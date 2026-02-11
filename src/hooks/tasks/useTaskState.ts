@@ -334,7 +334,7 @@ export function useTaskState(
             tempRangeMapSize: tempRangeMap.size
           });
         } else {
-          console.warn('⚠️ [ASSETS] No equipment found in task_data');
+          console.debug('[ASSETS] No equipment in task_data (expected for non-equipment tasks)');
         }
 
         // 4. Initialize form data

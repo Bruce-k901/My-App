@@ -19,9 +19,10 @@ import {
   MessageSquare,
   Send,
   type LucideIcon
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { useMobileNav } from './MobileNavProvider';
+import { usePanelStore } from '@/lib/stores/panel-store';
 
 interface QuickAction {
   id: string;
@@ -77,6 +78,7 @@ interface QuickActionsGridProps {
 export function QuickActionsGrid({ section, userRole }: QuickActionsGridProps) {
   const router = useRouter();
   const { closeMoreSheet } = useMobileNav();
+  const { setMessagingOpen } = usePanelStore();
 
   const actions = section === 'quick' ? quickActions :
                   section === 'settings' ? settingsActions :
@@ -88,6 +90,11 @@ export function QuickActionsGrid({ section, userRole }: QuickActionsGridProps) {
 
   const handleActionClick = (action: QuickAction) => {
     closeMoreSheet();
+    // Open messaging panel directly instead of navigating
+    if (action.href.startsWith('/dashboard/messaging')) {
+      setMessagingOpen(true);
+      return;
+    }
     router.push(action.href);
   };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { X, CheckSquare, Users, Phone, FileText, Calendar, Clock } from 'lucide-react';
+import { X, CheckSquare, Users, Phone, FileText, Calendar, Clock, Bell } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
@@ -14,9 +14,10 @@ import TaskForm from './TaskForm';
 import MeetingForm from './MeetingForm';
 import CallForm from './CallForm';
 import NoteForm from './NoteForm';
+import ReminderForm from './ReminderForm';
 import { generateSmartTitle } from './generateTitle';
 
-export type TaskType = 'task' | 'meeting' | 'call' | 'note';
+export type TaskType = 'task' | 'meeting' | 'call' | 'note' | 'reminder';
 
 export interface ModalContext {
   source: 'calendar' | 'message' | 'manual';
@@ -80,7 +81,12 @@ interface NoteFormData extends BaseFormData {
   type: 'note';
 }
 
-type FormData = TaskFormData | MeetingFormData | CallFormData | NoteFormData;
+interface ReminderFormData extends BaseFormData {
+  type: 'reminder';
+  repeat: 'once' | 'daily' | 'weekly';
+}
+
+type FormData = TaskFormData | MeetingFormData | CallFormData | NoteFormData | ReminderFormData;
 
 export default function CreateTaskModal({
   isOpen,
@@ -217,6 +223,12 @@ export default function CreateTaskModal({
             ...base,
             type: 'note' as const,
           };
+        case 'reminder':
+          return {
+            ...base,
+            type: 'reminder' as const,
+            repeat: existingTask.metadata?.repeat || 'once',
+          };
         default:
           return {
             ...base,
@@ -227,7 +239,7 @@ export default function CreateTaskModal({
           };
       }
     }
-    
+
     // Otherwise, create new task
     const preSelectedDate = context?.preSelectedDate || new Date();
     const now = new Date();
@@ -275,6 +287,12 @@ export default function CreateTaskModal({
         return {
           ...base,
           type: 'note' as const,
+        };
+      case 'reminder':
+        return {
+          ...base,
+          type: 'reminder' as const,
+          repeat: 'once' as const,
         };
     }
   };
@@ -579,15 +597,21 @@ export default function CreateTaskModal({
         };
       } else if (formData.type === 'call' && 'duration' in formData) {
         const callData = formData as CallFormData;
-        const durationMinutes = callData.duration === 'custom' 
-          ? callData.customDuration 
+        const durationMinutes = callData.duration === 'custom'
+          ? callData.customDuration
           : parseInt(callData.duration);
-        
+
         taskInsert.metadata = {
           ...taskInsert.metadata,
           duration_minutes: durationMinutes,
           location: callData.location === 'custom' ? callData.customLocation : callData.location,
           meeting_link: callData.meetingLink,
+        };
+      } else if (formData.type === 'reminder' && 'repeat' in formData) {
+        const reminderData = formData as ReminderFormData;
+        taskInsert.metadata = {
+          ...taskInsert.metadata,
+          repeat: reminderData.repeat,
         };
       }
 
@@ -722,7 +746,7 @@ export default function CreateTaskModal({
           .eq('id', context.messageId);
       }
 
-      toast.success(`${formData.type === 'task' ? 'Task' : formData.type === 'meeting' ? 'Meeting' : formData.type === 'call' ? 'Call' : 'Note'} created successfully!`);
+      toast.success(`${formData.type === 'task' ? 'Task' : formData.type === 'meeting' ? 'Meeting' : formData.type === 'call' ? 'Call' : formData.type === 'reminder' ? 'Reminder' : 'Note'} created successfully!`);
       onTaskCreated?.(task);
       onClose();
     } catch (error: any) {
@@ -759,31 +783,32 @@ export default function CreateTaskModal({
           </button>
         </div>
 
-        {/* Type Tabs - Enhanced Visibility */}
-        <div className="flex gap-2 p-4 border-b border-gray-200 dark:border-white/[0.06] bg-gray-50 dark:bg-gradient-to-r dark:from-white/[0.03] dark:to-white/[0.01] flex-shrink-0">
-          {(['task', 'meeting', 'call', 'note'] as TaskType[]).map((type) => {
-            const icons = {
+        {/* Type Tabs */}
+        <div className="flex gap-1.5 p-3 border-b border-gray-200 dark:border-white/[0.06] bg-gray-50 dark:bg-white/[0.02] flex-shrink-0">
+          {(['task', 'meeting', 'call', 'note', 'reminder'] as TaskType[]).map((type) => {
+            const icons: Record<TaskType, any> = {
               task: CheckSquare,
               meeting: Users,
               call: Phone,
               note: FileText,
+              reminder: Bell,
             };
             const Icon = icons[type];
             const isActive = activeType === type;
-            
+
             return (
               <button
                 key={type}
                 onClick={() => setActiveType(type)}
-                className={`flex-1 px-6 py-3 rounded-xl text-base font-semibold transition-all duration-200 ${
+                className={`flex-1 px-2 py-2 rounded-lg text-xs font-medium transition-all ${
                   isActive
-                    ? 'bg-[#EC4899] text-white shadow-[0_0_20px_rgba(236,72,153,0.5)] transform scale-105'
-                    : 'text-gray-600 dark:text-white/50 hover:text-gray-900 dark:hover:text-white/80 hover:bg-gray-100 dark:hover:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]'
+                    ? 'bg-[#D37E91] text-white shadow-sm'
+                    : 'text-gray-500 dark:text-white/50 hover:text-gray-700 dark:hover:text-white/80 hover:bg-gray-100 dark:hover:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06]'
                 }`}
               >
-                <div className="flex items-center justify-center gap-2.5">
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-gray-600 dark:text-white/60'}`} />
-                  <span className="capitalize">{type === '1-2-1' ? '1-2-1' : type === 'task' ? 'Task' : type === 'meeting' ? 'Meeting' : type === 'call' ? 'Call' : 'Note'}</span>
+                <div className="flex items-center justify-center gap-1.5">
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-gray-400 dark:text-white/50'}`} />
+                  <span className="capitalize hidden sm:inline">{type === 'task' ? 'Task' : type === 'meeting' ? 'Meeting' : type === 'call' ? 'Call' : type === 'reminder' ? 'Reminder' : 'Note'}</span>
                 </div>
               </button>
             );
@@ -848,6 +873,13 @@ export default function CreateTaskModal({
               sites={sites}
             />
           )}
+          {activeType === 'reminder' && (
+            <ReminderForm
+              formData={formData as Partial<ReminderFormData>}
+              setFormData={setFormData}
+              sites={sites}
+            />
+          )}
         </div>
 
         {/* Footer */}
@@ -861,7 +893,7 @@ export default function CreateTaskModal({
           <button
             onClick={handleCreate}
             disabled={loading || !canSubmit}
-            className="flex-1 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading 
               ? (isEditing ? 'Updating...' : 'Creating...') 

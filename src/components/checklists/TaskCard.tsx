@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Clock, CheckCircle2, AlertCircle, Calendar, Camera, Thermometer, FileText, Lightbulb, ExternalLink, ArrowRight } from 'lucide-react'
+import { Clock, CheckCircle2, AlertCircle, Calendar, Camera, Thermometer, FileText, Lightbulb, ExternalLink, ArrowRight } from '@/components/ui/icons'
 import { ChecklistTaskWithTemplate, TaskStatus } from '@/types/checklist-types'
 import { supabase } from '@/lib/supabase'
 import { calculateTaskTiming, TaskTimingStatus } from '@/utils/taskTiming'
@@ -34,6 +34,7 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
     
     switch (taskData.source_type) {
       case 'certificate_expiry':
+      case 'training_certificate':
         // Link to training page with profile_id query param
         if (taskData.profile_id) {
           return `/dashboard/training?profile_id=${taskData.profile_id}&certificate_type=${taskData.certificate_type || ''}`
@@ -149,7 +150,7 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
     if (timingStatus === 'pending') return 'border-yellow-500/50 dark:border-yellow-500/50 bg-yellow-500/10 dark:bg-yellow-500/10'
     
     if (isCritical) return 'border-orange-500/50 dark:border-orange-500/50 bg-orange-500/10 dark:bg-orange-500/10'
-    return 'border-[rgb(var(--border))] dark:border-neutral-700 hover:border-[#EC4899]/50 dark:hover:border-pink-400/50'
+    return 'border-[rgb(var(--border))] dark:border-neutral-700 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50'
   }
 
   const getStatusIcon = () => {
@@ -247,7 +248,7 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
             className="inline-flex items-center gap-2 px-3 py-2 bg-blue-500/10 dark:bg-blue-500/10 border border-blue-500/30 dark:border-blue-500/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-500/20 dark:hover:bg-blue-500/20 transition-colors text-xs font-medium"
           >
             <ArrowRight className="w-3 h-3" />
-            {task.task_data?.source_type === 'certificate_expiry' && 'View Training Details'}
+            {(task.task_data?.source_type === 'certificate_expiry' || task.task_data?.source_type === 'training_certificate') && 'View Training Details'}
             {task.task_data?.source_type === 'sop_review' && 'Review SOP'}
             {task.task_data?.source_type === 'document_expiry' && 'Review Document'}
             {task.task_data?.source_type === 'ppm_overdue' && 'View PPM Schedule'}

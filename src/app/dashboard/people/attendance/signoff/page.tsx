@@ -13,7 +13,7 @@ import {
   Send,
   LayoutList,
   Users
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import WeeklyEmployeeView from './components/WeeklyEmployeeView';
 import { toast } from 'sonner';
 import TimePicker from '@/components/ui/TimePicker';
@@ -893,7 +893,7 @@ export default function AttendanceSignOffPage() {
                 break_minutes: breakMinutes,
                 estimated_cost: estimatedCost,
                 company_id: companyId,
-                color: '#EC4899', // Default color
+                color: '#D37E91', // Default color
                 status: 'scheduled'
               });
             
@@ -2002,28 +2002,18 @@ export default function AttendanceSignOffPage() {
                               </div>
                             </td>
                             
-                            {/* Scheduled Start */}
+                            {/* Scheduled Start (read-only from rota) */}
                             <td className="px-4 py-3">
-                              <TimePicker
-                                key={`${employee.staffId}-${date}-scheduledStart`}
-                                value={dayData.scheduledStart ?? ''}
-                                onChange={(value) => updateTime(employee.staffId, date, 'scheduledStart', value)}
-                                onBlur={() => saveTimeChanges(employee.staffId, date)}
-                                disabled={isLocked}
-                                className="w-24"
-                              />
+                              <span className="text-sm text-gray-600 dark:text-white/60 w-24 inline-block text-center">
+                                {dayData.scheduledStart || '—'}
+                              </span>
                             </td>
-                            
-                            {/* Scheduled End */}
+
+                            {/* Scheduled End (read-only from rota) */}
                             <td className="px-4 py-3">
-                              <TimePicker
-                                key={`${employee.staffId}-${date}-scheduledEnd`}
-                                value={dayData.scheduledEnd ?? ''}
-                                onChange={(value) => updateTime(employee.staffId, date, 'scheduledEnd', value)}
-                                onBlur={() => saveTimeChanges(employee.staffId, date)}
-                                disabled={isLocked}
-                                className="w-24"
-                              />
+                              <span className="text-sm text-gray-600 dark:text-white/60 w-24 inline-block text-center">
+                                {dayData.scheduledEnd || '—'}
+                              </span>
                             </td>
                             
                             {/* Clock In */}

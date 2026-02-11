@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
-import { Search } from 'lucide-react';
+import { Search } from '@/components/ui/icons';
 
 interface CustomerFiltersProps {
   searchQuery: string;

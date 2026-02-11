@@ -1,6 +1,6 @@
 'use client'
 
-import { Menu } from 'lucide-react'
+import { Menu } from '@/components/ui/icons'
 import Link from 'next/link'
 
 interface AppHeaderProps {
@@ -23,7 +23,7 @@ export function AppHeader({
         className="flex items-center gap-2 hover:opacity-80 transition-opacity"
       >
         <img
-          src="/favicon.svg"
+          src="/new_logos_opsly/opsly-mark.svg"
           alt="Opsly"
           className="h-11 w-auto"
         />

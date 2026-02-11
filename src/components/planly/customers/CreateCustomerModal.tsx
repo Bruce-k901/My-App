@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Loader2, AlertCircle, Building2, Truck, Wallet, Settings } from 'lucide-react';
+import { X, Loader2, AlertCircle, Building2, Truck, Wallet, Settings } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import Label from '@/components/ui/Label';
 import Input from '@/components/ui/Input';

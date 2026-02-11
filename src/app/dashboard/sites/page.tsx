@@ -7,6 +7,7 @@ import SiteFormNew from "@/components/sites/SiteFormNew";
 import SiteToolbar from "@/components/sites/SiteToolbar";
 import SiteCard from "@/components/sites/SiteCard";
 import EntityPageLayout from "@/components/layouts/EntityPageLayout";
+import BackToSetup from "@/components/dashboard/BackToSetup";
 
 interface Site {
   id: string;
@@ -207,7 +208,7 @@ export default function OrganizationSitesPage() {
   // Early returns ONLY AFTER all hooks
   if (ctxLoading) {
     console.log('Context loading:', ctxLoading, 'Profile:', profile);
-    return <div className="text-slate-400">Loading context...</div>;
+    return <div className="text-gray-500 dark:text-slate-400">Loading context...</div>;
   }
 
   const handleSaved = async () => {
@@ -231,6 +232,10 @@ export default function OrganizationSitesPage() {
   });
 
   return (
+    <>
+    <div className="max-w-[1200px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-3">
+      <BackToSetup />
+    </div>
     <EntityPageLayout
       title="Sites"
       onSearch={setSearchTerm}
@@ -247,18 +252,18 @@ export default function OrganizationSitesPage() {
       }
     >
       {error && (
-        <div className="rounded-xl bg-white/[0.06] border border-white/[0.1] px-4 py-3">
-          <p className="text-sm text-red-400">{error}</p>
+        <div className="rounded-xl bg-red-50 dark:bg-white/[0.06] border border-red-200 dark:border-white/[0.1] px-4 py-3">
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         </div>
       )}
 
       {ctxLoading || loading ? (
-        <div className="text-slate-400">Loading sites…</div>
+        <div className="text-gray-500 dark:text-slate-400">Loading sites…</div>
       ) : filteredSites.length === 0 ? (
         searchTerm ? (
-          <p className="text-gray-400">No sites found matching "{searchTerm}".</p>
+          <p className="text-gray-500 dark:text-gray-400">No sites found matching "{searchTerm}".</p>
         ) : (
-          <p className="text-gray-400">No sites yet. Add one to get started.</p>
+          <p className="text-gray-500 dark:text-gray-400">No sites yet. Add one to get started.</p>
         )
       ) : (
         <div className="space-y-3 md:space-y-4">
@@ -298,5 +303,6 @@ export default function OrganizationSitesPage() {
         />
       )}
     </EntityPageLayout>
+    </>
   );
 }

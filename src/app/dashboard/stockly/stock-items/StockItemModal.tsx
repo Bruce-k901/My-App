@@ -10,7 +10,7 @@ import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
-import { Plus, Save, Loader2 } from 'lucide-react';
+import { Plus, Save, Loader2 } from '@/components/ui/icons';
 
 // Section Header Component
 const SectionHeader = ({ children }: { children: React.ReactNode }) => (

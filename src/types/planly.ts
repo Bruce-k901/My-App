@@ -158,6 +158,7 @@ export interface LaminationStyle {
   name: string;
   recipe_id?: string | null;
   products_per_sheet: number;
+  dough_per_sheet_g?: number | null;
   laminate_lead_days: number;
   display_order: number;
   created_at: string;

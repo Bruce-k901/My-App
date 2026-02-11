@@ -15,7 +15,7 @@ import {
   AlertCircle,
   Coffee,
   TrendingUp
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import type { DailyAttendance, WeeklyHours } from '@/types/teamly';
 
 export default function AttendancePage() {
@@ -256,7 +256,14 @@ export default function AttendancePage() {
                         {formatTime(row.clock_in)}
                       </td>
                       <td className="px-4 py-3 text-center text-gray-600 dark:text-white/70">
-                        {formatTime(row.clock_out)}
+                        <span className="inline-flex items-center gap-1">
+                          {formatTime(row.clock_out)}
+                          {row.notes?.includes('Auto clocked out') && (
+                            <span className="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded text-[10px] font-medium border border-amber-200 dark:border-amber-500/20">
+                              System
+                            </span>
+                          )}
+                        </span>
                       </td>
                       <td className="px-4 py-3 text-right text-gray-900 dark:text-white font-medium">
                         {row.hours_worked?.toFixed(1) || '-'}h

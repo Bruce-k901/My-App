@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { ChevronDown, ChevronRight, BarChart3, Filter } from 'lucide-react';
+import { ChevronDown, ChevronRight, BarChart3, Filter } from '@/components/ui/icons';
 import { ReviewComparisonQuestion } from './ReviewComparisonQuestion';
 import type { ReviewWithDetails, ReviewResponse } from '@/types/reviews';
 
@@ -119,7 +119,7 @@ export function ReviewComparisonView({
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-[#EC4899]" />
+            <BarChart3 className="w-5 h-5 text-[#D37E91]" />
             <h3 className="font-medium text-white">Alignment Overview</h3>
           </div>
           
@@ -129,7 +129,7 @@ export function ReviewComparisonView({
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value as FilterType)}
-              className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+              className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
             >
               <option value="all">Show All</option>
               <option value="aligned">Aligned Only</option>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { X, Search, Check } from 'lucide-react';
+import { X, Search, Check } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useConversations } from '@/hooks/useConversations';
@@ -186,7 +186,7 @@ export default function ForwardMessageModal({
               placeholder="Search conversations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
             />
           </div>
         </div>
@@ -214,14 +214,14 @@ export default function ForwardMessageModal({
                   onClick={() => toggleChannel(conv.id)}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors ${
                     isSelected
-                      ? 'bg-pink-50 dark:bg-pink-500/20 border-pink-300 dark:border-pink-500/50'
+                      ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/25 border-[#D37E91] dark:border-[#D37E91]/50'
                       : 'bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] hover:bg-gray-100 dark:hover:bg-white/[0.06]'
                   }`}
                 >
                   <div
                     className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
                       isSelected
-                        ? 'bg-pink-500 border-pink-500'
+                        ? 'bg-[#D37E91] border-[#D37E91]'
                         : 'border-gray-300 dark:border-white/30'
                     }`}
                   >
@@ -257,7 +257,7 @@ export default function ForwardMessageModal({
             <button
               onClick={handleForward}
               disabled={selectedChannels.size === 0 || isForwarding}
-              className="px-4 py-2 bg-transparent text-[#EC4899] border border-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-transparent text-[#D37E91] border border-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isForwarding ? 'Forwarding...' : `Forward to ${selectedChannels.size}`}
             </button>

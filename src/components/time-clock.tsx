@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Clock, Play, Square, Coffee, MapPin, Loader2 } from 'lucide-react';
+import { Clock, Play, Square, Coffee, MapPin, Loader2 } from '@/components/ui/icons';
 import type { ClockStatus } from '@/types/teamly';
+import { useOfflineAttendance } from '@/hooks/teamly/useOfflineAttendance';
 
 interface TimeClockProps {
   profileId: string;
@@ -17,6 +18,7 @@ export function TimeClock({ profileId, siteId, onStatusChange }: TimeClockProps)
   const [action, setAction] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const { clockIn, clockOut, isProcessing } = useOfflineAttendance();
 
   useEffect(() => {
     fetchStatus();
@@ -54,20 +56,24 @@ export function TimeClock({ profileId, siteId, onStatusChange }: TimeClockProps)
   };
 
   const handleClockIn = async () => {
+    if (!siteId) {
+      alert('Site ID is required to clock in');
+      return;
+    }
+
     setAction('in');
     try {
-      const { data, error } = await supabase.rpc('clock_in', {
-        p_profile_id: profileId,
-        p_site_id: siteId,
-        p_location: location,
-      });
-      if (error) {
-        console.error('Error clocking in:', error);
-        alert(error.message || 'Failed to clock in');
-        return;
+      const result = await clockIn(siteId);
+
+      if (result.success) {
+        // Only fetch status if not queued (online submission)
+        if (!result.queued) {
+          await fetchStatus();
+        }
+        onStatusChange?.();
+      } else if (result.error) {
+        alert(result.error);
       }
-      await fetchStatus();
-      onStatusChange?.();
     } catch (error: any) {
       console.error('Exception clocking in:', error);
       alert(error.message || 'Failed to clock in');
@@ -79,17 +85,17 @@ export function TimeClock({ profileId, siteId, onStatusChange }: TimeClockProps)
   const handleClockOut = async () => {
     setAction('out');
     try {
-      const { data, error } = await supabase.rpc('clock_out', {
-        p_profile_id: profileId,
-        p_location: location,
-      });
-      if (error) {
-        console.error('Error clocking out:', error);
-        alert(error.message || 'Failed to clock out');
-        return;
+      const result = await clockOut();
+
+      if (result.success) {
+        // Only fetch status if not queued (online submission)
+        if (!result.queued) {
+          await fetchStatus();
+        }
+        onStatusChange?.();
+      } else if (result.error) {
+        alert(result.error);
       }
-      await fetchStatus();
-      onStatusChange?.();
     } catch (error: any) {
       console.error('Exception clocking out:', error);
       alert(error.message || 'Failed to clock out');

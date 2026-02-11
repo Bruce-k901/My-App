@@ -9,7 +9,7 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface TrayAssignment {
   tray_number: number;
@@ -155,7 +155,7 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
     return (
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
         </div>
       </div>
     );
@@ -226,21 +226,21 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
         <div className="flex items-center gap-2">
           <button
             onClick={handleAutoPack}
-            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2 text-sm"
+            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2 text-sm"
           >
             <RefreshCw className="w-4 h-4" />
             Auto-Pack
           </button>
           <button
             onClick={handleExport}
-            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2 text-sm"
+            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2 text-sm"
           >
             <Download className="w-4 h-4" />
             Export
           </button>
           <button
             onClick={handlePrint}
-            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2 text-sm"
+            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2 text-sm"
           >
             <Printer className="w-4 h-4" />
             Print

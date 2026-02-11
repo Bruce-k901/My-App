@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, AlertTriangle, Phone, Mail, Calendar, MapPin, FileText, CheckCircle2, User, Clock, MessageSquare } from 'lucide-react';
+import { X, AlertTriangle, Phone, Mail, Calendar, MapPin, FileText, CheckCircle2, User, Clock, MessageSquare } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -386,7 +386,7 @@ export function CustomerComplaintModal({
               onClick={() => setActiveSection('details')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
                 activeSection === 'details'
-                  ? 'bg-[#EC4899]/20 dark:bg-pink-500/20 text-[#EC4899] dark:text-pink-300'
+                  ? 'bg-[#D37E91]/20 dark:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91]'
                   : 'text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white/80'
               }`}
             >
@@ -399,7 +399,7 @@ export function CustomerComplaintModal({
               disabled={!canProceedToFollowUp}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
                 activeSection === 'followup'
-                  ? 'bg-[#EC4899]/20 dark:bg-pink-500/20 text-[#EC4899] dark:text-pink-300'
+                  ? 'bg-[#D37E91]/20 dark:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91]'
                   : canProceedToFollowUp
                   ? 'text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white/80'
                   : 'text-gray-400 dark:text-white/30 cursor-not-allowed'
@@ -414,7 +414,7 @@ export function CustomerComplaintModal({
               disabled={!canProceedToReview}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
                 activeSection === 'review'
-                  ? 'bg-[#EC4899]/20 dark:bg-pink-500/20 text-[#EC4899] dark:text-pink-300'
+                  ? 'bg-[#D37E91]/20 dark:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91]'
                   : canProceedToReview
                   ? 'text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white/80'
                   : 'text-gray-400 dark:text-white/30 cursor-not-allowed'
@@ -433,7 +433,7 @@ export function CustomerComplaintModal({
               {/* Customer Information */}
               <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <User className="w-5 h-5 text-[#EC4899] dark:text-pink-400" />
+                  <User className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
                   Customer Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -445,7 +445,7 @@ export function CustomerComplaintModal({
                       type="text"
                       value={formData.customer_name}
                       onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       placeholder="Enter customer name"
                     />
                   </div>
@@ -457,7 +457,7 @@ export function CustomerComplaintModal({
                       type="email"
                       value={formData.customer_email}
                       onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       placeholder="customer@example.com"
                     />
                   </div>
@@ -469,7 +469,7 @@ export function CustomerComplaintModal({
                       type="tel"
                       value={formData.customer_phone}
                       onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       placeholder="+44 123 456 7890"
                     />
                   </div>
@@ -481,7 +481,7 @@ export function CustomerComplaintModal({
                       type="date"
                       value={formData.visit_date}
                       onChange={(e) => setFormData({ ...formData, visit_date: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                     />
                   </div>
                   <div>
@@ -540,7 +540,7 @@ export function CustomerComplaintModal({
                       type="text"
                       value={formData.complaint_title}
                       onChange={(e) => setFormData({ ...formData, complaint_title: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       placeholder="Brief summary of the complaint"
                     />
                   </div>
@@ -552,7 +552,7 @@ export function CustomerComplaintModal({
                       value={formData.complaint_description}
                       onChange={(e) => setFormData({ ...formData, complaint_description: e.target.value })}
                       rows={5}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500 resize-none"
+                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none"
                       placeholder="Provide detailed description of the complaint..."
                     />
                   </div>
@@ -565,7 +565,7 @@ export function CustomerComplaintModal({
                         type="text"
                         value={formData.location_in_venue}
                         onChange={(e) => setFormData({ ...formData, location_in_venue: e.target.value })}
-                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         placeholder="e.g., Table 12, Bar area, Restroom"
                       />
                     </div>
@@ -602,7 +602,7 @@ export function CustomerComplaintModal({
                       value={formData.immediate_response}
                       onChange={(e) => setFormData({ ...formData, immediate_response: e.target.value })}
                       rows={4}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500 resize-none"
+                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none"
                       placeholder="Describe what immediate action was taken when the complaint was received..."
                     />
                   </div>
@@ -615,7 +615,7 @@ export function CustomerComplaintModal({
                         type="text"
                         value={formData.response_taken_by}
                         onChange={(e) => setFormData({ ...formData, response_taken_by: e.target.value })}
-                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         placeholder="Staff member name"
                       />
                     </div>
@@ -627,7 +627,7 @@ export function CustomerComplaintModal({
                         type="date"
                         value={formData.response_date}
                         onChange={(e) => setFormData({ ...formData, response_date: e.target.value })}
-                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       />
                     </div>
                   </div>
@@ -662,7 +662,7 @@ export function CustomerComplaintModal({
                       key={action.id}
                       className={`p-4 rounded-lg border cursor-pointer transition-colors ${
                         formData.followUpActions.includes(action.id)
-                          ? 'bg-[#EC4899]/20 dark:bg-pink-500/20 border-[#EC4899]/40 dark:border-pink-500/40'
+                          ? 'bg-[#D37E91]/20 dark:bg-[#D37E91]/25 border-[#D37E91]/40 dark:border-[#D37E91]/40'
                           : 'bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.1] hover:bg-gray-50 dark:hover:bg-white/[0.05]'
                       }`}
                       onClick={() => {
@@ -677,7 +677,7 @@ export function CustomerComplaintModal({
                           type="checkbox"
                           checked={formData.followUpActions.includes(action.id)}
                           onChange={() => {}}
-                          className="mt-1 w-4 h-4 text-[#EC4899] dark:text-pink-500 rounded focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                          className="mt-1 w-4 h-4 text-[#D37E91] dark:text-[#D37E91] rounded focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-900 dark:text-white">{action.label}</h4>
@@ -695,7 +695,7 @@ export function CustomerComplaintModal({
                                 });
                               }}
                               rows={2}
-                              className="w-full mt-2 px-3 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500 resize-none text-sm"
+                              className="w-full mt-2 px-3 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none text-sm"
                               placeholder="Add additional details or notes..."
                               onClick={(e) => e.stopPropagation()}
                             />
@@ -714,7 +714,7 @@ export function CustomerComplaintModal({
                       type="date"
                       value={formData.follow_up_deadline}
                       onChange={(e) => setFormData({ ...formData, follow_up_deadline: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                     />
                   </div>
                   <div>
@@ -725,7 +725,7 @@ export function CustomerComplaintModal({
                       type="text"
                       value={formData.assigned_to}
                       onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       placeholder="Manager or staff member"
                     />
                   </div>
@@ -815,7 +815,7 @@ export function CustomerComplaintModal({
                       type="checkbox"
                       checked={formData.resolved}
                       onChange={(e) => setFormData({ ...formData, resolved: e.target.checked })}
-                      className="w-4 h-4 text-[#EC4899] dark:text-pink-500 rounded focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                      className="w-4 h-4 text-[#D37E91] dark:text-[#D37E91] rounded focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                     />
                     <span className="text-gray-900 dark:text-white">Complaint has been resolved</span>
                   </label>
@@ -829,7 +829,7 @@ export function CustomerComplaintModal({
                           type="date"
                           value={formData.resolution_date}
                           onChange={(e) => setFormData({ ...formData, resolution_date: e.target.value })}
-                          className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                          className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                       </div>
                       <div>
@@ -840,7 +840,7 @@ export function CustomerComplaintModal({
                           value={formData.resolution_details}
                           onChange={(e) => setFormData({ ...formData, resolution_details: e.target.value })}
                           rows={4}
-                          className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500 resize-none"
+                          className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none"
                           placeholder="Describe how the complaint was resolved..."
                         />
                       </div>
@@ -849,7 +849,7 @@ export function CustomerComplaintModal({
                           type="checkbox"
                           checked={formData.customer_satisfied}
                           onChange={(e) => setFormData({ ...formData, customer_satisfied: e.target.checked })}
-                          className="w-4 h-4 text-[#EC4899] dark:text-pink-500 rounded focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                          className="w-4 h-4 text-[#D37E91] dark:text-[#D37E91] rounded focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                         <span className="text-gray-900 dark:text-white">Customer satisfied with resolution</span>
                       </label>

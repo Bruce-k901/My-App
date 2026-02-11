@@ -25,7 +25,7 @@ import {
   Check,
   AlertTriangle,
   ArrowLeft
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import Link from 'next/link';
 import { toast } from 'sonner';
 

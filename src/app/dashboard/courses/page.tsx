@@ -1,7 +1,7 @@
 // Last updated: 2025-11-25 19:29
 import Link from "next/link";
 import OrgContentWrapper from "@/components/layouts/OrgContentWrapper";
-import { Play } from "lucide-react";
+import { Play } from "@/components/ui/icons";
 import { COURSES } from "@/lib/navigation-constants";
 
 // Force dynamic rendering to prevent caching issues
@@ -19,7 +19,7 @@ export default function CoursesPage() {
         {COURSES.map((course) => (
           <div
             key={course.slug}
-            className="group flex h-full flex-col justify-between rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition dark:border-white/10 dark:bg-white/5 dark:shadow-none hover:border-magenta-500/40 hover:shadow-[0_0_26px_rgba(236,72,153,0.15)] dark:hover:shadow-[0_0_26px_rgba(236,72,153,0.2)]"
+            className="group flex h-full flex-col justify-between rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition dark:border-white/10 dark:bg-white/5 dark:shadow-none hover:border-magenta-500/40 hover:shadow-[0_0_26px_rgba(211, 126, 145,0.15)] dark:hover:shadow-[0_0_26px_rgba(211, 126, 145,0.2)]"
           >
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-xs text-magenta-600 dark:text-magenta-200">
@@ -44,7 +44,7 @@ export default function CoursesPage() {
                 </Link>
                 <Link
                   href={course.href}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-[#EC4899] bg-transparent px-4 py-1.5 text-xs font-medium text-[#EC4899] transition-all duration-200 ease-in-out hover:bg-[#EC4899]/10 hover:shadow-[0_0_12px_rgba(236,72,153,0.25)] dark:hover:bg-transparent dark:hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-[#D37E91] bg-transparent px-4 py-1.5 text-xs font-medium text-[#D37E91] transition-all duration-200 ease-in-out hover:bg-[#D37E91]/10 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.25)] dark:hover:bg-transparent dark:hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
                 >
                   <Play className="h-3.5 w-3.5" />
                   Start

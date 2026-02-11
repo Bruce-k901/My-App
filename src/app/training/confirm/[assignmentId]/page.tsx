@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
-import { Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Loader2, AlertCircle, CheckCircle } from '@/components/ui/icons';
 import { toast } from 'sonner';
 import Link from 'next/link';
 
@@ -148,7 +148,7 @@ export default function ConfirmCoursePage() {
         <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-6 text-center">
           <h1 className="text-xl font-semibold text-red-300 mb-2">Assignment Not Found</h1>
           <p className="text-red-200/80 mb-4">This assignment could not be found or you do not have access.</p>
-          <Link href="/dashboard" className="text-pink-400 hover:underline">
+          <Link href="/dashboard" className="text-[#D37E91] hover:underline">
             Return to Dashboard
           </Link>
         </div>

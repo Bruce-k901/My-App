@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import { Maximize2 } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { MODULE_COLOURS, MODULE_BADGE_COLOURS, MODULE_LABELS, type ModuleId } from '@/config/widget-registry';
 
@@ -9,6 +10,7 @@ interface WidgetCardProps {
   title: string;
   module: ModuleId;
   viewAllHref?: string;
+  onExpand?: () => void;
   children: ReactNode;
   className?: string;
 }
@@ -26,6 +28,7 @@ export function WidgetCard({
   title,
   module,
   viewAllHref,
+  onExpand,
   children,
   className,
 }: WidgetCardProps) {
@@ -37,13 +40,13 @@ export function WidgetCard({
     <div
       className={cn(
         'bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D]',
-        'border border-white/[0.06] rounded-lg',
+        'border border-module-fg/[0.12] rounded-lg',
         'border-l-[3px]',
         borderColor,
-        'p-4',
-        'flex flex-col gap-2.5',
+        'flex flex-col',
         className
       )}
+      style={{ padding: 'var(--spacing-card)', gap: 'var(--spacing-row)' }}
     >
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -60,19 +63,29 @@ export function WidgetCard({
             {moduleLabel}
           </span>
           {/* Widget title */}
-          <span className="text-[13px] font-semibold text-white">
+          <span className="text-[13px] font-semibold text-[rgb(var(--text-primary))]">
             {title}
           </span>
         </div>
-        {/* View all link */}
-        {viewAllHref && (
-          <Link
-            href={viewAllHref}
-            className="text-[10px] text-fuchsia-400/70 hover:text-fuchsia-400 transition-colors"
-          >
-            View all →
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          {onExpand && (
+            <button
+              onClick={onExpand}
+              className="p-1 text-[rgb(var(--text-disabled))] hover:text-[rgb(var(--text-primary))] transition-colors"
+              title="Expand"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {viewAllHref && (
+            <Link
+              href={viewAllHref}
+              className="text-[10px] text-teamly/70 hover:text-teamly transition-colors"
+            >
+              View all →
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Widget content */}
@@ -86,15 +99,15 @@ export function WidgetCard({
  */
 export function WidgetSkeleton() {
   return (
-    <div className="bg-[#171B2D] border border-white/[0.06] rounded-lg p-4 animate-pulse">
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D] border border-module-fg/[0.12] rounded-lg p-4 animate-pulse">
       <div className="flex items-center gap-2 mb-3">
-        <div className="h-4 w-12 bg-white/10 rounded" />
-        <div className="h-4 w-24 bg-white/10 rounded" />
+        <div className="h-4 w-12 bg-black/10 dark:bg-white/10 rounded" />
+        <div className="h-4 w-24 bg-black/10 dark:bg-white/10 rounded" />
       </div>
       <div className="space-y-2">
-        <div className="h-3 w-full bg-white/5 rounded" />
-        <div className="h-3 w-3/4 bg-white/5 rounded" />
-        <div className="h-3 w-1/2 bg-white/5 rounded" />
+        <div className="h-3 w-full bg-black/5 dark:bg-white/5 rounded" />
+        <div className="h-3 w-3/4 bg-black/5 dark:bg-white/5 rounded" />
+        <div className="h-3 w-1/2 bg-black/5 dark:bg-white/5 rounded" />
       </div>
     </div>
   );
@@ -111,10 +124,10 @@ interface CountBadgeProps {
 
 export function CountBadge({ count, label, status = 'urgent' }: CountBadgeProps) {
   const statusColors = {
-    urgent: 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-400/30',
+    urgent: 'bg-teamly/10 text-teamly border-teamly/30',
     warning: 'bg-blue-500/10 text-blue-400 border-blue-400/30',
     good: 'bg-emerald-500/10 text-emerald-400 border-emerald-400/30',
-    neutral: 'bg-white/[0.03] text-white/40 border-white/10',
+    neutral: 'bg-black/[0.03] dark:bg-white/[0.03] text-[rgb(var(--text-disabled))] border-black/10 dark:border-white/10',
   };
 
   return (
@@ -127,7 +140,7 @@ export function CountBadge({ count, label, status = 'urgent' }: CountBadgeProps)
       >
         {count}
       </span>
-      <span className="text-[11px] text-white/40">{label}</span>
+      <span className="text-[11px] text-[rgb(var(--text-disabled))]">{label}</span>
     </div>
   );
 }
@@ -139,20 +152,38 @@ interface MiniItemProps {
   text: string;
   sub: string;
   status?: 'urgent' | 'warning' | 'good' | 'neutral';
+  href?: string;
 }
 
-export function MiniItem({ text, sub, status = 'neutral' }: MiniItemProps) {
+export function MiniItem({ text, sub, status = 'neutral', href }: MiniItemProps) {
   const statusColors = {
-    urgent: 'text-fuchsia-400',
+    urgent: 'text-teamly',
     warning: 'text-blue-400',
     good: 'text-emerald-400',
-    neutral: 'text-white/40',
+    neutral: 'text-[rgb(var(--text-disabled))]',
   };
+
+  const content = (
+    <>
+      <span className="text-[11.5px] text-[rgb(var(--text-secondary))] truncate pr-2">{text}</span>
+      <span className={cn('text-[10.5px] flex-shrink-0', statusColors[status])}>{sub}</span>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="flex justify-between items-center py-0.5 hover:bg-white/5 rounded -mx-1 px-1 transition-colors"
+      >
+        {content}
+      </Link>
+    );
+  }
 
   return (
     <div className="flex justify-between items-center py-0.5">
-      <span className="text-[11.5px] text-white/60 truncate pr-2">{text}</span>
-      <span className={cn('text-[10.5px] flex-shrink-0', statusColors[status])}>{sub}</span>
+      {content}
     </div>
   );
 }
@@ -166,18 +197,18 @@ interface ProgressBarProps {
   color?: string;
 }
 
-export function ProgressBar({ done, total, color = 'bg-fuchsia-400' }: ProgressBarProps) {
+export function ProgressBar({ done, total, color = 'bg-teamly' }: ProgressBarProps) {
   const pct = total > 0 ? (done / total) * 100 : 0;
 
   return (
     <div className="flex items-center gap-2.5">
-      <div className="flex-1 h-[5px] bg-white/[0.06] rounded-full overflow-hidden">
+      <div className="flex-1 h-[5px] bg-black/[0.06] dark:bg-white/[0.06] rounded-full overflow-hidden">
         <div
           className={cn('h-full rounded-full transition-all duration-500', color)}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="text-[11px] text-white/40 font-medium min-w-[30px]">
+      <span className="text-[11px] text-[rgb(var(--text-disabled))] font-medium min-w-[30px]">
         {done}/{total}
       </span>
     </div>

@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
+import { useSiteFilter } from '@/hooks/useSiteFilter';
 import { useToast } from '@/components/ui/ToastProvider';
-import { Wrench, Clock, CheckCircle, XCircle, AlertTriangle, Calendar, User, Building, Edit2, Upload, FileText, X, Download } from 'lucide-react';
+import { Wrench, Clock, CheckCircle, XCircle, AlertTriangle, Calendar, User, Building, Edit2, Upload, FileText, X, Download, Layers } from '@/components/ui/icons';
 
 interface Callout {
   id: string;
@@ -19,7 +20,10 @@ interface Callout {
   closed_at: string | null;
   reopened_at: string | null;
   asset_name: string | null;
-  asset_id: string;
+  asset_id: string | null;
+  ppm_group_id: string | null;
+  ppm_group_name: string | null;
+  group_asset_names: string[] | null;
   site_name: string | null;
   contractor_name: string | null;
   created_by_name: string | null;
@@ -38,6 +42,7 @@ interface EditingCallout {
 
 export default function CalloutLogsPage() {
   const { companyId } = useAppContext();
+  const { isAllSites, selectedSiteId } = useSiteFilter();
   const { showToast } = useToast();
   const [callouts, setCallouts] = useState<Callout[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,18 +51,12 @@ export default function CalloutLogsPage() {
   const [uploading, setUploading] = useState(false);
   const [expandedCallout, setExpandedCallout] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (companyId) {
-      loadCallouts();
-    }
-  }, [companyId, filter]);
-
-  const loadCallouts = async () => {
+  const loadCallouts = useCallback(async () => {
     if (!companyId) return;
 
     try {
       setLoading(true);
-      
+
       let query = supabase
         .from('callouts')
         .select(`
@@ -73,6 +72,7 @@ export default function CalloutLogsPage() {
           closed_at,
           reopened_at,
           asset_id,
+          ppm_group_id,
           site_id,
           contractor_id,
           created_by,
@@ -81,6 +81,11 @@ export default function CalloutLogsPage() {
         `)
         .eq('company_id', companyId)
         .order('created_at', { ascending: false });
+
+      // Apply site filter
+      if (!isAllSites) {
+        query = query.eq('site_id', selectedSiteId);
+      }
 
       // Apply status filter
       if (filter === 'open') {
@@ -102,32 +107,39 @@ export default function CalloutLogsPage() {
         return;
       }
 
-      // Load related data (assets, sites, contractors, profiles)
+      // Load related data (assets, sites, contractors, profiles, groups)
       const assetIds = [...new Set(data.map(c => c.asset_id).filter(Boolean))];
       const siteIds = [...new Set(data.map(c => c.site_id).filter(Boolean))];
       const contractorIds = [...new Set(data.map(c => c.contractor_id).filter(Boolean))];
       const createdByIds = [...new Set(data.map(c => c.created_by).filter(Boolean))];
+      const groupIds = [...new Set(data.map((c: any) => c.ppm_group_id).filter(Boolean))];
 
-      const [assetsResult, sitesResult, contractorsResult, profilesResult] = await Promise.all([
-        assetIds.length > 0 
-          ? assetIds.length === 1 
+      const [assetsResult, sitesResult, contractorsResult, profilesResult, groupsResult, groupAssetsResult] = await Promise.all([
+        assetIds.length > 0
+          ? assetIds.length === 1
             ? supabase.from('assets').select('id, name').eq('id', assetIds[0])
             : supabase.from('assets').select('id, name').in('id', assetIds)
           : { data: [] },
-        siteIds.length > 0 
+        siteIds.length > 0
           ? siteIds.length === 1
             ? supabase.from('sites').select('id, name').eq('id', siteIds[0])
             : supabase.from('sites').select('id, name').in('id', siteIds)
           : { data: [] },
-        contractorIds.length > 0 
+        contractorIds.length > 0
           ? contractorIds.length === 1
             ? supabase.from('contractors').select('id, name').eq('id', contractorIds[0])
             : supabase.from('contractors').select('id, name').in('id', contractorIds)
           : { data: [] },
-        createdByIds.length > 0 
+        createdByIds.length > 0
           ? createdByIds.length === 1
             ? supabase.from('profiles').select('id, full_name').eq('id', createdByIds[0])
             : supabase.from('profiles').select('id, full_name').in('id', createdByIds)
+          : { data: [] },
+        groupIds.length > 0
+          ? supabase.from('ppm_groups').select('id, name').in('id', groupIds)
+          : { data: [] },
+        groupIds.length > 0
+          ? supabase.from('ppm_group_assets').select('ppm_group_id, assets(name)').in('ppm_group_id', groupIds)
           : { data: [] }
       ]);
 
@@ -135,6 +147,14 @@ export default function CalloutLogsPage() {
       const sitesMap = new Map((sitesResult.data || []).map(s => [s.id, s.name]));
       const contractorsMap = new Map((contractorsResult.data || []).map(c => [c.id, c.name]));
       const profilesMap = new Map((profilesResult.data || []).map(p => [p.id, p.full_name]));
+      const groupsMap = new Map((groupsResult.data || []).map(g => [g.id, g.name]));
+      // Build map of group_id -> asset names
+      const groupAssetNamesMap = new Map<string, string[]>();
+      for (const row of (groupAssetsResult.data || []) as any[]) {
+        const names = groupAssetNamesMap.get(row.ppm_group_id) || [];
+        names.push(row.assets?.name || 'Unknown');
+        groupAssetNamesMap.set(row.ppm_group_id, names);
+      }
 
       // Enrich callouts with names
       const enrichedCallouts: Callout[] = data.map(callout => {
@@ -150,7 +170,10 @@ export default function CalloutLogsPage() {
         
         return {
           ...callout,
-          asset_name: assetsMap.get(callout.asset_id) || null,
+          asset_name: callout.asset_id ? assetsMap.get(callout.asset_id) || null : null,
+          ppm_group_id: (callout as any).ppm_group_id || null,
+          ppm_group_name: (callout as any).ppm_group_id ? groupsMap.get((callout as any).ppm_group_id) || null : null,
+          group_asset_names: (callout as any).ppm_group_id ? groupAssetNamesMap.get((callout as any).ppm_group_id) || null : null,
           site_name: sitesMap.get(callout.site_id) || null,
           contractor_name: contractorsMap.get(callout.contractor_id) || null,
           created_by_name: profilesMap.get(callout.created_by) || null,
@@ -174,7 +197,13 @@ export default function CalloutLogsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [companyId, filter, isAllSites, selectedSiteId]);
+
+  useEffect(() => {
+    if (companyId) {
+      loadCallouts();
+    }
+  }, [companyId, loadCallouts]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -555,8 +584,15 @@ export default function CalloutLogsPage() {
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white break-words">
-                      {callout.asset_name || 'Unknown Asset'}
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white break-words flex items-center gap-2">
+                      {callout.ppm_group_id ? (
+                        <>
+                          <Layers className="w-4 h-4 text-assetly flex-shrink-0" />
+                          Group: {callout.ppm_group_name || 'Unknown Group'}
+                        </>
+                      ) : (
+                        callout.asset_name || 'Unknown Asset'
+                      )}
                     </h3>
                     <span className={`px-2 py-1 rounded-full text-[10px] sm:text-xs font-medium border flex items-center gap-1 whitespace-nowrap ${getStatusColor(callout.status)}`}>
                       {getStatusIcon(callout.status)}
@@ -594,6 +630,13 @@ export default function CalloutLogsPage() {
                       <span>{new Date(callout.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
+
+                  {callout.group_asset_names && callout.group_asset_names.length > 0 && (
+                    <div className="mb-3 px-3 py-2 rounded-lg bg-cyan-50 dark:bg-cyan-500/10 border border-cyan-200 dark:border-cyan-500/20">
+                      <p className="text-xs font-medium text-cyan-700 dark:text-cyan-300 mb-1">Assets in group:</p>
+                      <p className="text-xs text-cyan-600 dark:text-cyan-400">{callout.group_asset_names.join(', ')}</p>
+                    </div>
+                  )}
 
                   {callout.fault_description && (
                     <div className="mb-3">

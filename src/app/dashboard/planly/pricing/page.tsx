@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/components/ui/icons';
 import { useAppContext } from '@/context/AppContext';
 import { CustomerSelector } from '@/components/planly/orders/CustomerSelector';
 import { PricingGrid } from '@/components/planly/pricing/PricingGrid';

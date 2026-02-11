@@ -3,7 +3,7 @@ import { getTemplate } from '@/app/actions/reviews';
 import { getCurrentProfile } from '@/app/actions/reviews';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Edit } from 'lucide-react';
+import { ArrowLeft, Edit } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import { TemplateEditor } from '@/components/reviews/TemplateEditor';
 

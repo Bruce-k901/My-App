@@ -5,12 +5,14 @@ import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
-import { 
+import {
   Settings,
   AlertTriangle,
   CheckCircle,
   Download,
-} from 'lucide-react';
+  Loader2,
+  Info,
+} from '@/components/ui/icons';
 import { toast } from 'sonner';
 import { calculatePayrollForEmployee } from './lib/payroll-calculations';
 import { PayrollEmployee, SitePayroll } from './lib/payroll-types';
@@ -43,6 +45,10 @@ export default function PayrollPage() {
   const [payPeriodsPerYear, setPayPeriodsPerYear] = useState(12); // Default monthly
   const [schedule, setSchedule] = useState<any>(null);
   
+  // Approve state
+  const [approving, setApproving] = useState(false);
+  const [payrunStatus, setPayrunStatus] = useState<'pending' | 'approved'>('pending');
+
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSite, setSelectedSite] = useState<string>('all');
@@ -149,8 +155,19 @@ export default function PayrollPage() {
         .eq('company_id', companyId);
       
       const sitesMap = new Map((sitesData || []).map(s => [s.id, s.name]));
-      
+
       if (profileError) throw profileError;
+
+      // Get current pay rates as fallback if profiles don't have rates
+      const { data: payRatesData } = await supabase
+        .from('pay_rates')
+        .select('profile_id, pay_type, base_rate, overtime_multiplier, is_current')
+        .eq('company_id', companyId)
+        .eq('is_current', true);
+
+      const payRatesMap = new Map(
+        (payRatesData || []).map(r => [r.profile_id, r])
+      );
       
       // Get attendance hours for the period
       // Normalize dates to start/end of day for accurate filtering
@@ -175,7 +192,7 @@ export default function PayrollPage() {
       // This allows us to attribute hours to the site where work was done, not the employee's home site
       const { data: attendanceData, error: attError } = await supabase
         .from('staff_attendance')
-        .select('user_id, total_hours, clock_in_time, signed_off, payroll_locked, clock_out_time, site_id')
+        .select('profile_id, total_hours, clock_in_time, clock_out_time, site_id')
         .eq('company_id', companyId)
         .gte('clock_in_time', periodStartStr)
         .lte('clock_in_time', periodEndStr)
@@ -211,7 +228,7 @@ export default function PayrollPage() {
       // Holiday pay = contracted hours per day × days taken × hourly rate
       const { data: leaveRequests, error: leaveError } = await supabase
         .from('leave_requests')
-        .select('profile_id, start_date, end_date, days_taken, status')
+        .select('profile_id, start_date, end_date, total_days, status')
         .eq('company_id', companyId)
         .eq('status', 'approved') // Only approved leave
         .gte('start_date', periodStartStr.split('T')[0])
@@ -227,7 +244,7 @@ export default function PayrollPage() {
       
       (leaveRequests || []).forEach(leave => {
         const employeeId = leave.profile_id;
-        const daysTaken = leave.days_taken || 0;
+        const daysTaken = leave.total_days || 0;
         
         // Find employee's contracted hours
         const emp = profileData?.find(p => p.id === employeeId);
@@ -268,18 +285,14 @@ export default function PayrollPage() {
       });
       console.log('Attendance records found:', {
         totalRecords: attendanceData?.length || 0,
-        signedOff: attendanceData?.filter(a => a.signed_off).length || 0,
-        payrollLocked: attendanceData?.filter(a => a.payroll_locked).length || 0,
         withHours: attendanceData?.filter(a => a.total_hours && a.total_hours > 0).length || 0,
         withNullHours: attendanceData?.filter(a => !a.total_hours || a.total_hours === 0).length || 0,
       });
       console.log('Total hours in records:', attendanceData?.reduce((sum, a) => sum + (a.total_hours || 0), 0) || 0);
       console.log('Sample records (first 5):', attendanceData?.slice(0, 5).map(a => ({
-        userId: a.user_id,
+        profileId: a.profile_id,
         clockIn: a.clock_in_time,
         totalHours: a.total_hours,
-        signedOff: a.signed_off,
-        payrollLocked: a.payroll_locked,
       })));
       console.log('=== END ATTENDANCE QUERY ===');
       
@@ -292,7 +305,7 @@ export default function PayrollPage() {
       let recordsWithValidHours = 0;
       
       (attendanceData || []).forEach(att => {
-        const employeeId = att.user_id;
+        const employeeId = att.profile_id;
         const siteId = att.site_id || null; // Use site_id from attendance record (where work was done)
         const key = `${employeeId}-${siteId || 'unassigned'}`;
         
@@ -366,12 +379,18 @@ export default function PayrollPage() {
         // Get holiday hours for this employee
         const holidayHours = holidayHoursByEmployee.get(emp.id) || 0;
         
+        // Fallback to pay_rates table if profile doesn't have rate info
+        const payRate = payRatesMap.get(emp.id);
+        const effectivePayType = emp.pay_type || (payRate?.pay_type === 'salary' ? 'salaried' : 'hourly');
+        const effectiveHourlyRate = emp.hourly_rate || (payRate && payRate.pay_type === 'hourly' ? payRate.base_rate / 100 : null);
+        const effectiveAnnualSalary = emp.annual_salary || (payRate && payRate.pay_type === 'salary' ? payRate.base_rate / 100 : null);
+
         const payrollEntry = calculatePayrollForEmployee({
           employeeId: emp.id,
           fullName: emp.full_name || 'Unknown',
-          payType: emp.pay_type || 'hourly',
-          hourlyRate: emp.hourly_rate,
-          annualSalary: emp.annual_salary,
+          payType: effectivePayType,
+          hourlyRate: effectiveHourlyRate,
+          annualSalary: effectiveAnnualSalary,
           siteId: effectiveSiteId, // Site where work was performed
           siteName,
           taxCode: emp.tax_code,
@@ -392,7 +411,10 @@ export default function PayrollPage() {
       // For salaried employees with no attendance records, still include them at their home site
       // (they get paid regardless of hours worked)
       for (const emp of profileData || []) {
-        if (emp.pay_type === 'salaried' && emp.annual_salary) {
+        const sPayRate = payRatesMap.get(emp.id);
+        const isSalaried = emp.pay_type === 'salaried' || sPayRate?.pay_type === 'salary';
+        const salary = emp.annual_salary || (sPayRate?.pay_type === 'salary' ? sPayRate.base_rate / 100 : null);
+        if (isSalaried && salary) {
           // Check if we already have an entry for this employee at their home site
           const hasEntry = payrollEmployees.some(
             e => e.employeeId === emp.id && e.siteId === emp.home_site
@@ -406,7 +428,7 @@ export default function PayrollPage() {
               fullName: emp.full_name || 'Unknown',
               payType: 'salaried',
               hourlyRate: null,
-              annualSalary: emp.annual_salary,
+              annualSalary: salary,
               siteId: emp.home_site,
               siteName,
               taxCode: emp.tax_code,
@@ -434,12 +456,81 @@ export default function PayrollPage() {
       });
       
       setEmployees(payrollEmployees);
-      
+
     } catch (err: any) {
       console.error('Error loading payroll:', err);
       toast.error('Failed to load payroll data');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleApprovePayroll() {
+    if (!companyId || !confirm('Are you sure you want to approve this payroll run? This will lock all attendance records for this period.')) return;
+
+    setApproving(true);
+    try {
+      // Insert/update pay_periods record
+      const { error: periodError } = await supabase
+        .from('pay_periods')
+        .upsert({
+          company_id: companyId,
+          period_type: schedule?.schedule_type === 'weekly' ? 'weekly' : schedule?.schedule_type === 'fortnightly' ? 'biweekly' : 'monthly',
+          period_start: periodStart.toISOString().split('T')[0],
+          period_end: periodEnd.toISOString().split('T')[0],
+          pay_date: payDate.toISOString().split('T')[0],
+          status: 'approved',
+          total_gross_pay: totals.grossPay,
+          total_net_pay: totals.netPay,
+          total_employer_cost: totals.employerCost,
+          employee_count: totals.employees,
+          approved_by: profile?.id,
+          approved_at: new Date().toISOString(),
+        }, {
+          onConflict: 'company_id,period_start,period_end',
+          ignoreDuplicates: false,
+        });
+
+      if (periodError) {
+        console.error('Error creating pay period:', periodError);
+        // Try insert if upsert fails (no unique constraint might exist)
+        const { error: insertError } = await supabase
+          .from('pay_periods')
+          .insert({
+            company_id: companyId,
+            period_type: schedule?.schedule_type === 'weekly' ? 'weekly' : schedule?.schedule_type === 'fortnightly' ? 'biweekly' : 'monthly',
+            period_start: periodStart.toISOString().split('T')[0],
+            period_end: periodEnd.toISOString().split('T')[0],
+            pay_date: payDate.toISOString().split('T')[0],
+            status: 'approved',
+            approved_by: profile?.id,
+            approved_at: new Date().toISOString(),
+          });
+        if (insertError) throw insertError;
+      }
+
+      // Lock attendance records for this period
+      const periodStartStr = periodStart.toISOString();
+      const periodEndStr = new Date(periodEnd.getFullYear(), periodEnd.getMonth(), periodEnd.getDate(), 23, 59, 59).toISOString();
+
+      const { error: lockError } = await supabase
+        .from('staff_attendance')
+        .update({ payroll_locked: true })
+        .eq('company_id', companyId)
+        .gte('clock_in_time', periodStartStr)
+        .lte('clock_in_time', periodEndStr);
+
+      if (lockError) {
+        console.warn('Could not lock attendance records:', lockError);
+      }
+
+      setPayrunStatus('approved');
+      toast.success('Payroll run approved and attendance records locked');
+    } catch (err: any) {
+      console.error('Error approving payroll:', err);
+      toast.error(err.message || 'Failed to approve payroll run');
+    } finally {
+      setApproving(false);
     }
   }
 
@@ -565,16 +656,39 @@ export default function PayrollPage() {
           </div>
         </div>
 
+        {/* Setup Prompt (when no schedule configured) */}
+        {!schedule && (
+          <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-xl p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-blue-600 dark:text-blue-400 font-medium">Payroll Schedule Not Configured</p>
+                <p className="text-sm text-gray-600 dark:text-white/60 mt-1">
+                  Set up your pay frequency and period settings to get accurate payroll calculations.
+                  The current view defaults to the calendar month.
+                </p>
+                <Link href="/dashboard/people/payroll/settings" className="inline-block mt-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                  Configure Payroll Settings &rarr;
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Status Badge */}
         <div className="flex items-center gap-4 mb-6">
-          <span className="px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400">
-            Pending Review
+          <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+            payrunStatus === 'approved'
+              ? 'bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400'
+              : 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400'
+          }`}>
+            {payrunStatus === 'approved' ? 'Approved' : 'Pending Review'}
           </span>
           <span className="text-gray-600 dark:text-white/60">
-            Pay Date: {payDate.toLocaleDateString('en-GB', { 
-              day: 'numeric', 
-              month: 'short', 
-              year: 'numeric' 
+            Pay Date: {payDate.toLocaleDateString('en-GB', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric'
             })}
           </span>
         </div>
@@ -589,9 +703,21 @@ export default function PayrollPage() {
 
         {/* Approve Button */}
         <div className="mb-6">
-          <Button className="bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)]">
-            <CheckCircle className="w-4 h-4 mr-2" />
-            Approve Payroll Run
+          <Button
+            onClick={handleApprovePayroll}
+            disabled={approving || payrunStatus === 'approved' || employees.length === 0}
+            className={`${
+              payrunStatus === 'approved'
+                ? 'bg-green-600 dark:bg-green-500 text-white cursor-default'
+                : 'bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)]'
+            } disabled:opacity-50`}
+          >
+            {approving ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <CheckCircle className="w-4 h-4 mr-2" />
+            )}
+            {payrunStatus === 'approved' ? 'Payroll Approved' : 'Approve Payroll Run'}
           </Button>
         </div>
 
@@ -637,8 +763,20 @@ export default function PayrollPage() {
 
         {/* No results */}
         {sitePayrolls.length === 0 && (
-          <div className="text-center py-12 text-gray-600 dark:text-white/60">
-            No employees found matching your filters
+          <div className="text-center py-12 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl mb-6">
+            <p className="text-gray-600 dark:text-white/60 mb-2">
+              {searchTerm || selectedSite !== 'all' || selectedPayType !== 'all'
+                ? 'No employees found matching your filters'
+                : 'No payroll data for this period'}
+            </p>
+            {!searchTerm && selectedSite === 'all' && selectedPayType === 'all' && (
+              <p className="text-sm text-gray-500 dark:text-white/40">
+                Ensure employees have pay rates configured and attendance records exist for this period.{' '}
+                <Link href="/dashboard/people/payroll/rates" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  Manage Pay Rates
+                </Link>
+              </p>
+            )}
           </div>
         )}
 

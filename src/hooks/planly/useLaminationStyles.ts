@@ -31,6 +31,7 @@ export function useLaminationStyles(options: UseLaminationStylesOptions = {}) {
     name: string;
     recipe_id?: string | null;
     products_per_sheet: number;
+    dough_per_sheet_g?: number | null;
     laminate_lead_days?: number;
   }) => {
     const response = await fetch('/api/planly/lamination-styles', {

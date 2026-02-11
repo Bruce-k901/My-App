@@ -21,7 +21,7 @@ import {
   Plus,
   Loader2,
   ExternalLink
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { RecipeIngredientsTable } from './RecipeIngredientsTable';
 import { supabase } from '@/lib/supabase';
 import { createFoodSOPFromRecipe } from '@/lib/utils/sopCreator';

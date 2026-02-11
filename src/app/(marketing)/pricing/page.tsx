@@ -13,7 +13,7 @@ import {
   MessageSquare,
   HelpCircle,
   ChevronDown,
-} from "lucide-react";
+} from "@/components/ui/icons";
 import { Button } from "@/components/ui";
 import { useState } from "react";
 
@@ -187,7 +187,7 @@ export default function PricingPage() {
                 return (
                   <GlassCard
                     key={module.name}
-                    className="flex flex-col hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.2)]"
+                    className="flex flex-col hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(211,126,145,0.2)]"
                   >
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-magenta-500/30 to-blue-500/30 flex items-center justify-center">

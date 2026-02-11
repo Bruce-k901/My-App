@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { ChevronLeft, ChevronRight, Download, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, Loader2 } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import { format, subMonths, addMonths, startOfMonth } from 'date-fns';
 import Link from 'next/link';
@@ -94,7 +94,7 @@ export default function MonthlyReportPage() {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
         </div>
       </div>
     );

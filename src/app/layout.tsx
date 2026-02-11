@@ -11,9 +11,12 @@ import RouteLogger from "@/components/RouteLogger";
 import { Toaster } from "sonner";
 import { PWAProvider } from "@/components/pwa/PWAProvider";
 import { NotificationInitializer } from "@/components/notifications/NotificationInitializer";
+import { OfflineIndicator } from "@/components/offline/OfflineIndicator";
 import { MessageAlertSubscriber } from "@/components/notifications/MessageAlertSubscriber";
+import { TaskAlertSubscriber } from "@/components/notifications/TaskAlertSubscriber";
 import { SuppressConsoleWarnings } from "@/components/dev/SuppressConsoleWarnings";
 import { ConditionalGlobalComponents } from "@/components/layout/ConditionalGlobalComponents";
+import { UserPreferencesProvider } from "@/context/UserPreferencesContext";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -41,6 +44,7 @@ export const metadata = {
     description: 'Complete operations platform for hospitality, retail, and manufacturing businesses',
     siteName: 'Opsly',
     type: 'website',
+    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -49,11 +53,20 @@ export const metadata = {
   },
   icons: {
     icon: [
-      { url: "/opsly_new_hexstyle_favicon.PNG", type: "image/png" },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
     ],
+    shortcut: '/favicon.ico',
     apple: [
-      { url: "/opsly_new_hexstyle_favicon.PNG", type: "image/png" },
+      { url: '/apple-touch-icon.png', sizes: '180x180' },
+      { url: '/apple-touch-icon-167x167.png', sizes: '167x167' },
+      { url: '/apple-touch-icon-152x152.png', sizes: '152x152' },
     ],
+  },
+  other: {
+    'msapplication-TileColor': '#110f0d',
+    'msapplication-config': '/browserconfig.xml',
   },
 };
 
@@ -63,7 +76,7 @@ export function generateViewport() {
     initialScale: 1,
     maximumScale: 1,
     userScalable: false,
-    themeColor: "#10B981",
+    themeColor: "#0b0d13",
   };
 }
 
@@ -96,25 +109,40 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   
                   // For dashboard pages, get theme from localStorage or system preference
                   const stored = localStorage.getItem('theme');
-                  let theme = 'dark'; // default
-                  
-                  if (stored === 'light' || stored === 'dark') {
-                    theme = stored;
-                  } else {
-                    // Check system preference if no stored preference
+                  let resolved = 'dark'; // default
+
+                  if (stored === 'system') {
+                    // System preference mode
                     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    theme = prefersDark ? 'dark' : 'light';
+                    resolved = prefersDark ? 'dark' : 'light';
+                  } else if (stored === 'light' || stored === 'dark') {
+                    resolved = stored;
+                  } else {
+                    // No stored preference — check system
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    resolved = prefersDark ? 'dark' : 'light';
                   }
-                  
+
                   // Apply theme immediately to prevent flash
                   const root = document.documentElement;
-                  if (theme === 'dark') {
+                  if (resolved === 'dark') {
                     root.classList.add('dark');
                     root.classList.remove('light');
                   } else {
                     root.classList.add('light');
                     root.classList.remove('dark');
                   }
+
+                  // Also apply other preferences from localStorage cache
+                  try {
+                    const prefs = JSON.parse(localStorage.getItem('opsly_user_preferences') || '{}');
+                    if (prefs.density === 'compact') root.classList.add('compact');
+                    if (prefs.font_size === 'small') root.classList.add('font-size-small');
+                    if (prefs.font_size === 'large') root.classList.add('font-size-large');
+                    if (prefs.reduce_animations) root.classList.add('reduce-motion');
+                    else root.classList.add('reduce-motion-off');
+                    if (prefs.high_contrast === 'high') root.classList.add('high-contrast');
+                  } catch(e) {}
                 } catch (e) {
                   // If localStorage is unavailable, default to dark
                   document.documentElement.classList.add('dark');
@@ -240,25 +268,30 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             `,
           }}
         />
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#10B981" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <meta name="theme-color" content="#0b0d13" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Opsly" />
-        <link rel="apple-touch-icon" href="/opsly_new_hexstyle_favicon.PNG?v=4" />
-        <link rel="icon" type="image/png" href="/opsly_new_hexstyle_favicon.PNG?v=4" />
-        <link rel="shortcut icon" href="/opsly_new_hexstyle_favicon.PNG?v=4" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
       </head>
-      <body className={`bg-neutral-950 text-white font-sans ${poppins.variable}`} suppressHydrationWarning>
+      <body className={`bg-[#F5F5F2] dark:bg-neutral-950 text-gray-900 dark:text-white font-sans ${poppins.variable}`} suppressHydrationWarning>
         <ErrorBoundaryWrapper>
           <ReactQueryProvider>
             <QueryProvider>
               <AppProvider>
+                <UserPreferencesProvider>
                 <SiteContextProvider>
                   <SuppressConsoleWarnings />
                   <PWAProvider />
                   <NotificationInitializer />
+                  <OfflineIndicator />
                   <MessageAlertSubscriber />
+                  <TaskAlertSubscriber />
                   <RouteLogger />
                   {children}
                   <Footer />
@@ -267,6 +300,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   {/* Global components - only shown on dashboard pages */}
                   <ConditionalGlobalComponents />
                 </SiteContextProvider>
+                </UserPreferencesProvider>
               </AppProvider>
             </QueryProvider>
           </ReactQueryProvider>

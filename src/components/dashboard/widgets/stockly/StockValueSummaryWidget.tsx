@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { WidgetProps, MODULE_COLORS } from '@/types/dashboard';
 import { WidgetCard, WidgetEmptyState, WidgetLoading } from '../WidgetWrapper';
-import { DollarSign, TrendingUp, Package } from 'lucide-react';
+import { DollarSign, TrendingUp, Package } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 

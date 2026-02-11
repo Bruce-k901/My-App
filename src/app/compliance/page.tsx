@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@/lib/useUser";
 import { supabase } from "@/lib/supabaseClient";
-import { Thermometer, Edit2, X } from "lucide-react";
+import { Thermometer, Edit2, X } from '@/components/ui/icons';
 import TimePicker from "@/components/ui/TimePicker";
 
 interface Asset {

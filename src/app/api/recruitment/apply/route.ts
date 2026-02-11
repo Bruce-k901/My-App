@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5;">
   <div style="max-width: 600px; margin: 40px auto; background: white; border-radius: 12px; overflow: hidden;">
-    <div style="background: linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%); padding: 40px 30px; text-align: center;">
+    <div style="background: linear-gradient(135deg, #D37E91 0%, #8B5CF6 100%); padding: 40px 30px; text-align: center;">
       <h1 style="margin: 0; color: white; font-size: 28px;">✅ Application Received!</h1>
       <p style="margin: 10px 0 0; color: rgba(255,255,255,0.9);">Thank you for applying</p>
     </div>
@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
         We have received your application and our hiring team will review it shortly. If your experience matches what we're looking for, we'll be in touch to arrange the next steps.
       </p>
       
-      <div style="background: #f9f9f9; border-left: 4px solid #EC4899; padding: 20px; margin: 30px 0; border-radius: 8px;">
+      <div style="background: #f9f9f9; border-left: 4px solid #D37E91; padding: 20px; margin: 30px 0; border-radius: 8px;">
         <h3 style="margin: 0 0 10px; color: #333;">What happens next?</h3>
         <ul style="margin: 0; padding-left: 20px; color: #666;">
           <li>Our team will review your application</li>

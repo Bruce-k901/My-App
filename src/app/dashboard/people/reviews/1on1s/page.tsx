@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { Calendar, Plus, Video, MapPin, Clock, MessageSquare, ChevronRight } from 'lucide-react';
+import { Calendar, Plus, Video, MapPin, Clock, MessageSquare, ChevronRight } from '@/components/ui/icons';
 import type { OneOnOneView } from '@/types/teamly';
 
 export default function OneOnOnesPage() {
@@ -50,7 +50,7 @@ export default function OneOnOnesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91]" />
       </div>
     );
   }
@@ -66,7 +66,7 @@ export default function OneOnOnesPage() {
         {isManager && (
           <Link
             href="/dashboard/people/reviews/1on1s/schedule"
-            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out"
+            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out"
           >
             <Plus className="w-5 h-5" />
             Schedule 1:1
@@ -80,7 +80,7 @@ export default function OneOnOnesPage() {
           onClick={() => setShowPast(!showPast)}
           className={`px-4 py-2 rounded-lg text-sm transition-colors ${
             showPast 
-              ? 'bg-transparent border border-[#EC4899] text-[#EC4899]' 
+              ? 'bg-transparent border border-[#D37E91] text-[#D37E91]' 
               : 'bg-white/[0.03] border border-white/[0.06] text-gray-500 dark:text-white/60 hover:text-white'
           }`}
         >
@@ -113,7 +113,7 @@ export default function OneOnOnesPage() {
                 }`}
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#EC4899] to-blue-500 flex items-center justify-center text-white font-medium flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#D37E91] to-blue-500 flex items-center justify-center text-white font-medium flex-shrink-0">
                     {otherAvatar ? (
                       <img src={otherAvatar} alt="" className="w-full h-full rounded-full object-cover" />
                     ) : (

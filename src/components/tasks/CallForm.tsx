@@ -37,7 +37,7 @@ export default function CallForm({ formData, setFormData, sites, onParticipantsC
       <div>
         <label className="flex items-center justify-between text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
           <span>
-            Title <span className="text-[#EC4899]">*</span>
+            Title <span className="text-[#D37E91]">*</span>
           </span>
           <span className="text-xs text-gray-500 dark:text-white/40 font-normal">
             Auto-generated from selections
@@ -47,7 +47,7 @@ export default function CallForm({ formData, setFormData, sites, onParticipantsC
           type="text"
           value={formData.title || ''}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+          className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
           placeholder="Enter call title"
           required
         />
@@ -62,7 +62,7 @@ export default function CallForm({ formData, setFormData, sites, onParticipantsC
           value={formData.description || ''}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           rows={3}
-          className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 resize-none"
+          className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 resize-none"
           placeholder="Call agenda or notes..."
         />
       </div>
@@ -74,21 +74,21 @@ export default function CallForm({ formData, setFormData, sites, onParticipantsC
           time: formData.dueTime || '',
           timezone: formData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
         }}
-        onChange={(value) => setFormData(prev => ({ ...prev, ...value }))}
+        onChange={(value) => setFormData(prev => ({ ...prev, dueDate: value.date, dueTime: value.time, timezone: value.timezone }))}
         required
       />
 
       {/* Site */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
-          Site <span className="text-[#EC4899]">*</span>
+          Site <span className="text-[#D37E91]">*</span>
         </label>
         <select
           value={formData.siteId || ''}
           onChange={(e) => setFormData({ ...formData, siteId: e.target.value })}
-          className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 appearance-none cursor-pointer"
+          className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 appearance-none cursor-pointer"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'right 0.75rem center',
             paddingRight: '2.5rem',
@@ -133,7 +133,7 @@ export default function CallForm({ formData, setFormData, sites, onParticipantsC
               onClick={() => setFormData({ ...formData, duration: dur })}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 formData.duration === dur
-                  ? 'bg-[#EC4899] text-white'
+                  ? 'bg-[#D37E91] text-white'
                   : 'bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
@@ -145,7 +145,7 @@ export default function CallForm({ formData, setFormData, sites, onParticipantsC
             onClick={() => setFormData({ ...formData, duration: 'custom' })}
             className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
               formData.duration === 'custom'
-                ? 'bg-[#EC4899] text-white'
+                ? 'bg-[#D37E91] text-white'
                 : 'bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
@@ -160,7 +160,7 @@ export default function CallForm({ formData, setFormData, sites, onParticipantsC
             value={formData.customDuration || ''}
             onChange={(e) => setFormData({ ...formData, customDuration: parseInt(e.target.value) || undefined })}
             placeholder="Minutes"
-            className="w-full mt-2 px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+            className="w-full mt-2 px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
           />
         )}
       </div>
@@ -179,7 +179,7 @@ export default function CallForm({ formData, setFormData, sites, onParticipantsC
                 onClick={() => setFormData({ ...formData, location: loc })}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all capitalize ${
                   formData.location === loc
-                    ? 'bg-[#EC4899] text-white'
+                    ? 'bg-[#D37E91] text-white'
                     : 'bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:text-gray-900 dark:hover:text-white'
                 }`}
               >
@@ -193,7 +193,7 @@ export default function CallForm({ formData, setFormData, sites, onParticipantsC
               value={formData.customLocation || ''}
               onChange={(e) => setFormData({ ...formData, customLocation: e.target.value })}
               placeholder="Enter location"
-              className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+              className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
             />
           )}
         </div>
@@ -210,7 +210,7 @@ export default function CallForm({ formData, setFormData, sites, onParticipantsC
             value={formData.meetingLink || ''}
             onChange={(e) => setFormData({ ...formData, meetingLink: e.target.value })}
             placeholder="https://..."
-            className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+            className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
           />
         </div>
       )}

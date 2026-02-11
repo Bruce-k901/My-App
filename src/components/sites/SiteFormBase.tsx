@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { updateGM } from "@/lib/updateGM";
-import { ChevronUp } from "lucide-react";
+import { ChevronUp } from '@/components/ui/icons';
 import { getLocationFromPostcode, isValidPostcodeForLookup } from "@/lib/locationLookup";
 import CheckboxCustom from "@/components/ui/CheckboxCustom";
 import DatePicker from "react-datepicker";
@@ -59,14 +59,22 @@ type FormData = {
 const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const WEEKDAY_LABELS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
+// Shared Tailwind class strings for theme-aware styling
+const inputClasses = "w-full bg-gray-50 dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]";
+const readOnlyInputClasses = "w-full bg-gray-100 dark:bg-neutral-900 cursor-not-allowed border border-gray-300 dark:border-neutral-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white focus:outline-none";
+const labelClasses = "block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1";
+const selectClasses = "w-full bg-gray-50 dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]";
+const scheduleSelectClasses = "bg-gray-100 dark:bg-neutral-700 border border-gray-300 dark:border-neutral-600 rounded pl-2 pr-7 py-1 text-gray-900 dark:text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed";
+const scheduleRowClasses = "flex items-center gap-4 py-1.5 px-3 bg-gray-100 dark:bg-neutral-800 rounded-lg transition-opacity";
+
 export default function SiteFormBase({ mode, initialData, onClose, onSaved, companyId, gmList, onDelete }: SiteFormBaseProps) {
-  console.log("� Rendered", "SiteFormBase");
-  console.log("�🔥 Received gmList prop:", gmList);
+  console.log("🎨 Rendered", "SiteFormBase");
+  console.log("🔥 Received gmList prop:", gmList);
   const [operatingScheduleOpen, setOperatingScheduleOpen] = useState(mode === "new");
   const [loading, setLoading] = useState(false);
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [newClosure, setNewClosure] = useState({ start: "", end: "" });
-  
+
   // GM expansion state
   const [isOpen, setIsOpen] = useState(false);
   const [selectedGM, setSelectedGM] = useState("");
@@ -267,23 +275,23 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
           }
 
           // Fetch planned closures
-          const { data, error } = await supabase 
-            .from("site_closures") 
-            .select("id, closure_start, closure_end, notes") 
-            .eq("site_id", initialData.id) 
+          const { data, error } = await supabase
+            .from("site_closures")
+            .select("id, closure_start, closure_end, notes")
+            .eq("site_id", initialData.id)
             .eq("is_active", true)
-            .order("closure_start", { ascending: true }); 
-          
-          if (!error && data) { 
-            setFormData(prev => ({ 
-              ...prev, 
-              planned_closures: data.map(d => ({ 
+            .order("closure_start", { ascending: true });
+
+          if (!error && data) {
+            setFormData(prev => ({
+              ...prev,
+              planned_closures: data.map(d => ({
                 id: d.id,
-                start: d.closure_start, 
-                end: d.closure_end, 
-                notes: d.notes || "", 
-              })), 
-            })); 
+                start: d.closure_start,
+                end: d.closure_end,
+                notes: d.notes || "",
+              })),
+            }));
           }
 
           // Update form data with fetched data
@@ -335,11 +343,11 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
             }));
 
             console.log("After site load:", site);
-            
+
             // Debug logs to check GM lookup logic
             console.log("initialData.gm_user_id:", initialData?.gm_user_id);
             console.log("gmList:", gmList);
-            
+
             // GM data is now handled by useEffect above
           }
         } catch (error) {
@@ -384,7 +392,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
   // Handle time changes with auto-fill propagation
   const handleTimeChange = (day: string, field: { group: 'open' | 'close', unit: 'hh' | 'mm' }, value: string) => {
     const updatedSchedule = { ...formData.operating_schedule };
-    
+
     updatedSchedule[day][field.group][field.unit] = value;
 
     // If this is the first complete open/close pair for a day,
@@ -401,7 +409,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
           copiedCount++;
         }
       }
-      
+
       // Log message for auto-fill only if times were copied
       if (copiedCount > 0) {
         console.log("Hours copied to all open days.");
@@ -436,7 +444,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
 
       console.log("Save button clicked", formData.id, formData.gm_user_id);
       console.log("Saving GM", formData.id, formData.gm_user_id);
-      
+
       if (formData.gm_user_id && formData.id) {
         await updateGM(formData.id, formData.gm_user_id);
       }
@@ -466,12 +474,12 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
       // Find the source day to copy from (Monday first, then first active day)
       const findSourceDay = () => {
         // Check Monday first if it's active and has complete times
-        if (updated.Monday?.active && 
+        if (updated.Monday?.active &&
             updated.Monday.open.hh && updated.Monday.open.mm &&
             updated.Monday.close.hh && updated.Monday.close.mm) {
           return 'Monday';
         }
-        
+
         // If Monday not available, find the first active day with complete times
         for (const weekday of WEEKDAYS) {
           if (updated[weekday]?.active &&
@@ -480,7 +488,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
             return weekday;
           }
         }
-        
+
         return null;
       };
 
@@ -494,7 +502,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         for (const weekday of WEEKDAYS) {
           // Skip the source day itself
           if (weekday === sourceDay) continue;
-          
+
           // Only copy to active days that are empty
           if (updated[weekday]?.active &&
               !updated[weekday].open.hh && !updated[weekday].open.mm &&
@@ -637,23 +645,23 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
           error_hint: siteError.hint,
           siteData: siteData,
         });
-        
+
         // Try to get more info about the user's profile
         const { data: profileData, error: profileError } = await supabase
           .from("profiles")
           .select("id, company_id, app_role")
           .eq("id", (await supabase.auth.getUser()).data.user?.id)
           .single();
-        
+
         console.error("User profile info:", {
           profileData,
           profileError,
         });
-        
+
         return;
       }
 
-      // 1️⃣ After site upsert succeeds and returns the site ID
+      // 1. After site upsert succeeds and returns the site ID
       const siteId = siteResult.id;
 
       // Update subscription site count
@@ -667,7 +675,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         }
       }
 
-      // 2️⃣ Handle closures: Delete existing and insert new ones
+      // 2. Handle closures: Delete existing and insert new ones
       // Always delete existing closures for this site (both new and edit modes)
       // This prevents duplicate key violations from the unique constraint
       if (siteId) {
@@ -682,14 +690,14 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         }
       }
 
-      // 3️⃣ Filter only active closures with valid dates
+      // 3. Filter only active closures with valid dates
       const activeClosures = (formData.planned_closures || []).filter(c => c.start && c.end);
 
-      // 4️⃣ If any closures exist, insert them (after deletion to avoid duplicates)
+      // 4. If any closures exist, insert them (after deletion to avoid duplicates)
       if (activeClosures.length > 0 && siteId) {
         // Remove duplicates based on start/end dates to prevent unique constraint violations
         const uniqueClosures = activeClosures.reduce((acc: any[], c) => {
-          const exists = acc.some(existing => 
+          const exists = acc.some(existing =>
             existing.closure_start === c.start && existing.closure_end === c.end
           );
           if (!exists) {
@@ -737,12 +745,98 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
     onClose();
   };
 
+  // Render the schedule rows (shared between edit and new modes)
+  const renderScheduleRows = () => (
+    <div className="border border-gray-200 dark:border-neutral-800 rounded-xl p-4">
+      <div className="space-y-2">
+        {WEEKDAYS.map((day, index) => {
+          const dayData = formData.operating_schedule[day];
+          const dayLabel = WEEKDAY_LABELS[index];
+
+          return (
+            <div
+              key={day}
+              className={`${scheduleRowClasses} ${!dayData.active ? 'opacity-50' : ''}`}
+            >
+              <div className="flex items-center gap-2 min-w-[100px]">
+                <CheckboxCustom
+                  checked={dayData.active}
+                  onChange={(checked: boolean) => handleCheckboxChange(day, checked)}
+                  size={16}
+                />
+                <span className="text-gray-900 dark:text-white text-sm font-medium">{dayLabel}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-gray-500 dark:text-gray-400 text-sm">Open:</span>
+                <select
+                  value={dayData.open?.hh || ""}
+                  onChange={(e) => handleScheduleChange(day, "open", "hh", e.target.value)}
+                  disabled={!dayData.active}
+                  className={scheduleSelectClasses}
+                >
+                  <option value="">HH</option>
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <option key={i} value={String(i).padStart(2, "0")}>
+                      {String(i).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={dayData.open?.mm || ""}
+                  onChange={(e) => handleScheduleChange(day, "open", "mm", e.target.value)}
+                  disabled={!dayData.active}
+                  className={scheduleSelectClasses}
+                >
+                  <option value="">MM</option>
+                  {[0, 15, 30, 45].map((minute) => (
+                    <option key={minute} value={String(minute).padStart(2, "0")}>
+                      {String(minute).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+
+                <span className="text-gray-500 dark:text-gray-400 text-sm mx-2">Close:</span>
+                <select
+                  value={dayData.close?.hh || ""}
+                  onChange={(e) => handleScheduleChange(day, "close", "hh", e.target.value)}
+                  disabled={!dayData.active}
+                  className={scheduleSelectClasses}
+                >
+                  <option value="">HH</option>
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <option key={i} value={String(i).padStart(2, "0")}>
+                      {String(i).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={dayData.close?.mm || ""}
+                  onChange={(e) => handleScheduleChange(day, "close", "mm", e.target.value)}
+                  disabled={!dayData.active}
+                  className={scheduleSelectClasses}
+                >
+                  <option value="">MM</option>
+                  {[0, 15, 30, 45].map((minute) => (
+                    <option key={minute} value={String(minute).padStart(2, "0")}>
+                      {String(minute).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="relative z-[10000] bg-white dark:bg-neutral-900 rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-gray-200 dark:border-neutral-800">
-          <h2 className="text-2xl font-semibold text-white">
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
             {mode === "new" ? "Add New Site" : "Edit Site"}
           </h2>
         </div>
@@ -751,27 +845,27 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         <div className="flex-1 overflow-y-auto p-6">
           {/* A. Core Details */}
           <section>
-            <h3 className="text-xl font-semibold mb-3 text-white">Core Details</h3>
-            
+            <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Core Details</h3>
+
             {/* Two-column responsive grid layout */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Row 1: Site Name and Postcode */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Site Name <span className="text-red-400">*</span>
+                <label className={labelClasses}>
+                  Site Name <span className="text-red-500 dark:text-red-400">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.name || ""}
                   onChange={(e) => handleInputChange("name", e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className={inputClasses}
                   placeholder="Enter site name"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Postcode <span className="text-red-400">*</span>
+                <label className={labelClasses}>
+                  Postcode <span className="text-red-500 dark:text-red-400">*</span>
                 </label>
                 <input
                   type="text"
@@ -780,7 +874,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                     const uppercaseValue = e.target.value.toUpperCase();
                     setFormData({ ...formData, postcode: uppercaseValue });
                   }}
-                  className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className={inputClasses}
                   placeholder="Enter postcode"
                   required
                 />
@@ -788,58 +882,58 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
 
               {/* Row 2: Address Line 1 and Address Line 2 */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Address Line 1 <span className="text-red-400">*</span>
+                <label className={labelClasses}>
+                  Address Line 1 <span className="text-red-500 dark:text-red-400">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.address_line1 || ""}
                   onChange={(e) => handleInputChange("address_line1", e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className={inputClasses}
                   placeholder="Enter address line 1"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Address Line 2</label>
+                <label className={labelClasses}>Address Line 2</label>
                 <input
                   type="text"
                   value={formData.address2 || ""}
                   onChange={(e) => handleInputChange("address2", e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className={inputClasses}
                   placeholder="Enter address line 2 (optional)"
                 />
               </div>
 
               {/* Row 3: City and Region (auto-filled, read-only) */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">City</label>
+                <label className={labelClasses}>City</label>
                 <input
                   type="text"
                   value={formData.city || ""}
                   readOnly
-                  className="bg-white dark:bg-neutral-900 cursor-not-allowed w-full border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none"
+                  className={readOnlyInputClasses}
                   placeholder="Auto-filled from postcode"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Region</label>
+                <label className={labelClasses}>Region</label>
                 <input
                   type="text"
                   value={formData.region || ""}
                   readOnly
-                  className="bg-white dark:bg-neutral-900 cursor-not-allowed w-full border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none"
+                  className={readOnlyInputClasses}
                   placeholder="Auto-filled from postcode"
                 />
               </div>
 
               {/* Row 4: Status and empty placeholder */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Status</label>
+                <label className={labelClasses}>Status</label>
                 <select
                   value={formData.status || "active"}
                   onChange={(e) => handleInputChange("status", e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className={selectClasses}
                 >
                   <option value="active">Active</option>
                   <option value="closed">Closed</option>
@@ -855,11 +949,11 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
             {/* Header with Update GM button on the left */}
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
-                <h3 className="text-xl font-semibold text-white">Management Contact</h3>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Management Contact</h3>
                 <button
                   type="button"
                   onClick={() => setGmEditMode((v) => !v)}
-                  className="px-3 py-1.5 border border-pink-500 text-pink-500 hover:bg-pink-500/10 rounded-md text-sm transition-colors"
+                  className="px-3 py-1.5 border border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/15 rounded-md text-sm transition-colors"
                   aria-pressed={gmEditMode}
                 >
                   {gmEditMode ? "Cancel" : "Update GM"}
@@ -872,24 +966,24 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
               <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-4 items-end">
                 {/* GM Name (read-only) */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">General Manager</label>
+                  <label className={labelClasses}>General Manager</label>
                   <input
                     type="text"
                     readOnly
                     value={formData.gm_name || ""}
                     placeholder="No GM assigned"
-                    className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-white"
+                    className={readOnlyInputClasses}
                   />
                 </div>
 
                 {/* Select a Manager (disabled until Update GM toggled) */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Select a Manager</label>
+                  <label className={labelClasses}>Select a Manager</label>
                   <select
                     value={formData.gm_user_id || ""}
                     onChange={(e) => handleGMChange(e.target.value)}
                     disabled={!gmEditMode}
-                    className={`w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-white disabled:opacity-50 disabled:cursor-not-allowed`}
+                    className={`${selectClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     <option value="">Select a manager</option>
                     {(gmList || []).map((gm) => (
@@ -906,7 +1000,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                     type="button"
                     onClick={handleSaveAndSync}
                     disabled={!gmEditMode || !formData.gm_user_id || isSaving}
-                    className="ml-auto px-4 py-2 border border-pink-600 text-pink-600 rounded-lg hover:shadow-lg hover:shadow-pink-600/50 hover:border-pink-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="ml-auto px-4 py-2 border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-lg hover:shadow-[#D37E91]/50 hover:border-[#D37E91] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSaving ? "Saving..." : "Save & Sync"}
                   </button>
@@ -919,199 +1013,31 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
           <section className="mt-6 border-t border-gray-200 dark:border-neutral-800 pt-6">
             {mode === "edit" ? (
               <div>
-                <h3 className="text-xl font-semibold mb-3 text-white">Operating Schedule</h3>
-                <div className="border border-gray-200 dark:border-neutral-800 rounded-xl p-4">
-                  <div className="space-y-2">
-                    {WEEKDAYS.map((day, index) => {
-                      const dayData = formData.operating_schedule[day];
-                      const dayLabel = WEEKDAY_LABELS[index];
-                      
-                      return (
-                        <div 
-                          key={day} 
-                          className={`flex items-center gap-4 py-1.5 px-3 bg-neutral-800 rounded-lg transition-opacity ${
-                            !dayData.active ? 'opacity-50' : ''
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 min-w-[100px]">
-                            <CheckboxCustom
-                              checked={dayData.active}
-                              onChange={(checked: boolean) => handleCheckboxChange(day, checked)}
-                              size={16}
-                            />
-                            <span className="text-white text-sm font-medium">{dayLabel}</span>
-                          </div>
-                          
-                          <div className="flex items-center gap-2">
-                            <span className="text-gray-400 text-sm">Open:</span>
-                            <select
-                              value={dayData.open?.hh || ""}
-                              onChange={(e) => handleScheduleChange(day, "open", "hh", e.target.value)}
-                              disabled={!dayData.active}
-                              className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <option value="">HH</option>
-                              {Array.from({ length: 24 }, (_, i) => (
-                                <option key={i} value={String(i).padStart(2, "0")}>
-                                  {String(i).padStart(2, "0")}
-                                </option>
-                              ))}
-                            </select>
-                            <select
-                              value={dayData.open?.mm || ""}
-                              onChange={(e) => handleScheduleChange(day, "open", "mm", e.target.value)}
-                              disabled={!dayData.active}
-                              className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <option value="">MM</option>
-                              {[0, 15, 30, 45].map((minute) => (
-                                <option key={minute} value={String(minute).padStart(2, "0")}>
-                                  {String(minute).padStart(2, "0")}
-                                </option>
-                              ))}
-                            </select>
-                            
-                            <span className="text-gray-400 text-sm mx-2">Close:</span>
-                            <select
-                              value={dayData.close?.hh || ""}
-                              onChange={(e) => handleScheduleChange(day, "close", "hh", e.target.value)}
-                              disabled={!dayData.active}
-                              className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <option value="">HH</option>
-                              {Array.from({ length: 24 }, (_, i) => (
-                                <option key={i} value={String(i).padStart(2, "0")}>
-                                  {String(i).padStart(2, "0")}
-                                </option>
-                              ))}
-                            </select>
-                            <select
-                              value={dayData.close?.mm || ""}
-                              onChange={(e) => handleScheduleChange(day, "close", "mm", e.target.value)}
-                              disabled={!dayData.active}
-                              className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <option value="">MM</option>
-                              {[0, 15, 30, 45].map((minute) => (
-                                <option key={minute} value={String(minute).padStart(2, "0")}>
-                                  {String(minute).padStart(2, "0")}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Operating Schedule</h3>
+                {renderScheduleRows()}
               </div>
             ) : (
               <div>
                 <button
                   type="button"
                   onClick={() => setOperatingScheduleOpen(!operatingScheduleOpen)}
-                  className="flex items-center justify-between w-full text-left text-xl font-semibold text-white mb-3 hover:text-pink-400 transition-colors"
+                  className="flex items-center justify-between w-full text-left text-xl font-semibold text-gray-900 dark:text-white mb-3 hover:text-[#D37E91] transition-colors"
                 >
                   Operating Schedule
                   <span className={`transform transition-transform ${operatingScheduleOpen ? 'rotate-180' : ''}`}>
                     ▼
                   </span>
                 </button>
-                
-                {operatingScheduleOpen && (
-                  <div className="border border-gray-200 dark:border-neutral-800 rounded-xl p-4">
-                    <div className="space-y-2">
-                      {WEEKDAYS.map((day, index) => {
-                        const dayData = formData.operating_schedule[day];
-                        const dayLabel = WEEKDAY_LABELS[index];
-                        
-                        return (
-                          <div 
-                            key={day} 
-                            className={`flex items-center gap-4 py-1.5 px-3 bg-neutral-800 rounded-lg transition-opacity ${
-                              !dayData.active ? 'opacity-50' : ''
-                            }`}
-                          >
-                            <div className="flex items-center gap-2 min-w-[100px]">
-                              <CheckboxCustom
-                                checked={dayData.active}
-                                onChange={(checked: boolean) => handleCheckboxChange(day, checked)}
-                                size={16}
-                              />
-                              <span className="text-white text-sm font-medium">{dayLabel}</span>
-                            </div>
-                            
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-400 text-sm">Open:</span>
-                              <select
-                                value={dayData.open?.hh || ""}
-                                onChange={(e) => handleScheduleChange(day, "open", "hh", e.target.value)}
-                                disabled={!dayData.active}
-                                className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                              >
-                                <option value="">HH</option>
-                                {Array.from({ length: 24 }, (_, i) => (
-                                  <option key={i} value={String(i).padStart(2, "0")}>
-                                    {String(i).padStart(2, "0")}
-                                  </option>
-                                ))}
-                              </select>
-                              <select
-                                  value={dayData.open?.mm || ""}
-                                  onChange={(e) => handleScheduleChange(day, "open", "mm", e.target.value)}
-                                  disabled={!dayData.active}
-                                  className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  <option value="">MM</option>
-                                  {[0, 15, 30, 45].map((minute) => (
-                                    <option key={minute} value={String(minute).padStart(2, "0")}>
-                                      {String(minute).padStart(2, "0")}
-                                    </option>
-                                  ))}
-                                </select>
-                              
-                              <span className="text-gray-400 text-sm mx-2">Close:</span>
-                              <select
-                                value={dayData.close?.hh || ""}
-                                onChange={(e) => handleScheduleChange(day, "close", "hh", e.target.value)}
-                                disabled={!dayData.active}
-                                className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                              >
-                                <option value="">HH</option>
-                                {Array.from({ length: 24 }, (_, i) => (
-                                  <option key={i} value={String(i).padStart(2, "0")}>
-                                    {String(i).padStart(2, "0")}
-                                  </option>
-                                ))}
-                              </select>
-                              <select
-                                value={dayData.close?.mm || ""}
-                                  onChange={(e) => handleScheduleChange(day, "close", "mm", e.target.value)}
-                                  disabled={!dayData.active}
-                                  className="bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  <option value="">MM</option>
-                                  {[0, 15, 30, 45].map((minute) => (
-                                    <option key={minute} value={String(minute).padStart(2, "0")}>
-                                      {String(minute).padStart(2, "0")}
-                                    </option>
-                                  ))}
-                                </select>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+
+                {operatingScheduleOpen && renderScheduleRows()}
               </div>
             )}
           </section>
 
           {/* D. Planned Closures */}
           <section className="mt-6 border-t border-gray-200 dark:border-neutral-800 pt-6">
-            <h3 className="text-xl font-semibold text-white mb-4">Planned Closures</h3>
-            
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Planned Closures</h3>
+
             <div className="flex gap-2 items-center mb-3">
               <DatePicker
                 selected={newClosure.start ? new Date(newClosure.start) : null}
@@ -1120,9 +1046,9 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                   start: date?.toISOString().split("T")[0] || ""
                 }))}
                 placeholderText="Start date"
-                className="bg-white dark:bg-neutral-900 border border-neutral-700 text-white p-2 rounded-md"
+                className="bg-white dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white p-2 rounded-md"
                 popperClassName="z-50"
-                calendarClassName="bg-neutral-800 text-white rounded-md shadow-lg"
+                calendarClassName="bg-white dark:bg-neutral-800 text-gray-900 dark:text-white rounded-md shadow-lg"
               />
 
               <DatePicker
@@ -1134,16 +1060,16 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 minDate={newClosure.start ? new Date(newClosure.start) : undefined}
                 openToDate={newClosure.start ? new Date(newClosure.start) : undefined}
                 placeholderText="End date"
-                className="bg-white dark:bg-neutral-900 border border-neutral-700 text-white p-2 rounded-md"
+                className="bg-white dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white p-2 rounded-md"
                 popperClassName="z-50"
-                calendarClassName="bg-neutral-800 text-white rounded-md shadow-lg"
+                calendarClassName="bg-white dark:bg-neutral-800 text-gray-900 dark:text-white rounded-md shadow-lg"
               />
 
               <button
                 type="button"
                 onClick={handleAddClosure}
                 disabled={!newClosure.start || !newClosure.end}
-                className="px-4 py-2 border-2 border-green-500 text-green-500 hover:bg-green-900/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 border-2 border-green-500 text-green-600 dark:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 ✓ Confirm
               </button>
@@ -1152,8 +1078,8 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
             {formData.planned_closures?.length > 0 ? (
               <div className="space-y-2">
                 {formData.planned_closures.map((closure, i) => (
-                  <div key={i} className="flex justify-between items-center border border-neutral-700 rounded-md p-2">
-                    <span className="text-sm text-white">
+                  <div key={i} className="flex justify-between items-center border border-gray-200 dark:border-neutral-700 rounded-md p-2">
+                    <span className="text-sm text-gray-900 dark:text-white">
                       {new Date(closure.start).toLocaleDateString()} → {new Date(closure.end).toLocaleDateString()}
                     </span>
                     <button
@@ -1167,7 +1093,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 ))}
               </div>
             ) : (
-              <p className="text-gray-400 dark:text-neutral-500 text-sm">No planned closures yet.</p>
+              <p className="text-gray-500 dark:text-neutral-500 text-sm">No planned closures yet.</p>
             )}
           </section>
         </div>
@@ -1182,19 +1108,19 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 onDelete();
                 onClose();
               }}
-              className="px-6 py-2 text-red-400 border border-red-400 rounded-lg hover:shadow-lg hover:shadow-red-400/50 hover:border-red-300 transition-all duration-200"
+              className="px-6 py-2 text-red-500 dark:text-red-400 border border-red-500 dark:border-red-400 rounded-lg hover:shadow-lg hover:shadow-red-400/50 hover:border-red-400 dark:hover:border-red-300 transition-all duration-200"
               disabled={loading}
             >
               Delete Site
             </button>
           )}
-          
+
           {/* Right side buttons */}
           <div className="flex gap-3 ml-auto">
             <button
               type="button"
               onClick={handleCancel}
-              className="px-6 py-2 text-white border border-white rounded-lg hover:shadow-lg hover:shadow-white/50 hover:border-white/80 transition-all duration-200"
+              className="px-6 py-2 text-gray-700 dark:text-white border border-gray-300 dark:border-white rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-200"
               disabled={loading}
             >
               Cancel
@@ -1203,7 +1129,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
               type="button"
               onClick={handleSave}
               disabled={loading}
-              className="px-6 py-2 border border-pink-600 text-pink-600 rounded-lg hover:shadow-lg hover:shadow-pink-600/50 hover:border-pink-500 transition-all duration-200 disabled:opacity-50"
+              className="px-6 py-2 border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-lg hover:shadow-[#D37E91]/50 hover:border-[#D37E91] transition-all duration-200 disabled:opacity-50"
             >
               {loading ? "Saving..." : "Save"}
             </button>

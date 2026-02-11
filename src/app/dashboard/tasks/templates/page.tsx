@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Plus, Clock, FileText, Calendar, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Clock, FileText, Calendar, Edit2, Trash2 } from '@/components/ui/icons';
 import { toast } from 'sonner';
 import { MasterTemplateModal } from '@/components/templates/MasterTemplateModal';
 import { TaskFromTemplateModal } from '@/components/templates/TaskFromTemplateModal';
@@ -48,7 +48,6 @@ export default function TemplatesPage() {
         .from('task_templates')
         .select('*')
         .eq('company_id', companyId)
-        .eq('is_active', true)
         .eq('is_template_library', false) // Only show user-created templates, not library templates
         .order('created_at', { ascending: false });
 
@@ -157,22 +156,33 @@ export default function TemplatesPage() {
     }
 
     setDeletingTemplateId(templateId);
-    
+
     try {
-      // Soft delete by setting is_active to false
-      const { error } = await supabase
+      // Hard delete - foreign keys handle cleanup:
+      // checklist_tasks.template_id → SET NULL
+      // site_checklists → CASCADE delete
+      const { data, error } = await supabase
         .from('task_templates')
-        .update({ is_active: false })
-        .eq('id', templateId);
+        .delete()
+        .eq('id', templateId)
+        .select();
 
       if (error) {
+        console.error('Delete error:', error);
         toast.error('Failed to delete template: ' + error.message);
         return;
       }
 
+      if (!data || data.length === 0) {
+        // RLS silently blocked the delete - no rows affected
+        console.error('Delete returned no rows - likely RLS denial');
+        toast.error('Unable to delete template. You may not have permission.');
+        return;
+      }
+
       toast.success('Template deleted successfully');
-      // Refresh templates list
-      fetchTemplates();
+      // Remove from local state immediately for instant UI feedback
+      setTemplates(prev => prev.filter(t => t.id !== templateId));
     } catch (error) {
       console.error('Error deleting template:', error);
       toast.error('Failed to delete template');
@@ -198,7 +208,7 @@ export default function TemplatesPage() {
       'h_and_s': 'bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-500/20',
       'fire': 'bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-300 dark:border-red-500/20',
       'cleaning': 'bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-300 dark:border-purple-500/20',
-      'compliance': 'bg-pink-100 dark:bg-pink-500/10 text-pink-700 dark:text-pink-400 border-pink-300 dark:border-pink-500/20'
+      'compliance': 'bg-[#D37E91]/10 dark:bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91] border-[#D37E91] dark:border-[#D37E91]/20'
     };
     return colors[category] || 'bg-gray-100 dark:bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-300 dark:border-gray-500/20';
   };
@@ -208,15 +218,12 @@ export default function TemplatesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">Custom Task Builder</h1>
-          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mb-6">
-            Create custom task templates for your sites
-          </p>
-          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm sm:text-base">Custom task templates you've created</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">Custom Templates</h1>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm sm:text-base">Build and manage your custom task templates</p>
         </div>
         <button
           onClick={handleNewTemplate}
-          className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-[#EC4899] text-[#EC4899] bg-transparent hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-all duration-150"
+          className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-[#D37E91] text-[#D37E91] bg-transparent hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-all duration-150"
           aria-label="Add Template"
         >
           <Plus className="h-5 w-5" />

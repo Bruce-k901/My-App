@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Search, Upload, Download, Edit, Trash2, Save, X, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, Search, Upload, Download, Edit, Trash2, Save, X, ChevronDown, ChevronRight } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 // toast removed per project policy
@@ -424,7 +424,7 @@ export default function DisposablesLibraryPage() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-2 h-8 bg-pink-500 rounded-full"></div>
+            <div className="w-2 h-8 bg-[#D37E91] rounded-full"></div>
             <div>
               <h1 className="text-lg font-semibold text-white">Disposables Library</h1>
               <p className="text-sm text-neutral-400">Manage disposable items and packaging</p>

@@ -17,7 +17,7 @@ import {
   TrendingUp,
   TrendingDown,
   Minus
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface StockItem {
   id: string;

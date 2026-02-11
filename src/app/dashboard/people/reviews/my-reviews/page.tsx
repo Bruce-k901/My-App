@@ -12,7 +12,7 @@ import {
   Clock,
   AlertCircle,
   ChevronRight
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 export default function MyReviewsPage() {
   const { profile } = useAppContext();
@@ -107,7 +107,7 @@ export default function MyReviewsPage() {
             href={`/dashboard/people/reviews/my-reviews?filter=${f}`}
             className={`px-4 py-2 rounded-lg text-sm transition-colors ${
               filter === f
-                ? 'bg-transparent border border-[#EC4899] text-[#EC4899]'
+                ? 'bg-transparent border border-[#D37E91] text-[#D37E91]'
                 : 'bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white'
             }`}
           >

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Calendar } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Calendar } from '@/components/ui/icons';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, parseISO } from 'date-fns';
 import { getPPMStatus } from '@/utils/ppmHelpers';
 import { usePPMCalendarData } from '@/hooks/usePPMCalendarData';

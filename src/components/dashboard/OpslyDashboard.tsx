@@ -1,11 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { Menu } from 'lucide-react';
+import { Menu } from '@/components/ui/icons';
+import { motion } from 'framer-motion';
 import { QuickNavBar } from './QuickNavBar';
 import { WidgetGrid } from './WidgetGrid';
 import { DashboardSidebar } from './DashboardSidebar';
 import { DashboardSettings } from './DashboardSettings';
+import { KPIHeroSection } from './KPIHeroSection';
+import { ChartSection } from './ChartSection';
+import { EnhancedWeatherWidget } from './EnhancedWeatherWidget';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/useIsMobile';
 
@@ -13,15 +17,6 @@ interface OpslyDashboardProps {
   variant?: 'mobile' | 'desktop';
 }
 
-/**
- * OpslyDashboard - Main dashboard layout component
- *
- * Features:
- * - Quick navigation bar with module-filtered shortcuts
- * - Widget grid (3 cols desktop, 2 cols tablet, 1 col mobile)
- * - Pinned right sidebar with Activity Feed and Incidents
- * - Settings panel for widget customization
- */
 export function OpslyDashboard({ variant }: OpslyDashboardProps) {
   const { isMobile } = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -33,8 +28,17 @@ export function OpslyDashboard({ variant }: OpslyDashboardProps) {
   if (isMobileView) {
     return (
       <div className="pb-4">
+        {/* Weather */}
+        <EnhancedWeatherWidget />
+
         {/* Quick Actions */}
         <QuickNavBar />
+
+        {/* KPI Hero */}
+        <KPIHeroSection variant="mobile" />
+
+        {/* Charts */}
+        <ChartSection variant="mobile" />
 
         {/* Widget Grid */}
         <WidgetGrid variant="mobile" />
@@ -42,7 +46,7 @@ export function OpslyDashboard({ variant }: OpslyDashboardProps) {
         {/* Mobile sidebar toggle */}
         <button
           onClick={() => setSidebarOpen(true)}
-          className="fixed bottom-20 right-4 w-12 h-12 bg-fuchsia-500 rounded-full flex items-center justify-center shadow-lg z-30"
+          className="fixed bottom-20 right-4 w-12 h-12 bg-teamly rounded-full flex items-center justify-center shadow-lg z-30"
         >
           <Menu className="w-5 h-5 text-white" />
         </button>
@@ -72,8 +76,17 @@ export function OpslyDashboard({ variant }: OpslyDashboardProps) {
           <DashboardSettings />
         </div>
 
+        {/* Weather */}
+        <EnhancedWeatherWidget />
+
         {/* Quick Actions */}
         <QuickNavBar />
+
+        {/* KPI Hero */}
+        <KPIHeroSection variant="desktop" />
+
+        {/* Charts */}
+        <ChartSection variant="desktop" />
 
         {/* Widget Grid */}
         <WidgetGrid variant="desktop" />

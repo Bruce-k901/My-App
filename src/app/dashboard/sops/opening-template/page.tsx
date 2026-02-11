@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, Trash2, Save, X, Loader2, Clock, CheckCircle2 } from 'lucide-react';
+import { Plus, Trash2, Save, X, Loader2, Clock, CheckCircle2 } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -328,7 +328,7 @@ export default function OpeningProcedureTemplatePage() {
             <select 
               value={status} 
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:bg-neutral-800 transition-colors"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 hover:bg-neutral-800 transition-colors"
             >
               <option value="Draft" className="bg-neutral-900 text-white">Draft</option>
               <option value="Published" className="bg-neutral-900 text-white">Published</option>
@@ -379,7 +379,7 @@ export default function OpeningProcedureTemplatePage() {
             <select
               value={siteLocation}
               onChange={(e) => setSiteLocation(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:bg-neutral-800 transition-colors"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 hover:bg-neutral-800 transition-colors"
             >
               <option value="" className="bg-neutral-900 text-white">Select site...</option>
               {sites.map(site => (
@@ -486,7 +486,7 @@ export default function OpeningProcedureTemplatePage() {
                 <select
                   value={eq.equipment_id}
                   onChange={(e) => updateEquipmentStartup(eq.id, 'equipment_id', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:bg-neutral-800 transition-colors"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 hover:bg-neutral-800 transition-colors"
                 >
                   <option value="" className="bg-neutral-900 text-white">Select equipment...</option>
                   {equipmentLibrary.map(equip => (
@@ -499,7 +499,7 @@ export default function OpeningProcedureTemplatePage() {
                 <select
                   value={eq.startup_status}
                   onChange={(e) => updateEquipmentStartup(eq.id, 'startup_status', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:bg-neutral-800 transition-colors"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 hover:bg-neutral-800 transition-colors"
                 >
                   <option value="" className="bg-neutral-900 text-white">Status...</option>
                   <option value="Operational" className="bg-neutral-900 text-white">Operational</option>
@@ -559,7 +559,7 @@ export default function OpeningProcedureTemplatePage() {
                 <select
                   value={check.status}
                   onChange={(e) => updateSafetyCheck(check.id, 'status', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:bg-neutral-800 transition-colors"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 hover:bg-neutral-800 transition-colors"
                 >
                   <option value="Pending" className="bg-neutral-900 text-white">Pending</option>
                   <option value="Complete" className="bg-neutral-900 text-white">Complete</option>
@@ -750,7 +750,7 @@ export default function OpeningProcedureTemplatePage() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg font-medium transition-all duration-150 hover:bg-magenta-500/10 hover:shadow-[0_0_16px_rgba(236,72,153,0.4)] focus:outline-none focus:ring-2 focus:ring-magenta-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg font-medium transition-all duration-150 hover:bg-magenta-500/10 hover:shadow-[0_0_16px_rgba(211, 126, 145,0.4)] focus:outline-none focus:ring-2 focus:ring-magenta-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
           {saving ? 'Saving...' : 'Save Procedure'}

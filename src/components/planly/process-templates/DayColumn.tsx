@@ -2,7 +2,7 @@
 
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Calendar, Plus, Trash2 } from 'lucide-react';
+import { Calendar, Plus, Trash2 } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { StepCard } from './StepCard';
 import { StageFormData } from './StepEditor';

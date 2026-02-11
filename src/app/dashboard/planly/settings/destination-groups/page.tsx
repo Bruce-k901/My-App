@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, MapPin, Clock, Truck, Edit2, Trash2, Home, X, Loader2, AlertCircle } from 'lucide-react';
+import { Plus, MapPin, Clock, Truck, Edit2, Trash2, Home, X, Loader2, AlertCircle } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import Label from '@/components/ui/Label';

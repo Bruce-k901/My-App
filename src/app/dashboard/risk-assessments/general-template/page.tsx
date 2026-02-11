@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { Plus, Trash2, Save, AlertTriangle, CheckCircle, XCircle, Calendar, ArrowDown, ArrowUp, FileText } from 'lucide-react';
+import { Plus, Trash2, Save, AlertTriangle, CheckCircle, XCircle, Calendar, ArrowDown, ArrowUp, FileText } from '@/components/ui/icons';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -390,7 +390,7 @@ function GeneralRiskAssessmentTemplateContent() {
 
       {/* Assessment Details */}
       <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#EC4899] dark:text-magenta-400 mb-4">Assessment Details</h2>
+        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Assessment Details</h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Activity/Task Name *</label>
@@ -433,7 +433,7 @@ function GeneralRiskAssessmentTemplateContent() {
 
       {/* Hazards Section */}
       <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#EC4899] dark:text-magenta-400 mb-4">Hazards</h2>
+        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Hazards</h2>
         <div className="space-y-4">
           {hazards.map((hazard, index) => {
             const scoreBefore = hazard.likelihoodBefore * hazard.severityBefore;
@@ -445,7 +445,7 @@ function GeneralRiskAssessmentTemplateContent() {
             return (
               <div key={hazard.id} className="p-4 bg-gray-50 dark:bg-neutral-900/50 rounded-lg border border-gray-200 dark:border-neutral-600">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-semibold text-[#EC4899] dark:text-magenta-400">Hazard {index + 1}</span>
+                  <span className="text-sm font-semibold text-[#D37E91] dark:text-magenta-400">Hazard {index + 1}</span>
                   <button onClick={() => setHazards(hazards.filter(h => h.id !== hazard.id))} disabled={hazards.length === 1} className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 disabled:opacity-30">
                     <Trash2 size={16} />
                   </button>
@@ -578,14 +578,14 @@ function GeneralRiskAssessmentTemplateContent() {
             );
           })}
         </div>
-        <button onClick={() => setHazards([...hazards, { id: Date.now(), description: "", category: "", peopleAtRisk: [], existingControls: "", likelihoodBefore: 3, severityBefore: 3, additionalControls: "", likelihoodAfter: 1, severityAfter: 1, responsiblePerson: "", targetDate: "", status: "Not Started", linkedSOP: "" }])} className="mt-3 flex items-center gap-2 px-4 py-2 bg-[#EC4899]/20 hover:bg-[#EC4899]/30 border border-[#EC4899]/40 rounded-lg text-[#EC4899] text-sm">
+        <button onClick={() => setHazards([...hazards, { id: Date.now(), description: "", category: "", peopleAtRisk: [], existingControls: "", likelihoodBefore: 3, severityBefore: 3, additionalControls: "", likelihoodAfter: 1, severityAfter: 1, responsiblePerson: "", targetDate: "", status: "Not Started", linkedSOP: "" }])} className="mt-3 flex items-center gap-2 px-4 py-2 bg-[#D37E91]/20 hover:bg-[#D37E91]/30 border border-[#D37E91]/40 rounded-lg text-[#D37E91] text-sm">
           <Plus size={16} /> Add Hazard
         </button>
       </section>
 
       {/* PPE Requirements */}
       <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#EC4899] dark:text-magenta-400 mb-4">PPE Requirements</h2>
+        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">PPE Requirements</h2>
         <div className="flex flex-wrap gap-2 mb-3">
           {selectedPPE.map(ppeId => {
             const ppe = ppeLibrary.find(p => p.id === ppeId);
@@ -607,7 +607,7 @@ function GeneralRiskAssessmentTemplateContent() {
 
       {/* Training Requirements */}
       <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#EC4899] dark:text-magenta-400 mb-4">Training Requirements</h2>
+        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Training Requirements</h2>
         <div className="space-y-3">
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Training Needed</label>
@@ -638,7 +638,7 @@ function GeneralRiskAssessmentTemplateContent() {
 
       {/* Review & Approval */}
       <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#EC4899] dark:text-magenta-400 mb-4">Review & Approval</h2>
+        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Review & Approval</h2>
         <div className="space-y-3">
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Review Frequency</label>

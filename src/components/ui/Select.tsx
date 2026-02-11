@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check } from '@/components/ui/icons';
 import { cn } from "@/lib/utils";
 
 type Option = string | { label: string; value: string };

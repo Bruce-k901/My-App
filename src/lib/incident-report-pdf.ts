@@ -67,12 +67,12 @@ function generateIncidentReportHTML(incident: Incident): string {
       background: #fff;
     }
     .header {
-      border-bottom: 3px solid #EC4899;
+      border-bottom: 3px solid #D37E91;
       padding-bottom: 20px;
       margin-bottom: 30px;
     }
     .header h1 {
-      color: #EC4899;
+      color: #D37E91;
       font-size: 28px;
       margin-bottom: 10px;
     }
@@ -89,8 +89,8 @@ function generateIncidentReportHTML(incident: Incident): string {
     }
     .section-title {
       font-size: 20px;
-      color: #EC4899;
-      border-bottom: 2px solid #EC4899;
+      color: #D37E91;
+      border-bottom: 2px solid #D37E91;
       padding-bottom: 8px;
       margin-bottom: 15px;
     }
@@ -154,11 +154,11 @@ function generateIncidentReportHTML(incident: Incident): string {
       background: #f9fafb;
       padding: 15px;
       margin-bottom: 10px;
-      border-left: 3px solid #EC4899;
+      border-left: 3px solid #D37E91;
       border-radius: 4px;
     }
     .casualty-item h4, .witness-item h4 {
-      color: #EC4899;
+      color: #D37E91;
       margin-bottom: 8px;
     }
     .grid-2 {

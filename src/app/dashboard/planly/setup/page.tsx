@@ -17,7 +17,7 @@ import {
   Users,
   PartyPopper,
   AlertCircle,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { useAppContext } from '@/context/AppContext';

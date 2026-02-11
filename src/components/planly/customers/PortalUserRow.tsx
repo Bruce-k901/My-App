@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Trash2, Send, Check, Clock, AlertCircle, Crown } from 'lucide-react';
+import { Trash2, Send, Check, Clock, AlertCircle, Crown } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { cn } from '@/lib/utils';

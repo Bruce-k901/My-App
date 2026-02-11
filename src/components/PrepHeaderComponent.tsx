@@ -1,7 +1,7 @@
 "use client"
 import { NodeViewWrapper } from "@tiptap/react";
 import { useState, useEffect } from "react";
-import { AlertTriangle, ChefHat, Scale, Palette, FileText, ChevronDown, ChevronUp } from "lucide-react";
+import { AlertTriangle, ChefHat, Scale, Palette, FileText, ChevronDown, ChevronUp } from '@/components/ui/icons';
 import { useSOP } from "@/context/SOPContext";
 
 export default function PrepHeaderComponent({ node, updateAttributes, selected, getPos, editor }) {

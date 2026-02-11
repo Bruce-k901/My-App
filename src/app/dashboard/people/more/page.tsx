@@ -11,7 +11,7 @@ import {
   Briefcase,
   Settings,
   UserPlus,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 const moreNavItems = [
   { href: '/dashboard/people/training', icon: GraduationCap, label: 'Training' },
@@ -34,14 +34,14 @@ export default function MorePage() {
           <Link
             key={item.href}
             href={item.href}
-            className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6 hover:border-[#EC4899]/50 transition-colors group"
+            className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6 hover:border-[#D37E91]/50 transition-colors group"
           >
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#EC4899] to-blue-500 flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#D37E91] to-blue-500 flex items-center justify-center flex-shrink-0">
                 <item.icon className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-white group-hover:text-[#EC4899] transition-colors">
+                <h3 className="font-medium text-white group-hover:text-[#D37E91] transition-colors">
                   {item.label}
                 </h3>
               </div>

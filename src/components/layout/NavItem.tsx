@@ -11,6 +11,7 @@ interface NavItemProps {
   active?: boolean;
   disabled?: boolean;
   badge?: string | number;
+  onClick?: () => void;
 }
 
 export function NavItem({
@@ -21,6 +22,7 @@ export function NavItem({
   active,
   disabled,
   badge,
+  onClick,
 }: NavItemProps) {
   if (disabled) {
     return (
@@ -30,7 +32,7 @@ export function NavItem({
         </div>
         <span className="flex-1 text-sm font-medium text-white/80">{label}</span>
         {badge && (
-          <span className="px-2 py-0.5 text-xs font-semibold bg-[#EC4899] text-white rounded-full">
+          <span className="px-2 py-0.5 text-xs font-semibold bg-[#D37E91] text-white rounded-full">
             {badge}
           </span>
         )}
@@ -38,13 +40,18 @@ export function NavItem({
     );
   }
 
+  const Wrapper = onClick ? 'button' : Link;
+  const wrapperProps = onClick
+    ? { onClick, type: 'button' as const }
+    : { href };
+
   return (
-    <Link
-      href={href}
+    <Wrapper
+      {...wrapperProps as any}
       className={cn(
-        "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group",
-        active && "bg-white/[0.06]",
-        !active && "hover:bg-white/[0.03]"
+        "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group w-full text-left",
+        active && "bg-module-fg/[0.10]",
+        !active && "hover:bg-module-fg/[0.04]"
       )}
     >
       {/* Icon */}
@@ -62,18 +69,19 @@ export function NavItem({
       <span
         className={cn(
           "flex-1 text-sm font-medium transition-colors",
-          active ? "text-white" : "text-white/80 group-hover:text-white"
+          active ? "text-white" : "text-white/50 group-hover:text-white/80"
         )}
+        style={active && color ? { color } : {}}
       >
         {label}
       </span>
 
       {/* Badge (optional) */}
       {badge && (
-        <span className="px-2 py-0.5 text-xs font-semibold bg-[#EC4899] text-white rounded-full">
+        <span className="px-2 py-0.5 text-xs font-semibold bg-[#D37E91] text-white rounded-full">
           {typeof badge === "number" && badge > 99 ? "99+" : badge}
         </span>
       )}
-    </Link>
+    </Wrapper>
   );
 }

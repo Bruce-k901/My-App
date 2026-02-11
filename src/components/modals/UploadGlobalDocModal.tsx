@@ -302,16 +302,16 @@ export default function UploadGlobalDocModal({
   };
 
   return (
-    <div className="p-6 bg-[#0b0f1a] rounded-2xl shadow-lg w-[500px] border border-white/10">
-      <h2 className="text-xl font-semibold text-white mb-4">Upload Document</h2>
+    <div className="p-6 bg-white dark:bg-[#0b0f1a] rounded-2xl shadow-lg w-[500px] border border-gray-200 dark:border-white/10">
+      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Upload Document</h2>
 
       <div className="space-y-3">
         <div>
           <Select
             label={
-              <span className="text-sm text-white/80">
-                Document Type <span className="text-pink-400">*</span>
-                <span className="text-xs text-white/60 ml-2">(Select from EHO requirements)</span>
+              <span className="text-sm text-gray-600 dark:text-white/80">
+                Document Type <span className="text-[#D37E91]">*</span>
+                <span className="text-xs text-gray-500 dark:text-white/60 ml-2">(Select from EHO requirements)</span>
               </span>
             }
             value={form.documentType}
@@ -321,10 +321,10 @@ export default function UploadGlobalDocModal({
               label: `${dt.value}${dt.required ? ' *' : ''}`,
               value: dt.value
             }))}
-            className="text-white"
+            className="text-gray-900 dark:text-white"
           />
           {form.documentType && form.documentType !== "Other" && (
-            <p className="text-xs text-green-400 mt-1">
+            <p className="text-xs text-green-600 dark:text-green-400 mt-1">
               ✓ This will be recognized by the EHO Readiness Pack
             </p>
           )}
@@ -343,8 +343,8 @@ export default function UploadGlobalDocModal({
         )}
 
         <div>
-          <label className="block text-sm text-white/80 mb-1">
-            Document Name <span className="text-pink-400">*</span>
+          <label className="block text-sm text-gray-600 dark:text-white/80 mb-1">
+            Document Name <span className="text-[#D37E91]">*</span>
           </label>
           <Input
             placeholder={form.documentType && form.documentType !== "Other" ? form.documentType : "Enter document name"}
@@ -353,14 +353,14 @@ export default function UploadGlobalDocModal({
             disabled={form.documentType && form.documentType !== "Other"}
           />
           {form.documentType && form.documentType !== "Other" && (
-            <p className="text-xs text-white/60 mt-1">
+            <p className="text-xs text-gray-500 dark:text-white/60 mt-1">
               Name auto-filled from document type. You can edit if needed.
             </p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm text-white/80 mb-1">Expiry Date (optional)</label>
+          <label className="block text-sm text-gray-600 dark:text-white/80 mb-1">Expiry Date (optional)</label>
           <Input
             type="date"
             value={form.expiry_date}
@@ -369,17 +369,17 @@ export default function UploadGlobalDocModal({
         </div>
 
         <div>
-          <label className="block text-sm text-white/80 mb-1">Notes (optional)</label>
+          <label className="block text-sm text-gray-600 dark:text-white/80 mb-1">Notes (optional)</label>
           <textarea
             placeholder="Short description or purpose"
             value={form.notes}
             onChange={(e) => handleChange("notes", e.target.value)}
-            className="w-full min-h-[90px] rounded-md px-4 py-2 text-white placeholder:text-white/40 bg-white/[0.03] border border-white/[0.15] focus:border-pink-500 focus:shadow-[0_0_14px_rgba(236,72,153,0.4)] focus:ring-0 focus:outline-none"
+            className="w-full min-h-[90px] rounded-md px-4 py-2 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.15] focus:border-[#D37E91] focus:shadow-[0_0_14px_rgba(211,126,145,0.4)] focus:ring-0 focus:outline-none"
           />
         </div>
 
         <div className="mt-3">
-          <label className="text-sm text-gray-300 mb-1 block">Select File</label>
+          <label className="text-sm text-gray-600 dark:text-gray-300 mb-1 block">Select File</label>
           <input
             type="file"
             accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg"
@@ -389,7 +389,7 @@ export default function UploadGlobalDocModal({
                 setForm(prev => ({ ...prev, file }));
               }
             }}
-            className="w-full text-sm text-gray-200 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#EC4899]/20 file:text-white hover:file:bg-[#EC4899]/30"
+            className="w-full text-sm text-gray-700 dark:text-gray-200 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#D37E91]/10 dark:file:bg-[#D37E91]/20 file:text-[#D37E91] dark:file:text-white hover:file:bg-[#D37E91]/20 dark:hover:file:bg-[#D37E91]/30"
           />
           {form.file && (
             <p className="text-xs text-gray-400 mt-1">

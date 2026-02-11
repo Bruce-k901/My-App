@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Calendar, BookOpen, AlertCircle } from 'lucide-react';
+import { X, Calendar, BookOpen, AlertCircle } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
@@ -172,7 +172,7 @@ export function BookCourseFromTaskModal({
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-4 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                className="w-full px-4 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                 disabled={booking}
               />
               <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-white/60 pointer-events-none" />
@@ -224,7 +224,7 @@ export function BookCourseFromTaskModal({
           <button
             onClick={handleBook}
             disabled={booking || !deadline}
-            className="px-4 py-2 bg-[#EC4899] hover:bg-[#EC4899]/80 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/80 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {booking ? (
               <>

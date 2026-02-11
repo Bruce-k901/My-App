@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { X, Send, Lock, AlertTriangle, FileSpreadsheet, Download } from 'lucide-react';
+import { X, Send, Lock, AlertTriangle, FileSpreadsheet, Download } from '@/components/ui/icons';
 import { WeekAttendance } from '@/lib/attendance/types';
 
 interface PayrollSubmitModalProps {

@@ -44,8 +44,8 @@ export default function TrainingExpiriesWidget({ siteId, companyId }: TrainingEx
           .select(`
             id,
             expiry_date,
-            training_type,
-            profile:profiles(id, full_name, first_name, last_name)
+            course:training_courses!training_records_course_id_fkey(name),
+            profile:profiles!training_records_profile_id_fkey(id, full_name)
           `)
           .eq('company_id', companyId)
           .gte('expiry_date', todayStr)
@@ -56,20 +56,14 @@ export default function TrainingExpiriesWidget({ siteId, companyId }: TrainingEx
         const { data, error } = await query;
 
         if (error) {
-          if (error.code === '42P01') {
-            console.debug('training_records table not available');
-            setLoading(false);
-            return;
-          }
-          throw error;
+          // Table may not exist yet — degrade gracefully
+          setLoading(false);
+          return;
         }
 
         const formatted: ExpiringTraining[] = (data || []).map((record: any) => {
           const profile = record.profile || {};
-          const staffName = profile.full_name ||
-            (profile.first_name && profile.last_name
-              ? `${profile.first_name} ${profile.last_name}`
-              : 'Unknown');
+          const staffName = profile.full_name || 'Unknown';
 
           const expiryDate = new Date(record.expiry_date);
           const daysUntil = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -77,7 +71,7 @@ export default function TrainingExpiriesWidget({ siteId, companyId }: TrainingEx
           return {
             id: record.id,
             staffName,
-            trainingName: record.training_type || 'Training',
+            trainingName: record.course?.name || 'Training',
             daysUntil,
           };
         });
@@ -108,9 +102,9 @@ export default function TrainingExpiriesWidget({ siteId, companyId }: TrainingEx
     return (
       <WidgetCard title="Training Expiries" module="teamly" viewAllHref="/dashboard/people/training">
         <div className="animate-pulse space-y-2">
-          <div className="h-8 bg-white/5 rounded w-24" />
-          <div className="h-3 bg-white/5 rounded" />
-          <div className="h-3 bg-white/5 rounded w-3/4" />
+          <div className="h-8 bg-black/5 dark:bg-white/5 rounded w-24" />
+          <div className="h-3 bg-black/5 dark:bg-white/5 rounded" />
+          <div className="h-3 bg-black/5 dark:bg-white/5 rounded w-3/4" />
         </div>
       </WidgetCard>
     );
@@ -120,7 +114,7 @@ export default function TrainingExpiriesWidget({ siteId, companyId }: TrainingEx
     return (
       <WidgetCard title="Training Expiries" module="teamly" viewAllHref="/dashboard/people/training">
         <div className="text-center py-4">
-          <div className="text-white/40 text-xs">No training expiring soon</div>
+          <div className="text-[rgb(var(--text-disabled))] text-xs">No training expiring soon</div>
         </div>
       </WidgetCard>
     );
@@ -136,6 +130,7 @@ export default function TrainingExpiriesWidget({ siteId, companyId }: TrainingEx
             text={`${item.staffName} — ${item.trainingName}`}
             sub={`${item.daysUntil} days`}
             status={item.daysUntil <= 7 ? 'urgent' : 'warning'}
+            href="/dashboard/people/training"
           />
         ))}
       </div>

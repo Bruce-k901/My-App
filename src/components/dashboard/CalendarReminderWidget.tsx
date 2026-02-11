@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Calendar, Bell, Wrench, Clock, ChevronRight, X } from "lucide-react";
+import { Calendar, Bell, Wrench, Clock, ChevronRight, X } from '@/components/ui/icons';
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
 import Link from "next/link";
@@ -156,13 +156,13 @@ export default function CalendarReminderWidget() {
       case 'ppm_due':
         return <Clock className="w-4 h-4 text-yellow-400" />;
       default:
-        return <Bell className="w-4 h-4 text-pink-400" />;
+        return <Bell className="w-4 h-4 text-[#D37E91]" />;
     }
   };
 
   if (loading) {
     return (
-      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-6">
+      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-6">
         <div className="flex items-center gap-2 mb-4">
           <Calendar className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
           <h3 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">
@@ -177,7 +177,7 @@ export default function CalendarReminderWidget() {
   }
 
   return (
-    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-6">
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">

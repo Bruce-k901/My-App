@@ -56,12 +56,9 @@ export default function TodaysChecksWidget({ siteId, companyId }: TodaysChecksWi
         const { data, error } = await query;
 
         if (error) {
-          if (error.code === '42P01') {
-            console.debug('checklist_tasks table not available');
-            setLoading(false);
-            return;
-          }
-          throw error;
+          // Table may not exist yet — degrade gracefully
+          setLoading(false);
+          return;
         }
 
         const formattedChecks: TodayCheck[] = (data || []).map((task: any) => ({
@@ -104,9 +101,9 @@ export default function TodaysChecksWidget({ siteId, companyId }: TodaysChecksWi
     return (
       <WidgetCard title="Today's Checks" module="checkly" viewAllHref="/dashboard/todays_tasks">
         <div className="animate-pulse space-y-2">
-          <div className="h-2 bg-white/5 rounded" />
-          <div className="h-3 bg-white/5 rounded w-3/4" />
-          <div className="h-3 bg-white/5 rounded w-1/2" />
+          <div className="h-2 bg-black/5 dark:bg-white/5 rounded" />
+          <div className="h-3 bg-black/5 dark:bg-white/5 rounded w-3/4" />
+          <div className="h-3 bg-black/5 dark:bg-white/5 rounded w-1/2" />
         </div>
       </WidgetCard>
     );
@@ -116,7 +113,7 @@ export default function TodaysChecksWidget({ siteId, companyId }: TodaysChecksWi
     return (
       <WidgetCard title="Today's Checks" module="checkly" viewAllHref="/dashboard/todays_tasks">
         <div className="text-center py-4">
-          <div className="text-white/40 text-xs">No checks scheduled for today</div>
+          <div className="text-[rgb(var(--text-disabled))] text-xs">No checks scheduled for today</div>
         </div>
       </WidgetCard>
     );
@@ -124,7 +121,7 @@ export default function TodaysChecksWidget({ siteId, companyId }: TodaysChecksWi
 
   return (
     <WidgetCard title="Today's Checks" module="checkly" viewAllHref="/dashboard/todays_tasks">
-      <ProgressBar done={doneCount} total={totalCount} color="bg-fuchsia-400" />
+      <ProgressBar done={doneCount} total={totalCount} color="bg-teamly" />
       <div className="mt-2">
         {checks.map((check) => (
           <MiniItem
@@ -132,6 +129,7 @@ export default function TodaysChecksWidget({ siteId, companyId }: TodaysChecksWi
             text={check.name}
             sub={check.status === 'completed' ? '✓ Done' : check.dueTime ? `Due ${check.dueTime}` : 'Pending'}
             status={check.status === 'completed' ? 'good' : 'neutral'}
+            href="/dashboard/todays_tasks"
           />
         ))}
       </div>

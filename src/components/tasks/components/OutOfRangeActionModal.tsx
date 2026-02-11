@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AlertTriangle, Clock, Phone } from 'lucide-react';
+import { AlertTriangle, Clock, Phone } from '@/components/ui/icons';
 
 interface OutOfRangeAction {
   assetId: string;

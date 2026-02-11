@@ -58,6 +58,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       name,
       recipe_id,
       products_per_sheet,
+      dough_per_sheet_g,
       laminate_lead_days,
       display_order
     } = body;
@@ -80,6 +81,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       }
       updateData.products_per_sheet = products_per_sheet;
     }
+    if (dough_per_sheet_g !== undefined) updateData.dough_per_sheet_g = dough_per_sheet_g ?? null;
     if (laminate_lead_days !== undefined) updateData.laminate_lead_days = laminate_lead_days;
     if (display_order !== undefined) updateData.display_order = display_order;
 

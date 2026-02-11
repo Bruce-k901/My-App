@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle2, XCircle } from '@/components/ui/icons';
 
 interface YesNoChecklistRendererProps {
   items: Array<{ text: string; answer: 'yes' | 'no' | null }>;

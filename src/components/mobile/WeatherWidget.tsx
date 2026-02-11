@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Cloud, Sun, CloudRain, CloudSnow, CloudLightning, Wind, Loader2, MapPin } from 'lucide-react';
+import { Cloud, Sun, CloudRain, CloudSnow, CloudLightning, Wind, Loader2, MapPin } from '@/components/ui/icons';
 
 interface WeatherData {
   current: {
@@ -124,11 +124,11 @@ export function WeatherWidget() {
   // Location denied state
   if (locationDenied) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-        <div className="flex items-center gap-3 text-gray-400">
+      <div className="bg-black/[0.03] dark:bg-white/[0.03] border border-[rgb(var(--border))] rounded-xl p-4">
+        <div className="flex items-center gap-3 text-[rgb(var(--text-disabled))]">
           <MapPin className="w-5 h-5" />
           <div>
-            <p className="text-sm font-medium text-white">Weather</p>
+            <p className="text-sm font-medium text-[rgb(var(--text-primary))]">Weather</p>
             <p className="text-xs">Enable location for local weather</p>
           </div>
         </div>
@@ -139,8 +139,8 @@ export function WeatherWidget() {
   // Loading state
   if (loading) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-        <div className="flex items-center gap-3 text-gray-400">
+      <div className="bg-black/[0.03] dark:bg-white/[0.03] border border-[rgb(var(--border))] rounded-xl p-4">
+        <div className="flex items-center gap-3 text-[rgb(var(--text-disabled))]">
           <Loader2 className="w-5 h-5 animate-spin" />
           <span className="text-sm">Loading weather...</span>
         </div>
@@ -151,8 +151,8 @@ export function WeatherWidget() {
   // Error state
   if (error || !weather) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-        <div className="flex items-center gap-3 text-gray-400">
+      <div className="bg-black/[0.03] dark:bg-white/[0.03] border border-[rgb(var(--border))] rounded-xl p-4">
+        <div className="flex items-center gap-3 text-[rgb(var(--text-disabled))]">
           <Wind className="w-5 h-5" />
           <span className="text-sm">{error || 'Weather unavailable'}</span>
         </div>
@@ -164,19 +164,19 @@ export function WeatherWidget() {
   const CurrentIcon = currentWeather.icon;
 
   return (
-    <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-white/[0.06] rounded-xl p-4">
+    <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-[rgb(var(--border))] rounded-xl p-4">
       <div className="flex items-center justify-between">
         {/* Current weather */}
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full bg-blue-500/10 dark:bg-white/10 flex items-center justify-center">
             <CurrentIcon className="w-7 h-7 text-blue-400" />
           </div>
           <div>
             <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-bold text-white">{weather.current.temperature}</span>
-              <span className="text-lg text-gray-400">°C</span>
+              <span className="text-3xl font-bold text-[rgb(var(--text-primary))]">{weather.current.temperature}</span>
+              <span className="text-lg text-[rgb(var(--text-disabled))]">°C</span>
             </div>
-            <p className="text-sm text-gray-400">{currentWeather.label}</p>
+            <p className="text-sm text-[rgb(var(--text-disabled))]">{currentWeather.label}</p>
           </div>
         </div>
 
@@ -190,9 +190,9 @@ export function WeatherWidget() {
 
             return (
               <div key={i} className="text-center">
-                <p className="text-xs text-gray-500 mb-1">{hourLabel}</p>
-                <HourIcon className="w-4 h-4 text-gray-400 mx-auto mb-1" />
-                <p className="text-xs font-medium text-gray-300">{hour.temperature}°</p>
+                <p className="text-xs text-[rgb(var(--text-disabled))] mb-1">{hourLabel}</p>
+                <HourIcon className="w-4 h-4 text-[rgb(var(--text-tertiary))] mx-auto mb-1" />
+                <p className="text-xs font-medium text-[rgb(var(--text-secondary))]">{hour.temperature}°</p>
               </div>
             );
           })}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NodeViewWrapper } from '@tiptap/react';
-import { Upload, FileText, Download, X, File, FileImage, FileSpreadsheet } from 'lucide-react';
+import { Upload, FileText, Download, X, File, FileImage, FileSpreadsheet } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 
 interface AttachmentComponentProps {

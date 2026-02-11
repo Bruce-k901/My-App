@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, AlertCircle, Plus, Globe } from 'lucide-react';
+import { Loader2, AlertCircle, Plus, Globe } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import Label from '@/components/ui/Label';

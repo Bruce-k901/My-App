@@ -11,7 +11,7 @@ import {
   Check,
   X,
   ShoppingBag
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface StaffMember {
   id: string;

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Calendar, MapPin, User, Wrench } from 'lucide-react';
+import { Calendar, MapPin, User, Wrench } from '@/components/ui/icons';
 import { getPPMStatus, formatServiceDate, getFrequencyText, getStatusDisplayText } from '@/utils/ppmHelpers';
 import { PPMAsset } from '@/types/ppm';
 import { nullifyUndefined } from '@/lib/utils';

@@ -4,7 +4,7 @@ import { useState, memo } from "react";
 import EntityCard from "@/components/ui/EntityCard";
 import CardHeader from "@/components/ui/CardHeader";
 import CardChevron from "@/components/ui/CardChevron";
-import { Pencil, Mail, Phone } from "lucide-react";
+import { Pencil, Mail, Phone } from '@/components/ui/icons';
 
 type Site = Record<string, any>;
 
@@ -28,7 +28,7 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
       .filter(Boolean)
       .join(", ");
     const address = site.postcode ? `${addressParts} • ${site.postcode.toUpperCase()}` : addressParts;
-    
+
     // On mobile, don't show GM details in subtitle (too cluttered)
     // They'll be shown in the expanded view instead
     return address;
@@ -48,39 +48,39 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
       onHeaderClick={toggleCard}
       rightActions={
         <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
-          <CardChevron 
-            isOpen={isOpen} 
+          <CardChevron
+            isOpen={isOpen}
             onToggle={toggleCard}
           />
         </div>
       }
     >
       {isOpen && (
-        <div className="mt-3 text-sm text-gray-300 pt-2 px-1">
+        <div className="mt-3 text-sm text-gray-600 dark:text-gray-300 pt-2 px-1">
           {/* Mobile: Stack fields vertically, Desktop: Keep horizontal */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 mb-3">
             <div>
               <span className="text-gray-500 text-xs uppercase tracking-wide">Region</span>
-              <div className="text-white mt-0.5">{site.region || "—"}</div>
+              <div className="text-gray-900 dark:text-white mt-0.5">{site.region || "—"}</div>
             </div>
             <div>
               <span className="text-gray-500 text-xs uppercase tracking-wide">City</span>
-              <div className="text-white mt-0.5">{site.city || "—"}</div>
+              <div className="text-gray-900 dark:text-white mt-0.5">{site.city || "—"}</div>
             </div>
           </div>
 
           {/* GM Information in expanded view */}
           {gm && (
-            <div className="mb-4 p-3 bg-white/[0.03] rounded-lg border border-white/[0.05]">
-              <div className="font-semibold text-gray-200 mb-2 text-sm">General Manager</div>
-              <div className="mt-1 text-gray-300 space-y-1.5">
-                <div className="text-white font-medium">{gm.full_name}</div>
+            <div className="mb-4 p-3 bg-gray-50 dark:bg-white/[0.03] rounded-lg border border-gray-200 dark:border-white/[0.05]">
+              <div className="font-semibold text-gray-700 dark:text-gray-200 mb-2 text-sm">General Manager</div>
+              <div className="mt-1 text-gray-600 dark:text-gray-300 space-y-1.5">
+                <div className="text-gray-900 dark:text-white font-medium">{gm.full_name}</div>
                 {gm.phone && (
                   <div className="flex items-center gap-2">
                     <Phone size={14} className="text-gray-500 flex-shrink-0" />
-                    <a 
+                    <a
                       href={`tel:${gm.phone}`}
-                      className="hover:text-pink-400 transition-colors break-all"
+                      className="hover:text-[#D37E91] transition-colors break-all"
                     >
                       {gm.phone}
                     </a>
@@ -89,9 +89,9 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
                 {gm.email && (
                   <div className="flex items-center gap-2">
                     <Mail size={14} className="text-gray-500 flex-shrink-0" />
-                    <a 
+                    <a
                       href={`mailto:${gm.email}`}
-                      className="hover:text-pink-400 transition-colors break-all text-xs md:text-sm"
+                      className="hover:text-[#D37E91] transition-colors break-all text-xs md:text-sm"
                     >
                       {gm.email}
                     </a>
@@ -103,14 +103,14 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
 
           {site.operating_schedule && typeof site.operating_schedule === "object" ? (
             <div className="mb-4">
-              <div className="font-semibold text-gray-200 mb-2 text-sm">Operating Schedule</div>
+              <div className="font-semibold text-gray-700 dark:text-gray-200 mb-2 text-sm">Operating Schedule</div>
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[200px] border-collapse text-gray-300">
+                <table className="w-full min-w-[200px] border-collapse text-gray-600 dark:text-gray-300">
                   <tbody>
                     {(() => {
                       const weekdayOrder = [
                         "Monday",
-                        "Tuesday", 
+                        "Tuesday",
                         "Wednesday",
                         "Thursday",
                         "Friday",
@@ -163,14 +163,14 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
 
           {Array.isArray(site.planned_closures) && site.planned_closures.length > 0 ? (
             <div className="mb-4">
-              <div className="font-semibold text-gray-200 mb-2 text-sm">Planned Closures</div>
+              <div className="font-semibold text-gray-700 dark:text-gray-200 mb-2 text-sm">Planned Closures</div>
               <ul className="list-disc ml-5 mt-1 space-y-1 text-xs md:text-sm">
                 {site.planned_closures
                   .filter((c: any) => c.is_active)
                   .map((c: any) => (
                     <li key={c.id} className="break-words">
-                      <span className="text-gray-300">{c.closure_start} → {c.closure_end}</span>
-                      {c.notes && <span className="text-gray-400"> — {c.notes}</span>}
+                      <span className="text-gray-600 dark:text-gray-300">{c.closure_start} → {c.closure_end}</span>
+                      {c.notes && <span className="text-gray-500 dark:text-gray-400"> — {c.notes}</span>}
                     </li>
                   ))}
               </ul>
@@ -179,7 +179,7 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
             <div className="text-gray-500 text-sm mb-4">No planned closures</div>
           )}
 
-          <div className="flex justify-end pt-2 border-t border-white/[0.05]">
+          <div className="flex justify-end pt-2 border-t border-gray-200 dark:border-white/[0.05]">
             <button
               onClick={(e) => {
                 e.stopPropagation(); // don't collapse card
@@ -187,8 +187,8 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
               }}
               className="
                 p-2 md:p-2 rounded
-                border border-pink-500 text-pink-500
-                hover:shadow-[0_0_6px_#ec4899]
+                border border-[#D37E91] text-[#D37E91]
+                hover:shadow-[0_0_6px_#D37E91]
                 transition
                 active:scale-95
               "

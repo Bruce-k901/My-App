@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { Clock, CheckCircle2, AlertCircle, Calendar } from 'lucide-react'
+import { Clock, CheckCircle2, AlertCircle, Calendar } from '@/components/ui/icons'
 import { supabase } from '@/lib/supabase'
 import { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 import ChecklistsHeader from '@/components/checklists/ChecklistsHeader'
@@ -1342,8 +1342,8 @@ export default function DailyChecklistPage() {
       {/* Tasks List */}
       {loading ? (
         <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pink-500/10 mb-4">
-            <Clock className="w-8 h-8 text-pink-400 animate-spin" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#D37E91]/15 mb-4">
+            <Clock className="w-8 h-8 text-[#D37E91] animate-spin" />
           </div>
           <h3 className="text-xl font-semibold text-white mb-2">Loading tasks...</h3>
         </div>

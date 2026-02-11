@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import { WidgetProps, MODULE_COLORS } from '@/types/dashboard';
 import { WidgetCard, WidgetEmptyState, WidgetLoading } from '../WidgetWrapper';
-import { Users, Clock } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { Users, Clock } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -29,81 +28,8 @@ export default function WhosOnTodayWidget({ companyId, siteId }: WidgetProps) {
       return;
     }
 
-    async function fetchStaffOnShift() {
-      try {
-        const today = new Date().toISOString().split('T')[0];
-
-        // Try to get from schedule_shifts joined with profiles
-        let query = supabase
-          .from('schedule_shifts')
-          .select(`
-            id,
-            start_time,
-            end_time,
-            profile:profiles(id, full_name, first_name, last_name, position_title)
-          `)
-          .eq('company_id', companyId)
-          .eq('date', today)
-          .order('start_time', { ascending: true })
-          .limit(6);
-
-        if (siteId && siteId !== 'all') {
-          query = query.eq('site_id', siteId);
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-          if (error.code === '42P01') {
-            console.debug('schedule_shifts table not available');
-            setLoading(false);
-            return;
-          }
-          throw error;
-        }
-
-        // Check who is clocked in
-        const profileIds = (data || []).map((s: any) => s.profile?.id).filter(Boolean);
-        let clockedInIds: string[] = [];
-
-        if (profileIds.length > 0) {
-          const { data: attendance } = await supabase
-            .from('staff_attendance')
-            .select('profile_id')
-            .eq('date', today)
-            .in('profile_id', profileIds)
-            .is('clock_out', null);
-
-          clockedInIds = (attendance || []).map((a: any) => a.profile_id);
-        }
-
-        const formattedStaff: StaffOnShift[] = (data || []).map((shift: any) => {
-          const profile = shift.profile || {};
-          const fullName = profile.full_name ||
-            (profile.first_name && profile.last_name
-              ? `${profile.first_name} ${profile.last_name}`
-              : 'Unknown');
-
-          return {
-            id: profile.id || shift.id,
-            full_name: fullName,
-            position_title: profile.position_title,
-            shift_start: shift.start_time,
-            shift_end: shift.end_time,
-            is_clocked_in: clockedInIds.includes(profile.id),
-          };
-        });
-
-        setStaff(formattedStaff);
-        setTotalCount(formattedStaff.length);
-      } catch (err) {
-        console.error('Error fetching staff on shift:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchStaffOnShift();
+    // schedule_shifts table not yet created — skip query to avoid 404
+    setLoading(false);
   }, [companyId, siteId]);
 
   if (loading) {

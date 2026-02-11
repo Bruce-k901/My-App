@@ -28,7 +28,7 @@ import {
   ChevronDown,
   ChevronUp,
   Sparkles,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { toast } from 'sonner';
 import useSWR from 'swr';
 import { BaseDough, LaminationStyle } from '@/types/planly';
@@ -92,6 +92,7 @@ export default function ProductionSettingsPage() {
     name: '',
     recipe_id: '',
     products_per_sheet: 24,
+    dough_per_sheet_g: null as number | null,
     laminate_lead_days: 1,
   });
 
@@ -172,6 +173,7 @@ export default function ProductionSettingsPage() {
       name: '',
       recipe_id: '',
       products_per_sheet: 24,
+      dough_per_sheet_g: null,
       laminate_lead_days: 1,
     });
   };
@@ -183,6 +185,7 @@ export default function ProductionSettingsPage() {
       name: style.name,
       recipe_id: style.recipe_id || '',
       products_per_sheet: style.products_per_sheet,
+      dough_per_sheet_g: style.dough_per_sheet_g ?? null,
       laminate_lead_days: style.laminate_lead_days,
     });
   };
@@ -204,6 +207,7 @@ export default function ProductionSettingsPage() {
         name: styleForm.name.trim(),
         recipe_id: styleForm.recipe_id || null,
         products_per_sheet: styleForm.products_per_sheet,
+        dough_per_sheet_g: styleForm.dough_per_sheet_g,
         laminate_lead_days: styleForm.laminate_lead_days,
       });
       if ('error' in result) {
@@ -219,6 +223,7 @@ export default function ProductionSettingsPage() {
         name: styleForm.name.trim(),
         recipe_id: styleForm.recipe_id || null,
         products_per_sheet: styleForm.products_per_sheet,
+        dough_per_sheet_g: styleForm.dough_per_sheet_g,
         laminate_lead_days: styleForm.laminate_lead_days,
       });
       if ('error' in result) {
@@ -407,6 +412,7 @@ export default function ProductionSettingsPage() {
                           </span>
                           <p className="text-xs text-gray-500 dark:text-white/50">
                             {getRecipeName(style.recipe_id)} | {style.products_per_sheet} products/sheet
+                            {style.dough_per_sheet_g ? ` | ${style.dough_per_sheet_g}g dough/sheet` : ''}
                           </p>
                         </div>
                         <div className="flex items-center gap-1">
@@ -462,6 +468,14 @@ export default function ProductionSettingsPage() {
                   </StyledOption>
                 ))}
               </StyledSelect>
+              {doughForm.recipe_id && (() => {
+                const selectedRecipe = recipes.find(r => r.id === doughForm.recipe_id);
+                return selectedRecipe ? (
+                  <p className="text-xs text-teal-600 dark:text-teal-400">
+                    Recipe yields: {selectedRecipe.yield_quantity}{selectedRecipe.yield_unit} per batch
+                  </p>
+                ) : null;
+              })()}
             </div>
 
             <div className="space-y-2">
@@ -570,19 +584,36 @@ export default function ProductionSettingsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Laminate Lead Days</Label>
+                <Label>Dough per Sheet (g)</Label>
                 <Input
                   type="number"
                   min={0}
-                  value={styleForm.laminate_lead_days}
+                  step={1}
+                  placeholder="e.g., 2000"
+                  value={styleForm.dough_per_sheet_g ?? ''}
                   onChange={e =>
                     setStyleForm(prev => ({
                       ...prev,
-                      laminate_lead_days: parseInt(e.target.value) || 1,
+                      dough_per_sheet_g: e.target.value ? parseFloat(e.target.value) : null,
                     }))
                   }
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Laminate Lead Days</Label>
+              <Input
+                type="number"
+                min={0}
+                value={styleForm.laminate_lead_days}
+                onChange={e =>
+                  setStyleForm(prev => ({
+                    ...prev,
+                    laminate_lead_days: parseInt(e.target.value) || 1,
+                  }))
+                }
+              />
             </div>
           </div>
 

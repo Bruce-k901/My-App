@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, Clock, TrendingUp, Users, Info, RefreshCw, MapPin, Filter } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, TrendingUp, Users, Info, RefreshCw, MapPin, Filter } from '@/components/ui/icons';
 import { useToast } from '@/components/ui/ToastProvider';
 import HolidayYearSettings from '@/components/people/HolidayYearSettings';
 
@@ -296,7 +296,7 @@ export default function HolidayBalancesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91]" />
       </div>
     );
   }

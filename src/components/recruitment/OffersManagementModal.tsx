@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { X, Edit, Send, Loader2, FileText, Calendar, DollarSign, Briefcase, Plus } from 'lucide-react'
+import { X, Edit, Send, Loader2, FileText, Calendar, DollarSign, Briefcase, Plus } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import EditOfferModal from './EditOfferModal'
 import SendOfferModal from './SendOfferModal'
@@ -261,7 +261,7 @@ export default function OffersManagementModal({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowSendOfferModal(true)}
-                className="px-3 py-1.5 text-xs rounded-lg bg-[#EC4899]/10 text-[#EC4899] border border-[#EC4899]/30 hover:bg-[#EC4899]/20 flex items-center gap-2"
+                className="px-3 py-1.5 text-xs rounded-lg bg-[#D37E91]/10 text-[#D37E91] border border-[#D37E91]/30 hover:bg-[#D37E91]/20 flex items-center gap-2"
               >
                 <Plus className="w-3.5 h-3.5" />
                 New Offer
@@ -289,7 +289,7 @@ export default function OffersManagementModal({
               </div>
               <button
                 onClick={() => setShowSendOfferModal(true)}
-                className="px-4 py-2 rounded-lg bg-[#EC4899]/10 text-[#EC4899] border border-[#EC4899]/30 hover:bg-[#EC4899]/20 flex items-center gap-2 mx-auto"
+                className="px-4 py-2 rounded-lg bg-[#D37E91]/10 text-[#D37E91] border border-[#D37E91]/30 hover:bg-[#D37E91]/20 flex items-center gap-2 mx-auto"
               >
                 <Plus className="w-4 h-4" />
                 Create First Offer
@@ -373,7 +373,7 @@ export default function OffersManagementModal({
                         {offer.offer_token && (
                           <div className="mt-3 p-2 bg-white/[0.02] rounded text-xs">
                             <span className="text-white/50">Offer Link: </span>
-                            <code className="text-[#EC4899] break-all">
+                            <code className="text-[#D37E91] break-all">
                               {window.location.origin}/recruitment/offers/{offer.offer_token}
                             </code>
                           </div>
@@ -395,7 +395,7 @@ export default function OffersManagementModal({
                           <button
                             onClick={() => handleResendOffer(offer)}
                             disabled={resendingOfferId === offer.id}
-                            className="px-3 py-1.5 text-xs rounded bg-pink-500/10 text-pink-400 border border-pink-500/30 hover:bg-pink-500/20 flex items-center gap-2 disabled:opacity-50"
+                            className="px-3 py-1.5 text-xs rounded bg-[#D37E91]/15 text-[#D37E91] border border-[#D37E91]/30 hover:bg-[#D37E91]/25 flex items-center gap-2 disabled:opacity-50"
                           >
                             {resendingOfferId === offer.id ? (
                               <>

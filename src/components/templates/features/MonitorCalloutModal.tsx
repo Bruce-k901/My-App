@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, AlertCircle } from 'lucide-react';
+import { X, AlertCircle } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 
 interface MonitorCalloutModalProps {
@@ -79,7 +79,7 @@ export function MonitorCalloutModal({
         <div className="mb-4">
           <p className="text-gray-900 dark:text-white/80 text-sm mb-2">{getTriggerMessage()}</p>
           {contractorType && (
-            <p className="text-pink-600 dark:text-pink-400 text-sm">
+            <p className="text-[#D37E91] dark:text-[#D37E91] text-sm">
               Contractor Type: {contractorType.replace('_', ' ')}
             </p>
           )}
@@ -91,7 +91,7 @@ export function MonitorCalloutModal({
               type="checkbox"
               checked={monitor}
               onChange={(e) => setMonitor(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-white/[0.05] text-pink-500 focus:ring-pink-500"
+              className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-white/[0.05] text-[#D37E91] focus:ring-[#D37E91]"
             />
             <span className="text-gray-900 dark:text-white">Monitor - Track this issue for follow-up</span>
           </label>
@@ -101,7 +101,7 @@ export function MonitorCalloutModal({
               type="checkbox"
               checked={callout}
               onChange={(e) => setCallout(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-white/[0.05] text-pink-500 focus:ring-pink-500"
+              className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-white/[0.05] text-[#D37E91] focus:ring-[#D37E91]"
             />
             <span className="text-gray-900 dark:text-white">
               Callout - Request contractor visit
@@ -117,7 +117,7 @@ export function MonitorCalloutModal({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any additional notes about the issue..."
-              className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 min-h-[100px]"
+              className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91] min-h-[100px]"
             />
           </div>
         </div>
@@ -132,7 +132,7 @@ export function MonitorCalloutModal({
           </Button>
           <Button
             onClick={handleConfirm}
-            className="flex-1 bg-pink-500 hover:bg-pink-600 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200"
+            className="flex-1 bg-[#D37E91] hover:bg-[#D37E91] text-white border-0 shadow-sm hover:shadow-md transition-all duration-200"
             disabled={!monitor && !callout}
           >
             Confirm

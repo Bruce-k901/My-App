@@ -18,8 +18,12 @@ import {
   UserCircle,
   PlusCircle,
   Wand2,
-} from 'lucide-react';
+  ExternalLink,
+  MessageSquare,
+} from '@/components/ui/icons';
 import { useState, useEffect } from 'react';
+import { useSidebarMode } from '@/hooks/useSidebarMode';
+import { SidebarPin } from '@/components/layout/SidebarPin';
 
 type NavItemType = 'section' | 'link' | 'parent';
 
@@ -28,7 +32,7 @@ interface NavItem {
   label: string;
   icon: React.ElementType;
   href?: string;
-  children?: { label: string; href: string; icon?: React.ElementType }[];
+  children?: { label: string; href: string; icon?: React.ElementType; roles?: string[] }[];
 }
 
 // Define nav items as a constant
@@ -93,10 +97,15 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    type: 'link',
+    type: 'parent',
     label: 'Customers',
     href: '/dashboard/planly/customers',
     icon: Users,
+    children: [
+      { label: 'Customer List', href: '/dashboard/planly/customers' },
+      { label: 'Customer Support', href: '/dashboard/planly/customer-support', icon: MessageSquare, roles: ['Owner', 'Admin', 'Manager', 'platform_admin'] },
+      { label: 'Customer Portal', href: '/customer/dashboard', icon: ExternalLink },
+    ],
   },
   {
     type: 'link',
@@ -134,7 +143,7 @@ export function PlanlyNavItem({ item }: { item: NavItem }) {
     const IconComponent = item.icon;
     return (
       <div className="px-3 py-3 mt-4">
-        <div className="flex items-center gap-2 text-sm uppercase text-[#14B8A6] tracking-wider font-bold">
+        <div className="flex items-center gap-2 text-sm uppercase text-planly-dark/35 dark:text-planly/35 tracking-wider font-bold">
           <IconComponent className="w-5 h-5" />
           <span>{item.label}</span>
         </div>
@@ -153,8 +162,8 @@ export function PlanlyNavItem({ item }: { item: NavItem }) {
         href={item.href!}
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
           isActive
-            ? 'bg-[#14B8A6]/20 text-[#14B8A6]'
-            : 'text-gray-600 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white'
+            ? 'bg-planly-dark/[0.08] dark:bg-planly/10 text-planly-dark dark:text-planly font-medium'
+            : 'text-[#888] dark:text-white/50 hover:bg-planly-dark/[0.04] dark:hover:bg-planly/5 hover:text-[#555] dark:hover:text-white/80'
         }`}
       >
         <IconComponent className="w-5 h-5 flex-shrink-0" />
@@ -189,13 +198,13 @@ export function PlanlyNavItem({ item }: { item: NavItem }) {
           onClick={handleClick}
           className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
             shouldHighlightParent
-              ? 'bg-[#14B8A6]/20 text-[#14B8A6]'
-              : 'text-gray-600 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white'
+              ? 'bg-planly-dark/[0.08] dark:bg-planly/10 text-planly-dark dark:text-planly font-medium'
+              : 'text-[#888] dark:text-white/50 hover:bg-planly-dark/[0.04] dark:hover:bg-planly/5 hover:text-[#555] dark:hover:text-white/80'
           }`}
         >
           <IconComponent className="w-5 h-5 flex-shrink-0" />
           <span className="flex-1">{item.label}</span>
-          <span className="text-gray-400 dark:text-neutral-500">
+          <span className="text-[#999] dark:text-white/50">
             {shouldExpand ? (
               <ChevronDown className="w-4 h-4" />
             ) : (
@@ -216,8 +225,8 @@ export function PlanlyNavItem({ item }: { item: NavItem }) {
                   href={child.href}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors relative ${
                     isChildActive
-                      ? 'bg-[#14B8A6]/20 text-[#14B8A6] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#14B8A6]'
-                      : 'text-gray-500 dark:text-neutral-500 hover:text-gray-900 dark:hover:text-white'
+                      ? 'bg-planly-dark/[0.08] dark:bg-planly/10 text-planly-dark dark:text-planly font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-planly-dark dark:before:bg-planly'
+                      : 'text-[#888] dark:text-white/50 hover:text-[#555] dark:hover:text-white/80'
                   }`}
                 >
                   <ChildIcon className="w-4 h-4" />
@@ -238,39 +247,88 @@ const APP_NAME = 'Planly';
 
 export function PlanlySidebar() {
   const { profile } = useAppContext();
+  const { isCollapsed, showExpanded, isHoverExpanded, displayWidth, togglePin, handleMouseEnter, handleMouseLeave } = useSidebarMode();
+
+  // Filter children based on user role
+  const userRole = profile?.app_role || '';
+  const filteredNavItems = navItems.map(item => {
+    if (item.children) {
+      return {
+        ...item,
+        children: item.children.filter(child => {
+          if (!child.roles) return true;
+          return child.roles.includes(userRole);
+        }),
+      };
+    }
+    return item;
+  });
 
   return (
-    <aside className="w-64 bg-white dark:bg-neutral-900 border-r border-gray-200 dark:border-neutral-800 flex flex-col h-full overflow-y-auto">
+    <aside
+      className={`bg-sidebar-planly-light dark:bg-sidebar-planly border-r border-module-fg/[0.18] flex flex-col h-full transition-[width] duration-200 ${isHoverExpanded ? 'shadow-2xl z-50' : ''}`}
+      style={{ width: displayWidth }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      suppressHydrationWarning
+    >
       {/* Header */}
-      <div className="px-4 py-5 bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800">
+      <div className={`${!showExpanded ? 'px-2 py-3' : 'px-4 py-5'} bg-sidebar-planly-light dark:bg-sidebar-planly border-b border-module-fg/[0.18]`}>
         <Link href="/dashboard/planly" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
-          <img
-            src="/module_logos/planly.png"
-            alt="Planly"
-            className="h-12 w-auto max-w-full"
-          />
+          <img src="/new_module_logos/planly_light.svg" alt="Planly" className={`${!showExpanded ? 'h-8' : 'h-12'} w-auto max-w-full dark:hidden`} />
+          <img src="/new_module_logos/planly_dark.svg" alt="Planly" className={`${!showExpanded ? 'h-8' : 'h-12'} w-auto max-w-full hidden dark:block`} />
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto p-4 space-y-1 planly-sidebar-scrollbar">
-        {navItems.map((item, index) => (
-          <PlanlyNavItem key={`${item.type}-${item.label}-${index}`} item={item} />
-        ))}
+      <nav className={`flex-1 overflow-y-auto ${!showExpanded ? 'p-2 space-y-1' : 'p-4 space-y-1'} planly-sidebar-scrollbar`}>
+        {!showExpanded ? (
+          filteredNavItems
+            .filter(item => item.type !== 'section')
+            .map((item, index) => {
+              const Icon = item.icon;
+              const href = item.href || (item.children?.[0]?.href) || '#';
+              return (
+                <Link
+                  key={`${item.label}-${index}`}
+                  href={href}
+                  className="flex items-center justify-center w-full h-10 rounded-lg text-[#888] dark:text-white/50 hover:bg-planly-dark/[0.04] dark:hover:bg-planly/5 hover:text-[#555] dark:hover:text-white/80 transition-colors"
+                  title={item.label}
+                >
+                  <Icon className="w-5 h-5" />
+                </Link>
+              );
+            })
+        ) : (
+          filteredNavItems.map((item, index) => (
+            <PlanlyNavItem key={`${item.type}-${item.label}-${index}`} item={item} />
+          ))
+        )}
       </nav>
 
-      {/* My Profile Quick Access */}
-      <div className="p-4 border-t border-gray-200 dark:border-neutral-800">
-        <Link
-          href={`/dashboard/people/${profile?.id}`}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-white transition-colors"
-        >
-          <UserCircle className="w-5 h-5" />
-          <div className="flex-1 min-w-0">
-            <p className="truncate text-gray-900 dark:text-white">{profile?.full_name || 'My Profile'}</p>
-            <p className="truncate text-xs text-gray-500 dark:text-neutral-500">{profile?.position_title || 'Employee'}</p>
+      {/* Profile + Pin */}
+      <div className="border-t border-module-fg/[0.18]">
+        {showExpanded ? (
+          <div className="p-4 pb-0">
+            <Link
+              href={`/dashboard/people/${profile?.id}`}
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#888] dark:text-white/50 hover:bg-planly-dark/[0.04] dark:hover:bg-planly/5 hover:text-[#555] dark:hover:text-white/80 transition-colors"
+            >
+              <UserCircle className="w-5 h-5" />
+              <div className="flex-1 min-w-0">
+                <p className="truncate text-[#1a1a1a] dark:text-white">{profile?.full_name || 'My Profile'}</p>
+                <p className="truncate text-xs text-[#888] dark:text-white/50">{profile?.position_title || 'Employee'}</p>
+              </div>
+            </Link>
           </div>
-        </Link>
+        ) : (
+          <div className="flex justify-center py-2">
+            <Link href={`/dashboard/people/${profile?.id}`} title={profile?.full_name || 'My Profile'} className="text-[#888] dark:text-white/50 hover:text-[#555] dark:hover:text-white/80 transition-colors">
+              <UserCircle className="w-5 h-5" />
+            </Link>
+          </div>
+        )}
+        <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />
       </div>
     </aside>
   );

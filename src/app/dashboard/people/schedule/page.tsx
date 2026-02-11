@@ -50,7 +50,7 @@ import {
   Check,
   Download,
   Loader2,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import TimePicker from '@/components/ui/TimePicker';
 import { pdf } from '@react-pdf/renderer';
 import { RotaPDF } from '@/lib/pdf/templates/RotaPDF';
@@ -183,7 +183,7 @@ const DEFAULT_TEMPLATES: ShiftTemplate[] = [
 ];
 
 const FALLBACK_SECTIONS: RotaSection[] = [
-  { id: 'fallback-foh', name: 'FOH', color: '#EC4899', sort_order: 1 },
+  { id: 'fallback-foh', name: 'FOH', color: '#D37E91', sort_order: 1 },
   { id: 'fallback-boh', name: 'BOH', color: '#22c55e', sort_order: 2 },
   { id: 'fallback-bar', name: 'Bar', color: '#3b82f6', sort_order: 3 },
   { id: 'fallback-res', name: 'Reservations', color: '#f59e0b', sort_order: 4 },
@@ -224,7 +224,7 @@ function AddShiftModal({
   const [breakMins, setBreakMins] = useState(30);
   const [selectedStaff, setSelectedStaff] = useState<string>(initialStaffId || '');
   const [selectedSectionId, setSelectedSectionId] = useState<string>(sectionsEnabled ? (initialSectionId || '') : '');
-  const [color, setColor] = useState('#EC4899');
+  const [color, setColor] = useState('#D37E91');
 
   useEffect(() => {
     if (initialStaffId) setSelectedStaff(initialStaffId);
@@ -315,7 +315,7 @@ function AddShiftModal({
                   const val = parseInt(e.target.value) || 0;
                   setBreakMins(Math.max(0, Math.min(480, val)));
                 }}
-                className="w-full px-3 py-2 bg-white dark:bg-neutral-800 border-2 border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:border-pink-500 dark:focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors"
+                className="w-full px-3 py-2 bg-white dark:bg-neutral-800 border-2 border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:border-[#D37E91] dark:focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors"
               />
             </div>
           </div>
@@ -359,7 +359,7 @@ function AddShiftModal({
               <select
                 value={selectedSectionId}
                 onChange={(e) => setSelectedSectionId(e.target.value)}
-                className="w-full px-3 py-2 pr-8 bg-white dark:bg-neutral-800 border-2 border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-pink-500 dark:focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors appearance-none cursor-pointer"
+                className="w-full px-3 py-2 pr-8 bg-white dark:bg-neutral-800 border-2 border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91] dark:focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors appearance-none cursor-pointer"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
                   backgroundRepeat: 'no-repeat',
@@ -401,7 +401,7 @@ function AddShiftModal({
               className="w-6 h-6 rounded cursor-pointer border border-neutral-600"
               style={{ backgroundColor: color }}
               onClick={() => {
-                const colors = ['#EC4899', '#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
+                const colors = ['#D37E91', '#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
                 const idx = colors.indexOf(color);
                 setColor(colors[(idx + 1) % colors.length]);
               }}
@@ -436,7 +436,7 @@ function AddShiftModal({
                 section_id: sectionsEnabled ? (selectedSectionId || null) : null,
               });
             }}
-            className="px-4 py-2 !bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent"
+            className="px-4 py-2 !bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent"
           >
             Add Shift
           </button>
@@ -519,7 +519,7 @@ function EditShiftModal({
                   const val = parseInt(e.target.value) || 0;
                   setBreakMins(Math.max(0, Math.min(480, val)));
                 }}
-                className="w-full px-3 py-2 bg-white dark:bg-neutral-800 border-2 border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:border-pink-500 dark:focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors"
+                className="w-full px-3 py-2 bg-white dark:bg-neutral-800 border-2 border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:border-[#D37E91] dark:focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors"
               />
             </div>
           </div>
@@ -544,7 +544,7 @@ function EditShiftModal({
               <select
                 value={selectedSectionId}
                 onChange={(e) => setSelectedSectionId(e.target.value)}
-                className="w-full px-3 py-2 pr-8 bg-white dark:bg-neutral-800 border-2 border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-pink-500 dark:focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors appearance-none cursor-pointer"
+                className="w-full px-3 py-2 pr-8 bg-white dark:bg-neutral-800 border-2 border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91] dark:focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors appearance-none cursor-pointer"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
                   backgroundRepeat: 'no-repeat',
@@ -616,7 +616,7 @@ function EditShiftModal({
                   estimated_cost: Math.round(estimatedCost * 100),
                 });
               }}
-              className="px-4 py-2 !bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent"
+              className="px-4 py-2 !bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent"
             >
               Save
             </button>
@@ -667,7 +667,7 @@ function DroppableDayCell({
           onClick();
         }
       }}
-      className={`${className} ${isOver ? 'bg-[#EC4899]/20 border-blue-600 dark:border-blue-400' : ''}`}
+      className={`${className} ${isOver ? 'bg-[#D37E91]/20 border-blue-600 dark:border-blue-400' : ''}`}
     >
       {children}
     </div>
@@ -1083,7 +1083,7 @@ function ForecastModal({
             type="button"
             disabled={saving}
             onClick={handleSave}
-            className="px-4 py-2 !bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent disabled:opacity-50"
+            className="px-4 py-2 !bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent disabled:opacity-50"
           >
             {saving ? 'Saving…' : 'Save'}
           </button>
@@ -1164,7 +1164,7 @@ function ShiftCard({
                 ? 'text-blue-400'
                 : shift.profile_id 
                   ? 'text-gray-900 dark:text-white' 
-                  : (shift.role_required?.includes('TRIAL') ? 'text-pink-300' : 'text-amber-300')
+                  : (shift.role_required?.includes('TRIAL') ? 'text-[#D37E91]' : 'text-amber-300')
             }`}>
               {(() => {
                 const displayText = shift.profile_id 
@@ -1382,7 +1382,7 @@ function ManageSectionsModal({
   onReload: () => Promise<void>;
 }) {
   const [name, setName] = useState('');
-  const [color, setColor] = useState('#EC4899');
+  const [color, setColor] = useState('#D37E91');
   const [saving, setSaving] = useState(false);
 
   const handleCreate = async () => {
@@ -1466,7 +1466,7 @@ function ManageSectionsModal({
               <button
                 type="button"
                 onClick={() => {
-                  const colors = ['#EC4899', '#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#64748b'];
+                  const colors = ['#D37E91', '#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#64748b'];
                   const idx = colors.indexOf(color);
                   setColor(colors[(idx + 1) % colors.length]);
                 }}
@@ -1478,7 +1478,7 @@ function ManageSectionsModal({
                 type="button"
                 disabled={!sectionsEnabled || saving || !name.trim()}
                 onClick={handleCreate}
-                className="px-4 py-2 !bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent disabled:opacity-50"
+                className="px-4 py-2 !bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent disabled:opacity-50"
               >
                 Add
               </button>
@@ -1620,7 +1620,7 @@ function CopyShiftModal({
             type="button"
             disabled={selectedDates.length === 0}
             onClick={() => onCopyToDates(selectedDates)}
-            className="px-4 py-2 !bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent disabled:opacity-50"
+            className="px-4 py-2 !bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent disabled:opacity-50"
           >
             Copy ({selectedDates.length})
           </button>
@@ -2707,7 +2707,7 @@ export default function RotaBuilderPage() {
           const mapped: RotaSection[] = (sectionsData || []).map((s: any) => ({
             id: s.id,
             name: s.name,
-            color: s.color || '#EC4899',
+            color: s.color || '#D37E91',
             sort_order: s.sort_order || 0,
           }));
           if (!mountedRef.current) return;
@@ -2933,7 +2933,7 @@ export default function RotaBuilderPage() {
       result.push({
         id: section.id,
         name: section.name,
-        color: section.color || '#EC4899',
+        color: section.color || '#D37E91',
         roleGroups,
       });
     }
@@ -4181,7 +4181,7 @@ export default function RotaBuilderPage() {
                             {/* Color indicator */}
                             <div
                               className="w-1 h-12 rounded-full flex-shrink-0"
-                              style={{ backgroundColor: shift.section_color || shift.color || '#EC4899' }}
+                              style={{ backgroundColor: shift.section_color || shift.color || '#D37E91' }}
                             />
 
                             {/* Avatar */}
@@ -4841,8 +4841,8 @@ export default function RotaBuilderPage() {
                 </div>
 
                 {/* Trial shifts row */}
-                <div className="grid grid-cols-[240px_80px_repeat(7,minmax(0,1fr))] bg-pink-950/20">
-                    <div className="px-3 py-2 border-r border-gray-200 dark:border-neutral-800 text-sm font-semibold text-pink-300 flex items-center gap-2">
+                <div className="grid grid-cols-[240px_80px_repeat(7,minmax(0,1fr))] bg-[#D37E91]/10">
+                    <div className="px-3 py-2 border-r border-gray-200 dark:border-neutral-800 text-sm font-semibold text-[#D37E91] flex items-center gap-2">
                       🎯 Trial Shifts
                     </div>
                     <div className="px-2 py-2 border-r border-gray-200 dark:border-neutral-800">
@@ -4937,7 +4937,7 @@ export default function RotaBuilderPage() {
                       : null;
 
                   return (
-                    <div key={dateStr} className={`${isToday ? 'bg-[#EC4899]/5' : isClosed ? 'bg-red-500/5' : ''} ${isWeekend ? 'bg-neutral-950/30' : ''}`}>
+                    <div key={dateStr} className={`${isToday ? 'bg-[#D37E91]/5' : isClosed ? 'bg-red-500/5' : ''} ${isWeekend ? 'bg-neutral-950/30' : ''}`}>
                       <div className={`p-2 ${isToday ? 'bg-blue-50 dark:bg-blue-500/10' : isClosed ? 'bg-red-500/10' : ''}`}>
                         <div className="flex items-center justify-between mb-1">
                           <div>

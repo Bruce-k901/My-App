@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Play } from "lucide-react";
+import { Play } from '@/components/ui/icons';
 import OrgContentWrapper from "@/components/layouts/OrgContentWrapper";
 import { ModuleAccordion, type ModuleSummary } from "@/components/courses/module-accordion";
 import { CourseHeader } from "@/components/courses/CourseHeader";
@@ -206,7 +206,7 @@ export default async function FoodSafetyCoursePage() {
   const actions = (
     <Link
       href="/learn/uk-l2-food-safety"
-      className="inline-flex items-center gap-2 rounded-lg border border-[#EC4899] bg-transparent px-6 py-2.5 text-sm font-medium text-[#EC4899] transition-all duration-200 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+      className="inline-flex items-center gap-2 rounded-lg border border-[#D37E91] bg-transparent px-6 py-2.5 text-sm font-medium text-[#D37E91] transition-all duration-200 ease-in-out hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
     >
       <Play className="h-4 w-4" />
       Start Course
@@ -221,7 +221,7 @@ export default async function FoodSafetyCoursePage() {
     >
       <CourseHeader />
 
-      <section className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_0_26px_rgba(236,72,153,0.12)]">
+      <section className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_0_26px_rgba(211, 126, 145,0.12)]">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <div>
             <p className="text-xs uppercase tracking-wide text-slate-400">Course mode</p>

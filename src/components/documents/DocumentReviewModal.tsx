@@ -11,7 +11,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { X, Upload, Calendar, FileText, AlertCircle, Loader2 } from 'lucide-react'
+import { X, Upload, Calendar, FileText, AlertCircle, Loader2 } from '@/components/ui/icons'
 import type { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 
 interface DocumentReviewModalProps {

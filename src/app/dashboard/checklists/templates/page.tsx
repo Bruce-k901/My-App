@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Search, Plus, Settings, Info, ArrowRight, AlertCircle, Trash2 } from 'lucide-react'
+import { Search, Plus, Settings, Info, ArrowRight, AlertCircle, Trash2 } from '@/components/ui/icons'
 import { supabase } from '@/lib/supabase'
 import { TaskTemplate, TaskCategory, LABELS } from '@/types/checklist-types'
 import { toast } from 'sonner'
@@ -12,7 +12,7 @@ const CATEGORY_COLORS = {
   health_and_safety: 'border-blue-500', 
   fire: 'border-amber-500',
   cleaning: 'border-purple-500',
-  compliance: 'border-pink-500'
+  compliance: 'border-[#D37E91]'
 }
 
 // Frequency labels
@@ -190,11 +190,11 @@ export default function TemplatesPage() {
         <div className="flex gap-2">
           <a
             href="/dashboard/checklists/templates/card1"
-            className="px-4 py-2 bg-gradient-to-r from-pink-600/70 to-blue-600/70 text-white rounded-lg hover:shadow-lg hover:shadow-pink-500/30 transition-all text-sm"
+            className="px-4 py-2 bg-gradient-to-r from-[#D37E91]/70 to-[#544349]/70 text-white rounded-lg hover:shadow-lg hover:shadow-[#D37E91]/30 transition-all text-sm"
           >
             Card 1 Config
           </a>
-          <button className="px-4 py-2 bg-gradient-to-r from-pink-600/70 to-blue-600/70 text-white rounded-lg hover:shadow-lg hover:shadow-pink-500/30 transition-all">
+          <button className="px-4 py-2 bg-gradient-to-r from-[#D37E91]/70 to-[#544349]/70 text-white rounded-lg hover:shadow-lg hover:shadow-[#D37E91]/30 transition-all">
             <Plus className="inline mr-2 h-4 w-4" />
             Create Template
           </button>
@@ -210,13 +210,13 @@ export default function TemplatesPage() {
             placeholder="Search templates..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-pink-400"
+            className="w-full pl-10 pr-4 py-2 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#D37E91]"
           />
         </div>
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-4 py-2 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white focus:outline-none focus:border-pink-400"
+          className="px-4 py-2 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
         >
           <option value="all">All Categories</option>
           {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
@@ -225,7 +225,7 @@ export default function TemplatesPage() {
             </option>
           ))}
         </select>
-        <select className="px-4 py-2 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white focus:outline-none focus:border-pink-400">
+        <select className="px-4 py-2 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white focus:outline-none focus:border-[#D37E91]">
           <option>A-Z</option>
           <option>Most Used</option>
           <option>Most Critical</option>
@@ -266,7 +266,7 @@ export default function TemplatesPage() {
                     {FREQUENCY_LABELS[template.frequency as keyof typeof FREQUENCY_LABELS] || template.frequency}
                   </span>
                   {template.is_critical && (
-                    <span className="text-xs text-pink-500 font-medium ml-1">
+                    <span className="text-xs text-[#D37E91] font-medium ml-1">
                       ⚠️ CRIT
                     </span>
                   )}
@@ -312,7 +312,7 @@ export default function TemplatesPage() {
                     <Trash2 className="h-3 w-3" />
                   </button>
                 </div>
-                <div className="flex items-center text-xs text-neutral-400 group-hover:text-pink-400 transition-colors">
+                <div className="flex items-center text-xs text-neutral-400 group-hover:text-[#D37E91] transition-colors">
                   Use Template
                   <ArrowRight className="h-3 w-3 ml-1" />
                 </div>

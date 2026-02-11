@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
-import { Plus, Building2, Check, Settings, Users, Link2, ArrowLeft } from "lucide-react";
+import { Plus, Building2, Check, Settings, Users, Link2, ArrowLeft } from '@/components/ui/icons';
 
 type UserCompany = {
   id: string;
@@ -38,7 +38,7 @@ export default function CompaniesSettingsPage() {
   const [loadingCompanies, setLoadingCompanies] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  
+
   // Settings state
   const [selectedCompanyForSettings, setSelectedCompanyForSettings] = useState<string | null>(null);
   const [settings, setSettings] = useState<CompanySettings | null>(null);
@@ -87,7 +87,7 @@ export default function CompaniesSettingsPage() {
         .single();
 
       if (error) throw error;
-      
+
       setSettings({
         share_staff: data.share_staff,
         share_sites: data.share_sites,
@@ -111,7 +111,7 @@ export default function CompaniesSettingsPage() {
         .eq("company_id", companyId);
 
       if (error) throw error;
-      
+
       setSettings({ ...settings!, ...newSettings });
       setSuccess("Settings updated successfully!");
       setTimeout(() => setSuccess(null), 3000);
@@ -172,7 +172,7 @@ export default function CompaniesSettingsPage() {
       setCompanyName("");
       setLinkToParent(false);
       setParentCompanyId("");
-      
+
       await loadUserCompanies();
     } catch (err: any) {
       console.error("Error creating company:", err);
@@ -195,7 +195,7 @@ export default function CompaniesSettingsPage() {
 
       setSuccess("Primary company updated!");
       await loadUserCompanies();
-      
+
       setTimeout(() => {
         window.location.reload();
       }, 1000);
@@ -216,7 +216,7 @@ export default function CompaniesSettingsPage() {
   if (!canManageCompanies) {
     return (
       <div className="max-w-6xl mx-auto p-6">
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6 text-red-400">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-lg p-6 text-red-600 dark:text-red-400">
           <h1 className="text-xl font-bold mb-2">Access Denied</h1>
           <p>You must be an Owner or Admin to manage companies.</p>
         </div>
@@ -229,12 +229,12 @@ export default function CompaniesSettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Building2 className="w-8 h-8 text-pink-500" />
-          <h1 className="text-2xl font-bold text-white">Manage Companies & Brands</h1>
+          <Building2 className="w-8 h-8 text-[#D37E91]" />
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Manage Companies & Brands</h1>
         </div>
         <button
           onClick={() => router.push('/dashboard')}
-          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out"
+          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 ease-in-out"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Home</span>
@@ -243,13 +243,13 @@ export default function CompaniesSettingsPage() {
 
       {/* Global Messages */}
       {error && (
-        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400">
+        <div className="p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-lg text-red-600 dark:text-red-400">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-green-400">
+        <div className="p-4 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 rounded-lg text-green-600 dark:text-green-400">
           {success}
         </div>
       )}
@@ -258,45 +258,45 @@ export default function CompaniesSettingsPage() {
         {/* Left Column: Companies List */}
         <div className="space-y-6">
           {/* Current Companies */}
-          <div className="bg-white/[0.06] border border-white/[0.12] rounded-lg p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Your Companies</h2>
-            
+          <div className="bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.12] rounded-lg p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Your Companies</h2>
+
             {loadingCompanies ? (
-              <p className="text-gray-400">Loading...</p>
+              <p className="text-gray-500 dark:text-gray-400">Loading...</p>
             ) : companies.length === 0 ? (
-              <p className="text-gray-400">No companies found.</p>
+              <p className="text-gray-500 dark:text-gray-400">No companies found.</p>
             ) : (
               <div className="space-y-2">
                 {companies.map((uc) => {
                   const company = Array.isArray(uc.companies) ? uc.companies[0] : uc.companies;
                   const isParent = company && !company.parent_company_id;
-                  
+
                   return (
                     <div
                       key={uc.id}
-                      className="flex items-center justify-between p-4 bg-white/[0.04] border border-white/[0.08] rounded-lg"
+                      className="flex items-center justify-between p-4 bg-white dark:bg-white/[0.04] border border-gray-200 dark:border-white/[0.08] rounded-lg"
                     >
                       <div className="flex items-center gap-3 flex-1">
-                        <Building2 className={`w-5 h-5 ${isParent ? 'text-pink-400' : 'text-blue-400'}`} />
+                        <Building2 className={`w-5 h-5 ${isParent ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-blue-500 dark:text-blue-400'}`} />
                         <div className="flex-1">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-white font-medium">{company?.name}</span>
+                            <span className="text-gray-900 dark:text-white font-medium">{company?.name}</span>
                             {uc.is_primary && (
-                              <span className="px-2 py-0.5 bg-pink-500/20 text-pink-400 text-xs rounded">
+                              <span className="px-2 py-0.5 bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91] text-xs rounded">
                                 Primary
                               </span>
                             )}
                             {company?.parent_company_id && (
-                              <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded flex items-center gap-1">
+                              <span className="px-2 py-0.5 bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs rounded flex items-center gap-1">
                                 <Link2 className="w-3 h-3" />
                                 Brand
                               </span>
                             )}
                           </div>
-                          <span className="text-sm text-gray-400">{uc.app_role}</span>
+                          <span className="text-sm text-gray-500 dark:text-gray-400">{uc.app_role}</span>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
                         {(uc.app_role === 'Owner' || uc.app_role === 'Admin') && (
                           <button
@@ -304,17 +304,17 @@ export default function CompaniesSettingsPage() {
                               setSelectedCompanyForSettings(company.id);
                               loadCompanySettings(company.id);
                             }}
-                            className="p-2 bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.12] text-white rounded transition-colors"
+                            className="p-2 bg-gray-100 dark:bg-white/[0.06] hover:bg-gray-200 dark:hover:bg-white/[0.12] border border-gray-200 dark:border-white/[0.12] text-gray-700 dark:text-white rounded transition-colors"
                             title="Manage sharing settings"
                           >
                             <Settings className="w-4 h-4" />
                           </button>
                         )}
-                        
+
                         {!uc.is_primary && (
                           <button
                             onClick={() => handleSetPrimary(company.id)}
-                            className="px-3 py-1.5 bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.12] text-white text-sm rounded transition-colors whitespace-nowrap"
+                            className="px-3 py-1.5 bg-gray-100 dark:bg-white/[0.06] hover:bg-gray-200 dark:hover:bg-white/[0.12] border border-gray-200 dark:border-white/[0.12] text-gray-700 dark:text-white text-sm rounded transition-colors whitespace-nowrap"
                           >
                             Set Primary
                           </button>
@@ -328,12 +328,12 @@ export default function CompaniesSettingsPage() {
           </div>
 
           {/* Add New Company */}
-          <div className="bg-white/[0.06] border border-white/[0.12] rounded-lg p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Add New Company</h2>
-            
+          <div className="bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.12] rounded-lg p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Add New Company</h2>
+
             <form onSubmit={handleAddCompany} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                   Company/Brand Name
                 </label>
                 <input
@@ -341,28 +341,28 @@ export default function CompaniesSettingsPage() {
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   placeholder="e.g., Okja UK Ltd"
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.12] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+                  className="w-full px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.12] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                   required
                 />
               </div>
 
               {parentCompanies.length > 0 && (
                 <div>
-                  <label className="flex items-center gap-2 text-sm text-gray-300 mb-2">
+                  <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-2">
                     <input
                       type="checkbox"
                       checked={linkToParent}
                       onChange={(e) => setLinkToParent(e.target.checked)}
-                      className="rounded"
+                      className="rounded border-gray-300 dark:border-neutral-600 bg-gray-50 dark:bg-neutral-800 text-[#D37E91] focus:ring-[#D37E91]"
                     />
                     Link to parent company (share resources)
                   </label>
-                  
+
                   {linkToParent && (
                     <select
                       value={parentCompanyId}
                       onChange={(e) => setParentCompanyId(e.target.value)}
-                      className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.12] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+                      className="w-full px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.12] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                       required={linkToParent}
                     >
                       <option value="">Select parent company...</option>
@@ -382,7 +382,7 @@ export default function CompaniesSettingsPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center gap-2 px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full justify-center"
+                className="flex items-center gap-2 px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91] text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full justify-center"
               >
                 <Plus className="w-4 h-4" />
                 {loading ? "Creating..." : "Add Company"}
@@ -392,24 +392,24 @@ export default function CompaniesSettingsPage() {
         </div>
 
         {/* Right Column: Resource Sharing Settings */}
-        <div className="bg-white/[0.06] border border-white/[0.12] rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Resource Sharing Settings</h2>
-          
+        <div className="bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.12] rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Resource Sharing Settings</h2>
+
           {!selectedCompanyForSettings ? (
             <div className="text-center py-12">
-              <Settings className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-400">
+              <Settings className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">
                 Select a company from the left to manage its resource sharing settings
               </p>
             </div>
           ) : loadingSettings ? (
-            <p className="text-gray-400">Loading settings...</p>
+            <p className="text-gray-500 dark:text-gray-400">Loading settings...</p>
           ) : settings ? (
             <div className="space-y-4">
-              <p className="text-sm text-gray-400 mb-4">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                 Control which resources are shared with linked brands/companies in the same group.
               </p>
-              
+
               <div className="space-y-3">
                 {[
                   { key: 'share_staff', label: 'Staff & Team Members', icon: Users },
@@ -421,11 +421,11 @@ export default function CompaniesSettingsPage() {
                 ].map(({ key, label, icon: Icon }) => (
                   <label
                     key={key}
-                    className="flex items-center justify-between p-3 bg-white/[0.04] border border-white/[0.08] rounded-lg hover:bg-white/[0.06] cursor-pointer transition-colors"
+                    className="flex items-center justify-between p-3 bg-white dark:bg-white/[0.04] border border-gray-200 dark:border-white/[0.08] rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] cursor-pointer transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <Icon className="w-5 h-5 text-gray-400" />
-                      <span className="text-white">{label}</span>
+                      <Icon className="w-5 h-5 text-gray-400 dark:text-gray-400" />
+                      <span className="text-gray-900 dark:text-white">{label}</span>
                     </div>
                     <input
                       type="checkbox"
@@ -435,15 +435,15 @@ export default function CompaniesSettingsPage() {
                           [key]: e.target.checked
                         });
                       }}
-                      className="rounded"
+                      className="rounded border-gray-300 dark:border-neutral-600 bg-gray-50 dark:bg-neutral-800 text-[#D37E91] focus:ring-[#D37E91]"
                     />
                   </label>
                 ))}
               </div>
 
-              <div className="mt-6 pt-6 border-t border-white/[0.12]">
-                <p className="text-xs text-gray-400">
-                  <strong>Note:</strong> Only resources with sharing enabled will be visible across linked brands. 
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-white/[0.12]">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <strong>Note:</strong> Only resources with sharing enabled will be visible across linked brands.
                   Turn off sharing for resources that should remain company-specific.
                 </p>
               </div>
@@ -453,9 +453,9 @@ export default function CompaniesSettingsPage() {
       </div>
 
       {/* Info Box */}
-      <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-6">
-        <h3 className="text-white font-semibold mb-2">How Multi-Company Works</h3>
-        <ul className="text-sm text-gray-300 space-y-2">
+      <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-lg p-6">
+        <h3 className="text-gray-900 dark:text-white font-semibold mb-2">How Multi-Company Works</h3>
+        <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
           <li>• <strong>Primary Company:</strong> The default company shown when you log in</li>
           <li>• <strong>Switch Companies:</strong> Use the company selector in the header to switch between companies</li>
           <li>• <strong>Parent Companies:</strong> Can have multiple brands linked to them for resource sharing</li>

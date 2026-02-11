@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { WidgetProps, MODULE_COLORS } from '@/types/dashboard';
 import { WidgetCard, WidgetEmptyState, WidgetLoading } from '../WidgetWrapper';
-import { ShieldCheck, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { ShieldCheck, TrendingUp, TrendingDown, Minus } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 

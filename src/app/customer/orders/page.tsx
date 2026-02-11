@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Loader2, Calendar, ChevronLeft, ChevronRight, Repeat, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Loader2, Calendar, ChevronLeft, ChevronRight, Repeat, RotateCcw } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import {
   getProductCatalog,
@@ -55,8 +55,8 @@ export default function OrdersPage() {
 
       // Load products and customer pricing in parallel
       const [productsData, pricingResponse] = await Promise.all([
-        getProductCatalog(customerData.supplier_id),
-        fetch(`/api/order-book/customer-pricing?customer_id=${customerData.id}`),
+        getProductCatalog(customerData.site_id),
+        fetch(`/api/customer/pricing?customer_id=${customerData.id}`),
       ]);
 
       const sorted = productsData.sort((a, b) => {
@@ -95,11 +95,12 @@ export default function OrdersPage() {
         startDate = addDays(startDate, 7);
       }
       
-      // Apply week offset (max 4 weeks in the future)
+      // Apply week offset (can go back in time with negative offset, or forward up to 4 weeks)
       const MAX_WEEKS_AHEAD = 4;
-      if (weekOffset > 0) {
-        const weeksToAdd = Math.min(weekOffset, MAX_WEEKS_AHEAD);
-        startDate = addDays(startDate, weeksToAdd * 7);
+      if (weekOffset !== 0) {
+        // Clamp forward offset to max 4 weeks, but allow unlimited backward offset
+        const actualOffset = weekOffset > 0 ? Math.min(weekOffset, MAX_WEEKS_AHEAD) : weekOffset;
+        startDate = addDays(startDate, actualOffset * 7);
       }
       
       for (let i = 0; i < 7; i++) {
@@ -148,7 +149,7 @@ export default function OrdersPage() {
       if (uniqueOrders.length > 0) {
         const itemsPromises = uniqueOrders.map(async (order) => {
           try {
-            const itemsResponse = await fetch(`/api/order-book/orders/${order.id}/items`, {
+            const itemsResponse = await fetch(`/api/customer/orders/${order.id}/items`, {
               signal: AbortSignal.timeout(15000), // 15 second timeout (increased for better reliability)
             });
             if (itemsResponse.ok) {
@@ -338,7 +339,7 @@ export default function OrdersPage() {
         console.log(`[Orders Page] Saving order for ${date}: ${itemsForDate.length} items`, itemsForDate);
         try {
           const savedOrder = await createOrder({
-            supplier_id: customer.supplier_id,
+            site_id: customer.site_id,
             customer_id: customer.id,
             delivery_date: date,
             items: itemsForDate,
@@ -450,9 +451,8 @@ export default function OrdersPage() {
           items: standingOrderItems,
         });
       } else {
-        // Create new standing order
+        // Create new standing order (backend will find/create supplier automatically)
         await createStandingOrder({
-          supplier_id: customer.supplier_id,
           customer_id: customer.id,
           delivery_days: deliveryDays,
           items: standingOrderItems,
@@ -471,8 +471,8 @@ export default function OrdersPage() {
 
       // Build all orders to create/update
       const ordersToCreate: Array<{
-        supplier_id: string;
         customer_id: string;
+        site_id: string;
         delivery_date: string;
         items: OrderItem[];
       }> = [];
@@ -512,8 +512,8 @@ export default function OrdersPage() {
             // Add to batch if there are items
             if (itemsForDate.length > 0) {
               ordersToCreate.push({
-                supplier_id: customer.supplier_id,
                 customer_id: customer.id,
+                site_id: customer.site_id,
                 delivery_date: targetDateStr,
                 items: itemsForDate,
               });
@@ -529,10 +529,17 @@ export default function OrdersPage() {
           console.log(`[Orders Page] Order ${idx + 1} (${order.delivery_date}): ${order.items.length} items`, order.items.map(i => `${i.product_id}: ${i.quantity}`));
         });
         
-        const response = await fetch('/api/order-book/orders/batch', {
+        const response = await fetch('/api/customer/orders/batch', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orders: ordersToCreate }),
+          body: JSON.stringify({
+            customer_id: customer.id,
+            site_id: customer.site_id,
+            orders: ordersToCreate.map(o => ({
+              delivery_date: o.delivery_date,
+              items: o.items,
+            })),
+          }),
         });
 
         if (!response.ok) {
@@ -561,7 +568,7 @@ export default function OrdersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -603,9 +610,8 @@ export default function OrdersPage() {
           {/* Week Navigation */}
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setWeekOffset(Math.max(0, weekOffset - 1))}
-              disabled={weekOffset === 0}
-              className="p-2 rounded-lg border border-white/[0.1] text-white/60 hover:text-white hover:bg-white/[0.05] disabled:opacity-30 disabled:cursor-not-allowed transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              onClick={() => setWeekOffset(weekOffset - 1)}
+              className="p-2 rounded-lg border border-white/[0.1] text-white/60 hover:text-white hover:bg-white/[0.05] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label="Previous week"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -637,7 +643,7 @@ export default function OrdersPage() {
                     className="bg-white/[0.05] px-3 py-3 text-center text-xs font-semibold text-white/80 min-w-[100px]"
                   >
                     <div className="flex flex-col items-center gap-1">
-                      <Calendar className="w-4 h-4 text-[#EC4899]" />
+                      <Calendar className="w-4 h-4 text-[#D37E91]" />
                       <span>{formatDate(date)}</span>
                     </div>
                   </th>
@@ -649,39 +655,42 @@ export default function OrdersPage() {
             </thead>
             <tbody>
               {(() => {
-                const productsByCategory = products
+                const productsByBakeGroup = products
                   .filter((p) => p.is_active && p.is_available)
                   .reduce((acc, product) => {
-                    const category = product.category || 'Other';
-                    if (!acc[category]) {
-                      acc[category] = [];
+                    const groupName = product.bake_group_name || 'Other';
+                    if (!acc[groupName]) {
+                      acc[groupName] = {
+                        products: [],
+                        priority: product.bake_group_priority || 999
+                      };
                     }
-                    acc[category].push(product);
+                    acc[groupName].products.push(product);
                     return acc;
-                  }, {} as Record<string, Product[]>);
+                  }, {} as Record<string, { products: Product[]; priority: number }>);
 
-                const categoryOrder = ['Cookies', 'Pastries', 'Other'];
-                const sortedCategories = Object.keys(productsByCategory).sort((a, b) => {
-                  const indexA = categoryOrder.indexOf(a);
-                  const indexB = categoryOrder.indexOf(b);
-                  if (indexA === -1 && indexB === -1) return a.localeCompare(b);
-                  if (indexA === -1) return 1;
-                  if (indexB === -1) return -1;
-                  return indexA - indexB;
+                // Sort groups by priority, then alphabetically
+                const sortedGroups = Object.keys(productsByBakeGroup).sort((a, b) => {
+                  const priorityA = productsByBakeGroup[a].priority;
+                  const priorityB = productsByBakeGroup[b].priority;
+                  if (priorityA !== priorityB) {
+                    return priorityA - priorityB;
+                  }
+                  return a.localeCompare(b);
                 });
 
                 let rowIndex = 0;
-                return sortedCategories.flatMap((category) => {
-                  const categoryProducts = productsByCategory[category].sort((a, b) =>
+                return sortedGroups.flatMap((groupName) => {
+                  const groupProducts = productsByBakeGroup[groupName].products.sort((a, b) =>
                     a.name.localeCompare(b.name)
                   );
                   return [
-                    <tr key={`category-${category}`} className="bg-white/[0.08] border-b border-white/[0.15]">
-                      <td colSpan={availableDates.length + 2} className="sticky left-0 z-10 px-4 py-2 text-left text-xs font-bold uppercase text-[#EC4899] bg-white/[0.08]">
-                        {category}
+                    <tr key={`bakegroup-${groupName}`} className="bg-white/[0.08] border-b border-white/[0.15]">
+                      <td colSpan={availableDates.length + 2} className="sticky left-0 z-10 px-4 py-2 text-left text-xs font-bold uppercase text-[#D37E91] bg-white/[0.08]">
+                        {groupName}
                       </td>
                     </tr>,
-                    ...categoryProducts.map((product, idx) => {
+                    ...groupProducts.map((product, idx) => {
                       const hasValue = availableDates.some(date => getQuantity(product.id, date) > 0);
                       return (
                         <tr
@@ -745,14 +754,14 @@ export default function OrdersPage() {
                   return (
                     <td key={date} className="px-2 py-3 text-center">
                       {total > 0 && (
-                        <span className="text-[#EC4899] text-sm font-semibold">
+                        <span className="text-[#D37E91] text-sm font-semibold">
                           {formatCurrency(total)}
                         </span>
                       )}
                     </td>
                   );
                 })}
-                <td className="px-4 py-3 text-right text-lg font-bold text-[#EC4899] bg-white/[0.05]">
+                <td className="px-4 py-3 text-right text-lg font-bold text-[#D37E91] bg-white/[0.05]">
                   {formatCurrency(getGrandTotal())}
                 </td>
               </tr>
@@ -766,7 +775,7 @@ export default function OrdersPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="text-lg font-semibold text-white mb-1">
-              Grand Total: <span className="text-[#EC4899]">{formatCurrency(getGrandTotal())}</span>
+              Grand Total: <span className="text-[#D37E91]">{formatCurrency(getGrandTotal())}</span>
             </div>
             {!hasAnyOrders && (
               <p className="text-sm text-white/60">Enter quantities above to place your order</p>
@@ -781,7 +790,7 @@ export default function OrdersPage() {
             <Button
               onClick={handleSubmit}
               variant="primary"
-              className="min-h-[44px] bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] whitespace-nowrap"
+              className="min-h-[44px] bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] whitespace-nowrap"
               disabled={submitting || !hasAnyOrders}
             >
               {submitting ? (

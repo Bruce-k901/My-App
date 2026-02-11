@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { Plus, Trash2, AlertTriangle, Save, Download, Upload, X, Loader2, FileText, GripVertical } from 'lucide-react';
+import { Plus, Trash2, AlertTriangle, Save, Download, Upload, X, Loader2, FileText, GripVertical } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -1077,12 +1077,12 @@ function FoodSOPTemplatePageContent() {
     }
 
     const sopData = {
-      header: { 
-        title, 
-        refCode, 
-        version, 
-        status, 
-        author, 
+      header: {
+        title,
+        refCode,
+        version,
+        status,
+        author,
         category,
         allergens: headerAllergens // Save allergens in header
       },
@@ -1091,6 +1091,33 @@ function FoodSOPTemplatePageContent() {
       processSteps,
       storage: { storageType, shelfLife, containerType },
       calculated: { totalCost, totalYield, allergensList, toolColours }
+    };
+
+    // Build metadata for print template (keeps equipment/method in sync)
+    const sopMetadata = {
+      recipe: {
+        name: title,
+        code: refCode,
+        version_number: parseFloat(version) || 1.0,
+        allergens: allergensList,
+        total_cost: totalCost,
+        yield_qty: totalYield * 1000, // Convert back to grams
+        yield_unit: 'g',
+        shelf_life_days: shelfLife ? parseInt(shelfLife) || null : null,
+        storage_requirements: STORAGE_TYPES.find(s => s.value === storageType)?.label || storageType
+      },
+      ingredients: ingredients.map((ing: any) => {
+        const libItem = ingredientsLibrary.find((i: any) => i.id === ing.ingredient_id);
+        return {
+          ingredient_name: libItem?.ingredient_name || ing.ingredient_name || '',
+          quantity: parseFloat(ing.quantity) || 0,
+          unit: ing.unit || '',
+          supplier: libItem?.supplier || '',
+          allergens: ing.allergens || []
+        };
+      }),
+      equipment: equipment.map((eq: any) => eq.item || eq.name || '').filter(Boolean),
+      method_steps: processSteps.map((step: any) => step.description || step.text || '').filter(Boolean)
     };
 
     try {
@@ -1123,6 +1150,7 @@ function FoodSOPTemplatePageContent() {
           author,
           category,
           sop_data: sopData,
+          metadata: sopMetadata,
           linked_recipe_id: linkedRecipeId || originalSOP.linked_recipe_id || null, // Preserve linked recipe
           created_by: profile?.id,
           updated_by: profile?.id
@@ -1149,6 +1177,7 @@ function FoodSOPTemplatePageContent() {
           author,
           category,
           sop_data: sopData,
+          metadata: sopMetadata,
           created_by: profile?.id,
           updated_by: profile?.id
         };
@@ -1664,7 +1693,7 @@ function FoodSOPTemplatePageContent() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg font-medium transition-all duration-150 hover:bg-magenta-500/10 hover:shadow-[0_0_16px_rgba(236,72,153,0.4)] focus:outline-none focus:ring-2 focus:ring-magenta-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-transparent text-magenta-400 border border-magenta-500 rounded-lg font-medium transition-all duration-150 hover:bg-magenta-500/10 hover:shadow-[0_0_16px_rgba(211,126,145,0.4)] focus:outline-none focus:ring-2 focus:ring-magenta-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Save size={20} />
           {saving ? 'Saving...' : 'Save SOP'}

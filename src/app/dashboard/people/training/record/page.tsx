@@ -5,7 +5,7 @@ import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, User, GraduationCap, Calendar, Award, Loader2, Check } from 'lucide-react';
+import { ArrowLeft, User, GraduationCap, Calendar, Award, Loader2, Check } from '@/components/ui/icons';
 import type { TrainingCourse } from '@/types/teamly';
 
 interface Employee {

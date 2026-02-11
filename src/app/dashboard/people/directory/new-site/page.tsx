@@ -16,7 +16,7 @@ import {
   Loader2,
   Plus,
   Trash2
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import type { EmergencyContact } from '@/types/teamly';
 
 export default function AddEmployeePage() {

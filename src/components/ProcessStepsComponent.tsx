@@ -1,7 +1,7 @@
 "use client"
 import { NodeViewWrapper } from "@tiptap/react"
 import { useState, useEffect } from "react"
-import { Check, X, AlertTriangle, Clock, Thermometer, GripVertical } from "lucide-react"
+import { Check, X, AlertTriangle, Clock, Thermometer, GripVertical } from '@/components/ui/icons'
 
 interface ProcessStep {
   order: number;

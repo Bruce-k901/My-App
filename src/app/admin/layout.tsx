@@ -5,18 +5,21 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { AdminFaviconSetter } from '@/components/admin/AdminFaviconSetter';
-import { 
-  Shield, 
-  LayoutDashboard, 
-  Building2, 
-  Users, 
+import { useTicketCount } from '@/hooks/tickets/useTicketCount';
+import {
+  Shield,
+  LayoutDashboard,
+  Building2,
+  Users,
   ClipboardList,
   Settings,
   LogOut,
   ChevronRight,
   Eye,
-  X
-} from 'lucide-react';
+  X,
+  ArrowLeft,
+  LifeBuoy
+} from '@/components/ui/icons';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -27,6 +30,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [viewingAsCompany, setViewingAsCompany] = useState<{ id: string; name: string } | null>(null);
+  const { count: ticketCount } = useTicketCount();
+
+  // Admin is always dark — force dark class on HTML element
+  // (handles client-side navigation from dashboard which may be in light mode)
+  useEffect(() => {
+    document.documentElement.classList.add('dark');
+    document.documentElement.classList.remove('light');
+  }, []);
 
   useEffect(() => {
     // Skip auth check for login page
@@ -112,6 +123,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { href: '/admin/companies', icon: Building2, label: 'Companies' },
     { href: '/admin/users', icon: Users, label: 'All Users' },
     { href: '/admin/tasks', icon: ClipboardList, label: 'Task Analytics' },
+    { href: '/admin/tickets', icon: LifeBuoy, label: 'Support Tickets' },
     { href: '/admin/settings', icon: Settings, label: 'Settings' },
   ];
 
@@ -124,8 +136,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {/* Logo Header */}
         <div className="p-6 border-b border-white/[0.06] flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[#EC4899]/20 flex items-center justify-center">
-              <Shield className="w-5 h-5 text-[#EC4899]" />
+            <div className="w-10 h-10 rounded-lg bg-[#D37E91]/20 flex items-center justify-center">
+              <Shield className="w-5 h-5 text-[#D37E91]" />
             </div>
             <div>
               <div className="text-white font-semibold">Opsly Admin</div>
@@ -138,26 +150,41 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <nav className="flex-1 overflow-y-auto p-4 space-y-1">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
+            const isTicketsPage = item.href === '/admin/tickets';
+            const showBadge = isTicketsPage && ticketCount > 0;
+
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   isActive
-                    ? 'bg-[#EC4899]/10 text-[#EC4899] border border-[#EC4899]/20'
+                    ? 'bg-[#D37E91]/10 text-[#D37E91] border border-[#D37E91]/20'
                     : 'text-white/60 hover:bg-white/[0.06] hover:text-white'
                 }`}
               >
                 <item.icon className="w-5 h-5" />
                 <span className="font-medium">{item.label}</span>
-                {isActive && <ChevronRight className="w-4 h-4 ml-auto" />}
+                {showBadge && (
+                  <span className="ml-auto px-2 py-0.5 text-xs font-semibold bg-[#D37E91] text-white rounded-full min-w-[20px] text-center">
+                    {ticketCount > 99 ? '99+' : ticketCount}
+                  </span>
+                )}
+                {isActive && !showBadge && <ChevronRight className="w-4 h-4 ml-auto" />}
               </Link>
             );
           })}
         </nav>
 
         {/* Footer - Fixed */}
-        <div className="p-4 border-t border-white/[0.06] flex-shrink-0">
+        <div className="p-4 border-t border-white/[0.06] flex-shrink-0 space-y-1">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-white/60 hover:bg-white/[0.06] hover:text-white w-full transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className="font-medium">Back to Dashboard</span>
+          </Link>
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-3 rounded-lg text-white/60 hover:bg-white/[0.06] hover:text-white w-full transition-colors"

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import Input from "@/components/ui/Input";
-import { Plus, Upload, Download } from "lucide-react";
+import { Plus, Upload, Download } from "@/components/ui/icons";
 
 type EntityPageLayoutProps = {
   title: string;
@@ -120,7 +120,7 @@ function IconButton({ children, onClick, ariaLabel, variant = "neutral" }: { chi
   );
   const variants = {
     neutral: "border border-gray-200 dark:border-white/[0.12] bg-gray-50 dark:bg-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.12]",
-    magentaOutline: "border border-pink-500 text-pink-500 bg-transparent hover:bg-pink-50 dark:hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]",
+    magentaOutline: "border border-[#D37E91] text-[#D37E91] bg-transparent hover:bg-[#D37E91]/10 dark:hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(211,126,145,0.25)]",
     orangeOutline: "border border-orange-500 text-orange-500 bg-transparent hover:bg-orange-50 dark:hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)]",
     navyOutline: "border border-blue-700 dark:border-blue-500 text-blue-700 dark:text-blue-400 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:shadow-[0_0_12px_rgba(30,64,175,0.25)]",
   } as const;

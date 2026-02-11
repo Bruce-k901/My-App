@@ -9,7 +9,7 @@ import Switch from '@/components/ui/Switch';
 import Select from '@/components/ui/Select';
 import { toast } from 'sonner';
 import TimePicker from '@/components/ui/TimePicker';
-import { Clock, Save, ArrowLeft } from 'lucide-react';
+import { Clock, Save, ArrowLeft } from '@/components/ui/icons';
 import Link from 'next/link';
 import { ShiftRules, DEFAULT_SHIFT_RULES } from '@/types/teamly-settings';
 

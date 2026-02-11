@@ -1,6 +1,6 @@
 'use client';
 
-import { Flame, Package, Trash2 } from 'lucide-react';
+import { Flame, Package, Trash2 } from '@/components/ui/icons';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import Label from '@/components/ui/Label';

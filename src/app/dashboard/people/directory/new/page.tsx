@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
-import { Building2, Briefcase, ArrowRight, Users, MapPin, GraduationCap, User } from 'lucide-react';
+import { Building2, Briefcase, ArrowRight, Users, MapPin, GraduationCap, User } from '@/components/ui/icons';
 import AddExecutiveModal from '@/components/users/AddExecutiveModal';
 
 export default function AddEmployeeChoicePage() {

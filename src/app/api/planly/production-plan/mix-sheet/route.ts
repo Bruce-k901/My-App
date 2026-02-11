@@ -7,6 +7,7 @@ interface LaminationStyleData {
   name: string;
   recipe_id: string | null;
   products_per_sheet: number;
+  dough_per_sheet_g: number | null;
   laminate_lead_days: number;
   base_dough_id: string;
   recipe?: { id: string; name: string; yield_quantity: number; yield_unit: string } | null;
@@ -119,6 +120,7 @@ export async function GET(request: NextRequest) {
           name,
           recipe_id,
           products_per_sheet,
+          dough_per_sheet_g,
           laminate_lead_days
         )
       `)
@@ -279,7 +281,7 @@ export async function GET(request: NextRequest) {
 
       // Calculate lamination sheet requirements
       const laminationResults: LaminationSheetResult[] = [];
-      let totalSheetsForDough = 0;
+      let totalLaminationDoughG = 0;
 
       for (const [styleId, styleProducts] of productData.byStyle.entries()) {
         const style = laminationStyleMap.get(styleId);
@@ -313,8 +315,10 @@ export async function GET(request: NextRequest) {
           })),
         });
 
-        // Track sheets needed for base dough scaling
-        totalSheetsForDough += sheetsNeeded;
+        // Track total dough weight needed for all lamination sheets
+        if (style.dough_per_sheet_g) {
+          totalLaminationDoughG += sheetsNeeded * Number(style.dough_per_sheet_g);
+        }
       }
 
       // Calculate direct (non-laminated) product requirements
@@ -327,36 +331,51 @@ export async function GET(request: NextRequest) {
         totalKgFromDirect = totalBatches * Number(dough.batch_size_kg);
       }
 
-      // Total sheets needed for lamination
-      const totalSheetsNeeded = totalSheetsForDough;
-
       // Skip if no products ordered for this dough
+      const totalSheetsNeeded = laminationResults.reduce((sum, r) => sum + r.sheets_needed, 0);
       if (totalSheetsNeeded === 0 && directTotalUnits === 0) continue;
 
-      // Get base dough recipe ingredients
-      // Scale by number of sheets/batches needed
-      const scaleFactor = totalSheetsNeeded + (totalBatches || 0);
-      const doughIngredients = scaleFactor > 0
-        ? await getScaledIngredients(supabase, dough.recipe_id, scaleFactor)
-        : [];
+      // Calculate total dough needed in kg
+      const totalLaminationDoughKg = totalLaminationDoughG / 1000;
+      const totalDoughNeededKg = totalLaminationDoughKg + totalKgFromDirect;
 
-      // Calculate total kg from ingredients (sum all quantities, convert to kg)
-      let totalKg = totalKgFromDirect;
-      if (doughIngredients.length > 0) {
-        // Sum ingredient quantities, converting g to kg
-        const ingredientTotalG = doughIngredients.reduce((sum, ing) => {
-          const qty = ing.quantity || 0;
-          // Convert to grams for summing
-          if (ing.unit === 'kg') return sum + qty * 1000;
-          if (ing.unit === 'g') return sum + qty;
-          if (ing.unit === 'ml' || ing.unit === 'l') return sum + (ing.unit === 'l' ? qty * 1000 : qty); // approx 1g/ml
-          return sum + qty; // assume grams for unknown units
-        }, 0);
-        totalKg = Math.round(ingredientTotalG / 10) / 100; // Convert to kg with 2 decimal places
+      // Get base dough recipe ingredients scaled by recipe yield
+      // Uses dough_per_sheet_g to calculate actual dough weight, then divides by recipe yield
+      let doughIngredients: { name: string; quantity: number; unit: string }[] = [];
+      let totalKg = 0;
+
+      if (totalDoughNeededKg > 0 && dough.recipe_id && dough.recipe) {
+        // Use recipe yield to correctly scale ingredients
+        doughIngredients = await getScaledIngredientsForKg(
+          supabase,
+          dough.recipe_id,
+          totalDoughNeededKg,
+          dough.recipe
+        );
+        totalKg = totalDoughNeededKg;
+      } else if (totalDoughNeededKg > 0) {
+        // No recipe linked - just use the calculated weight
+        totalKg = totalDoughNeededKg;
       } else if (totalSheetsNeeded > 0 && dough.recipe) {
-        // Fallback: use recipe yield if no ingredients
-        const doughYieldKg = normalizeYieldToKg(dough.recipe.yield_quantity || 1, dough.recipe.yield_unit || 'kg');
-        totalKg = totalSheetsNeeded * doughYieldKg;
+        // Fallback: dough_per_sheet_g not set, use old sheet-count scaling
+        const scaleFactor = totalSheetsNeeded + (totalBatches || 0);
+        doughIngredients = scaleFactor > 0
+          ? await getScaledIngredients(supabase, dough.recipe_id, scaleFactor)
+          : [];
+        // Estimate total kg from ingredients
+        if (doughIngredients.length > 0) {
+          const ingredientTotalG = doughIngredients.reduce((sum, ing) => {
+            const qty = ing.quantity || 0;
+            if (ing.unit === 'kg') return sum + qty * 1000;
+            if (ing.unit === 'g') return sum + qty;
+            if (ing.unit === 'ml' || ing.unit === 'l') return sum + (ing.unit === 'l' ? qty * 1000 : qty);
+            return sum + qty;
+          }, 0);
+          totalKg = Math.round(ingredientTotalG / 10) / 100;
+        } else {
+          const doughYieldKg = normalizeYieldToKg(dough.recipe.yield_quantity || 1, dough.recipe.yield_unit || 'kg');
+          totalKg = totalSheetsNeeded * doughYieldKg;
+        }
       }
 
       doughMixResults.push({

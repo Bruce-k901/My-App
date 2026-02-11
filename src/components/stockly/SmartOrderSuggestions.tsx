@@ -15,7 +15,7 @@ import {
   ChevronUp,
   AlertCircle,
   Sparkles
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface Suggestion {
   stock_item_id: string;

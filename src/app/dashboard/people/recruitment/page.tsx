@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAppContext } from '@/context/AppContext'
 import { supabase } from '@/lib/supabase'
-import { Loader2, Plus, Briefcase, Users, DollarSign, MapPin, Eye, Edit, Copy, Trash2 } from 'lucide-react'
+import { Loader2, Plus, Briefcase, Users, DollarSign, MapPin, Eye, Edit, Copy, Trash2 } from '@/components/ui/icons'
 import { toast } from 'sonner'
 
 type Job = {

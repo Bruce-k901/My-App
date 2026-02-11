@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui';
 import Select from '@/components/ui/Select';
-import { GitBranch, Plus, Edit2, Trash2, X, MoveUp, MoveDown, ArrowLeft } from 'lucide-react';
+import { GitBranch, Plus, Edit2, Trash2, X, MoveUp, MoveDown, ArrowLeft } from '@/components/ui/icons';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -715,7 +715,7 @@ export default function ApprovalWorkflowsPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#EC4899] mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D37E91] mx-auto mb-4"></div>
           <p className="text-gray-500 dark:text-white/60">Loading approval workflows...</p>
         </div>
       </div>

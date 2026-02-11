@@ -10,7 +10,7 @@ import {
   ChevronDown,
   ChevronUp,
   CheckCircle
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { DayAttendance, AttendanceRecord } from '@/lib/attendance/types';
 
 interface DayCardProps {

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { WidgetProps, MODULE_COLORS } from '@/types/dashboard';
 import { WidgetCard, WidgetEmptyState, WidgetLoading } from '../WidgetWrapper';
-import { Megaphone, Clock } from 'lucide-react';
+import { Megaphone, Clock } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';

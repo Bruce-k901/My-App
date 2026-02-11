@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AlertTriangle, Clock, Phone, X } from 'lucide-react';
+import { AlertTriangle, Clock, Phone, X } from '@/components/ui/icons';
 
 interface OutOfRangeAction {
   action: 'monitor' | 'callout';

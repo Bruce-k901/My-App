@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
-import { Download, Loader2 } from 'lucide-react';
+import { Download, Loader2 } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 
 interface PDFDownloadButtonProps {

@@ -32,16 +32,20 @@ interface PanelStore {
   messagingOpen: boolean
   calendarOpen: boolean
   aiAssistantOpen: boolean
+  searchOpen: boolean
   setMessagingOpen: (open: boolean) => void
   setCalendarOpen: (open: boolean) => void
   setAiAssistantOpen: (open: boolean) => void
+  setSearchOpen: (open: boolean) => void
 }
 
 export const usePanelStore = create<PanelStore>((set) => ({
   messagingOpen: false,
   calendarOpen: false,
   aiAssistantOpen: false,
+  searchOpen: false,
   setMessagingOpen: (open) => set({ messagingOpen: open }),
   setCalendarOpen: (open) => set({ calendarOpen: open }),
   setAiAssistantOpen: (open) => set({ aiAssistantOpen: open }),
+  setSearchOpen: (open) => set({ searchOpen: open }),
 }))

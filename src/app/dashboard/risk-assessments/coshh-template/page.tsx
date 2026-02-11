@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { Plus, Trash2, Save, AlertTriangle, Download, Link as LinkIcon, Shield, CheckCircle } from 'lucide-react';
+import { Plus, Trash2, Save, AlertTriangle, Download, Link as LinkIcon, Shield, CheckCircle } from '@/components/ui/icons';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -381,7 +381,7 @@ function COSHHRiskAssessmentTemplateContent() {
 
       {/* Assessment Details */}
       <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#EC4899] dark:text-magenta-400 mb-4">Assessment Details</h2>
+        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Assessment Details</h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Activity/Task Name *</label>
@@ -424,7 +424,7 @@ function COSHHRiskAssessmentTemplateContent() {
 
       {/* Chemical Details */}
       <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#EC4899] dark:text-magenta-400 mb-4">Chemical Details</h2>
+        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Chemical Details</h2>
         <div className="space-y-4">
           {chemicals.map((chem, index) => {
             const selectedChemical = chemicalsLibrary.find(c => c.id === chem.chemical_id);
@@ -433,7 +433,7 @@ function COSHHRiskAssessmentTemplateContent() {
             return (
               <div key={chem.id} className="p-4 bg-gray-50 dark:bg-neutral-900/50 rounded-lg border border-gray-200 dark:border-neutral-600">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-semibold text-[#EC4899] dark:text-magenta-400">Chemical {index + 1}</span>
+                  <span className="text-sm font-semibold text-[#D37E91] dark:text-magenta-400">Chemical {index + 1}</span>
                   <button onClick={() => setChemicals(chemicals.filter(c => c.id !== chem.id))} disabled={chemicals.length === 1} className="text-red-400 hover:text-red-300 disabled:opacity-30">
                     <Trash2 size={16} />
                   </button>
@@ -549,14 +549,14 @@ function COSHHRiskAssessmentTemplateContent() {
             );
           })}
         </div>
-        <button onClick={() => setChemicals([...chemicals, { id: Date.now(), chemical_id: "", howUsed: "", quantity: "", unit: "", frequency: "", duration: "", staffExposed: "", storageLocation: "", substitutionConsidered: false, substitutionNotes: "" }])} className="mt-3 flex items-center gap-2 px-4 py-2 bg-[#EC4899]/20 hover:bg-[#EC4899]/30 border border-[#EC4899]/40 rounded-lg text-[#EC4899] text-sm">
+        <button onClick={() => setChemicals([...chemicals, { id: Date.now(), chemical_id: "", howUsed: "", quantity: "", unit: "", frequency: "", duration: "", staffExposed: "", storageLocation: "", substitutionConsidered: false, substitutionNotes: "" }])} className="mt-3 flex items-center gap-2 px-4 py-2 bg-[#D37E91]/20 hover:bg-[#D37E91]/30 border border-[#D37E91]/40 rounded-lg text-[#D37E91] text-sm">
           <Plus size={16} /> Add Chemical
         </button>
       </section>
 
       {/* Exposure Routes */}
       <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#EC4899] dark:text-magenta-400 mb-4">Exposure Routes</h2>
+        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Exposure Routes</h2>
         <div className="space-y-3">
           {Object.entries(exposureRoutes).map(([key, value]) => (
             <div key={key} className="flex items-start gap-3">
@@ -585,12 +585,12 @@ function COSHHRiskAssessmentTemplateContent() {
 
       {/* Control Measures */}
       <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#EC4899] dark:text-magenta-400 mb-4">Control Measures</h2>
+        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Control Measures</h2>
         <div className="space-y-3">
           {controlMeasures.map((measure, index) => (
             <div key={measure.id} className="p-3 bg-gray-50 dark:bg-neutral-900/50 rounded-lg border border-gray-200 dark:border-neutral-600">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-[#EC4899] dark:text-magenta-400">Control {index + 1}</span>
+                <span className="text-sm font-semibold text-[#D37E91] dark:text-magenta-400">Control {index + 1}</span>
                 <button onClick={() => setControlMeasures(controlMeasures.filter(m => m.id !== measure.id))} disabled={controlMeasures.length === 1} className="text-red-400 hover:text-red-300 disabled:opacity-30">
                   <Trash2 size={16} />
                 </button>
@@ -621,14 +621,14 @@ function COSHHRiskAssessmentTemplateContent() {
             </div>
           ))}
         </div>
-        <button onClick={() => setControlMeasures([...controlMeasures, { id: Date.now(), type: "", description: "", effectiveness: "Medium", reviewDate: "" }])} className="mt-3 flex items-center gap-2 px-4 py-2 bg-[#EC4899]/20 hover:bg-[#EC4899]/30 border border-[#EC4899]/40 rounded-lg text-[#EC4899] text-sm">
+        <button onClick={() => setControlMeasures([...controlMeasures, { id: Date.now(), type: "", description: "", effectiveness: "Medium", reviewDate: "" }])} className="mt-3 flex items-center gap-2 px-4 py-2 bg-[#D37E91]/20 hover:bg-[#D37E91]/30 border border-[#D37E91]/40 rounded-lg text-[#D37E91] text-sm">
           <Plus size={16} /> Add Control Measure
         </button>
       </section>
 
       {/* Risk Assessment */}
       <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#EC4899] dark:text-magenta-400 mb-4">Overall Risk Assessment</h2>
+        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Overall Risk Assessment</h2>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Overall Risk Level</label>
@@ -653,7 +653,7 @@ function COSHHRiskAssessmentTemplateContent() {
 
       {/* Health Surveillance */}
       <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#EC4899] dark:text-magenta-400 mb-4">Health Surveillance</h2>
+        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Health Surveillance</h2>
         <div className="flex items-center gap-2 mb-3">
           <input type="checkbox" checked={healthSurveillanceRequired} onChange={(e) => setHealthSurveillanceRequired(e.target.checked)} className="rounded" />
           <label className="text-sm text-gray-700 dark:text-neutral-300">Is health surveillance required?</label>
@@ -682,7 +682,7 @@ function COSHHRiskAssessmentTemplateContent() {
 
       {/* Emergency Procedures */}
       <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#EC4899] dark:text-magenta-400 mb-4">Emergency Procedures</h2>
+        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Emergency Procedures</h2>
         <div className="space-y-3">
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Spill Kit Location</label>

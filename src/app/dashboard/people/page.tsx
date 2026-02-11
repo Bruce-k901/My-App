@@ -18,7 +18,7 @@ import {
   Calendar,
   Target,
   Wallet,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface DashboardStats {
   total_employees: number;
@@ -387,7 +387,7 @@ export default function TeamlyDashboard() {
     { label: 'Approve Leave', href: '/dashboard/people/leave', icon: CheckCircle, color: 'from-green-500 to-emerald-600' },
     { label: 'View Timesheets', href: '/dashboard/people/attendance/signoff', icon: Clock, color: 'from-blue-500 to-cyan-600' },
     { label: 'Post Job', href: '/dashboard/people/recruitment/jobs/new', icon: Briefcase, color: 'from-purple-500 to-violet-600' },
-    { label: 'Start Onboarding', href: '/dashboard/people/onboarding', icon: UserPlus, color: 'from-[#EC4899] to-pink-600' },
+    { label: 'Start Onboarding', href: '/dashboard/people/onboarding', icon: UserPlus, color: 'from-[#D37E91] to-[#D37E91]/80' },
   ];
 
   const getAlerts = (): Alert[] => {
@@ -774,7 +774,7 @@ export default function TeamlyDashboard() {
             description: 'Clock in/out, timesheets, hours worked',
             href: '/dashboard/people/attendance',
             icon: Clock,
-            color: 'from-rose-500 to-pink-600'
+            color: 'from-rose-500 to-[#D37E91]/80'
           },
           { 
             title: 'Company Directory', 

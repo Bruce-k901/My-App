@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { WidgetProps, MODULE_COLORS } from '@/types/dashboard';
 import { WidgetCard, WidgetEmptyState, WidgetLoading } from '../WidgetWrapper';
-import { GraduationCap, AlertTriangle, Calendar } from 'lucide-react';
+import { GraduationCap, AlertTriangle, Calendar } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -38,14 +38,14 @@ export default function TrainingExpiriesWidget({ companyId, siteId }: WidgetProp
           .from('training_records')
           .select(`
             id,
-            expires_at,
-            training_type:training_types(name),
-            profile:profiles(id, full_name, first_name, last_name)
+            expiry_date,
+            course:training_courses!training_records_course_id_fkey(name),
+            profile:profiles!training_records_profile_id_fkey(id, full_name)
           `)
           .eq('company_id', companyId)
-          .lte('expires_at', thirtyDaysFromNow.toISOString())
-          .gte('expires_at', today.toISOString())
-          .order('expires_at', { ascending: true })
+          .lte('expiry_date', thirtyDaysFromNow.toISOString().split('T')[0])
+          .gte('expiry_date', today.toISOString().split('T')[0])
+          .order('expiry_date', { ascending: true })
           .limit(5);
 
         if (siteId && siteId !== 'all') {
@@ -65,19 +65,16 @@ export default function TrainingExpiriesWidget({ companyId, siteId }: WidgetProp
 
         const formattedTrainings: ExpiringTraining[] = (data || []).map((record: any) => {
           const profile = record.profile || {};
-          const staffName = profile.full_name ||
-            (profile.first_name && profile.last_name
-              ? `${profile.first_name} ${profile.last_name}`
-              : 'Unknown');
+          const staffName = profile.full_name || 'Unknown';
 
-          const expiresAt = new Date(record.expires_at);
+          const expiresAt = new Date(record.expiry_date);
           const daysUntil = Math.ceil((expiresAt.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
           return {
             id: record.id,
             staff_name: staffName,
-            training_name: record.training_type?.name || 'Unknown Training',
-            expires_at: record.expires_at,
+            training_name: record.course?.name || 'Unknown Training',
+            expires_at: record.expiry_date,
             days_until_expiry: daysUntil,
           };
         });

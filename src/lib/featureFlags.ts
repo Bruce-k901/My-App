@@ -46,6 +46,9 @@ export const FEATURE_FLAGS = {
   // Feature-specific flags
   ENABLE_ATTENDANCE_LOGS: process.env.NEXT_PUBLIC_ENABLE_ATTENDANCE_LOGS !== 'false', // Default true
   ENABLE_TEMPERATURE_LOGS: process.env.NEXT_PUBLIC_ENABLE_TEMPERATURE_LOGS !== 'false', // Default true
+
+  // Health check system
+  HEALTH_CHECK_ENABLED: process.env.NEXT_PUBLIC_HEALTH_CHECK_ENABLED === 'true',
 } as const;
 
 /**

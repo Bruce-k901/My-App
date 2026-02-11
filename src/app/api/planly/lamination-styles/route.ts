@@ -79,6 +79,7 @@ export async function POST(request: NextRequest) {
       name,
       recipe_id,
       products_per_sheet,
+      dough_per_sheet_g,
       laminate_lead_days
     } = body;
 
@@ -116,6 +117,7 @@ export async function POST(request: NextRequest) {
         name: name.trim(),
         recipe_id: recipe_id || null,
         products_per_sheet: products_per_sheet,
+        dough_per_sheet_g: dough_per_sheet_g ?? null,
         laminate_lead_days: laminate_lead_days ?? 1,
         display_order: nextOrder,
         created_by: user?.id,

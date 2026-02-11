@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useAppContext } from '@/context/AppContext'
 import { supabase } from '@/lib/supabase'
-import { CheckCircle2, AlertTriangle, Clock, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { CheckCircle2, AlertTriangle, Clock, TrendingUp, TrendingDown, Minus } from '@/components/ui/icons'
 import Link from 'next/link'
 import { format, formatDistanceToNow } from 'date-fns'
 
@@ -455,9 +455,9 @@ export default function ComplianceMetricsWidget() {
   if (contextLoading || (!siteId && !companyId)) {
     console.log('🔄 ComplianceMetricsWidget: Rendering context loading state', { contextLoading, siteId, companyId })
     return (
-      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-6">
+      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-6">
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-400"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91]"></div>
           <span className="ml-3 text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))]">Loading...</span>
         </div>
       </div>
@@ -467,7 +467,7 @@ export default function ComplianceMetricsWidget() {
   if (!siteId || siteId === 'all') {
     console.log('🔄 ComplianceMetricsWidget: Rendering "select site" state', { siteId, companyId })
     return (
-      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-6">
+      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-6">
         <p className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))] text-center">Select a specific site to view compliance metrics</p>
       </div>
     )
@@ -481,9 +481,9 @@ export default function ComplianceMetricsWidget() {
       hasRecentCompletions: recentCompletions.length > 0
     })
     return (
-      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-6">
+      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-6">
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-400"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91]"></div>
           <span className="ml-3 text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))]">Loading compliance metrics...</span>
         </div>
       </div>
@@ -511,7 +511,7 @@ export default function ComplianceMetricsWidget() {
     : 0
 
   return (
-    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-6 space-y-6">
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -520,7 +520,7 @@ export default function ComplianceMetricsWidget() {
         </div>
         <Link 
           href="/dashboard/my_tasks"
-          className="text-sm text-pink-600 dark:text-pink-400 hover:text-pink-300 transition-colors"
+          className="text-sm text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] transition-colors"
         >
           View All Tasks →
         </Link>
@@ -628,7 +628,7 @@ export default function ComplianceMetricsWidget() {
               {complianceTrend.map((entry) => (
                 <div
                   key={entry.date}
-                  className="flex-1 bg-pink-500/30 rounded-t transition-all hover:bg-pink-500/50"
+                  className="flex-1 bg-[#D37E91]/35 rounded-t transition-all hover:bg-[#D37E91]/50"
                   style={{ height: `${Math.max(5, Math.min(100, entry.score))}%` }}
                   title={`${entry.score.toFixed(1)}% on ${format(new Date(entry.date), 'MMM dd')}`}
                 />
@@ -683,7 +683,7 @@ export default function ComplianceMetricsWidget() {
           <p className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-primary))]">No tasks scheduled for today</p>
           <Link 
             href="/dashboard/tasks/compliance-templates"
-            className="text-sm text-pink-600 dark:text-pink-400 hover:text-pink-300 mt-2 inline-block"
+            className="text-sm text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] mt-2 inline-block"
           >
             Create a compliance template →
           </Link>

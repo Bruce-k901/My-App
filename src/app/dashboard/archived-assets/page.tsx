@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/ToastProvider";
-import { ArrowLeft, Search, Filter, RotateCcw } from "lucide-react";
+import { ArrowLeft, Search, Filter, RotateCcw } from '@/components/ui/icons';
 import Link from "next/link";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/Button";

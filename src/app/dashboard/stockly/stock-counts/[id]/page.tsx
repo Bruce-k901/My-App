@@ -18,7 +18,7 @@ import {
   Box,
   Coffee,
   Trash2
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { StockCountWithDetails, StockCountItem, LibraryType } from '@/lib/types/stockly';
 import { generateCountSheetPDF, downloadPDF, openPDFInNewTab } from '@/lib/utils/pdf-generator';
 import CountDataEntry from '@/components/stockly/stock-counts/CountDataEntry';

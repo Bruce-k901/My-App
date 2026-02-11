@@ -16,7 +16,7 @@ import {
   Loader2,
   Mail,
   MapPin
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface CompanyDetails {
   id: string;
@@ -133,7 +133,7 @@ export default function CompanyDetailPage() {
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -161,8 +161,8 @@ export default function CompanyDetailPage() {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <div className="w-14 h-14 rounded-xl bg-[#EC4899]/10 flex items-center justify-center">
-            <Building2 className="w-7 h-7 text-[#EC4899]" />
+          <div className="w-14 h-14 rounded-xl bg-[#D37E91]/10 flex items-center justify-center">
+            <Building2 className="w-7 h-7 text-[#D37E91]" />
           </div>
           <div>
             <h1 className="text-3xl font-bold text-white">{company.name}</h1>
@@ -174,7 +174,7 @@ export default function CompanyDetailPage() {
         </div>
         <button
           onClick={handleViewAs}
-          className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
+          className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
         >
           <Eye className="w-5 h-5" />
           View As This Company

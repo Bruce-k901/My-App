@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Plus, Clock, FileText, Calendar, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Clock, FileText, Calendar, Edit2, Trash2 } from '@/components/ui/icons';
 import { toast } from 'sonner';
 import { MasterTemplateModal } from '@/components/templates/MasterTemplateModal';
 import { TaskFromTemplateModal } from '@/components/templates/TaskFromTemplateModal';
@@ -200,7 +200,7 @@ export default function TemplatesPage() {
       'h_and_s': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
       'fire': 'bg-red-500/10 text-red-400 border-red-500/20',
       'cleaning': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-      'compliance': 'bg-pink-500/10 text-pink-400 border-pink-500/20'
+      'compliance': 'bg-[#D37E91]/15 text-[#D37E91] border-[#D37E91]/20'
     };
     return colors[category] || 'bg-gray-500/10 text-gray-400 border-gray-500/20';
   };
@@ -215,7 +215,7 @@ export default function TemplatesPage() {
         </div>
         <button
           onClick={handleNewTemplate}
-          className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-pink-500 text-pink-500 bg-transparent hover:bg-white/[0.04] transition-all duration-150"
+          className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-[#D37E91] text-[#D37E91] bg-transparent hover:bg-white/[0.04] transition-all duration-150"
           aria-label="Add Template"
         >
           <Plus className="h-5 w-5" />

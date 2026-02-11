@@ -14,7 +14,7 @@ import {
   DollarSign,
   Search,
   Filter,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { toast } from 'sonner';
 import type { PayslipView } from '@/types/teamly';
 
@@ -141,7 +141,7 @@ export default function MyPayslipsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white p-6 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#EC4899]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#D37E91]" />
       </div>
     );
   }
@@ -207,7 +207,7 @@ export default function MyPayslipsPage() {
             {filteredPayslips.map((payslip) => (
               <div
                 key={payslip.id}
-                className="bg-white dark:bg-[#1A1D26] rounded-lg border border-gray-300 dark:border-white/10 p-6 hover:border-[#EC4899]/50 transition-colors cursor-pointer"
+                className="bg-white dark:bg-[#1A1D26] rounded-lg border border-gray-300 dark:border-white/10 p-6 hover:border-[#D37E91]/50 transition-colors cursor-pointer"
                 onClick={() => setSelectedPayslip(payslip)}
               >
                 <div className="flex items-start justify-between mb-4">

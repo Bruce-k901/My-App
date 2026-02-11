@@ -3,7 +3,7 @@
 import { useAppContext } from '@/context/AppContext';
 import { CustomerForm } from '@/components/planly/customers/CustomerForm';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from '@/components/ui/icons';
 
 export default function NewCustomerPage() {
   const { siteId } = useAppContext();

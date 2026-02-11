@@ -10,7 +10,7 @@ import {
   Settings,
   LifeBuoy,
   ShieldCheck,
-} from "lucide-react";
+} from '@/components/ui/icons';
 
 export const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },

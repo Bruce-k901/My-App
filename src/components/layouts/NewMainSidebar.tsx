@@ -8,6 +8,7 @@ import { isRestricted, type AppRole } from "@/lib/accessControl";
 import { isRoleGuardEnabled } from "@/lib/featureFlags";
 import { useAppContext } from "@/context/AppContext";
 import { COURSES, LIBRARIES } from "@/lib/navigation-constants";
+import { usePanelStore } from "@/lib/stores/panel-store";
 import {
   LayoutGrid,
   Building2,
@@ -34,7 +35,7 @@ import {
   ClipboardList,
   ChefHat,
   Users,
-} from "lucide-react";
+} from '@/components/ui/icons';
 
 // Section with hover popup
 interface SidebarSection {
@@ -62,6 +63,7 @@ interface NewMainSidebarProps {
 export default function NewMainSidebar({ isMobileOpen = false, onMobileClose }: NewMainSidebarProps) {
   const pathname = usePathname();
   const { role: contextRole, signOut, profile } = useAppContext();
+  const { setMessagingOpen } = usePanelStore();
   
   // Build dynamic sections with courses and libraries - memoized to prevent hydration issues
   const sections: SidebarSection[] = useMemo(() => [
@@ -375,7 +377,7 @@ const directLinks: SidebarLink[] = [
       {mobileBackdrop}
 
       {/* Main Sidebar - Hidden on mobile, visible on desktop */}
-      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[rgb(var(--surface))] dark:bg-[#0B0D13] border-r border-[rgb(var(--border))] dark:border-white/[0.1] flex-col items-center py-4 gap-2 z-50 overflow-y-auto overflow-x-hidden checkly-sidebar-scrollbar" suppressHydrationWarning>
+      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-20 bg-[rgb(var(--surface))] dark:bg-[#110F0D] border-r border-[rgb(var(--border))] dark:border-white/[0.1] flex-col items-center py-4 gap-2 z-50 overflow-y-auto overflow-x-hidden checkly-sidebar-scrollbar" suppressHydrationWarning>
         {/* Checkly Logo - Show when on Checkly pages */}
         {(pathname === "/dashboard" || pathname.startsWith("/dashboard/tasks") || pathname.startsWith("/dashboard/checklists") || pathname.startsWith("/dashboard/sops") || pathname.startsWith("/dashboard/incidents") || pathname.startsWith("/dashboard/assets") || pathname.startsWith("/dashboard/logs") || pathname.startsWith("/dashboard/compliance") || pathname.startsWith("/dashboard/eho-report") || pathname.startsWith("/dashboard/libraries") || pathname.startsWith("/dashboard/courses") || pathname.startsWith("/dashboard/ppm") || pathname.startsWith("/dashboard/todays_tasks")) && (
           <Link
@@ -384,9 +386,14 @@ const directLinks: SidebarLink[] = [
             title="Checkly"
           >
             <img
-              src="/assets/checkly_logo_touching_blocks.svg"
+              src="/new_module_logos/checkly_light.svg"
               alt="Checkly"
-              className="h-8 w-auto"
+              className="h-8 w-auto dark:hidden"
+            />
+            <img
+              src="/new_module_logos/checkly_dark.svg"
+              alt="Checkly"
+              className="h-8 w-auto hidden dark:block"
             />
           </Link>
         )}
@@ -419,12 +426,13 @@ const directLinks: SidebarLink[] = [
           );
         })}
 
-        {/* Manager Calendar - Right after sections */}
+        {/* Messages - Opens panel directly */}
         <div className="w-12 h-px bg-[rgb(var(--border))] dark:bg-white/[0.1] my-1" />
         <SidebarDirectLink
           item={directLinks[1]}
-          isActive={pathname.startsWith(directLinks[1].href)}
+          isActive={false}
           isRestricted={false}
+          onClick={() => setMessagingOpen(true)}
         />
 
         <div className="w-12 h-px bg-[rgb(var(--border))] dark:bg-white/[0.1] my-1" />
@@ -474,7 +482,7 @@ const directLinks: SidebarLink[] = [
 
       {/* Mobile Drawer Sidebar */}
       {mounted && isMobileOpen ? createPortal(
-        <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0B0D13] border-r border-white/[0.1] flex flex-col z-50 lg:hidden overflow-y-auto overflow-x-hidden" suppressHydrationWarning>
+        <aside className="fixed left-0 top-0 h-screen w-64 bg-[#110F0D] border-r border-white/[0.1] flex flex-col z-50 lg:hidden overflow-y-auto overflow-x-hidden" suppressHydrationWarning>
           {/* Mobile Header */}
           <div className="flex items-center justify-between p-4 border-b border-white/[0.1]">
             <h2 className="text-lg font-semibold text-white">Menu</h2>
@@ -491,7 +499,7 @@ const directLinks: SidebarLink[] = [
           <div className="flex-1 p-4 space-y-6">
             {/* Quick Actions - Today's Tasks, Incidents & Attendance */}
             <div className="space-y-2">
-              <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-pink-400">
+              <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-module-fg">
                 Quick Actions
               </div>
               <Link
@@ -499,7 +507,7 @@ const directLinks: SidebarLink[] = [
                 onClick={onMobileClose}
                 className={
                   pathname === "/dashboard/todays_tasks" || pathname.startsWith("/dashboard/todays_tasks")
-                    ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-pink-500/20 text-pink-300 font-medium"
+                    ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-module-fg/25 text-module-fg font-medium"
                     : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
                 }
               >
@@ -511,7 +519,7 @@ const directLinks: SidebarLink[] = [
                 onClick={onMobileClose}
                 className={
                   pathname === "/dashboard/incidents" || pathname.startsWith("/dashboard/incidents")
-                    ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-pink-500/20 text-pink-300 font-medium"
+                    ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-module-fg/25 text-module-fg font-medium"
                     : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
                 }
               >
@@ -523,7 +531,7 @@ const directLinks: SidebarLink[] = [
                 onClick={onMobileClose}
                 className={
                   pathname === "/dashboard/logs/attendance" || pathname.startsWith("/dashboard/logs/attendance")
-                    ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-pink-500/20 text-pink-300 font-medium"
+                    ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-module-fg/25 text-module-fg font-medium"
                     : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
                 }
               >
@@ -561,7 +569,7 @@ const directLinks: SidebarLink[] = [
 
               return (
                 <div key={section.label} className="space-y-2">
-                  <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-pink-400">
+                  <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-module-fg">
                     {section.label}
                   </div>
                   {itemsToShow.map((item) => {
@@ -583,7 +591,7 @@ const directLinks: SidebarLink[] = [
                         }}
                         className={
                           isActive
-                            ? "block px-4 py-2.5 rounded-lg text-sm transition-colors cursor-pointer bg-pink-500/20 text-pink-300 font-medium"
+                            ? "block px-4 py-2.5 rounded-lg text-sm transition-colors cursor-pointer bg-module-fg/25 text-module-fg font-medium"
                             : "block px-4 py-2.5 rounded-lg text-sm transition-colors cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
                         }
                       >
@@ -600,13 +608,20 @@ const directLinks: SidebarLink[] = [
             {/* Bottom Direct Links */}
             {directLinks.slice(1).map((link) => {
               // Remove restrictions - show all links
+              const isMessaging = link.href === '/dashboard/messaging';
               return (
                 <MobileSidebarLink
                   key={link.href}
                   item={link}
-                  isActive={pathname.startsWith(link.href)}
+                  isActive={!isMessaging && pathname.startsWith(link.href)}
                   isRestricted={false}
-                  onClick={onMobileClose}
+                  preventNavigation={isMessaging}
+                  onClick={() => {
+                    if (isMessaging) {
+                      setMessagingOpen(true);
+                    }
+                    onMobileClose?.();
+                  }}
                 />
               );
             })}
@@ -656,19 +671,36 @@ function SidebarDirectLink({
   item,
   isActive,
   isRestricted,
+  onClick,
 }: {
   item: SidebarLink;
   isActive: boolean;
   isRestricted: boolean;
+  onClick?: () => void;
 }) {
   const Icon = item.icon;
 
   // Use static className to prevent hydration mismatches
   // CRITICAL: Must use static string, not template literal, to prevent hydration mismatch
   const staticClassName = isActive
-    ? "relative group flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer bg-[#EC4899]/20 dark:bg-pink-500/20 text-[#EC4899] dark:text-pink-400 shadow-[0_0_12px_rgba(236,72,153,0.4)] border border-[#EC4899]/30 dark:border-pink-500/30"
-    : "relative group flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white hover:bg-[rgb(var(--surface-elevated))] dark:hover:bg-white/[0.08] hover:shadow-[0_0_8px_rgba(236,72,153,0.2)]";
-  
+    ? "relative group flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer bg-module-fg/20 text-module-fg shadow-[0_0_12px_rgb(var(--module-fg)/0.4)] border border-module-fg/30"
+    : "relative group flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white hover:bg-module-fg/[0.08] hover:shadow-[0_0_8px_rgb(var(--module-fg)/0.2)]";
+
+  if (onClick) {
+    return (
+      <button
+        onClick={onClick}
+        className={staticClassName}
+        title={item.label}
+      >
+        <Icon size={20} />
+        <div className="absolute left-full ml-3 px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1e1a17] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg text-[rgb(var(--text-primary))] dark:text-white">
+          {item.label}
+        </div>
+      </button>
+    );
+  }
+
   return (
     <Link
       href={item.href}
@@ -676,7 +708,7 @@ function SidebarDirectLink({
       title={item.label}
     >
       <Icon size={20} />
-      <div className="absolute left-full ml-3 px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1c24] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg text-[rgb(var(--text-primary))] dark:text-white">
+      <div className="absolute left-full ml-3 px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1e1a17] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg text-[rgb(var(--text-primary))] dark:text-white">
         {item.label}
       </div>
     </Link>
@@ -735,8 +767,8 @@ function SidebarSectionItem({
 
   // Use static className to prevent hydration mismatch
   const buttonClassName = (isActive || isHovered)
-    ? "relative flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer bg-[#EC4899]/20 dark:bg-pink-500/20 text-[#EC4899] dark:text-pink-400 border border-[#EC4899]/30 dark:border-pink-500/30 shadow-[0_0_12px_rgba(236,72,153,0.4)]"
-    : "relative flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white hover:bg-[rgb(var(--surface-elevated))] dark:hover:bg-white/[0.08] hover:shadow-[0_0_8px_rgba(236,72,153,0.2)]";
+    ? "relative flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer bg-module-fg/20 text-module-fg border border-module-fg/30 shadow-[0_0_12px_rgb(var(--module-fg)/0.4)]"
+    : "relative flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white hover:bg-module-fg/[0.08] hover:shadow-[0_0_8px_rgb(var(--module-fg)/0.2)]";
   
   return (
     <div
@@ -758,28 +790,37 @@ function MobileSidebarLink({
   isActive,
   isRestricted,
   onClick,
+  preventNavigation,
 }: {
   item: SidebarLink;
   isActive: boolean;
   isRestricted: boolean;
   onClick?: () => void;
+  preventNavigation?: boolean;
 }) {
   const Icon = item.icon;
 
-  const handleClick = (e: React.MouseEvent) => {
-    // No restrictions - allow navigation
-    onClick?.();
-  };
-
   // Use static className to prevent hydration mismatch
   const linkClassName = isActive
-    ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-pink-500/20 text-pink-300 font-medium"
+    ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-module-fg/25 text-module-fg font-medium"
     : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]";
-  
+
+  if (preventNavigation) {
+    return (
+      <button
+        onClick={() => onClick?.()}
+        className={linkClassName + " w-full text-left"}
+      >
+        <Icon size={18} />
+        <span>{item.label}</span>
+      </button>
+    );
+  }
+
   return (
     <Link
       href={item.href}
-      onClick={handleClick}
+      onClick={() => onClick?.()}
       className={linkClassName}
     >
       <Icon size={18} />
@@ -822,9 +863,9 @@ function SidebarPopup({
         }}
         onMouseLeave={onMouseLeave}
       >
-      <div className="pointer-events-auto bg-[rgb(var(--surface-elevated))] dark:bg-[#0f1119]/98 border border-[#EC4899]/30 dark:border-pink-500/20 border-l-2 border-l-[#EC4899] dark:border-l-pink-500 rounded-r-xl backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.4)] min-w-[260px] py-3 animate-slideIn">
+      <div className="pointer-events-auto bg-[rgb(var(--surface-elevated))] dark:bg-[#151210]/98 border border-module-fg/30 dark:border-module-fg/20 border-l-2 border-l-module-fg rounded-r-xl backdrop-blur-sm shadow-[0_8px_32px_rgba(0,0,0,0.4)] min-w-[260px] py-3 animate-slideIn">
         {/* Section Title */}
-        <div className="px-5 py-3 text-sm font-semibold text-[#EC4899] dark:text-pink-400 border-b border-[rgb(var(--border))] dark:border-white/[0.1] mb-2 flex items-center gap-2">
+        <div className="px-5 py-3 text-sm font-semibold text-module-fg border-b border-[rgb(var(--border))] dark:border-white/[0.1] mb-2 flex items-center gap-2">
           <section.icon size={16} />
           <span>{section.label}</span>
         </div>
@@ -847,7 +888,7 @@ function SidebarPopup({
                 href={item.href}
                 className={
                   isActive
-                    ? "block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer bg-[#EC4899]/20 dark:bg-pink-500/20 text-[#EC4899] dark:text-pink-300 font-medium border-l-2 border-l-[#EC4899] dark:border-l-pink-400"
+                    ? "block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer bg-module-fg/20 text-module-fg font-medium border-l-2 border-l-module-fg"
                     : "block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer text-[rgb(var(--text-secondary))] dark:text-white/80 hover:text-[rgb(var(--text-primary))] dark:hover:text-white hover:bg-[rgb(var(--surface))] dark:hover:bg-white/[0.08] hover:pl-5"
                 }
               >

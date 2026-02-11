@@ -1,6 +1,6 @@
 'use client';
 
-import { Send, Lock, AlertCircle, CheckCircle } from 'lucide-react';
+import { Send, Lock, AlertCircle, CheckCircle } from '@/components/ui/icons';
 import { WeekAttendance } from '@/lib/attendance/types';
 
 interface WeekSummaryProps {

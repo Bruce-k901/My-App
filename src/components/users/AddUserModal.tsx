@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button, Input, Select } from "@/components/ui";
 import { useToast } from "@/components/ui/ToastProvider";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from '@/components/ui/icons';
 import { useAppContext } from "@/context/AppContext";
 
 interface AddUserModalProps {
@@ -417,16 +417,16 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
           }
         }} 
       />
-      <div className="relative w-full max-w-lg rounded-xl bg-slate-900 border border-slate-800 p-4 sm:p-6 shadow-xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-lg rounded-xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 p-4 sm:p-6 shadow-xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-white">Add New User</h2>
-          <button className="text-slate-300 hover:text-white" onClick={onClose}>×</button>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Add New User</h2>
+          <button className="text-gray-500 dark:text-slate-300 hover:text-gray-700 dark:hover:text-white" onClick={onClose}>×</button>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-3">
             {/* Full Name */}
             <div>
-              <label className="text-xs text-neutral-400">Full Name</label>
+              <label className="text-xs text-gray-500 dark:text-neutral-400">Full Name</label>
               <Input
                 value={form.full_name}
                 onChange={(e) => updateForm({ full_name: e.target.value })}
@@ -435,7 +435,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
 
             {/* Email */}
             <div>
-              <label className="text-xs text-neutral-400">Email</label>
+              <label className="text-xs text-gray-500 dark:text-neutral-400">Email</label>
               <Input
                 value={form.email}
                 onChange={(e) => updateForm({ email: e.target.value })}
@@ -444,7 +444,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
 
             {/* Role */}
             <div>
-              <label className="text-xs text-neutral-400">Role</label>
+              <label className="text-xs text-gray-500 dark:text-neutral-400">Role</label>
               <Select
                 value={form.app_role}
                 options={roleOptions}
@@ -458,7 +458,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
 
             {/* Position */}
             <div>
-              <label className="text-xs text-neutral-400">Position</label>
+              <label className="text-xs text-gray-500 dark:text-neutral-400">Position</label>
               <Select
                 value={form.position_title}
                 options={[
@@ -478,7 +478,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
 
             {/* BOH/FOH */}
             <div>
-              <label className="text-xs text-neutral-400">BOH/FOH</label>
+              <label className="text-xs text-gray-500 dark:text-neutral-400">BOH/FOH</label>
               <Select
                 value={form.boh_foh || ""}
                 options={[
@@ -496,7 +496,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
 
             {/* Mobile */}
             <div>
-              <label className="text-xs text-neutral-400">Mobile Number</label>
+              <label className="text-xs text-gray-500 dark:text-neutral-400">Mobile Number</label>
               <Input
                 type="tel"
                 value={form.phone_number}
@@ -506,7 +506,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
 
             {/* Home Site */}
             <div>
-              <label className="text-xs text-neutral-400">Home Site</label>
+              <label className="text-xs text-gray-500 dark:text-neutral-400">Home Site</label>
               <Select
                 value={form.site_id || ""}
                 options={sites.map((s) => ({ label: s.name, value: s.id }))}
@@ -518,24 +518,24 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
             {/* Start onboarding */}
             <div className="col-span-2">
               <div className="flex items-center justify-between gap-3">
-                <label className="text-xs text-neutral-400">Onboarding</label>
-                <label className="flex items-center gap-2 text-xs text-white/70 select-none">
+                <label className="text-xs text-gray-500 dark:text-neutral-400">Onboarding</label>
+                <label className="flex items-center gap-2 text-xs text-gray-600 dark:text-white/70 select-none">
                   <input
                     type="checkbox"
                     checked={startOnboarding}
                     onChange={(e) => setStartOnboarding(e.target.checked)}
-                    className="accent-pink-500"
+                    className="accent-[#D37E91]"
                   />
                   Start onboarding now
                 </label>
               </div>
-              <div className="text-xs text-white/50 mt-1">
+              <div className="text-xs text-gray-500 dark:text-white/50 mt-1">
                 Recommended: assign docs now, then add them to rota once complete.
               </div>
               {startOnboarding && (
                 <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-neutral-400">Onboarding pack</label>
+                    <label className="text-xs text-gray-500 dark:text-neutral-400">Onboarding pack</label>
                     <Select
                       value={onboardingPackId}
                       options={onboardingPacks.map((p) => ({
@@ -548,7 +548,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-neutral-400">Message (optional)</label>
+                    <label className="text-xs text-gray-500 dark:text-neutral-400">Message (optional)</label>
                     <Input
                       value={onboardingMessage}
                       onChange={(e) => setOnboardingMessage(e.target.value)}
@@ -561,7 +561,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
 
             {/* PIN Code */}
             <div>
-              <label className="text-xs text-neutral-400">PIN Code</label>
+              <label className="text-xs text-gray-500 dark:text-neutral-400">PIN Code</label>
               <div className="flex gap-2 mt-1 items-center">
                 <div className="relative flex-1">
                   <Input
@@ -579,7 +579,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
                   <button
                     type="button"
                     onClick={() => setShowPin((v) => !v)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-pink-400"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 dark:text-neutral-400 hover:text-[#D37E91]"
                   >
                     {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -587,7 +587,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
                 <Button
                   type="button"
                   variant="ghost"
-                  className="border-pink-500 text-pink-500 hover:bg-pink-500/10"
+                  className="border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/15"
                   onClick={() => {
                     const code = Math.floor(1000 + Math.random() * 9000).toString();
                     updateForm({ pin_code: code });
@@ -600,14 +600,14 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
           </div>
 
           {/* Training Certificates Section */}
-          <div className="mt-6 pt-6 border-t border-white/[0.1]">
-            <h3 className="text-sm font-semibold text-white mb-4">Training Certificates</h3>
+          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-white/[0.1]">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">Training Certificates</h3>
             
             <div className="space-y-4">
               {/* Food Safety */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-neutral-400">Food Safety Level</label>
+                  <label className="text-xs text-gray-500 dark:text-neutral-400">Food Safety Level</label>
                   <Select
                     value={form.food_safety_level ? form.food_safety_level.toString() : undefined}
                     placeholder="Select Level"
@@ -623,7 +623,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-neutral-400">Food Safety Expiry Date</label>
+                  <label className="text-xs text-gray-500 dark:text-neutral-400">Food Safety Expiry Date</label>
                   <Input
                     type="date"
                     value={form.food_safety_expiry_date || ""}
@@ -635,7 +635,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
               {/* Health & Safety */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-neutral-400">H&S Level</label>
+                  <label className="text-xs text-gray-500 dark:text-neutral-400">H&S Level</label>
                   <Select
                     value={form.h_and_s_level ? form.h_and_s_level.toString() : undefined}
                     placeholder="Select Level"
@@ -650,7 +650,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-neutral-400">H&S Expiry Date</label>
+                  <label className="text-xs text-gray-500 dark:text-neutral-400">H&S Expiry Date</label>
                   <Input
                     type="date"
                     value={form.h_and_s_expiry_date || ""}
@@ -662,21 +662,21 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
               {/* Fire Marshal */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-neutral-400">Fire Marshal Trained</label>
+                  <label className="text-xs text-gray-500 dark:text-neutral-400">Fire Marshal Trained</label>
                   <div className="flex items-center gap-2 mt-1">
                     <input
                       type="checkbox"
                       checked={form.fire_marshal_trained || false}
                       onChange={(e) => updateForm({ fire_marshal_trained: e.target.checked })}
-                      className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-pink-500 focus:ring-pink-500"
+                      className="w-4 h-4 rounded border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 text-[#D37E91] focus:ring-[#D37E91]"
                     />
-                    <span className="text-xs text-neutral-400">
+                    <span className="text-xs text-gray-500 dark:text-neutral-400">
                       {form.fire_marshal_trained ? "Yes" : "No"}
                     </span>
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-neutral-400">Fire Marshal Expiry Date</label>
+                  <label className="text-xs text-gray-500 dark:text-neutral-400">Fire Marshal Expiry Date</label>
                   <Input
                     type="date"
                     value={form.fire_marshal_expiry_date || ""}
@@ -689,21 +689,21 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
               {/* First Aid */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-neutral-400">First Aid Trained</label>
+                  <label className="text-xs text-gray-500 dark:text-neutral-400">First Aid Trained</label>
                   <div className="flex items-center gap-2 mt-1">
                     <input
                       type="checkbox"
                       checked={form.first_aid_trained || false}
                       onChange={(e) => updateForm({ first_aid_trained: e.target.checked })}
-                      className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-pink-500 focus:ring-pink-500"
+                      className="w-4 h-4 rounded border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 text-[#D37E91] focus:ring-[#D37E91]"
                     />
-                    <span className="text-xs text-neutral-400">
+                    <span className="text-xs text-gray-500 dark:text-neutral-400">
                       {form.first_aid_trained ? "Yes" : "No"}
                     </span>
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-neutral-400">First Aid Expiry Date</label>
+                  <label className="text-xs text-gray-500 dark:text-neutral-400">First Aid Expiry Date</label>
                   <Input
                     type="date"
                     value={form.first_aid_expiry_date || ""}
@@ -716,21 +716,21 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
               {/* COSSH */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-neutral-400">COSSH Trained</label>
+                  <label className="text-xs text-gray-500 dark:text-neutral-400">COSSH Trained</label>
                   <div className="flex items-center gap-2 mt-1">
                     <input
                       type="checkbox"
                       checked={form.cossh_trained || false}
                       onChange={(e) => updateForm({ cossh_trained: e.target.checked })}
-                      className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-pink-500 focus:ring-pink-500"
+                      className="w-4 h-4 rounded border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 text-[#D37E91] focus:ring-[#D37E91]"
                     />
-                    <span className="text-xs text-neutral-400">
+                    <span className="text-xs text-gray-500 dark:text-neutral-400">
                       {form.cossh_trained ? "Yes" : "No"}
                     </span>
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-neutral-400">COSSH Expiry Date</label>
+                  <label className="text-xs text-gray-500 dark:text-neutral-400">COSSH Expiry Date</label>
                   <Input
                     type="date"
                     value={form.cossh_expiry_date || ""}
@@ -745,14 +745,14 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
           <div className="flex justify-end gap-2 mt-4">
             <Button
               variant="ghost"
-              className="border-pink-500 text-pink-500 hover:bg-pink-500/10"
+              className="border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/15"
               onClick={onClose}
             >
               Cancel
             </Button>
             <Button
               variant="ghost"
-              className="border-pink-500 text-pink-500 hover:bg-pink-500/10"
+              className="border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/15"
               onClick={handleSubmit}
               disabled={saving}
             >

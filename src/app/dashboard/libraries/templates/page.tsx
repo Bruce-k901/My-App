@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Search, Download, FileText, Package, Shield, Droplets, Coffee, Box, Wine, ShoppingBag, UtensilsCrossed, Zap, Heart } from 'lucide-react';
+import { Search, Download, FileText, Package, Shield, Droplets, Coffee, Box, Wine, ShoppingBag, UtensilsCrossed, Zap, Heart } from '@/components/ui/icons';
 import { useToast } from '@/components/ui/ToastProvider';
 import { useRouter } from 'next/navigation';
 
@@ -46,7 +46,7 @@ const LIBRARY_TEMPLATES: LibraryTemplate[] = [
     description: 'Cleaning chemicals and hazardous substances with safety data',
     tableName: 'chemicals_library',
     icon: Droplets,
-    color: 'from-purple-500/20 to-pink-500/20',
+    color: 'from-purple-500/20 to-[#D37E91]/25',
     borderColor: 'border-purple-500/30',
     fields: ['product_name', 'manufacturer', 'use_case', 'hazard_symbols', 'dilution_ratio', 'contact_time', 'required_ppe', 'coshh_sheet_url', 'supplier', 'unit_cost', 'pack_size', 'storage_requirements', 'linked_risks', 'first_aid_instructions', 'environmental_info', 'notes'],
     csvHeaders: ['product_name', 'manufacturer', 'use_case', 'hazard_symbols', 'dilution_ratio', 'contact_time', 'required_ppe', 'coshh_sheet_url', 'supplier', 'unit_cost', 'pack_size', 'storage_requirements', 'linked_risks', 'first_aid_instructions', 'environmental_info', 'notes']
@@ -101,7 +101,7 @@ const LIBRARY_TEMPLATES: LibraryTemplate[] = [
     description: 'Plates, bowls, utensils, and serving tools',
     tableName: 'equipment_library',
     icon: UtensilsCrossed,
-    color: 'from-rose-500/20 to-pink-500/20',
+    color: 'from-rose-500/20 to-[#D37E91]/25',
     borderColor: 'border-rose-500/30',
     fields: ['item_name', 'category', 'material', 'size_dimensions', 'shape', 'use_case', 'color_finish', 'dishwasher_safe', 'oven_safe', 'supplier', 'brand', 'color_coding', 'unit_cost', 'storage_location', 'notes'],
     csvHeaders: ['item_name', 'category', 'material', 'size_dimensions', 'shape', 'use_case', 'color_finish', 'dishwasher_safe', 'oven_safe', 'supplier', 'brand', 'color_coding', 'unit_cost', 'storage_location', 'notes']
@@ -205,7 +205,7 @@ export default function LibraryTemplatesPage() {
             placeholder="Search library templates..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+            className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
           />
         </div>
       </div>
@@ -268,7 +268,7 @@ export default function LibraryTemplatesPage() {
           <p className="text-white/60 mb-2">No templates match your search</p>
           <button
             onClick={() => setSearchQuery('')}
-            className="text-pink-400 hover:text-pink-300 text-sm mt-2"
+            className="text-[#D37E91] hover:text-[#D37E91] text-sm mt-2"
           >
             Clear search
           </button>

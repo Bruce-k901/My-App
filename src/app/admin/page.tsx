@@ -19,8 +19,9 @@ import {
   MessageSquare,
   Phone,
   Award,
-  RefreshCw
-} from 'lucide-react';
+  RefreshCw,
+  HeartPulse
+} from '@/components/ui/icons';
 import Link from 'next/link';
 
 interface PlatformStats {
@@ -479,7 +480,7 @@ export default function AdminDashboardPage() {
   if (!mounted) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -522,11 +523,28 @@ export default function AdminDashboardPage() {
         <button
           onClick={handleRefresh}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 ease-in-out disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg transition-all duration-200 ease-in-out disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           Refresh
         </button>
+      </div>
+
+      {/* Quick Access Tools */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Link
+          href="/admin/health-check-test"
+          className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/[0.06] rounded-xl hover:bg-white/[0.05] hover:border-emerald-500/30 transition-all group"
+        >
+          <div className="p-3 bg-emerald-500/10 rounded-lg">
+            <HeartPulse className="w-6 h-6 text-emerald-400" />
+          </div>
+          <div className="flex-1">
+            <div className="text-white font-semibold group-hover:text-emerald-400 transition-colors">Health Check Test</div>
+            <div className="text-xs text-white/50">Reports, calendar tasks, delegation & AI fix testing</div>
+          </div>
+          <ArrowRight className="w-4 h-4 text-white/30 group-hover:text-emerald-400 transition-colors" />
+        </Link>
       </div>
 
       {/* Primary Stats Grid - 4 Cards */}
@@ -534,8 +552,8 @@ export default function AdminDashboardPage() {
         {/* Total Companies */}
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 hover:bg-white/[0.05] transition-colors">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-[#EC4899]/10 rounded-lg">
-              <Building2 className="w-6 h-6 text-[#EC4899]" />
+            <div className="p-3 bg-[#D37E91]/10 rounded-lg">
+              <Building2 className="w-6 h-6 text-[#D37E91]" />
             </div>
             {stats && stats.new_companies_this_week > 0 && (
               <span className="text-xs text-green-400 bg-green-500/10 px-2.5 py-1 rounded-full font-medium">
@@ -728,8 +746,8 @@ export default function AdminDashboardPage() {
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-[#EC4899]/10 rounded-lg">
-              <Award className="w-6 h-6 text-[#EC4899]" />
+            <div className="p-2.5 bg-[#D37E91]/10 rounded-lg">
+              <Award className="w-6 h-6 text-[#D37E91]" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-white">EHO Readiness Scores</h2>
@@ -738,7 +756,7 @@ export default function AdminDashboardPage() {
           </div>
           <Link 
             href="/admin/companies" 
-            className="text-[#EC4899] hover:text-[#EC4899]/80 text-sm flex items-center gap-1 transition-colors"
+            className="text-[#D37E91] hover:text-[#D37E91]/80 text-sm flex items-center gap-1 transition-colors"
           >
             View all <ArrowRight className="w-4 h-4" />
           </Link>
@@ -784,7 +802,7 @@ export default function AdminDashboardPage() {
                   </div>
                   
                   <div>
-                    <h3 className="text-white font-semibold group-hover:text-[#EC4899] transition-colors">{company.name}</h3>
+                    <h3 className="text-white font-semibold group-hover:text-[#D37E91] transition-colors">{company.name}</h3>
                     <p className="text-white/60 text-sm">
                       {company.user_count} users • {company.site_count} sites
                     </p>
@@ -814,7 +832,7 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
 
-                  <div className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg text-sm transition-all duration-200 ease-in-out">
+                  <div className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg text-sm transition-all duration-200 ease-in-out">
                     View Details
                   </div>
                 </div>

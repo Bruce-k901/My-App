@@ -10,7 +10,7 @@ import {
   AlertTriangle,
   Info,
   Loader2
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface DeliveryInfo {
   next_delivery_date: string;

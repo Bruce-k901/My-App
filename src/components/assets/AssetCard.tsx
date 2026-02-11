@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Edit2, Save, X, Archive, Paperclip, Trash2, ChevronUp, Edit3, Wrench, Phone } from "lucide-react";
+import { Edit2, Save, X, Archive, Paperclip, Trash2, ChevronUp, Edit3, Wrench, Phone, Layers } from '@/components/ui/icons';
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
 import { useToast } from "@/components/ui/ToastProvider";
@@ -42,6 +42,8 @@ interface Asset {
   document_url: string | null;
   working_temp_min: number | null;
   working_temp_max: number | null;
+  ppm_group_id: string | null;
+  ppm_group_name: string | null;
 }
 
 interface AssetCardProps {
@@ -382,26 +384,37 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
                     </span>
                   </div>
                 </div>
-                <EditableField
-                  label="Next Service Date"
-                  value={asset.next_service_date}
-                  type="date"
-                  onSave={(value) => handleFieldUpdate('next_service_date', value)}
-                />
-                <EditableField
-                  label="PPM Frequency"
-                  value={asset.ppm_frequency_months ? `every ${asset.ppm_frequency_months} months` : '—'}
-                  type="text"
-                  onSave={(value) => {
-                    // Extract number from "every X months" format or just number
-                    const match = value.match(/every (\d+) months?/i);
-                    const months = match ? parseInt(match[1]) : parseInt(value);
-                    if (months && months >= 1) {
-                      handleFieldUpdate('ppm_frequency_months', months.toString());
-                    }
-                  }}
-                  placeholder="every 6 months"
-                />
+                {asset.ppm_group_id ? (
+                  <div className="col-span-2 flex items-center gap-2 px-2 py-2 rounded-lg bg-cyan-50 dark:bg-cyan-500/10 border border-cyan-200 dark:border-cyan-500/20 text-sm">
+                    <Layers className="w-4 h-4 text-cyan-600 dark:text-cyan-400 flex-shrink-0" />
+                    <span className="text-cyan-700 dark:text-cyan-300">
+                      PPM managed by group: <strong>{asset.ppm_group_name || 'Unknown'}</strong>
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    <EditableField
+                      label="Next Service Date"
+                      value={asset.next_service_date}
+                      type="date"
+                      onSave={(value) => handleFieldUpdate('next_service_date', value)}
+                    />
+                    <EditableField
+                      label="PPM Frequency"
+                      value={asset.ppm_frequency_months ? `every ${asset.ppm_frequency_months} months` : '—'}
+                      type="text"
+                      onSave={(value) => {
+                        // Extract number from "every X months" format or just number
+                        const match = value.match(/every (\d+) months?/i);
+                        const months = match ? parseInt(match[1]) : parseInt(value);
+                        if (months && months >= 1) {
+                          handleFieldUpdate('ppm_frequency_months', months.toString());
+                        }
+                      }}
+                      placeholder="every 6 months"
+                    />
+                  </>
+                )}
               </div>
             </div>
 
@@ -412,13 +425,20 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
               </h3>
               <div className="grid grid-cols-2 gap-x-12 gap-y-4 items-center text-sm mt-4 py-2 relative">
                 <div className="absolute left-1/2 top-0 bottom-0 w-px bg-cyan-300 dark:bg-cyan-500/40"></div>
-                <EditableField
-                  label="PPM Contractor"
-                  value={asset.ppm_contractor_name}
-                  type="select"
-                  fetchOptions={fetchContractors}
-                  onSave={(value) => handleFieldUpdate('ppm_contractor_id', value)}
-                />
+                {asset.ppm_group_id ? (
+                  <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
+                    <span className="text-gray-500 dark:text-neutral-400">PPM Contractor</span>
+                    <span className="text-gray-400 dark:text-gray-500 text-xs italic">via group</span>
+                  </div>
+                ) : (
+                  <EditableField
+                    label="PPM Contractor"
+                    value={asset.ppm_contractor_name}
+                    type="select"
+                    fetchOptions={fetchContractors}
+                    onSave={(value) => handleFieldUpdate('ppm_contractor_id', value)}
+                  />
+                )}
                 <EditableField
                   label="Reactive Contractor"
                   value={asset.reactive_contractor_name}

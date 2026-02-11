@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { X, Plus, Calendar, MapPin, Trash2 } from 'lucide-react';
+import { X, Plus, Calendar, MapPin, Trash2 } from '@/components/ui/icons';
 import { useToast } from '@/components/ui/ToastProvider';
 
 interface SiteAssignment {

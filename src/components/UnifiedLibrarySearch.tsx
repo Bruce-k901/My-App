@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Search, X, ChevronDown, Package, Shield, FlaskConical, Coffee, ShoppingBag, GlassWater, Boxes, UtensilsCrossed } from 'lucide-react';
+import { Search, X, ChevronDown, Package, Shield, FlaskConical, Coffee, ShoppingBag, GlassWater, Boxes, UtensilsCrossed } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 
@@ -72,9 +72,9 @@ const LIBRARIES = [
     id: 'serving_equipment_library', 
     name: 'Serving Equipment', 
     icon: UtensilsCrossed, 
-    color: 'text-pink-400',
-    bgColor: 'bg-pink-500/10',
-    borderColor: 'border-pink-500/30'
+    color: 'text-[#D37E91]',
+    bgColor: 'bg-[#D37E91]/15',
+    borderColor: 'border-[#D37E91]/30'
   }
 ];
 
@@ -276,7 +276,7 @@ export default function UnifiedLibrarySearch({
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
           placeholder="Type to search across all libraries (Ingredients, PPE, Chemicals, Drinks, etc.)..."
-          className="w-full bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg pl-10 pr-10 py-3 text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:border-[#EC4899] focus:ring-2 focus:ring-[#EC4899]/20 transition-all"
+          className="w-full bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg pl-10 pr-10 py-3 text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 transition-all"
           autoFocus
         />
         {searchQuery && (

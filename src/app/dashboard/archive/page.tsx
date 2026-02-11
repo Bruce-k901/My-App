@@ -33,7 +33,7 @@ import {
   Loader2,
   AlertCircle,
   X
-} from 'lucide-react'
+} from '@/components/ui/icons'
 
 type ArchiveType =
   | 'assets'
@@ -138,8 +138,8 @@ export default function ArchiveCenterPage() {
       id: 'recipes',
       label: 'Recipes',
       icon: Package,
-      color: 'text-pink-600',
-      darkColor: 'dark:text-pink-400',
+      color: 'text-[#D37E91]',
+      darkColor: 'dark:text-[#D37E91]',
       enabled: false
     },
     {

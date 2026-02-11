@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 /**
  * GET /api/order-book/customers
  * Get customer profile(s)
- * Query params: customer_id (optional - if not provided, gets user's customer record)
+ * Query params:
+ *   customer_id (optional - if not provided, gets user's customer record)
+ *   list=true (optional - platform admins can list all customers for preview mode)
  */
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify user is authenticated
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
@@ -17,10 +20,42 @@ export async function GET(request: NextRequest) {
     }
 
     const customerId = request.nextUrl.searchParams.get('customer_id');
+    const listAll = request.nextUrl.searchParams.get('list') === 'true';
+
+    // Check if user is a platform admin (needed for admin preview mode)
+    let isPlatformAdmin = false;
+    if (customerId || listAll) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_platform_admin, app_role')
+        .eq('auth_user_id', user.id)
+        .maybeSingle();
+      isPlatformAdmin = !!(profile?.is_platform_admin || profile?.app_role === 'Owner');
+    }
+
+    // List all customers (admin preview mode)
+    if (listAll && isPlatformAdmin) {
+      const adminClient = getSupabaseAdmin();
+      const { data: customers, error } = await adminClient
+        .from('order_book_customers')
+        .select('id, business_name')
+        .order('business_name');
+
+      if (error) {
+        console.error('Error listing customers:', error);
+        return NextResponse.json(
+          { error: error.message || 'Failed to list customers' },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json({ success: true, data: customers || [] });
+    }
 
     if (customerId) {
-      // Get specific customer (RLS will enforce access)
-      const { data: customer, error } = await supabase
+      // Use admin client for platform admins to bypass RLS
+      const client = isPlatformAdmin ? getSupabaseAdmin() : supabase;
+      const { data: customer, error } = await client
         .from('order_book_customers')
         .select('*')
         .eq('id', customerId)
@@ -78,4 +113,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

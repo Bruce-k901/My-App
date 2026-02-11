@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from '@/components/ui/icons';
 import { MultiChoice } from '../components/MultiChoice';
 import { OnboardingForm } from '../components/OnboardingForm';
 import { PageShell as LayoutShell } from '../components/PageShell';

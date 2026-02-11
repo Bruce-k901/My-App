@@ -26,18 +26,29 @@ export default function OpslyLogo({ size = 'md', showText = true, className = ''
   const height = heightMap[size];
   const width = widthMap[size];
 
-  // Use SVG for better quality and scalability
-  const logoSrc = "/new_logos_opsly/opsly_logo_v5_transparent.svg";
+  const logoSrcLight = "/new_logos_opsly/opsly-logo-light.svg";
+  const logoSrcDark = "/new_logos_opsly/opsly-logo-dark.svg";
 
   return (
-    <img
-      src={logoSrc}
-      alt="Opsly"
-      width={width}
-      height={height}
-      className={className}
-      loading="eager"
-      decoding="async"
-    />
+    <>
+      <img
+        src={logoSrcLight}
+        alt="Opsly"
+        width={width}
+        height={height}
+        className={`dark:hidden ${className}`}
+        loading="eager"
+        decoding="async"
+      />
+      <img
+        src={logoSrcDark}
+        alt="Opsly"
+        width={width}
+        height={height}
+        className={`hidden dark:block ${className}`}
+        loading="eager"
+        decoding="async"
+      />
+    </>
   );
 }

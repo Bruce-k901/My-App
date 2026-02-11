@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Loader2, Calendar, ChevronLeft, ChevronRight, Repeat } from 'lucide-react';
+import { ArrowLeft, Loader2, Calendar, ChevronLeft, ChevronRight, Repeat } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import {
   getProductCatalog,
@@ -30,6 +30,7 @@ export default function NewOrderPage() {
   const [submitting, setSubmitting] = useState(false);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
+  const [customerPricing, setCustomerPricing] = useState<Map<string, number>>(new Map());
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [gridQuantities, setGridQuantities] = useState<GridQuantity>({});
   const [error, setError] = useState<string | null>(null);
@@ -50,8 +51,11 @@ export default function NewOrderPage() {
       }
       setCustomer(customerData);
 
-      // Load products
-      const productsData = await getProductCatalog(customerData.supplier_id);
+      // Load products and customer pricing in parallel
+      const [productsData, pricingResponse] = await Promise.all([
+        getProductCatalog(customerData.site_id),
+        fetch(`/api/customer/pricing?customer_id=${customerData.id}`),
+      ]);
       const sorted = productsData.sort((a, b) => {
         if (a.category !== b.category) {
           return (a.category || 'Other').localeCompare(b.category || 'Other');
@@ -59,6 +63,16 @@ export default function NewOrderPage() {
         return a.name.localeCompare(b.name);
       });
       setProducts(sorted);
+
+      // Load customer-specific pricing
+      const pricingMap = new Map<string, number>();
+      if (pricingResponse.ok) {
+        const pricingData = await pricingResponse.json();
+        pricingData.data?.forEach((p: any) => {
+          pricingMap.set(p.product_id, p.custom_price);
+        });
+      }
+      setCustomerPricing(pricingMap);
 
       // Generate 7 days starting from Monday with 3-day lead time
       const MIN_LEAD_TIME_DAYS = 3;
@@ -147,19 +161,25 @@ export default function NewOrderPage() {
     return gridQuantities[productId]?.[date] || 0;
   }
 
+  function getProductPrice(productId: string): number {
+    const customPrice = customerPricing.get(productId);
+    if (customPrice !== undefined && customPrice !== null) return customPrice;
+    const product = products.find((p) => p.id === productId);
+    return product?.base_price || 0;
+  }
+
   function getTotalForDate(date: string): number {
     return products.reduce((total, product) => {
       const qty = getQuantity(product.id, date);
-      return total + product.base_price * qty;
+      return total + getProductPrice(product.id) * qty;
     }, 0);
   }
 
   function getTotalForProduct(productId: string): number {
-    const product = products.find((p) => p.id === productId);
-    if (!product) return 0;
+    const price = getProductPrice(productId);
     return availableDates.reduce((total, date) => {
       const qty = getQuantity(productId, date);
-      return total + product.base_price * qty;
+      return total + price * qty;
     }, 0);
   }
 
@@ -207,7 +227,7 @@ export default function NewOrderPage() {
       // Create orders for each date sequentially to avoid race condition with order number generation
       for (const date of datesWithOrders) {
         await createOrder({
-          supplier_id: customer.supplier_id,
+          site_id: customer.site_id,
           customer_id: customer.id,
           delivery_date: date,
           items: ordersByDate[date],
@@ -297,7 +317,6 @@ export default function NewOrderPage() {
       } else {
         // Create new standing order
         await createStandingOrder({
-          supplier_id: customer.supplier_id,
           customer_id: customer.id,
           delivery_days: deliveryDays,
           items: standingOrderItems,
@@ -315,7 +334,7 @@ export default function NewOrderPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -390,7 +409,7 @@ export default function NewOrderPage() {
                     className="bg-white/[0.05] px-3 py-3 text-center text-xs font-semibold text-white/80 min-w-[100px]"
                   >
                     <div className="flex flex-col items-center gap-1">
-                      <Calendar className="w-4 h-4 text-[#EC4899]" />
+                      <Calendar className="w-4 h-4 text-[#D37E91]" />
                       <span>{formatDate(date)}</span>
                     </div>
                   </th>
@@ -456,7 +475,7 @@ export default function NewOrderPage() {
                             <div>
                               <div className="font-medium text-white text-sm">{product.name}</div>
                               <div className="text-xs text-white/60 mt-0.5">
-                                {formatCurrency(product.base_price)} / {product.unit}
+                                {formatCurrency(getProductPrice(product.id))} / {product.unit}
                               </div>
                             </div>
                           </td>
@@ -474,7 +493,7 @@ export default function NewOrderPage() {
                                     const value = parseInt(e.target.value) || 0;
                                     updateQuantity(product.id, date, value);
                                   }}
-                                  className={`w-full px-2 py-2 border rounded text-center focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 min-h-[44px] ${
+                                  className={`w-full px-2 py-2 border rounded text-center focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 min-h-[44px] ${
                                     hasValue
                                       ? 'text-[#10B981] font-semibold text-base bg-[#10B981]/10 border-[#10B981]/30'
                                       : 'text-white text-sm bg-white/[0.03] border-white/[0.1]'
@@ -486,7 +505,7 @@ export default function NewOrderPage() {
                           })}
                           <td className="px-4 py-3 text-right text-sm font-medium text-white/80 bg-white/[0.02]">
                             {getTotalForProduct(product.id) > 0 && (
-                              <span className="text-[#EC4899]">
+                              <span className="text-[#D37E91]">
                                 {formatCurrency(getTotalForProduct(product.id))}
                               </span>
                             )}
@@ -507,14 +526,14 @@ export default function NewOrderPage() {
                   return (
                     <td key={date} className="px-2 py-3 text-center">
                       {total > 0 && (
-                        <span className="text-[#EC4899] text-sm font-semibold">
+                        <span className="text-[#D37E91] text-sm font-semibold">
                           {formatCurrency(total)}
                         </span>
                       )}
                     </td>
                   );
                 })}
-                <td className="px-4 py-3 text-right text-lg font-bold text-[#EC4899] bg-white/[0.05]">
+                <td className="px-4 py-3 text-right text-lg font-bold text-[#D37E91] bg-white/[0.05]">
                   {formatCurrency(getGrandTotal())}
                 </td>
               </tr>
@@ -528,7 +547,7 @@ export default function NewOrderPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="text-lg font-semibold text-white mb-1">
-              Grand Total: <span className="text-[#EC4899]">{formatCurrency(getGrandTotal())}</span>
+              Grand Total: <span className="text-[#D37E91]">{formatCurrency(getGrandTotal())}</span>
             </div>
             {!hasAnyOrders && (
               <p className="text-sm text-white/60">Enter quantities above to place your order</p>
@@ -543,7 +562,7 @@ export default function NewOrderPage() {
             <Button
               onClick={handleSubmit}
               variant="primary"
-              className="min-h-[44px] bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] whitespace-nowrap"
+              className="min-h-[44px] bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] whitespace-nowrap"
               disabled={submitting || !hasAnyOrders}
             >
               {submitting ? (

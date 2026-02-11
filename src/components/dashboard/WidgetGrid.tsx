@@ -1,10 +1,11 @@
 'use client';
 
 import { Suspense, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '@/context/AppContext';
 import { useEnabledModules } from '@/hooks/dashboard';
 import { useDashboardPreferences } from '@/hooks/dashboard/useDashboardPreferences';
-import { WIDGET_REGISTRY, getDefaultWidgetsForRole, type ModuleId } from '@/config/widget-registry';
+import { WIDGET_REGISTRY, WIDGET_SIZE_CLASSES, getDefaultWidgetsForRole, type ModuleId } from '@/config/widget-registry';
 import { WidgetSkeleton } from './WidgetCard';
 import { cn } from '@/lib/utils';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -13,32 +14,20 @@ interface WidgetGridProps {
   variant?: 'mobile' | 'desktop';
 }
 
-/**
- * WidgetErrorFallback - Shown when a widget crashes
- */
 function WidgetErrorFallback({ error }: { error: Error }) {
   return (
-    <div className="bg-[#171B2D] border border-white/[0.06] rounded-lg p-4">
-      <div className="text-fuchsia-400 text-xs font-medium mb-1">Widget Error</div>
-      <div className="text-white/40 text-xs">{error.message}</div>
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D] border border-module-fg/[0.12] rounded-lg p-4">
+      <div className="text-teamly text-xs font-medium mb-1">Widget Error</div>
+      <div className="text-[rgb(var(--text-disabled))] text-xs">{error.message}</div>
     </div>
   );
 }
 
-/**
- * WidgetGrid - Responsive grid of dashboard widgets
- *
- * Layout:
- * - Desktop (>1024px): 3 columns
- * - Tablet (768-1024px): 2 columns
- * - Mobile (<768px): 1 column
- */
 export function WidgetGrid({ variant = 'desktop' }: WidgetGridProps) {
   const { companyId, siteId, profile } = useAppContext();
   const { enabledModules, loading: modulesLoading } = useEnabledModules();
   const { preferences, loading: prefsLoading } = useDashboardPreferences();
 
-  // Determine user role
   const userRole = useMemo(() => {
     const role = profile?.app_role?.toLowerCase();
     if (role === 'owner') return 'Owner';
@@ -47,29 +36,24 @@ export function WidgetGrid({ variant = 'desktop' }: WidgetGridProps) {
     return 'Staff';
   }, [profile?.app_role]);
 
-  // Get visible widgets
   const visibleWidgets = useMemo(() => {
-    // If preferences exist and have widgets, use them
     if (preferences.visibleWidgets.length > 0) {
       return preferences.visibleWidgets;
     }
-
-    // Otherwise fall back to role defaults
     return getDefaultWidgetsForRole(userRole as any);
   }, [preferences.visibleWidgets, userRole]);
 
-  // Filter widgets by enabled modules and visibility
+  // Filter widgets — exclude chart-section widgets (rendered by ChartSection)
   const widgetsToRender = useMemo(() => {
     return visibleWidgets.filter((widgetId) => {
       const widget = WIDGET_REGISTRY[widgetId];
       if (!widget) return false;
-
-      // Check if module is enabled
+      // Skip chart widgets — they're rendered in ChartSection
+      if (widget.section === 'charts') return false;
       return enabledModules.includes(widget.module);
     });
   }, [visibleWidgets, enabledModules]);
 
-  // Loading state
   if (modulesLoading || prefsLoading) {
     return (
       <div
@@ -85,12 +69,11 @@ export function WidgetGrid({ variant = 'desktop' }: WidgetGridProps) {
     );
   }
 
-  // No widgets to show
   if (widgetsToRender.length === 0) {
     return (
-      <div className="bg-[#171B2D] border border-white/[0.06] rounded-lg p-8 text-center">
-        <div className="text-white/40 text-sm">No widgets to display</div>
-        <div className="text-white/20 text-xs mt-1">
+      <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D] border border-module-fg/[0.12] rounded-lg p-8 text-center">
+        <div className="text-[rgb(var(--text-disabled))] text-sm">No widgets to display</div>
+        <div className="text-[rgb(var(--text-disabled))]/60 text-xs mt-1">
           Enable modules or customize your dashboard settings
         </div>
       </div>
@@ -98,30 +81,46 @@ export function WidgetGrid({ variant = 'desktop' }: WidgetGridProps) {
   }
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.3 }}
       className={cn(
         'grid gap-3',
         variant === 'mobile' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
       )}
     >
-      {widgetsToRender.map((widgetId) => {
-        const widget = WIDGET_REGISTRY[widgetId];
-        if (!widget) return null;
+      <AnimatePresence mode="popLayout">
+        {widgetsToRender.map((widgetId, index) => {
+          const widget = WIDGET_REGISTRY[widgetId];
+          if (!widget) return null;
 
-        const WidgetComponent = widget.component;
+          const WidgetComponent = widget.component;
+          const sizeClass = WIDGET_SIZE_CLASSES[widget.size] || 'col-span-1';
 
-        return (
-          <ErrorBoundary key={widgetId} FallbackComponent={WidgetErrorFallback}>
-            <Suspense fallback={<WidgetSkeleton />}>
-              <WidgetComponent
-                siteId={siteId || ''}
-                companyId={companyId || ''}
-              />
-            </Suspense>
-          </ErrorBoundary>
-        );
-      })}
-    </div>
+          return (
+            <motion.div
+              key={widgetId}
+              layout
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+              className={variant === 'mobile' ? '' : sizeClass}
+            >
+              <ErrorBoundary FallbackComponent={WidgetErrorFallback}>
+                <Suspense fallback={<WidgetSkeleton />}>
+                  <WidgetComponent
+                    siteId={siteId || ''}
+                    companyId={companyId || ''}
+                  />
+                </Suspense>
+              </ErrorBoundary>
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 

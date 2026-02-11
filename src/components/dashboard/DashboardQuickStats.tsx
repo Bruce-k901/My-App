@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAppContext } from '@/context/AppContext'
 import { supabase } from '@/lib/supabase'
-import { CheckSquare, AlertTriangle, ShieldCheck, Clock, TrendingUp } from 'lucide-react'
+import { CheckSquare, AlertTriangle, ShieldCheck, Clock, TrendingUp } from '@/components/ui/icons'
 import Link from 'next/link'
 
 interface QuickStats {
@@ -143,11 +143,11 @@ export default function DashboardQuickStats() {
       {/* Today's Tasks */}
       <Link
         href="/dashboard/todays_tasks"
-        className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5 hover:border-[#EC4899]/50 dark:hover:border-[#EC4899]/50 transition-all group"
+        className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-all group"
       >
         <div className="flex items-start justify-between mb-3">
-          <div className="p-2 bg-pink-100 dark:bg-pink-500/10 rounded-lg group-hover:bg-pink-200 dark:group-hover:bg-pink-500/20 transition-colors">
-            <CheckSquare className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+          <div className="p-2 bg-[#D37E91]/10 dark:bg-[#D37E91]/15 rounded-lg group-hover:bg-[#D37E91]/20 dark:group-hover:bg-[#D37E91]/25 transition-colors">
+            <CheckSquare className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
           </div>
           {stats.overdueTasks > 0 && (
             <span className="px-2 py-1 text-xs font-semibold bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 rounded-full">
@@ -167,13 +167,13 @@ export default function DashboardQuickStats() {
               <span className="text-[rgb(var(--text-tertiary))] dark:text-white/40">
                 {stats.completedTasks} completed
               </span>
-              <span className="text-pink-600 dark:text-pink-400 font-medium">
+              <span className="text-[#D37E91] dark:text-[#D37E91] font-medium">
                 {completionRate}%
               </span>
             </div>
             <div className="mt-2 h-1.5 bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
               <div
-                className="h-full bg-pink-500 rounded-full transition-all duration-500"
+                className="h-full bg-[#D37E91] rounded-full transition-all duration-500"
                 style={{ width: `${completionRate}%` }}
               />
             </div>
@@ -184,7 +184,7 @@ export default function DashboardQuickStats() {
       {/* Pending Tasks */}
       <Link
         href="/dashboard/tasks/my-tasks"
-        className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5 hover:border-[#EC4899]/50 dark:hover:border-[#EC4899]/50 transition-all group"
+        className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-all group"
       >
         <div className="flex items-start justify-between mb-3">
           <div className="p-2 bg-yellow-100 dark:bg-yellow-500/10 rounded-lg group-hover:bg-yellow-200 dark:group-hover:bg-yellow-500/20 transition-colors">
@@ -207,7 +207,7 @@ export default function DashboardQuickStats() {
       {/* Open Incidents */}
       <Link
         href="/dashboard/incidents"
-        className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5 hover:border-[#EC4899]/50 dark:hover:border-[#EC4899]/50 transition-all group"
+        className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-all group"
       >
         <div className="flex items-start justify-between mb-3">
           <div className="p-2 bg-red-100 dark:bg-red-500/10 rounded-lg group-hover:bg-red-200 dark:group-hover:bg-red-500/20 transition-colors">

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
-import { Building2, Users, ChevronDown, ChevronRight, MapPin, User, Briefcase, UserCog } from 'lucide-react';
+import { Building2, Users, ChevronDown, ChevronRight, MapPin, User, Briefcase, UserCog } from '@/components/ui/icons';
 import { toast } from 'sonner';
 
 interface Employee {
@@ -326,7 +326,7 @@ export default function OrgChartPage() {
       <div className="mb-4">
         <button
           onClick={() => toggleDepartment(sectionKey)}
-          className="flex items-center gap-3 w-full p-3 bg-blue-50 dark:bg-gradient-to-r dark:from-purple-500/10 dark:to-pink-500/10 border border-blue-200 dark:border-purple-500/20 rounded-lg hover:border-blue-300 dark:hover:border-purple-500/40 transition-colors"
+          className="flex items-center gap-3 w-full p-3 bg-blue-50 dark:bg-gradient-to-r dark:from-purple-500/10 dark:to-[#D37E91]/10 border border-blue-200 dark:border-purple-500/20 rounded-lg hover:border-blue-300 dark:hover:border-purple-500/40 transition-colors"
         >
           {isExpanded ? (
             <ChevronDown className="w-5 h-5 text-blue-600 dark:text-purple-400 flex-shrink-0" />
@@ -373,7 +373,7 @@ export default function OrgChartPage() {
       {/* Company Level */}
       <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 shadow-sm dark:shadow-none">
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-500/20 dark:to-pink-500/20 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-500/20 dark:to-[#D37E91]/25 flex items-center justify-center">
             <Building2 className="w-6 h-6 text-blue-600 dark:text-purple-400" />
           </div>
           <div>
@@ -395,7 +395,7 @@ export default function OrgChartPage() {
             {renderExecutiveSection('Managing Director', <User className="w-5 h-5 text-blue-400" />, executives.md)}
             {renderExecutiveSection('Chief Operating Officer (COO)', <UserCog className="w-5 h-5 text-green-400" />, executives.coo)}
             {renderExecutiveSection('Chief Financial Officer (CFO)', <UserCog className="w-5 h-5 text-yellow-400" />, executives.cfo)}
-            {renderExecutiveSection('HR Manager', <Users className="w-5 h-5 text-pink-400" />, executives.hr_manager)}
+            {renderExecutiveSection('HR Manager', <Users className="w-5 h-5 text-[#D37E91]" />, executives.hr_manager)}
             {renderExecutiveSection('Operations Manager', <Briefcase className="w-5 h-5 text-orange-400" />, executives.operations_manager)}
             {renderExecutiveSection('Finance Manager', <Briefcase className="w-5 h-5 text-cyan-400" />, executives.finance_manager)}
           </div>

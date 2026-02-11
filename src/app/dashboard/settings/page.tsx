@@ -5,9 +5,12 @@ import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
-import { User, Bell, Building2, Lock, Mail, Save, Eye, EyeOff, Upload, Image as ImageIcon } from 'lucide-react';
+import { User, Bell, Building2, Lock, Mail, Save, Eye, EyeOff, Upload, Image as ImageIcon, Palette, Workflow, Accessibility } from '@/components/ui/icons';
 import SiteSelector from '@/components/ui/SiteSelector';
 import { AlertSettingsCard } from '@/components/settings/AlertSettingsCard';
+import { AppearanceTab } from '@/components/settings/AppearanceTab';
+import { WorkflowTab } from '@/components/settings/WorkflowTab';
+import { AccessibilityTab } from '@/components/settings/AccessibilityTab';
 
 type ProfileSettings = {
   user_id: string;
@@ -20,7 +23,7 @@ type ProfileSettings = {
   sound_vibration: boolean;
 };
 
-type Tab = 'profile' | 'notifications' | 'company';
+type Tab = 'profile' | 'appearance' | 'notifications' | 'workflow' | 'accessibility' | 'company';
 
 export default function SettingsPage() {
   const { profile, companyId, siteId, company, role, userId } = useAppContext();
@@ -296,7 +299,10 @@ export default function SettingsPage() {
 
   const tabs = [
     { id: 'profile' as Tab, label: 'Profile', icon: User },
+    { id: 'appearance' as Tab, label: 'Appearance', icon: Palette },
     { id: 'notifications' as Tab, label: 'Notifications', icon: Bell },
+    { id: 'workflow' as Tab, label: 'Workflow', icon: Workflow },
+    { id: 'accessibility' as Tab, label: 'Accessibility', icon: Accessibility },
     ...(role === 'Admin' ? [{ id: 'company' as Tab, label: 'Company', icon: Building2 }] : []),
   ];
 
@@ -483,6 +489,9 @@ export default function SettingsPage() {
         </div>
       )}
 
+      {/* Appearance Tab */}
+      {activeTab === 'appearance' && <AppearanceTab />}
+
       {/* Notifications Tab */}
       {activeTab === 'notifications' && settings && (
         <div className="space-y-6">
@@ -577,6 +586,12 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
+
+      {/* Workflow Tab */}
+      {activeTab === 'workflow' && <WorkflowTab />}
+
+      {/* Accessibility Tab */}
+      {activeTab === 'accessibility' && <AccessibilityTab />}
 
       {/* Company Tab (Admin only) */}
       {activeTab === 'company' && role === 'Admin' && (

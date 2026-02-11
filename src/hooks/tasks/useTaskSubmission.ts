@@ -3,7 +3,7 @@
 // Handles task completion, temperature logging, and follow-up creation
 // ============================================================================
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { ChecklistTask, TaskCompletionPayload, OutOfRangeAsset } from '@/types/task-completion.types';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -24,7 +24,17 @@ export function useTaskSubmission(
   const { showToast } = useToast();
   const { profile, companyId, siteId } = useAppContext();
 
+  // Ref-based guard to prevent duplicate submissions (synchronous check)
+  const isSubmittingRef = useRef(false);
+
   async function submitTask(payload: TaskCompletionPayload): Promise<boolean> {
+    // Synchronous guard: prevent multiple concurrent submissions
+    if (isSubmittingRef.current) {
+      console.warn('⚠️ Task submission already in progress, ignoring duplicate call');
+      return false;
+    }
+    isSubmittingRef.current = true;
+
     setSubmitting(true);
     setError(null);
 
@@ -129,11 +139,7 @@ export function useTaskSubmission(
           console.log(`✅ Saved ${recordsToInsert.length} temperature records`);
         }
       } else {
-        console.warn('⚠️ [TEMP] Skipping temperature insert:', {
-          reason: !payload.temperatureRecords ? 'no records' :
-                  payload.temperatureRecords.length === 0 ? 'empty records' :
-                  'invalid site_id'
-        });
+        console.debug('[TEMP] No temperature records to insert (expected for non-temperature tasks)');
       }
 
       // 3. Handle out-of-range assets (create monitoring tasks or callouts)
@@ -204,6 +210,7 @@ export function useTaskSubmission(
 
       return false;
     } finally {
+      isSubmittingRef.current = false;
       setSubmitting(false);
     }
   }

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { TaskFromTemplateModal } from "@/components/templates/TaskFromTemplateModal";
-import { Search, CheckCircle2, Calendar, Edit2, ChevronDown, ChevronUp, Utensils, ShieldAlert, Flame, Sparkles, ClipboardCheck } from "lucide-react";
+import { Search, CheckCircle2, Calendar, Edit2, ChevronDown, ChevronUp, Utensils, ShieldAlert, Flame, Sparkles, ClipboardCheck } from '@/components/ui/icons';
 import { TaskTemplate } from "@/types/checklist-types";
 import { useAppContext } from "@/context/AppContext";
 import { COMPLIANCE_MODULE_SLUGS } from "@/data/compliance-templates";
@@ -371,7 +371,7 @@ export default function ComplianceTemplatesPage() {
             placeholder="Search compliance templates..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-pink-500/50 text-sm sm:text-base"
+            className="w-full pl-10 pr-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 text-sm sm:text-base"
           />
         </div>
       </div>
@@ -395,7 +395,7 @@ export default function ComplianceTemplatesPage() {
                     <div
                       key={template.id}
                       onClick={(e) => handleUseTemplate(template.id, e)}
-                      className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden hover:border-pink-500/30 transition-colors cursor-pointer"
+                      className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden hover:border-[#D37E91]/30 transition-colors cursor-pointer"
                     >
                       {/* Collapsed Card View */}
                       <div className="p-3 sm:p-4">
@@ -502,7 +502,7 @@ export default function ComplianceTemplatesPage() {
                                   {template.evidence_types.map((evidence, idx) => (
                                     <span
                                       key={idx}
-                                      className="px-2 py-1 text-xs bg-pink-500/10 text-pink-400 rounded border border-pink-500/20"
+                                      className="px-2 py-1 text-xs bg-[#D37E91]/15 text-[#D37E91] rounded border border-[#D37E91]/20"
                                     >
                                       {evidence}
                                     </span>

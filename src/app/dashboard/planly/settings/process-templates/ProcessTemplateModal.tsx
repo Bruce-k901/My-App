@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Plus, Trash2, ChevronDown, ChevronRight, Loader2, Calendar, GripVertical, Flame, Package } from 'lucide-react';
+import { X, Plus, Trash2, ChevronDown, ChevronRight, Loader2, Calendar, GripVertical, Flame, Package } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';

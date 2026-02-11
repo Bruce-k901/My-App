@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Loader2 } from 'lucide-react';
+import { FileText, Loader2 } from '@/components/ui/icons';
 
 export default function DeliveryNotesPage() {
   return (

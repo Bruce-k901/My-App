@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Plus, Trash2, Save, Eye, X, GripVertical, Package, DollarSign, Building2, Calendar, Tag, FileText, Send } from 'lucide-react';
+import { Plus, Trash2, Save, Eye, X, GripVertical, Package, DollarSign, Building2, Calendar, Tag, FileText, Send } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useRouter } from 'next/navigation';
@@ -432,7 +432,7 @@ export default function CreateLibraryPage() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-2 h-8 bg-pink-500 rounded-full"></div>
+            <div className="w-2 h-8 bg-[#D37E91] rounded-full"></div>
             <div>
               <h1 className="text-lg font-semibold text-white">Create Custom Library</h1>
               <p className="text-sm text-neutral-400">Design a new library with custom fields</p>

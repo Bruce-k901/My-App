@@ -30,7 +30,7 @@ type Contractor = {
 export default function ContractorsPage() {
   // const router = useRouter();
   const { companyId, loading: authLoading } = useAppContext();
-  const { applySiteFilter, isAllSites } = useSiteFilter();
+  const { isAllSites, selectedSiteId } = useSiteFilter();
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -47,8 +47,7 @@ export default function ContractorsPage() {
     setLoading(true);
     setError(null);
     try {
-      const { data: contractors, error } = await applySiteFilter(
-        supabase
+      let query = supabase
           .from('contractors')
           .select(`
             id,
@@ -71,9 +70,15 @@ export default function ContractorsPage() {
             contract_file,
             contractor_categories ( name, description )
           `)
-          .eq('is_active', true)
-          .eq('company_id', companyId)
-      ).order('name', { ascending: true });
+          .neq('is_active', false)
+          .eq('company_id', companyId);
+
+      // Contractors are often shared across sites, so include those with no site_id
+      if (!isAllSites) {
+        query = query.or(`site_id.eq.${selectedSiteId},site_id.is.null`);
+      }
+
+      const { data: contractors, error } = await query.order('name', { ascending: true });
 
       if (error) throw error;
 
@@ -107,7 +112,7 @@ export default function ContractorsPage() {
       setError(err.message);
       setLoading(false);
     }
-  }, [companyId]);
+  }, [companyId, isAllSites, selectedSiteId]);
 
   useEffect(() => {
     if (companyId) {
@@ -116,7 +121,7 @@ export default function ContractorsPage() {
       setLoading(false);
       setContractors([]);
     }
-  }, [companyId]); // Remove loadContractors from deps to prevent infinite loops
+  }, [companyId, loadContractors]);
 
   const handleSaved = async () => {
     setOpenAdd(false);

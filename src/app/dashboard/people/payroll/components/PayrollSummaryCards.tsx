@@ -1,6 +1,6 @@
 'use client';
 
-import { Users, Clock, PoundSterling, TrendingUp } from 'lucide-react';
+import { Users, Clock, PoundSterling, TrendingUp } from '@/components/ui/icons';
 
 interface Props {
   employees: number;

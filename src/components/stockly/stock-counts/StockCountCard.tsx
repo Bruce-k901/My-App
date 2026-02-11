@@ -12,7 +12,7 @@ import {
   AlertCircle,
   ChevronRight,
   Trash2
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 

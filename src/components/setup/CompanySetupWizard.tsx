@@ -10,7 +10,7 @@ import {
   Users,
   Wrench,
   ArrowRight,
-} from "lucide-react";
+} from '@/components/ui/icons';
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useAppContext } from "@/context/AppContext";

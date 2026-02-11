@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import GlassCard from '@/components/ui/GlassCard';
 import { AuthLayout } from '@/components/layouts';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from '@/components/ui/icons';
 import { Input, Button } from '@/components/ui';
 import { supabase } from '@/lib/supabase';
 
@@ -123,7 +123,7 @@ export default function CustomerLoginPage() {
         <div className="text-center mt-5 sm:mt-6">
           <Link
             href="/forgot-password"
-            className="text-[#EC4899] hover:text-[#EC4899]/80 text-xs sm:text-sm transition-colors"
+            className="text-[#D37E91] hover:text-[#D37E91]/80 text-xs sm:text-sm transition-colors"
           >
             Forgotten your password?
           </Link>

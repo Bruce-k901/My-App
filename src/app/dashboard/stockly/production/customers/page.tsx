@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
-import { Plus, Upload } from 'lucide-react';
+import { Plus, Upload } from '@/components/ui/icons';
 import CustomerTable from '@/components/stockly/customers/CustomerTable';
 import CustomerFilters from '@/components/stockly/customers/CustomerFilters';
 import CustomerFormModal from '@/components/stockly/customers/CustomerFormModal';

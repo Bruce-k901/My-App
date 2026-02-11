@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
-import { Building2, Briefcase, ArrowRight, Users, MapPin, GraduationCap, User } from 'lucide-react';
+import { Building2, Briefcase, ArrowRight, Users, MapPin, GraduationCap, User } from '@/components/ui/icons';
 import AddExecutiveModal from '@/components/users/AddExecutiveModal';
 
 export default function AddEmployeeChoicePage() {
@@ -31,10 +31,10 @@ export default function AddEmployeeChoicePage() {
           {/* Option 1: Head Office / Executive */}
           <button
             onClick={() => setShowExecutiveModal(true)}
-            className="group relative bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-2 border-purple-500/20 rounded-2xl p-8 text-left hover:border-purple-500/40 hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] transition-all duration-300"
+            className="group relative bg-gradient-to-br from-purple-500/10 to-[#D37E91]/10 border-2 border-purple-500/20 rounded-2xl p-8 text-left hover:border-purple-500/40 hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] transition-all duration-300"
           >
             {/* Icon */}
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/20 to-[#D37E91]/25 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <Briefcase className="w-8 h-8 text-purple-400" />
             </div>
 
@@ -87,11 +87,11 @@ export default function AddEmployeeChoicePage() {
           {/* Option 2: Site Employee */}
           <button
             onClick={() => router.push('/dashboard/people/directory/new')}
-            className="group relative bg-gradient-to-br from-pink-500/10 to-blue-500/10 border-2 border-pink-500/20 rounded-2xl p-8 text-left hover:border-pink-500/40 hover:shadow-[0_0_30px_rgba(236,72,153,0.3)] transition-all duration-300"
+            className="group relative bg-gradient-to-br from-[#D37E91]/15 to-blue-500/10 border-2 border-[#D37E91]/20 rounded-2xl p-8 text-left hover:border-[#D37E91]/40 hover:shadow-[0_0_30px_rgba(211, 126, 145,0.3)] transition-all duration-300"
           >
             {/* Icon */}
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500/20 to-blue-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <Building2 className="w-8 h-8 text-pink-400" />
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#D37E91]/25 to-blue-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <Building2 className="w-8 h-8 text-[#D37E91]" />
             </div>
 
             {/* Title */}
@@ -108,33 +108,33 @@ export default function AddEmployeeChoicePage() {
             {/* Features */}
             <div className="space-y-3 mb-6">
               <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-pink-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-pink-400 text-xs">✓</span>
+                <div className="w-5 h-5 rounded-full bg-[#D37E91]/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[#D37E91] text-xs">✓</span>
                 </div>
                 <p className="text-sm text-gray-500 dark:text-white/60">Complete employee profile</p>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-pink-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-pink-400 text-xs">✓</span>
+                <div className="w-5 h-5 rounded-full bg-[#D37E91]/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[#D37E91] text-xs">✓</span>
                 </div>
                 <p className="text-sm text-gray-500 dark:text-white/60">Site assignment & sections (BOH/FOH)</p>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-pink-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-pink-400 text-xs">✓</span>
+                <div className="w-5 h-5 rounded-full bg-[#D37E91]/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[#D37E91] text-xs">✓</span>
                 </div>
                 <p className="text-sm text-gray-500 dark:text-white/60">Training certificates & compliance</p>
               </div>
             </div>
 
             {/* Best For */}
-            <div className="pt-4 border-t border-pink-500/20">
-              <p className="text-xs text-pink-300 font-semibold mb-2">BEST FOR:</p>
+            <div className="pt-4 border-t border-[#D37E91]/20">
+              <p className="text-xs text-[#D37E91] font-semibold mb-2">BEST FOR:</p>
               <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-pink-500/20 text-pink-300 text-xs rounded-full">Site Manager</span>
-                <span className="px-2 py-1 bg-pink-500/20 text-pink-300 text-xs rounded-full">Kitchen Staff</span>
-                <span className="px-2 py-1 bg-pink-500/20 text-pink-300 text-xs rounded-full">FOH Staff</span>
-                <span className="px-2 py-1 bg-pink-500/20 text-pink-300 text-xs rounded-full">Operations</span>
+                <span className="px-2 py-1 bg-[#D37E91]/25 text-[#D37E91] text-xs rounded-full">Site Manager</span>
+                <span className="px-2 py-1 bg-[#D37E91]/25 text-[#D37E91] text-xs rounded-full">Kitchen Staff</span>
+                <span className="px-2 py-1 bg-[#D37E91]/25 text-[#D37E91] text-xs rounded-full">FOH Staff</span>
+                <span className="px-2 py-1 bg-[#D37E91]/25 text-[#D37E91] text-xs rounded-full">Operations</span>
               </div>
             </div>
           </button>
@@ -154,8 +154,8 @@ export default function AddEmployeeChoicePage() {
                   <span><strong className="text-purple-300">Head Office:</strong> For executives, managers, and staff who don't work at a specific site</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-pink-400 mt-1">•</span>
-                  <span><strong className="text-pink-300">Site Employee:</strong> For staff who work at a physical location and need full operational details</span>
+                  <span className="text-[#D37E91] mt-1">•</span>
+                  <span><strong className="text-[#D37E91]">Site Employee:</strong> For staff who work at a physical location and need full operational details</span>
                 </li>
               </ul>
               <p className="text-xs text-gray-500 dark:text-white/60 mt-3">

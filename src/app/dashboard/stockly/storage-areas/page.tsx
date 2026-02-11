@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import Button from '@/components/ui/Button';
-import { Plus, Loader2, ArrowLeft, Package } from 'lucide-react';
+import { Plus, Loader2, ArrowLeft, Package } from '@/components/ui/icons';
 import Link from 'next/link';
 import StorageAreaCard from '@/components/stockly/storage-areas/StorageAreaCard';
 import StorageAreaModal from '@/components/stockly/storage-areas/StorageAreaModal';
 import { StorageArea } from '@/lib/types/stockly';
+import BackToSetup from '@/components/dashboard/BackToSetup';
 
 export default function StorageAreasPage() {
   const { companyId } = useAppContext();
@@ -86,6 +87,7 @@ export default function StorageAreasPage() {
   return (
     <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
       <div className="max-w-6xl mx-auto p-6">
+        <BackToSetup />
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div className="flex items-center gap-4">

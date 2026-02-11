@@ -22,13 +22,13 @@ import {
   Filter,
   X,
   Check
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import Select from '@/components/ui/Select';
 import { StockCountItem, LibraryType } from '@/lib/types/stockly';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { getCurrentUserId } from '@/lib/stock-counts';
-import { XCircle, CheckCircle2, RefreshCw, AlertTriangle } from 'lucide-react';
+import { XCircle, CheckCircle2, RefreshCw, AlertTriangle } from '@/components/ui/icons';
 import SelectApproverModal from '@/components/stockly/stock-counts/SelectApproverModal';
 
 // Map library types to table names and name columns

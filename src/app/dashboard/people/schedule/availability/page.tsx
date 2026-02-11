@@ -5,7 +5,7 @@ import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui';
 import { Card } from '@/components/ui/Card';
-import { Calendar, Clock, Plus, X, Check, XCircle, Loader2, ChevronLeft, ChevronRight, Building2 } from 'lucide-react';
+import { Calendar, Clock, Plus, X, Check, XCircle, Loader2, ChevronLeft, ChevronRight, Building2 } from '@/components/ui/icons';
 import { toast } from 'sonner';
 import TimePicker from '@/components/ui/TimePicker';
 import { format, startOfWeek, addDays, isSameDay, parseISO, addWeeks, subWeeks } from 'date-fns';
@@ -315,7 +315,7 @@ export default function MyAvailabilityPage() {
           </div>
           <Button
             onClick={() => setShowRequestModal(true)}
-            className="bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out"
+            className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out"
           >
             <Plus className="w-4 h-4 mr-2" />
             Request Time Off
@@ -381,7 +381,7 @@ export default function MyAvailabilityPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -401,7 +401,7 @@ export default function MyAvailabilityPage() {
         {isManager && (
           <a href="/dashboard/people/my-availability/requests">
             <Button
-              className="bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out"
+              className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out"
             >
               <Calendar className="w-4 h-4 mr-2" />
               Review Requests
@@ -426,7 +426,7 @@ export default function MyAvailabilityPage() {
           onClick={() => setView('patterns')}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
             view === 'patterns'
-              ? 'bg-[#EC4899] text-white'
+              ? 'bg-[#D37E91] text-white'
               : 'text-gray-500 dark:text-white/60 hover:text-white'
           }`}
         >
@@ -437,7 +437,7 @@ export default function MyAvailabilityPage() {
           onClick={() => setView('calendar')}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
             view === 'calendar'
-              ? 'bg-[#EC4899] text-white'
+              ? 'bg-[#D37E91] text-white'
               : 'text-gray-500 dark:text-white/60 hover:text-white'
           }`}
         >
@@ -591,7 +591,7 @@ function PatternCard({ day, pattern, onSave }: PatternCardProps) {
               type="checkbox"
               checked={periods.allDay}
               onChange={() => handlePeriodChange('allDay')}
-              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#EC4899] focus:ring-[#EC4899] focus:ring-2"
+              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#D37E91] focus:ring-[#D37E91] focus:ring-2"
             />
             <span className="text-sm text-neutral-300">All Day</span>
           </label>
@@ -600,7 +600,7 @@ function PatternCard({ day, pattern, onSave }: PatternCardProps) {
               type="checkbox"
               checked={periods.am}
               onChange={() => handlePeriodChange('am')}
-              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#EC4899] focus:ring-[#EC4899] focus:ring-2"
+              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#D37E91] focus:ring-[#D37E91] focus:ring-2"
             />
             <span className="text-sm text-neutral-300">AM (9am - 12pm)</span>
           </label>
@@ -609,7 +609,7 @@ function PatternCard({ day, pattern, onSave }: PatternCardProps) {
               type="checkbox"
               checked={periods.pm}
               onChange={() => handlePeriodChange('pm')}
-              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#EC4899] focus:ring-[#EC4899] focus:ring-2"
+              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#D37E91] focus:ring-[#D37E91] focus:ring-2"
             />
             <span className="text-sm text-neutral-300">PM (12pm - 5pm)</span>
           </label>
@@ -626,7 +626,7 @@ function PatternCard({ day, pattern, onSave }: PatternCardProps) {
             value={notes}
             onChange={(e) => handleNotesChange(e.target.value)}
             placeholder="e.g., School pickup at 3pm"
-            className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:outline-none focus:border-[#EC4899] focus:ring-1 focus:ring-[#EC4899] transition-colors"
+            className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:outline-none focus:border-[#D37E91] focus:ring-1 focus:ring-[#D37E91] transition-colors"
           />
         </div>
       </div>
@@ -708,13 +708,13 @@ function DayCard({ date, override, pattern, onRequestTimeOff }: DayCardProps) {
     <div
       className={`p-3 rounded-lg border transition-all ${
         isToday
-          ? 'border-[#EC4899] bg-[#EC4899]/10'
+          ? 'border-[#D37E91] bg-[#D37E91]/10'
           : 'border-white/[0.06] bg-white/[0.03] hover:border-white/[0.12]'
       } ${isPast ? 'opacity-50' : ''}`}
     >
       <div className="text-center mb-2">
         <div className="text-xs text-gray-500 dark:text-white/60 uppercase">{format(date, 'EEE')}</div>
-        <div className={`text-lg font-semibold ${isToday ? 'text-[#EC4899]' : 'text-white'}`}>
+        <div className={`text-lg font-semibold ${isToday ? 'text-[#D37E91]' : 'text-white'}`}>
           {format(date, 'd')}
         </div>
       </div>
@@ -728,7 +728,7 @@ function DayCard({ date, override, pattern, onRequestTimeOff }: DayCardProps) {
           onClick={onRequestTimeOff}
           size="sm"
           variant="ghost"
-          className="w-full mt-2 text-xs text-gray-500 dark:text-white/60 hover:text-[#EC4899]"
+          className="w-full mt-2 text-xs text-gray-500 dark:text-white/60 hover:text-[#D37E91]"
         >
           Request Time Off
         </Button>
@@ -795,7 +795,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required
-              className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#EC4899] focus:ring-1 focus:ring-[#EC4899] transition-colors"
+              className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#D37E91] focus:ring-1 focus:ring-[#D37E91] transition-colors"
             />
           </div>
 
@@ -805,7 +805,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
             <select
               value={type}
               onChange={(e) => setType(e.target.value as 'time_off_request' | 'leave')}
-              className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#EC4899] focus:ring-1 focus:ring-[#EC4899] transition-colors"
+              className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#D37E91] focus:ring-1 focus:ring-[#D37E91] transition-colors"
             >
               <option value="time_off_request">Time Off Request</option>
               <option value="leave">Leave (Holiday/Sick)</option>
@@ -819,7 +819,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
               id="partial-day"
               checked={isPartialDay}
               onChange={(e) => setIsPartialDay(e.target.checked)}
-              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#EC4899] focus:ring-[#EC4899]"
+              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#D37E91] focus:ring-[#D37E91]"
             />
             <label htmlFor="partial-day" className="text-sm text-neutral-300">
               Partial day (specify times)
@@ -859,7 +859,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
               required
               rows={3}
               placeholder="Please provide a reason for your request..."
-              className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white resize-none focus:outline-none focus:border-[#EC4899] focus:ring-1 focus:ring-[#EC4899] transition-colors"
+              className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white resize-none focus:outline-none focus:border-[#D37E91] focus:ring-1 focus:ring-[#D37E91] transition-colors"
             />
           </div>
 
@@ -876,7 +876,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out"
+              className="flex-1 bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out"
               disabled={submitting}
             >
               {submitting ? (

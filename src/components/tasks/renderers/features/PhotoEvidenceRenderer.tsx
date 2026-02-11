@@ -1,6 +1,6 @@
 'use client';
 
-import { Camera, X } from 'lucide-react';
+import { Camera, X } from '@/components/ui/icons';
 
 interface PhotoEvidenceRendererProps {
   photos: File[];

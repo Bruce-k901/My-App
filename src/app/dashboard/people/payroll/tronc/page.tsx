@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Label from '@/components/ui/Label';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save } from '@/components/ui/icons';
 import Link from 'next/link';
 import { toast } from 'sonner';
 

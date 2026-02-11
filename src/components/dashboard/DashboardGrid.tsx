@@ -6,7 +6,7 @@ import { WidgetConfig, DashboardPreferences, ModuleId } from '@/types/dashboard'
 import { WIDGET_REGISTRY, WidgetWrapper, sortWidgets, filterWidgetsByModules } from './widgets';
 import { WidgetGridSkeleton } from './widgets/WidgetSkeleton';
 import { useIsMobile } from '@/hooks/useIsMobile';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp } from '@/components/ui/icons';
 
 interface DashboardGridProps {
   preferences: DashboardPreferences;

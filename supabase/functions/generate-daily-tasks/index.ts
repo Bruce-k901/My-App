@@ -151,6 +151,7 @@ Deno.serve(async (req)=>{
         template_id: params.templateId,
         company_id: params.companyId,
         site_id: params.siteId,
+        custom_name: params.customName || null,
         due_date: params.dueDate,
         due_time: params.dueTime,
         daypart: params.daypart,
@@ -186,6 +187,7 @@ Deno.serve(async (req)=>{
                 templateId: config.template_id,
                 companyId: config.company_id,
                 siteId: config.site_id,
+                customName: config.name,
                 dueDate: todayString,
                 dueTime: time,
                 daypart: daypart,
@@ -205,6 +207,7 @@ Deno.serve(async (req)=>{
             templateId: config.template_id,
             companyId: config.company_id,
             siteId: config.site_id,
+            customName: config.name,
             dueDate: todayString,
             dueTime: time,
             daypart: daypart,
@@ -233,6 +236,7 @@ Deno.serve(async (req)=>{
           templateId: config.template_id,
           companyId: config.company_id,
           siteId: config.site_id,
+          customName: config.name,
           dueDate: todayString,
           dueTime: null,
           daypart: "anytime",
@@ -259,6 +263,7 @@ Deno.serve(async (req)=>{
           templateId: config.template_id,
           companyId: config.company_id,
           siteId: config.site_id,
+          customName: config.name,
           dueDate: todayString,
           dueTime: null,
           daypart: "anytime",
@@ -292,6 +297,7 @@ Deno.serve(async (req)=>{
           templateId: config.template_id,
           companyId: config.company_id,
           siteId: config.site_id,
+          customName: config.name,
           dueDate: todayString,
           dueTime: null,
           daypart: "anytime",
@@ -432,25 +438,28 @@ try {
             if (!cert.date) continue;
             const expiryDate = new Date(cert.date);
             const daysUntilExpiry = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-            // Only create task if expiry is within 30 days and not already expired
-            if (daysUntilExpiry < 0 || daysUntilExpiry > 30) continue;
+            // Create task if expiry is within 30 days OR already expired (up to 1 year overdue)
+            if (daysUntilExpiry < -365 || daysUntilExpiry > 30) continue;
             const levelText = cert.level ? ` Level ${cert.level}` : "";
-            const taskName = `${cert.label}${levelText} Certificate Expiring: ${profile.full_name || "Staff Member"}`;
+            const isExpired = daysUntilExpiry < 0;
+            const taskName = isExpired
+              ? `EXPIRED ${cert.label}${levelText} Certificate: ${profile.full_name || "Staff Member"}`
+              : `${cert.label}${levelText} Certificate Expiring: ${profile.full_name || "Staff Member"}`;
             // ✅ FIX: Check if ANY pending/in_progress task exists for this cert (not just today)
             const { data: existing } = await supabase.from("checklist_tasks").select("id").eq("task_data->>source_type", "certificate_expiry").eq("task_data->>certificate_type", cert.type).eq("task_data->>profile_id", profile.id).in("status", [
               "pending",
               "in_progress"
             ]).limit(1);
             if (existing && existing.length > 0) continue;
-            // ✅ FIX: Use actual expiry date as due_date (not today)
+            // Use actual expiry date as due_date for upcoming, today for already expired
             const { error } = await supabase.from("checklist_tasks").insert({
               template_id: certTemplate.id,
               company_id: profile.company_id,
               site_id: siteId,
               custom_name: taskName,
-              due_date: cert.date,
+              due_date: isExpired ? todayString : cert.date,
               status: "pending",
-              priority: daysUntilExpiry <= 7 ? "urgent" : daysUntilExpiry <= 14 ? "high" : "medium",
+              priority: daysUntilExpiry <= 0 ? "urgent" : daysUntilExpiry <= 7 ? "urgent" : daysUntilExpiry <= 14 ? "high" : "medium",
               generated_at: today.toISOString(),
               task_data: {
                 source_type: "certificate_expiry",
@@ -532,6 +541,117 @@ try {
       }
     } catch (e) {
       log.errors.push(`Error processing certificate expiry tasks: ${e}`);
+    }
+    // ========================================================================
+    // 6b. TRAINING RECORDS - EXPIRED & EXPIRING CERTIFICATES
+    // ========================================================================
+    // The profiles-based check above only covers 5 hardcoded cert types.
+    // This section checks the training_records table (the primary source of truth)
+    // for ALL training courses that are expired or expiring within 30 days.
+    try {
+      const thirtyDaysAhead = new Date(today);
+      thirtyDaysAhead.setDate(thirtyDaysAhead.getDate() + 30);
+      const thirtyDaysAheadString = thirtyDaysAhead.toISOString().split("T")[0];
+
+      // Query training_records (no joins - separate lookups for profiles and courses)
+      const { data: expiringRecords, error: trError } = await supabase
+        .from("training_records")
+        .select("id, profile_id, course_id, expiry_date, company_id")
+        .eq("status", "completed")
+        .not("expiry_date", "is", null)
+        .lte("expiry_date", thirtyDaysAheadString)
+        .order("expiry_date", { ascending: true });
+
+      if (trError) {
+        log.errors.push(`Failed to fetch training records: ${trError.message}`);
+      }
+      log.training_records_scanned = (expiringRecords || []).length;
+
+      // Batch-lookup course names
+      const courseIds = [...new Set((expiringRecords || []).map((r) => r.course_id).filter(Boolean))];
+      const courseMap = {};
+      if (courseIds.length > 0) {
+        const { data: courses } = await supabase
+          .from("training_courses")
+          .select("id, name, code")
+          .in("id", courseIds);
+        for (const c of courses || []) {
+          courseMap[c.id] = c;
+        }
+      }
+
+      // Batch-lookup profile details
+      const profileIds = [...new Set((expiringRecords || []).map((r) => r.profile_id).filter(Boolean))];
+      const profileMap = {};
+      if (profileIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, full_name, site_id, home_site")
+          .in("id", profileIds);
+        for (const p of profiles || []) {
+          profileMap[p.id] = p;
+        }
+      }
+
+      // Get certificate renewal template for linking
+      const { data: certTemplateForTraining } = await supabase.from("task_templates").select("id").eq("slug", "certificate-renewal-generic").single();
+      for (const record of expiringRecords || []) {
+        const profile = profileMap[record.profile_id];
+        const course = courseMap[record.course_id];
+        if (!profile || !course || !record.company_id) continue;
+        const siteId = profile.site_id || profile.home_site;
+        if (!siteId) continue;
+
+        const expiryDate = new Date(record.expiry_date);
+        const daysUntilExpiry = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        // Skip if more than 1 year overdue (stale data)
+        if (daysUntilExpiry < -365) continue;
+
+        const isExpired = daysUntilExpiry < 0;
+        const taskName = isExpired
+          ? `EXPIRED Training: ${course.name} - ${profile.full_name || "Staff Member"}`
+          : `Training Expiring: ${course.name} - ${profile.full_name || "Staff Member"}`;
+
+        // Check if task already exists for this training record
+        const { data: existing } = await supabase
+          .from("checklist_tasks")
+          .select("id")
+          .eq("task_data->>source_type", "training_certificate")
+          .eq("task_data->>training_record_id", record.id)
+          .in("status", ["pending", "in_progress"])
+          .limit(1);
+        if (existing && existing.length > 0) continue;
+
+        // Use actual expiry date as due_date for upcoming, today for already expired
+        // NOTE: template_id is null to avoid unique constraint on (template_id, due_date, site_id)
+        const { error } = await supabase.from("checklist_tasks").insert({
+          template_id: null,
+          company_id: record.company_id,
+          site_id: siteId,
+          custom_name: taskName,
+          due_date: isExpired ? todayString : record.expiry_date,
+          status: "pending",
+          priority: daysUntilExpiry <= 0 ? "urgent" : daysUntilExpiry <= 7 ? "urgent" : daysUntilExpiry <= 14 ? "high" : "medium",
+          generated_at: today.toISOString(),
+          task_data: {
+            source_type: "training_certificate",
+            training_record_id: record.id,
+            course_id: record.course_id,
+            course_name: course.name,
+            course_code: course.code || null,
+            profile_id: record.profile_id,
+            expiry_date: record.expiry_date,
+            days_until_expiry: daysUntilExpiry
+          }
+        });
+        if (error) {
+          log.errors.push(`Training cert insert failed: ${error.message} (record: ${record.id}, profile: ${record.profile_id})`);
+        } else {
+          log.certificate_tasks_created++;
+        }
+      }
+    } catch (e) {
+      log.errors.push(`Error processing training record expiry tasks: ${e}`);
     }
     // ========================================================================
     // 7. SOP REVIEW TASKS (30 days before review date)

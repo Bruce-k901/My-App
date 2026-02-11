@@ -15,7 +15,7 @@ import {
   Trash2,
   Save,
   X
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import Input from '@/components/ui/Input';
 import Label from '@/components/ui/Label';
@@ -244,7 +244,7 @@ export function ReviewPortal({ review, currentUserId, isEmployee, isManager }: R
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-colors border-b-2 ${
                 activeTab === tab.id
-                  ? 'border-[#EC4899] text-[#EC4899]'
+                  ? 'border-[#D37E91] text-[#D37E91]'
                   : 'border-transparent text-gray-500 dark:text-white/60 hover:text-white'
               }`}
             >
@@ -264,7 +264,7 @@ export function ReviewPortal({ review, currentUserId, isEmployee, isManager }: R
               onClick={() => setViewMode('edit')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 viewMode === 'edit' 
-                  ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]' 
+                  ? 'bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]' 
                   : 'text-gray-500 dark:text-white/60 hover:text-white border border-white/[0.06]'
               }`}
             >
@@ -274,7 +274,7 @@ export function ReviewPortal({ review, currentUserId, isEmployee, isManager }: R
               onClick={() => setViewMode('compare')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 viewMode === 'compare' 
-                  ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]' 
+                  ? 'bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]' 
                   : 'text-gray-500 dark:text-white/60 hover:text-white border border-white/[0.06]'
               }`}
             >
@@ -369,7 +369,7 @@ function NotesTab({
                     onClick={() => setNotePhase(phase)}
                     className={`px-4 py-2 rounded-lg text-sm transition-colors ${
                       notePhase === phase
-                        ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]'
+                        ? 'bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]'
                         : 'bg-white/[0.05] text-gray-500 dark:text-white/60 border border-white/[0.06] hover:text-white'
                     }`}
                   >
@@ -384,14 +384,14 @@ function NotesTab({
                 value={newNoteText}
                 onChange={(e) => setNewNoteText(e.target.value)}
                 placeholder="Add your note here..."
-                className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#EC4899] resize-none"
+                className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#D37E91] resize-none"
                 rows={4}
               />
             </div>
             <Button
               onClick={onAddNote}
               disabled={isPending || !newNoteText.trim()}
-              className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+              className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
             >
               <Send className="h-4 w-4 mr-2" />
               {isPending ? 'Adding...' : 'Add Note'}
@@ -459,7 +459,7 @@ function FollowUpsTab({
         <div className="flex justify-end">
           <Button
             onClick={() => setShowForm(!showForm)}
-            className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+            className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
           >
             <Plus className="h-4 w-4 mr-2" />
             Create Follow-up
@@ -477,7 +477,7 @@ function FollowUpsTab({
               <select
                 value={followUpData.type}
                 onChange={(e) => setFollowUpData({ ...followUpData, type: e.target.value })}
-                className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+                className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
               >
                 <option value="action">Action Item</option>
                 <option value="training">Training</option>
@@ -494,7 +494,7 @@ function FollowUpsTab({
               <select
                 value={followUpData.priority}
                 onChange={(e) => setFollowUpData({ ...followUpData, priority: e.target.value })}
-                className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+                className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
               >
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
@@ -519,7 +519,7 @@ function FollowUpsTab({
               value={followUpData.description}
               onChange={(e) => setFollowUpData({ ...followUpData, description: e.target.value })}
               placeholder="Describe the follow-up action..."
-              className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#EC4899] resize-none"
+              className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#D37E91] resize-none"
               rows={4}
             />
           </div>
@@ -538,7 +538,7 @@ function FollowUpsTab({
             <Button
               onClick={followUpData.type === 'review' ? onScheduleReview : onCreateFollowUp}
               disabled={isPending}
-              className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+              className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
             >
               {isPending ? 'Creating...' : 'Create Follow-up'}
             </Button>

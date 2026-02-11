@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Search, ChevronDown, Check, X } from 'lucide-react';
+import { Search, ChevronDown, Check, X } from '@/components/ui/icons';
 
 interface Option {
   label: string;
@@ -82,7 +82,7 @@ export function SearchableSelect({
           bg-white/[0.03] border border-neutral-700 rounded-lg
           text-left transition-colors
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-neutral-600 cursor-pointer'}
-          ${isOpen ? 'border-[#EC4899]/50 ring-1 ring-[#EC4899]/20' : ''}
+          ${isOpen ? 'border-[#D37E91]/50 ring-1 ring-[#D37E91]/20' : ''}
         `}
       >
         <span className={selectedOption ? 'text-white' : 'text-slate-400'}>
@@ -124,7 +124,7 @@ export function SearchableSelect({
                   w-full pl-9 pr-3 py-2
                   bg-white/[0.05] border border-neutral-700 rounded-md
                   text-white placeholder-slate-500
-                  focus:outline-none focus:border-[#EC4899]/50
+                  focus:outline-none focus:border-[#D37E91]/50
                   text-sm
                 "
               />
@@ -147,7 +147,7 @@ export function SearchableSelect({
                     w-full flex items-center justify-between px-3 py-2.5
                     text-left text-sm transition-colors
                     ${option.value === value
-                      ? 'bg-[#EC4899]/10 text-[#EC4899]'
+                      ? 'bg-[#D37E91]/10 text-[#D37E91]'
                       : 'text-white hover:bg-white/[0.05]'
                     }
                   `}

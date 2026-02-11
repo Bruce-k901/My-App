@@ -9,8 +9,11 @@ import {
   Users,
   PhoneCall,
   Calendar,
+  Layers,
   UserCircle,
-} from 'lucide-react';
+} from '@/components/ui/icons';
+import { useSidebarMode } from '@/hooks/useSidebarMode';
+import { SidebarPin } from '@/components/layout/SidebarPin';
 
 type NavItemType = 'section' | 'link' | 'parent';
 
@@ -55,6 +58,12 @@ const navItems: NavItem[] = [
   },
   {
     type: 'link',
+    label: 'PPM Groups',
+    href: '/dashboard/assets/groups',
+    icon: Layers,
+  },
+  {
+    type: 'link',
     label: 'PPM Schedule',
     href: '/dashboard/ppm',
     icon: Calendar,
@@ -68,7 +77,7 @@ export function AssetlyNavItem({ item }: { item: NavItem }) {
     const IconComponent = item.icon;
     return (
       <div className="px-3 py-3 mt-4">
-        <div className="flex items-center gap-2 text-sm uppercase text-cyan-600 dark:text-cyan-400 tracking-wider font-bold">
+        <div className="flex items-center gap-2 text-sm uppercase text-assetly-dark/35 dark:text-assetly/35 tracking-wider font-bold">
           <IconComponent className="w-5 h-5" suppressHydrationWarning />
           <span suppressHydrationWarning>{item.label}</span>
         </div>
@@ -87,8 +96,8 @@ export function AssetlyNavItem({ item }: { item: NavItem }) {
         href={item.href!}
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
           isActive
-            ? 'text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-500/10 font-medium'
-            : 'text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05]'
+            ? 'text-assetly-dark dark:text-assetly bg-assetly-dark/[0.08] dark:bg-assetly/10 font-medium'
+            : 'text-[#888] dark:text-white/50 hover:text-[#555] dark:hover:text-white/80 hover:bg-assetly-dark/[0.04] dark:hover:bg-assetly/5'
         }`}
       >
         <IconComponent className="w-5 h-5 flex-shrink-0" suppressHydrationWarning />
@@ -104,39 +113,73 @@ const APP_NAME = 'Assetly';
 
 export function AssetlySidebar() {
   const { profile } = useAppContext();
+  const { isCollapsed, showExpanded, isHoverExpanded, displayWidth, togglePin, handleMouseEnter, handleMouseLeave } = useSidebarMode();
 
   return (
-    <aside className="w-64 bg-white dark:bg-neutral-900 border-r border-gray-200 dark:border-neutral-800 flex flex-col h-full overflow-y-auto" suppressHydrationWarning>
+    <aside
+      className={`bg-sidebar-assetly-light dark:bg-sidebar-assetly border-r border-module-fg/[0.18] flex flex-col h-full transition-[width] duration-200 ${isHoverExpanded ? 'shadow-2xl z-50' : ''}`}
+      style={{ width: displayWidth }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      suppressHydrationWarning
+    >
       {/* Header */}
-      <div className="px-4 py-5 bg-gray-50 dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800">
+      <div className={`${!showExpanded ? 'px-2 py-3' : 'px-4 py-5'} bg-sidebar-assetly-light dark:bg-sidebar-assetly border-b border-module-fg/[0.18]`}>
         <Link href="/dashboard/assets" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
-          <img
-            src="/module_logos/assetly.png"
-            alt="Assetly"
-            className="h-12 w-auto max-w-full"
-          />
+          <img src="/new_module_logos/assetly_light.svg" alt="Assetly" className={`${!showExpanded ? 'h-8' : 'h-12'} w-auto max-w-full dark:hidden`} />
+          <img src="/new_module_logos/assetly_dark.svg" alt="Assetly" className={`${!showExpanded ? 'h-8' : 'h-12'} w-auto max-w-full hidden dark:block`} />
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto p-4 space-y-1 assetly-sidebar-scrollbar">
-        {navItems.map((item, index) => (
-          <AssetlyNavItem key={`${item.type}-${item.label}-${index}`} item={item} />
-        ))}
+      <nav className={`flex-1 overflow-y-auto ${!showExpanded ? 'p-2 space-y-1' : 'p-4 space-y-1'} assetly-sidebar-scrollbar`}>
+        {!showExpanded ? (
+          navItems
+            .filter(item => item.type !== 'section')
+            .map((item, index) => {
+              const Icon = item.icon;
+              const href = item.href || '#';
+              return (
+                <Link
+                  key={`${item.label}-${index}`}
+                  href={href}
+                  className="flex items-center justify-center w-full h-10 rounded-lg text-[#888] dark:text-white/50 hover:bg-assetly-dark/[0.04] dark:hover:bg-assetly/5 hover:text-[#555] dark:hover:text-white/80 transition-colors"
+                  title={item.label}
+                >
+                  <Icon className="w-5 h-5" />
+                </Link>
+              );
+            })
+        ) : (
+          navItems.map((item, index) => (
+            <AssetlyNavItem key={`${item.type}-${item.label}-${index}`} item={item} />
+          ))
+        )}
       </nav>
 
-      {/* My Profile Quick Access */}
-      <div className="p-4 border-t border-gray-200 dark:border-neutral-800">
-        <Link
-          href={`/dashboard/people/${profile?.id}`}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-white/60 hover:bg-gray-100 dark:hover:bg-white/[0.05] hover:text-gray-900 dark:hover:text-white transition-colors"
-        >
-          <UserCircle className="w-5 h-5" />
-          <div className="flex-1 min-w-0">
-            <p className="truncate text-gray-900 dark:text-white">{profile?.full_name || 'My Profile'}</p>
-            <p className="truncate text-xs text-gray-500 dark:text-white/50">{profile?.position_title || 'Employee'}</p>
+      {/* Profile + Pin */}
+      <div className="border-t border-module-fg/[0.18]">
+        {showExpanded ? (
+          <div className="p-4 pb-0">
+            <Link
+              href={`/dashboard/people/${profile?.id}`}
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#888] dark:text-white/50 hover:bg-assetly-dark/[0.04] dark:hover:bg-assetly/5 hover:text-[#555] dark:hover:text-white/80 transition-colors"
+            >
+              <UserCircle className="w-5 h-5" />
+              <div className="flex-1 min-w-0">
+                <p className="truncate text-[#1a1a1a] dark:text-white">{profile?.full_name || 'My Profile'}</p>
+                <p className="truncate text-xs text-[#999] dark:text-white/50">{profile?.position_title || 'Employee'}</p>
+              </div>
+            </Link>
           </div>
-        </Link>
+        ) : (
+          <div className="flex justify-center py-2">
+            <Link href={`/dashboard/people/${profile?.id}`} title={profile?.full_name || 'My Profile'} className="text-[#888] dark:text-white/50 hover:text-[#555] dark:hover:text-white/80 transition-colors">
+              <UserCircle className="w-5 h-5" />
+            </Link>
+          </div>
+        )}
+        <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />
       </div>
     </aside>
   );

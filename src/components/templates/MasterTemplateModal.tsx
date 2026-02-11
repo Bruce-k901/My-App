@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Info } from 'lucide-react';
+import { X, Info } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
@@ -37,21 +37,21 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ id, name, description, enable
     <button
       onClick={onChange}
       className={`p-3 rounded border transition-all text-left ${enabled 
-        ? 'border-pink-500 bg-pink-500/10 dark:bg-pink-500/10' 
-        : 'border-gray-300 dark:border-white/[0.1] bg-white dark:bg-white/[0.02] hover:border-pink-500/50 dark:hover:border-pink-500/50'}`}
+        ? 'border-[#D37E91] bg-[#D37E91]/15 dark:bg-[#D37E91]/15' 
+        : 'border-gray-300 dark:border-white/[0.1] bg-white dark:bg-white/[0.02] hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50'}`}
     >
       <div className="flex items-start gap-2">
         <input
           type="checkbox"
           checked={enabled}
           onChange={() => {}}
-          className="mt-1 accent-pink-500"
+          className="mt-1 accent-[#D37E91]"
         />
         <div className="flex-1">
           <div className="flex items-center gap-1">
             <span className="text-sm font-medium text-gray-900 dark:text-white">{name}</span>
             <div className="group relative">
-              <Info className="w-4 h-4 text-pink-500 dark:text-pink-400" />
+              <Info className="w-4 h-4 text-[#D37E91] dark:text-[#D37E91]" />
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-xs rounded p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
                 {description}
               </div>
@@ -891,7 +891,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                 setSelectedSites(allSiteIds);
               }
             }}
-            className="w-4 h-4 text-pink-500 border-gray-300 rounded focus:ring-pink-500"
+            className="w-4 h-4 text-[#D37E91] border-gray-300 rounded focus:ring-[#D37E91]"
           />
           <span className="text-sm font-medium text-gray-900 dark:text-white">
             Apply to all sites ({availableSites.length})
@@ -912,7 +912,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       setSelectedSites(selectedSites.filter(id => id !== site.id));
                     }
                   }}
-                  className="w-4 h-4 text-pink-500 border-gray-300 rounded focus:ring-pink-500"
+                  className="w-4 h-4 text-[#D37E91] border-gray-300 rounded focus:ring-[#D37E91]"
                 />
                 <span className="text-sm text-gray-900 dark:text-white">{site.name}</span>
               </label>
@@ -1025,7 +1025,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                     setNextInstanceDates([]);
                   }
                 }}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
               >
                 <option value="Daily">Daily</option>
                 <option value="Weekly">Weekly</option>
@@ -1066,7 +1066,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       }}
                       className={`px-3 py-2 rounded-lg border text-center transition-all text-sm ${
                         weeklyDays.includes(day.value)
-                          ? "border-pink-500 bg-pink-500/10 text-pink-600 dark:text-pink-400"
+                          ? "border-[#D37E91] bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91]"
                           : "border-gray-300 dark:border-neutral-800 bg-white dark:bg-[#141823] text-gray-700 dark:text-slate-400 hover:border-gray-400 dark:hover:border-neutral-700"
                       }`}
                     >
@@ -1125,7 +1125,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                           setMonthlyLastWeekday('friday');
                           setMonthlyDay(null);
                         }}
-                        className="w-4 h-4 text-pink-500 dark:text-magenta-500"
+                        className="w-4 h-4 text-[#D37E91] dark:text-magenta-500"
                       />
                       <label htmlFor="monthly_last_weekday" className="text-sm text-gray-700 dark:text-slate-200">
                         Last Weekday of Month
@@ -1169,7 +1169,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       setNextInstanceDates([]);
                     }
                   }}
-                  className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                  className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                 />
                 <p className="text-xs text-gray-600 dark:text-slate-400 mt-2">
                   Tasks will be automatically scheduled for this date {templateConfig.frequency === 'Annually' ? 'each year' : templateConfig.frequency === 'Bi-Annually' ? 'every 6 months' : 'each quarter'}
@@ -1222,7 +1222,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                           }}
                           className={`px-3 py-2 rounded-lg border text-center transition-all text-sm ${
                             weeklyDays.includes(day.value)
-                              ? "border-pink-500 bg-pink-500/10 text-pink-600 dark:text-pink-400"
+                              ? "border-[#D37E91] bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91]"
                               : "border-gray-300 dark:border-neutral-800 bg-white dark:bg-[#141823] text-gray-700 dark:text-slate-400 hover:border-gray-400 dark:hover:border-neutral-700"
                           }`}
                         >
@@ -1247,7 +1247,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                           setAnnualDate('');
                         }
                       }}
-                      className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                      className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                     />
                   </div>
                 </div>
@@ -1268,7 +1268,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       onClick={() => toggleDaypart(part.value)}
                       className={`px-4 py-3 rounded-lg border text-center transition-all ${
                         selectedDayparts.includes(part.value)
-                          ? "border-pink-500 bg-pink-500/10 text-pink-600 dark:text-pink-400"
+                          ? "border-[#D37E91] bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91]"
                           : "border-gray-300 dark:border-neutral-800 bg-white dark:bg-[#141823] text-gray-700 dark:text-slate-400 hover:border-gray-400 dark:hover:border-neutral-700"
                       }`}
                     >
@@ -1342,7 +1342,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="w-full sm:w-auto px-5 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+            className="w-full sm:w-auto px-5 py-2 bg-[#D37E91] hover:bg-[#D37E91] text-white rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
           >
             {isSaving 
               ? (editingTemplate ? 'Updating...' : 'Creating...')

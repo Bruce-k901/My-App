@@ -17,7 +17,7 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronUp,
-} from "lucide-react";
+} from '@/components/ui/icons';
 import { useState } from "react";
 
 const pitfallFeaturePairs = [
@@ -362,7 +362,7 @@ export default function ProductPage() {
             {painPoints.map((point, idx) => (
               <div
                 key={idx}
-                className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.35)] transition"
+                className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(211, 126, 145,0.35)] transition"
               >
                 <p className="text-gray-300 text-sm leading-relaxed">{point}</p>
               </div>
@@ -381,7 +381,7 @@ export default function ProductPage() {
             {modules.map((module) => (
               <div
                 key={module.id}
-                className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.35)] transition"
+                className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(211, 126, 145,0.35)] transition"
               >
                 <h3 className="text-xl font-semibold text-white mb-2">{module.name}</h3>
                 <p className="text-magenta-400 text-sm mb-3">{module.tagline}</p>
@@ -450,7 +450,7 @@ export default function ProductPage() {
             {benefits.map((benefit, idx) => (
               <div
                 key={idx}
-                className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.35)] transition"
+                className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(211, 126, 145,0.35)] transition"
               >
                 <h3 className="text-xl font-semibold text-white mb-2">{benefit.title}</h3>
                 <p className="text-gray-300 text-sm leading-relaxed">{benefit.description}</p>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Building2, Check } from "lucide-react";
+import { ChevronDown, Building2, Check } from '@/components/ui/icons';
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import { createPortal } from "react-dom";
@@ -130,7 +130,7 @@ export function ContextSwitcher() {
           h-10 px-4 rounded-lg border flex items-center gap-2 min-w-[180px]
           transition-all
           ${isOpen
-            ? "bg-black/[0.05] dark:bg-white/[0.08] border-[#EC4899]"
+            ? "bg-black/[0.05] dark:bg-white/[0.08] border-[#D37E91]"
             : "bg-black/[0.03] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] hover:bg-black/[0.05] dark:hover:bg-white/[0.06]"
           }
         `}
@@ -162,7 +162,7 @@ export function ContextSwitcher() {
             >
               <Building2 className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-white/60" />
               <span className="flex-1 text-[rgb(var(--text-primary))] dark:text-white">{comp.name}</span>
-              {company?.id === comp.id && <Check className="w-4 h-4 text-[#EC4899]" />}
+              {company?.id === comp.id && <Check className="w-4 h-4 text-[#D37E91]" />}
             </button>
           ))}
 

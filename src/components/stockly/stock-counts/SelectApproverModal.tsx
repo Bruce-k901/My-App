@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/Button';
-import { Loader2, CheckCircle2, Bell, MessageSquare, Calendar, Building2, MapPin, Users, Crown } from 'lucide-react';
+import { Loader2, CheckCircle2, Bell, MessageSquare, Calendar, Building2, MapPin, Users, Crown } from '@/components/ui/icons';
 
 interface Approver {
   id: string;

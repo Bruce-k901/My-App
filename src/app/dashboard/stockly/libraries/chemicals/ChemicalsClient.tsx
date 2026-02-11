@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Search, Upload, Download, Edit, Trash2, Save, X, AlertTriangle, CheckCircle, ChevronDown, ChevronRight, FileText, Package } from 'lucide-react';
+import { Plus, Search, Upload, Download, Edit, Trash2, Save, X, AlertTriangle, CheckCircle, ChevronDown, ChevronRight, FileText, Package } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';

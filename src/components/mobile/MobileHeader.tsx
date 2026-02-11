@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Bell, MapPin, ChevronDown, Check } from 'lucide-react';
+import { Bell, BellOff, MapPin, ChevronDown, Check } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -13,6 +13,8 @@ interface MobileHeaderProps {
   department?: string;
   unreadNotifications?: number;
   onNotificationClick?: () => void;
+  notificationsEnabled?: boolean;
+  onNotificationsToggle?: (enabled: boolean) => void;
   showSiteSelector?: boolean;
 }
 
@@ -22,10 +24,12 @@ export function MobileHeader({
   department,
   unreadNotifications = 0,
   onNotificationClick,
+  notificationsEnabled = true,
+  onNotificationsToggle,
   showSiteSelector = true,
 }: MobileHeaderProps) {
   const { companyId, profile, siteId } = useAppContext();
-  const { setSiteId } = useSiteContext();
+  const { setSelectedSite } = useSiteContext();
   const [sites, setSites] = useState<{ id: string; name: string }[]>([]);
   const [showSiteDropdown, setShowSiteDropdown] = useState(false);
   const [currentSiteName, setCurrentSiteName] = useState(propSiteName || 'All Sites');
@@ -67,7 +71,7 @@ export function MobileHeader({
   };
 
   const handleSiteSelect = (selectedSiteId: string | null) => {
-    setSiteId(selectedSiteId);
+    setSelectedSite(selectedSiteId || 'all');
     if (selectedSiteId === null || selectedSiteId === 'all') {
       setCurrentSiteName('All Sites');
     } else {
@@ -110,20 +114,26 @@ export function MobileHeader({
           )}
         </div>
         <button
-          onClick={onNotificationClick}
+          onClick={() => {
+            if (onNotificationsToggle) {
+              onNotificationsToggle(!notificationsEnabled);
+            } else if (onNotificationClick) {
+              onNotificationClick();
+            }
+          }}
           className={cn(
             "relative p-2 rounded-full",
-            "bg-white/5 hover:bg-white/10",
-            "transition-colors"
+            "transition-colors",
+            notificationsEnabled
+              ? "bg-[#D37E91]/15 hover:bg-[#D37E91]/25"
+              : "bg-white/5 hover:bg-white/10"
           )}
+          title={notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
         >
-          <Bell size={20} className="text-gray-400" />
-          {unreadNotifications > 0 && (
-            <span className={cn(
-              "absolute top-1 right-1 w-2.5 h-2.5",
-              "bg-[#FF6B9D] rounded-full",
-              "ring-2 ring-[#0a0a0a]"
-            )} />
+          {notificationsEnabled ? (
+            <Bell size={20} className="text-[#D37E91]" />
+          ) : (
+            <BellOff size={20} className="text-gray-500" />
           )}
         </button>
       </div>
@@ -140,7 +150,7 @@ export function MobileHeader({
               onClick={() => handleSiteSelect('all')}
               className={cn(
                 "w-full px-4 py-3 text-left flex items-center justify-between border-b border-white/10",
-                (siteId === 'all' || !siteId) ? 'text-[#EC4899]' : 'text-white'
+                (siteId === 'all' || !siteId) ? 'text-[#D37E91]' : 'text-white'
               )}
             >
               <span>All Sites</span>
@@ -152,7 +162,7 @@ export function MobileHeader({
                 onClick={() => handleSiteSelect(site.id)}
                 className={cn(
                   "w-full px-4 py-3 text-left flex items-center justify-between border-b border-white/5 last:border-0",
-                  siteId === site.id ? 'text-[#EC4899]' : 'text-white/80'
+                  siteId === site.id ? 'text-[#D37E91]' : 'text-white/80'
                 )}
               >
                 <span>{site.name}</span>

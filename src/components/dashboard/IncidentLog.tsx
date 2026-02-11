@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { ClipboardList, AlertTriangle, ThumbsDown, Activity } from "lucide-react";
+import { ClipboardList, AlertTriangle, ThumbsDown, Activity } from '@/components/ui/icons';
 import { format } from "date-fns";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
@@ -114,7 +114,7 @@ export default function IncidentLog() {
   }, [activeTab, companyId]);
 
   return (
-    <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)] text-white fade-in-soft">
+    <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(211, 126, 145,0.05)] text-white fade-in-soft">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">

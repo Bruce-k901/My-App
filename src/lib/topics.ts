@@ -83,7 +83,7 @@ export const TOPIC_COLORS = {
   [TOPICS.SAFETY]: 'bg-red-500/10 text-red-500 border-red-500/20',
   [TOPICS.MAINTENANCE]: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
   [TOPICS.OPERATIONS]: 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20',
-  [TOPICS.HR]: 'bg-pink-500/10 text-pink-500 border-pink-500/20',
+  [TOPICS.HR]: 'bg-[#D37E91]/15 text-[#D37E91] border-[#D37E91]/20',
   [TOPICS.INCIDENTS]: 'bg-red-600/10 text-red-600 border-red-600/20',
   [TOPICS.COMPLIANCE]: 'bg-green-600/10 text-green-600 border-green-600/20',
   [TOPICS.GENERAL]: 'bg-gray-500/10 text-gray-500 border-gray-500/20',

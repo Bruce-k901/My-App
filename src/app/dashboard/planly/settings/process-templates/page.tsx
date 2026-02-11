@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, ChevronDown, ChevronRight, RefreshCw, Trash2, Edit2, Loader2, Calendar, Flame, Package } from 'lucide-react';
+import { Plus, ChevronDown, ChevronRight, RefreshCw, Trash2, Edit2, Loader2, Calendar, Flame, Package } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';

@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { GraduationCap, CheckCircle, XCircle, Clock, AlertTriangle, Download, Plus, Mail, UserCheck } from 'lucide-react';
+import { GraduationCap, CheckCircle, XCircle, Clock, AlertTriangle, Download, Plus, Mail, UserCheck } from '@/components/ui/icons';
 import { AssignCourseModal } from './AssignCourseModal';
+import RecordTrainingModal from './RecordTrainingModal';
 import Link from 'next/link';
 
 interface EmployeeTrainingTabProps {
@@ -49,7 +50,7 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
     courseId: string;
     courseName: string;
   } | null>(null);
-  const [showAddExternal, setShowAddExternal] = useState(false);
+  const [showRecordModal, setShowRecordModal] = useState(false);
 
   useEffect(() => {
     if (employeeId && companyId) {
@@ -172,7 +173,7 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91]" />
       </div>
     );
   }
@@ -191,7 +192,7 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
           {selectedCourses.length > 0 && (
             <button
               onClick={handleAssignSelected}
-              className="px-3 py-1.5 text-sm bg-[#EC4899] hover:bg-[#EC4899]/80 text-white rounded-lg transition-colors"
+              className="px-3 py-1.5 text-sm bg-[#D37E91] hover:bg-[#D37E91]/80 text-white rounded-lg transition-colors"
             >
               Assign Selected ({selectedCourses.length})
             </button>
@@ -210,7 +211,7 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
                   assignment
                     ? 'bg-blue-500/10 border-blue-500/50'
                     : isSelected
-                    ? 'bg-[#EC4899]/10 border-[#EC4899]/50'
+                    ? 'bg-[#D37E91]/10 border-[#D37E91]/50'
                     : 'bg-neutral-700/50 border-neutral-600'
                 }`}
               >
@@ -237,7 +238,7 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
                           setSelectedCourses(selectedCourses.filter(id => id !== course.id));
                         }
                       }}
-                      className="w-4 h-4 text-[#EC4899] bg-neutral-700 border-neutral-600 rounded focus:ring-[#EC4899]"
+                      className="w-4 h-4 text-[#D37E91] bg-neutral-700 border-neutral-600 rounded focus:ring-[#D37E91]"
                     />
                   )}
                 </div>
@@ -313,7 +314,7 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
                       <Link
                         href={`/api/certificates/${record.id}`}
                         target="_blank"
-                        className="flex items-center gap-2 px-3 py-1.5 text-sm bg-[#EC4899] hover:bg-[#EC4899]/80 text-white rounded-lg transition-colors"
+                        className="flex items-center gap-2 px-3 py-1.5 text-sm bg-[#D37E91] hover:bg-[#D37E91]/80 text-white rounded-lg transition-colors"
                       >
                         <Download className="w-4 h-4" />
                         Certificate
@@ -327,30 +328,28 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
         )}
       </div>
 
-      {/* Section 3: Add External Certificate */}
+      {/* Section 3: Record Training */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h4 className="text-base font-medium text-white">Add External Certificate</h4>
+          <h4 className="text-base font-medium text-gray-900 dark:text-white">Record Training</h4>
           <button
-            onClick={() => setShowAddExternal(!showAddExternal)}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-neutral-700 hover:bg-neutral-600 text-white rounded-lg transition-colors"
+            onClick={() => setShowRecordModal(true)}
+            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg transition-colors"
           >
             <Plus className="w-4 h-4" />
-            {showAddExternal ? 'Cancel' : 'Add Certificate'}
+            Record Training
           </button>
         </div>
-
-        {showAddExternal && (
-          <div className="p-4 bg-neutral-700/50 border border-neutral-600 rounded-lg">
-            <p className="text-sm text-gray-500 dark:text-white/60 mb-4">
-              For courses completed outside Opsly, you can manually add a training record.
-            </p>
-            <p className="text-xs text-neutral-500">
-              This feature will be implemented in the next phase.
-            </p>
-          </div>
-        )}
       </div>
+
+      {/* Record Training Modal */}
+      <RecordTrainingModal
+        isOpen={showRecordModal}
+        onClose={() => setShowRecordModal(false)}
+        onSuccess={loadData}
+        employeeId={employeeId}
+        employeeName={employeeName}
+      />
 
       {/* Assignment Modal */}
       {assignmentModal && (

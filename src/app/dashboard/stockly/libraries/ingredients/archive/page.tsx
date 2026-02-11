@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
-import { ArrowLeft, Archive, Loader2 } from 'lucide-react';
+import { ArrowLeft, Archive, Loader2 } from '@/components/ui/icons';
 import Link from 'next/link';
 import { toast } from 'sonner';
 

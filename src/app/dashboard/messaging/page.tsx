@@ -11,15 +11,9 @@ export default function MessagingRedirectPage() {
   useEffect(() => {
     // Open the messaging panel
     setMessagingOpen(true)
-    
-    // Redirect back to previous page or dashboard
-    // Use replace to avoid adding to history
-    const previousPath = document.referrer ? new URL(document.referrer).pathname : '/dashboard'
-    if (previousPath.includes('/messaging')) {
-      router.replace('/dashboard')
-    } else {
-      router.back()
-    }
+    // Always navigate to dashboard - router.back() is unreliable
+    // and can navigate outside the app (e.g., to login page), causing logout
+    router.replace('/dashboard')
   }, [router, setMessagingOpen])
 
   return (

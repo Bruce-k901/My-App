@@ -16,11 +16,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get customer record
+    // Get customer record from planly
     const { data: customer } = await supabase
-      .from('order_book_customers')
+      .from('planly_customers')
       .select('id')
       .eq('email', user.email?.toLowerCase() || '')
+      .eq('is_active', true)
       .maybeSingle();
 
     if (!customer) {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Check } from 'lucide-react';
+import { Check } from '@/components/ui/icons';
 import { WidgetCard, CountBadge, MiniItem } from '../WidgetCard';
 import { supabase } from '@/lib/supabase';
 
@@ -108,10 +108,10 @@ export default function OverdueMaintenanceWidget({ siteId, companyId }: OverdueM
 
   if (loading) {
     return (
-      <WidgetCard title="Overdue Maintenance" module="assetly" viewAllHref="/dashboard/assets/maintenance">
+      <WidgetCard title="Overdue Maintenance" module="assetly" viewAllHref="/dashboard/assets">
         <div className="animate-pulse space-y-2">
-          <div className="h-8 bg-white/5 rounded w-24" />
-          <div className="h-3 bg-white/5 rounded" />
+          <div className="h-8 bg-black/5 dark:bg-white/5 rounded w-24" />
+          <div className="h-3 bg-black/5 dark:bg-white/5 rounded" />
         </div>
       </WidgetCard>
     );
@@ -119,7 +119,7 @@ export default function OverdueMaintenanceWidget({ siteId, companyId }: OverdueM
 
   if (totalCount === 0) {
     return (
-      <WidgetCard title="Overdue Maintenance" module="assetly" viewAllHref="/dashboard/assets/maintenance">
+      <WidgetCard title="Overdue Maintenance" module="assetly" viewAllHref="/dashboard/assets">
         <div className="flex items-center gap-2 py-4 justify-center">
           <div className="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center">
             <Check className="w-3.5 h-3.5 text-emerald-400" />
@@ -131,7 +131,7 @@ export default function OverdueMaintenanceWidget({ siteId, companyId }: OverdueM
   }
 
   return (
-    <WidgetCard title="Overdue Maintenance" module="assetly" viewAllHref="/dashboard/assets/maintenance">
+    <WidgetCard title="Overdue Maintenance" module="assetly" viewAllHref="/dashboard/assets">
       <CountBadge count={totalCount} label="overdue task" status="urgent" />
       <div className="mt-2">
         {tasks.map((task) => (
@@ -140,6 +140,7 @@ export default function OverdueMaintenanceWidget({ siteId, companyId }: OverdueM
             text={`${task.assetName} — ${task.taskName}`}
             sub={`${task.daysOverdue}d overdue`}
             status="urgent"
+            href="/dashboard/assets"
           />
         ))}
       </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
-import { Plug, Edit2, X } from "lucide-react";
+import { Plug, Edit2, X } from '@/components/ui/icons';
 import TimePicker from "@/components/ui/TimePicker";
 
 interface Appliance {

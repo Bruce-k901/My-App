@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { CheckSquare, X, Calendar } from 'lucide-react';
+import { CheckSquare, X, Calendar } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
@@ -204,7 +204,7 @@ export default function ConvertToTaskModal({
               type="text"
               value={taskData.title}
               onChange={(e) => setTaskData({ ...taskData, title: e.target.value })}
-              className="w-full px-4 py-3 bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:border-[#EC4899] transition-colors"
+              className="w-full px-4 py-3 bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:border-[#D37E91] transition-colors"
               placeholder="Enter task title..."
               maxLength={200}
             />
@@ -219,7 +219,7 @@ export default function ConvertToTaskModal({
               value={taskData.description}
               onChange={(e) => setTaskData({ ...taskData, description: e.target.value })}
               rows={4}
-              className="w-full px-4 py-3 bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:border-[#EC4899] transition-colors resize-none"
+              className="w-full px-4 py-3 bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:border-[#D37E91] transition-colors resize-none"
               placeholder="Add more details..."
             />
           </div>
@@ -232,7 +232,7 @@ export default function ConvertToTaskModal({
             <select
               value={taskData.site_id}
               onChange={(e) => setTaskData({ ...taskData, site_id: e.target.value })}
-              className="w-full px-4 py-3 bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#EC4899] transition-colors appearance-none cursor-pointer"
+              className="w-full px-4 py-3 bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91] transition-colors appearance-none cursor-pointer"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='${document.documentElement.classList.contains('dark') ? '%23ffffff' : '%231f2937'}' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
                 backgroundRepeat: 'no-repeat',
@@ -263,7 +263,7 @@ export default function ConvertToTaskModal({
               type="date"
               value={taskData.due_date}
               onChange={(e) => setTaskData({ ...taskData, due_date: e.target.value })}
-              className="w-full px-4 py-3 bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#EC4899] transition-colors"
+              className="w-full px-4 py-3 bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91] transition-colors"
             />
           </div>
         </div>
@@ -280,7 +280,7 @@ export default function ConvertToTaskModal({
           <button
             onClick={handleCreate}
             disabled={loading || !taskData.title.trim() || !taskData.site_id}
-            className="px-6 py-2.5 bg-transparent text-[#EC4899] border border-[#EC4899] rounded-lg font-medium hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2.5 bg-transparent text-[#D37E91] border border-[#D37E91] rounded-lg font-medium hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Creating...' : 'Create Task'}
           </button>

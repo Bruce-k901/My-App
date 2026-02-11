@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/ToastProvider";
-import { ChevronUp } from "lucide-react";
+import { ChevronUp } from '@/components/ui/icons';
 import { updateGM } from "@/lib/updateGM";
 
 type GM = {
@@ -67,7 +67,7 @@ export function UpdateGM({ siteId, gmList, currentGM, renderExpandedOnly = false
           <select
             value={selectedGM}
             onChange={(e) => setSelectedGM(e.target.value)}
-            className="bg-white/[0.05] border border-white/[0.1] rounded-md px-4 py-2 text-white min-w-[180px] h-11 hover:border-white/20 focus:border-pink-500 focus:outline-none"
+            className="bg-white/[0.05] border border-white/[0.1] rounded-md px-4 py-2 text-white min-w-[180px] h-11 hover:border-white/20 focus:border-[#D37E91] focus:outline-none"
           >
             <option value="">Select GM...</option>
             {gmList.map((gm) => (
@@ -81,7 +81,7 @@ export function UpdateGM({ siteId, gmList, currentGM, renderExpandedOnly = false
             variant="outline"
             disabled={loading}
             onClick={handleUpdate}
-            className="border-pink-500 text-pink-500 hover:bg-pink-500/10"
+            className="border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/15"
           >
             {loading ? "Saving..." : "Save & Sync"}
           </Button>

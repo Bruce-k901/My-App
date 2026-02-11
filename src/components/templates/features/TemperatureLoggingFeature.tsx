@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from '@/components/ui/icons';
 import { MonitorCalloutModal } from './MonitorCalloutModal';
 import { TemperatureInput } from '@/components/ui';
 
@@ -265,7 +265,7 @@ export function TemperatureLoggingFeature({
                         onChange(newTemps);
                       }}
                       placeholder="Equipment name"
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                       readOnly={!!asset}
                       title={temp.equipment || asset?.name || ''}
                     />
@@ -280,7 +280,7 @@ export function TemperatureLoggingFeature({
                         onChange(newTemps);
                       }}
                       placeholder="e.g., FR1"
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                     />
                   </div>
                   {!isTemplateMode && (
@@ -292,7 +292,7 @@ export function TemperatureLoggingFeature({
                         }}
                         placeholder="Temperature (°C)"
                         fontSize="14px"
-                        className={`w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 ${
+                        className={`w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] ${
                           isFail ? 'border-red-500' :
                           isWarning ? 'border-yellow-500' :
                           'border-gray-300 dark:border-white/[0.1]'
@@ -316,7 +316,7 @@ export function TemperatureLoggingFeature({
                         }}
                         placeholder="Min"
                         fontSize="14px"
-                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                         style={{ fontSize: '14px', fontFamily: 'inherit' }}
                       />
                     </div>
@@ -329,7 +329,7 @@ export function TemperatureLoggingFeature({
                         }}
                         placeholder="Max"
                         fontSize="14px"
-                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                         style={{ fontSize: '14px', fontFamily: 'inherit' }}
                       />
                     </div>
@@ -369,7 +369,7 @@ export function TemperatureLoggingFeature({
               <button
                 type="button"
                 onClick={autoPopulateFromAssets}
-                className="text-sm px-4 py-2 bg-pink-50 dark:bg-pink-600/20 text-pink-600 dark:text-pink-400 hover:bg-pink-100 dark:hover:bg-pink-600/30 rounded-lg border border-pink-300 dark:border-pink-500/30 font-medium transition-colors"
+                className="text-sm px-4 py-2 bg-[#D37E91]/10 dark:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91] hover:bg-[#D37E91]/10 dark:hover:bg-[#D37E91]/35 rounded-lg border border-[#D37E91] dark:border-[#D37E91]/30 font-medium transition-colors"
               >
                 + Auto-populate from Assets
               </button>

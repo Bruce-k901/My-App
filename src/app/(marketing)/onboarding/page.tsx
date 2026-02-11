@@ -20,7 +20,7 @@ import {
   ChevronUp,
   Clock,
   ArrowLeft
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface SetupStep {
   id: string;
@@ -282,7 +282,7 @@ export default function OnboardingPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.35)] transition">
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(211, 126, 145,0.35)] transition">
                 <h3 className="text-xl font-semibold text-white mb-2">Accurate Compliance Tracking</h3>
                 <p className="text-gray-300">
                   Proper setup ensures every task, temperature reading, and incident is correctly attributed to the right site, asset, and team member, creating a bulletproof audit trail.
@@ -296,7 +296,7 @@ export default function OnboardingPage() {
                 </p>
               </div>
 
-              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.35)] transition">
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(211, 126, 145,0.35)] transition">
                 <h3 className="text-xl font-semibold text-white mb-2">Immediate ROI</h3>
                 <p className="text-gray-300">
                   Complete setup unlocks the full power of Opsly: automated compliance, real-time alerts, comprehensive reporting, and data-driven insights that improve operations.

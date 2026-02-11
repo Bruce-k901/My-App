@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { ChevronLeft, ChevronRight, DollarSign } from 'lucide-react';
+import { ChevronLeft, ChevronRight, DollarSign } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { useMonthlySales } from '@/hooks/planly/useMonthlySales';

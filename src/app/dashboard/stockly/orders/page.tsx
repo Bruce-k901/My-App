@@ -18,7 +18,7 @@ import {
   ArrowLeft,
   Trash2,
   AlertTriangle
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface PurchaseOrder {
   id: string;

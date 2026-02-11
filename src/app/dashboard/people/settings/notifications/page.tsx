@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Switch from '@/components/ui/Switch';
 import { toast } from 'sonner';
-import { Bell, Save, ArrowLeft, Mail, Smartphone, MessageSquare } from 'lucide-react';
+import { Bell, Save, ArrowLeft, Mail, Smartphone, MessageSquare } from '@/components/ui/icons';
 import Link from 'next/link';
 import { NotificationCategory, NotificationSetting, NotificationType } from '@/types/teamly-settings';
 

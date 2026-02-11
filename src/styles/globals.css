@@ -8,16 +8,16 @@
 
 :root {
   /* Primary brand gradient */
-  --mobile-primary: #ff6b9d;
-  --mobile-primary-end: #ff8a65;
+  --mobile-primary: #D37E91;
+  --mobile-primary-end: #ACC8A2;
 
-  /* Module accent colors */
-  --mobile-checkly: #4caf50;
-  --mobile-stockly: #2196f3;
-  --mobile-teamly: #9c27b0;
-  --mobile-planly: #ff9800;
-  --mobile-assetly: #607d8b;
-  --mobile-msgly: #00bcd4;
+  /* Module accent colors (aligned with --module-* in app/globals.css) */
+  --mobile-checkly: rgb(var(--module-checkly, 241 225 148));
+  --mobile-stockly: rgb(var(--module-stockly, 120 154 153));
+  --mobile-teamly: rgb(var(--module-teamly, 211 126 145));
+  --mobile-planly: rgb(var(--module-planly, 172 200 162));
+  --mobile-assetly: rgb(var(--module-assetly, 243 231 217));
+  --mobile-msgly: rgb(var(--module-msgly, 203 221 233));
 
   /* Dark theme base */
   --mobile-bg-primary: #0d0d0f;
@@ -201,25 +201,47 @@
 
 /* Gradient accent bar */
 .mobile-gradient-accent {
-  background: linear-gradient(90deg, #ff6b9d, #9c27b0, #ff8a65);
+  background: linear-gradient(90deg, #D37E91, #544349, #ACC8A2);
 }
 
-/* Custom scrollbar styles */
+/* ─── App scrollbar ─── */
+/* Thin, rounded, semi-transparent — visible on scroll/hover */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+.dark * {
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1f2937;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #374151;
-  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 9999px;
+  transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #4b5563;
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 /* Hide scrollbar utility */
@@ -248,7 +270,7 @@
 .react-datepicker__input-container input:focus {
   outline: none;
   ring: 2px;
-  ring-color: #ec4899;
+  ring-color: #D37E91;
 }
 
 .react-datepicker {
@@ -275,15 +297,15 @@
 }
 
 .react-datepicker__day:hover {
-  background-color: #ec4899;
+  background-color: #D37E91;
 }
 
 .react-datepicker__day--selected {
-  background-color: #ec4899;
+  background-color: #D37E91;
 }
 
 .react-datepicker__day--keyboard-selected {
-  background-color: #ec4899;
+  background-color: #D37E91;
 }
 
 /* GM Info Container Styles */
@@ -312,8 +334,8 @@
 
 .gm-email:hover,
 .gm-phone:hover {
-  color: #ec4899;
-  text-shadow: 0 0 6px #ec4899;
+  color: #D37E91;
+  text-shadow: 0 0 6px #D37E91;
 }
 
 .gm-name {

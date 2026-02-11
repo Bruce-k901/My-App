@@ -24,7 +24,7 @@ import {
   PlusCircle,
   Calculator,
   ArrowLeft
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { toast } from 'sonner';
 import { ExpandableRecipeCard } from '@/components/recipes/ExpandableRecipeCard';
 
@@ -741,7 +741,7 @@ function RecipesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -836,7 +836,7 @@ function RecipesPage() {
             placeholder="Search recipes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:border-[#EC4899]"
+            className="w-full pl-10 pr-4 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:border-[#D37E91]"
           />
         </div>
         
@@ -844,7 +844,7 @@ function RecipesPage() {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="px-4 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-[#EC4899]"
+          className="px-4 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-[#D37E91]"
         >
           <option value="all">All Types</option>
           <option value="prep">Prep Items</option>
@@ -858,7 +858,7 @@ function RecipesPage() {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="px-4 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-[#EC4899]"
+            className="px-4 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-[#D37E91]"
           >
             <option value="all">All Categories</option>
             {categories.map(cat => (

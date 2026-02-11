@@ -3,7 +3,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/Button';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@/components/ui/icons';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -43,9 +43,9 @@ export default function ConfirmDialog({
         
         <div className="py-4">
           {typeof description === 'string' ? (
-            <p className="text-gray-600 dark:text-neutral-300">{description}</p>
+            <p className="text-gray-600 dark:text-white/60">{description}</p>
           ) : (
-            <div className="text-gray-600 dark:text-neutral-300">{description}</div>
+            <div className="text-gray-600 dark:text-white/60">{description}</div>
           )}
         </div>
         
@@ -53,16 +53,16 @@ export default function ConfirmDialog({
           <Button
             onClick={onClose}
             variant="outline"
-            className="border-gray-300 dark:border-neutral-600 text-gray-600 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800"
+            className="border-gray-300 dark:border-white/[0.12] text-gray-600 dark:text-white/60 hover:bg-gray-100 dark:hover:bg-white/[0.05]"
           >
             {cancelText}
           </Button>
           <Button
             onClick={handleConfirm}
             variant={variant === 'destructive' ? 'destructive' : 'default'}
-            className={variant === 'destructive' 
-              ? 'bg-orange-500 hover:bg-orange-600 text-white' 
-              : 'bg-magenta-500 hover:bg-magenta-600 text-white'
+            className={variant === 'destructive'
+              ? 'bg-orange-500 hover:bg-orange-600 dark:bg-orange-500/90 dark:hover:bg-orange-500 text-white'
+              : 'bg-[#D37E91] hover:bg-[#D37E91]/90 text-white'
             }
           >
             {confirmText}

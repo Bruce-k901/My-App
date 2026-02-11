@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { Clock, CheckCircle2, AlertCircle, Calendar } from 'lucide-react'
+import { Clock, CheckCircle2, AlertCircle, Calendar, RefreshCw, Loader2 } from '@/components/ui/icons'
 import { supabase } from '@/lib/supabase'
 import { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 import ChecklistsHeader from '@/components/checklists/ChecklistsHeader'
@@ -14,7 +14,7 @@ import { TemperatureBreachAction, TemperatureLogWithMeta } from '@/types/tempera
 import { toast } from 'sonner'
 import { enrichTemplateWithDefinition } from '@/lib/templates/enrich-template'
 import { calculateTaskTiming } from '@/utils/taskTiming'
-import { useTaskAlerts } from '@/hooks/useTaskAlerts'
+import { triggerTaskGeneration } from '@/lib/task-generation'
 
 // Daypart chronological order (for sorting)
 const DAYPART_ORDER: Record<string, number> = {
@@ -73,15 +73,10 @@ export default function DailyChecklistPage() {
   const { siteId, companyId, selectedSiteId } = useAppContext()
   const [breachActions, setBreachActions] = useState<TemperatureBreachAction[]>([])
   const [breachLoading, setBreachLoading] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
   // Use ref to store latest fetchTodaysTasks function
   const fetchTodaysTasksRef = useRef<() => Promise<void>>()
 
-  // Enable task due/overdue alerts with sound and vibration
-  useTaskAlerts({
-    tasks,
-    enabled: true,
-    checkIntervalMs: 60000 // Check every minute
-  })
 
   // Format date - use suppressHydrationWarning to prevent mismatch
   // Server and client may format dates slightly differently, but that's OK
@@ -1718,14 +1713,37 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
         </p>
         </div>
         <button
-          onClick={() => {
-            console.log('🔄 Manual refresh clicked')
-            fetchTodaysTasks()
-            fetchUpcomingTasks()
+          onClick={async () => {
+            if (refreshing) return
+            setRefreshing(true)
+            try {
+              const result = await triggerTaskGeneration()
+              const total = result.total_tasks_created ?? 0
+              if (total > 0) {
+                toast.success(`Generated ${total} new task${total === 1 ? '' : 's'}`)
+              } else {
+                toast.info('All tasks up to date')
+              }
+            } catch (err) {
+              console.error('Task generation failed:', err)
+              toast.error('Failed to generate tasks — refreshing existing list')
+            }
+            await fetchTodaysTasks()
+            await fetchUpcomingTasks()
+            setRefreshing(false)
           }}
-          className="px-4 py-2 bg-[#EC4899]/10 dark:bg-magenta-500/20 hover:bg-[#EC4899]/20 dark:hover:bg-magenta-500/30 border border-[#EC4899]/50 dark:border-magenta-500/50 text-[#EC4899] dark:text-magenta-400 rounded-lg transition-colors text-sm"
+          disabled={refreshing}
+          className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium flex items-center gap-2 ${
+            refreshing
+              ? 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-tertiary))] dark:text-white/40 cursor-not-allowed'
+              : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.12]'
+          }`}
         >
-          🔄 Refresh Tasks
+          {refreshing
+            ? <Loader2 className="h-4 w-4 animate-spin" />
+            : <RefreshCw className="h-4 w-4" />
+          }
+          {refreshing ? 'Scanning...' : 'Refresh Tasks'}
         </button>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           {upcomingTasks.length > 0 && (
@@ -1780,8 +1798,8 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
       {/* Tasks List */}
       {loading ? (
         <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#EC4899]/10 dark:bg-pink-500/10 mb-4">
-            <Clock className="w-8 h-8 text-[#EC4899] dark:text-pink-400 animate-spin" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/15 mb-4">
+            <Clock className="w-8 h-8 text-[#D37E91] dark:text-[#D37E91] animate-spin" />
           </div>
           <h3 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-2">Loading tasks...</h3>
         </div>

@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase'
 import { 
   Loader2, ArrowLeft, Edit, Share2, ExternalLink, Users, 
   DollarSign, MapPin, Briefcase, Calendar, Copy, CheckCircle
-} from 'lucide-react'
+} from '@/components/ui/icons'
 import { toast } from 'sonner'
 
 type Job = {
@@ -309,7 +309,7 @@ Apply here: ${getPublicJobUrl()}
           {/* Edit Button */}
           <Link
             href={`/dashboard/people/recruitment/jobs/${job.id}/edit`}
-            className="px-4 py-2 rounded-lg text-sm bg-transparent text-[#EC4899] border border-blue-600 dark:border-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all flex items-center gap-2"
+            className="px-4 py-2 rounded-lg text-sm bg-transparent text-[#D37E91] border border-blue-600 dark:border-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all flex items-center gap-2"
           >
             <Edit className="w-4 h-4" />
             Edit
@@ -443,7 +443,7 @@ Apply here: ${getPublicJobUrl()}
               </h2>
               <Link
                 href="/dashboard/people/recruitment/candidates"
-                className="text-xs text-[#EC4899] hover:underline"
+                className="text-xs text-[#D37E91] hover:underline"
               >
                 View all candidates
               </Link>
@@ -470,7 +470,7 @@ Apply here: ${getPublicJobUrl()}
                 <>
                   <button
                     onClick={copyJobUrl}
-                    className="w-full px-3 py-2 rounded-lg text-sm bg-transparent text-[#EC4899] border border-blue-600 dark:border-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all text-left flex items-center gap-2 font-medium"
+                    className="w-full px-3 py-2 rounded-lg text-sm bg-transparent text-[#D37E91] border border-blue-600 dark:border-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all text-left flex items-center gap-2 font-medium"
                   >
                     <Copy className="w-4 h-4" />
                     Copy Link
@@ -570,7 +570,7 @@ Apply here: ${getPublicJobUrl()}
                   <button
                     onClick={copyJobUrl}
                     disabled={!job.is_published || job.status !== 'open'}
-                    className="px-4 py-2 rounded-lg bg-transparent text-[#EC4899] border border-blue-600 dark:border-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                    className="px-4 py-2 rounded-lg bg-transparent text-[#D37E91] border border-blue-600 dark:border-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                   >
                     <Copy className="w-4 h-4" />
                     Copy

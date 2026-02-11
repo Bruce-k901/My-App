@@ -1,5 +1,5 @@
 /**
- * PDF Export Utility for Stockly Reports
+ * PDF Export Utility for Opsly Reports
  * Uses jsPDF library with autoTable plugin
  */
 
@@ -23,6 +23,7 @@ interface PdfExportOptions {
   orientation?: 'portrait' | 'landscape';
   summary?: { label: string; value: string }[];
   footerText?: string;
+  brandLabel?: string;
 }
 
 interface PdfReportSummary {
@@ -81,7 +82,8 @@ export function exportToPdf(options: PdfExportOptions): void {
     data,
     orientation = 'portrait',
     summary,
-    footerText
+    footerText,
+    brandLabel = 'OPSLY'
   } = options;
 
   // Create PDF document
@@ -98,7 +100,7 @@ export function exportToPdf(options: PdfExportOptions): void {
   // Add logo placeholder / company name
   doc.setFontSize(10);
   doc.setTextColor(128, 128, 128);
-  doc.text('STOCKLY', margin, yPos);
+  doc.text(brandLabel, margin, yPos);
   
   // Add generation date
   const dateStr = new Date().toLocaleString('en-GB');
@@ -362,12 +364,13 @@ export function exportPriceChangesPdf(
 ): void {
   const increases = data.filter(d => d.price_change_pct > 0).length;
   const decreases = data.filter(d => d.price_change_pct < 0).length;
-  
+
   exportToPdf({
     filename: 'price_changes_report',
     title: 'Price Tracking Report',
     subtitle: 'Price changes from recent deliveries',
     orientation: 'landscape',
+    brandLabel: 'STOCKLY',
     summary: [
       { label: 'Price Changes', value: String(data.length) },
       { label: 'Increases', value: String(increases) },
@@ -382,5 +385,232 @@ export function exportPriceChangesPdf(
       { header: 'Change', key: 'price_change_pct', width: 25, align: 'right', format: 'percentage' }
     ],
     data
+  });
+}
+
+// ---- Checkly Report Exporters ----
+
+export function exportChecklyTasksPdf(
+  data: { category: string; total: number; completed: number; rate: number }[],
+  dateRange: string
+): void {
+  const totalTasks = data.reduce((sum, d) => sum + d.total, 0);
+  const totalCompleted = data.reduce((sum, d) => sum + d.completed, 0);
+  exportToPdf({
+    filename: 'checkly_tasks_report',
+    title: 'Task Performance Report',
+    subtitle: dateRange,
+    brandLabel: 'CHECKLY',
+    summary: [
+      { label: 'Total Tasks', value: String(totalTasks) },
+      { label: 'Completed', value: String(totalCompleted) },
+      { label: 'Completion Rate', value: totalTasks > 0 ? `${Math.round((totalCompleted / totalTasks) * 100)}%` : '0%' },
+    ],
+    columns: [
+      { header: 'Category', key: 'category', width: 60 },
+      { header: 'Total', key: 'total', width: 30, align: 'right', format: 'number' },
+      { header: 'Completed', key: 'completed', width: 30, align: 'right', format: 'number' },
+      { header: 'Rate', key: 'rate', width: 30, align: 'right', format: 'percentage' },
+    ],
+    data,
+  });
+}
+
+export function exportChecklyIncidentsPdf(
+  data: { siteName: string; total: number; critical: number; high: number; medium: number; low: number; riddor: number }[],
+  dateRange: string
+): void {
+  const total = data.reduce((sum, d) => sum + d.total, 0);
+  exportToPdf({
+    filename: 'checkly_incidents_report',
+    title: 'Incident Summary Report',
+    subtitle: dateRange,
+    brandLabel: 'CHECKLY',
+    orientation: 'landscape',
+    summary: [
+      { label: 'Total Incidents', value: String(total) },
+      { label: 'Critical', value: String(data.reduce((s, d) => s + d.critical, 0)) },
+      { label: 'RIDDOR', value: String(data.reduce((s, d) => s + d.riddor, 0)) },
+    ],
+    columns: [
+      { header: 'Site', key: 'siteName', width: 60 },
+      { header: 'Total', key: 'total', width: 25, align: 'right', format: 'number' },
+      { header: 'Critical', key: 'critical', width: 25, align: 'right', format: 'number' },
+      { header: 'High', key: 'high', width: 25, align: 'right', format: 'number' },
+      { header: 'Medium', key: 'medium', width: 25, align: 'right', format: 'number' },
+      { header: 'Low', key: 'low', width: 25, align: 'right', format: 'number' },
+      { header: 'RIDDOR', key: 'riddor', width: 25, align: 'right', format: 'number' },
+    ],
+    data,
+  });
+}
+
+export function exportChecklyTemperaturePdf(
+  data: { siteName: string; totalReadings: number; compliant: number; breaches: number; complianceRate: number }[],
+  dateRange: string
+): void {
+  exportToPdf({
+    filename: 'checkly_temperature_report',
+    title: 'Temperature Compliance Report',
+    subtitle: dateRange,
+    brandLabel: 'CHECKLY',
+    summary: [
+      { label: 'Total Readings', value: String(data.reduce((s, d) => s + d.totalReadings, 0)) },
+      { label: 'Breaches', value: String(data.reduce((s, d) => s + d.breaches, 0)) },
+    ],
+    columns: [
+      { header: 'Site', key: 'siteName', width: 60 },
+      { header: 'Readings', key: 'totalReadings', width: 30, align: 'right', format: 'number' },
+      { header: 'Compliant', key: 'compliant', width: 30, align: 'right', format: 'number' },
+      { header: 'Breaches', key: 'breaches', width: 30, align: 'right', format: 'number' },
+      { header: 'Rate', key: 'complianceRate', width: 30, align: 'right', format: 'percentage' },
+    ],
+    data,
+  });
+}
+
+// ---- Teamly Report Exporters ----
+
+export function exportTeamlyTrainingPdf(
+  data: { name: string; course: string; expiryDate: string; status: string }[],
+  dateRange: string
+): void {
+  exportToPdf({
+    filename: 'teamly_training_report',
+    title: 'Training Compliance Report',
+    subtitle: dateRange,
+    brandLabel: 'TEAMLY',
+    summary: [
+      { label: 'Total Records', value: String(data.length) },
+      { label: 'Expiring Soon', value: String(data.filter(d => d.status === 'expiring').length) },
+      { label: 'Expired', value: String(data.filter(d => d.status === 'expired').length) },
+    ],
+    columns: [
+      { header: 'Staff Member', key: 'name', width: 50 },
+      { header: 'Course', key: 'course', width: 50 },
+      { header: 'Expiry Date', key: 'expiryDate', width: 35, format: 'date' },
+      { header: 'Status', key: 'status', width: 30 },
+    ],
+    data,
+  });
+}
+
+// ---- Planly Report Exporters ----
+
+export function exportPlanlyProductionPdf(
+  data: { date: string; total: number; completed: number; rate: number }[],
+  dateRange: string
+): void {
+  const totalBatches = data.reduce((s, d) => s + d.total, 0);
+  const totalCompleted = data.reduce((s, d) => s + d.completed, 0);
+  exportToPdf({
+    filename: 'planly_production_report',
+    title: 'Production Summary Report',
+    subtitle: dateRange,
+    brandLabel: 'PLANLY',
+    summary: [
+      { label: 'Total Batches', value: String(totalBatches) },
+      { label: 'Completed', value: String(totalCompleted) },
+      { label: 'Completion Rate', value: totalBatches > 0 ? `${Math.round((totalCompleted / totalBatches) * 100)}%` : '0%' },
+    ],
+    columns: [
+      { header: 'Date', key: 'date', width: 40, format: 'date' },
+      { header: 'Total Batches', key: 'total', width: 35, align: 'right', format: 'number' },
+      { header: 'Completed', key: 'completed', width: 35, align: 'right', format: 'number' },
+      { header: 'Rate', key: 'rate', width: 30, align: 'right', format: 'percentage' },
+    ],
+    data,
+  });
+}
+
+export function exportPlanlyOrdersPdf(
+  data: { customer: string; orderCount: number; totalSpend: number }[],
+  dateRange: string
+): void {
+  const totalRevenue = data.reduce((s, d) => s + d.totalSpend, 0);
+  exportToPdf({
+    filename: 'planly_orders_report',
+    title: 'Order Fulfillment Report',
+    subtitle: dateRange,
+    brandLabel: 'PLANLY',
+    summary: [
+      { label: 'Total Revenue', value: formatValue(totalRevenue, 'currency') },
+      { label: 'Customers', value: String(data.length) },
+      { label: 'Total Orders', value: String(data.reduce((s, d) => s + d.orderCount, 0)) },
+    ],
+    columns: [
+      { header: 'Customer', key: 'customer', width: 60 },
+      { header: 'Orders', key: 'orderCount', width: 30, align: 'right', format: 'number' },
+      { header: 'Revenue', key: 'totalSpend', width: 40, align: 'right', format: 'currency' },
+    ],
+    data,
+  });
+}
+
+// ---- Assetly Report Exporters ----
+
+export function exportAssetlyOverviewPdf(
+  data: { category: string; count: number; needingService: number; overdue: number }[]
+): void {
+  const total = data.reduce((s, d) => s + d.count, 0);
+  exportToPdf({
+    filename: 'assetly_overview_report',
+    title: 'Asset Overview Report',
+    brandLabel: 'ASSETLY',
+    summary: [
+      { label: 'Total Assets', value: String(total) },
+      { label: 'Categories', value: String(data.length) },
+    ],
+    columns: [
+      { header: 'Category', key: 'category', width: 60 },
+      { header: 'Count', key: 'count', width: 30, align: 'right', format: 'number' },
+      { header: 'Service Due', key: 'needingService', width: 30, align: 'right', format: 'number' },
+      { header: 'Overdue', key: 'overdue', width: 30, align: 'right', format: 'number' },
+    ],
+    data,
+  });
+}
+
+export function exportAssetlyPPMPdf(
+  data: { assetName: string; nextDue: string; lastCompleted: string; status: string }[]
+): void {
+  exportToPdf({
+    filename: 'assetly_ppm_report',
+    title: 'PPM Compliance Report',
+    brandLabel: 'ASSETLY',
+    summary: [
+      { label: 'Total Schedules', value: String(data.length) },
+      { label: 'Overdue', value: String(data.filter(d => d.status === 'overdue').length) },
+    ],
+    columns: [
+      { header: 'Asset', key: 'assetName', width: 60 },
+      { header: 'Next Due', key: 'nextDue', width: 35, format: 'date' },
+      { header: 'Last Completed', key: 'lastCompleted', width: 35, format: 'date' },
+      { header: 'Status', key: 'status', width: 30 },
+    ],
+    data,
+  });
+}
+
+export function exportAssetlyCalloutsPdf(
+  data: { contractor: string; calloutCount: number; openCount: number; resolvedCount: number }[],
+  dateRange: string
+): void {
+  exportToPdf({
+    filename: 'assetly_callouts_report',
+    title: 'Callout History Report',
+    subtitle: dateRange,
+    brandLabel: 'ASSETLY',
+    summary: [
+      { label: 'Total Callouts', value: String(data.reduce((s, d) => s + d.calloutCount, 0)) },
+      { label: 'Contractors', value: String(data.length) },
+    ],
+    columns: [
+      { header: 'Contractor', key: 'contractor', width: 60 },
+      { header: 'Callouts', key: 'calloutCount', width: 30, align: 'right', format: 'number' },
+      { header: 'Open', key: 'openCount', width: 30, align: 'right', format: 'number' },
+      { header: 'Resolved', key: 'resolvedCount', width: 30, align: 'right', format: 'number' },
+    ],
+    data,
   });
 }

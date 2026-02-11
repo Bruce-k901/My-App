@@ -8,7 +8,7 @@ import Label from '@/components/ui/Label';
 import { toast } from 'sonner';
 import { updateTemplate, addTemplateSection, updateTemplateSection, addTemplateQuestion, updateTemplateQuestion } from '@/app/actions/reviews';
 import type { ReviewTemplate, ReviewTemplateSection, ReviewTemplateQuestion } from '@/types/reviews';
-import { Edit, Save, X, Plus, Trash2 } from 'lucide-react';
+import { Edit, Save, X, Plus, Trash2 } from '@/components/ui/icons';
 
 interface EditableTemplateFormProps {
   template: ReviewTemplate;
@@ -223,7 +223,7 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
                 toast.success('Template saved');
                 router.refresh();
               }}
-              className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+              className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
             >
               <Save className="h-4 w-4 mr-2" />Save
             </Button>
@@ -429,7 +429,7 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
           <button
             onClick={() => setShowAddSectionMenu(!showAddSectionMenu)}
-            className="w-full flex items-center justify-center gap-2 py-3 text-[#EC4899] hover:bg-[#EC4899]/10 rounded-lg border border-[#EC4899]/30 transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-3 text-[#D37E91] hover:bg-[#D37E91]/10 rounded-lg border border-[#D37E91]/30 transition-colors"
           >
             <Plus className="h-4 w-4" />
             Add Section
@@ -451,7 +451,7 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
                       handleAddSection(mode as any);
                       setShowAddSectionMenu(false);
                     }}
-                    className="p-4 bg-white/[0.05] border border-white/[0.06] rounded-lg hover:border-[#EC4899]/50 hover:bg-[#EC4899]/10 transition-colors text-center"
+                    className="p-4 bg-white/[0.05] border border-white/[0.06] rounded-lg hover:border-[#D37E91]/50 hover:bg-[#D37E91]/10 transition-colors text-center"
                   >
                     <div className="text-2xl mb-2">{icon}</div>
                     <div className="text-sm text-white">{label}</div>
@@ -501,14 +501,14 @@ function EditableField({
           <textarea
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#EC4899] resize-none"
+            className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#D37E91] resize-none"
             rows={4}
           />
         ) : type === 'select' && options ? (
           <select
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+            className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
           >
             {options.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -526,7 +526,7 @@ function EditableField({
             size="sm"
             onClick={() => onSave(field)}
             disabled={isPending}
-            className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+            className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
           >
             <Save className="h-3 w-3 mr-1" />Save
           </Button>
@@ -551,7 +551,7 @@ function EditableField({
         <Label className="text-white">{label}</Label>
         <button
           onClick={() => onEdit(field, value)}
-          className="p-1.5 text-[#EC4899] hover:bg-[#EC4899]/10 rounded transition-colors border border-[#EC4899]/30 hover:border-[#EC4899]/50"
+          className="p-1.5 text-[#D37E91] hover:bg-[#D37E91]/10 rounded transition-colors border border-[#D37E91]/30 hover:border-[#D37E91]/50"
           title="Click to edit"
         >
           <Edit className="h-4 w-4" />
@@ -591,7 +591,7 @@ function SectionGroup({
           size="sm"
           onClick={() => onAddSection(completedBy)}
           disabled={isPending}
-          className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+          className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Section
@@ -739,7 +739,7 @@ function EditableSection({
                 size="sm"
                 onClick={() => onAddQuestion(section.id)}
                 disabled={isPending}
-                className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] text-xs"
+                className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] text-xs"
               >
                 <Plus className="h-3 w-3 mr-1" />
                 Add Question

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { FileText, Shield, Plus } from 'lucide-react';
+import { FileText, Shield, Plus } from '@/components/ui/icons';
 
 const TEMPLATES = [
   {

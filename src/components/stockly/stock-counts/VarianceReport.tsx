@@ -13,7 +13,7 @@ import {
   AlertCircle,
   Search,
   MapPin
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface VarianceReportProps {
   count: StockCountWithDetails;

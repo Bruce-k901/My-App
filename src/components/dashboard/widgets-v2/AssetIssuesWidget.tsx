@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Check } from 'lucide-react';
+import { Check } from '@/components/ui/icons';
 import { WidgetCard, CountBadge, MiniItem } from '../WidgetCard';
 import { supabase } from '@/lib/supabase';
 
@@ -56,12 +56,9 @@ export default function AssetIssuesWidget({ siteId, companyId }: AssetIssuesWidg
         const { data, error } = await query;
 
         if (error) {
-          if (error.code === '42P01') {
-            console.debug('callouts table not available');
-            setLoading(false);
-            return;
-          }
-          throw error;
+          // Table may not exist yet — degrade gracefully
+          setLoading(false);
+          return;
         }
 
         const now = new Date();
@@ -117,9 +114,9 @@ export default function AssetIssuesWidget({ siteId, companyId }: AssetIssuesWidg
     return (
       <WidgetCard title="Asset Issues" module="assetly" viewAllHref="/dashboard/assets/callout-logs">
         <div className="animate-pulse space-y-2">
-          <div className="h-8 bg-white/5 rounded w-24" />
-          <div className="h-3 bg-white/5 rounded" />
-          <div className="h-3 bg-white/5 rounded w-3/4" />
+          <div className="h-8 bg-black/5 dark:bg-white/5 rounded w-24" />
+          <div className="h-3 bg-black/5 dark:bg-white/5 rounded" />
+          <div className="h-3 bg-black/5 dark:bg-white/5 rounded w-3/4" />
         </div>
       </WidgetCard>
     );
@@ -148,6 +145,7 @@ export default function AssetIssuesWidget({ siteId, companyId }: AssetIssuesWidg
             text={`${issue.assetName} — ${issue.issue}`}
             sub={issue.reportedDate}
             status={issue.isUrgent ? 'urgent' : 'warning'}
+            href="/dashboard/assets/callout-logs"
           />
         ))}
       </div>

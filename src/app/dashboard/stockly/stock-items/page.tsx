@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Plus, Search, Edit2, Trash2, Package, AlertCircle, X, ArrowLeft, Upload, Download } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Package, AlertCircle, X, ArrowLeft, Upload, Download } from '@/components/ui/icons';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';

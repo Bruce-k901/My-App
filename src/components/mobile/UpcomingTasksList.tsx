@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CheckCircle2, Circle, Clock, ChevronRight } from 'lucide-react';
+import { CheckCircle2, Circle, Clock, ChevronRight } from '@/components/ui/icons';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
@@ -100,7 +100,7 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
         </h3>
         <button
           onClick={handleViewAll}
-          className="text-xs text-pink-400 hover:text-pink-300 transition-colors flex items-center gap-1"
+          className="text-xs text-[#D37E91] hover:text-[#D37E91] transition-colors flex items-center gap-1"
         >
           View All
           <ChevronRight className="w-3 h-3" />

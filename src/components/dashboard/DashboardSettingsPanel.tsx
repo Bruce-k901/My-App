@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ModuleId, MODULE_NAMES, MODULE_COLORS, WidgetConfig } from '@/types/dashboard';
 import { WIDGET_REGISTRY, filterWidgetsByModules } from './widgets';
-import { X, RotateCcw, Settings } from 'lucide-react';
+import { X, RotateCcw, Settings } from '@/components/ui/icons';
 
 interface DashboardSettingsPanelProps {
   isOpen: boolean;
@@ -122,7 +122,7 @@ export function DashboardSettingsPanel({
                               onChange={() => onToggleWidget(widget.id)}
                               className="sr-only peer"
                             />
-                            <div className="w-11 h-6 bg-gray-200 dark:bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-500" />
+                            <div className="w-11 h-6 bg-gray-200 dark:bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D37E91]" />
                           </div>
                         </label>
                       );
@@ -156,7 +156,7 @@ export function DashboardSettingsButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] hover:border-pink-500/50 dark:hover:border-pink-500/50 transition-colors"
+      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-colors"
       title="Dashboard settings"
     >
       <Settings className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-white/60" />

@@ -1,7 +1,7 @@
 "use client"
 import { NodeViewWrapper } from "@tiptap/react"
 import { useState, useEffect } from "react"
-import { Plus, X, CheckCircle, Circle } from "lucide-react"
+import { Plus, X, CheckCircle, Circle } from '@/components/ui/icons'
 import SOPBlockWrapper from "./SOPBlockWrapper"
 
 interface ChecklistItem {

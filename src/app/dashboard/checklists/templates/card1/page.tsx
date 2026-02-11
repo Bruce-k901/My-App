@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronLeft, Save, Calendar, Clock, Thermometer, Camera } from 'lucide-react'
+import { ChevronLeft, Save, Calendar, Clock, Thermometer, Camera } from '@/components/ui/icons'
 import { useRouter } from 'next/navigation'
 
 const DAYPARTS = [
@@ -108,7 +108,7 @@ export default function Card1ConfigPage() {
           <ChevronLeft className="h-6 w-6" />
         </button>
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600/20 to-blue-600/20 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-[#D37E91]/25 to-blue-600/20 bg-clip-text text-transparent">
             Configure: Fridge & Freezer Temperature Check
           </h1>
           <p className="text-neutral-400 mt-1">Card 1 - Cold Hold Compliance</p>
@@ -128,7 +128,7 @@ export default function Card1ConfigPage() {
               onClick={() => setFrequency(freq)}
               className={`px-4 py-2 rounded-lg transition-all ${
                 frequency === freq
-                  ? 'bg-gradient-to-r from-pink-600/70 to-blue-600/70 text-white'
+                  ? 'bg-gradient-to-r from-[#D37E91]/70 to-[#544349]/70 text-white'
                   : 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600'
               }`}
             >
@@ -151,7 +151,7 @@ export default function Card1ConfigPage() {
               onClick={() => toggleDay(day.value)}
               className={`px-3 py-2 rounded-lg transition-all ${
                 selectedDays.includes(day.value)
-                  ? 'bg-pink-600/70 text-white'
+                  ? 'bg-[#D37E91]/70 text-white'
                   : 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600'
               }`}
             >
@@ -204,7 +204,7 @@ export default function Card1ConfigPage() {
                   <select
                     value={daypartTimes[daypart.value] || daypart.times[0]}
                     onChange={(e) => setDaypartTime(daypart.value, e.target.value)}
-                    className="px-3 py-1 bg-neutral-700 border border-neutral-600 rounded text-white text-sm focus:outline-none focus:border-pink-400"
+                    className="px-3 py-1 bg-neutral-700 border border-neutral-600 rounded text-white text-sm focus:outline-none focus:border-[#D37E91]"
                   >
                     {daypart.times.map(time => (
                       <option key={time} value={time}>{time}</option>
@@ -227,7 +227,7 @@ export default function Card1ConfigPage() {
               onClick={() => toggleMonth(month.value)}
               className={`px-3 py-2 rounded-lg transition-all text-sm ${
                 selectedMonths.includes(month.value)
-                  ? 'bg-pink-600/70 text-white'
+                  ? 'bg-[#D37E91]/70 text-white'
                   : 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600'
               }`}
             >
@@ -270,7 +270,7 @@ export default function Card1ConfigPage() {
                 type="text"
                 value={item}
                 onChange={(e) => updateRepeatableItem(index, e.target.value)}
-                className="flex-1 px-3 py-2 bg-neutral-700 border border-neutral-600 rounded text-white placeholder-neutral-500 focus:outline-none focus:border-pink-400"
+                className="flex-1 px-3 py-2 bg-neutral-700 border border-neutral-600 rounded text-white placeholder-neutral-500 focus:outline-none focus:border-[#D37E91]"
                 placeholder="Fridge name"
               />
               <button
@@ -310,7 +310,7 @@ export default function Card1ConfigPage() {
             })
             // TODO: Save to database
           }}
-          className="px-6 py-3 bg-gradient-to-r from-pink-600/70 to-blue-600/70 text-white rounded-lg hover:shadow-lg hover:shadow-pink-500/30 transition-all font-medium flex items-center gap-2"
+          className="px-6 py-3 bg-gradient-to-r from-[#D37E91]/70 to-[#544349]/70 text-white rounded-lg hover:shadow-lg hover:shadow-[#D37E91]/30 transition-all font-medium flex items-center gap-2"
         >
           <Save className="h-5 w-5" />
           Save Configuration

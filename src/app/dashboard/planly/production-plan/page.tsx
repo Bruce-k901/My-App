@@ -18,7 +18,7 @@ import {
   Clock,
   Truck,
   AlertCircle,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { pdf } from '@react-pdf/renderer';
 import { ProductionPlanPDF } from '@/lib/pdf/templates/ProductionPlanPDF';
 import { Button } from '@/components/ui/Button';

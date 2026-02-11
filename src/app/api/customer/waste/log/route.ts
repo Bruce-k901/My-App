@@ -14,16 +14,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get customer record
+    // Get customer record from planly
     const { data: customer } = await supabase
-      .from('order_book_customers')
-      .select('id, company_id')
+      .from('planly_customers')
+      .select('id, site_id')
       .eq('email', user.email?.toLowerCase() || '')
+      .eq('is_active', true)
       .maybeSingle();
 
     if (!customer) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
+
+    // Get company_id from site
+    const { data: site } = await supabase
+      .from('sites')
+      .select('company_id')
+      .eq('id', customer.site_id)
+      .single();
 
     const body = await request.json();
     const { order_id, items, status, notes } = body;
@@ -35,10 +43,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify order belongs to customer
+    // Verify order belongs to customer (planly_orders)
     const { data: order, error: orderError } = await supabase
-      .from('order_book_orders')
-      .select('id, customer_id, delivery_date, total')
+      .from('planly_orders')
+      .select('id, customer_id, delivery_date, total_value')
       .eq('id', order_id)
       .eq('customer_id', customer.id)
       .single();
@@ -117,7 +125,7 @@ export async function POST(request: NextRequest) {
       const { data: newLog, error: createError } = await supabase
         .from('order_book_waste_logs')
         .insert({
-          company_id: customer.company_id,
+          company_id: site?.company_id,
           customer_id: customer.id,
           order_id,
           log_date: order.delivery_date,
@@ -187,11 +195,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Missing order_id' }, { status: 400 });
     }
 
-    // Get customer record
+    // Get customer record from planly
     const { data: customer } = await supabase
-      .from('order_book_customers')
+      .from('planly_customers')
       .select('id')
       .eq('email', user.email?.toLowerCase() || '')
+      .eq('is_active', true)
       .maybeSingle();
 
     if (!customer) {
@@ -203,10 +212,7 @@ export async function GET(request: NextRequest) {
       .from('order_book_waste_logs')
       .select(`
         *,
-        items:order_book_waste_log_items(
-          *,
-          product:order_book_products(id, name)
-        )
+        items:order_book_waste_log_items(*)
       `)
       .eq('order_id', orderId)
       .eq('customer_id', customer.id)
@@ -214,6 +220,35 @@ export async function GET(request: NextRequest) {
 
     if (logError) {
       throw logError;
+    }
+
+    // Resolve product names from planly_products → ingredients_library
+    if (wasteLog?.items && wasteLog.items.length > 0) {
+      const productIds = [...new Set(wasteLog.items.map((i: any) => i.product_id))];
+      const { data: planlyProducts } = await supabase
+        .from('planly_products')
+        .select('id, stockly_product_id')
+        .in('id', productIds);
+
+      const stocklyIds = (planlyProducts || []).map(p => p.stockly_product_id).filter(Boolean);
+      if (stocklyIds.length > 0) {
+        const { data: ingredients } = await supabase
+          .from('ingredients_library')
+          .select('id, ingredient_name')
+          .in('id', stocklyIds);
+
+        const ingMap = new Map((ingredients || []).map(i => [i.id, i.ingredient_name]));
+        const nameMap = new Map<string, string>();
+        (planlyProducts || []).forEach(p => {
+          const name = ingMap.get(p.stockly_product_id);
+          if (name) nameMap.set(p.id, name);
+        });
+
+        wasteLog.items = wasteLog.items.map((item: any) => ({
+          ...item,
+          product: { id: item.product_id, name: nameMap.get(item.product_id) || 'Unknown' },
+        }));
+      }
     }
 
     return NextResponse.json({

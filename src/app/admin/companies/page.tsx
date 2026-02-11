@@ -14,7 +14,7 @@ import {
   ChevronRight,
   AlertCircle,
   CheckCircle2
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface CompanyWithStats {
   id: string;
@@ -115,7 +115,7 @@ export default function AdminCompaniesPage() {
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -141,7 +141,7 @@ export default function AdminCompaniesPage() {
           placeholder="Search companies..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/40 focus:border-[#EC4899]/40"
+          className="w-full pl-12 pr-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
         />
       </div>
 
@@ -163,8 +163,8 @@ export default function AdminCompaniesPage() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#EC4899]/10 flex items-center justify-center">
-                    <Building2 className="w-6 h-6 text-[#EC4899]" />
+                  <div className="w-12 h-12 rounded-xl bg-[#D37E91]/10 flex items-center justify-center">
+                    <Building2 className="w-6 h-6 text-[#D37E91]" />
                   </div>
                   <div>
                     <div className="flex items-center gap-3">
@@ -224,7 +224,7 @@ export default function AdminCompaniesPage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleViewAs(company)}
-                      className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg text-sm font-medium transition-all duration-200 ease-in-out"
+                      className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg text-sm font-medium transition-all duration-200 ease-in-out"
                     >
                       <Eye className="w-4 h-4" />
                       View As

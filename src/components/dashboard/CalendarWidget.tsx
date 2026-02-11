@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { format, addDays, startOfDay, startOfWeek, setHours, setMinutes, isSameDay, parseISO } from "date-fns";
-import { Calendar, Clock, Filter, ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
+import { Calendar, Clock, Filter, ChevronLeft, ChevronRight, Plus, X } from '@/components/ui/icons';
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { supabase } from "@/lib/supabase";
@@ -514,6 +514,29 @@ export default function CalendarWidget() {
         console.log('📅 No handover data found');
       }
 
+      // ---- Fetch from tasks table (message-created tasks, meetings, calls, notes, reminders) ----
+      let tasksTableData: any[] = [];
+      try {
+        const { data: tData, error: tError } = await supabase
+          .from("tasks")
+          .select("id, title, description, due_date, due_time, metadata, status, priority, assigned_to, created_by")
+          .eq("company_id", companyId)
+          .gte("due_date", format(startDate, "yyyy-MM-dd"))
+          .lte("due_date", format(endDate, "yyyy-MM-dd"))
+          .in("status", ["todo", "in_progress", "pending", "accepted"])
+          .order("due_date", { ascending: true })
+          .order("due_time", { ascending: true });
+
+        if (tError) {
+          console.error("Error fetching tasks table:", tError);
+        } else {
+          tasksTableData = tData || [];
+          console.log('📅 Tasks from tasks table:', tasksTableData.length);
+        }
+      } catch (err) {
+        console.error("Exception fetching tasks table:", err);
+      }
+
       // AGGRESSIVE: Deduplicate at database result level first
       const taskIdCounts = new Map<string, number>();
       filteredTasks?.forEach((task: any) => {
@@ -756,8 +779,46 @@ export default function CalendarWidget() {
         console.error('❌ Found duplicate IDs in itemsMap:', duplicateIdsInMap);
       }
 
-      // TODO: Fetch meetings, calls, notes, reminders, messages
-      // For now, we'll focus on tasks
+      // ---- Add tasks-table items (message-created tasks, meetings, calls, notes, reminders) ----
+      if (tasksTableData.length > 0) {
+        console.log(`📅 Processing ${tasksTableData.length} items from tasks table`);
+        tasksTableData.forEach((task: any) => {
+          // Skip if already in map (avoid duplicates with checklist_tasks or handover)
+          if (itemsMap.has(task.id)) return;
+
+          const taskType = (task.metadata?.task_type as CalendarItemType) || "task";
+
+          let scheduledAt: Date;
+          if (task.due_time) {
+            const [hours, minutes] = task.due_time.split(":").map(Number);
+            scheduledAt = setMinutes(setHours(startOfDay(new Date(task.due_date + "T00:00:00")), hours), minutes || 0);
+          } else {
+            scheduledAt = startOfDay(new Date(task.due_date + "T00:00:00"));
+          }
+
+          const calendarItem: CalendarItem = {
+            id: task.id,
+            type: taskType,
+            title: task.title || "Untitled",
+            description: task.description || undefined,
+            scheduledAt,
+            scheduledAtUTC: scheduledAt,
+            timezone: userTimezone,
+            status: task.status === "completed" ? "completed" : task.status === "in_progress" ? "in_progress" : "pending",
+            source_message_id: task.metadata?.source_message_id || undefined,
+            meeting_link: task.metadata?.meeting_link || undefined,
+            meeting_location: task.metadata?.location || undefined,
+            metadata: {
+              ...task.metadata,
+              source: "tasks_table",
+              priority: task.priority,
+            },
+          };
+
+          itemsMap.set(task.id, calendarItem);
+        });
+        console.log(`📅 Tasks-table items added to calendar map. Total items now: ${itemsMap.size}`);
+      }
 
       // Convert map to array - already deduplicated
       let uniqueItems = Array.from(itemsMap.values());
@@ -968,6 +1029,32 @@ export default function CalendarWidget() {
       )
       .subscribe();
 
+    // Subscribe to tasks table changes (message-created tasks, meetings, calls, notes, reminders)
+    const tasksTableChannel = supabase
+      .channel(`calendar-tasks-table-${companyId}-${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "tasks",
+          filter: `company_id=eq.${companyId}`,
+        },
+        (payload) => {
+          if (!isMounted) return;
+          console.log("Calendar tasks-table update:", payload);
+          if (debounceTimeoutRef.current) {
+            clearTimeout(debounceTimeoutRef.current);
+          }
+          debounceTimeoutRef.current = setTimeout(() => {
+            if (isMounted && companyId && userId && !fetchInProgressRef.current) {
+              fetchCalendarItems();
+            }
+          }, 300);
+        }
+      )
+      .subscribe();
+
     // Also subscribe to asset archive/unarchive changes
     const assetsChannel = supabase
       .channel(`calendar-assets-${companyId}-${userId}`)
@@ -1009,6 +1096,7 @@ export default function CalendarWidget() {
         debounceTimeoutRef.current = null;
       }
       supabase.removeChannel(tasksChannel);
+      supabase.removeChannel(tasksTableChannel);
       supabase.removeChannel(assetsChannel);
     };
      
@@ -1066,6 +1154,13 @@ export default function CalendarWidget() {
   const handleItemClick = async (item: CalendarItem) => {
     if (!item.id) {
       toast.error("Task ID not found");
+      return;
+    }
+
+    // Handle tasks from the tasks table (created from messaging, calendar page, etc.)
+    // These are not in checklist_tasks, so redirect to the calendar page which can open them
+    if (item.metadata?.source === 'tasks_table') {
+      window.location.href = '/dashboard/calendar';
       return;
     }
 
@@ -1188,7 +1283,7 @@ export default function CalendarWidget() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <section className="bg-white/[0.03] dark:bg-[#0b0d13]/80 border-2 border-[#EC4899]/20 dark:border-[#EC4899]/30 rounded-2xl p-4 sm:p-6 shadow-[0_0_20px_rgba(236,72,153,0.15)] dark:shadow-[0_0_20px_rgba(236,72,153,0.25)] fade-in-soft ring-1 ring-[#EC4899]/10 dark:ring-[#EC4899]/20">
+      <section className="bg-white/[0.03] dark:bg-[#0b0d13]/80 border-2 border-[#D37E91]/20 dark:border-[#D37E91]/30 rounded-2xl p-4 sm:p-6 shadow-[0_0_20px_rgba(211,126,145,0.15)] dark:shadow-[0_0_20px_rgba(211,126,145,0.25)] fade-in-soft ring-1 ring-[#D37E91]/10 dark:ring-[#D37E91]/20">
         <CalendarHeader
           filters={filters}
           onFilterChange={setFilters}
@@ -1200,7 +1295,7 @@ export default function CalendarWidget() {
         {loading ? (
           <div className="h-[400px] flex items-center justify-center">
             <div className="flex flex-col items-center gap-2">
-              <div className="w-8 h-8 border-2 border-[#EC4899] border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-2 border-[#D37E91] border-t-transparent rounded-full animate-spin"></div>
               <div className="text-gray-600 dark:text-gray-400">Loading calendar...</div>
             </div>
           </div>
@@ -1316,8 +1411,8 @@ function CalendarHeader({
       {/* Top row: Title, Navigation, Full Calendar button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 sm:gap-3">
-          <div className="p-1.5 sm:p-2 rounded-lg bg-gradient-to-br from-[#EC4899]/20 to-[#EC4899]/10 dark:from-[#EC4899]/30 dark:to-[#EC4899]/20 border-2 border-[#EC4899]/40 dark:border-[#EC4899]/50 shadow-md">
-            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#EC4899] dark:text-[#EC4899]" />
+          <div className="p-1.5 sm:p-2 rounded-lg bg-gradient-to-br from-[#D37E91]/20 to-[#D37E91]/10 dark:from-[#D37E91]/30 dark:to-[#D37E91]/20 border-2 border-[#D37E91]/40 dark:border-[#D37E91]/50 shadow-md">
+            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#D37E91] dark:text-[#D37E91]" />
           </div>
           <div>
             <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent">Daily Notes & Actions</h3>
@@ -1329,7 +1424,7 @@ function CalendarHeader({
           {/* Week Navigation */}
           <button
             onClick={() => navigateWeek("prev")}
-            className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border border-white/10 dark:border-white/10 hover:bg-[#EC4899]/10 dark:hover:bg-[#EC4899]/20 hover:border-[#EC4899]/40 dark:hover:border-[#EC4899]/50 transition-all"
+            className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border border-white/10 dark:border-white/10 hover:bg-[#D37E91]/10 dark:hover:bg-[#D37E91]/20 hover:border-[#D37E91]/40 dark:hover:border-[#D37E91]/50 transition-all"
           >
             <ChevronLeft className="w-4 h-4 text-gray-700 dark:text-gray-300" />
           </button>
@@ -1338,7 +1433,7 @@ function CalendarHeader({
           </span>
           <button
             onClick={() => navigateWeek("next")}
-            className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border border-white/10 dark:border-white/10 hover:bg-[#EC4899]/10 dark:hover:bg-[#EC4899]/20 hover:border-[#EC4899]/40 dark:hover:border-[#EC4899]/50 transition-all"
+            className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border border-white/10 dark:border-white/10 hover:bg-[#D37E91]/10 dark:hover:bg-[#D37E91]/20 hover:border-[#D37E91]/40 dark:hover:border-[#D37E91]/50 transition-all"
           >
             <ChevronRight className="w-4 h-4 text-gray-700 dark:text-gray-300" />
           </button>
@@ -1346,7 +1441,7 @@ function CalendarHeader({
           {/* Expand Calendar Button - Icon only */}
           <button
             onClick={onExpandClick}
-            className="p-2 rounded-lg bg-[#EC4899]/10 dark:bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/40 dark:border-[#EC4899]/50 hover:bg-[#EC4899]/20 dark:hover:bg-[#EC4899]/30 hover:border-[#EC4899]/60 dark:hover:border-[#EC4899]/70 hover:shadow-[0_0_12px_rgba(236,72,153,0.6)] transition-all"
+            className="p-2 rounded-lg bg-[#D37E91]/10 dark:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/40 dark:border-[#D37E91]/50 hover:bg-[#D37E91]/20 dark:hover:bg-[#D37E91]/30 hover:border-[#D37E91]/60 dark:hover:border-[#D37E91]/70 hover:shadow-[0_0_12px_rgba(211,126,145,0.6)] transition-all"
             title="Full Calendar"
           >
             <Calendar className="w-4 h-4" />
@@ -1381,8 +1476,8 @@ function CalendarHeader({
               inactive: "bg-white/5 text-gray-500 dark:text-gray-400 border-white/10 hover:border-yellow-400/40 hover:bg-yellow-500/10",
             },
             pink: {
-              active: "bg-pink-500/20 dark:bg-pink-500/30 text-pink-700 dark:text-pink-200 border-pink-500/50 dark:border-pink-400/60",
-              inactive: "bg-white/5 text-gray-500 dark:text-gray-400 border-white/10 hover:border-pink-400/40 hover:bg-pink-500/10",
+              active: "bg-[#D37E91]/25 dark:bg-[#D37E91]/35 text-[#D37E91] dark:text-[#D37E91]/70 border-[#D37E91]/50 dark:border-[#D37E91]/60",
+              inactive: "bg-white/5 text-gray-500 dark:text-gray-400 border-white/10 hover:border-[#D37E91]/40 hover:bg-[#D37E91]/15",
             },
           };
           return (
@@ -1480,7 +1575,7 @@ function WeekView({ startDate, items, onSlotClick, onItemClick, onReschedule }: 
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-7 border-b-2 border-[#EC4899]/20 dark:border-[#EC4899]/30">
+      <div className="grid grid-cols-7 border-b-2 border-[#D37E91]/20 dark:border-[#D37E91]/30">
         {/* Day headers with + button */}
         {weekDays.map((day) => {
           const dayKey = format(day, "yyyy-MM-dd");
@@ -1493,7 +1588,7 @@ function WeekView({ startDate, items, onSlotClick, onItemClick, onReschedule }: 
           return (
             <div
               key={dayKey}
-              className="p-2 border-r-2 border-[#EC4899]/10 dark:border-[#EC4899]/20 text-center last:border-r-0 bg-white/30 dark:bg-white/5 hover:bg-white/50 dark:hover:bg-white/10 transition-colors"
+              className="p-2 border-r-2 border-[#D37E91]/10 dark:border-[#D37E91]/20 text-center last:border-r-0 bg-white/30 dark:bg-white/5 hover:bg-white/50 dark:hover:bg-white/10 transition-colors"
             >
               <div className="flex items-center justify-between mb-1">
                 <div className="flex-1">
@@ -1502,7 +1597,7 @@ function WeekView({ startDate, items, onSlotClick, onItemClick, onReschedule }: 
                   </div>
                   <div
                     className={`text-sm font-semibold mt-1 ${
-                      isSameDay(day, new Date()) ? "text-[#EC4899]" : "text-gray-900 dark:text-white"
+                      isSameDay(day, new Date()) ? "text-[#D37E91]" : "text-gray-900 dark:text-white"
                     }`}
                   >
                     {format(day, "MMM d")}
@@ -1510,10 +1605,10 @@ function WeekView({ startDate, items, onSlotClick, onItemClick, onReschedule }: 
                 </div>
                 <button
                   onClick={handleAddClick}
-                  className="p-1.5 rounded-lg bg-[#EC4899]/10 dark:bg-[#EC4899]/20 border-2 border-[#EC4899]/30 dark:border-[#EC4899]/40 hover:bg-[#EC4899]/20 dark:hover:bg-[#EC4899]/30 hover:border-[#EC4899]/50 dark:hover:border-[#EC4899]/60 hover:shadow-md transition-all flex-shrink-0"
+                  className="p-1.5 rounded-lg bg-[#D37E91]/10 dark:bg-[#D37E91]/20 border-2 border-[#D37E91]/30 dark:border-[#D37E91]/40 hover:bg-[#D37E91]/20 dark:hover:bg-[#D37E91]/30 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/60 hover:shadow-md transition-all flex-shrink-0"
                   title="Add item"
                 >
-                  <Plus className="w-3 h-3 text-[#EC4899] dark:text-[#EC4899]" />
+                  <Plus className="w-3 h-3 text-[#D37E91] dark:text-[#D37E91]" />
                 </button>
               </div>
             </div>
@@ -1655,8 +1750,8 @@ function DroppableDayColumn({
   return (
     <div
       ref={drop}
-      className={`border-r-2 border-[#EC4899]/10 dark:border-[#EC4899]/20 last:border-r-0 min-h-[400px] p-2 transition-all ${
-        isOver ? "bg-[#EC4899]/20 dark:bg-[#EC4899]/30 ring-2 ring-[#EC4899]/50 dark:ring-[#EC4899]/60" : "bg-white/20 dark:bg-white/5 hover:bg-white/30 dark:hover:bg-white/10"
+      className={`border-r-2 border-[#D37E91]/10 dark:border-[#D37E91]/20 last:border-r-0 min-h-[400px] p-2 transition-all ${
+        isOver ? "bg-[#D37E91]/20 dark:bg-[#D37E91]/30 ring-2 ring-[#D37E91]/50 dark:ring-[#D37E91]/60" : "bg-white/20 dark:bg-white/5 hover:bg-white/30 dark:hover:bg-white/10"
       }`}
       onClick={(e) => {
         // Only trigger if clicking on empty space, not on items
@@ -1687,7 +1782,7 @@ function CalendarItemComponent({ item, onClick }: CalendarItemComponentProps) {
     call: "bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 dark:from-emerald-500/40 dark:to-emerald-600/30 border-2 border-emerald-500/50 dark:border-emerald-400/60 shadow-sm hover:shadow-md",
     note: "bg-gradient-to-br from-gray-500/30 to-gray-600/20 dark:from-gray-500/40 dark:to-gray-600/30 border-2 border-gray-500/50 dark:border-gray-400/60 shadow-sm hover:shadow-md",
     reminder: "bg-gradient-to-br from-yellow-500/30 to-yellow-600/20 dark:from-yellow-500/40 dark:to-yellow-600/30 border-2 border-yellow-500/50 dark:border-yellow-400/60 shadow-sm hover:shadow-md",
-    message: "bg-gradient-to-br from-pink-500/30 to-pink-600/20 dark:from-pink-500/40 dark:to-pink-600/30 border-2 border-pink-500/50 dark:border-pink-400/60 shadow-sm hover:shadow-md",
+    message: "bg-gradient-to-br from-[#D37E91]/35 to-[#D37E91]/25 dark:from-[#D37E91]/40 dark:to-[#D37E91]/80/30 border-2 border-[#D37E91]/50 dark:border-[#D37E91]/60 shadow-sm hover:shadow-md",
   };
 
   const statusIcons: Record<string, string> = {
@@ -1827,7 +1922,7 @@ function CalendarModal({
               </button>
               <button
                 onClick={() => setCurrentMonth(new Date())}
-                className="px-3 py-1.5 rounded-lg bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out text-sm"
+                className="px-3 py-1.5 rounded-lg bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 ease-in-out text-sm"
               >
                 Today
               </button>
@@ -1865,7 +1960,7 @@ function CalendarModal({
               <div
                 key={dateKey}
                 className={`min-h-[100px] p-2 border border-white/[0.06] dark:border-white/[0.06] rounded-lg ${
-                  isToday ? "ring-2 ring-[#EC4899]" : ""
+                  isToday ? "ring-2 ring-[#D37E91]" : ""
                 } ${isCurrentMonth ? "bg-white/[0.02] dark:bg-white/[0.02]" : "bg-white/[0.01] dark:bg-white/[0.01] opacity-50"}`}
                 onClick={() => {
                   // Switch to week view for this day
@@ -1875,7 +1970,7 @@ function CalendarModal({
               >
                 <div
                   className={`text-sm font-semibold mb-1 ${
-                    isToday ? "text-[#EC4899]" : isCurrentMonth ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-500"
+                    isToday ? "text-[#D37E91]" : isCurrentMonth ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-500"
                   }`}
                 >
                   {format(day, "d")}
@@ -1890,7 +1985,7 @@ function CalendarModal({
                       call: "bg-emerald-500/20 border-emerald-500/30",
                       note: "bg-gray-500/20 border-gray-500/30",
                       reminder: "bg-yellow-500/20 border-yellow-500/30",
-                      message: "bg-pink-500/20 border-pink-500/30",
+                      message: "bg-[#D37E91]/25 border-[#D37E91]/30",
                     };
                     const itemColorClass = miniItemColors[item.type] || miniItemColors.task;
                     return (
@@ -2051,7 +2146,7 @@ function CreateItemModal({
                     inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-gray-600 dark:text-gray-400 border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                   pink: {
-                    active: "bg-pink-500/20 text-pink-400 border-pink-500/30",
+                    active: "bg-[#D37E91]/25 text-[#D37E91] border-[#D37E91]/30",
                     inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-gray-600 dark:text-gray-400 border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                 };
@@ -2080,7 +2175,7 @@ function CreateItemModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter item title"
-              className="w-full px-4 py-2 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+              className="w-full px-4 py-2 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
               autoFocus
             />
           </div>
@@ -2093,7 +2188,7 @@ function CreateItemModal({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter description (optional)"
               rows={3}
-              className="w-full px-4 py-2 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 resize-none"
+              className="w-full px-4 py-2 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 resize-none"
             />
           </div>
         </div>
@@ -2112,7 +2207,7 @@ function CreateItemModal({
             type="button"
             onClick={handleCreate}
             disabled={loading || !title.trim()}
-            className="flex-1 px-4 py-2.5 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2.5 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 ease-in-out text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Creating..." : "Create"}
           </button>

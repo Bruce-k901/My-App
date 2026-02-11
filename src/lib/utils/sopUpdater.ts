@@ -134,10 +134,50 @@ export async function updateFoodSOPFromRecipe(
     }
     
     // 5. Ensure sopData has content array - if empty, initialize with template structure
+    // Preserve equipment and processSteps from simple format before overwriting
+    const simpleEquipment = (!sopData.content && sopData.equipment) ? sopData.equipment : null;
+    const simpleProcessSteps = (!sopData.content && sopData.processSteps) ? sopData.processSteps : null;
+
     if (!sopData.content || !Array.isArray(sopData.content)) {
       // Import template to get structure
       const { FOOD_SOP_TEMPLATE } = await import('@/lib/templates/foodSOPTemplate');
       sopData = JSON.parse(JSON.stringify(FOOD_SOP_TEMPLATE));
+    }
+
+    // If we had simple format equipment/steps, inject them into the TipTap structure
+    if (simpleEquipment && Array.isArray(simpleEquipment)) {
+      let eqIdx = sopData.content.findIndex((node: any) => node.type === 'equipmentList');
+      if (eqIdx === -1) {
+        sopData.content.push({ type: 'equipmentList', attrs: { rows: [] } });
+        eqIdx = sopData.content.length - 1;
+      }
+      sopData.content[eqIdx].attrs = {
+        ...sopData.content[eqIdx].attrs,
+        rows: simpleEquipment.map((eq: any) => ({
+          item: eq.item || eq.name || '',
+          colour_code: eq.colour_code || '',
+          sanitation_notes: eq.sanitation_notes || ''
+        }))
+      };
+    }
+    if (simpleProcessSteps && Array.isArray(simpleProcessSteps)) {
+      let stepsIdx = sopData.content.findIndex((node: any) => node.type === 'processSteps');
+      if (stepsIdx === -1) {
+        sopData.content.push({ type: 'processSteps', attrs: { steps: [] } });
+        stepsIdx = sopData.content.length - 1;
+      }
+      sopData.content[stepsIdx].attrs = {
+        ...sopData.content[stepsIdx].attrs,
+        steps: simpleProcessSteps.map((step: any) => ({
+          description: step.description || step.text || '',
+          title: step.title || '',
+          temperature: step.temperature || '',
+          duration: step.duration || '',
+          haccp_note: step.haccp_note || '',
+          is_ccp: step.is_ccp || false,
+          photo_url: step.photo_url || ''
+        }))
+      };
     }
 
     // 6. Build ingredient rows with full details including allergens

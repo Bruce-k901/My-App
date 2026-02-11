@@ -24,7 +24,7 @@ export default function SetupHeader() {
   return (
     <div className="flex items-center justify-between">
       <Link href="/setup" className="flex items-center">
-        <Image src="/favicon.svg" alt="Opsly" width={120} height={30} />
+        <Image src="/new_logos_opsly/opsly-logo-dark.svg" alt="Opsly" width={120} height={30} />
       </Link>
       <nav className="hidden md:flex items-center gap-2">
         {steps.map((s) => {
@@ -35,7 +35,7 @@ export default function SetupHeader() {
               href={s.href}
               className={`text-sm px-3 py-1 rounded-full border border-white/20 transition-all duration-300 ${
                 active
-                  ? "bg-gradient-to-r from-magenta-500 to-blue-500 text-white shadow-[0_0_18px_rgba(236,72,153,0.35)]"
+                  ? "bg-gradient-to-r from-magenta-500 to-blue-500 text-white shadow-[0_0_18px_rgba(211,126,145,0.35)]"
                   : "bg-transparent text-slate-300 hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 hover:text-white"
               }`}
             >

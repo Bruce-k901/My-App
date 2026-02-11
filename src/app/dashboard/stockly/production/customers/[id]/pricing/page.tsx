@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import { ArrowLeft, Save, X } from 'lucide-react';
+import { ArrowLeft, Save, X } from '@/components/ui/icons';
 import { useToast } from '@/components/ui/ToastProvider';
 
 interface Product {

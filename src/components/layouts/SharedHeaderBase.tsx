@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X } from '@/components/ui/icons';
 import { Button } from "@/components/ui";
 import { OpslyLogo } from "@/components/ui/opsly-logo";
 
@@ -18,7 +18,7 @@ export default function SharedHeaderBase({ children, cta, logoSrc, logoAlt }: Sh
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0b0e17]/95 backdrop-blur border-b border-slate-800 text-white shadow-[0_2px_10px_rgba(0,0,0,0.4)]">
+    <header className="sticky top-0 z-50 bg-[#110f0d]/95 backdrop-blur border-b border-[#2a2520] text-white shadow-[0_2px_10px_rgba(0,0,0,0.4)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-4 sm:py-5">
         <div className="flex items-center justify-between">
           {/* Logo (left) */}
@@ -30,7 +30,7 @@ export default function SharedHeaderBase({ children, cta, logoSrc, logoAlt }: Sh
                 alt={logoAlt ?? "Company logo"}
                 width={192}
                 height={48}
-                className="h-8 sm:h-10 w-auto object-contain transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.5)]"
+                className="h-8 sm:h-10 w-auto object-contain transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(211, 126, 145,0.5)]"
                 loading="eager"
               />
             ) : (
@@ -62,7 +62,7 @@ export default function SharedHeaderBase({ children, cta, logoSrc, logoAlt }: Sh
 
         {/* Mobile Menu Dropdown */}
         {isMobileMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-slate-800">
+          <div className="md:hidden mt-4 pb-4 border-t border-[#2a2520]">
             {/* Mobile Menu - Sign Up, Login, Pricing */}
             <nav className="flex flex-col gap-3 pt-4">
               <Link

@@ -42,7 +42,7 @@ export function useTaskAlerts({
     if (!enabled || !tasks.length || !settings.taskRemindersEnabled) return;
 
     const now = new Date();
-    const today = now.toISOString().split('T')[0];
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
     tasks.forEach((task) => {
       // Skip if already alerted or completed

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AlertTriangle, Plus, Filter, Search, Download, Eye, FileText, UtensilsCrossed, MessageSquare, Activity, ShieldAlert } from 'lucide-react';
+import { AlertTriangle, Plus, Filter, Search, Download, Eye, FileText, UtensilsCrossed, MessageSquare, Activity, ShieldAlert } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/Button';
@@ -220,7 +220,7 @@ export default function IncidentsStoragePage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-              <FileText className="w-8 h-8 text-[#EC4899] dark:text-pink-400" />
+              <FileText className="w-8 h-8 text-[#D37E91] dark:text-[#D37E91]" />
               Incident Log
             </h1>
             <p className="text-gray-600 dark:text-white/60">Complete record of all incidents, accidents, complaints, and RIDDOR reports</p>
@@ -282,7 +282,7 @@ export default function IncidentsStoragePage() {
                 placeholder="Search incidents..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                className="w-full pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
               />
             </div>
 
@@ -349,7 +349,7 @@ export default function IncidentsStoragePage() {
                 setError(null);
                 fetchIncidents();
               }}
-              className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200"
+              className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200"
             >
               Try Again
             </Button>
@@ -389,7 +389,7 @@ export default function IncidentsStoragePage() {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <Icon className="w-5 h-5 text-[#EC4899] dark:text-pink-400" />
+                        <Icon className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{incident.title || 'Untitled Incident'}</h3>
                         {incident.riddor_reportable && (
                           <span className="px-2 py-1 rounded-md text-xs font-medium bg-orange-50 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-500/40">

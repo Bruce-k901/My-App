@@ -75,7 +75,7 @@ export function CreateTemplateForm() {
           <select
             value={formData.template_type}
             onChange={(e) => setFormData({ ...formData, template_type: e.target.value as ReviewTemplate['template_type'] })}
-            className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+            className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
           >
             <option value="custom">Custom</option>
             <option value="one_to_one">1-2-1</option>
@@ -117,7 +117,7 @@ export function CreateTemplateForm() {
             type="checkbox"
             checked={formData.requires_self_assessment}
             onChange={(e) => setFormData({ ...formData, requires_self_assessment: e.target.checked })}
-            className="w-4 h-4 rounded border-white/[0.06] bg-white/[0.05] text-[#EC4899]"
+            className="w-4 h-4 rounded border-white/[0.06] bg-white/[0.05] text-[#D37E91]"
           />
           <span className="text-white">Requires Self Assessment</span>
         </label>
@@ -126,7 +126,7 @@ export function CreateTemplateForm() {
             type="checkbox"
             checked={formData.requires_manager_assessment}
             onChange={(e) => setFormData({ ...formData, requires_manager_assessment: e.target.checked })}
-            className="w-4 h-4 rounded border-white/[0.06] bg-white/[0.05] text-[#EC4899]"
+            className="w-4 h-4 rounded border-white/[0.06] bg-white/[0.05] text-[#D37E91]"
           />
           <span className="text-white">Requires Manager Assessment</span>
         </label>

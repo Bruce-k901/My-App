@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, Search, FileX, Calendar, ArrowLeft } from 'lucide-react';
+import { Plus, Search, FileX, Calendar, ArrowLeft } from '@/components/ui/icons';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -454,7 +454,7 @@ export default function CreditNotesPage() {
                             e.stopPropagation();
                             router.push(`/dashboard/stockly/credit-notes/${cn.id}`);
                           }}
-                          className="text-[#EC4899] hover:text-[#EC4899]/80 transition-colors"
+                          className="text-[#D37E91] hover:text-[#D37E91]/80 transition-colors"
                         >
                           View
                         </button>

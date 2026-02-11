@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Clock, Thermometer, Calendar, FileText } from "lucide-react";
+import { Clock, Thermometer, Calendar, FileText } from "@/components/ui/icons";
 
 const logTabs = [
   {
@@ -43,7 +43,7 @@ export default function LogsHubPage() {
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <Clock className="w-8 h-8 text-[#EC4899]" />
+            <Clock className="w-8 h-8 text-[#D37E91]" />
             <h1 className="text-2xl sm:text-3xl font-bold text-white">Logs</h1>
           </div>
           <p className="text-white/60 text-sm sm:text-base">
@@ -63,7 +63,7 @@ export default function LogsHubPage() {
                   href={tab.href}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                     isActive
-                      ? "bg-transparent text-[#EC4899] border border-[#EC4899] shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+                      ? "bg-transparent text-[#D37E91] border border-[#D37E91] shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
                       : "bg-transparent border border-white/[0.1] text-white/80 hover:border-white/[0.2] hover:text-white"
                   }`}
                 >
@@ -83,16 +83,16 @@ export default function LogsHubPage() {
               <Link
                 key={tab.key}
                 href={tab.href}
-                className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 hover:border-[#EC4899]/30 hover:shadow-[0_0_12px_rgba(236,72,153,0.2)] transition-all group"
+                className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 hover:border-[#D37E91]/30 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.2)] transition-all group"
               >
                 <div className="flex items-start justify-between mb-3">
-                  <div className="p-2 bg-[#EC4899]/10 rounded-lg group-hover:bg-[#EC4899]/20 transition-colors">
-                    <Icon className="w-5 h-5 text-[#EC4899]" />
+                  <div className="p-2 bg-[#D37E91]/10 rounded-lg group-hover:bg-[#D37E91]/20 transition-colors">
+                    <Icon className="w-5 h-5 text-[#D37E91]" />
                   </div>
                 </div>
                 <h3 className="text-lg font-semibold text-white mb-1">{tab.label}</h3>
                 <p className="text-white/60 text-sm">{tab.description}</p>
-                <div className="mt-4 text-[#EC4899] text-sm font-medium group-hover:underline">
+                <div className="mt-4 text-[#D37E91] text-sm font-medium group-hover:underline">
                   View logs →
                 </div>
               </Link>
@@ -103,7 +103,7 @@ export default function LogsHubPage() {
         {/* Info Section */}
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
           <div className="flex items-start gap-3">
-            <FileText className="w-5 h-5 text-[#EC4899] flex-shrink-0 mt-0.5" />
+            <FileText className="w-5 h-5 text-[#D37E91] flex-shrink-0 mt-0.5" />
             <div>
               <h3 className="text-lg font-semibold text-white mb-2">About Logs</h3>
               <p className="text-white/60 text-sm leading-relaxed">

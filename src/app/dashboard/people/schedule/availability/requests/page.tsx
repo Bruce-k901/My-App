@@ -5,7 +5,7 @@ import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui';
 import { Card } from '@/components/ui/Card';
-import { Check, X, Loader2, Calendar, Clock, User, AlertCircle } from 'lucide-react';
+import { Check, X, Loader2, Calendar, Clock, User, AlertCircle } from '@/components/ui/icons';
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
 import Link from 'next/link';
@@ -173,7 +173,7 @@ export default function TimeOffRequestsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -207,7 +207,7 @@ export default function TimeOffRequestsPage() {
           onClick={() => setFilter('pending')}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
             filter === 'pending'
-              ? 'bg-[#EC4899] text-white'
+              ? 'bg-[#D37E91] text-white'
               : 'text-gray-500 dark:text-white/60 hover:text-white'
           }`}
         >
@@ -222,7 +222,7 @@ export default function TimeOffRequestsPage() {
           onClick={() => setFilter('all')}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
             filter === 'all'
-              ? 'bg-[#EC4899] text-white'
+              ? 'bg-[#D37E91] text-white'
               : 'text-gray-500 dark:text-white/60 hover:text-white'
           }`}
         >
@@ -415,7 +415,7 @@ function RequestCard({ request, onApprove, onReject, processing }: RequestCardPr
                   onChange={(e) => setRejectNotes(e.target.value)}
                   rows={3}
                   placeholder="Provide a reason for the rejection..."
-                  className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white resize-none focus:outline-none focus:border-[#EC4899]"
+                  className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white resize-none focus:outline-none focus:border-[#D37E91]"
                 />
               </div>
 

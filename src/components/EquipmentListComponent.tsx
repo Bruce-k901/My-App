@@ -1,7 +1,7 @@
 "use client"
 import { NodeViewWrapper } from "@tiptap/react"
 import { useState, useEffect } from "react"
-import { Check, X } from "lucide-react"
+import { Check, X } from '@/components/ui/icons'
 import SOPBlockWrapper from "./SOPBlockWrapper"
 
 interface EquipmentRow {

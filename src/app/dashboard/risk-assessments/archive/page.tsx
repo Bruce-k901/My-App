@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Search, FileText, Shield, Edit, RotateCcw, Archive } from 'lucide-react';
+import { Search, FileText, Shield, Edit, RotateCcw, Archive } from '@/components/ui/icons';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -31,7 +31,7 @@ export default function ArchivedRAsPage() {
           .select('*')
           .eq('company_id', companyId)
           .eq('status', 'Archived')
-          .order('archived_at', { ascending: false, nullsFirst: false });
+          .order('updated_at', { ascending: false });
         
         if (error) throw error;
 
@@ -67,7 +67,7 @@ export default function ArchivedRAsPage() {
       setRestoringId(raId);
       const { error } = await supabase
         .from('risk_assessments')
-        .update({ status: 'Draft', archived_at: null, archived_by: null })
+        .update({ status: 'Draft' })
         .eq('id', raId)
         .eq('company_id', companyId);
 
@@ -159,7 +159,7 @@ export default function ArchivedRAsPage() {
                     )}
                   </div>
                   <div className="text-left flex-1">
-                    <h4 className="text-gray-900 dark:text-white font-medium group-hover:text-[#EC4899] dark:group-hover:text-magenta-400 transition-colors">
+                    <h4 className="text-gray-900 dark:text-white font-medium group-hover:text-[#D37E91] dark:group-hover:text-magenta-400 transition-colors">
                       {ra.title}
                     </h4>
                     <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-neutral-400 mt-1">
@@ -186,7 +186,7 @@ export default function ArchivedRAsPage() {
                   </div>
                   <button
                     onClick={() => handleEditRA(ra)}
-                    className="px-3 py-2 bg-[#EC4899]/20 hover:bg-[#EC4899]/30 border border-[#EC4899]/40 rounded-lg text-[#EC4899] flex items-center gap-2 transition-colors"
+                    className="px-3 py-2 bg-[#D37E91]/20 hover:bg-[#D37E91]/30 border border-[#D37E91]/40 rounded-lg text-[#D37E91] flex items-center gap-2 transition-colors"
                   >
                     <Edit size={16} />
                     Edit

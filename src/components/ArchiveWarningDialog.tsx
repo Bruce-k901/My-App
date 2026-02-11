@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle, X } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 
 interface ArchiveWarningDialogProps {

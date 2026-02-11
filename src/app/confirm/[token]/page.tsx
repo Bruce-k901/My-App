@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { Loader2, CheckCircle, XCircle, Calendar, Clock } from 'lucide-react'
+import { Loader2, CheckCircle, XCircle, Calendar, Clock } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import TimePicker from '@/components/ui/TimePicker'
 
@@ -352,7 +352,7 @@ export default function ConfirmationPage() {
                     value={requestedStartDate}
                     onChange={(e) => setRequestedStartDate(e.target.value)}
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
                   />
                 </div>
               ) : (
@@ -367,7 +367,7 @@ export default function ConfirmationPage() {
                       value={requestedDate}
                       onChange={(e) => setRequestedDate(e.target.value)}
                       min={new Date().toISOString().split('T')[0]}
-                      className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+                      className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
                     />
                   </div>
                   <div>
@@ -391,7 +391,7 @@ export default function ConfirmationPage() {
                   onChange={(e) => setReason(e.target.value)}
                   placeholder={confirmationType === 'offer' ? 'Why do you need a different start date?' : 'Please let us know why you need to reschedule...'}
                   rows={3}
-                  className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899] resize-none"
+                  className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] resize-none"
                 />
               </div>
             </div>
@@ -408,7 +408,7 @@ export default function ConfirmationPage() {
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Please let us know why you need to decline..."
                 rows={3}
-                className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899] resize-none"
+                className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] resize-none"
               />
             </div>
           )}
@@ -417,7 +417,7 @@ export default function ConfirmationPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full px-6 py-3 rounded-lg bg-[#EC4899] hover:bg-[#EC4899]/90 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full px-6 py-3 rounded-lg bg-[#D37E91] hover:bg-[#D37E91]/90 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {submitting ? (
               <span className="flex items-center justify-center gap-2">

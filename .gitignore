@@ -60,3 +60,4 @@ playwright/.cache/
 
 # Private assets (certificate templates, etc.)
 /private/
+nul

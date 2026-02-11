@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Clock, MapPin, LogOut, LogIn } from 'lucide-react';
+import { Clock, MapPin, LogOut, LogIn } from '@/components/ui/icons';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
@@ -253,7 +253,7 @@ export default function ClockInOut() {
               value={shiftNotes}
               onChange={(e) => setShiftNotes(e.target.value)}
               placeholder="Add handover notes (optional)..."
-              className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+              className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
               rows={3}
             />
             <div className="flex gap-2">

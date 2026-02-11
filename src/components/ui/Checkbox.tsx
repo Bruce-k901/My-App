@@ -25,7 +25,7 @@ export default function Checkbox({ checked, onCheckedChange, disabled, className
         }}
         className={cn(
           "inline-flex items-center justify-center h-5 w-5 rounded-sm border",
-          checked ? "bg-pink-500/60 border-pink-400" : "bg-white/5 border-white/20",
+          checked ? "bg-[#D37E91]/60 border-[#D37E91]" : "bg-gray-200 dark:bg-white/5 border-gray-300 dark:border-white/20",
           disabled && "opacity-50 cursor-not-allowed",
         )}
       >
@@ -35,7 +35,7 @@ export default function Checkbox({ checked, onCheckedChange, disabled, className
           </svg>
         )}
       </span>
-      {label && <span className="text-sm text-white/90">{label}</span>}
+      {label && <span className="text-sm text-gray-900 dark:text-white/90">{label}</span>}
     </label>
   );
 }

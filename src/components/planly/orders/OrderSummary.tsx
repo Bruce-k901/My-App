@@ -2,7 +2,7 @@
 
 import { format } from 'date-fns';
 import { Card } from '@/components/ui/Card';
-import { Package, Calendar, User, PoundSterling } from 'lucide-react';
+import { Package, Calendar, User, PoundSterling } from '@/components/ui/icons';
 
 interface OrderSummaryProps {
   customerName: string;

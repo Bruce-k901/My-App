@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Clock, Calendar, Edit2, Trash2, Loader2, AlertCircle } from 'lucide-react';
+import { Clock, Calendar, Edit2, Trash2, Loader2, AlertCircle } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
@@ -206,7 +206,7 @@ export default function MyTasksPage() {
       {/* Loading State */}
       {loading ? (
         <div className="mt-8 text-center py-12">
-          <Loader2 className="h-12 w-12 text-pink-500 mx-auto mb-4 animate-spin" />
+          <Loader2 className="h-12 w-12 text-[#D37E91] mx-auto mb-4 animate-spin" />
           <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">Loading configurations...</p>
         </div>
       ) : configs.length === 0 ? (

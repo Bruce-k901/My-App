@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { RefreshCw, Printer, ArrowLeftRight, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { RefreshCw, Printer, ArrowLeftRight, Calendar, ChevronLeft, ChevronRight, Repeat } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { format, addDays, subDays, isValid, parseISO } from 'date-fns';
 
@@ -10,10 +10,12 @@ interface PackingPlanHeaderProps {
   onDateChange: (date: string) => void;
   onRefresh: () => void;
   onPrint: () => void;
+  onGenerate?: () => void;
   transposed: boolean;
   onTranspose: () => void;
   orderCount: number;
   isLoading?: boolean;
+  isGenerating?: boolean;
 }
 
 // Safe date formatting helper
@@ -47,10 +49,12 @@ export function PackingPlanHeader({
   onDateChange,
   onRefresh,
   onPrint,
+  onGenerate,
   transposed,
   onTranspose,
   orderCount,
   isLoading,
+  isGenerating,
 }: PackingPlanHeaderProps) {
   const dateInputRef = useRef<HTMLInputElement>(null);
 
@@ -136,6 +140,20 @@ export function PackingPlanHeader({
               Today
             </Button>
           </div>
+
+          {onGenerate && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onGenerate}
+              disabled={isGenerating}
+              className="border-orange-200 dark:border-orange-500/20 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10"
+              title="Generate orders from standing orders"
+            >
+              <Repeat className={`h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`} />
+              <span className="ml-2">Generate</span>
+            </Button>
+          )}
 
           <Button
             variant="outline"

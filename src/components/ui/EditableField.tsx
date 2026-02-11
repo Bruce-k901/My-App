@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Edit2, Check, X, Edit3 } from 'lucide-react';
+import { Edit2, Check, X, Edit3 } from '@/components/ui/icons';
 
 interface EditableFieldProps {
   label: string;
@@ -70,7 +70,7 @@ export default function EditableField({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setEditing(true)}
-            className="text-gray-400 dark:text-neutral-500 hover:text-pink-500 dark:hover:text-magenta-400 hover:drop-shadow-[0_0_3px_#ff00ff] transition-all duration-150"
+            className="text-gray-400 dark:text-neutral-500 hover:text-[#D37E91] dark:hover:text-magenta-400 hover:drop-shadow-[0_0_3px_#ff00ff] transition-all duration-150"
             title="Edit"
           >
             <Edit3 size={14} />

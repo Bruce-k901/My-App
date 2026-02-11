@@ -2,7 +2,7 @@
 
 import { useAppContext } from '@/context/AppContext';
 import { ProcessTemplateBuilder } from '@/components/planly/process-templates/ProcessTemplateBuilder';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/components/ui/icons';
 
 export default function NewProcessTemplatePage() {
   const { siteId } = useAppContext();

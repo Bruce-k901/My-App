@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, Minus, Plus, Check, X, Loader2 } from 'lucide-react';
+import { ArrowLeft, Minus, Plus, Check, X, Loader2 } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import Link from 'next/link';
 import { format } from 'date-fns';
@@ -22,7 +22,7 @@ interface OrderItem {
 
 interface Order {
   id: string;
-  order_number: string;
+  order_number?: string;
   delivery_date: string;
   items: OrderItem[];
 }
@@ -53,31 +53,31 @@ export default function WasteLogPage() {
       setLoading(true);
       
       // Get customer profile first to verify access
-      const customerResponse = await fetch('/api/order-book/customers');
+      const customerResponse = await fetch('/api/customer/profile');
       if (!customerResponse.ok) throw new Error('Failed to load customer');
-      
+
       const customerResult = await customerResponse.json();
       const customer = customerResult.data;
-      
+
       if (!customer) {
         throw new Error('Customer not found');
       }
-      
-      // Get orders for this customer (the endpoint includes items with product data)
-      const response = await fetch(`/api/order-book/orders?customer_id=${customer.id}`);
+
+      // Get orders for this customer (planly orders)
+      const response = await fetch(`/api/customer/orders?customer_id=${customer.id}`);
       if (!response.ok) throw new Error('Failed to load orders');
-      
+
       const result = await response.json();
       const orders = result.data || [];
       const foundOrder = orders.find((o: Order) => o.id === orderId);
-      
+
       if (!foundOrder) {
         throw new Error('Order not found or you do not have access to it');
       }
-      
+
       // If items weren't loaded, fetch them separately
       if (!foundOrder.items || foundOrder.items.length === 0) {
-        const itemsResponse = await fetch(`/api/order-book/orders/${orderId}/items`);
+        const itemsResponse = await fetch(`/api/customer/orders/${orderId}/items`);
         if (itemsResponse.ok) {
           const itemsResult = await itemsResponse.json();
           if (itemsResult.data && itemsResult.data.length > 0) {
@@ -268,7 +268,7 @@ export default function WasteLogPage() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
         </div>
       </div>
     );
@@ -310,7 +310,7 @@ export default function WasteLogPage() {
       {/* Order Summary */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
         <div className="text-sm text-white/80 mb-1">Today's delivery from supplier</div>
-        <div className="text-lg font-semibold text-white">Order #{order.order_number}</div>
+        <div className="text-lg font-semibold text-white">Order for {format(new Date(order.delivery_date), 'd MMM yyyy')}</div>
         <div className="text-sm text-green-400 mt-1">✓ Delivered</div>
       </div>
 
@@ -348,7 +348,7 @@ export default function WasteLogPage() {
                     max={item.quantity}
                     value={soldQuantities[item.id] || 0}
                     onChange={(e) => updateSoldQty(item.id, parseInt(e.target.value) || 0)}
-                    className="w-20 px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white text-center focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+                    className="w-20 px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white text-center focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                   />
                   <button
                     onClick={() => increment(item.id)}

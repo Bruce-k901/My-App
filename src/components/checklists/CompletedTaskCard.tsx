@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { CheckCircle2, ChevronDown, ChevronUp, Clock, Calendar, Thermometer, Camera, FileText, CheckCircle, X, AlertTriangle, ExternalLink, Lightbulb } from 'lucide-react'
+import { CheckCircle2, ChevronDown, ChevronUp, Clock, Calendar, Thermometer, Camera, FileText, CheckCircle, X, AlertTriangle, ExternalLink, Lightbulb } from '@/components/ui/icons'
 import { isCompletedOutsideWindow, isCompletedLate } from '@/utils/taskTiming'
 import { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 import { supabase } from '@/lib/supabase'
@@ -1409,19 +1409,19 @@ const photoPaths = completionRecord?.evidence_attachments ||
             {/* PRIMARY: Assets Checked with Temperatures - MOST IMPORTANT FOR EHO */}
             {temperatures.length > 0 ? (
               <div>
-                <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                  <Thermometer className="w-5 h-5 text-blue-400" />
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  <Thermometer className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   Temperature Readings
                 </h4>
 
-                <div className="bg-white/[0.02] border border-white/[0.08] rounded-lg overflow-hidden">
+                <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.08] rounded-lg overflow-hidden">
                   <table className="w-full">
                     <thead>
-                      <tr className="bg-white/[0.04] border-b border-white/[0.08]">
-                        <th className="text-left px-4 py-2 text-xs font-medium text-neutral-400 uppercase tracking-wider">Equipment</th>
-                        <th className="text-left px-4 py-2 text-xs font-medium text-neutral-400 uppercase tracking-wider">Reading</th>
-                        <th className="text-left px-4 py-2 text-xs font-medium text-neutral-400 uppercase tracking-wider">Expected Range</th>
-                        <th className="text-center px-4 py-2 text-xs font-medium text-neutral-400 uppercase tracking-wider">Status</th>
+                      <tr className="bg-gray-50 dark:bg-white/[0.04] border-b border-gray-200 dark:border-white/[0.08]">
+                        <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Equipment</th>
+                        <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Reading</th>
+                        <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Expected Range</th>
+                        <th className="text-center px-4 py-2 text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1430,21 +1430,21 @@ const photoPaths = completionRecord?.evidence_attachments ||
                         const isWarning = temp.status === 'warning';
 
                         return (
-                          <tr key={idx} className={`border-b border-white/[0.05] transition-colors ${
-                            isOutOfRange ? 'bg-red-500/5' : ''
+                          <tr key={idx} className={`border-b border-gray-100 dark:border-white/[0.05] transition-colors ${
+                            isOutOfRange ? 'bg-red-50 dark:bg-red-500/5' : ''
                           }`}>
                             {/* Equipment Column */}
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-2">
                                 <Thermometer className={`w-4 h-4 flex-shrink-0 ${
-                                  isOutOfRange ? 'text-red-400' : isWarning ? 'text-orange-400' : 'text-green-400'
+                                  isOutOfRange ? 'text-red-500 dark:text-red-400' : isWarning ? 'text-orange-500 dark:text-orange-400' : 'text-green-600 dark:text-green-400'
                                 }`} />
                                 <div className="min-w-0">
-                                  <div className="text-sm font-semibold text-white truncate">
+                                  <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                                     {temp.nickname || temp.asset_name || temp.equipment || 'Unknown'}
                                   </div>
                                   {temp.nickname && temp.asset_name && (
-                                    <div className="text-xs text-neutral-500 truncate">
+                                    <div className="text-xs text-gray-500 dark:text-neutral-500 truncate">
                                       {temp.asset_name}
                                     </div>
                                   )}
@@ -1456,23 +1456,23 @@ const photoPaths = completionRecord?.evidence_attachments ||
                             <td className="px-4 py-3">
                               {temp.temp !== null && temp.temp !== undefined && temp.temp !== '' ? (
                                 <div className={`text-lg font-bold tabular-nums ${
-                                  isOutOfRange ? 'text-red-400' : isWarning ? 'text-orange-400' : 'text-green-400'
+                                  isOutOfRange ? 'text-red-600 dark:text-red-400' : isWarning ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-400'
                                 }`}>
                                   {temp.temp}°C
                                 </div>
                               ) : (
-                                <span className="text-sm text-neutral-500 italic">No reading</span>
+                                <span className="text-sm text-gray-400 dark:text-neutral-500 italic">No reading</span>
                               )}
                             </td>
 
                             {/* Range Column */}
                             <td className="px-4 py-3">
                               {temp.range && temp.range.min !== null && temp.range.max !== null ? (
-                                <div className="text-sm text-neutral-400 tabular-nums">
+                                <div className="text-sm text-gray-500 dark:text-neutral-400 tabular-nums">
                                   {temp.range.min}°C to {temp.range.max}°C
                                 </div>
                               ) : (
-                                <span className="text-sm text-neutral-500">—</span>
+                                <span className="text-sm text-gray-400 dark:text-neutral-500">—</span>
                               )}
                             </td>
 
@@ -1481,10 +1481,10 @@ const photoPaths = completionRecord?.evidence_attachments ||
                               <div className="flex justify-center">
                                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
                                   isOutOfRange
-                                    ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                                    ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-300 dark:border-red-500/30'
                                     : isWarning
-                                    ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                                    : 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                    ? 'bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 border border-orange-300 dark:border-orange-500/30'
+                                    : 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-500/30'
                                 }`}>
                                   {isOutOfRange ? (
                                     <>
@@ -1514,14 +1514,14 @@ const photoPaths = completionRecord?.evidence_attachments ||
 
                 {/* Out of Range Summary */}
                 {temperatures.some((t: any) => t.status === 'failed' || t.status === 'critical') && (
-                  <div className="mt-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                  <div className="mt-3 p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg">
                     <div className="flex items-start gap-2">
-                      <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                      <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-sm font-semibold text-red-400 mb-1">
+                        <p className="text-sm font-semibold text-red-700 dark:text-red-400 mb-1">
                           Action Required
                         </p>
-                        <p className="text-xs text-red-300">
+                        <p className="text-xs text-red-600 dark:text-red-300">
                           {temperatures.filter((t: any) => t.status === 'failed' || t.status === 'critical').length} equipment reading(s) out of acceptable range. Follow-up actions may have been triggered.
                         </p>
                       </div>
@@ -1550,37 +1550,37 @@ const photoPaths = completionRecord?.evidence_attachments ||
 
             {/* Callout Report Data - Show all callout info if this is a callout report */}
             {isCalloutReport && calloutReportData && (
-              <div className="bg-red-500/10 border-2 border-red-500/50 rounded-lg p-4 mb-6">
-                <h4 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-red-400" />
+              <div className="bg-red-50 dark:bg-red-500/10 border-2 border-red-300 dark:border-red-500/50 rounded-lg p-4 mb-6">
+                <h4 className="text-base font-bold text-red-900 dark:text-white mb-4 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
                   Callout Report Details
                 </h4>
                 <div className="space-y-4 text-sm">
                   {/* Asset Information */}
                   {(calloutAssetName || calloutAssetId) && (
-                    <div className="bg-white/5 border border-white/10 rounded-lg p-3">
-                      <p className="text-white/60 text-xs mb-2 font-medium">Asset Information</p>
+                    <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg p-3">
+                      <p className="text-gray-500 dark:text-white/60 text-xs mb-2 font-medium">Asset Information</p>
                       {calloutAssetName && (
-                        <p className="text-white/90 font-medium text-base mb-1">{calloutAssetName}</p>
+                        <p className="text-gray-900 dark:text-white/90 font-medium text-base mb-1">{calloutAssetName}</p>
                       )}
                       {calloutAssetId && (
-                        <p className="text-white/60 text-xs font-mono">ID: {calloutAssetId}</p>
+                        <p className="text-gray-500 dark:text-white/60 text-xs font-mono">ID: {calloutAssetId}</p>
                       )}
                     </div>
                   )}
-                  
+
                   {/* Contractor Information */}
                   {(calloutContractorName || calloutContractorId || calloutContractorEmail) && (
-                    <div className="bg-white/5 border border-white/10 rounded-lg p-3">
-                      <p className="text-white/60 text-xs mb-2 font-medium">Contractor Information</p>
+                    <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg p-3">
+                      <p className="text-gray-500 dark:text-white/60 text-xs mb-2 font-medium">Contractor Information</p>
                       {calloutContractorName && (
-                        <p className="text-white/90 font-medium text-base mb-1">{calloutContractorName}</p>
+                        <p className="text-gray-900 dark:text-white/90 font-medium text-base mb-1">{calloutContractorName}</p>
                       )}
                       {calloutContractorEmail && (
-                        <p className="text-white/70 text-xs mb-1">Email: {calloutContractorEmail}</p>
+                        <p className="text-gray-600 dark:text-white/70 text-xs mb-1">Email: {calloutContractorEmail}</p>
                       )}
                       {calloutContractorId && (
-                        <p className="text-white/60 text-xs font-mono">ID: {calloutContractorId}</p>
+                        <p className="text-gray-500 dark:text-white/60 text-xs font-mono">ID: {calloutContractorId}</p>
                       )}
                     </div>
                   )}
@@ -1852,51 +1852,51 @@ const photoPaths = completionRecord?.evidence_attachments ||
                     </div>
                   )}
                   {tempAction === 'callout' && (
-                    <div className="bg-red-500/20 border border-red-500/40 rounded-lg p-3">
+                    <div className="bg-red-100 dark:bg-red-500/20 border border-red-300 dark:border-red-500/40 rounded-lg p-3">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="font-bold text-red-300">Contractor Callout Created</span>
+                        <span className="font-bold text-red-700 dark:text-red-300">Contractor Callout Created</span>
                       </div>
                       {contractorName && (
-                        <p className="text-white/90 text-sm font-medium mb-1">
+                        <p className="text-gray-900 dark:text-white/90 text-sm font-medium mb-1">
                           Contractor: {contractorName}
                         </p>
                       )}
                       {calloutDetails.contractor_type && (
-                        <p className="text-white/80 text-sm">
+                        <p className="text-gray-700 dark:text-white/80 text-sm">
                           <span className="font-medium">Type:</span> {calloutDetails.contractor_type}
                         </p>
                       )}
                       {calloutDetails.status && (
-                        <p className="text-white/80 text-sm mt-2">
+                        <p className="text-gray-700 dark:text-white/80 text-sm mt-2">
                           <span className="font-medium">Status:</span> <span className="capitalize">{calloutDetails.status}</span>
                         </p>
                       )}
                       {calloutDetails.resolution && (
-                        <p className="text-white/80 text-sm mt-2">
+                        <p className="text-gray-700 dark:text-white/80 text-sm mt-2">
                           <span className="font-medium">Resolution:</span> {calloutDetails.resolution}
                         </p>
                       )}
                       {calloutDetails.resolved_at && (
-                        <p className="text-white/80 text-sm mt-2">
+                        <p className="text-gray-700 dark:text-white/80 text-sm mt-2">
                           <span className="font-medium">Resolved At:</span> {new Date(calloutDetails.resolved_at).toLocaleString()}
                         </p>
                       )}
                     </div>
                   )}
                   {flagReason === 'completed_late' && (
-                    <div className="bg-yellow-500/20 border border-yellow-500/40 rounded-lg p-3">
-                      <p className="text-yellow-300 font-medium">⚠️ Task was completed late</p>
+                    <div className="bg-yellow-100 dark:bg-yellow-500/20 border border-yellow-300 dark:border-yellow-500/40 rounded-lg p-3">
+                      <p className="text-yellow-800 dark:text-yellow-300 font-medium">Task was completed late</p>
                       {(completionRecord?.completed_at || task.completed_at) && task.due_date && (
-                        <p className="text-white/80 text-xs mt-1">
-                          Due: {new Date(task.due_date).toLocaleDateString()} | 
+                        <p className="text-gray-700 dark:text-white/80 text-xs mt-1">
+                          Due: {new Date(task.due_date).toLocaleDateString()} |
                           Completed: {new Date(completionRecord?.completed_at || task.completed_at).toLocaleString()}
                         </p>
                       )}
                     </div>
                   )}
                   {flagReason === 'completed_early' && (
-                    <div className="bg-blue-500/20 border border-blue-500/40 rounded-lg p-3">
-                      <p className="text-blue-300 font-medium">ℹ️ Task was completed early</p>
+                    <div className="bg-blue-100 dark:bg-blue-500/20 border border-blue-300 dark:border-blue-500/40 rounded-lg p-3">
+                      <p className="text-blue-700 dark:text-blue-300 font-medium">Task was completed early</p>
                     </div>
                   )}
                 </div>
@@ -1993,11 +1993,11 @@ const photoPaths = completionRecord?.evidence_attachments ||
             {/* Pass/Fail Result */}
             {passFailResult && (
               <div>
-                <h4 className="text-sm font-semibold text-white mb-2">Result</h4>
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Result</h4>
                 <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg ${
-                  passFailResult === 'pass' 
-                    ? 'bg-green-500/20 text-green-400 border border-green-500/50' 
-                    : 'bg-red-500/20 text-red-400 border border-red-500/50'
+                  passFailResult === 'pass'
+                    ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-500/50'
+                    : 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-300 dark:border-red-500/50'
                 }`}>
                   {passFailResult === 'pass' ? (
                     <CheckCircle className="w-4 h-4" />
@@ -2012,7 +2012,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
             {/* Photos */}
             {photoUrls.length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold text-white mb-3">Photos</h4>
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Photos</h4>
                 <div className="grid grid-cols-2 gap-3">
                   {photoUrls.map((photoUrl: string, idx: number) => (
                     <a
@@ -2020,7 +2020,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
                       href={photoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="relative aspect-square rounded-lg overflow-hidden border border-white/[0.06] hover:border-pink-500/50 transition-colors group"
+                      className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 dark:border-white/[0.06] hover:border-[#D37E91]/50 transition-colors group"
                     >
                       <img
                         src={photoUrl}
@@ -2039,8 +2039,8 @@ const photoPaths = completionRecord?.evidence_attachments ||
             {/* Notes */}
             {notes && (
               <div>
-                <h4 className="text-sm font-semibold text-white mb-2">Notes & Observations</h4>
-                <p className="text-sm text-white/70 whitespace-pre-line bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Notes & Observations</h4>
+                <p className="text-sm text-gray-700 dark:text-white/70 whitespace-pre-line bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
                   {notes}
                 </p>
               </div>
@@ -2049,16 +2049,16 @@ const photoPaths = completionRecord?.evidence_attachments ||
 
             {/* Instructions - Hide for completed follow-up tasks, show for others */}
             {(task.custom_instructions || task.template?.instructions) && !isMonitoringTask && (
-              <div className="pt-4 border-t border-white/[0.06]">
+              <div className="pt-4 border-t border-gray-200 dark:border-white/[0.06]">
                 <details className="group">
-                  <summary className="cursor-pointer text-sm font-semibold text-white/60 hover:text-white/80 transition-colors list-none">
+                  <summary className="cursor-pointer text-sm font-semibold text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white/80 transition-colors list-none">
                     <div className="flex items-center gap-2">
                       <span>View Instructions</span>
                       <ChevronDown className="w-4 h-4 group-open:rotate-180 transition-transform" />
                     </div>
                   </summary>
-                  <div className="mt-3 pt-3 border-t border-white/[0.06]">
-                    <p className="text-sm text-white/70 whitespace-pre-line">
+                  <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/[0.06]">
+                    <p className="text-sm text-gray-700 dark:text-white/70 whitespace-pre-line">
                       {task.custom_instructions || task.template?.instructions}
                     </p>
                   </div>

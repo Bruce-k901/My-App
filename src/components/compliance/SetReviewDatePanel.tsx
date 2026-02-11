@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Calendar, AlertCircle } from 'lucide-react'
+import { X, Calendar, AlertCircle } from '@/components/ui/icons'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/components/ui/ToastProvider'
 

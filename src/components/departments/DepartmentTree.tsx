@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { Department } from '@/types/departments';
 import DepartmentCard from './DepartmentCard';
-import { ChevronDown, ChevronRight, Minus } from 'lucide-react';
+import { ChevronDown, ChevronRight, Minus } from '@/components/ui/icons';
 
 interface DepartmentTreeProps {
   departments: Department[];
@@ -143,7 +143,7 @@ export default function DepartmentTree({
           {hasChildren && (
             <button
               onClick={() => toggleExpand(node.department.id)}
-              className="absolute z-10 w-6 h-6 flex items-center justify-center rounded-md bg-[#0B0D13] border border-white/[0.1] hover:border-[#EC4899]/50 text-gray-400 hover:text-[#EC4899] transition-colors shadow-lg"
+              className="absolute z-10 w-6 h-6 flex items-center justify-center rounded-md bg-[#0B0D13] border border-white/[0.1] hover:border-[#D37E91]/50 text-gray-400 hover:text-[#D37E91] transition-colors shadow-lg"
               style={{
                 left: `${indent + 16}px`,
                 top: '1.5rem',

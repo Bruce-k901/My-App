@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FileText, Shield, Plus, AlertTriangle, CheckCircle, Download } from 'lucide-react';
+import { FileText, Shield, Plus, AlertTriangle, CheckCircle, Download } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 
@@ -86,7 +86,7 @@ export default function RiskAssessmentsPage() {
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">COSHH Data</h2>
           <button
             onClick={() => router.push('/dashboard/coshh-data')}
-            className="px-4 py-2 bg-[#EC4899] hover:bg-[#EC4899]/90 rounded-lg text-white text-sm flex items-center gap-2"
+            className="px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/90 rounded-lg text-white text-sm flex items-center gap-2"
           >
             <Download size={16} />
             Manage All COSHH Data

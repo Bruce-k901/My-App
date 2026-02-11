@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/ToastProvider';
-import { Calendar, Save } from 'lucide-react';
+import { Calendar, Save } from '@/components/ui/icons';
 
 export default function HolidayYearSettings() {
   const { companyId, profile } = useAppContext();

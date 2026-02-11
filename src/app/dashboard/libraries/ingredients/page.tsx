@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Search, Upload, Download, Edit, Trash2, Save, X, ChevronDown, ChevronRight, Check } from 'lucide-react';
+import { Plus, Search, Upload, Download, Edit, Trash2, Save, X, ChevronDown, ChevronRight, Check } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import Select from '@/components/ui/Select';
@@ -624,7 +624,7 @@ export default function IngredientsLibraryPage() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-2 h-8 bg-pink-500 rounded-full"></div>
+            <div className="w-2 h-8 bg-[#D37E91] rounded-full"></div>
             <div>
               <h1 className="text-lg font-semibold text-white">Ingredients Library</h1>
               <p className="text-sm text-neutral-400">Manage ingredients, allergens, and costs</p>
@@ -745,7 +745,7 @@ export default function IngredientsLibraryPage() {
                             {item.is_prep_item && item.linked_recipe && (
                               <>
                                 {item.linked_recipe.recipe_status === 'active' && item.linked_recipe.is_active ? (
-                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-pink-500/10 text-pink-400 border border-pink-500/20">
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[#D37E91]/15 text-[#D37E91] border border-[#D37E91]/20">
                                     ✓ Recipe Active
                                   </span>
                                 ) : item.linked_recipe.recipe_status === 'draft' ? (
@@ -844,8 +844,8 @@ export default function IngredientsLibraryPage() {
                                               setRowDraft((d: any) => ({ ...d, allergens: current.filter((a: string) => a !== allergen) }));
                                             }
                                           }}
-                                          style={{ accentColor: '#EC4899' }}
-                                          className="w-4 h-4 rounded border-pink-500/50 bg-neutral-900 text-pink-500 focus:ring-pink-500 focus:ring-2 checked:bg-pink-500 checked:border-pink-500"
+                                          style={{ accentColor: '#D37E91' }}
+                                          className="w-4 h-4 rounded border-[#D37E91]/50 bg-neutral-900 text-[#D37E91] focus:ring-[#D37E91] focus:ring-2 checked:bg-[#D37E91] checked:border-[#D37E91]"
                                         />
                                         <span className="text-xs text-white">{allergen}</span>
                                       </label>
@@ -876,14 +876,14 @@ export default function IngredientsLibraryPage() {
                                 <div className="flex items-center gap-2">
                                   {editingRowId === item.id ? (
                                     <label className="flex items-center gap-2 cursor-pointer">
-                                      <input type="checkbox" checked={rowDraft?.track_stock ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, track_stock: e.target.checked }))} style={{ accentColor: '#EC4899' }} className="w-4 h-4 rounded border-pink-500/50 bg-neutral-900 text-pink-500 focus:ring-pink-500 focus:ring-2 checked:bg-pink-500 checked:border-pink-500" />
+                                      <input type="checkbox" checked={rowDraft?.track_stock ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, track_stock: e.target.checked }))} style={{ accentColor: '#D37E91' }} className="w-4 h-4 rounded border-[#D37E91]/50 bg-neutral-900 text-[#D37E91] focus:ring-[#D37E91] focus:ring-2 checked:bg-[#D37E91] checked:border-[#D37E91]" />
                                       <span className="text-xs text-neutral-400">Track Stock</span>
                                     </label>
                                   ) : (
                                     <label className="flex items-center gap-2">
                                       <div className="relative w-4 h-4">
                                         <input type="checkbox" checked={item.track_stock ?? false} disabled className="sr-only" />
-                                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.track_stock ? 'bg-pink-500 border-pink-500' : 'bg-neutral-900 border-pink-500/30'}`}>
+                                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.track_stock ? 'bg-[#D37E91] border-[#D37E91]' : 'bg-neutral-900 border-[#D37E91]/30'}`}>
                                           {item.track_stock && <Check size={12} className="text-white" />}
                                         </div>
                                       </div>
@@ -894,14 +894,14 @@ export default function IngredientsLibraryPage() {
                                 <div className="flex items-center gap-2">
                                   {editingRowId === item.id ? (
                                     <label className="flex items-center gap-2 cursor-pointer">
-                                      <input type="checkbox" checked={rowDraft?.is_prep_item ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_prep_item: e.target.checked }))} style={{ accentColor: '#EC4899' }} className="w-4 h-4 rounded border-pink-500/50 bg-neutral-900 text-pink-500 focus:ring-pink-500 focus:ring-2 checked:bg-pink-500 checked:border-pink-500" />
+                                      <input type="checkbox" checked={rowDraft?.is_prep_item ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_prep_item: e.target.checked }))} style={{ accentColor: '#D37E91' }} className="w-4 h-4 rounded border-[#D37E91]/50 bg-neutral-900 text-[#D37E91] focus:ring-[#D37E91] focus:ring-2 checked:bg-[#D37E91] checked:border-[#D37E91]" />
                                       <span className="text-xs text-neutral-400">Prep Item</span>
                                     </label>
                                   ) : (
                                     <label className="flex items-center gap-2">
                                       <div className="relative w-4 h-4">
                                         <input type="checkbox" checked={item.is_prep_item ?? false} disabled className="sr-only" />
-                                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_prep_item ? 'bg-pink-500 border-pink-500' : 'bg-neutral-900 border-pink-500/30'}`}>
+                                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_prep_item ? 'bg-[#D37E91] border-[#D37E91]' : 'bg-neutral-900 border-[#D37E91]/30'}`}>
                                           {item.is_prep_item && <Check size={12} className="text-white" />}
                                         </div>
                                       </div>
@@ -912,14 +912,14 @@ export default function IngredientsLibraryPage() {
                                 <div className="flex items-center gap-2">
                                   {editingRowId === item.id ? (
                                     <label className="flex items-center gap-2 cursor-pointer">
-                                      <input type="checkbox" checked={rowDraft?.is_purchasable ?? true} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_purchasable: e.target.checked }))} style={{ accentColor: '#EC4899' }} className="w-4 h-4 rounded border-pink-500/50 bg-neutral-900 text-pink-500 focus:ring-pink-500 focus:ring-2 checked:bg-pink-500 checked:border-pink-500" />
+                                      <input type="checkbox" checked={rowDraft?.is_purchasable ?? true} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_purchasable: e.target.checked }))} style={{ accentColor: '#D37E91' }} className="w-4 h-4 rounded border-[#D37E91]/50 bg-neutral-900 text-[#D37E91] focus:ring-[#D37E91] focus:ring-2 checked:bg-[#D37E91] checked:border-[#D37E91]" />
                                       <span className="text-xs text-neutral-400">Purchasable</span>
                                     </label>
                                   ) : (
                                     <label className="flex items-center gap-2">
                                       <div className="relative w-4 h-4">
                                         <input type="checkbox" checked={item.is_purchasable ?? true} disabled className="sr-only" />
-                                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_purchasable ? 'bg-pink-500 border-pink-500' : 'bg-neutral-900 border-pink-500/30'}`}>
+                                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_purchasable ? 'bg-[#D37E91] border-[#D37E91]' : 'bg-neutral-900 border-[#D37E91]/30'}`}>
                                           {item.is_purchasable && <Check size={12} className="text-white" />}
                                         </div>
                                       </div>
@@ -1019,9 +1019,9 @@ export default function IngredientsLibraryPage() {
                                 <div className="space-y-2">
                                   <div className="flex items-center gap-2">
                                     {editingRowId === item.id ? (
-                                      <input type="checkbox" checked={rowDraft?.is_retail_saleable ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_retail_saleable: e.target.checked }))} style={{ accentColor: '#EC4899' }} className="w-4 h-4 rounded border-pink-500/50 bg-neutral-900 text-pink-500 focus:ring-pink-500 focus:ring-2 checked:bg-pink-500 checked:border-pink-500" />
+                                      <input type="checkbox" checked={rowDraft?.is_retail_saleable ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_retail_saleable: e.target.checked }))} style={{ accentColor: '#D37E91' }} className="w-4 h-4 rounded border-[#D37E91]/50 bg-neutral-900 text-[#D37E91] focus:ring-[#D37E91] focus:ring-2 checked:bg-[#D37E91] checked:border-[#D37E91]" />
                                     ) : (
-                                      <input type="checkbox" checked={item.is_retail_saleable ?? false} disabled className="w-4 h-4 rounded border-pink-500/30 bg-neutral-900" />
+                                      <input type="checkbox" checked={item.is_retail_saleable ?? false} disabled className="w-4 h-4 rounded border-[#D37E91]/30 bg-neutral-900" />
                                     )}
                                     <label className="text-xs text-neutral-400">Retail Saleable</label>
                                   </div>
@@ -1035,14 +1035,14 @@ export default function IngredientsLibraryPage() {
                                   <div className="flex items-center gap-2">
                                     {editingRowId === item.id ? (
                                       <label className="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" checked={rowDraft?.is_wholesale_saleable ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_wholesale_saleable: e.target.checked }))} style={{ accentColor: '#EC4899' }} className="w-4 h-4 rounded border-pink-500/50 bg-neutral-900 text-pink-500 focus:ring-pink-500 focus:ring-2 checked:bg-pink-500 checked:border-pink-500" />
+                                        <input type="checkbox" checked={rowDraft?.is_wholesale_saleable ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_wholesale_saleable: e.target.checked }))} style={{ accentColor: '#D37E91' }} className="w-4 h-4 rounded border-[#D37E91]/50 bg-neutral-900 text-[#D37E91] focus:ring-[#D37E91] focus:ring-2 checked:bg-[#D37E91] checked:border-[#D37E91]" />
                                         <span className="text-xs text-neutral-400">Wholesale Saleable</span>
                                       </label>
                                     ) : (
                                       <label className="flex items-center gap-2">
                                         <div className="relative w-4 h-4">
                                           <input type="checkbox" checked={item.is_wholesale_saleable ?? false} disabled className="sr-only" />
-                                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_wholesale_saleable ? 'bg-pink-500 border-pink-500' : 'bg-neutral-900 border-pink-500/30'}`}>
+                                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_wholesale_saleable ? 'bg-[#D37E91] border-[#D37E91]' : 'bg-neutral-900 border-[#D37E91]/30'}`}>
                                             {item.is_wholesale_saleable && <Check size={12} className="text-white" />}
                                           </div>
                                         </div>
@@ -1060,14 +1060,14 @@ export default function IngredientsLibraryPage() {
                                   <div className="flex items-center gap-2">
                                     {editingRowId === item.id ? (
                                       <label className="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" checked={rowDraft?.is_online_saleable ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_online_saleable: e.target.checked }))} style={{ accentColor: '#EC4899' }} className="w-4 h-4 rounded border-pink-500/50 bg-neutral-900 text-pink-500 focus:ring-pink-500 focus:ring-2 checked:bg-pink-500 checked:border-pink-500" />
+                                        <input type="checkbox" checked={rowDraft?.is_online_saleable ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_online_saleable: e.target.checked }))} style={{ accentColor: '#D37E91' }} className="w-4 h-4 rounded border-[#D37E91]/50 bg-neutral-900 text-[#D37E91] focus:ring-[#D37E91] focus:ring-2 checked:bg-[#D37E91] checked:border-[#D37E91]" />
                                         <span className="text-xs text-neutral-400">Online Saleable</span>
                                       </label>
                                     ) : (
                                       <label className="flex items-center gap-2">
                                         <div className="relative w-4 h-4">
                                           <input type="checkbox" checked={item.is_online_saleable ?? false} disabled className="sr-only" />
-                                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_online_saleable ? 'bg-pink-500 border-pink-500' : 'bg-neutral-900 border-pink-500/30'}`}>
+                                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_online_saleable ? 'bg-[#D37E91] border-[#D37E91]' : 'bg-neutral-900 border-[#D37E91]/30'}`}>
                                             {item.is_online_saleable && <Check size={12} className="text-white" />}
                                           </div>
                                         </div>

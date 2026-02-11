@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/Button';
-import { Download, Printer, ArrowRight, Loader2 } from 'lucide-react';
+import { Download, Printer, ArrowRight, Loader2 } from '@/components/ui/icons';
 import { StockCountItem, LibraryType } from '@/lib/types/stockly';
 import { generateCountSheetPDF } from '@/lib/utils/pdf-generator';
 import { supabase } from '@/lib/supabase';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface NumericKeyboardProps {
   onKeyPress: (key: string) => void;
@@ -184,7 +184,7 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, isVisible }:
               type="button"
               onClick={(e) => handleEnter(e)}
               onTouchEnd={(e) => handleEnter(e)}
-              className="h-12 bg-[#EC4899]/20 border border-[#EC4899] rounded-lg text-[#EC4899] text-sm font-medium active:bg-[#EC4899]/30 transition-colors touch-manipulation"
+              className="h-12 bg-[#D37E91]/20 border border-[#D37E91] rounded-lg text-[#D37E91] text-sm font-medium active:bg-[#D37E91]/30 transition-colors touch-manipulation"
             >
               Enter
             </button>

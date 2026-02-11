@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { startOfWeek, addWeeks, addDays } from 'date-fns';
-import { Loader2, Save } from 'lucide-react';
+import { Loader2, Save } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { useAppContext } from '@/context/AppContext';
 import { CustomerSelector } from '@/components/planly/orders/CustomerSelector';

@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CheckSquare, MessageSquare, Clock, AlertTriangle } from 'lucide-react';
+import { CheckSquare, MessageSquare, Clock, AlertTriangle } from '@/components/ui/icons';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import { usePanelStore } from '@/lib/stores/panel-store';
 
 interface SummaryData {
   tasksDue: number;
@@ -22,6 +23,7 @@ export function PrioritySummaryCard() {
   });
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { setMessagingOpen } = usePanelStore();
 
   useEffect(() => {
     const fetchSummary = async () => {
@@ -116,7 +118,7 @@ export function PrioritySummaryCard() {
           className="flex flex-col items-center p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] transition-colors"
         >
           <div className="relative">
-            <CheckSquare className="w-6 h-6 text-pink-400 mb-1" />
+            <CheckSquare className="w-6 h-6 text-[#D37E91] mb-1" />
             {summary.tasksOverdue > 0 && (
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center">
                 !
@@ -129,7 +131,7 @@ export function PrioritySummaryCard() {
 
         {/* Messages */}
         <button
-          onClick={() => router.push('/dashboard/messaging')}
+          onClick={() => setMessagingOpen(true)}
           className="flex flex-col items-center p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] transition-colors"
         >
           <div className="relative">

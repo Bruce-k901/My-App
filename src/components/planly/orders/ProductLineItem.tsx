@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Trash2, Snowflake, Flame, ChevronDown, Check, Search, X } from 'lucide-react';
+import { Trash2, Snowflake, Flame, ChevronDown, Check, Search, X } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { cn } from '@/lib/utils';

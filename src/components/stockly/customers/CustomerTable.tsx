@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
-import { MoreVertical, Eye, Edit, Package, DollarSign, Pause, Play, Archive, Mail } from 'lucide-react';
+import { MoreVertical, Eye, Edit, Package, DollarSign, Pause, Play, Archive, Mail } from '@/components/ui/icons';
 import { formatCustomerAddress } from '@/lib/stockly/customerHelpers';
 import Link from 'next/link';
 

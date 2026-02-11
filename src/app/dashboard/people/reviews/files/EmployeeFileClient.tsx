@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { getEmployeeFile } from '@/app/actions/reviews';
 import { EmployeeFile } from '@/components/reviews/EmployeeFile';
-import { FileText } from 'lucide-react';
+import { FileText } from '@/components/ui/icons';
 
 export default function EmployeeFileClient({ profile, employees }: { profile: any; employees: any[] }) {
   const [selectedEmployee, setSelectedEmployee] = useState<string | null>(null);

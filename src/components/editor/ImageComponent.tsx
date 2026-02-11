@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NodeViewWrapper } from '@tiptap/react';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Upload, X, Image as ImageIcon } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 
 interface ImageComponentProps {

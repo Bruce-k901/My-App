@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
-import { Thermometer, Download, Filter, X } from "lucide-react";
+import { Thermometer, Download, Filter, X } from '@/components/ui/icons';
 import { format, differenceInMinutes } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
 import { Badge } from "@/components/ui/badge";
@@ -1281,7 +1281,7 @@ export default function TemperatureLogsPage() {
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <Thermometer className="w-8 h-8 text-red-600 dark:text-[#EC4899]" />
+            <Thermometer className="w-8 h-8 text-red-600 dark:text-[#D37E91]" />
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Temperature Logs</h1>
           </div>
           <p className="text-gray-600 dark:text-white/60 text-sm sm:text-base">
@@ -1312,7 +1312,7 @@ export default function TemperatureLogsPage() {
         {/* Export & Analytics Section */}
         <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
-            <Download className="w-5 h-5 text-[#EC4899] dark:text-[#EC4899]" />
+            <Download className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Export & Analytics</h2>
           </div>
 
@@ -1324,7 +1324,7 @@ export default function TemperatureLogsPage() {
                 type="date"
                 value={exportStart}
                 onChange={(e) => setExportStart(e.target.value)}
-                className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
               />
             </div>
             <div>
@@ -1333,14 +1333,14 @@ export default function TemperatureLogsPage() {
                 type="date"
                 value={exportEnd}
                 onChange={(e) => setExportEnd(e.target.value)}
-                className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
               />
             </div>
             <div className="flex items-end">
               <button
                 type="button"
                 onClick={exportCsv}
-                className="w-full bg-transparent text-[#EC4899] border border-[#EC4899] rounded-lg px-4 py-2 hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all font-medium flex items-center justify-center gap-2"
+                className="w-full bg-transparent text-[#D37E91] border border-[#D37E91] rounded-lg px-4 py-2 hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all font-medium flex items-center justify-center gap-2"
               >
                 <Download className="w-4 h-4" />
                 Export CSV
@@ -1351,18 +1351,21 @@ export default function TemperatureLogsPage() {
           {/* Equipment Filters for Graph */}
           {(() => {
             const categorizedLogs = categorizeEquipment(enrichedLogs);
-            const uniqueAssets = Array.from(
-              new Map(
-                enrichedLogs.map(log => [
-                  log.asset_id,
-                  {
-                    id: log.asset_id,
-                    nickname: log.nickname,
-                    name: log.asset?.name || log.asset_name
-                  }
-                ])
-              ).values()
-            );
+            const uniqueAssetsMap = new Map<string, { id: string; nickname: string | null; name: string | undefined }>();
+            for (const log of enrichedLogs) {
+              const existing = uniqueAssetsMap.get(log.asset_id);
+              // Keep whichever entry has a nickname; otherwise take the first one
+              if (!existing) {
+                uniqueAssetsMap.set(log.asset_id, {
+                  id: log.asset_id,
+                  nickname: log.nickname || log.position?.nickname || null,
+                  name: log.asset?.name || log.asset_name || undefined
+                });
+              } else if (!existing.nickname && (log.nickname || log.position?.nickname)) {
+                existing.nickname = log.nickname || log.position?.nickname || null;
+              }
+            }
+            const uniqueAssets = Array.from(uniqueAssetsMap.values());
 
             const getFilteredLogs = () => {
               let filtered = categorizedLogs[equipmentTypeFilter as keyof typeof categorizedLogs] || [];
@@ -1376,18 +1379,90 @@ export default function TemperatureLogsPage() {
 
             const filteredGraphLogs = getFilteredLogs();
 
-            // Prepare data for chart - last 50 readings, sorted by time
-            const chartData = filteredGraphLogs
-              .sort((a, b) => new Date(a.recorded_at || a.created_at || '').getTime() - new Date(b.recorded_at || b.created_at || '').getTime())
-              .slice(-50)
-              .map(log => ({
-                timestamp: format(new Date(log.recorded_at || log.created_at || ''), 'MMM dd HH:mm'),
-                temperature: log.reading,
-                assetName: log.display_name || log.nickname || log.position?.nickname || log.asset?.name || log.asset_name || 'Unknown',
-                assetId: log.asset_id,
-                min: log.temp_min ?? log.asset?.working_temp_min,
-                max: log.temp_max ?? log.asset?.working_temp_max
-              }));
+            // Prepare data for chart - pivot so each row is a timestamp with columns per asset
+            const sortedGraphLogs = [...filteredGraphLogs]
+              .sort((a, b) => new Date(a.recorded_at || a.created_at || '').getTime() - new Date(b.recorded_at || b.created_at || '').getTime());
+
+            // Build asset name lookup - scan ALL enriched logs for each asset to find nickname
+            const assetNameMap = new Map<string, string>();
+            const chartAssetIds = new Set(sortedGraphLogs.map(l => l.asset_id));
+            for (const id of chartAssetIds) {
+              // Search all enrichedLogs (not just filtered) to find a nickname for this asset
+              const nickname = enrichedLogs.find(l => l.asset_id === id && (l.nickname || l.position?.nickname))
+                ?. nickname
+                || enrichedLogs.find(l => l.asset_id === id && l.position?.nickname)?.position?.nickname
+                || null;
+              if (nickname) {
+                assetNameMap.set(id, nickname);
+              } else {
+                // Last resort: use asset name from the dropdown list
+                const asset = uniqueAssets.find(a => a.id === id);
+                assetNameMap.set(id, asset?.nickname || asset?.name || 'Unknown');
+              }
+            }
+
+            let chartData: Record<string, any>[];
+
+            if (selectedAssetFilter !== 'all') {
+              // Single asset - simple flat array, last 50 readings
+              chartData = sortedGraphLogs
+                .slice(-50)
+                .map(log => {
+                  const d = new Date(log.recorded_at || log.created_at || '');
+                  return {
+                    timestamp: format(d, 'MMM dd'),
+                    fullTimestamp: format(d, 'MMM dd HH:mm'),
+                    _ts: d.getTime(),
+                    _day: format(d, 'yyyy-MM-dd'),
+                    temperature: log.reading,
+                    assetId: log.asset_id,
+                    assetName: assetNameMap.get(log.asset_id) || 'Unknown',
+                    min: log.temp_min ?? log.asset?.working_temp_min,
+                    max: log.temp_max ?? log.asset?.working_temp_max
+                  };
+                });
+            } else {
+              // Multiple assets - take last 50 per asset, then pivot into shared timeline
+              const assetIds = Array.from(assetNameMap.keys());
+              const perAssetLogs = new Map<string, typeof sortedGraphLogs>();
+              for (const id of assetIds) {
+                perAssetLogs.set(id, sortedGraphLogs.filter(l => l.asset_id === id).slice(-50));
+              }
+
+              // Build a unified timeline from all included readings
+              const timelineMap = new Map<string, Record<string, any>>();
+              for (const [assetId, logs] of perAssetLogs) {
+                for (const log of logs) {
+                  const d = new Date(log.recorded_at || log.created_at || '');
+                  const ts = d.getTime();
+                  const key = `${ts}`;
+                  if (!timelineMap.has(key)) {
+                    timelineMap.set(key, {
+                      timestamp: format(d, 'MMM dd'),
+                      fullTimestamp: format(d, 'MMM dd HH:mm'),
+                      _ts: ts,
+                      _day: format(d, 'yyyy-MM-dd'),
+                    });
+                  }
+                  timelineMap.get(key)![`temp_${assetId}`] = log.reading;
+                }
+              }
+
+              chartData = Array.from(timelineMap.values()).sort((a, b) => a._ts - b._ts);
+            }
+
+            // Find day boundaries for tick labels and vertical reference lines
+            const dayBoundaryTimestamps: string[] = [];  // fullTimestamp at each day boundary
+            const seenDaysForTick = new Set<string>();
+            const dayTickTimestamps: string[] = [];  // fullTimestamp for tick labels (first reading per day)
+            for (let i = 0; i < chartData.length; i++) {
+              const day = chartData[i]._day;
+              if (!seenDaysForTick.has(day)) {
+                seenDaysForTick.add(day);
+                dayTickTimestamps.push(chartData[i].fullTimestamp);
+                if (i > 0) dayBoundaryTimestamps.push(chartData[i].fullTimestamp);
+              }
+            }
 
             // Get range for reference lines (if single asset selected)
             const getRangeLimits = () => {
@@ -1428,7 +1503,7 @@ export default function TemperatureLogsPage() {
                         setEquipmentTypeFilter(e.target.value);
                         setSelectedAssetFilter('all'); // Reset asset filter when type changes
                       }}
-                      className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                      className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                     >
                       <option value="chilled">Chilled (0-8°C)</option>
                       <option value="frozen">Frozen (&lt;-10°C)</option>
@@ -1442,7 +1517,7 @@ export default function TemperatureLogsPage() {
                     <select
                       value={selectedAssetFilter}
                       onChange={(e) => setSelectedAssetFilter(e.target.value)}
-                      className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                      className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                     >
                       <option value="all">All Equipment in Type</option>
                       {assetsInType.map(asset => (
@@ -1466,17 +1541,22 @@ export default function TemperatureLogsPage() {
                 </div>
 
                 {chartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={400}>
+                  <ResponsiveContainer width="100%" height={400} minWidth={0} minHeight={0}>
                     <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 20 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-white/10" />
 
-                      {/* X Axis - Time */}
+                      {/* X Axis - unique position per reading, label once per day */}
                       <XAxis
-                        dataKey="timestamp"
+                        dataKey="fullTimestamp"
+                        ticks={dayTickTimestamps}
+                        tickFormatter={(value) => {
+                          // Strip the time portion, show only "MMM dd"
+                          return value?.replace(/\s+\d{2}:\d{2}$/, '') || value;
+                        }}
                         tick={{ fontSize: 12, fill: 'currentColor' }}
                         className="text-gray-600 dark:text-white/60"
                         label={{
-                          value: 'Date & Time',
+                          value: 'Date',
                           position: 'insideBottom',
                           offset: -10,
                           style: { fontSize: 14, fontWeight: 600, fill: 'currentColor' }
@@ -1504,8 +1584,11 @@ export default function TemperatureLogsPage() {
                           padding: '12px',
                           color: '#000'
                         }}
-                        formatter={(value: any) => [`${value}°C`, 'Temperature']}
-                        labelFormatter={(label) => `Time: ${label}`}
+                        formatter={(value: any, name: any) => [`${value}°C`, name]}
+                        labelFormatter={(_label, payload) => {
+                          const entry = payload?.[0]?.payload;
+                          return entry?.fullTimestamp ? `Time: ${entry.fullTimestamp}` : `Date: ${_label}`;
+                        }}
                       />
 
                       {/* Legend */}
@@ -1547,41 +1630,48 @@ export default function TemperatureLogsPage() {
                         </>
                       )}
 
+                      {/* Vertical day-boundary lines */}
+                      {dayBoundaryTimestamps.map(ts => (
+                        <ReferenceLine
+                          key={`day-${ts}`}
+                          x={ts}
+                          stroke="#9ca3af"
+                          strokeDasharray="4 4"
+                          strokeWidth={1}
+                          strokeOpacity={0.5}
+                        />
+                      ))}
+
                       {/* Temperature Line - Group by asset if showing multiple */}
                       {selectedAssetFilter === 'all' ? (
-                        // Multiple assets - different color per asset
+                        // Multiple assets - one Line per asset using pivoted dataKey
                         (() => {
-                          const colors = ['#ec4899', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'];
-                          const assetsInView = Array.from(new Set(chartData.map(d => d.assetId)));
+                          const colors = ['#D37E91', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'];
+                          const assetIds = Array.from(assetNameMap.keys());
 
-                          return assetsInView.map((assetId, index) => {
-                            const assetData = chartData.filter(d => d.assetId === assetId);
-                            const assetName = assetData[0]?.assetName || 'Unknown';
-
-                            return (
-                              <Line
-                                key={assetId}
-                                type="monotone"
-                                dataKey="temperature"
-                                data={assetData}
-                                stroke={colors[index % colors.length]}
-                                strokeWidth={2}
-                                name={assetName}
-                                dot={{ r: 4 }}
-                                activeDot={{ r: 6 }}
-                              />
-                            );
-                          });
+                          return assetIds.map((assetId, index) => (
+                            <Line
+                              key={assetId}
+                              type="monotone"
+                              dataKey={`temp_${assetId}`}
+                              stroke={colors[index % colors.length]}
+                              strokeWidth={2}
+                              name={assetNameMap.get(assetId) || 'Unknown'}
+                              dot={{ r: 4 }}
+                              activeDot={{ r: 6 }}
+                              connectNulls={false}
+                            />
+                          ));
                         })()
                       ) : (
                         // Single asset - one line
                         <Line
                           type="monotone"
                           dataKey="temperature"
-                          stroke="#ec4899"
+                          stroke="#D37E91"
                           strokeWidth={3}
                           name="Temperature"
-                          dot={{ r: 5, fill: '#ec4899' }}
+                          dot={{ r: 5, fill: '#D37E91' }}
                           activeDot={{ r: 7 }}
                         />
                       )}
@@ -1605,7 +1695,7 @@ export default function TemperatureLogsPage() {
         <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-[#EC4899] dark:text-[#EC4899]" />
+              <Filter className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Filters</h2>
             </div>
             <button
@@ -1625,7 +1715,7 @@ export default function TemperatureLogsPage() {
                   <select
                     value={filterSite}
                     onChange={(e) => setFilterSite(e.target.value)}
-                    className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                    className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                   >
                     <option value="" className="bg-white dark:bg-[#0B0D13]">All Sites</option>
                     {sites.map((site) => (
@@ -1643,7 +1733,7 @@ export default function TemperatureLogsPage() {
                 <select
                   value={filterAsset}
                   onChange={(e) => setFilterAsset(e.target.value)}
-                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                 >
                   <option value="" className="bg-white dark:bg-[#0B0D13]">All Assets</option>
                   {assets.map((a) => (
@@ -1661,7 +1751,7 @@ export default function TemperatureLogsPage() {
                   <select
                     value={filterAssetType}
                     onChange={(e) => setFilterAssetType(e.target.value)}
-                    className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                    className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                   >
                     <option value="" className="bg-white dark:bg-[#0B0D13]">All Types</option>
                     {assetTypes.map((type) => (
@@ -1679,7 +1769,7 @@ export default function TemperatureLogsPage() {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                 >
                   <option value="" className="bg-white dark:bg-[#0B0D13]">All Statuses</option>
                   <option value="ok" className="bg-white dark:bg-[#0B0D13]">OK</option>
@@ -1695,7 +1785,7 @@ export default function TemperatureLogsPage() {
                   <select
                     value={filterDayPart}
                     onChange={(e) => setFilterDayPart(e.target.value)}
-                    className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                    className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                   >
                     <option value="" className="bg-white dark:bg-[#0B0D13]">All</option>
                     {dayParts.map((dp) => (
@@ -1714,7 +1804,7 @@ export default function TemperatureLogsPage() {
                   type="date"
                   value={dateRangeStart}
                   onChange={(e) => setDateRangeStart(e.target.value)}
-                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                 />
               </div>
 
@@ -1725,7 +1815,7 @@ export default function TemperatureLogsPage() {
                   type="date"
                   value={dateRangeEnd}
                   onChange={(e) => setDateRangeEnd(e.target.value)}
-                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                 />
               </div>
 
@@ -1759,7 +1849,7 @@ export default function TemperatureLogsPage() {
           </div>
           {loading ? (
             <div className="p-12 text-center">
-              <div className="inline-block w-8 h-8 border-4 border-[#EC4899] border-t-transparent rounded-full animate-spin" />
+              <div className="inline-block w-8 h-8 border-4 border-[#D37E91] border-t-transparent rounded-full animate-spin" />
               <p className="mt-4 text-gray-600 dark:text-white/60">Loading temperature logs...</p>
             </div>
           ) : filteredLogs.length === 0 ? (

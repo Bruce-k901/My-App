@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { format, addDays } from 'date-fns';
-import { Calendar, Plus, Loader2, AlertCircle } from 'lucide-react';
+import { Calendar, Plus, Loader2, AlertCircle } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import Label from '@/components/ui/Label';

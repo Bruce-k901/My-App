@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, Trash2, Save, X, Edit, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Save, X, Edit, Loader2 } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import Select from '@/components/ui/Select';
 import { toast } from 'sonner';

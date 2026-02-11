@@ -13,7 +13,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { X, FileText, Calendar, AlertCircle, Loader2, CheckCircle, Clock, ExternalLink } from 'lucide-react'
+import { X, FileText, Calendar, AlertCircle, Loader2, CheckCircle, Clock, ExternalLink } from '@/components/ui/icons'
 import type { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 
 interface SOPReviewModalProps {

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { WidgetProps, MODULE_COLORS } from '@/types/dashboard';
 import { WidgetCard, WidgetEmptyState, WidgetLoading } from '../WidgetWrapper';
-import { UserMinus, Calendar } from 'lucide-react';
+import { UserMinus, Calendar } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -36,11 +36,11 @@ export default function AbsenceAlertsWidget({ companyId, siteId }: WidgetProps) 
           .from('leave_requests')
           .select(`
             id,
-            leave_type,
             start_date,
             end_date,
             status,
-            profile:profiles(id, full_name, first_name, last_name)
+            leave_type:leave_types!leave_requests_leave_type_id_fkey(name),
+            profile:profiles!leave_requests_profile_id_fkey(id, full_name)
           `)
           .eq('company_id', companyId)
           .eq('status', 'approved')
@@ -66,15 +66,12 @@ export default function AbsenceAlertsWidget({ companyId, siteId }: WidgetProps) 
 
         const formattedAbsences: AbsenceAlert[] = (data || []).map((leave: any) => {
           const profile = leave.profile || {};
-          const staffName = profile.full_name ||
-            (profile.first_name && profile.last_name
-              ? `${profile.first_name} ${profile.last_name}`
-              : 'Unknown');
+          const staffName = profile.full_name || 'Unknown';
 
           return {
             id: leave.id,
             staff_name: staffName,
-            leave_type: leave.leave_type || 'Leave',
+            leave_type: leave.leave_type?.name || 'Leave',
             start_date: leave.start_date,
             end_date: leave.end_date,
             status: leave.status,

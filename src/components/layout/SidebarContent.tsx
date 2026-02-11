@@ -20,14 +20,16 @@ import {
   Settings,
   CreditCard,
   HelpCircle,
-} from "lucide-react";
+} from '@/components/ui/icons';
 import { NavSection } from "./NavSection";
 import { NavItem } from "./NavItem";
 import { useUnreadMessageCount } from "@/hooks/useUnreadMessageCount";
+import { usePanelStore } from "@/lib/stores/panel-store";
 
 export function SidebarContent() {
   const pathname = usePathname();
   const { unreadCount } = useUnreadMessageCount();
+  const { setMessagingOpen } = usePanelStore();
 
   return (
     <>
@@ -47,21 +49,21 @@ export function SidebarContent() {
           icon={<CheckSquare />}
           label="Checkly"
           href="/dashboard/tasks"
-          color="#EC4899"
+          color="#F1E194"
           active={pathname?.startsWith("/dashboard/tasks") || pathname?.startsWith("/dashboard/todays_tasks")}
         />
         <NavItem
           icon={<Package />}
           label="Stockly"
           href="/dashboard/stockly"
-          color="#10B981"
+          color="#789A99"
           active={pathname?.startsWith("/dashboard/stockly")}
         />
         <NavItem
           icon={<Factory />}
           label="Planly"
           href="/dashboard/planly"
-          color="#14B8A6"
+          color="#ACC8A2"
           active={pathname?.startsWith("/dashboard/planly")}
         />
         <NavItem
@@ -80,7 +82,7 @@ export function SidebarContent() {
           icon={<Wrench />}
           label="Assetly"
           href="/dashboard/assets"
-          color="#0284C7"
+          color="#F3E7D9"
           active={pathname?.startsWith("/dashboard/assets")}
         />
       </NavSection>
@@ -91,7 +93,7 @@ export function SidebarContent() {
           icon={<Users />}
           label="Teamly"
           href="/dashboard/people"
-          color="#2563EB"
+          color="#D37E91"
           active={pathname?.startsWith("/dashboard/people")}
         />
       </NavSection>
@@ -132,6 +134,7 @@ export function SidebarContent() {
           href="/dashboard/messaging"
           badge={unreadCount > 0 ? unreadCount : undefined}
           active={pathname?.startsWith("/dashboard/messaging")}
+          onClick={() => setMessagingOpen(true)}
         />
         <NavItem
           icon={<CheckCircle />}

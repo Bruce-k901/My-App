@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import Input from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { StockCountItem, LibraryType } from '@/lib/types/stockly';
-import { CheckCircle, Loader2, Save, ArrowRight, ArrowUp } from 'lucide-react';
+import { CheckCircle, Loader2, Save, ArrowRight, ArrowUp } from '@/components/ui/icons';
 import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
 

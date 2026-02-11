@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import { X } from 'lucide-react';
+import { X } from '@/components/ui/icons';
 import { useToast } from '@/components/ui/ToastProvider';
 
 interface Customer {

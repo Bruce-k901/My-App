@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { X, Edit2, Trash2, ChevronDown, ChevronUp, ArrowUpRight } from 'lucide-react';
+import { X, Edit2, Trash2, ChevronDown, ChevronUp, ArrowUpRight } from '@/components/ui/icons';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -232,10 +232,11 @@ export function TaskFromTemplateModal({
       // Reset site selection state when modal opens
       setTaskSiteId('');
       setAvailableSites([]);
-      setLoadingSites(false);
-      
+      // Keep loadingSites true so UI shows "Loading..." not "No sites" while sites load
+      setLoadingSites(true);
+
       console.log('🔄 Modal opened, resetting site state. existingTask:', !!existingTask, 'existingSiteChecklist:', !!existingSiteChecklist);
-      
+
       if (existingTask) {
         // For editing, we'll initialize after template loads
         fetchTemplate();
@@ -249,7 +250,9 @@ export function TaskFromTemplateModal({
         loadAssets();
       }
     }
-  }, [isOpen, templateId, companyId, selectedSiteId, siteId, profile]);
+    // Note: profile is NOT in deps - profile changes should not reset the modal state.
+    // The site-loading useEffect below handles profile dependency separately.
+  }, [isOpen, templateId, companyId, selectedSiteId, siteId]);
   
   // Reload assets when selectedSiteId changes (from header site selector)
   useEffect(() => {
@@ -1890,16 +1893,113 @@ export function TaskFromTemplateModal({
             }
           }
 
-          // Redirect based on source page - go back to where user came from
-          // If from compliance page, go back to compliance. If from templates, go back to templates.
-          if (sourcePage === 'compliance') {
-            router.push('/dashboard/tasks/compliance');
-          } else if (sourcePage === 'templates') {
-            router.push('/dashboard/tasks/templates');
-          } else {
-            // Fallback: redirect to My Tasks configurations page (where site_checklists are shown)
-            router.push('/dashboard/my_tasks');
+          // ====================================================================
+          // CRITICAL: Activate template so the daily cron picks it up
+          // Templates are created with is_active=false by the builder.
+          // Once a task config (site_checklist) exists, the template should be active.
+          // ====================================================================
+          if (templateId) {
+            try {
+              const { error: activateError } = await supabase
+                .from('task_templates')
+                .update({ is_active: true })
+                .eq('id', templateId);
+
+              if (activateError) {
+                console.error('Error activating template:', activateError);
+              } else {
+                console.log('✅ Template activated (is_active=true) for cron pickup');
+              }
+            } catch (activateErr) {
+              console.error('Error activating template:', activateErr);
+            }
           }
+
+          // ====================================================================
+          // CRITICAL: Create seed checklist_task(s) for today so the task
+          // appears immediately in Today's Tasks AND so the cron can
+          // pattern-match from this seed to generate future daily tasks.
+          // ====================================================================
+          try {
+            const today = new Date().toISOString().split('T')[0];
+
+            // Build the task_data payload (same structure as existing task updates)
+            const seedTaskData: Record<string, any> = {};
+
+            if (formData.checklistItems && formData.checklistItems.length > 0) {
+              const validItems = formData.checklistItems.filter((item: string) => item && item.trim().length > 0);
+              if (validItems.length > 0) {
+                seedTaskData.checklistItems = validItems.map((item: string) => ({
+                  text: item.trim(),
+                  completed: false
+                }));
+              }
+            }
+
+            if (formData.yesNoChecklistItems && formData.yesNoChecklistItems.length > 0) {
+              const validItems = formData.yesNoChecklistItems.filter((item: any) => item && item.text && item.text.trim().length > 0);
+              if (validItems.length > 0) {
+                seedTaskData.yesNoChecklistItems = validItems;
+              }
+            }
+
+            if (formData.temperatures && formData.temperatures.length > 0) {
+              seedTaskData.temperatures = formData.temperatures;
+            }
+
+            if (formData.selectedAssets && formData.selectedAssets.length > 0) {
+              seedTaskData.selectedAssets = formData.selectedAssets;
+            }
+
+            // Determine daypart/time pairs to create tasks for
+            const daypartPairs = formData.dayparts && formData.dayparts.length > 0
+              ? formData.dayparts.filter((dp: { daypart: string; due_time: string }) => dp.daypart)
+              : [{ daypart: formData.daypart || 'anytime', due_time: formData.due_time || '09:00' }];
+
+            for (const dp of daypartPairs) {
+              // Check if a seed task already exists for today (avoid duplicates)
+              const { data: existingSeed } = await supabase
+                .from('checklist_tasks')
+                .select('id')
+                .eq('template_id', templateId)
+                .eq('site_id', effectiveSiteId)
+                .eq('due_date', today)
+                .eq('daypart', dp.daypart)
+                .maybeSingle();
+
+              if (!existingSeed) {
+                const { error: seedError } = await supabase
+                  .from('checklist_tasks')
+                  .insert({
+                    template_id: templateId,
+                    company_id: companyId,
+                    site_id: effectiveSiteId,
+                    custom_name: formData.custom_name.trim() || template?.name || null,
+                    due_date: today,
+                    due_time: dp.due_time || '09:00',
+                    daypart: dp.daypart,
+                    priority: formData.priority || 'medium',
+                    status: 'pending',
+                    task_data: Object.keys(seedTaskData).length > 0 ? seedTaskData : {},
+                  });
+
+                if (seedError) {
+                  console.error('Error creating seed checklist_task:', seedError);
+                } else {
+                  console.log(`✅ Seed checklist_task created for daypart: ${dp.daypart}`);
+                }
+              } else {
+                console.log(`⏭️ Seed task already exists for daypart: ${dp.daypart}`);
+              }
+            }
+          } catch (seedErr) {
+            console.error('Error creating seed tasks:', seedErr);
+            // Don't fail the whole operation - the site_checklist was created
+          }
+
+          // Close the modal and notify parent
+          if (onSave) onSave();
+          onClose();
         }
       }
     } catch (error: any) {
@@ -1930,7 +2030,7 @@ export function TaskFromTemplateModal({
           <p className="text-gray-900 dark:text-white mb-4">Template not found</p>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200"
+            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded transition-all duration-200"
           >
             Close
           </button>
@@ -1999,7 +2099,7 @@ export function TaskFromTemplateModal({
                   onChange={(e) => setFormData({ ...formData, custom_name: e.target.value })}
                   placeholder={existingTask ? (existingTask.custom_name || template?.name || 'Task name') : 'Enter a unique name for this task (e.g., "Front counter setup checklist")'}
                   required={!existingTask}
-                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                 />
                 {!existingTask && (
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -2044,7 +2144,7 @@ export function TaskFromTemplateModal({
                           value={taskSiteId}
                           onChange={(e) => setTaskSiteId(e.target.value)}
                           required
-                          className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                          className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                         >
                           <option value="">Select a site</option>
                           {availableSites.map(site => (
@@ -2088,32 +2188,32 @@ export function TaskFromTemplateModal({
                       onChange={(e) => setFormData({ ...formData, custom_instructions: e.target.value })}
                       placeholder={template?.instructions || 'Instructions will come from template...'}
                       rows={8}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 resize-y"
+                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91] resize-y"
                     />
                   </div>
                 )}
               </div>
 
               {template?.slug === 'training_compliance_management' && (
-                <div className="border border-pink-500/30 bg-pink-500/5 rounded-xl p-4 space-y-3 shadow-[0_0_18px_rgba(236,72,153,0.15)]">
+                <div className="border border-[#D37E91]/30 bg-[#D37E91]/10 rounded-xl p-4 space-y-3 shadow-[0_0_18px_rgba(211,126,145,0.15)]">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="text-sm text-pink-50/90">
+                    <div className="text-sm text-white/90">
                       <p className="font-semibold text-white">Training Matrix Shortcut</p>
-                      <p className="text-xs text-pink-100/80 mt-1">
+                      <p className="text-xs text-white/70 mt-1">
                         {matrixField?.help_text || 'Open the live Training Matrix in a new tab, review compliance status, then return to complete this task.'}
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={handleOpenMatrix}
-                      className="inline-flex items-center gap-2 px-4 py-2 border border-pink-500 text-pink-300 font-medium rounded-lg transition-all duration-150 hover:bg-pink-500/15 hover:text-white shadow-[0_0_12px_rgba(236,72,153,0.35)]"
+                      className="inline-flex items-center gap-2 px-4 py-2 border border-[#D37E91] text-[#D37E91] font-medium rounded-lg transition-all duration-150 hover:bg-[#D37E91]/20 hover:text-white shadow-[0_0_12px_rgba(211,126,145,0.35)]"
                     >
                       <span>Open Matrix</span>
                       <ArrowUpRight className="w-4 h-4" />
                     </button>
                   </div>
                   {matrixDisplayUrl && (
-                    <p className="text-[10px] text-pink-100/60 break-all">
+                    <p className="text-[10px] text-white/50 break-all">
                       {matrixDisplayUrl}
                     </p>
                   )}
@@ -2129,7 +2229,7 @@ export function TaskFromTemplateModal({
                     value={formData.due_date}
                     onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
                     required
-                    className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                    className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                   />
                 </div>
 
@@ -2152,7 +2252,7 @@ export function TaskFromTemplateModal({
                             e.target.value = ''; // Reset dropdown
                           }
                         }}
-                        className="px-3 py-1.5 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                        className="px-3 py-1.5 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                       >
                         <option value="">+ Add Daypart</option>
                         {availableDayparts
@@ -2179,7 +2279,7 @@ export function TaskFromTemplateModal({
                               key={daypart}
                               className={`border rounded-lg p-3 transition-all ${
                                 isSelected
-                                  ? 'border-pink-500/50 bg-pink-500/5'
+                                  ? 'border-[#D37E91]/50 bg-[#D37E91]/10'
                                   : 'border-white/10 bg-white/[0.02] hover:border-white/20'
                               }`}
                             >
@@ -2205,7 +2305,7 @@ export function TaskFromTemplateModal({
                                       });
                                     }
                                   }}
-                                  className="w-5 h-5 accent-pink-500 cursor-pointer"
+                                  className="w-5 h-5 accent-[#D37E91] cursor-pointer"
                                 />
                                 <label className="text-sm font-medium text-gray-900 dark:text-white capitalize flex-1 cursor-pointer" onClick={() => {
                                   if (!isSelected) {
@@ -2269,7 +2369,7 @@ export function TaskFromTemplateModal({
                 <select
                   value={formData.priority}
                   onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
-                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -2320,7 +2420,7 @@ export function TaskFromTemplateModal({
                   <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                     Fire Alarm Call Points
                     {callPoints.length > 0 && (
-                      <span className="ml-2 text-sm font-normal text-pink-600 dark:text-pink-400">
+                      <span className="ml-2 text-sm font-normal text-[#D37E91] dark:text-[#D37E91]">
                         ({callPoints.length} configured)
                       </span>
                     )}
@@ -2390,7 +2490,7 @@ export function TaskFromTemplateModal({
                             value={newCallPoint.name}
                             onChange={(e) => setNewCallPoint({ ...newCallPoint, name: e.target.value })}
                             placeholder="e.g., Call Point 1 - Front Entrance"
-                            className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                            className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                           />
                         </div>
                         <div>
@@ -2402,7 +2502,7 @@ export function TaskFromTemplateModal({
                             value={newCallPoint.location}
                             onChange={(e) => setNewCallPoint({ ...newCallPoint, location: e.target.value })}
                             placeholder="e.g., Front Entrance, Kitchen, Bar Area"
-                            className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                            className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                           />
                         </div>
                         <button
@@ -2446,7 +2546,7 @@ export function TaskFromTemplateModal({
                             }
                           }}
                           disabled={!newCallPoint.name.trim()}
-                          className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
+                          className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
                         >
                           Add Call Point
                         </button>
@@ -2527,7 +2627,7 @@ export function TaskFromTemplateModal({
                       className="hidden"
                       id="sop-upload"
                     />
-                    <span className="inline-block px-4 py-2 bg-pink-50 dark:bg-transparent border border-pink-300 dark:border-pink-500 text-pink-600 dark:text-pink-400 hover:bg-pink-100 dark:hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 cursor-pointer font-medium">
+                    <span className="inline-block px-4 py-2 bg-[#D37E91]/10 dark:bg-transparent border border-[#D37E91] dark:border-[#D37E91] text-[#D37E91] dark:text-[#D37E91] hover:bg-[#D37E91]/10 dark:hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg transition-all duration-200 cursor-pointer font-medium">
                       Upload SOP Document
                     </span>
                   </label>
@@ -2540,7 +2640,7 @@ export function TaskFromTemplateModal({
                             <span className="text-gray-500 dark:text-gray-400 text-xs">({formatFileSize(sop.fileSize)})</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <a href={sop.url} target="_blank" rel="noopener noreferrer" className="text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300 text-sm font-medium">
+                            <a href={sop.url} target="_blank" rel="noopener noreferrer" className="text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] text-sm font-medium">
                               View
                             </a>
                             <button
@@ -2571,7 +2671,7 @@ export function TaskFromTemplateModal({
                       className="hidden"
                       id="ra-upload"
                     />
-                    <span className="inline-block px-4 py-2 bg-white dark:bg-transparent border border-pink-300 dark:border-[#EC4899] text-pink-600 dark:text-[#EC4899] hover:bg-pink-50 dark:hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 cursor-pointer font-medium">
+                    <span className="inline-block px-4 py-2 bg-white dark:bg-transparent border border-[#D37E91] dark:border-[#D37E91] text-[#D37E91] dark:text-[#D37E91] hover:bg-[#D37E91]/10 dark:hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded transition-all duration-200 cursor-pointer font-medium">
                       Upload Risk Assessment
                     </span>
                   </label>
@@ -2584,7 +2684,7 @@ export function TaskFromTemplateModal({
                             <span className="text-gray-500 dark:text-gray-400 text-xs">({formatFileSize(ra.fileSize)})</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <a href={ra.url} target="_blank" rel="noopener noreferrer" className="text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300 text-sm font-medium">
+                            <a href={ra.url} target="_blank" rel="noopener noreferrer" className="text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] text-sm font-medium">
                               View
                             </a>
                             <button
@@ -2651,7 +2751,7 @@ export function TaskFromTemplateModal({
                         toast.error('Company ID not available');
                       }
                     }}
-                    className="px-3 py-1 text-xs text-pink-400 hover:text-pink-300 border border-pink-500/30 rounded hover:bg-pink-500/10 transition-colors"
+                    className="px-3 py-1 text-xs text-[#D37E91] hover:text-[#D37E91] border border-[#D37E91]/30 rounded hover:bg-[#D37E91]/15 transition-colors"
                     title="Refresh library data from database"
                   >
                     Refresh
@@ -2663,7 +2763,7 @@ export function TaskFromTemplateModal({
                     setSelectedLibraryType(e.target.value);
                     setTempLibrarySelection([]); // Reset temp selection when changing library
                   }}
-                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                 >
                   <option value="">-- Select a library --</option>
                   {libraryData.ppe.length > 0 && <option value="ppe">PPE Library</option>}
@@ -2722,7 +2822,7 @@ export function TaskFromTemplateModal({
                                         setTempLibrarySelection(tempLibrarySelection.filter(id => id !== itemId));
                                       }
                                     }}
-                                    className="w-4 h-4 accent-pink-500 cursor-pointer"
+                                    className="w-4 h-4 accent-[#D37E91] cursor-pointer"
                                   />
                                   <span className="text-white text-sm flex-1">{getItemName(item)}</span>
                                 </label>
@@ -2757,7 +2857,7 @@ export function TaskFromTemplateModal({
                               toast.success(`Added ${tempLibrarySelection.length} item(s) from ${selectedLibraryType.replace('_', ' ')} library`);
                             }}
                             disabled={tempLibrarySelection.length === 0}
-                            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
+                            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
                           >
                             Add to Task
                           </button>
@@ -2798,7 +2898,7 @@ export function TaskFromTemplateModal({
                               setSelectedLibraryType('ppe');
                               setTempLibrarySelection(formData.selectedLibraries.ppe); // Pre-populate with current selections
                             }}
-                            className="text-pink-400 hover:text-pink-300 p-1 rounded hover:bg-white/5"
+                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
                             title="Edit PPE Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -2844,7 +2944,7 @@ export function TaskFromTemplateModal({
                               setSelectedLibraryType('chemicals');
                               setTempLibrarySelection(formData.selectedLibraries.chemicals); // Pre-populate with current selections
                             }}
-                            className="text-pink-400 hover:text-pink-300 p-1 rounded hover:bg-white/5"
+                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
                             title="Edit Chemicals Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -2890,7 +2990,7 @@ export function TaskFromTemplateModal({
                               setSelectedLibraryType('equipment');
                               setTempLibrarySelection(formData.selectedLibraries.equipment); // Pre-populate with current selections
                             }}
-                            className="text-pink-400 hover:text-pink-300 p-1 rounded hover:bg-white/5"
+                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
                             title="Edit Equipment Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -2935,7 +3035,7 @@ export function TaskFromTemplateModal({
                               setSelectedLibraryType('ingredients');
                               setTempLibrarySelection(formData.selectedLibraries.ingredients); // Pre-populate with current selections
                             }}
-                            className="text-pink-400 hover:text-pink-300 p-1 rounded hover:bg-white/5"
+                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
                             title="Edit Ingredients Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -2980,7 +3080,7 @@ export function TaskFromTemplateModal({
                               setSelectedLibraryType('drinks');
                               setTempLibrarySelection(formData.selectedLibraries.drinks); // Pre-populate with current selections
                             }}
-                            className="text-pink-400 hover:text-pink-300 p-1 rounded hover:bg-white/5"
+                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
                             title="Edit Drinks Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -3025,7 +3125,7 @@ export function TaskFromTemplateModal({
                               setSelectedLibraryType('disposables');
                               setTempLibrarySelection(formData.selectedLibraries.disposables); // Pre-populate with current selections
                             }}
-                            className="text-pink-400 hover:text-pink-300 p-1 rounded hover:bg-white/5"
+                            className="text-[#D37E91] hover:text-[#D37E91] p-1 rounded hover:bg-white/5"
                             title="Edit Disposables Library selection"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -3074,7 +3174,7 @@ export function TaskFromTemplateModal({
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 placeholder="Add any additional notes for this task..."
                 rows={3}
-                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
               />
             </div>
           </div>
@@ -3091,7 +3191,7 @@ export function TaskFromTemplateModal({
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+              className="px-5 py-2 bg-[#D37E91] hover:bg-[#D37E91] text-white rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
             >
               {saving 
                 ? (existingTask || existingSiteChecklist ? 'Saving...' : 'Creating...') 

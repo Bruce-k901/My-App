@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Calendar, Clock, MapPin, Video, Phone, Building2, Loader2 } from 'lucide-react'
+import { X, Calendar, Clock, MapPin, Video, Phone, Building2, Loader2 } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
 import TimePicker from '@/components/ui/TimePicker'
@@ -140,7 +140,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
                 onClick={() => setInterviewType('in-person')}
                 className={`p-4 rounded-lg border-2 transition-all ${
                   interviewType === 'in-person'
-                    ? 'border-[#EC4899] bg-[#EC4899]/10'
+                    ? 'border-[#D37E91] bg-[#D37E91]/10'
                     : 'border-white/10 bg-white/5 hover:bg-white/10'
                 }`}
               >
@@ -151,7 +151,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
                 onClick={() => setInterviewType('video')}
                 className={`p-4 rounded-lg border-2 transition-all ${
                   interviewType === 'video'
-                    ? 'border-[#EC4899] bg-[#EC4899]/10'
+                    ? 'border-[#D37E91] bg-[#D37E91]/10'
                     : 'border-white/10 bg-white/5 hover:bg-white/10'
                 }`}
               >
@@ -162,7 +162,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
                 onClick={() => setInterviewType('phone')}
                 className={`p-4 rounded-lg border-2 transition-all ${
                   interviewType === 'phone'
-                    ? 'border-[#EC4899] bg-[#EC4899]/10'
+                    ? 'border-[#D37E91] bg-[#D37E91]/10'
                     : 'border-white/10 bg-white/5 hover:bg-white/10'
                 }`}
               >
@@ -184,7 +184,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
               />
             </div>
             <div>
@@ -211,7 +211,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder={interviewType === 'video' ? 'Zoom/Teams link' : interviewType === 'phone' ? 'We will call you' : 'Office address'}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899]"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
             />
           </div>
 
@@ -225,7 +225,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
               onChange={(e) => setAdditionalInfo(e.target.value)}
               placeholder="e.g., What to bring, who will interview you, parking info..."
               rows={3}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899] resize-none"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] resize-none"
             />
           </div>
 
@@ -236,7 +236,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
               id="send-email"
               checked={sendEmail}
               onChange={(e) => setSendEmail(e.target.checked)}
-              className="w-4 h-4 rounded accent-[#EC4899]"
+              className="w-4 h-4 rounded accent-[#D37E91]"
             />
             <label htmlFor="send-email" className="text-sm text-white/70 cursor-pointer">
               Send email invitation to candidate
@@ -256,7 +256,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
           <button
             onClick={handleSubmit}
             disabled={saving}
-            className="px-4 py-2 rounded-lg text-sm bg-[#EC4899] hover:bg-[#EC4899]/90 text-white font-medium flex items-center gap-2 disabled:opacity-50"
+            className="px-4 py-2 rounded-lg text-sm bg-[#D37E91] hover:bg-[#D37E91]/90 text-white font-medium flex items-center gap-2 disabled:opacity-50"
           >
             {saving && <Loader2 className="w-4 h-4 animate-spin" />}
             Schedule Interview

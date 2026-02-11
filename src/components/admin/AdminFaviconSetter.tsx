@@ -78,11 +78,11 @@ export function AdminFaviconSetter() {
       // Update theme color
       let themeColor = document.querySelector('meta[name="theme-color"]');
       if (themeColor) {
-        themeColor.setAttribute('content', '#EC4899');
+        themeColor.setAttribute('content', '#D37E91');
       } else {
         themeColor = document.createElement('meta');
         themeColor.setAttribute('name', 'theme-color');
-        themeColor.setAttribute('content', '#EC4899');
+        themeColor.setAttribute('content', '#D37E91');
         document.head.appendChild(themeColor);
       }
 

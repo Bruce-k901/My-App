@@ -1,6 +1,6 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { useState } from "react";
-import { Plus, X } from "lucide-react";
+import { Plus, X } from '@/components/ui/icons';
 
 interface PPEListComponentProps {
   node: {

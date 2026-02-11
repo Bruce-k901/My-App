@@ -21,16 +21,17 @@ module.exports = {
           800: '#075985',
           900: '#0c4a6e',
         },
-        // App theme aliases for marketing pages (keeping for backward compatibility)
-        "checkly-blue": "#2563eb",
-        "checkly-magenta": "#ec4899",
-        "checkly-dark": "#0b0d13",
-        "checkly-light": "#e5e7eb",
-        "checkly-gray": "#64748b",
+        // Brand accent colours
+        "brand-primary": "#544349",   // Cocoa Dust
+        "brand-cta": "#D37E91",       // Blush
+        "opsly-dark": "#0b0d13",
+        "opsly-light": "#e5e7eb",
+        "opsly-gray": "#64748b",
+        // Legacy aliases (mapped to new brand)
         magenta: {
-          400: "#f472b6",
-          500: "#ec4899",
-          600: "#db2777",
+          400: "#D37E91",
+          500: "#D37E91",
+          600: "#b0607a",
         },
         blue: {
           400: "#60a5fa",
@@ -40,28 +41,53 @@ module.exports = {
           900: "#171717",
           950: "#0b0d13",
         },
-        // Module colors
-        checkly: '#ec4899',    // Rose (muted)
-        stockly: '#10b981',     // Emerald
-        teamly: '#3b82f6',      // Blue
-        planly: '#8b5cf6',      // Purple
-        assetly: '#f59e0b',     // Amber
-        msgly: '#06b6d4',       // Cyan
+        // Active module colours (set by .module-* class on layout wrapper)
+        'module-fg': 'rgb(var(--module-fg) / <alpha-value>)',
+        'module-bg-tint': 'rgb(var(--module-bg-tint) / <alpha-value>)',
+        // Module colors (driven by CSS variables in globals.css)
+        checkly: 'rgb(var(--module-checkly) / <alpha-value>)',
+        stockly: 'rgb(var(--module-stockly) / <alpha-value>)',
+        teamly: 'rgb(var(--module-teamly) / <alpha-value>)',
+        planly: 'rgb(var(--module-planly) / <alpha-value>)',
+        assetly: 'rgb(var(--module-assetly) / <alpha-value>)',
+        msgly: 'rgb(var(--module-msgly) / <alpha-value>)',
+        forecastly: 'rgb(var(--module-forecastly) / <alpha-value>)',
+        // Module dark variants (for text on light backgrounds)
+        'checkly-dark': 'rgb(var(--module-checkly-dark) / <alpha-value>)',
+        'stockly-dark': 'rgb(var(--module-stockly-dark) / <alpha-value>)',
+        'teamly-dark': 'rgb(var(--module-teamly-dark) / <alpha-value>)',
+        'planly-dark': 'rgb(var(--module-planly-dark) / <alpha-value>)',
+        'assetly-dark': 'rgb(var(--module-assetly-dark) / <alpha-value>)',
+        'msgly-dark': 'rgb(var(--module-msgly-dark) / <alpha-value>)',
+        // Sidebar tints (dark theme)
+        'sidebar-checkly': 'rgb(var(--sidebar-checkly) / <alpha-value>)',
+        'sidebar-stockly': 'rgb(var(--sidebar-stockly) / <alpha-value>)',
+        'sidebar-teamly': 'rgb(var(--sidebar-teamly) / <alpha-value>)',
+        'sidebar-planly': 'rgb(var(--sidebar-planly) / <alpha-value>)',
+        'sidebar-assetly': 'rgb(var(--sidebar-assetly) / <alpha-value>)',
+        'sidebar-msgly': 'rgb(var(--sidebar-msgly) / <alpha-value>)',
+        // Sidebar tints (light theme)
+        'sidebar-checkly-light': 'rgb(var(--sidebar-checkly-light) / <alpha-value>)',
+        'sidebar-stockly-light': 'rgb(var(--sidebar-stockly-light) / <alpha-value>)',
+        'sidebar-teamly-light': 'rgb(var(--sidebar-teamly-light) / <alpha-value>)',
+        'sidebar-planly-light': 'rgb(var(--sidebar-planly-light) / <alpha-value>)',
+        'sidebar-assetly-light': 'rgb(var(--sidebar-assetly-light) / <alpha-value>)',
+        'sidebar-msgly-light': 'rgb(var(--sidebar-msgly-light) / <alpha-value>)',
         // Mobile-specific colors
-        'mobile-primary': '#FF6B9D',
+        'mobile-primary': '#D37E91',
         'mobile-bg': '#0D0D0F',
         'mobile-bg-secondary': '#1A1A1F',
         'mobile-bg-elevated': '#252530',
         // Consistent card styling tokens
         background: "#111827",
         border: "#1F2937",
-        accent: "#EC4899",
+        accent: "#D37E91",
       },
       boxShadow: {
-        glow: "0 0 16px rgba(236,72,153,0.6)",
-        // Consistent magenta glow shadows
-        magenta: "0 0 0 1px rgba(236,72,153,0.55), 0 0 12px rgba(236,72,153,0.35)",
-        magentaSm: "0 0 8px #ec4899",
+        glow: "0 0 16px rgba(211,126,145,0.6)",
+        // Brand glow shadows
+        magenta: "0 0 0 1px rgba(211,126,145,0.55), 0 0 12px rgba(211,126,145,0.35)",
+        magentaSm: "0 0 8px #D37E91",
       },
       keyframes: {
         dropdownFade: {

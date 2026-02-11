@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Download } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import Link from 'next/link';
 import { format, subMonths, addMonths, startOfMonth } from 'date-fns';
@@ -36,6 +36,7 @@ export function MonthlySpendCard() {
   const [selectedMonth, setSelectedMonth] = useState(startOfMonth(new Date()));
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<MonthlySpendData | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadMonthlyData();
@@ -44,17 +45,36 @@ export function MonthlySpendCard() {
   async function loadMonthlyData() {
     try {
       setLoading(true);
+      setError(null);
       const monthStr = format(selectedMonth, 'yyyy-MM');
-      const response = await fetch(`/api/customer/reports/monthly?month=${monthStr}`);
-      
+      const params = new URLSearchParams({ month: monthStr });
+
+      // Support admin preview mode
+      const previewCustomerId = typeof window !== 'undefined'
+        ? sessionStorage.getItem('admin_preview_customer_id')
+        : null;
+      if (previewCustomerId) {
+        params.set('customer_id', previewCustomerId);
+      }
+
+      const response = await fetch(`/api/customer/reports/monthly?${params}`);
+
       if (!response.ok) {
-        throw new Error('Failed to load monthly data');
+        const body = await response.json().catch(() => ({}));
+        const msg = body?.error || `Request failed (${response.status})`;
+        if (response.status === 404) {
+          // Customer record not linked yet - show empty state rather than error
+          setData(null);
+          return;
+        }
+        throw new Error(msg);
       }
 
       const result = await response.json();
       setData(result.data);
-    } catch (error) {
-      console.error('Error loading monthly data:', error);
+    } catch (err: any) {
+      console.error('Error loading monthly data:', err);
+      setError(err.message || 'Failed to load monthly data');
     } finally {
       setLoading(false);
     }
@@ -88,10 +108,38 @@ export function MonthlySpendCard() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+        <p className="text-red-400 text-sm">{error}</p>
+      </div>
+    );
+  }
+
   if (!data || !data.current_month) {
     return (
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <p className="text-white/60">No data available for this month</p>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setSelectedMonth(subMonths(selectedMonth, 1))}
+              className="p-1 hover:bg-white/10 rounded transition-colors"
+            >
+              <ChevronLeft className="w-5 h-5 text-white/60" />
+            </button>
+            <h2 className="text-xl font-semibold text-white">
+              {format(selectedMonth, 'MMMM yyyy')}
+            </h2>
+            <button
+              onClick={() => setSelectedMonth(addMonths(selectedMonth, 1))}
+              disabled={format(selectedMonth, 'yyyy-MM') >= format(new Date(), 'yyyy-MM')}
+              className="p-1 hover:bg-white/10 rounded transition-colors disabled:opacity-40"
+            >
+              <ChevronRight className="w-5 h-5 text-white/60" />
+            </button>
+          </div>
+        </div>
+        <p className="text-white/60">No orders for this month</p>
       </div>
     );
   }
@@ -179,7 +227,7 @@ export function MonthlySpendCard() {
                   </div>
                   <div className="flex-1 bg-white/5 rounded-full h-2 overflow-hidden">
                     <div
-                      className="h-full bg-[#EC4899] rounded-full transition-all"
+                      className="h-full bg-[#D37E91] rounded-full transition-all"
                       style={{ width: `${widthPercent}%` }}
                     />
                   </div>
@@ -193,7 +241,7 @@ export function MonthlySpendCard() {
           {data.top_products.length > 3 && (
             <Link
               href={`/customer/reports/monthly?month=${format(selectedMonth, 'yyyy-MM')}`}
-              className="text-sm text-[#EC4899] hover:text-[#EC4899]/80 mt-3 inline-block"
+              className="text-sm text-[#D37E91] hover:text-[#D37E91]/80 mt-3 inline-block"
             >
               View All Products →
             </Link>

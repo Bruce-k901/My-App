@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAppContext } from '@/context/AppContext'
 import { supabase } from '@/lib/supabase'
-import { Loader2, Users, Star, Mail, Phone, FileText, MapPin, Calendar, ExternalLink } from 'lucide-react'
+import { Loader2, Users, Star, Mail, Phone, FileText, MapPin, Calendar, ExternalLink } from '@/components/ui/icons'
 import { toast } from 'sonner'
 
 type Candidate = {
@@ -230,7 +230,7 @@ export default function CandidatesPage() {
             onClick={() => setFilterStatus('all')}
             className={`px-3 py-2 rounded-lg text-sm transition-all whitespace-nowrap ${
               filterStatus === 'all'
-                ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-[#EC4899]/30'
+                ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-[#D37E91]/30'
                 : 'bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white/60 border border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
             }`}
           >
@@ -240,7 +240,7 @@ export default function CandidatesPage() {
             onClick={() => setFilterStatus('active')}
             className={`px-3 py-2 rounded-lg text-sm transition-all whitespace-nowrap ${
               filterStatus === 'active'
-                ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-[#EC4899]/30'
+                ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-[#D37E91]/30'
                 : 'bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white/60 border border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
             }`}
           >
@@ -250,7 +250,7 @@ export default function CandidatesPage() {
             onClick={() => setFilterStatus('hired')}
             className={`px-3 py-2 rounded-lg text-sm transition-all whitespace-nowrap ${
               filterStatus === 'hired'
-                ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-[#EC4899]/30'
+                ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-[#D37E91]/30'
                 : 'bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white/60 border border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
             }`}
           >
@@ -295,7 +295,7 @@ export default function CandidatesPage() {
                   {/* Job Applied For */}
                   {candidate.latest_application && (
                     <div className="mb-3">
-                      <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-500/10 border border-[#EC4899]/30">
+                      <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-500/10 border border-[#D37E91]/30">
                         <FileText className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                         <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
                           {candidate.latest_application.job_title}

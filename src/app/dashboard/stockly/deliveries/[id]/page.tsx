@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { ArrowLeft, CheckCircle2, AlertCircle, XCircle, Plus, Search, Save } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, AlertCircle, XCircle, Plus, Search, Save } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/Button';
@@ -2326,7 +2326,7 @@ export default function DeliveryReviewPage() {
                         onClick={() => {
                           matchLineToVariant(matchingLineId, variant.id);
                         }}
-                        className="w-full text-left p-3 rounded-lg border border-neutral-700 hover:border-[#EC4899] transition-colors bg-white/[0.03]"
+                        className="w-full text-left p-3 rounded-lg border border-neutral-700 hover:border-[#D37E91] transition-colors bg-white/[0.03]"
                       >
                         <div className="font-medium text-white">{variant.stock_item?.name || variant.supplier_description}</div>
                         <div className="text-xs text-slate-400 mt-1">

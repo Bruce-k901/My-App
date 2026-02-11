@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
   <div style="max-width: 560px; margin: 0 auto; background: #1a1d24; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);">
     
     <!-- Header -->
-    <div style="background: linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%); padding: 40px 32px; text-align: center; position: relative;">
+    <div style="background: linear-gradient(135deg, #D37E91 0%, #8B5CF6 100%); padding: 40px 32px; text-align: center; position: relative;">
       <div style="width: 64px; height: 64px; margin: 0 auto 16px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px;">
         🌟
       </div>
@@ -76,12 +76,12 @@ export async function POST(request: NextRequest) {
           Congratulations ${candidateName.split(' ')[0]},
         </p>
         <p style="margin: 0; color: rgba(255, 255, 255, 0.85); font-size: 16px; line-height: 1.6;">
-          We're delighted to offer you the position of <span style="color: #EC4899; font-weight: 600;">${jobTitle}</span>.
+          We're delighted to offer you the position of <span style="color: #D37E91; font-weight: 600;">${jobTitle}</span>.
         </p>
       </div>
       
       <!-- Offer Details -->
-      <div style="background: rgba(236, 72, 153, 0.08); border: 1px solid rgba(236, 72, 153, 0.15); border-radius: 12px; padding: 0; margin: 28px 0; overflow: hidden;">
+      <div style="background: rgba(211, 126, 145, 0.08); border: 1px solid rgba(211, 126, 145, 0.15); border-radius: 12px; padding: 0; margin: 28px 0; overflow: hidden;">
         <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="padding: 16px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
@@ -162,18 +162,18 @@ export async function POST(request: NextRequest) {
         </table>
         
         <!-- Link Alternative -->
-        <div style="text-align: center; margin-top: 20px; padding: 16px; background: rgba(236, 72, 153, 0.05); border-radius: 8px;">
+        <div style="text-align: center; margin-top: 20px; padding: 16px; background: rgba(211, 126, 145, 0.05); border-radius: 8px;">
           <p style="margin: 0 0 8px; color: rgba(255, 255, 255, 0.4); font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px;">
             Confirmation Link
           </p>
           <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/confirm/${confirmationToken}" 
-             style="color: #EC4899; text-decoration: none; font-size: 12px; font-weight: 600; word-break: break-all;">
+             style="color: #D37E91; text-decoration: none; font-size: 12px; font-weight: 600; word-break: break-all;">
             ${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/confirm/${confirmationToken}
           </a>
         </div>
       </div>
       ` : `
-      <div style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.2); border-radius: 12px; padding: 24px; margin: 32px 0; text-align: center;">
+      <div style="background: rgba(211, 126, 145, 0.1); border: 1px solid rgba(211, 126, 145, 0.2); border-radius: 12px; padding: 24px; margin: 32px 0; text-align: center;">
         <p style="margin: 0 0 12px; color: rgba(255, 255, 255, 0.9); font-size: 15px; font-weight: 600;">
           📧 Please Respond
         </p>

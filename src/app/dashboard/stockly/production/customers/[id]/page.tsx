@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
-import { ArrowLeft, Edit, Mail, Archive, Package, DollarSign, Play } from 'lucide-react';
+import { ArrowLeft, Edit, Mail, Archive, Package, DollarSign, Play } from '@/components/ui/icons';
 import { useToast } from '@/components/ui/ToastProvider';
 import { formatCustomerAddress } from '@/lib/stockly/customerHelpers';
 import Link from 'next/link';

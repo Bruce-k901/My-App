@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp } from '@/components/ui/icons';
 import { useAppContext } from '@/context/AppContext';
 
 interface AssetSelectionFeatureProps {
@@ -56,7 +56,7 @@ export function AssetSelectionFeature({
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
           Asset Selection
           {selectedAssets.length > 0 && (
-            <span className="ml-2 text-sm font-normal text-pink-600 dark:text-pink-400">
+            <span className="ml-2 text-sm font-normal text-[#D37E91] dark:text-[#D37E91]">
               ({selectedAssets.length} selected)
             </span>
           )}
@@ -87,7 +87,7 @@ export function AssetSelectionFeature({
                   // Note: Changing this will filter locally, but won't update the header selector
                   // The header selector is the source of truth for site selection
                 }}
-                className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
               >
                 <option value="">All Sites ({assets.length} assets)</option>
                 {sites.map((site) => {
@@ -111,7 +111,7 @@ export function AssetSelectionFeature({
                     key={asset.id}
                     className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
                       isSelected
-                        ? 'bg-pink-50 dark:bg-pink-500/20 border border-pink-300 dark:border-pink-500/50'
+                        ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/25 border border-[#D37E91] dark:border-[#D37E91]/50'
                         : 'bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] hover:bg-gray-50 dark:hover:bg-white/[0.05]'
                     }`}
                   >
@@ -119,7 +119,7 @@ export function AssetSelectionFeature({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleAsset(asset.id)}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-white/[0.05] text-pink-500 focus:ring-pink-500 flex-shrink-0"
+                      className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-white/[0.05] text-[#D37E91] focus:ring-[#D37E91] flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
                       <div className="text-gray-900 dark:text-white text-sm font-medium">

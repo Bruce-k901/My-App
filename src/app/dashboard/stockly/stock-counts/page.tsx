@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
-import { Plus, Loader2, Calendar, FileText, Lock, CheckCircle, Package, ArrowLeft } from 'lucide-react';
+import { Plus, Loader2, Calendar, FileText, Lock, CheckCircle, Package, ArrowLeft } from '@/components/ui/icons';
 import StockCountCard from '@/components/stockly/stock-counts/StockCountCard';
 import CreateCountModal from '@/components/stockly/stock-counts/CreateCountModal';
 import { StockCount } from '@/lib/types/stockly';

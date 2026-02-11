@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
-import { AlertTriangle, Clock, Bell, Thermometer, Wrench } from "lucide-react";
+import { AlertTriangle, Clock, Bell, Thermometer, Wrench } from '@/components/ui/icons';
 import { formatDistanceToNow } from "date-fns";
 
 type AlertRow = {
@@ -602,7 +602,7 @@ export default function AlertsFeed() {
   }
 
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 space-y-4">
+    <div className="bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-6 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -624,7 +624,7 @@ export default function AlertsFeed() {
         <div className="space-y-2 max-h-[400px] overflow-y-auto">
           {loading && (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-pink-400"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#D37E91]"></div>
               <span className="ml-3 text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Loading alerts...</span>
             </div>
           )}

@@ -1,7 +1,7 @@
 'use client';
 
 import { format, addWeeks, subWeeks, addDays } from 'date-fns';
-import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 
 interface WeekSelectorProps {

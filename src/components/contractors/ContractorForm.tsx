@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
 import { getLocationFromPostcode, isValidPostcodeForLookup } from "@/lib/locationLookup";
-import { Upload, X, FileText } from "lucide-react";
+import { Upload, X, FileText } from "@/components/ui/icons";
 
 // Simple UK postcode validator
 const UK_POSTCODE_REGEX = /^([A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2})$/;
@@ -341,7 +341,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
             id="is_active"
             checked={form.is_active !== undefined ? form.is_active : true}
             onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
-            className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-[#EC4899] focus:ring-[#EC4899]"
+            className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-[#D37E91] focus:ring-[#D37E91]"
           />
           <label htmlFor="is_active" className="text-sm font-medium text-gray-300">
             Active Contractor
@@ -519,7 +519,7 @@ function ContractFileUpload({ value, onChange }: { value: string; onChange: (url
             href={value}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#EC4899] hover:text-[#EC4899]/80 text-xs"
+            className="text-[#D37E91] hover:text-[#D37E91]/80 text-xs"
           >
             View
           </a>
@@ -547,7 +547,7 @@ function ContractFileUpload({ value, onChange }: { value: string; onChange: (url
             variant="ghost"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="w-full border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+            className="w-full border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
           >
             {uploading ? (
               <>Uploading...</>

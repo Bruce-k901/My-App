@@ -5,7 +5,7 @@ import { ComponentType, Suspense } from 'react';
 
 // Loading component for dashboard widgets
 const DashboardWidgetSkeleton = () => (
-  <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)] animate-pulse">
+  <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(211, 126, 145,0.05)] animate-pulse">
     <div className="flex items-center gap-3 mb-4">
       <div className="w-5 h-5 bg-white/10 rounded"></div>
       <div className="h-5 bg-white/10 rounded w-32"></div>

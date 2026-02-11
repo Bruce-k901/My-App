@@ -2,7 +2,7 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, ChevronDown, ChevronRight, Flame, Package, Moon, Clock } from 'lucide-react';
+import { GripVertical, ChevronDown, ChevronRight, Flame, Package, Moon, Clock } from '@/components/ui/icons';
 import { StepEditor, StageFormData } from './StepEditor';
 import { cn } from '@/lib/utils';
 

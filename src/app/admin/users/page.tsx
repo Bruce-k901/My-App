@@ -11,7 +11,7 @@ import {
   Loader2,
   Shield,
   User
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface PlatformUser {
   id: string;
@@ -84,7 +84,7 @@ export default function AdminUsersPage() {
   });
 
   const getRoleBadgeColor = (role: string, isAdmin: boolean) => {
-    if (isAdmin) return 'bg-[#EC4899]/20 text-[#EC4899] border-[#EC4899]/30';
+    if (isAdmin) return 'bg-[#D37E91]/20 text-[#D37E91] border-[#D37E91]/30';
     switch (role?.toLowerCase()) {
       case 'owner': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
       case 'admin': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
@@ -96,7 +96,7 @@ export default function AdminUsersPage() {
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -122,7 +122,7 @@ export default function AdminUsersPage() {
           placeholder="Search by name, email, or company..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/40 focus:border-[#EC4899]/40"
+          className="w-full pl-12 pr-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
         />
       </div>
 
@@ -145,7 +145,7 @@ export default function AdminUsersPage() {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-white/[0.1] flex items-center justify-center">
                       {user.is_platform_admin ? (
-                        <Shield className="w-5 h-5 text-[#EC4899]" />
+                        <Shield className="w-5 h-5 text-[#D37E91]" />
                       ) : (
                         <User className="w-5 h-5 text-white/60" />
                       )}

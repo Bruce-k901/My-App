@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Plus, GripVertical, Trash2, Pencil, X, Loader2, FolderTree } from 'lucide-react';
+import { Plus, GripVertical, Trash2, Pencil, X, Loader2, FolderTree } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardContent } from '@/components/ui/Card';
 import Input from '@/components/ui/Input';

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { X, Plus, AlertTriangle, User } from 'lucide-react';
+import { X, Plus, AlertTriangle, User } from '@/components/ui/icons';
 import TimePicker from '@/components/ui/TimePicker';
 
 interface AddAttendanceModalProps {

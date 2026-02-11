@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MessageSquare, AlertTriangle, CheckCircle, HelpCircle } from 'lucide-react';
+import { MessageSquare, AlertTriangle, CheckCircle, HelpCircle } from '@/components/ui/icons';
 import type { ReviewTemplateQuestion, ReviewResponse } from '@/types/reviews';
 
 interface ReviewComparisonQuestionProps {
@@ -126,7 +126,7 @@ export function ReviewComparisonQuestion({
                   key={i}
                   className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-medium ${
                     score && i < score
-                      ? 'bg-[#EC4899] border-[#EC4899] text-white'
+                      ? 'bg-[#D37E91] border-[#D37E91] text-white'
                       : 'border-white/20 text-neutral-500'
                   }`}
                 >
@@ -231,8 +231,8 @@ export function ReviewComparisonQuestion({
           </button>
           
           {showPrompt && (
-            <div className="mt-3 p-3 bg-[#EC4899]/10 border border-[#EC4899]/20 rounded-lg">
-              <p className="text-sm text-[#EC4899]">
+            <div className="mt-3 p-3 bg-[#D37E91]/10 border border-[#D37E91]/20 rounded-lg">
+              <p className="text-sm text-[#D37E91]">
                 💬 {discussionPrompt}
               </p>
             </div>

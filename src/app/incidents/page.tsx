@@ -120,7 +120,7 @@ function IncidentsList() {
     <div className="max-w-4xl mx-auto py-6 px-4">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-semibold">Active Incidents</h1>
-        <Link href="/incidents/new" className="bg-transparent border border-[#EC4899] text-[#EC4899] px-3 py-2 rounded hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200">Add New Report</Link>
+        <Link href="/incidents/new" className="bg-transparent border border-[#D37E91] text-[#D37E91] px-3 py-2 rounded hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200">Add New Report</Link>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
         <div>
@@ -183,7 +183,7 @@ function IncidentsList() {
                       value={notesDraft[it.id] ?? ""}
                       onChange={(e) => setNotesDraft((d) => ({ ...d, [it.id]: e.target.value }))}
                     />
-                    <button className="bg-transparent border border-[#EC4899] text-[#EC4899] px-3 py-1 rounded hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200" onClick={() => resolveIncident(it.id)}>Mark Resolved</button>
+                    <button className="bg-transparent border border-[#D37E91] text-[#D37E91] px-3 py-1 rounded hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200" onClick={() => resolveIncident(it.id)}>Mark Resolved</button>
                   </>
                 )}
               </div>

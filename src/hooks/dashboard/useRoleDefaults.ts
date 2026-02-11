@@ -11,6 +11,13 @@ import { RoleSlug } from '@/types/dashboard';
  */
 export const ROLE_DEFAULT_WIDGETS: Record<RoleSlug, string[]> = {
   owner: [
+    // Charts
+    'compliance_trend_chart',
+    'production_output_chart',
+    'stock_health_chart',
+    'order_pipeline_chart',
+    'eho_score_chart',
+    'temperature_logs_chart',
     // Checkly
     'compliance_score',
     'overdue_checks',
@@ -31,6 +38,14 @@ export const ROLE_DEFAULT_WIDGETS: Record<RoleSlug, string[]> = {
     'unread_messages',
   ],
   admin: [
+    // Charts
+    'compliance_trend_chart',
+    'production_output_chart',
+    'stock_health_chart',
+    'order_pipeline_chart',
+    'eho_score_chart',
+    'temperature_logs_chart',
+    // Operational
     'compliance_score',
     'overdue_checks',
     'todays_checks',
@@ -45,6 +60,12 @@ export const ROLE_DEFAULT_WIDGETS: Record<RoleSlug, string[]> = {
     'unread_messages',
   ],
   site_manager: [
+    // Charts
+    'compliance_trend_chart',
+    'stock_health_chart',
+    'eho_score_chart',
+    'temperature_logs_chart',
+    // Operational
     'compliance_score',
     'overdue_checks',
     'todays_checks',

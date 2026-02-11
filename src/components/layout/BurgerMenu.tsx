@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { X, Building2, FileText, ShieldCheck, BarChart3, Settings, User, CreditCard, LogOut, Users, MapPin, Target, Archive } from 'lucide-react'
+import { X, Building2, FileText, ShieldCheck, BarChart3, Settings, User, CreditCard, LogOut, Users, MapPin, Rocket, Archive, Shield, LifeBuoy } from '@/components/ui/icons'
 import { useAppContext } from '@/context/AppContext'
 import { getMenuItemsByRole, COLORS } from './navigation'
 
@@ -10,19 +10,21 @@ interface BurgerMenuProps {
   isOpen: boolean
   onClose: () => void
   userRole?: 'admin' | 'manager' | 'team' // Optional - will be calculated from profile if not provided
+  unreadTicketCount?: number // Optional - unread ticket notifications count
 }
 
-// Icon mapping for the 12 menu items
+// Icon mapping for the 13 menu items
 const iconMap: Record<string, any> = {
   // Organization (5 items)
   sites: MapPin,
   users: Users,
   companies: Building2,
-  'business-setup': Target,
+  'business-setup': Rocket,
   documents: FileText,
-  // Workspace (3 items)
+  // Workspace (4 items)
   reports: BarChart3,
   'eho-readiness': ShieldCheck,
+  'my-tickets': LifeBuoy,
   archive: Archive,
   // Settings (2 items)
   settings: Settings,
@@ -35,7 +37,8 @@ const iconMap: Record<string, any> = {
 export function BurgerMenu({
   isOpen,
   onClose,
-  userRole
+  userRole,
+  unreadTicketCount = 0
 }: BurgerMenuProps) {
   const router = useRouter()
   const pathname = usePathname()
@@ -105,15 +108,15 @@ export function BurgerMenu({
 
       {/* Menu Panel - Desktop only */}
       <div
-        className={`hidden lg:flex fixed top-0 right-0 bottom-0 w-[320px] max-w-[90vw] z-50 shadow-2xl flex-col bg-gray-50 dark:bg-[#09090B] transition-transform duration-200 ${
+        className={`hidden lg:flex fixed top-0 right-0 bottom-0 w-[320px] max-w-[90vw] z-50 shadow-2xl flex-col bg-gray-50 dark:bg-[#0c0a09] transition-transform duration-200 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-white dark:bg-transparent border-b border-gray-200 dark:border-white/10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-fuchsia-500/20 flex items-center justify-center">
-              <User className="w-5 h-5 text-fuchsia-500 dark:text-fuchsia-400" />
+            <div className="w-10 h-10 rounded-full bg-teamly/20 flex items-center justify-center">
+              <User className="w-5 h-5 text-teamly dark:text-teamly" />
             </div>
             <div>
               <div className="text-sm font-medium text-gray-900 dark:text-white">
@@ -152,27 +155,56 @@ export function BurgerMenu({
                   const active = isActive(item.path)
 
                   const isSignOut = item.id === 'signout'
+                  const isMyTickets = item.id === 'my-tickets'
+                  const showTicketBadge = isMyTickets && unreadTicketCount > 0
 
                   return (
                     <button
                       key={item.id}
                       onClick={() => isSignOut ? handleSignOut() : handleNavigation(item.path)}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-150 text-left ${
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-150 text-left relative ${
                         active
-                          ? 'bg-fuchsia-500/15 text-fuchsia-600 dark:text-fuchsia-300 shadow-[inset_0_0_12px_rgba(217,70,239,0.12)]'
+                          ? 'bg-teamly/15 text-teamly dark:text-teamly/30 shadow-[inset_0_0_12px_rgba(211,126,145,0.12)]'
                           : isSignOut
                             ? 'text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-500/10 hover:shadow-[inset_0_0_12px_rgba(239,68,68,0.08)]'
-                            : 'text-gray-600 dark:text-white/70 hover:text-fuchsia-600 dark:hover:text-fuchsia-300 hover:bg-fuchsia-50 dark:hover:bg-fuchsia-500/10 hover:shadow-[inset_0_0_12px_rgba(217,70,239,0.12)]'
+                            : 'text-gray-600 dark:text-white/70 hover:text-teamly dark:hover:text-teamly/30 hover:bg-teamly/5 dark:hover:bg-teamly/10 hover:shadow-[inset_0_0_12px_rgba(211,126,145,0.12)]'
                       }`}
                     >
-                      <Icon className={`w-4 h-4 flex-shrink-0 transition-colors duration-150 ${active ? 'text-fuchsia-500 dark:text-fuchsia-400' : isSignOut ? 'text-red-500 dark:text-red-400' : 'text-gray-400 dark:text-white/50'}`} />
+                      <Icon className={`w-4 h-4 flex-shrink-0 transition-colors duration-150 ${active ? 'text-teamly dark:text-teamly' : isSignOut ? 'text-red-500 dark:text-red-400' : 'text-gray-400 dark:text-white/50'}`} />
                       <span className="font-medium truncate">{item.label}</span>
+                      {showTicketBadge && (
+                        <span className="ml-auto px-2 py-0.5 text-xs font-bold bg-[#D37E91] text-white rounded-full min-w-[20px] text-center">
+                          {unreadTicketCount > 99 ? '99+' : unreadTicketCount}
+                        </span>
+                      )}
                     </button>
                   )
                 })}
               </div>
             </div>
           ))}
+
+          {/* Admin Portal - Only for platform admins */}
+          {profile?.is_platform_admin && (
+            <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/[0.06] shadow-sm dark:shadow-none overflow-hidden">
+              <div className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/40 border-b border-gray-100 dark:border-white/[0.04]">
+                PLATFORM
+              </div>
+              <div className="py-1">
+                <button
+                  onClick={() => handleNavigation('/admin')}
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-150 text-left ${
+                    isActive('/admin')
+                      ? 'bg-teamly/15 text-teamly dark:text-teamly/30 shadow-[inset_0_0_12px_rgba(211,126,145,0.12)]'
+                      : 'text-gray-600 dark:text-white/70 hover:text-teamly dark:hover:text-teamly/30 hover:bg-teamly/5 dark:hover:bg-teamly/10 hover:shadow-[inset_0_0_12px_rgba(211,126,145,0.12)]'
+                  }`}
+                >
+                  <Shield className={`w-4 h-4 flex-shrink-0 transition-colors duration-150 ${isActive('/admin') ? 'text-teamly dark:text-teamly' : 'text-gray-400 dark:text-white/50'}`} />
+                  <span className="font-medium truncate">Admin Portal</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer */}

@@ -3,7 +3,7 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { usePanelStore } from '@/lib/stores/panel-store'
 import { Messaging } from './Messaging'
-import { Menu, X } from 'lucide-react'
+import { Menu, X } from '@/components/ui/icons'
 import { useMobileNav } from '@/components/mobile/MobileNavProvider'
 import { useIsMobile } from '@/hooks/useIsMobile'
 

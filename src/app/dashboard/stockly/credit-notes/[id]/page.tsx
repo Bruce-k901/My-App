@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Save, CheckCircle2, XCircle, AlertCircle, Plus, Trash2, Upload } from 'lucide-react';
+import { ArrowLeft, Save, CheckCircle2, XCircle, AlertCircle, Plus, Trash2, Upload } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/Button';
@@ -352,7 +352,7 @@ export default function CreditNoteDetailPage() {
                           href={line.photo_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-[#EC4899] hover:underline mt-1 inline-flex items-center gap-1"
+                          className="text-xs text-[#D37E91] hover:underline mt-1 inline-flex items-center gap-1"
                         >
                           <Upload size={12} />
                           View Photo

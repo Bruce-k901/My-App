@@ -44,19 +44,19 @@ export default function PersistentHeader() {
       <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={() => go("/tasks")}
-          className="px-3 py-2 rounded-md text-sm bg-white/[0.08] hover:bg-white/[0.12] text-white hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]"
+          className="px-3 py-2 rounded-md text-sm bg-white/[0.08] hover:bg-white/[0.12] text-white hover:shadow-[0_0_10px_rgba(211, 126, 145,0.25)]"
         >
           View Tasks
         </button>
         <button
           onClick={() => go("/notifications")}
-          className="px-3 py-2 rounded-md text-sm bg-white/[0.08] hover:bg-white/[0.12] text-white hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]"
+          className="px-3 py-2 rounded-md text-sm bg-white/[0.08] hover:bg-white/[0.12] text-white hover:shadow-[0_0_10px_rgba(211, 126, 145,0.25)]"
         >
           Notifications
         </button>
         <button
           onClick={() => go("/reports")}
-          className="px-3 py-2 rounded-md text-sm bg-white/[0.08] hover:bg-white/[0.12] text-white hover:shadow-[0_0_10px_rgba(236,72,153,0.25)]"
+          className="px-3 py-2 rounded-md text-sm bg-white/[0.08] hover:bg-white/[0.12] text-white hover:shadow-[0_0_10px_rgba(211, 126, 145,0.25)]"
         >
           Reports
         </button>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AlertTriangle, Truck, Star, CreditCard, Loader2 } from 'lucide-react';
+import { AlertTriangle, Truck, Star, CreditCard, Loader2 } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 
 export default function FeedbackPage() {
@@ -31,7 +31,7 @@ export default function FeedbackPage() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
         </div>
       </div>
     );

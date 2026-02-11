@@ -1,6 +1,6 @@
 "use client";
 
-import { DollarSign, Loader2 } from 'lucide-react';
+import { DollarSign, Loader2 } from '@/components/ui/icons';
 
 export default function MonthlySalesPage() {
   return (

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Thermometer, AlertCircle, Clock, Phone, X } from 'lucide-react';
+import { Thermometer, AlertCircle, Clock, Phone, X } from '@/components/ui/icons';
 import { NumericKeyboard } from '@/components/ui/NumericKeyboard';
 
 interface PlacedAction {

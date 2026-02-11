@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import {
   Package, Sparkles, PauseCircle, Truck, Snowflake,
   Loader2, X, Search, Settings, DollarSign, ChevronDown, ChevronUp
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Label from '@/components/ui/Label';

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Plus, ChefHat, Users, Wine, Coffee, IceCream, Sparkles, Clock, Lock, Search } from 'lucide-react';
+import { Plus, ChefHat, Users, Wine, Coffee, IceCream, Sparkles, Clock, Lock, Search } from '@/components/ui/icons';
 import { useRouter } from 'next/navigation';
 
 const SOP_TEMPLATES = [
@@ -30,7 +30,7 @@ const SOP_TEMPLATES = [
     title: 'Drinks (Bar)',
     description: 'Cocktails, spirits, and beverage recipes',
     icon: Wine,
-    color: 'from-purple-500/20 to-pink-500/20',
+    color: 'from-purple-500/20 to-[#D37E91]/25',
     borderColor: 'border-purple-500/30',
     link: '/dashboard/sops/drinks-template',
     category: 'Drinks'
@@ -153,7 +153,7 @@ export default function TemplatesPage() {
               icon: 'text-blue-600 dark:text-white'
             },
             'drinks': { 
-              bg: 'bg-purple-50 dark:bg-gradient-to-br dark:from-purple-500/20 dark:to-pink-500/20', 
+              bg: 'bg-purple-50 dark:bg-gradient-to-br dark:from-purple-500/20 dark:to-[#D37E91]/25', 
               border: 'border-purple-200 dark:border-purple-500/30',
               text: 'text-purple-900 dark:text-white',
               icon: 'text-purple-600 dark:text-white'

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 
 // ============================================================================
 // TICKET CREATION API
@@ -9,18 +10,47 @@ import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 export async function POST(request: NextRequest) {
   try {
+    // Get authenticated user from session
+    const supabase = await createServerSupabaseClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      console.error('[Ticket API] Authentication failed:', authError);
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
-    const { type, module, title, description, page_url, screenshot, company_id, site_id, user_id } = body;
+    const { type, module, title, description, page_url, screenshot, company_id, site_id } = body;
+
+    console.log('[Ticket API] Received request:', {
+      type,
+      module,
+      title,
+      company_id,
+      site_id,
+      auth_user_id: user.id,
+      hasScreenshot: !!screenshot
+    });
 
     // Validate required fields
-    if (!type || !module || !title || !description || !company_id || !user_id) {
+    if (!type || !module || !title || !description || !company_id) {
+      console.error('[Ticket API] Missing required fields:', {
+        type: !!type,
+        module: !!module,
+        title: !!title,
+        description: !!description,
+        company_id: !!company_id
+      });
       return NextResponse.json(
-        { error: 'Missing required fields: type, module, title, description, company_id, user_id' },
+        { error: 'Missing required fields: type, module, title, description, company_id' },
         { status: 400 }
       );
     }
 
-    // Validate type and module enums
+    // Validate type enum
     if (!['issue', 'idea', 'question'].includes(type)) {
       return NextResponse.json(
         { error: 'Invalid type. Must be: issue, idea, or question' },
@@ -28,22 +58,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!['checkly', 'stockly', 'teamly', 'planly', 'assetly', 'msgly', 'general'].includes(module)) {
-      return NextResponse.json(
-        { error: 'Invalid module. Must be one of: checkly, stockly, teamly, planly, assetly, msgly, general' },
-        { status: 400 }
-      );
-    }
+    // Module validation removed - accept any module value to allow questions from any context
 
-    const supabase = getSupabaseAdmin();
+    const supabaseAdmin = getSupabaseAdmin();
 
     // Create ticket
-    const { data: ticket, error: ticketError } = await supabase
+    const { data: ticket, error: ticketError } = await supabaseAdmin
       .from('support_tickets')
       .insert({
         company_id,
         site_id: site_id || null,
-        created_by: user_id,
+        created_by: user.id,
         type,
         module,
         title,
@@ -56,11 +81,43 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (ticketError) {
-      console.error('Error creating ticket:', ticketError);
+      console.error('[Ticket API] Error creating ticket:', {
+        code: ticketError.code,
+        message: ticketError.message,
+        details: ticketError.details,
+        hint: ticketError.hint,
+        auth_user_id: user.id
+      });
       return NextResponse.json(
-        { error: 'Failed to create ticket', details: ticketError.message },
+        {
+          error: 'Failed to create ticket',
+          details: ticketError.message,
+          code: ticketError.code,
+          hint: ticketError.hint
+        },
         { status: 500 }
       );
+    }
+
+    // Create initial history entry for ticket creation
+    await supabaseAdmin
+      .from('ticket_history')
+      .insert({
+        ticket_id: ticket.id,
+        changed_by: user.id,
+        change_type: 'created',
+        new_value: 'open',
+      });
+
+    // Create initial notification for assigned user (if auto-assigned)
+    if (ticket.assigned_to) {
+      await supabaseAdmin
+        .from('ticket_notifications')
+        .insert({
+          ticket_id: ticket.id,
+          user_id: ticket.assigned_to,
+          unread_count: 1,
+        });
     }
 
     // Handle screenshot upload if provided
@@ -76,7 +133,7 @@ export async function POST(request: NextRequest) {
         const filePath = `${company_id}/${ticket.id}/screenshot_${timestamp}.png`;
 
         // Upload to Supabase Storage
-        const { error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabaseAdmin.storage
           .from('support-tickets')
           .upload(filePath, buffer, {
             contentType: 'image/png',
@@ -89,7 +146,7 @@ export async function POST(request: NextRequest) {
           // Ticket is already created
         } else {
           // Create attachment record
-          const { error: attachmentError } = await supabase
+          const { error: attachmentError } = await supabaseAdmin
             .from('ticket_attachments')
             .insert({
               ticket_id: ticket.id,
@@ -113,12 +170,12 @@ export async function POST(request: NextRequest) {
     // Get assigned user name for response
     let assignedToName = 'Support Team';
     if (ticket.assigned_to) {
-      const { data: assignedUser } = await supabase
+      const { data: assignedUser } = await supabaseAdmin
         .from('profiles')
         .select('full_name')
-        .eq('id', ticket.assigned_to)
+        .eq('auth_user_id', ticket.assigned_to)
         .single();
-      
+
       if (assignedUser?.full_name) {
         assignedToName = assignedUser.full_name;
       }

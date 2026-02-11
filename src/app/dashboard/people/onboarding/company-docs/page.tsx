@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { useAppContext } from '@/context/AppContext'
-import { FileText, ExternalLink, Loader2, Upload } from 'lucide-react'
+import { FileText, ExternalLink, Loader2, Upload } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import UploadGlobalDocModal from '@/components/modals/UploadGlobalDocModal'
 

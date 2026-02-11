@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useConversations } from '@/hooks/useConversations';
 import { useAppContext } from '@/context/AppContext';
-import { MessageSquare, Users, Building2, User, Search, Plus, Trash2, Pin, ChevronDown, ChevronUp } from 'lucide-react';
+import { MessageSquare, Users, Building2, User, Search, Plus, Trash2, Pin, ChevronDown, ChevronUp } from '@/components/ui/icons';
 import { formatConversationTime } from '@/lib/utils/dateUtils';
 import { supabase } from '@/lib/supabase';
 import type { Conversation, ConversationFilters, TopicCategory } from '@/types/messaging';
@@ -333,7 +333,7 @@ export function ConversationList({
               // Prevent any potential form submission or other default behavior
               e.preventDefault();
             }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-transparent text-[#EC4899] border-2 border-[#EC4899] text-sm font-medium rounded-lg hover:shadow-[0_0_15px_rgba(236,72,153,0.5)] transition-all h-[40px] cursor-pointer pointer-events-auto"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-transparent text-[#D37E91] border-2 border-[#D37E91] text-sm font-medium rounded-lg hover:shadow-[0_0_15px_rgba(211, 126, 145,0.5)] transition-all h-[40px] cursor-pointer pointer-events-auto"
             type="button"
             aria-label="Start a new conversation"
           >
@@ -347,7 +347,7 @@ export function ConversationList({
               placeholder="Search conversations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-full pl-10 pr-4 bg-gray-50 dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+              className="w-full h-full pl-10 pr-4 bg-gray-50 dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
             />
           </div>
         </div>
@@ -361,7 +361,7 @@ export function ConversationList({
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-medium text-gray-700 dark:text-white/70">Filter by Topic</h3>
               {(filters.topicCategory || filters.isPinned) && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-pink-100 dark:bg-[#EC4899]/30 text-pink-700 dark:text-[#EC4899]">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/30 text-[#D37E91] dark:text-[#D37E91]">
                   Active
                 </span>
               )}
@@ -395,7 +395,7 @@ export function ConversationList({
         </div>
       ) : (
         /* Conversations List - Scrollable */
-        <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-[#EC4899]/30 scrollbar-track-transparent" style={{ scrollbarWidth: 'thin' }}>
+        <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-[#D37E91]/30 scrollbar-track-transparent" style={{ scrollbarWidth: 'thin' }}>
         {filteredConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-8 text-center">
             <MessageSquare className="w-12 h-12 text-gray-300 dark:text-white/20 mb-4" />
@@ -421,16 +421,16 @@ export function ConversationList({
                 >
                   {/* Left border highlight for selected conversation */}
                   {isSelected && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-pink-500 rounded-r" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#D37E91] rounded-r" />
                   )}
                   <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 p-2 bg-pink-50 dark:bg-pink-500/10 rounded-lg">
-                      <Icon className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+                    <div className="flex-shrink-0 p-2 bg-[#D37E91]/10 dark:bg-[#D37E91]/15 rounded-lg">
+                      <Icon className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <h3 className={`text-sm font-semibold truncate ${
-                          isSelected ? 'text-pink-600 dark:text-pink-300' : 'text-gray-900 dark:text-white'
+                          isSelected ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-gray-900 dark:text-white'
                         }`}>
                           {name}
                         </h3>
@@ -452,7 +452,7 @@ export function ConversationList({
                     <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                       {unreadCount > 0 && (
                         <div className="flex-shrink-0">
-                          <span className="px-2 py-0.5 bg-pink-500 text-white text-xs font-semibold rounded-full">
+                          <span className="px-2 py-0.5 bg-[#D37E91] text-white text-xs font-semibold rounded-full">
                             {unreadCount > 99 ? '99+' : unreadCount}
                           </span>
                         </div>

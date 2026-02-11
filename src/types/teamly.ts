@@ -635,7 +635,7 @@ export interface ComplianceMatrixEntry {
   training_status: string;
   completed_at?: string | null;
   expiry_date?: string | null;
-  compliance_status: 'compliant' | 'expired' | 'in_progress' | 'required' | 'optional';
+  compliance_status: 'current' | 'compliant' | 'expiring_soon' | 'expired' | 'in_progress' | 'assigned' | 'invited' | 'required' | 'optional' | string;
 }
 
 export interface TrainingStats {
@@ -1077,6 +1077,7 @@ export interface DailyAttendance {
   is_on_break: boolean;
   scheduled_start?: string | null;
   scheduled_end?: string | null;
+  notes?: string | null;
 }
 
 export interface WeeklyHours {

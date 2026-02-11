@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns';
-import { ChevronLeft, ChevronRight, Calendar, User } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, User } from '@/components/ui/icons';
 import { useReviewCalendar, CalendarReview } from '@/components/reviews/ReviewCalendarIntegration';
 import { useAppContext } from '@/context/AppContext';
 import Link from 'next/link';

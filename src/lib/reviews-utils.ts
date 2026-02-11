@@ -5,7 +5,7 @@ import {
   Users, Calendar, BarChart, Award, Heart, UserCheck, UserMinus, 
   MessageCircle, Search, Gavel, FileText, Scale, AlertCircle, FileEdit,
   ClipboardList, AlertTriangle, UserPlus
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 export const TEMPLATE_TYPE_CONFIG: Record<string, {
   label: string;
@@ -66,9 +66,9 @@ export const TEMPLATE_TYPE_CONFIG: Record<string, {
     label: 'Values Review',
     shortLabel: 'Values',
     category: 'performance',
-    color: 'text-pink-400',
-    bgColor: 'bg-pink-600/20',
-    borderColor: 'border-pink-600/30',
+    color: 'text-[#D37E91]',
+    bgColor: 'bg-[#D37E91]/25',
+    borderColor: 'border-[#D37E91]/30',
     icon: Heart
   },
   performance_improvement: {

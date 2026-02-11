@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Check, ChevronDown, Search, X, Plus } from 'lucide-react';
+import { Check, ChevronDown, Search, X, Plus } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { CreateCustomerModal } from '@/components/planly/customers/CreateCustomerModal';
 
@@ -105,10 +105,10 @@ export function CustomerSelector({ siteId, value, onChange }: CustomerSelectorPr
           )}
         >
           {selectedCustomer ? (
-            <span className="flex items-center gap-2 truncate">
-              <span className="truncate">{selectedCustomer.name}</span>
+            <span className="flex items-center gap-2 min-w-0 flex-1">
+              <span className="font-medium truncate">{selectedCustomer.name}</span>
               {selectedCustomer.destination_group && (
-                <span className="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white/60 shrink-0">
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-white/40 uppercase tracking-wide shrink-0">
                   {selectedCustomer.destination_group.name}
                 </span>
               )}
@@ -197,16 +197,18 @@ export function CustomerSelector({ siteId, value, onChange }: CustomerSelectorPr
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-gray-900 dark:text-white truncate">{customer.name}</div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-900 dark:text-white font-medium">{customer.name}</span>
+                              {customer.destination_group && (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-white/40 uppercase tracking-wide">
+                                  {customer.destination_group.name}
+                                </span>
+                              )}
+                            </div>
                             {customer.contact_name && (
                               <div className="text-xs text-gray-500 dark:text-white/40 truncate">{customer.contact_name}</div>
                             )}
                           </div>
-                          {customer.destination_group && (
-                            <span className="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white/60 shrink-0">
-                              {customer.destination_group.name}
-                            </span>
-                          )}
                         </button>
                       ))}
                     </div>

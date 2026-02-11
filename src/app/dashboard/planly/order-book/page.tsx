@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useMemo, useCallback } from 'react';
-import { format, isValid, parseISO } from 'date-fns';
-import { Package } from 'lucide-react';
+import { format, isValid, parseISO, addDays } from 'date-fns';
+import { Package } from '@/components/ui/icons';
 import { PackingPlanHeader } from '@/components/planly/packing-plan/PackingPlanHeader';
 import { PackingPlanGrid } from '@/components/planly/packing-plan/PackingPlanGrid';
 import { usePackingPlan, PackingPlanData } from '@/hooks/planly/usePackingPlan';
@@ -93,6 +93,7 @@ export default function PackingPlanPage() {
   const { siteId } = useAppContext();
   const [deliveryDate, setDeliveryDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [transposed, setTransposed] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const { data, isLoading, error, mutate } = usePackingPlan(deliveryDate, siteId || undefined);
 
@@ -113,6 +114,50 @@ export default function PackingPlanPage() {
     setTransposed((prev) => !prev);
   }, []);
 
+  const handleGenerate = useCallback(async () => {
+    if (!siteId || isGenerating) return;
+
+    try {
+      setIsGenerating(true);
+
+      // Generate orders for the next 7 days
+      const today = new Date();
+      const endDate = addDays(today, 7);
+
+      const response = await fetch('/api/planly/standing-orders/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          start_date: format(today, 'yyyy-MM-dd'),
+          end_date: format(endDate, 'yyyy-MM-dd'),
+          site_id: siteId,
+          auto_confirm: true, // Auto-confirm orders
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to generate orders');
+      }
+
+      const result = await response.json();
+
+      // Show success message
+      alert(
+        `✅ Generated ${result.generated} orders from standing orders\n` +
+        (result.skipped > 0 ? `⏭️ Skipped ${result.skipped} (already exist)` : '')
+      );
+
+      // Refresh the packing plan
+      mutate();
+    } catch (error: any) {
+      console.error('Error generating orders:', error);
+      alert(`❌ Error: ${error.message}`);
+    } finally {
+      setIsGenerating(false);
+    }
+  }, [siteId, mutate, isGenerating]);
+
   if (!siteId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -130,10 +175,12 @@ export default function PackingPlanPage() {
           onDateChange={setDeliveryDate}
           onRefresh={handleRefresh}
           onPrint={handlePrint}
+          onGenerate={handleGenerate}
           transposed={transposed}
           onTranspose={handleTranspose}
           orderCount={data?.orderCount || 0}
           isLoading={isLoading}
+          isGenerating={isGenerating}
         />
       </div>
 

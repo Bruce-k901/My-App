@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, Search, Calendar, Filter, Eye, Edit2, FileText, ArrowLeft, Trash2 } from 'lucide-react';
+import { Plus, Search, Calendar, Filter, Eye, Edit2, FileText, ArrowLeft, Trash2 } from '@/components/ui/icons';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Wrench, Calendar, Phone, ExternalLink, Clock, CheckCircle2 } from 'lucide-react'
+import { X, Wrench, Calendar, Phone, ExternalLink, Clock, CheckCircle2 } from '@/components/ui/icons'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/components/ui/ToastProvider'
 import LogServiceModal from './LogServiceModal'

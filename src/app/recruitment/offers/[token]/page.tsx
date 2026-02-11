@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { Loader2, Check, X, Building2, Calendar, DollarSign, Clock, FileText, Sparkles } from 'lucide-react'
+import { Loader2, Check, X, Building2, Calendar, DollarSign, Clock, FileText, Sparkles } from '@/components/ui/icons'
 import { toast } from 'sonner'
 
 type Offer = {
@@ -134,7 +134,7 @@ export default function OfferAcceptancePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     )
   }
@@ -161,23 +161,23 @@ export default function OfferAcceptancePage() {
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Progress Indicator */}
         <div className="flex items-center justify-center gap-2 mb-4">
-          <div className="flex items-center gap-2 px-4 py-2 bg-[#EC4899]/10 border border-[#EC4899]/30 rounded-full">
-            <Sparkles className="w-4 h-4 text-[#EC4899]" />
-            <span className="text-xs font-semibold text-[#EC4899] uppercase tracking-wide">Final Step: Job Offer</span>
+          <div className="flex items-center gap-2 px-4 py-2 bg-[#D37E91]/10 border border-[#D37E91]/30 rounded-full">
+            <Sparkles className="w-4 h-4 text-[#D37E91]" />
+            <span className="text-xs font-semibold text-[#D37E91] uppercase tracking-wide">Final Step: Job Offer</span>
           </div>
         </div>
         {/* Header */}
-        <div className="bg-gradient-to-br from-[#EC4899]/20 via-purple-500/20 to-blue-500/20 border-2 border-[#EC4899]/30 rounded-xl p-8 text-center relative overflow-hidden">
+        <div className="bg-gradient-to-br from-[#D37E91]/20 via-purple-500/20 to-blue-500/20 border-2 border-[#D37E91]/30 rounded-xl p-8 text-center relative overflow-hidden">
           {/* Decorative background elements */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#EC4899]/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#D37E91]/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl"></div>
           
           <div className="relative z-10">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#EC4899] via-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-4 shadow-[0_0_30px_rgba(236,72,153,0.5)]">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#D37E91] via-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-4 shadow-[0_0_30px_rgba(211, 126, 145,0.5)]">
               <Building2 className="w-10 h-10 text-white" />
             </div>
             <div className="mb-3">
-              <span className="inline-block px-3 py-1 text-xs font-semibold bg-[#EC4899]/30 text-[#EC4899] border border-[#EC4899]/50 rounded-full mb-3">
+              <span className="inline-block px-3 py-1 text-xs font-semibold bg-[#D37E91]/30 text-[#D37E91] border border-[#D37E91]/50 rounded-full mb-3">
                 🎉 JOB OFFER
               </span>
             </div>
@@ -194,7 +194,7 @@ export default function OfferAcceptancePage() {
         {/* Offer Details */}
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8">
           <div className="flex items-center gap-3 mb-6">
-            <FileText className="w-6 h-6 text-[#EC4899]" />
+            <FileText className="w-6 h-6 text-[#D37E91]" />
             <h2 className="text-xl font-semibold text-white">Your Job Offer Details</h2>
           </div>
           

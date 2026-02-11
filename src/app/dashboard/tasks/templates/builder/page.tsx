@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { X } from 'lucide-react';
+import { X } from '@/components/ui/icons';
 import { MasterTemplateModal } from '@/components/templates/MasterTemplateModal';
 
 export default function TemplateBuilderPage() {

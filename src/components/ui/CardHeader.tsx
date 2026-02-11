@@ -25,9 +25,9 @@ export default function CardHeader({
       onClick={onToggle}
     >
       <div className="flex flex-col gap-0.5 flex-1 min-w-0 pr-2">
-        <div className="text-base md:text-lg font-semibold text-white truncate">{title}</div>
+        <div className="text-base md:text-lg font-semibold text-gray-900 dark:text-white truncate">{title}</div>
         {subtitle && (
-          <div className="text-xs md:text-sm text-gray-400 flex flex-wrap gap-1 items-center">
+          <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400 flex flex-wrap gap-1 items-center">
             {subtitle.split(' • ').map((part, index, array) => {
               const trimmedPart = part.trim();
               
@@ -38,7 +38,7 @@ export default function CardHeader({
                     <a
                       href={`mailto:${trimmedPart}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="hover:text-pink-400 transition-colors duration-200"
+                      className="hover:text-[#D37E91] transition-colors duration-200"
                     >
                       {trimmedPart}
                     </a>
@@ -54,7 +54,7 @@ export default function CardHeader({
                     <a
                       href={`tel:${trimmedPart}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="hover:text-pink-400 transition-colors duration-200"
+                      className="hover:text-[#D37E91] transition-colors duration-200"
                     >
                       {trimmedPart}
                     </a>

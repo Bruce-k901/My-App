@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle } from '@/components/ui/icons';
 import Input from '@/components/ui/Input';
 import Label from '@/components/ui/Label';
 import type { ReviewTemplateQuestion, ReviewResponse, SaveResponseInput } from '@/types/reviews';
@@ -43,7 +43,7 @@ export function ReviewFormQuestion({
         <div className="flex-1">
           <Label className="text-white font-medium">
             {question.question_text}
-            {question.is_required && <span className="text-[#EC4899] ml-1">*</span>}
+            {question.is_required && <span className="text-[#D37E91] ml-1">*</span>}
           </Label>
           {question.helper_text && (
             <p className="text-sm text-gray-500 dark:text-white/60 mt-1 flex items-center gap-1">
@@ -90,7 +90,7 @@ function QuestionInput({ question, value, onChange, disabled }: {
           value={value.response_text || ''}
           onChange={(e) => onChange({ response_text: e.target.value })}
           disabled={disabled}
-          className="flex min-h-[120px] w-full rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm px-3 py-2 placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EC4899]/50 focus-visible:border-[#EC4899]/50 hover:bg-white/[0.08] hover:border-white/20 transition-colors"
+          className="flex min-h-[120px] w-full rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm px-3 py-2 placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D37E91]/50 focus-visible:border-[#D37E91]/50 hover:bg-white/[0.08] hover:border-white/20 transition-colors"
           maxLength={question.max_length || undefined}
         />
       );
@@ -146,7 +146,7 @@ function RatingNumericInput({ question, value, onChange, disabled }: {
           disabled={disabled}
           className="flex-1"
         />
-        <span className="text-2xl font-bold text-[#EC4899] w-12 text-center">{currentValue}</span>
+        <span className="text-2xl font-bold text-[#D37E91] w-12 text-center">{currentValue}</span>
       </div>
       {(question.min_label || question.max_label) && (
         <div className="flex justify-between text-sm text-gray-500 dark:text-white/60">
@@ -179,7 +179,7 @@ function RatingScaleInput({ question, value, onChange, disabled }: {
             disabled={disabled}
             className={`w-12 h-12 rounded-lg border transition-colors ${
               value === num
-                ? 'bg-[#EC4899]/20 text-[#EC4899] border-[#EC4899]'
+                ? 'bg-[#D37E91]/20 text-[#D37E91] border-[#D37E91]'
                 : 'bg-white/[0.05] text-gray-500 dark:text-white/60 border-white/[0.06] hover:border-white/[0.1]'
             }`}
           >
@@ -197,7 +197,7 @@ function RatingScaleInput({ question, value, onChange, disabled }: {
           key={option.value}
           className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
             value === option.value
-              ? 'border-[#EC4899] bg-[#EC4899]/10'
+              ? 'border-[#D37E91] bg-[#D37E91]/10'
               : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.1]'
           }`}
         >
@@ -207,7 +207,7 @@ function RatingScaleInput({ question, value, onChange, disabled }: {
             checked={value === option.value}
             onChange={() => onChange(option.value)}
             disabled={disabled}
-            className="w-4 h-4 text-[#EC4899]"
+            className="w-4 h-4 text-[#D37E91]"
           />
           <div className="flex-1">
             <span className="font-medium text-white">{option.label}</span>
@@ -236,7 +236,7 @@ function SingleChoiceInput({ question, value, onChange, disabled }: {
             key={index}
             className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
               value === optValue
-                ? 'border-[#EC4899] bg-[#EC4899]/10'
+                ? 'border-[#D37E91] bg-[#D37E91]/10'
                 : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.1]'
             }`}
           >
@@ -246,7 +246,7 @@ function SingleChoiceInput({ question, value, onChange, disabled }: {
               checked={value === optValue}
               onChange={() => onChange(optValue)}
               disabled={disabled}
-              className="w-4 h-4 text-[#EC4899]"
+              className="w-4 h-4 text-[#D37E91]"
             />
             <span className="flex-1 text-white">{optLabel}</span>
           </label>
@@ -284,7 +284,7 @@ function MultipleChoiceInput({ question, value, onChange, disabled }: {
             key={index}
             className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
               isSelected
-                ? 'border-[#EC4899] bg-[#EC4899]/10'
+                ? 'border-[#D37E91] bg-[#D37E91]/10'
                 : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.1]'
             }`}
           >
@@ -293,7 +293,7 @@ function MultipleChoiceInput({ question, value, onChange, disabled }: {
               checked={isSelected}
               onChange={() => toggleOption(optValue)}
               disabled={disabled}
-              className="w-4 h-4 text-[#EC4899]"
+              className="w-4 h-4 text-[#D37E91]"
             />
             <span className="flex-1 text-white">{optLabel}</span>
           </label>
@@ -397,7 +397,7 @@ function ValueBehaviorInput({ question, tierSelected, example, onChange, disable
               checked={tierSelected === tier.value}
               onChange={() => onChange(tier.value, localExample)}
               disabled={disabled}
-              className="w-4 h-4 text-[#EC4899] mt-1"
+              className="w-4 h-4 text-[#D37E91] mt-1"
             />
             <div className="flex-1">
               <span className="font-medium text-white">{tier.label}</span>
@@ -408,7 +408,7 @@ function ValueBehaviorInput({ question, tierSelected, example, onChange, disable
       </div>
 
       <div className="space-y-2">
-        <Label className="text-white">Provide an example <span className="text-[#EC4899]">*</span></Label>
+        <Label className="text-white">Provide an example <span className="text-[#D37E91]">*</span></Label>
         <textarea
           placeholder="Describe a specific example that demonstrates this behavior..."
           value={localExample}
@@ -417,7 +417,7 @@ function ValueBehaviorInput({ question, tierSelected, example, onChange, disable
             if (tierSelected) onChange(tierSelected, e.target.value);
           }}
           disabled={disabled}
-          className="flex min-h-[100px] w-full rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm px-3 py-2 placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EC4899]/50 focus-visible:border-[#EC4899]/50 hover:bg-white/[0.08] hover:border-white/20 transition-colors"
+          className="flex min-h-[100px] w-full rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm px-3 py-2 placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D37E91]/50 focus-visible:border-[#D37E91]/50 hover:bg-white/[0.08] hover:border-white/20 transition-colors"
         />
       </div>
     </div>

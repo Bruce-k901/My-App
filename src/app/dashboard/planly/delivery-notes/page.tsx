@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { format } from 'date-fns';
-import { FileText, Loader2 } from 'lucide-react';
+import { FileText, Loader2 } from '@/components/ui/icons';
 import { Card } from '@/components/ui/Card';
 import { useDeliveryNotes } from '@/hooks/planly/useDeliveryNotes';
 import { useAppContext } from '@/context/AppContext';

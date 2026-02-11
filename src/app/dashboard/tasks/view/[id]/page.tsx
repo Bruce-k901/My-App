@@ -22,7 +22,7 @@ import {
   Building2,
   Tag,
   X
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { ChecklistTaskWithTemplate } from '@/types/checklist-types';
 import TaskCompletionModal from '@/components/checklists/TaskCompletionModal';
 import { formatDistanceToNow, format } from 'date-fns';
@@ -141,7 +141,7 @@ export default function TaskDetailPage() {
       <div className="flex flex-col w-full items-center">
         <div className="w-full max-w-[1280px] px-6 md:px-8 lg:px-12 flex flex-col gap-6 text-white py-8">
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-pink-400 animate-spin mr-3" />
+            <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin mr-3" />
             <span className="text-white/60">Loading task details...</span>
           </div>
         </div>
@@ -159,7 +159,7 @@ export default function TaskDetailPage() {
             <p className="text-white/60 mb-6">{error || 'Task not found'}</p>
             <button
               onClick={() => router.back()}
-              className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
+              className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200"
             >
               Go Back
             </button>
@@ -195,7 +195,7 @@ export default function TaskDetailPage() {
           {!isCompleted && (
             <button
               onClick={() => setShowCompletionModal(true)}
-              className="px-6 py-3 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] font-semibold rounded-lg transition-all duration-200 flex items-center gap-2"
+              className="px-6 py-3 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] font-semibold rounded-lg transition-all duration-200 flex items-center gap-2"
             >
               <CheckCircle2 className="w-5 h-5" />
               Complete Task

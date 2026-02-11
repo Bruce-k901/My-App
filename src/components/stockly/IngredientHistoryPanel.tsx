@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Package, TrendingUp, TrendingDown, RefreshCw, ShoppingCart, Trash2, ClipboardList, ArrowRightLeft, Loader2 } from 'lucide-react';
+import { Package, TrendingUp, TrendingDown, RefreshCw, ShoppingCart, Trash2, ClipboardList, ArrowRightLeft, Loader2 } from '@/components/ui/icons';
 import { formatDistanceToNow, format } from 'date-fns';
 
 interface StockMovement {
@@ -46,7 +46,7 @@ const MOVEMENT_TYPE_CONFIG: Record<string, { label: string; icon: React.ElementT
   production_in: { label: 'Produced', icon: Package, color: 'text-teal-500' },
   pos_drawdown: { label: 'Sale', icon: ShoppingCart, color: 'text-cyan-500' },
   internal_sale: { label: 'Internal Sale', icon: ShoppingCart, color: 'text-indigo-500' },
-  staff_sale: { label: 'Staff Sale', icon: ShoppingCart, color: 'text-pink-500' },
+  staff_sale: { label: 'Staff Sale', icon: ShoppingCart, color: 'text-[#D37E91]' },
   return_supplier: { label: 'Return', icon: ArrowRightLeft, color: 'text-gray-500' },
 };
 

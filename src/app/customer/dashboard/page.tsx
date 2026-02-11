@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Plus, Calendar, Edit, SkipForward, Loader2 } from 'lucide-react';
+import { Plus, Calendar, Edit, SkipForward, Loader2 } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import { MonthlySpendCard } from '@/components/customer/MonthlySpendCard';
 import { WasteDashboardWidget } from '@/components/customer/WasteDashboardWidget';
@@ -141,7 +141,7 @@ export default function CustomerDashboardPage() {
   if (!mounted) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -149,7 +149,7 @@ export default function CustomerDashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -166,7 +166,7 @@ export default function CustomerDashboardPage() {
               loadDashboardData();
             }}
             variant="primary"
-            className="bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+            className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
           >
             Try Again
           </Button>
@@ -216,7 +216,7 @@ export default function CustomerDashboardPage() {
         <Link href="/customer/order/new">
           <Button
             variant="primary"
-            className="w-full min-h-[44px] bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+            className="w-full min-h-[44px] bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
           >
             <Plus className="w-5 h-5 mr-2" />
             Place Order
@@ -244,7 +244,7 @@ export default function CustomerDashboardPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <Calendar className="w-4 h-4 text-[#EC4899]" />
+                      <Calendar className="w-4 h-4 text-[#D37E91]" />
                       <span className="font-medium text-white">{formatDate(order.delivery_date)}</span>
                       <span
                         className={`text-xs px-2 py-0.5 rounded ${
@@ -272,7 +272,7 @@ export default function CustomerDashboardPage() {
           <div className="mt-4 pt-4 border-t border-white/[0.06]">
             <Link
               href="/customer/orders"
-              className="text-[#EC4899] hover:text-[#EC4899]/80 text-sm font-medium transition-colors"
+              className="text-[#D37E91] hover:text-[#D37E91]/80 text-sm font-medium transition-colors"
             >
               View all orders →
             </Link>

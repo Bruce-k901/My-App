@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { useMobileNav } from './MobileNavProvider';
 import { QuickActionsGrid } from './QuickActionsGrid';
@@ -12,7 +12,7 @@ import {
   Wrench,         // Assetly
   Users,          // Teamly
   MessageSquare,  // Msgly
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 const moduleSections = [
   { id: 'stockly', label: 'Stockly', subtitle: 'Inventory', icon: Package, color: '#10B981' },

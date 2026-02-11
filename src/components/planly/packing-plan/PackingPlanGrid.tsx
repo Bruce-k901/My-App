@@ -175,17 +175,20 @@ export function PackingPlanGrid({
         </thead>
         <tbody>
           {groupedProducts?.map((group) => {
+            const showGroupHeader = groupedProducts.length > 1;
             return (
               <Fragment key={group.id}>
-                {/* Group Header Row */}
-                <tr className="group-header bg-gray-200/70 dark:bg-zinc-700/50">
-                  <td
-                    colSpan={customers.length + 2}
-                    className="border border-gray-300 dark:border-zinc-600 px-3 py-2 font-semibold text-gray-800 dark:text-white uppercase tracking-wide text-xs"
-                  >
-                    {group.icon || '📦'} {group.name}
-                  </td>
-                </tr>
+                {/* Group Header Row - only show if multiple groups */}
+                {showGroupHeader && (
+                  <tr className="group-header bg-gray-200/70 dark:bg-zinc-700/50">
+                    <td
+                      colSpan={customers.length + 2}
+                      className="border border-gray-300 dark:border-zinc-600 px-3 py-2 font-semibold text-gray-800 dark:text-white uppercase tracking-wide text-xs"
+                    >
+                      {group.icon || '📦'} {group.name}
+                    </td>
+                  </tr>
+                )}
 
                 {/* Product Rows */}
                 {group.products.map((product, productIndex) => {

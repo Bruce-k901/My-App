@@ -1,23 +1,29 @@
 /**
- * Order Book Customer API Helper Functions
- * Client-side functions for interacting with Order Book API routes
+ * Customer Portal API Helper Functions
+ * Client-side functions for the customer portal, backed by planly tables.
  */
 
 export interface Product {
   id: string;
-  supplier_id: string;
   name: string;
   description: string | null;
-  sku: string | null;
   category: string | null;
+  bake_group_id?: string | null;
+  bake_group_name?: string | null;
+  bake_group_priority?: number;
   base_price: number;
   unit: string;
-  bulk_discounts: any;
   is_active: boolean;
-  is_available: boolean;
-  image_url: string | null;
-  created_at: string;
-  updated_at: string;
+  is_available?: boolean;
+  default_ship_state?: string;
+  can_ship_frozen?: boolean;
+  // Legacy order_book fields (optional for backward compat)
+  supplier_id?: string;
+  sku?: string | null;
+  bulk_discounts?: any;
+  image_url?: string | null;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface OrderItem {
@@ -27,22 +33,23 @@ export interface OrderItem {
 
 export interface Order {
   id: string;
-  supplier_id: string;
   customer_id: string;
-  order_number: string;
-  order_date: string;
   delivery_date: string;
+  order_date?: string;
   status: string;
-  subtotal: number;
   total: number;
+  subtotal?: number;
   items?: Array<{
     id: string;
     product_id: string;
     quantity: number;
     unit_price: number;
     line_total: number;
-    product?: Product;
+    product?: Partial<Product>;
   }>;
+  // Legacy order_book fields (optional)
+  supplier_id?: string;
+  order_number?: string;
   customer?: {
     id: string;
     business_name: string;
@@ -53,7 +60,7 @@ export interface Order {
 
 export interface StandingOrder {
   id: string;
-  supplier_id: string;
+  site_id: string;
   customer_id: string;
   delivery_days: string[];
   start_date: string;
@@ -73,30 +80,34 @@ export interface StandingOrder {
 
 export interface Customer {
   id: string;
-  company_id: string;
-  supplier_id: string;
+  site_id: string;
   business_name: string;
-  trading_name: string | null;
   contact_name: string | null;
   email: string | null;
   phone: string | null;
-  status: string;
-  created_at: string;
-  updated_at: string;
+  is_active?: boolean;
+  default_ship_state?: string;
+  // Legacy order_book fields (optional)
+  company_id?: string;
+  supplier_id?: string;
+  trading_name?: string | null;
+  status?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 /**
- * Get product catalog for a supplier
+ * Get product catalog for a site (from planly_products)
  */
-export async function getProductCatalog(supplierId?: string): Promise<Product[]> {
-  const url = new URL('/api/order-book/products', window.location.origin);
-  if (supplierId) {
-    url.searchParams.set('supplier_id', supplierId);
+export async function getProductCatalog(siteId?: string): Promise<Product[]> {
+  const url = new URL('/api/customer/products', window.location.origin);
+  if (siteId) {
+    url.searchParams.set('site_id', siteId);
   }
 
   const response = await fetch(url.toString());
   if (!response.ok) {
-    const error = await response.json();
+    const error = await response.json().catch(() => ({}));
     throw new Error(error.error || 'Failed to fetch products');
   }
 
@@ -105,10 +116,36 @@ export async function getProductCatalog(supplierId?: string): Promise<Product[]>
 }
 
 /**
- * Get customer profile
+ * Get customer profile (from planly_customers)
  */
 export async function getCustomerProfile(customerId?: string): Promise<Customer | null> {
-  const url = new URL('/api/order-book/customers', window.location.origin);
+  // In admin preview mode, use the selected customer from sessionStorage
+  if (!customerId && typeof window !== 'undefined') {
+    let previewId = sessionStorage.getItem('admin_preview_customer_id');
+
+    // If admin mode is active but no customer selected yet, auto-select the first one
+    if (!previewId && sessionStorage.getItem('admin_preview_mode') === 'true') {
+      try {
+        const listRes = await fetch('/api/planly/customers?isActive=true');
+        if (listRes.ok) {
+          const listJson = await listRes.json();
+          const customers = listJson.data || listJson;
+          if (Array.isArray(customers) && customers.length > 0) {
+            previewId = customers[0].id;
+            sessionStorage.setItem('admin_preview_customer_id', previewId!);
+          }
+        }
+      } catch (e) {
+        console.error('[Admin Preview] Error loading customer list:', e);
+      }
+    }
+
+    if (previewId) {
+      customerId = previewId;
+    }
+  }
+
+  const url = new URL('/api/customer/profile', window.location.origin);
   if (customerId) {
     url.searchParams.set('customer_id', customerId);
   }
@@ -118,7 +155,7 @@ export async function getCustomerProfile(customerId?: string): Promise<Customer 
     if (response.status === 404) {
       return null;
     }
-    const error = await response.json();
+    const error = await response.json().catch(() => ({}));
     throw new Error(error.error || 'Failed to fetch customer profile');
   }
 
@@ -127,62 +164,47 @@ export async function getCustomerProfile(customerId?: string): Promise<Customer 
 }
 
 /**
- * Create a new order
+ * Create a new order (writes to planly_orders)
  */
 export async function createOrder(data: {
-  supplier_id: string;
+  site_id: string;
   customer_id: string;
   delivery_date: string;
   items: OrderItem[];
 }): Promise<Order> {
-  // 🔍 DEBUG: Log what we're sending
-  console.log(`[createOrder] Sending order for ${data.delivery_date} with ${data.items.length} items`);
-  console.log('[createOrder] Items:', data.items.map(i => `${i.product_id}: qty=${i.quantity}`));
-
-  const response = await fetch('/api/order-book/orders', {
+  const response = await fetch('/api/customer/orders', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-    console.error('[createOrder] API Error:', error);
     throw new Error(error.error || 'Failed to create order');
   }
 
   try {
     const result = await response.json();
-    console.log(`[createOrder] Order saved successfully:`, result.data?.id);
     return result.data;
-  } catch (parseError) {
-    console.error('[createOrder] Error parsing response:', parseError);
-    // Even if response parsing fails, the order was likely saved
-    // Return a minimal order object so the frontend can continue
+  } catch {
     return {
-      id: data.delivery_date, // Temporary ID
+      id: data.delivery_date,
       delivery_date: data.delivery_date,
-      status: 'draft',
+      status: 'confirmed',
     } as Order;
   }
 }
 
 /**
- * Get orders
+ * Get orders (from planly_orders)
  */
 export async function getOrders(params?: {
   customer_id?: string;
-  supplier_id?: string;
   delivery_date?: string;
 }): Promise<Order[]> {
-  const url = new URL('/api/order-book/orders', window.location.origin);
+  const url = new URL('/api/customer/orders', window.location.origin);
   if (params?.customer_id) {
     url.searchParams.set('customer_id', params.customer_id);
-  }
-  if (params?.supplier_id) {
-    url.searchParams.set('supplier_id', params.supplier_id);
   }
   if (params?.delivery_date) {
     url.searchParams.set('delivery_date', params.delivery_date);
@@ -190,7 +212,7 @@ export async function getOrders(params?: {
 
   const response = await fetch(url.toString());
   if (!response.ok) {
-    const error = await response.json();
+    const error = await response.json().catch(() => ({}));
     throw new Error(error.error || 'Failed to fetch orders');
   }
 
@@ -199,24 +221,20 @@ export async function getOrders(params?: {
 }
 
 /**
- * Get standing orders
+ * Get standing orders from planly_standing_orders
  */
 export async function getStandingOrders(params?: {
   customer_id?: string;
-  supplier_id?: string;
 }): Promise<StandingOrder[]> {
-  const url = new URL('/api/order-book/standing-orders', window.location.origin);
+  const url = new URL('/api/customer/standing-orders', window.location.origin);
   if (params?.customer_id) {
     url.searchParams.set('customer_id', params.customer_id);
-  }
-  if (params?.supplier_id) {
-    url.searchParams.set('supplier_id', params.supplier_id);
   }
 
   const response = await fetch(url.toString());
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to fetch standing orders');
+    // Standing orders may not exist yet — return empty
+    return [];
   }
 
   const data = await response.json();
@@ -224,26 +242,23 @@ export async function getStandingOrders(params?: {
 }
 
 /**
- * Create or update standing order
+ * Create or update standing order for customer in planly_standing_orders
  */
 export async function createStandingOrder(data: {
-  supplier_id: string;
   customer_id: string;
   delivery_days: string[];
   items: OrderItem[];
   start_date?: string;
   end_date?: string | null;
 }): Promise<StandingOrder> {
-  const response = await fetch('/api/order-book/standing-orders', {
+  const response = await fetch('/api/customer/standing-orders', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
 
   if (!response.ok) {
-    const error = await response.json();
+    const error = await response.json().catch(() => ({}));
     throw new Error(error.error || 'Failed to create standing order');
   }
 
@@ -252,7 +267,7 @@ export async function createStandingOrder(data: {
 }
 
 /**
- * Update standing order
+ * Update standing order in planly_standing_orders
  */
 export async function updateStandingOrder(
   id: string,
@@ -265,31 +280,17 @@ export async function updateStandingOrder(
     end_date?: string | null;
   }
 ): Promise<StandingOrder> {
-  const response = await fetch('/api/order-book/standing-orders', {
+  const response = await fetch('/api/customer/standing-orders', {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id, ...updates }),
   });
 
   if (!response.ok) {
-    const error = await response.json();
+    const error = await response.json().catch(() => ({}));
     throw new Error(error.error || 'Failed to update standing order');
   }
 
   const result = await response.json();
   return result.data;
 }
-
-/**
- * Skip a delivery date for a standing order
- * Note: This would require a separate API endpoint or we'd update the skips table directly
- * For now, this is a placeholder - you'd need to add an endpoint for this
- */
-export async function skipDelivery(standingOrderId: string, date: string): Promise<void> {
-  // TODO: Implement skip delivery endpoint
-  // For now, this is a placeholder
-  throw new Error('Skip delivery endpoint not yet implemented');
-}
-

@@ -2,7 +2,7 @@
 
 import { StorageArea } from '@/lib/types/stockly';
 import Button from '@/components/ui/Button';
-import { Edit, Trash2, Package, Loader2 } from 'lucide-react';
+import { Edit, Trash2, Package, Loader2 } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
 import { toast } from 'sonner';

@@ -5,7 +5,7 @@ import { Department, DepartmentForm, DEFAULT_DEPARTMENT_FORM } from '@/types/dep
 import { useStandardDepartments } from '@/hooks/use-standard-departments';
 import Input from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { X } from 'lucide-react';
+import { X } from '@/components/ui/icons';
 import { toast } from 'sonner';
 
 interface DepartmentFormProps {
@@ -158,7 +158,7 @@ export default function DepartmentFormComponent({
                     setFormData({ ...formData, name: standardDepartments[0].name });
                   }
                 }}
-                className="w-4 h-4 text-[#EC4899] bg-white/[0.03] border-white/[0.06] focus:ring-[#EC4899]/50"
+                className="w-4 h-4 text-[#D37E91] bg-white/[0.03] border-white/[0.06] focus:ring-[#D37E91]/50"
               />
               <span className="text-sm text-gray-300">Standard</span>
             </label>
@@ -172,7 +172,7 @@ export default function DepartmentFormComponent({
                   setDepartmentNameMode('custom');
                   setFormData({ ...formData, name: '' });
                 }}
-                className="w-4 h-4 text-[#EC4899] bg-white/[0.03] border-white/[0.06] focus:ring-[#EC4899]/50"
+                className="w-4 h-4 text-[#D37E91] bg-white/[0.03] border-white/[0.06] focus:ring-[#D37E91]/50"
               />
               <span className="text-sm text-gray-300">Other (Custom)</span>
             </label>
@@ -234,7 +234,7 @@ export default function DepartmentFormComponent({
                     selectedParentId: selected.parent_department_id,
                   });
                 }}
-                className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={loadingStandard}
               >
                 <option value="" className="bg-[#0B0D13] text-white">Select a standard department...</option>
@@ -331,7 +331,7 @@ export default function DepartmentFormComponent({
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             placeholder="Brief description of the department"
             rows={3}
-            className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+            className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
           />
         </div>
 
@@ -344,7 +344,7 @@ export default function DepartmentFormComponent({
               <button
                 type="button"
                 onClick={() => setShowCreateParentForm(true)}
-                className="text-xs text-[#EC4899] hover:text-[#EC4899]/80 underline"
+                className="text-xs text-[#D37E91] hover:text-[#D37E91]/80 underline"
               >
                 + Create New Parent
               </button>
@@ -386,7 +386,7 @@ export default function DepartmentFormComponent({
                   onChange={(e) => setParentFormData({ ...parentFormData, description: e.target.value })}
                   placeholder="Brief description"
                   rows={2}
-                  className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+                  className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -416,7 +416,7 @@ export default function DepartmentFormComponent({
                     }
                   }}
                   disabled={creatingParent || !parentFormData.name.trim()}
-                  className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] text-sm px-3 py-1.5"
+                  className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] text-sm px-3 py-1.5"
                 >
                   {creatingParent ? 'Creating...' : 'Create & Select'}
                 </Button>
@@ -448,7 +448,7 @@ export default function DepartmentFormComponent({
                     parent_department_id: value || null,
                   });
                 }}
-                className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50"
+                className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50"
               >
                 <option value="" className="bg-[#0B0D13] text-white">None (Top Level)</option>
                 
@@ -556,7 +556,7 @@ export default function DepartmentFormComponent({
                 status: e.target.value as 'active' | 'inactive' | 'archived',
               })
             }
-            className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50"
+            className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50"
           >
             <option value="active" className="bg-[#0B0D13] text-white">Active</option>
             <option value="inactive" className="bg-[#0B0D13] text-white">Inactive</option>
@@ -652,7 +652,7 @@ export default function DepartmentFormComponent({
               onChange={(e) => updateContactDetails('notes', e.target.value)}
               placeholder="Additional notes (e.g., Available 9-5 weekdays)"
               rows={2}
-              className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+              className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
             />
           </div>
         </div>
@@ -724,7 +724,7 @@ export default function DepartmentFormComponent({
         <Button
           type="submit"
           disabled={isLoading}
-          className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+          className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
         >
           {isLoading ? 'Saving...' : department ? 'Update Department' : 'Create Department'}
         </Button>

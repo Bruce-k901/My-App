@@ -13,7 +13,7 @@ import {
   User,
   Filter,
   AlertTriangle
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import { useAppContext } from '@/context/AppContext';
 import type { Review, EmployeeReviewSchedule } from '@/types/reviews';

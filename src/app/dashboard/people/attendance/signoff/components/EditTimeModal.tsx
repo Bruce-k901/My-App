@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { X, Clock, AlertTriangle } from 'lucide-react';
+import { X, Clock, AlertTriangle } from '@/components/ui/icons';
 import { AttendanceRecord } from '@/lib/attendance/types';
 import TimePicker from '@/components/ui/TimePicker';
 

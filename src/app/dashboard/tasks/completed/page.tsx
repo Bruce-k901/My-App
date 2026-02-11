@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { CheckCircle2, Loader2, AlertCircle, Filter, X, ChevronDown } from 'lucide-react';
+import { CheckCircle2, Loader2, AlertCircle, Filter, X, ChevronDown } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import CompletedTaskCard from '@/components/checklists/CompletedTaskCard';
@@ -652,14 +652,14 @@ export default function CompletedTasksPage() {
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
               showFilters || activeFilterCount > 0
-                ? 'bg-pink-500/10 border-pink-500/30 text-pink-500'
+                ? 'bg-[#D37E91]/15 border-[#D37E91]/30 text-[#D37E91]'
                 : 'bg-[rgb(var(--surface))] border-[rgb(var(--border))] text-[rgb(var(--text-secondary))] hover:border-[rgb(var(--border-hover))]'
             }`}
           >
             <Filter className="w-4 h-4" />
             <span>Filters</span>
             {activeFilterCount > 0 && (
-              <span className="bg-pink-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+              <span className="bg-[#D37E91] text-white text-xs px-1.5 py-0.5 rounded-full">
                 {activeFilterCount}
               </span>
             )}
@@ -680,7 +680,7 @@ export default function CompletedTasksPage() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1f2e] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+                className="w-full px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1f2e] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
               >
                 <option value="all">All Types</option>
                 {filterOptions.categories.map((category) => (
@@ -699,7 +699,7 @@ export default function CompletedTasksPage() {
               <select
                 value={selectedCompletedBy}
                 onChange={(e) => setSelectedCompletedBy(e.target.value)}
-                className="w-full px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1f2e] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+                className="w-full px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1f2e] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
               >
                 <option value="all">All Users</option>
                 {filterOptions.users.map((user) => (
@@ -718,7 +718,7 @@ export default function CompletedTasksPage() {
               <select
                 value={selectedIssueFilter}
                 onChange={(e) => setSelectedIssueFilter(e.target.value)}
-                className="w-full px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1f2e] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500/50"
+                className="w-full px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1f2e] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
               >
                 <option value="all">All Tasks</option>
                 <option value="with_issues">With Issues</option>
@@ -738,7 +738,7 @@ export default function CompletedTasksPage() {
               </span>
               <button
                 onClick={clearFilters}
-                className="flex items-center gap-1 text-sm text-pink-500 hover:text-pink-400 transition-colors"
+                className="flex items-center gap-1 text-sm text-[#D37E91] hover:text-[#D37E91] transition-colors"
               >
                 <X className="w-3 h-3" />
                 Clear filters
@@ -763,7 +763,7 @@ export default function CompletedTasksPage() {
       {/* Loading State */}
       {loading ? (
         <div className="mt-8 text-center py-12">
-          <Loader2 className="h-12 w-12 text-pink-500 mx-auto mb-4 animate-spin" />
+          <Loader2 className="h-12 w-12 text-[#D37E91] mx-auto mb-4 animate-spin" />
           <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">Loading completed tasks...</p>
         </div>
       ) : completedTasks.length === 0 ? (
@@ -778,7 +778,7 @@ export default function CompletedTasksPage() {
           <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2">No tasks match your filters</p>
           <button
             onClick={clearFilters}
-            className="text-pink-500 hover:text-pink-400 text-sm transition-colors"
+            className="text-[#D37E91] hover:text-[#D37E91] text-sm transition-colors"
           >
             Clear all filters
           </button>

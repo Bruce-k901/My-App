@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Calendar, MapPin, User, FileText, Upload, CheckCircle2, ExternalLink, AlertTriangle, Clock } from 'lucide-react'
+import { X, Calendar, MapPin, User, FileText, Upload, CheckCircle2, ExternalLink, AlertTriangle, Clock } from '@/components/ui/icons'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/components/ui/ToastProvider'
 import { useAppContext } from '@/context/AppContext'

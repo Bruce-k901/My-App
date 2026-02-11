@@ -3,7 +3,7 @@
 import { useState, useTransition, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, Clock, User, FileText, Repeat, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, User, FileText, Repeat, AlertTriangle } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import Input from '@/components/ui/Input';
 import Label from '@/components/ui/Label';
@@ -180,7 +180,7 @@ export function ScheduleForm({ templates, employees = [] }: ScheduleFormProps) {
 
         <div className="space-y-2">
           <Label className="flex items-center gap-2 text-white">
-            <FileText className="h-4 w-4" />Review Template <span className="text-[#EC4899]">*</span>
+            <FileText className="h-4 w-4" />Review Template <span className="text-[#D37E91]">*</span>
           </Label>
           <Select
             value={formData.template_id || undefined}
@@ -207,7 +207,7 @@ export function ScheduleForm({ templates, employees = [] }: ScheduleFormProps) {
 
         <div className="space-y-2">
           <Label className="flex items-center gap-2 text-white">
-            <Calendar className="h-4 w-4" />Scheduled Date <span className="text-[#EC4899]">*</span>
+            <Calendar className="h-4 w-4" />Scheduled Date <span className="text-[#D37E91]">*</span>
           </Label>
           <Input
             type="date"

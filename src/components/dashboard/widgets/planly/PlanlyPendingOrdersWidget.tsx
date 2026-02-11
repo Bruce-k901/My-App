@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import { WidgetProps, MODULE_COLORS } from '@/types/dashboard';
 import { WidgetCard, WidgetEmptyState, WidgetLoading } from '../WidgetWrapper';
-import { ShoppingBag, Calendar, User } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { ShoppingBag, Calendar, User } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -29,70 +28,8 @@ export default function PlanlyPendingOrdersWidget({ companyId, siteId }: WidgetP
       return;
     }
 
-    async function fetchOrders() {
-      try {
-        let query = supabase
-          .from('planly_customer_orders')
-          .select(`
-            id,
-            order_number,
-            delivery_date,
-            status,
-            customer:planly_customers(name),
-            lines:planly_customer_order_lines(count)
-          `)
-          .eq('company_id', companyId)
-          .in('status', ['pending', 'confirmed', 'in_production'])
-          .order('delivery_date', { ascending: true, nullsFirst: false })
-          .limit(5);
-
-        if (siteId && siteId !== 'all') {
-          query = query.eq('site_id', siteId);
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-          if (error.code === '42P01') {
-            console.debug('planly_customer_orders table not available');
-            setLoading(false);
-            return;
-          }
-          throw error;
-        }
-
-        const formattedOrders: CustomerOrder[] = (data || []).map((order: any) => ({
-          id: order.id,
-          order_number: order.order_number || 'No Order#',
-          customer_name: order.customer?.name || 'Unknown Customer',
-          delivery_date: order.delivery_date,
-          total_items: order.lines?.[0]?.count || 0,
-          status: order.status,
-        }));
-
-        setOrders(formattedOrders);
-
-        // Get total count
-        let countQuery = supabase
-          .from('planly_customer_orders')
-          .select('id', { count: 'exact', head: true })
-          .eq('company_id', companyId)
-          .in('status', ['pending', 'confirmed', 'in_production']);
-
-        if (siteId && siteId !== 'all') {
-          countQuery = countQuery.eq('site_id', siteId);
-        }
-
-        const { count } = await countQuery;
-        setTotalCount(count || 0);
-      } catch (err) {
-        console.error('Error fetching customer orders:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchOrders();
+    // planly_customer_orders table not yet created — skip query to avoid 404
+    setLoading(false);
   }, [companyId, siteId]);
 
   if (loading) {

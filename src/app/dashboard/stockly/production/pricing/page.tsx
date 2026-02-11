@@ -1,6 +1,6 @@
 "use client";
 
-import { Tag, Loader2 } from 'lucide-react';
+import { Tag, Loader2 } from '@/components/ui/icons';
 
 export default function PricingPage() {
   return (

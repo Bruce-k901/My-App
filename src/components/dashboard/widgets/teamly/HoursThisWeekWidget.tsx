@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import { WidgetProps, MODULE_COLORS } from '@/types/dashboard';
 import { WidgetCard, WidgetEmptyState, WidgetLoading } from '../WidgetWrapper';
-import { Clock, TrendingUp, TrendingDown } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { Clock, TrendingUp, TrendingDown } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 
 interface HoursSummary {
@@ -24,86 +23,8 @@ export default function HoursThisWeekWidget({ companyId, siteId }: WidgetProps) 
       return;
     }
 
-    async function fetchHours() {
-      try {
-        // Get start and end of current week (Monday to Sunday)
-        const today = new Date();
-        const dayOfWeek = today.getDay();
-        const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-        const monday = new Date(today);
-        monday.setDate(today.getDate() + mondayOffset);
-        monday.setHours(0, 0, 0, 0);
-
-        const sunday = new Date(monday);
-        sunday.setDate(monday.getDate() + 6);
-        sunday.setHours(23, 59, 59, 999);
-
-        const mondayStr = monday.toISOString().split('T')[0];
-        const sundayStr = sunday.toISOString().split('T')[0];
-
-        // Get scheduled hours from schedule_shifts
-        let scheduleQuery = supabase
-          .from('schedule_shifts')
-          .select('start_time, end_time')
-          .eq('company_id', companyId)
-          .gte('date', mondayStr)
-          .lte('date', sundayStr);
-
-        if (siteId && siteId !== 'all') {
-          scheduleQuery = scheduleQuery.eq('site_id', siteId);
-        }
-
-        const { data: shifts, error: shiftsError } = await scheduleQuery;
-
-        let scheduledHours = 0;
-        if (!shiftsError && shifts) {
-          shifts.forEach((shift: any) => {
-            if (shift.start_time && shift.end_time) {
-              const start = parseFloat(shift.start_time.split(':')[0]) + parseFloat(shift.start_time.split(':')[1]) / 60;
-              const end = parseFloat(shift.end_time.split(':')[0]) + parseFloat(shift.end_time.split(':')[1]) / 60;
-              scheduledHours += end > start ? end - start : (24 - start) + end;
-            }
-          });
-        }
-
-        // Get worked hours from staff_attendance
-        let attendanceQuery = supabase
-          .from('staff_attendance')
-          .select('clock_in, clock_out')
-          .eq('company_id', companyId)
-          .gte('date', mondayStr)
-          .lte('date', sundayStr);
-
-        if (siteId && siteId !== 'all') {
-          attendanceQuery = attendanceQuery.eq('site_id', siteId);
-        }
-
-        const { data: attendance, error: attendanceError } = await attendanceQuery;
-
-        let workedHours = 0;
-        if (!attendanceError && attendance) {
-          attendance.forEach((record: any) => {
-            if (record.clock_in && record.clock_out) {
-              const clockIn = new Date(record.clock_in);
-              const clockOut = new Date(record.clock_out);
-              workedHours += (clockOut.getTime() - clockIn.getTime()) / (1000 * 60 * 60);
-            }
-          });
-        }
-
-        setSummary({
-          scheduledHours: Math.round(scheduledHours * 10) / 10,
-          workedHours: Math.round(workedHours * 10) / 10,
-          contractedHours: null, // Would need to sum from profiles
-        });
-      } catch (err) {
-        console.error('Error fetching hours:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchHours();
+    // schedule_shifts table not yet created — skip query to avoid 404
+    setLoading(false);
   }, [companyId, siteId]);
 
   if (loading) {

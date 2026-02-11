@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import { WidgetProps, MODULE_COLORS } from '@/types/dashboard';
 import { WidgetCard, WidgetEmptyState, WidgetLoading } from '../WidgetWrapper';
-import { Truck, Calendar, MapPin } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { Truck, Calendar, MapPin } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -28,65 +27,8 @@ export default function DeliveryScheduleWidget({ companyId, siteId }: WidgetProp
       return;
     }
 
-    async function fetchDeliveries() {
-      try {
-        const today = new Date();
-        const threeDaysLater = new Date(today);
-        threeDaysLater.setDate(today.getDate() + 3);
-
-        const todayStr = today.toISOString().split('T')[0];
-        const futureStr = threeDaysLater.toISOString().split('T')[0];
-
-        let query = supabase
-          .from('planly_customer_orders')
-          .select(`
-            id,
-            delivery_date,
-            delivery_time,
-            customer:planly_customers(name, delivery_address),
-            lines:planly_customer_order_lines(count)
-          `)
-          .eq('company_id', companyId)
-          .gte('delivery_date', todayStr)
-          .lte('delivery_date', futureStr)
-          .in('status', ['confirmed', 'in_production', 'ready'])
-          .order('delivery_date', { ascending: true })
-          .order('delivery_time', { ascending: true, nullsFirst: false })
-          .limit(6);
-
-        if (siteId && siteId !== 'all') {
-          query = query.eq('site_id', siteId);
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-          if (error.code === '42P01') {
-            console.debug('planly_customer_orders table not available');
-            setLoading(false);
-            return;
-          }
-          throw error;
-        }
-
-        const formattedDeliveries: ScheduledDelivery[] = (data || []).map((order: any) => ({
-          id: order.id,
-          customer_name: order.customer?.name || 'Unknown Customer',
-          delivery_date: order.delivery_date,
-          delivery_time: order.delivery_time,
-          item_count: order.lines?.[0]?.count || 0,
-          address: order.customer?.delivery_address,
-        }));
-
-        setDeliveries(formattedDeliveries);
-      } catch (err) {
-        console.error('Error fetching delivery schedule:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchDeliveries();
+    // planly_customer_orders table not yet created — skip query to avoid 404
+    setLoading(false);
   }, [companyId, siteId]);
 
   if (loading) {

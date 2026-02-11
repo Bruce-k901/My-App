@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import WelcomeHeader from "@/components/dashboard/WelcomeHeader";
 import { OpslyDashboard } from "@/components/dashboard/OpslyDashboard";
@@ -15,6 +15,20 @@ export default function DashboardHomePage() {
   const router = useRouter();
   const { companyId, loading, user, profile } = useAppContext();
   const { isMobile, isHydrated } = useIsMobile();
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+
+  // Load notification preference from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('opsly_notifications_enabled');
+    if (stored !== null) {
+      setNotificationsEnabled(stored === 'true');
+    }
+  }, []);
+
+  const handleNotificationsToggle = useCallback((enabled: boolean) => {
+    setNotificationsEnabled(enabled);
+    localStorage.setItem('opsly_notifications_enabled', String(enabled));
+  }, []);
 
   // Note: Users should always have a company after signup (created in auth callback)
   // This redirect is a safety net in case something went wrong during signup
@@ -30,7 +44,7 @@ export default function DashboardHomePage() {
   if (!isHydrated) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-2 border-fuchsia-400 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-teamly border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -48,6 +62,8 @@ export default function DashboardHomePage() {
         <MobileHeader
           userName={userName}
           unreadNotifications={0}
+          notificationsEnabled={notificationsEnabled}
+          onNotificationsToggle={handleNotificationsToggle}
         />
 
         <div className="px-4 space-y-4 pb-24">

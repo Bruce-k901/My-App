@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 /**
  * GET /api/order-book/products
@@ -9,31 +10,35 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify user is authenticated
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Check if user is a platform admin for RLS bypass
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('is_platform_admin, app_role, company_id')
+      .eq('auth_user_id', user.id)
+      .maybeSingle();
+    const isPlatformAdmin = !!(profileData?.is_platform_admin || profileData?.app_role === 'Owner');
+    const client = isPlatformAdmin ? getSupabaseAdmin() : supabase;
+
     const supplierId = request.nextUrl.searchParams.get('supplier_id');
 
     // If supplier_id not provided, try to get from user's company
     let finalSupplierId = supplierId;
     if (!finalSupplierId) {
-      // Get user's profile to find their company
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('company_id')
-        .eq('id', user.id)
-        .maybeSingle();
+      const companyId = profileData?.company_id;
 
-      if (profile?.company_id) {
+      if (companyId) {
         // Find supplier for this company
-        const { data: supplier } = await supabase
+        const { data: supplier } = await client
           .from('order_book_suppliers')
           .select('id')
-          .eq('company_id', profile.company_id)
+          .eq('company_id', companyId)
           .eq('is_active', true)
           .maybeSingle();
 
@@ -50,8 +55,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get products (RLS will filter based on user's access)
-    const { data: products, error } = await supabase
+    // Get products
+    const { data: products, error } = await client
       .from('order_book_products')
       .select('*')
       .eq('supplier_id', finalSupplierId)

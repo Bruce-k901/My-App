@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAppContext } from '@/context/AppContext'
 import { supabase } from '@/lib/supabase'
-import { ArrowLeft, Save, Send, Loader2 } from 'lucide-react'
+import { ArrowLeft, Save, Send, Loader2 } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import Select from '@/components/ui/Select'
 
@@ -359,7 +359,7 @@ export default function PostJobPage() {
             <button
               onClick={() => handleSave(true)}
               disabled={saving || publishing || !title.trim()}
-              className="px-4 py-2 rounded-lg text-sm bg-transparent text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all disabled:opacity-50 flex items-center gap-2"
+              className="px-4 py-2 rounded-lg text-sm bg-transparent text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all disabled:opacity-50 flex items-center gap-2"
             >
               {publishing ? (
                 <>

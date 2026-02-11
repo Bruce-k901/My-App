@@ -31,7 +31,7 @@ import {
   ClipboardCheck,
   ShieldCheck,
   Paperclip
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { PPEList } from '@/extensions/PPEList';
 import { IngredientTable } from '@/extensions/IngredientTable';
 import { PrepHeader } from '@/extensions/PrepHeader';
@@ -350,77 +350,77 @@ export default function SOPPlayground({
             <div className="flex gap-1 border-l border-neutral-600 pl-2 ml-2">
               <button
                 onClick={() => handleInsertBlock("prepHeader")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <FileText size={14} className="inline mr-1" />
                 Header
               </button>
               <button
                 onClick={() => handleInsertBlock("preStartChecklist")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <CheckSquare size={14} className="inline mr-1" />
                 Pre-Start
               </button>
               <button
                 onClick={() => handleInsertBlock("equipmentList")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <Wrench size={14} className="inline mr-1" />
                 Equipment
               </button>
               <button
                 onClick={() => handleInsertBlock("ppeList")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <Shield size={14} className="inline mr-1" />
                 PPE
               </button>
               <button
                 onClick={() => handleInsertBlock("ingredientTable")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <Package size={14} className="inline mr-1" />
                 Ingredients
               </button>
               <button
                 onClick={() => handleInsertBlock("processSteps")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <Play size={14} className="inline mr-1" />
                 Process
               </button>
               <button
                 onClick={() => handleInsertBlock("storageInfo")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <Archive size={14} className="inline mr-1" />
                 Storage
               </button>
               <button
                 onClick={() => handleInsertBlock("postFinishChecklist")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <ClipboardCheck size={14} className="inline mr-1" />
                 Post-Finish
               </button>
               <button
                 onClick={() => handleInsertBlock("sopComplianceCheck")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <ShieldCheck size={14} className="inline mr-1" />
                 Compliance
               </button>
               <button
                 onClick={() => handleInsertBlock("imageBlock")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <ImageIcon size={14} className="inline mr-1" />
                 Image
               </button>
               <button
                 onClick={() => handleInsertBlock("attachmentBlock")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <Paperclip size={14} className="inline mr-1" />
                 Attachment

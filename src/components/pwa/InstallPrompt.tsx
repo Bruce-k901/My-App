@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui';
-import { Download, X, CheckCircle2, Smartphone, ExternalLink } from 'lucide-react';
+import { Download, X, CheckCircle2, Smartphone, ExternalLink } from '@/components/ui/icons';
 import { setupInstallPrompt, showInstallPrompt, isInstalled, getPWAStatus } from '@/lib/pwa';
 
 export function InstallPrompt() {

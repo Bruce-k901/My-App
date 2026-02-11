@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
   <title>Test Email</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5;">
-  <div style="max-width: 600px; margin: 40px auto; background: white; border-radius: 12px; overflow: hidden; border: 2px solid #EC4899;">
-    <div style="background: linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%); padding: 40px 30px; text-align: center;">
+  <div style="max-width: 600px; margin: 40px auto; background: white; border-radius: 12px; overflow: hidden; border: 2px solid #D37E91;">
+    <div style="background: linear-gradient(135deg, #D37E91 0%, #8B5CF6 100%); padding: 40px 30px; text-align: center;">
       <h1 style="margin: 0; color: white; font-size: 32px;">🧪 Test Email</h1>
       <p style="margin: 10px 0 0; color: rgba(255,255,255,0.9);">Your email system is working!</p>
     </div>

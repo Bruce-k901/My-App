@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { formatMessageTime } from '@/lib/utils/dateUtils';
 import type { Message, TopicCategory } from '@/types/messaging';
-import { X } from 'lucide-react';
+import { X } from '@/components/ui/icons';
 
 interface FilteredMessagesViewProps {
   topic: TopicCategory;

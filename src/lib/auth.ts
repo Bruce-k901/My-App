@@ -25,8 +25,17 @@ export async function getUserProfile(userId: string) {
   }
 }
 
-// Simplified post-login handler that only redirects to dashboard
-// No error handling redirects - let AuthContext handle session management
+// Simplified post-login handler — reads user's preferred landing page
+// Falls back to /dashboard if no preference is set
 export function redirectToDashboard(router: any) {
-  router.replace("/dashboard");
+  let landingPage = '/dashboard';
+  try {
+    const prefs = JSON.parse(localStorage.getItem('opsly_user_preferences') || '{}');
+    if (prefs.landing_page && typeof prefs.landing_page === 'string') {
+      landingPage = prefs.landing_page;
+    }
+  } catch {
+    // ignore parse errors
+  }
+  router.replace(landingPage);
 }

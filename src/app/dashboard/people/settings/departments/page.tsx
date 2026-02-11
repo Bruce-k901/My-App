@@ -6,12 +6,13 @@ import { useDepartments, useCreateDepartment, useUpdateDepartment, useDeleteDepa
 import DepartmentFormComponent from '@/components/departments/DepartmentForm';
 import DepartmentTree from '@/components/departments/DepartmentTree';
 import { Button } from '@/components/ui/Button';
-import { Building2, ArrowLeft, Plus, Search, X } from 'lucide-react';
+import { Building2, ArrowLeft, Plus, Search, X } from '@/components/ui/icons';
 import Link from 'next/link';
 import { Department, DepartmentForm } from '@/types/departments';
 import { toast } from 'sonner';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
+import BackToSetup from '@/components/dashboard/BackToSetup';
 
 export default function SettingsDepartmentsPage() {
   const { loading: ctxLoading, profile } = useAppContext();
@@ -274,6 +275,7 @@ export default function SettingsDepartmentsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
+        <BackToSetup />
         <Link
           href="/dashboard/people/settings"
           className="inline-flex items-center gap-2 text-sm text-gray-900 dark:text-white/60 hover:text-gray-900 dark:hover:text-white mb-4"
@@ -311,7 +313,7 @@ export default function SettingsDepartmentsPage() {
                 setEditingDepartment(null);
                 setFormOpen(true);
               }}
-              className="flex items-center justify-center w-10 h-10 rounded-md border border-[#EC4899] text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EC4899]/40"
+              className="flex items-center justify-center w-10 h-10 rounded-md border border-[#D37E91] text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D37E91]/40"
               title="Add Department"
             >
               <Plus className="w-5 h-5" />
@@ -353,7 +355,7 @@ export default function SettingsDepartmentsPage() {
                 setEditingDepartment(null);
                 setFormOpen(true);
               }}
-              className="mt-4 bg-transparent border border-[#EC4899] text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+              className="mt-4 bg-transparent border border-[#D37E91] text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(211,126,145,0.7)]"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create First Department

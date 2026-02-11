@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Calendar, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, ChevronDown, ChevronUp } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { calculatePeriodForDate, getRecentPeriods } from '../lib/period-calculator';
 
@@ -151,7 +151,7 @@ export default function PayPeriodSelector({
                 </div>
                 <Button
                   onClick={handleCustomDates}
-                  className="w-full bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+                  className="w-full bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
                 >
                   Apply Custom Dates
                 </Button>

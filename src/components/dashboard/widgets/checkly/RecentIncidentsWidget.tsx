@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { WidgetProps, MODULE_COLORS } from '@/types/dashboard';
 import { WidgetCard, WidgetEmptyState, WidgetLoading } from '../WidgetWrapper';
-import { AlertOctagon, Clock } from 'lucide-react';
+import { AlertOctagon, Clock } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -157,14 +157,14 @@ export default function RecentIncidentsWidget({ companyId, siteId }: WidgetProps
           icon={<AlertOctagon className="w-8 h-8" />}
           message="No incidents reported"
           actionLabel="Report incident"
-          actionHref="/dashboard/incidents/new"
+          actionHref="/dashboard/incidents"
         />
       ) : (
         <div className="space-y-2">
           {incidents.map((incident) => (
             <Link
               key={incident.id}
-              href={`/dashboard/incidents/${incident.id}`}
+              href={`/dashboard/incidents?openIncident=${incident.id}`}
               className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
             >
               <div className="flex items-center gap-2 min-w-0 flex-1">

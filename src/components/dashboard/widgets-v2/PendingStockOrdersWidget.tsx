@@ -36,14 +36,10 @@ export default function PendingStockOrdersWidget({ siteId, companyId }: PendingS
 
         let query = supabase
           .from('purchase_orders')
-          .select(`
-            id,
-            expected_date,
-            supplier:suppliers(id, name)
-          `)
+          .select('id, expected_delivery, supplier_id')
           .eq('company_id', companyId)
           .in('status', ['ordered', 'pending'])
-          .order('expected_date', { ascending: true })
+          .order('expected_delivery', { ascending: true })
           .limit(3);
 
         if (siteId && siteId !== 'all') {
@@ -53,16 +49,24 @@ export default function PendingStockOrdersWidget({ siteId, companyId }: PendingS
         const { data, error } = await query;
 
         if (error) {
-          if (error.code === '42P01') {
-            console.debug('purchase_orders table not available');
-            setLoading(false);
-            return;
-          }
-          throw error;
+          // Table may not exist yet — degrade gracefully
+          setLoading(false);
+          return;
+        }
+
+        // Fetch supplier names separately (FK to view doesn't support joins)
+        const supplierIds = [...new Set((data || []).map((o: any) => o.supplier_id).filter(Boolean))];
+        const supplierMap = new Map<string, string>();
+        if (supplierIds.length > 0) {
+          const { data: suppliers } = await supabase
+            .from('suppliers')
+            .select('id, name')
+            .in('id', supplierIds);
+          (suppliers || []).forEach((s: any) => supplierMap.set(s.id, s.name));
         }
 
         const formatted: PendingOrder[] = (data || []).map((order: any) => {
-          const expectedDate = order.expected_date;
+          const expectedDate = order.expected_delivery;
           const isDueToday = expectedDate === today;
           const dueDateObj = new Date(expectedDate);
           const tomorrow = new Date();
@@ -79,7 +83,7 @@ export default function PendingStockOrdersWidget({ siteId, companyId }: PendingS
 
           return {
             id: order.id,
-            supplierName: order.supplier?.name || 'Unknown Supplier',
+            supplierName: supplierMap.get(order.supplier_id) || 'Unknown Supplier',
             dueDate: dueLabel,
             isDueToday,
           };
@@ -114,9 +118,9 @@ export default function PendingStockOrdersWidget({ siteId, companyId }: PendingS
     return (
       <WidgetCard title="Pending Orders" module="stockly" viewAllHref="/dashboard/stockly/orders">
         <div className="animate-pulse space-y-2">
-          <div className="h-8 bg-white/5 rounded w-24" />
-          <div className="h-3 bg-white/5 rounded" />
-          <div className="h-3 bg-white/5 rounded w-3/4" />
+          <div className="h-8 bg-black/5 dark:bg-white/5 rounded w-24" />
+          <div className="h-3 bg-black/5 dark:bg-white/5 rounded" />
+          <div className="h-3 bg-black/5 dark:bg-white/5 rounded w-3/4" />
         </div>
       </WidgetCard>
     );
@@ -126,7 +130,7 @@ export default function PendingStockOrdersWidget({ siteId, companyId }: PendingS
     return (
       <WidgetCard title="Pending Orders" module="stockly" viewAllHref="/dashboard/stockly/orders">
         <div className="text-center py-4">
-          <div className="text-white/40 text-xs">No pending orders</div>
+          <div className="text-[rgb(var(--text-disabled))] text-xs">No pending orders</div>
         </div>
       </WidgetCard>
     );
@@ -142,6 +146,7 @@ export default function PendingStockOrdersWidget({ siteId, companyId }: PendingS
             text={order.supplierName}
             sub={order.dueDate}
             status={order.isDueToday ? 'good' : 'neutral'}
+            href="/dashboard/stockly/orders"
           />
         ))}
       </div>

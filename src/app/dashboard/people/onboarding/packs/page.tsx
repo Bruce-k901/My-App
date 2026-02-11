@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAppContext } from '@/context/AppContext'
 import { supabase } from '@/lib/supabase'
-import { Loader2, Package, FileText, Plus, ChevronDown, ChevronRight } from 'lucide-react'
+import { Loader2, Package, FileText, Plus, ChevronDown, ChevronRight } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import Select from '@/components/ui/Select'
 import MultiSelect from '@/components/ui/MultiSelect'
@@ -273,7 +273,7 @@ export default function OnboardingPacksPage() {
           <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Onboarding Packs</h1>
           <p className="text-sm text-gray-900 dark:text-white/60">This page is for managers/admins only.</p>
         </div>
-        <Link href="/dashboard/people/onboarding/my-docs" className="text-sm text-[#EC4899] hover:underline">
+        <Link href="/dashboard/people/onboarding/my-docs" className="text-sm text-[#D37E91] hover:underline">
           View My Onboarding Docs
         </Link>
       </div>
@@ -315,7 +315,7 @@ export default function OnboardingPacksPage() {
           >
             Manage Docs
           </Link>
-          <Link href="/dashboard/people/onboarding" className="text-sm text-[#EC4899] hover:underline">
+          <Link href="/dashboard/people/onboarding" className="text-sm text-[#D37E91] hover:underline">
             Back
           </Link>
         </div>
@@ -336,7 +336,7 @@ export default function OnboardingPacksPage() {
           {!showCreateForm ? (
             <button
               onClick={() => setShowCreateForm(true)}
-              className="px-4 py-2 rounded-lg text-sm bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all flex items-center gap-2"
+              className="px-4 py-2 rounded-lg text-sm bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               Create New Pack
@@ -414,7 +414,7 @@ export default function OnboardingPacksPage() {
                 <button
                   onClick={() => void createPack()}
                   disabled={creatingPack || !newPackName.trim()}
-                  className="px-4 py-2 rounded-lg text-sm bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg text-sm bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all disabled:opacity-50"
                 >
                   {creatingPack ? 'Creating…' : 'Create Pack'}
                 </button>

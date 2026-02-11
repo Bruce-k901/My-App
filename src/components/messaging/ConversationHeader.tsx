@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Users, Building2, User, Sparkles } from 'lucide-react';
+import { Users, Building2, User, Sparkles } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import type { Conversation } from '@/types/messaging';
@@ -152,8 +152,8 @@ export function ConversationHeader({ conversationId }: ConversationHeaderProps) 
   return (
     <div className="flex-shrink-0 h-16 border-b border-gray-200 dark:border-white/[0.06] bg-white dark:bg-[#0B0D13] px-4 flex items-center justify-between relative">
       <div className="flex items-center gap-3 flex-1 min-w-0">
-        <div className="flex-shrink-0 p-2 bg-pink-50 dark:bg-pink-500/10 rounded-lg">
-          <Icon className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+        <div className="flex-shrink-0 p-2 bg-[#D37E91]/10 dark:bg-[#D37E91]/15 rounded-lg">
+          <Icon className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
         </div>
         <div className="flex-1 min-w-0">
           <h2 className="text-base font-semibold text-gray-900 dark:text-white truncate">

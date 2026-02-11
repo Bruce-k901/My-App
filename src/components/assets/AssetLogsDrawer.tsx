@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Database } from '@/lib/database.types';
 import { Button } from '@/components/ui/Button';
-import { X, Calendar, User, FileText } from 'lucide-react';
+import { X, Calendar, User, FileText } from '@/components/ui/icons';
 
 type Asset = Database['public']['Tables']['assets']['Row'];
 

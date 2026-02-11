@@ -180,7 +180,7 @@ function NotificationsInner() {
                     <button
                       disabled={acceptingId === n.id}
                       onClick={() => acceptOpenShift(n)}
-                      className="text-xs px-3 py-1.5 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-md transition-all duration-200 ease-in-out disabled:opacity-50 disabled:hover:shadow-none"
+                      className="text-xs px-3 py-1.5 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-md transition-all duration-200 ease-in-out disabled:opacity-50 disabled:hover:shadow-none"
                       title="Accept this open shift"
                     >
                       {acceptingId === n.id ? "Accepting…" : "Accept shift"}

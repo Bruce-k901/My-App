@@ -6,7 +6,7 @@ import {
   Clock,
   Loader2,
   TrendingUp
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface TimeSlot {
   id: string;
@@ -94,7 +94,7 @@ export default function CapacityStatus({ date, data, loading }: CapacityStatusPr
     return (
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
         </div>
       </div>
     );

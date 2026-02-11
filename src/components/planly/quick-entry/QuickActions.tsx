@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Copy, ArrowDown, Trash2, ChevronDown } from 'lucide-react';
+import { Copy, ArrowDown, Trash2, ChevronDown } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 

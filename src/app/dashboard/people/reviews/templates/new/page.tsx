@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import { CreateTemplateForm } from '@/components/reviews/CreateTemplateForm';
 import { getCurrentProfile } from '@/app/actions/reviews';

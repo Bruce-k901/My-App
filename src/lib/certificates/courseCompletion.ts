@@ -154,13 +154,11 @@ export async function completeCourseWithCertificate(
   // 9. Get profile details for course charge
   const { data: profileDetails } = await supabaseAdmin
     .from("profiles")
-    .select("full_name, first_name, last_name")
+    .select("full_name")
     .eq("id", profileId)
     .single();
 
-  const candidateName = profileDetails?.full_name || 
-    [profileDetails?.first_name, profileDetails?.last_name].filter(Boolean).join(" ") || 
-    "Unknown";
+  const candidateName = profileDetails?.full_name || "Unknown";
 
   // 10. Create course charge (£5.00 = 500 pence)
   try {

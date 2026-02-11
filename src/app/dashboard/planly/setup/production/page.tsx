@@ -28,7 +28,7 @@ import {
   Layers,
   Eye,
   Pencil,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { toast } from 'sonner';
 import useSWR from 'swr';
 
@@ -58,6 +58,7 @@ interface WizardLaminationStyle {
   name: string;
   recipe_id: string | null;
   products_per_sheet: number;
+  dough_per_sheet_g: number | null;
   product_ids: string[];
 }
 
@@ -104,6 +105,7 @@ export default function ProductionSetupWizardPage() {
     name: '',
     recipe_id: null,
     products_per_sheet: 24,
+    dough_per_sheet_g: null,
     product_ids: [],
   });
 
@@ -199,6 +201,7 @@ export default function ProductionSetupWizardPage() {
       name: '',
       recipe_id: null,
       products_per_sheet: 24,
+      dough_per_sheet_g: null,
       product_ids: [],
     });
     setStyleDialogOpen(true);
@@ -294,6 +297,7 @@ export default function ProductionSetupWizardPage() {
             name: style.name.trim(),
             recipe_id: style.recipe_id,
             products_per_sheet: style.products_per_sheet,
+            dough_per_sheet_g: style.dough_per_sheet_g,
             laminate_lead_days: state.laminate_lead_days,
           });
 
@@ -571,6 +575,7 @@ export default function ProductionSetupWizardPage() {
                           <p className="text-sm text-gray-500 dark:text-white/50">
                             Recipe: {getRecipeName(style.recipe_id)} |{' '}
                             {style.products_per_sheet} products/sheet
+                            {style.dough_per_sheet_g ? ` | ${style.dough_per_sheet_g}g dough/sheet` : ''}
                           </p>
                           <p className="text-xs text-teal-600 dark:text-teal-400 mt-1">
                             {style.product_ids.length} product
@@ -867,20 +872,38 @@ export default function ProductionSetupWizardPage() {
               </p>
             </div>
 
-            {/* Products Per Sheet */}
-            <div className="space-y-2">
-              <Label>Products Per Sheet *</Label>
-              <Input
-                type="number"
-                min={1}
-                value={styleForm.products_per_sheet}
-                onChange={e =>
-                  setStyleForm(prev => ({
-                    ...prev,
-                    products_per_sheet: parseInt(e.target.value) || 1,
-                  }))
-                }
-              />
+            {/* Products Per Sheet & Dough Per Sheet */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Products Per Sheet *</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={styleForm.products_per_sheet}
+                  onChange={e =>
+                    setStyleForm(prev => ({
+                      ...prev,
+                      products_per_sheet: parseInt(e.target.value) || 1,
+                    }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Dough per Sheet (g)</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  step={1}
+                  placeholder="e.g., 2000"
+                  value={styleForm.dough_per_sheet_g ?? ''}
+                  onChange={e =>
+                    setStyleForm(prev => ({
+                      ...prev,
+                      dough_per_sheet_g: e.target.value ? parseFloat(e.target.value) : null,
+                    }))
+                  }
+                />
+              </div>
             </div>
 
             {/* Product Assignment */}

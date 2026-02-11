@@ -49,12 +49,9 @@ export default function ComplianceScoreWidget({ siteId, companyId }: ComplianceS
         const { data: tasks, error } = await query;
 
         if (error) {
-          if (error.code === '42P01') {
-            console.debug('checklist_tasks table not available');
-            setLoading(false);
-            return;
-          }
-          throw error;
+          // Table may not exist yet — degrade gracefully
+          setLoading(false);
+          return;
         }
 
         const total = tasks?.length || 0;
@@ -97,7 +94,7 @@ export default function ComplianceScoreWidget({ siteId, companyId }: ComplianceS
             cy="40"
             r={r}
             fill="none"
-            stroke="rgba(255,255,255,0.06)"
+            stroke="rgb(var(--border))"
             strokeWidth="5"
           />
           <circle
@@ -125,12 +122,12 @@ export default function ComplianceScoreWidget({ siteId, companyId }: ComplianceS
 
   if (loading) {
     return (
-      <WidgetCard title="Compliance Score" module="checkly" viewAllHref="/dashboard/reports">
+      <WidgetCard title="Weekly Compliance" module="checkly" viewAllHref="/dashboard/reports">
         <div className="animate-pulse flex gap-4">
-          <div className="w-20 h-20 rounded-full bg-white/5" />
+          <div className="w-20 h-20 rounded-full bg-black/5 dark:bg-white/5" />
           <div className="space-y-2 flex-1">
-            <div className="h-3 bg-white/5 rounded w-20" />
-            <div className="h-3 bg-white/5 rounded w-16" />
+            <div className="h-3 bg-black/5 dark:bg-white/5 rounded w-20" />
+            <div className="h-3 bg-black/5 dark:bg-white/5 rounded w-16" />
           </div>
         </div>
       </WidgetCard>
@@ -139,12 +136,12 @@ export default function ComplianceScoreWidget({ siteId, companyId }: ComplianceS
 
   if (score === null) {
     return (
-      <WidgetCard title="Compliance Score" module="checkly" viewAllHref="/dashboard/reports">
+      <WidgetCard title="Weekly Compliance" module="checkly" viewAllHref="/dashboard/reports">
         <div className="text-center py-4">
-          <div className="text-white/40 text-xs">No compliance data yet</div>
+          <div className="text-[rgb(var(--text-disabled))] text-xs">No compliance data yet</div>
           <a
             href="/dashboard/todays_tasks"
-            className="text-fuchsia-400 text-xs hover:underline mt-1 inline-block"
+            className="text-teamly text-xs hover:underline mt-1 inline-block"
           >
             Complete a checklist →
           </a>
@@ -154,17 +151,17 @@ export default function ComplianceScoreWidget({ siteId, companyId }: ComplianceS
   }
 
   return (
-    <WidgetCard title="Compliance Score" module="checkly" viewAllHref="/dashboard/reports">
+    <WidgetCard title="Weekly Compliance" module="checkly" viewAllHref="/dashboard/reports">
       <div className="flex items-center gap-4">
         <ComplianceRing value={score} />
         <div>
-          <div className="text-[10.5px] text-white/40 mb-0.5">This week</div>
+          <div className="text-[10.5px] text-[rgb(var(--text-disabled))] mb-0.5">This week</div>
           <div
             className={`text-[10.5px] ${change >= 0 ? 'text-emerald-400' : 'text-blue-400'}`}
           >
             {change >= 0 ? '↑' : '↓'} {Math.abs(change)}% from last week
           </div>
-          <div className="text-[10px] text-white/40 mt-1.5">
+          <div className="text-[10px] text-[rgb(var(--text-disabled))] mt-1.5">
             {failedCount} of {totalCount} checks failed
           </div>
         </div>

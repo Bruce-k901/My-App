@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { X, User, Search } from 'lucide-react';
+import { X, User, Search } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 
 interface ParticipantSelectorProps {
@@ -140,7 +140,7 @@ export default function ParticipantSelector({
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-gray-700 dark:text-white/80">
-        {label} {required && <span className="text-[#EC4899]">*</span>}
+        {label} {required && <span className="text-[#D37E91]">*</span>}
       </label>
 
       {/* Selected Participants */}
@@ -156,7 +156,7 @@ export default function ParticipantSelector({
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
                   isCurrentUser
                     ? 'bg-gray-100 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]'
-                    : 'bg-pink-50 dark:bg-[#EC4899]/20 border border-pink-200 dark:border-[#EC4899]/30'
+                    : 'bg-[#D37E91]/10 dark:bg-[#D37E91]/20 border border-[#D37E91]/30 dark:border-[#D37E91]/30'
                 }`}
               >
                 {user.avatar_url ? (
@@ -215,7 +215,7 @@ export default function ParticipantSelector({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search users..."
-                    className="w-full pl-8 pr-3 py-1.5 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+                    className="w-full pl-8 pr-3 py-1.5 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                     onClick={(e) => e.stopPropagation()}
                   />
                 </div>
@@ -279,7 +279,7 @@ export default function ParticipantSelector({
       </div>
 
       {selectedParticipants.length === 0 && required && (
-        <p className="text-xs text-[#EC4899]">At least one participant is required</p>
+        <p className="text-xs text-[#D37E91]">At least one participant is required</p>
       )}
     </div>
   );

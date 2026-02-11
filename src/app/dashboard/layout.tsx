@@ -10,7 +10,9 @@ import { TeamlySidebar } from "@/components/teamly/sidebar-nav";
 import { PlanlySidebar } from "@/components/planly/sidebar-nav";
 import { AssetlySidebar } from "@/components/assetly/sidebar-nav";
 import AIAssistantWidget from "@/components/assistant/AIAssistantWidget";
+import { SearchModal } from "@/components/search";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useSidebarMode } from "@/hooks/useSidebarMode";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [paddingClass, setPaddingClass] = useState('px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:pb-6 lg:px-16');
@@ -50,6 +52,12 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   const isPlanly = pathname?.startsWith('/dashboard/planly');
   const isAssetly = pathname?.startsWith('/dashboard/assets') || pathname?.startsWith('/dashboard/ppm');
   const showModuleSidebar = isCheckly || isStockly || isTeamly || isPlanly || isAssetly;
+  const moduleClass = isCheckly ? 'module-checkly' :
+                      isStockly ? 'module-stockly' :
+                      isTeamly  ? 'module-teamly'  :
+                      isPlanly  ? 'module-planly'  :
+                      isAssetly ? 'module-assetly' : '';
+  const { width: sidebarWidth } = useSidebarMode();
 
   // ============================================
   // MOBILE LAYOUT - Dark theme, no desktop header/sidebar
@@ -57,7 +65,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   if (isMobile) {
     return (
       <MobileNavProvider>
-        <div className="dashboard-page bg-[#0a0a0a] text-white pb-20">
+        <div className={`dashboard-page ${moduleClass} bg-[rgb(var(--module-bg-tint))] text-white pb-20`}>
           {/* No desktop header on mobile - pages handle their own headers */}
           <main>
             {children}
@@ -66,6 +74,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           {/* Mobile Navigation */}
           <BottomTabBar />
           <MoreSheet />
+          <SearchModal />
         </div>
       </MobileNavProvider>
     );
@@ -76,7 +85,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   // ============================================
   return (
     <MobileNavProvider>
-      <div className="min-h-screen bg-[rgb(var(--background))] dark:bg-[#0a0a0a]">
+      <div className={`min-h-screen ${moduleClass} bg-[rgb(var(--module-bg-tint))] text-gray-900 dark:text-white`}>
         {/* Header - Fixed at top (includes ModuleBar) */}
         <Header />
 
@@ -85,27 +94,27 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           {showModuleSidebar && (
             <>
               {isCheckly && (
-                <div className="hidden lg:block fixed left-0 top-[112px] h-[calc(100vh-112px)]">
+                <div className="hidden lg:block fixed left-0 top-[112px] h-[calc(100vh-112px)] z-30">
                   <ChecklySidebar />
                 </div>
               )}
               {isStockly && (
-                <div className="hidden lg:block fixed left-0 top-[112px] h-[calc(100vh-112px)]">
+                <div className="hidden lg:block fixed left-0 top-[112px] h-[calc(100vh-112px)] z-30">
                   <StocklySidebar />
                 </div>
               )}
               {isTeamly && (
-                <div className="hidden lg:block fixed left-0 top-[112px] h-[calc(100vh-112px)]">
+                <div className="hidden lg:block fixed left-0 top-[112px] h-[calc(100vh-112px)] z-30">
                   <TeamlySidebar />
                 </div>
               )}
               {isPlanly && (
-                <div className="hidden lg:block fixed left-0 top-[112px] h-[calc(100vh-112px)]">
+                <div className="hidden lg:block fixed left-0 top-[112px] h-[calc(100vh-112px)] z-30">
                   <PlanlySidebar />
                 </div>
               )}
               {isAssetly && (
-                <div className="hidden lg:block fixed left-0 top-[112px] h-[calc(100vh-112px)]">
+                <div className="hidden lg:block fixed left-0 top-[112px] h-[calc(100vh-112px)] z-30">
                   <AssetlySidebar />
                 </div>
               )}
@@ -114,17 +123,11 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 
           {/* Main Content */}
           <main
-            className={`flex-1 mt-[112px] bg-[#F5F5F2] dark:bg-transparent ${showModuleSidebar ? 'lg:ml-64' : ''} ${
-              isCheckly ? 'checkly-page-scrollbar' :
-              isStockly ? 'stockly-page-scrollbar' :
-              isTeamly ? 'teamly-page-scrollbar' :
-              isAssetly ? 'assetly-page-scrollbar' :
-              isPlanly ? 'planly-page-scrollbar' :
-              ''
-            }`}
+            className="flex-1 mt-[112px] bg-transparent transition-[margin,width,max-width] duration-200 module-page-scrollbar"
             style={showModuleSidebar ? {
-              width: 'calc(100vw - 256px)',
-              maxWidth: 'calc(100vw - 256px)',
+              marginLeft: sidebarWidth,
+              width: `calc(100vw - ${sidebarWidth})`,
+              maxWidth: `calc(100vw - ${sidebarWidth})`,
             } : {}}
           >
             <div className={`${paddingClass}`} style={{ paddingBottom: '80px' }}>
@@ -135,6 +138,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 
         {/* Hide global AI widget on messaging page */}
         {showAIWidget && <AIAssistantWidget />}
+        <SearchModal />
       </div>
     </MobileNavProvider>
   );

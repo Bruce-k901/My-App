@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, CheckCircle, Circle, Clock, Save, Send, User, Calendar, FileText, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Circle, Clock, Save, Send, User, Calendar, FileText, AlertTriangle } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import { toast } from 'sonner';
 import { ReviewFormSection } from './ReviewFormSection';
@@ -171,7 +171,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#EC4899] to-blue-500 flex items-center justify-center text-white text-lg font-medium">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#D37E91] to-blue-500 flex items-center justify-center text-white text-lg font-medium">
               {review.employee?.avatar_url ? (
                 <img src={review.employee.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
               ) : (
@@ -206,7 +206,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
           </div>
           <div className="h-2 bg-white/[0.05] rounded-full overflow-hidden">
             <div 
-              className="h-full bg-[#EC4899] transition-all"
+              className="h-full bg-[#D37E91] transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -411,7 +411,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
               <Button variant="outline" onClick={handleSave} disabled={isPending || Object.keys(localResponses).length === 0}>
                 <Save className="h-4 w-4 mr-2" />Save Draft
               </Button>
-              <Button variant="primary" onClick={handleSubmit} disabled={isPending} className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]">
+              <Button variant="primary" onClick={handleSubmit} disabled={isPending} className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)]">
                 <Send className="h-4 w-4 mr-2" />Submit {isEmployee ? 'Employee' : 'Manager'} Section
               </Button>
             </div>

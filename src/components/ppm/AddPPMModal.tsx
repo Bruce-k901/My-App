@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, MapPin, User, Clock, FileText } from 'lucide-react';
+import { X, Calendar, MapPin, User, Clock, FileText } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 
 interface Site {

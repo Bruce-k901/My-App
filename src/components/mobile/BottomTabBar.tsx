@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Home, CheckSquare, CalendarDays, Users, Menu } from 'lucide-react';
+import { Home, CheckSquare, CalendarDays, Users, Menu } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { useMobileNav } from './MobileNavProvider';
 

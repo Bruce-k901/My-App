@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
@@ -62,14 +62,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isMounted]);
 
-  // Initialize selected site from profile if not already set
+  // Initialize selected site from user preferences, then profile, if not already set
   useEffect(() => {
     if (!isMounted || !profile) return;
-    // If no site is selected and profile has a site, use it
-    if (!selectedSiteId && (profile.home_site || profile.site_id)) {
-      const defaultSite = profile.home_site || profile.site_id;
-      setSelectedSiteIdState(defaultSite);
-      console.log('🏢 [AppContext] Initializing selected site from profile:', defaultSite);
+    if (!selectedSiteId) {
+      let defaultSite: string | null = null;
+      // Check user preferences for default_site_id first
+      try {
+        const prefs = JSON.parse(localStorage.getItem('opsly_user_preferences') || '{}');
+        if (prefs.default_site_id) {
+          defaultSite = prefs.default_site_id;
+        }
+      } catch { /* ignore */ }
+      // Fall back to profile home_site or site_id
+      if (!defaultSite) {
+        defaultSite = profile.home_site || profile.site_id || null;
+      }
+      if (defaultSite) {
+        setSelectedSiteIdState(defaultSite);
+      }
     }
   }, [profile, isMounted, selectedSiteId]);
 
@@ -87,11 +98,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [selectedSiteId, isMounted]);
 
-  // Function to set selected site
-  const setSelectedSite = (siteId: string | null) => {
+  // Function to set selected site (memoized to prevent re-render loops in consumers)
+  const setSelectedSite = useCallback((siteId: string | null) => {
     setSelectedSiteIdState(siteId);
     console.log('🏢 [AppContext] Selected site changed:', siteId);
-  };
+  }, []);
 
   useEffect(() => {
     // Mark as mounted to prevent hydration issues

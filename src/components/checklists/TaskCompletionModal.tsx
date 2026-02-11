@@ -130,8 +130,9 @@ function isCertificateTask(task: ChecklistTaskWithTemplate): boolean {
   const sourceType = taskData?.source_type
 
   return (
-    sourceType === 'certificate_expiry' ||      // Matches database
+    sourceType === 'certificate_expiry' ||      // Matches database (profile-based certs)
     sourceType === 'certificate_no_expiry' ||   // Matches database
+    sourceType === 'training_certificate' ||    // Matches database (training_records-based)
     sourceType === 'certificate_expiring' ||    // Backward compatibility
     sourceType === 'certificate_expired' ||     // Backward compatibility
     task.template?.slug === 'certificate-renewal' ||

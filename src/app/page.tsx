@@ -36,7 +36,7 @@ import {
   Briefcase,
   Building2,
   ArrowLeftRight,
-} from "lucide-react";
+} from '@/components/ui/icons';
 
 // Module data
 const modules = [
@@ -204,11 +204,11 @@ function ModulesCarouselSection() {
 
   const colorClasses: Record<string, { text: string; border: string; gradient: string; icon: string; dot: string }> = {
     checkly: {
-      text: 'text-pink-400',
-      border: 'hover:border-pink-400/50 hover:shadow-[0_0_18px_rgba(236,72,153,0.35)]',
-      gradient: 'bg-gradient-to-br from-pink-900 to-gray-900',
-      icon: 'text-pink-400',
-      dot: 'bg-pink-400',
+      text: 'text-[#D37E91]',
+      border: 'hover:border-[#D37E91]/50 hover:shadow-[0_0_18px_rgba(211, 126, 145,0.35)]',
+      gradient: 'bg-gradient-to-br from-[#3a2028] to-gray-900',
+      icon: 'text-[#D37E91]',
+      dot: 'bg-[#D37E91]',
     },
     stockly: {
       text: 'text-emerald-400',
@@ -413,8 +413,8 @@ function TopBenefitsSection() {
 
   const colorClasses = {
     pink: {
-      gradient: 'from-pink-500/10',
-      icon: 'text-pink-400/50',
+      gradient: 'from-[#D37E91]/15',
+      icon: 'text-[#D37E91]/50',
       hover: 'group-hover:opacity-100',
     },
     blue: {
@@ -488,10 +488,10 @@ function TopBenefitsSection() {
             {/* Stat 1 */}
             <div className="text-center group">
               <div className="relative inline-block mb-4">
-                <div className="text-4xl sm:text-5xl md:text-6xl font-light text-transparent bg-clip-text bg-gradient-to-br from-pink-400 to-pink-600">
+                <div className="text-4xl sm:text-5xl md:text-6xl font-light text-transparent bg-clip-text bg-gradient-to-br from-[#D37E91] to-[#D37E91]/80">
                   100+
                 </div>
-                <div className="absolute -inset-4 bg-pink-500/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute -inset-4 bg-[#D37E91]/15 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
               <div className="text-gray-400 text-sm">
                 Sites using Opsly
@@ -636,7 +636,7 @@ export default function HomePage() {
             />
           </div>
           
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 px-2 bg-gradient-to-r from-magenta-500 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(236,72,153,0.4)]">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 px-2 bg-gradient-to-r from-magenta-500 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(211, 126, 145,0.4)]">
             Run Your Operations on One Platform
           </h1>
           
@@ -684,7 +684,7 @@ export default function HomePage() {
           <div className="text-center mb-12 sm:mb-16 md:mb-20">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-light mb-4 text-white">
               The Real Cost of{' '}
-              <span className="font-normal text-transparent bg-clip-text bg-gradient-to-r from-pink-400/80 to-blue-400/80">
+              <span className="font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#D37E91]/80 to-[#544349]/80">
                 Operations Chaos
               </span>
             </h2>
@@ -848,7 +848,7 @@ export default function HomePage() {
           <div className="text-center mb-12 sm:mb-16 md:mb-20">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-white mb-4">
               Everything Works{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D37E91] to-[#544349]">
                 Together
               </span>
             </h2>
@@ -863,11 +863,11 @@ export default function HomePage() {
               {/* Central Dashboard Hub */}
               <div className="flex justify-center mb-12 sm:mb-16">
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 via-purple-500/20 to-blue-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#D37E91]/25 via-purple-500/20 to-blue-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500" />
                   <div className="relative px-8 sm:px-12 py-6 sm:py-8 bg-gray-900/80 backdrop-blur-xl border border-white/20 rounded-2xl">
                     <div className="text-center">
                       <div className="flex justify-center mb-2">
-                        <BarChart3 className="w-8 h-8 sm:w-10 sm:h-10 text-pink-400/70" />
+                        <BarChart3 className="w-8 h-8 sm:w-10 sm:h-10 text-[#D37E91]/70" />
                       </div>
                       <div className="text-lg sm:text-xl font-light text-white mb-1">Unified Dashboard</div>
                       <div className="text-xs sm:text-sm text-gray-400">All your ops KPIs in one place</div>
@@ -884,7 +884,7 @@ export default function HomePage() {
                   <line x1="400" y1="100" x2="400" y2="300" stroke="url(#gradient1)" strokeWidth="1" strokeDasharray="4 4" />
                   <defs>
                     <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#ec4899" stopOpacity="0.3" />
+                      <stop offset="0%" stopColor="#D37E91" stopOpacity="0.3" />
                       <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.3" />
                     </linearGradient>
                   </defs>
@@ -895,10 +895,10 @@ export default function HomePage() {
               <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
                 {/* Checkly ↔ Assetly */}
                 <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#D37E91]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
                   <div className="relative p-5 sm:p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="flex items-center gap-1.5 text-pink-400/90 text-xs sm:text-sm font-medium">
+                      <span className="flex items-center gap-1.5 text-[#D37E91]/90 text-xs sm:text-sm font-medium">
                         <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
                         Checkly
                       </span>
@@ -924,7 +924,7 @@ export default function HomePage() {
                         Stockly
                       </span>
                       <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" />
-                      <span className="flex items-center gap-1.5 text-pink-400/90 text-xs sm:text-sm font-medium">
+                      <span className="flex items-center gap-1.5 text-[#D37E91]/90 text-xs sm:text-sm font-medium">
                         <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
                         Checkly
                       </span>
@@ -979,10 +979,10 @@ export default function HomePage() {
 
                 {/* Checkly → Reports */}
                 <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#D37E91]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
                   <div className="relative p-5 sm:p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="flex items-center gap-1.5 text-pink-400/90 text-xs sm:text-sm font-medium">
+                      <span className="flex items-center gap-1.5 text-[#D37E91]/90 text-xs sm:text-sm font-medium">
                         <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
                         Checkly
                       </span>
@@ -1057,10 +1057,10 @@ export default function HomePage() {
 
               {/* Regional/HQ Level */}
               <div className="group relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+                <div className="absolute inset-0 bg-gradient-to-br from-[#D37E91]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
                 <div className="relative p-5 sm:p-6 text-center">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-pink-500/10 flex items-center justify-center">
-                    <Building2 className="w-6 h-6 sm:w-8 sm:h-8 text-pink-400/70" />
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-[#D37E91]/15 flex items-center justify-center">
+                    <Building2 className="w-6 h-6 sm:w-8 sm:h-8 text-[#D37E91]/70" />
                   </div>
                   <h4 className="text-base sm:text-lg font-light text-white mb-2">Regional & HQ</h4>
                   <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
@@ -1087,7 +1087,7 @@ export default function HomePage() {
             {/* Heading */}
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-white mb-4 sm:mb-6">
               Ready to Simplify Your{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D37E91] to-[#544349]">
                 Operations
               </span>
               ?
@@ -1108,7 +1108,7 @@ export default function HomePage() {
               </Link>
               
               <Link href="/signup">
-                <button className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-pink-500/90 to-blue-500/90 hover:from-pink-500 hover:to-blue-500 text-white font-light rounded-lg transition-all duration-300 shadow-lg shadow-pink-500/20 text-sm sm:text-base">
+                <button className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-[#D37E91]/90 to-[#544349]/90 hover:from-[#D37E91] hover:to-[#544349] text-white font-light rounded-lg transition-all duration-300 shadow-lg shadow-[#D37E91]/20 text-sm sm:text-base">
                   Start Free Trial
                 </button>
               </Link>

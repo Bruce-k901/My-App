@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, TrendingUp, TrendingDown, Calendar, AlertTriangle, Loader2, Target } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Calendar, AlertTriangle, Loader2, Target } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import { format } from 'date-fns';
 
@@ -87,7 +87,7 @@ export default function WasteInsightsPage() {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
         </div>
       </div>
     );
@@ -103,7 +103,7 @@ export default function WasteInsightsPage() {
           <Button
             onClick={loadInsights}
             variant="primary"
-            className="bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+            className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
           >
             Try Again
           </Button>
@@ -124,7 +124,7 @@ export default function WasteInsightsPage() {
           <Link href="/customer/waste/log">
             <Button
               variant="primary"
-              className="bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+              className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
             >
               Log Today's Sales
             </Button>
@@ -165,7 +165,7 @@ export default function WasteInsightsPage() {
               onClick={() => setDays(7)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${
                 days === 7
-                  ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]'
+                  ? 'bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]'
                   : 'bg-white/[0.03] text-white/60 border border-white/[0.06] hover:bg-white/[0.05]'
               }`}
             >
@@ -175,7 +175,7 @@ export default function WasteInsightsPage() {
               onClick={() => setDays(30)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${
                 days === 30
-                  ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]'
+                  ? 'bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]'
                   : 'bg-white/[0.03] text-white/60 border border-white/[0.06] hover:bg-white/[0.05]'
               }`}
             >
@@ -185,7 +185,7 @@ export default function WasteInsightsPage() {
               onClick={() => setDays(90)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${
                 days === 90
-                  ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]'
+                  ? 'bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]'
                   : 'bg-white/[0.03] text-white/60 border border-white/[0.06] hover:bg-white/[0.05]'
               }`}
             >
@@ -238,7 +238,7 @@ export default function WasteInsightsPage() {
 
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6">
           <div className="text-sm text-white/60 mb-2">Potential Savings</div>
-          <div className="text-2xl font-bold text-[#EC4899] mb-1">
+          <div className="text-2xl font-bold text-[#D37E91] mb-1">
             {formatCurrency(weeklySavings)}/week
           </div>
           <div className="text-xs text-white/40">
@@ -349,7 +349,7 @@ export default function WasteInsightsPage() {
         <Link href="/customer/waste/log">
           <Button
             variant="primary"
-            className="bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+            className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
           >
             Log Today's Sales
           </Button>

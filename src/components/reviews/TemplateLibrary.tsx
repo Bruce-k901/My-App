@@ -3,7 +3,7 @@
 import { useState, useTransition, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FileText, Plus, Clock, Calendar, Copy, Eye, Edit, ArrowLeft, AlertTriangle } from 'lucide-react';
+import { FileText, Plus, Clock, Calendar, Copy, Eye, Edit, ArrowLeft, AlertTriangle } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import Input from '@/components/ui/Input';
 import { toast } from 'sonner';
@@ -198,7 +198,7 @@ export function TemplateLibrary({ systemTemplates, companyTemplates }: TemplateL
               <h3 className="text-base font-semibold text-white">No company templates</h3>
               <p className="text-gray-500 dark:text-white/60 mt-1">Clone a system template or create your own to get started.</p>
               <Link href="/dashboard/people/reviews/templates/new">
-                <Button variant="primary" className="mt-4 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]">
+                <Button variant="primary" className="mt-4 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]">
                   <Plus className="h-4 w-4 mr-2" />Create Template
                 </Button>
               </Link>

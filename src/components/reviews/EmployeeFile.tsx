@@ -1,6 +1,6 @@
 'use client';
 
-import { FileText, TrendingUp, Calendar, Target } from 'lucide-react';
+import { FileText, TrendingUp, Calendar, Target } from '@/components/ui/icons';
 import Link from 'next/link';
 import type { EmployeeFileData } from '@/types/reviews';
 

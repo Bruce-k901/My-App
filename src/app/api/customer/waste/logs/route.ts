@@ -15,11 +15,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get customer record
+    // Get customer record from planly
     const { data: customer } = await supabase
-      .from('order_book_customers')
+      .from('planly_customers')
       .select('id')
       .eq('email', user.email?.toLowerCase() || '')
+      .eq('is_active', true)
       .maybeSingle();
 
     if (!customer) {
@@ -40,8 +41,8 @@ export async function GET(request: NextRequest) {
         waste_percent,
         total_waste_cost,
         status,
-        order:order_book_orders!order_book_waste_logs_order_id_fkey(
-          order_number
+        order:planly_orders!order_book_waste_logs_order_id_fkey(
+          delivery_date
         )
       `)
       .eq('customer_id', customer.id)
@@ -71,7 +72,7 @@ export async function GET(request: NextRequest) {
     const formattedLogs = logs?.map((log: any) => ({
       id: log.id,
       logDate: log.log_date,
-      orderNumber: log.order?.order_number || 'N/A',
+      orderNumber: log.order?.delivery_date || 'N/A',
       totalOrdered: log.total_ordered,
       totalSold: log.total_sold,
       wastePercent: log.waste_percent,

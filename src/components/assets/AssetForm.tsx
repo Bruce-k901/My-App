@@ -13,7 +13,7 @@ import Select from '@/components/ui/Select';
 import CheckboxCustom from '@/components/ui/CheckboxCustom';
 import { Tooltip } from '@/components/ui/tooltip/Tooltip';
 import { TemperatureInput } from '@/components/ui';
-import { Save, XCircle, Loader2 } from 'lucide-react';
+import { Save, XCircle, Loader2 } from '@/components/ui/icons';
 
 export default function AssetForm({ open, onClose, onSaved }: { open: boolean; onClose: () => void; onSaved?: (asset: any) => void }) {
   const { companyId, siteId } = useAppContext();

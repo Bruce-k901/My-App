@@ -14,7 +14,7 @@ import Input from '@/components/ui/Input';
 import Label from '@/components/ui/Label';
 import Textarea from '@/components/ui/Textarea';
 import { StorageArea, STORAGE_DIVISIONS } from '@/lib/types/stockly';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/components/ui/icons';
 import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
 

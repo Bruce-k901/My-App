@@ -2,7 +2,7 @@
 import { NodeViewWrapper } from "@tiptap/react"
 import { useState, useEffect } from "react"
 import { useSOP } from "@/context/SOPContext"
-import { Package, FileText, Thermometer, CheckCircle, AlertTriangle, Clock, X } from "lucide-react"
+import { Package, FileText, Thermometer, CheckCircle, AlertTriangle, Clock, X } from '@/components/ui/icons'
 
 interface StorageRow {
   container: string;

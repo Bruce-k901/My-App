@@ -12,7 +12,7 @@ import {
   Printer, 
   ArrowLeft,
   RefreshCw
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 
 export default function SOPViewPage() {
@@ -143,6 +143,47 @@ export default function SOPViewPage() {
       recipe = data.linked_recipe || parsedData.header;
     }
 
+    // Fallback: if equipment or method are still empty, check sop_data (handles case where
+    // metadata has ingredients from recipe sync but equipment/method were added via form)
+    if (equipment.length === 0 || equipment.every((e: string) => !e)) {
+      if (parsedData.equipment && Array.isArray(parsedData.equipment)) {
+        const fromSimple = parsedData.equipment.map((eq: any) => eq.item || eq.name || '').filter(Boolean);
+        if (fromSimple.length > 0) {
+          console.log('✅ Fallback: found equipment in sop_data simple format:', fromSimple.length);
+          equipment = fromSimple;
+        }
+      }
+      if (equipment.length === 0 && isTipTapFormat) {
+        const eqNode = parsedData.content.find((n: any) => n.type === 'equipmentList');
+        if (eqNode?.attrs?.rows) {
+          const fromTipTap = eqNode.attrs.rows.map((eq: any) => eq.item || eq.name || '').filter(Boolean);
+          if (fromTipTap.length > 0) {
+            console.log('✅ Fallback: found equipment in TipTap format:', fromTipTap.length);
+            equipment = fromTipTap;
+          }
+        }
+      }
+    }
+    if (methodSteps.length === 0 || methodSteps.every((s: string) => !s)) {
+      if (parsedData.processSteps && Array.isArray(parsedData.processSteps)) {
+        const fromSimple = parsedData.processSteps.map((step: any) => step.description || step.text || '').filter(Boolean);
+        if (fromSimple.length > 0) {
+          console.log('✅ Fallback: found method steps in sop_data simple format:', fromSimple.length);
+          methodSteps = fromSimple;
+        }
+      }
+      if (methodSteps.length === 0 && isTipTapFormat) {
+        const stepsNode = parsedData.content.find((n: any) => n.type === 'processSteps');
+        if (stepsNode?.attrs?.steps) {
+          const fromTipTap = stepsNode.attrs.steps.map((step: any) => step.description || step.text || '').filter(Boolean);
+          if (fromTipTap.length > 0) {
+            console.log('✅ Fallback: found method steps in TipTap format:', fromTipTap.length);
+            methodSteps = fromTipTap;
+          }
+        }
+      }
+    }
+
     // Use linked recipe if available
     if (data.linked_recipe && !recipe) {
       recipe = {
@@ -237,8 +278,8 @@ export default function SOPViewPage() {
       recipe: scaledRecipe,
       ingredients: scaledIngredients,
       baseIngredients: baseIngredients,
-      equipment: equipment.length > 0 ? equipment : undefined,
-      method_steps: methodSteps.length > 0 ? methodSteps : undefined,
+      equipment: equipment.filter(Boolean).length > 0 ? equipment.filter(Boolean) : undefined,
+      method_steps: methodSteps.filter(Boolean).length > 0 ? methodSteps.filter(Boolean) : undefined,
       multiplier: currentMultiplier
     };
   };
@@ -828,7 +869,7 @@ export default function SOPViewPage() {
             <div className="flex items-center gap-4">
               {/* Recipe Scaling Multiplier - More Prominent */}
               {printData?.recipe && (
-                <div className="flex items-center gap-3 px-5 py-3 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 rounded-xl border-2 border-pink-500 dark:border-pink-500/70 shadow-lg shadow-pink-500/20 dark:shadow-pink-500/30">
+                <div className="flex items-center gap-3 px-5 py-3 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 rounded-xl border-2 border-[#D37E91] dark:border-[#D37E91]/70 shadow-lg shadow-[#D37E91]/20 dark:shadow-[#D37E91]/30">
                   <label htmlFor="multiplier" className="text-base font-semibold text-[rgb(var(--text-primary))] dark:text-white whitespace-nowrap">
                     Portions:
                   </label>
@@ -862,9 +903,9 @@ export default function SOPViewPage() {
                         setMultiplier(clampedValue);
                       }
                     }}
-                    className="w-28 bg-[rgb(var(--background-primary))] dark:bg-neutral-900 border-2 border-pink-500 dark:border-pink-500 rounded-lg px-3 py-2 text-lg font-bold text-[rgb(var(--text-primary))] dark:text-white focus:border-pink-400 dark:focus:border-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-500/40 dark:focus:ring-pink-500/40"
+                    className="w-28 bg-[rgb(var(--background-primary))] dark:bg-neutral-900 border-2 border-[#D37E91] dark:border-[#D37E91] rounded-lg px-3 py-2 text-lg font-bold text-[rgb(var(--text-primary))] dark:text-white focus:border-[#D37E91] dark:focus:border-[#D37E91] focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 dark:focus:ring-[#D37E91]/40"
                   />
-                  <span className="text-base font-bold text-pink-500 dark:text-pink-400">
+                  <span className="text-base font-bold text-[#D37E91] dark:text-[#D37E91]">
                     ×{multiplier.toFixed(1)}
                   </span>
                 </div>

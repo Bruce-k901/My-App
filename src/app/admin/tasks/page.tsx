@@ -10,7 +10,7 @@ import {
   TrendingUp,
   Loader2,
   Calendar
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface TaskMetrics {
   total_all_time: number;
@@ -80,7 +80,7 @@ export default function AdminTasksPage() {
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -150,7 +150,7 @@ export default function AdminTasksPage() {
 
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
             <div className="text-white/60 text-sm mb-2">Completion Rate</div>
-            <div className="text-3xl font-bold text-[#EC4899]">{metrics?.completion_rate || 0}%</div>
+            <div className="text-3xl font-bold text-[#D37E91]">{metrics?.completion_rate || 0}%</div>
           </div>
         </div>
       </div>

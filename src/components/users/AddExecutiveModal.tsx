@@ -6,7 +6,7 @@ import { Button } from '@/components/ui';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import { toast } from 'sonner';
-import { User, Briefcase, Mail, Phone, X, Shield, CreditCard, Calendar, Home } from 'lucide-react';
+import { User, Briefcase, Mail, Phone, X, Shield, CreditCard, Calendar, Home } from '@/components/ui/icons';
 
 interface AddExecutiveModalProps {
   open: boolean;

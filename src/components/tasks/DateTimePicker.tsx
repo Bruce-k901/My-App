@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar, Clock } from '@/components/ui/icons';
 import { format } from 'date-fns';
 import { fromZonedTime, toZonedTime } from 'date-fns-tz';
 import TimePicker from '../ui/TimePicker';
@@ -57,7 +57,7 @@ export default function DateTimePicker({
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-gray-700 dark:text-white/80">
-        {label} {required && <span className="text-[#EC4899]">*</span>}
+        {label} {required && <span className="text-[#D37E91]">*</span>}
       </label>
 
       <div className="grid grid-cols-2 gap-4">
@@ -79,7 +79,7 @@ export default function DateTimePicker({
               e.stopPropagation();
             }}
             min={format(new Date(), 'yyyy-MM-dd')}
-            className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 cursor-pointer"
+            className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 cursor-pointer"
             required={required}
           />
         </div>

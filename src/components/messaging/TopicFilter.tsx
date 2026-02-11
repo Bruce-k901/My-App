@@ -10,7 +10,7 @@ import {
   AlertTriangle,
   MessageSquare,
   Pin
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { TopicCategory, ConversationFilters } from '@/types/messaging';
 
 interface TopicFilterProps {
@@ -131,21 +131,21 @@ export default function TopicFilter({ currentFilters, onFilterChange, counts }: 
               className={`
                 flex items-center gap-2 px-4 py-2 rounded-lg transition-all whitespace-nowrap
                 ${active 
-                  ? 'bg-transparent border border-[#EC4899] text-[#EC4899] shadow-[0_0_12px_rgba(236,72,153,0.7)]' 
+                  ? 'bg-transparent border border-[#D37E91] text-[#D37E91] shadow-[0_0_12px_rgba(211, 126, 145,0.7)]' 
                   : 'bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] hover:bg-gray-100 dark:hover:bg-white/[0.06]'
                 }
               `}
               title={config.description}
             >
-              <Icon className={`h-4 w-4 ${active ? 'text-[#EC4899]' : config.color}`} />
-              <span className={`text-sm font-medium ${active ? 'text-[#EC4899]' : 'text-gray-700 dark:text-white/70'}`}>
+              <Icon className={`h-4 w-4 ${active ? 'text-[#D37E91]' : config.color}`} />
+              <span className={`text-sm font-medium ${active ? 'text-[#D37E91]' : 'text-gray-700 dark:text-white/70'}`}>
                 {config.label}
               </span>
               {count > 0 && (
                 <span className={`
                   text-xs px-2 py-0.5 rounded-full
                   ${active 
-                    ? 'bg-pink-100 dark:bg-[#EC4899]/30 text-pink-700 dark:text-[#EC4899]' 
+                    ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/30 text-[#D37E91] dark:text-[#D37E91]' 
                     : 'bg-gray-200 dark:bg-white/[0.1] text-gray-600 dark:text-white/60'
                   }
                 `}>
@@ -161,7 +161,7 @@ export default function TopicFilter({ currentFilters, onFilterChange, counts }: 
       {(currentFilters.topicCategory || currentFilters.isPinned) && (
         <div className="mt-3 flex items-center gap-2">
           <span className="text-xs text-gray-500 dark:text-white/40">Showing:</span>
-          <span className="text-xs text-[#EC4899] font-medium">
+          <span className="text-xs text-[#D37E91] font-medium">
             {currentFilters.isPinned 
               ? 'Pinned Conversations' 
               : topicConfig[currentFilters.topicCategory!].label

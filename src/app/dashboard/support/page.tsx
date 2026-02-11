@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Mail, MessageCircle, BookOpen, HelpCircle, Phone, Calendar, FileText, ExternalLink } from 'lucide-react';
+import { Mail, MessageCircle, BookOpen, HelpCircle, Phone, Calendar, FileText, ExternalLink } from '@/components/ui/icons';
 
 export default function SupportPage() {
   const [activeTab, setActiveTab] = useState('help');
@@ -53,12 +53,12 @@ export default function SupportPage() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-6 bg-white/[0.03] border border-white/[0.06] rounded-xl text-center">
-              <Mail className="w-8 h-8 text-pink-400 mx-auto mb-3" />
+              <Mail className="w-8 h-8 text-[#D37E91] mx-auto mb-3" />
               <h3 className="text-lg font-medium text-white mb-2">Email Support</h3>
               <p className="text-gray-400 text-sm mb-4">Get help via email within 24 hours</p>
               <a 
                 href="mailto:support@opsly.app"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-pink-500/20 border border-pink-500/40 rounded-lg text-pink-300 hover:bg-pink-500/30 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[#D37E91]/25 border border-[#D37E91]/40 rounded-lg text-[#D37E91] hover:bg-[#D37E91]/35 transition-colors"
               >
                 <Mail className="w-4 h-4" />
                 Send Email
@@ -116,28 +116,28 @@ export default function SupportPage() {
               <h3 className="text-lg font-medium text-white mb-3">User Guides</h3>
               <ul className="space-y-3">
                 <li>
-                  <a href="#" className="flex items-center gap-2 text-pink-300 hover:text-pink-200 transition-colors">
+                  <a href="#" className="flex items-center gap-2 text-[#D37E91] hover:text-[#D37E91]/70 transition-colors">
                     <FileText className="w-4 h-4" />
                     Getting Started Guide
                     <ExternalLink className="w-3 h-3" />
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="flex items-center gap-2 text-pink-300 hover:text-pink-200 transition-colors">
+                  <a href="#" className="flex items-center gap-2 text-[#D37E91] hover:text-[#D37E91]/70 transition-colors">
                     <FileText className="w-4 h-4" />
                     Compliance Templates
                     <ExternalLink className="w-3 h-3" />
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="flex items-center gap-2 text-pink-300 hover:text-pink-200 transition-colors">
+                  <a href="#" className="flex items-center gap-2 text-[#D37E91] hover:text-[#D37E91]/70 transition-colors">
                     <FileText className="w-4 h-4" />
                     Asset Management
                     <ExternalLink className="w-3 h-3" />
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="flex items-center gap-2 text-pink-300 hover:text-pink-200 transition-colors">
+                  <a href="#" className="flex items-center gap-2 text-[#D37E91] hover:text-[#D37E91]/70 transition-colors">
                     <FileText className="w-4 h-4" />
                     SOP Creation
                     <ExternalLink className="w-3 h-3" />
@@ -181,7 +181,7 @@ export default function SupportPage() {
             </div>
           </div>
           
-          <div className="p-6 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-xl">
+          <div className="p-6 bg-gradient-to-r from-purple-500/10 to-[#D37E91]/10 border border-purple-500/20 rounded-xl">
             <h3 className="text-lg font-medium text-purple-300 mb-2">Need More Help?</h3>
             <p className="text-purple-200 text-sm mb-4">
               Can't find what you're looking for? Our support team is here to help with any questions or issues you might have.
@@ -216,7 +216,7 @@ export default function SupportPage() {
               onClick={() => setActiveTab(section.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
                 activeTab === section.id
-                  ? 'bg-pink-500/20 text-pink-300 border border-pink-500/40'
+                  ? 'bg-[#D37E91]/25 text-[#D37E91] border border-[#D37E91]/40'
                   : 'text-gray-400 hover:text-white hover:bg-white/[0.08]'
               }`}
             >

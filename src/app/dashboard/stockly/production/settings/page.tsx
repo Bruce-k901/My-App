@@ -1,6 +1,6 @@
 "use client";
 
-import { Settings, Loader2 } from 'lucide-react';
+import { Settings, Loader2 } from '@/components/ui/icons';
 
 export default function ProductionSettingsPage() {
   return (

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2 } from '@/components/ui/icons';
 import { useAppContext } from '@/context/AppContext';
 import { useTaskState } from '@/hooks/tasks/useTaskState';
 import { useTaskSubmission } from '@/hooks/tasks/useTaskSubmission';
@@ -245,13 +245,13 @@ export function TaskCompletionModalNew({
   }, []);
 
   // Handle submit button click
-  const handleSubmitClick = useCallback(() => {
+  const handleSubmitClick = useCallback(async () => {
     console.log('🎯 [SUBMIT] Complete Task clicked');
     console.log('🎯 [SUBMIT] outOfRangeAssets:', outOfRangeAssets);
     console.log('🎯 [SUBMIT] localOutOfRangeActions:', Array.from(localOutOfRangeActions.entries()));
 
-    // Validate all temps entered
-    if (assetIds.length > 0) {
+    // Validate all temps entered (only when temperature feature is enabled)
+    if (enabledFeatures.temperature && assetIds.length > 0) {
       const allTempsEntered = assetIds.every(
         (assetId) => temperatures[assetId] !== null && temperatures[assetId] !== undefined
       );
@@ -262,8 +262,8 @@ export function TaskCompletionModalNew({
       }
     }
 
-    // Check if all out-of-range assets have actions placed
-    if (outOfRangeAssets.length > 0) {
+    // Check if all out-of-range assets have actions placed (only when temperature feature is enabled)
+    if (enabledFeatures.temperature && outOfRangeAssets.length > 0) {
       const allActionsPlaced = outOfRangeAssets.every(
         (asset) => localOutOfRangeActions.has(asset.assetId)
       );
@@ -274,9 +274,9 @@ export function TaskCompletionModalNew({
       }
     }
 
-    // Submit
-    handleSubmit();
-  }, [assetIds, temperatures, outOfRangeAssets, localOutOfRangeActions, handleSubmit]);
+    // Submit (awaited to ensure submitting state is set before returning)
+    await handleSubmit();
+  }, [enabledFeatures, assetIds, temperatures, outOfRangeAssets, localOutOfRangeActions, handleSubmit]);
 
   if (!isOpen) return null;
 

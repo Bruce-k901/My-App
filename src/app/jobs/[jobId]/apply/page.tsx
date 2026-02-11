@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { 
   Loader2, ArrowLeft, Upload, CheckCircle2, AlertCircle,
   Briefcase, MapPin, DollarSign, Building2
-} from 'lucide-react'
+} from '@/components/ui/icons'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
@@ -264,7 +264,7 @@ export default function ApplyPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0A0B0F] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     )
   }
@@ -280,7 +280,7 @@ export default function ApplyPage() {
           </p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-transparent text-[#EC4899] border-2 border-[#EC4899] hover:shadow-[0_0_20px_rgba(236,72,153,0.7)] transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-transparent text-[#D37E91] border-2 border-[#D37E91] hover:shadow-[0_0_20px_rgba(211, 126, 145,0.7)] transition-all"
           >
             Go Back
           </Link>
@@ -296,7 +296,7 @@ export default function ApplyPage() {
   return (
     <div className="min-h-screen bg-[#0A0B0F]">
       {/* Header */}
-      <div className="bg-gradient-to-b from-[#EC4899]/10 to-transparent border-b border-white/[0.06]">
+      <div className="bg-gradient-to-b from-[#D37E91]/10 to-transparent border-b border-white/[0.06]">
         <div className="max-w-3xl mx-auto px-6 py-8">
           <Link
             href={`/jobs/${jobIdOrSlug}`}
@@ -356,7 +356,7 @@ export default function ApplyPage() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Your full name"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899] transition-colors"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] transition-colors"
                   required
                 />
               </div>
@@ -371,7 +371,7 @@ export default function ApplyPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your.email@example.com"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899] transition-colors"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] transition-colors"
                     required
                   />
                 </div>
@@ -385,7 +385,7 @@ export default function ApplyPage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="07XXX XXXXXX"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899] transition-colors"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] transition-colors"
                     required
                   />
                 </div>
@@ -398,7 +398,7 @@ export default function ApplyPage() {
                 <select
                   value={source}
                   onChange={(e) => setSource(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899] transition-colors [&>option]:bg-[#1a1d24] [&>option]:text-white"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91] transition-colors [&>option]:bg-[#1a1d24] [&>option]:text-white"
                 >
                   <option value="">Select a source</option>
                   <option value="Indeed">Indeed</option>
@@ -435,7 +435,7 @@ export default function ApplyPage() {
                   />
                   <label
                     htmlFor="cv-upload"
-                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/10 rounded-lg hover:border-[#EC4899]/50 transition-colors cursor-pointer group"
+                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/10 rounded-lg hover:border-[#D37E91]/50 transition-colors cursor-pointer group"
                   >
                     {cvFile ? (
                       <div className="text-center">
@@ -447,7 +447,7 @@ export default function ApplyPage() {
                       </div>
                     ) : (
                       <div className="text-center">
-                        <Upload className="w-8 h-8 text-white/40 group-hover:text-[#EC4899] mx-auto mb-2 transition-colors" />
+                        <Upload className="w-8 h-8 text-white/40 group-hover:text-[#D37E91] mx-auto mb-2 transition-colors" />
                         <p className="text-white/70 font-medium">Click to upload your CV</p>
                         <p className="text-white/40 text-xs mt-1">
                           PDF, DOC, DOCX (Max 5MB)
@@ -473,7 +473,7 @@ export default function ApplyPage() {
                 onChange={(e) => setCoverLetter(e.target.value)}
                 rows={8}
                 placeholder="Share your experience, skills, and why you're interested in this position..."
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899] transition-colors resize-none"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] transition-colors resize-none"
               />
             </div>
           </div>
@@ -489,7 +489,7 @@ export default function ApplyPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="px-8 py-3 rounded-lg bg-transparent text-[#EC4899] border-2 border-[#EC4899] hover:shadow-[0_0_20px_rgba(236,72,153,0.7)] transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-8 py-3 rounded-lg bg-transparent text-[#D37E91] border-2 border-[#D37E91] hover:shadow-[0_0_20px_rgba(211, 126, 145,0.7)] transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {submitting ? (
                 <>

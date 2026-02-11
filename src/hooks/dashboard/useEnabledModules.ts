@@ -46,7 +46,7 @@ export function useEnabledModules(): {
 
   const fetchModules = async () => {
     if (!companyId) {
-      setLoading(false);
+      // Don't set loading=false yet — wait for companyId to arrive
       return;
     }
 
@@ -60,13 +60,9 @@ export function useEnabledModules(): {
         .eq('company_id', companyId);
 
       if (queryError) {
-        // Silently handle if table doesn't exist
-        if (queryError.code === '42P01') {
-          console.debug('company_modules table does not exist yet');
-          setModules([]);
-        } else {
-          throw queryError;
-        }
+        // Silently handle if table doesn't exist or any DB error
+        console.debug('company_modules query issue:', queryError.code || queryError.message);
+        setModules([]);
       } else {
         setModules(data || []);
       }
@@ -86,20 +82,24 @@ export function useEnabledModules(): {
     // Start with always-enabled modules
     const enabled = new Set<ModuleId>(ALWAYS_ENABLED_MODULES);
 
-    // Add modules from database
+    // All core reportable modules — enabled by default unless explicitly disabled
+    const coreModules: ModuleId[] = ['checkly', 'stockly', 'teamly', 'planly'];
+
+    // Build set of explicitly disabled modules from DB
+    const explicitlyDisabled = new Set<ModuleId>();
     modules.forEach((m) => {
-      if (m.is_enabled) {
-        const mappedModule = MODULE_MAPPING[m.module];
-        if (mappedModule) {
-          enabled.add(mappedModule);
-        }
+      const mappedModule = MODULE_MAPPING[m.module];
+      if (mappedModule && !m.is_enabled) {
+        explicitlyDisabled.add(mappedModule);
       }
     });
 
-    // If no modules configured yet, enable common defaults
-    if (modules.length === 0 && !loading) {
-      enabled.add('checkly');
-    }
+    // Enable core modules that aren't explicitly disabled
+    coreModules.forEach((m) => {
+      if (!explicitlyDisabled.has(m)) {
+        enabled.add(m);
+      }
+    });
 
     return Array.from(enabled);
   }, [modules, loading]);

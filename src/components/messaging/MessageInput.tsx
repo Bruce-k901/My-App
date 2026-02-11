@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, KeyboardEvent, useEffect, useCallback } from 'react';
-import { Send, Paperclip, Smile, X, Mic, MicOff, User } from 'lucide-react';
+import { Send, Paperclip, Smile, X, Mic, MicOff, User } from '@/components/ui/icons';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { supabase } from '@/lib/supabase';
 import { compressImage } from '@/lib/messaging/utils';
@@ -398,7 +398,7 @@ export function MessageInput({
       {/* Reply Preview - Fixed height to prevent layout shift */}
       <div className={`mb-3 transition-all duration-200 ${replyTo ? 'h-[60px] opacity-100' : 'h-0 opacity-0 overflow-hidden'}`}>
         {replyTo && (
-          <div className="px-3 py-2 bg-pink-50 dark:bg-white/[0.05] border-l-2 border-pink-500 dark:border-pink-500/50 rounded flex items-center justify-between h-full">
+          <div className="px-3 py-2 bg-[#D37E91]/10 dark:bg-white/[0.05] border-l-2 border-[#D37E91] dark:border-[#D37E91]/50 rounded flex items-center justify-between h-full">
             <div className="flex-1 min-w-0 overflow-hidden">
               <div className="text-xs text-gray-600 dark:text-white/60 mb-1 truncate">Replying to {replyTo.senderName}</div>
               <div className="text-sm text-gray-700 dark:text-white/80 truncate break-words">{replyTo.content}</div>
@@ -467,7 +467,7 @@ export function MessageInput({
             }}
             placeholder="Type a message... (use @ to mention someone)"
             rows={1}
-            className="w-full h-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-pink-500/50 text-sm leading-tight"
+            className="w-full h-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 text-sm leading-tight"
             style={{
               minHeight: '44px',
               maxHeight: '44px',
@@ -487,10 +487,10 @@ export function MessageInput({
                   onClick={() => selectMention(user)}
                   className={`w-full px-3 py-2 flex items-center gap-2 text-left hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors ${
                     index === mentionIndex ? 'bg-gray-100 dark:bg-white/[0.08]' : ''
-                  } ${user.isParticipant ? 'border-l-2 border-pink-500 dark:border-pink-500/50' : ''}`}
+                  } ${user.isParticipant ? 'border-l-2 border-[#D37E91] dark:border-[#D37E91]/50' : ''}`}
                 >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center">
-                    <User className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/15 flex items-center justify-center">
+                    <User className="w-4 h-4 text-[#D37E91] dark:text-[#D37E91]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm text-gray-900 dark:text-white truncate">
@@ -502,7 +502,7 @@ export function MessageInput({
                       </div>
                     )}
                     {user.isParticipant && (
-                      <div className="text-xs text-pink-600 dark:text-pink-400/70 mt-0.5">
+                      <div className="text-xs text-[#D37E91] dark:text-[#D37E91]/70 mt-0.5">
                         In this conversation
                       </div>
                     )}
@@ -516,7 +516,7 @@ export function MessageInput({
         <button
           onClick={handleSend}
           disabled={!content.trim() && !replyTo}
-          className="flex-shrink-0 w-[44px] h-[44px] flex items-center justify-center bg-pink-100 dark:bg-pink-500/20 hover:bg-pink-200 dark:hover:bg-pink-500/30 text-pink-600 dark:text-pink-400 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-shrink-0 w-[44px] h-[44px] flex items-center justify-center bg-[#D37E91]/10 dark:bg-[#D37E91]/25 hover:bg-[#D37E91]/20 dark:hover:bg-[#D37E91]/35 text-[#D37E91] dark:text-[#D37E91] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Send message"
         >
           <Send className="w-5 h-5" />

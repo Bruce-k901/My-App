@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { toast } from 'sonner';
-import { ArrowLeft, Loader2, ExternalLink, AlertTriangle, ChevronDown, ChevronUp, X, Plus, Trash2, Search, FileText, Save, Edit, Pencil, Package } from 'lucide-react';
+import { ArrowLeft, Loader2, ExternalLink, AlertTriangle, ChevronDown, ChevronUp, X, Plus, Trash2, Search, FileText, Save, Edit, Pencil, Package } from '@/components/ui/icons';
 import Link from 'next/link';
 import { ModuleReferences } from '@/lib/module-references';
 import { useWasteTasks } from '@/hooks/useModuleReferences';
@@ -1470,7 +1470,7 @@ export default function WasteLogPage() {
                                 Linked: {format(new Date(link.created_at), 'dd MMM yyyy HH:mm')}
                               </p>
                               {link.link_type && (
-                                <span className="inline-block mt-2 text-xs bg-[#EC4899]/10 text-[#EC4899] border border-[#EC4899]/20 px-2 py-1 rounded">
+                                <span className="inline-block mt-2 text-xs bg-[#D37E91]/10 text-[#D37E91] border border-[#D37E91]/20 px-2 py-1 rounded">
                                   {link.link_type.replace(/_/g, ' ')}
                                 </span>
                               )}
@@ -1610,7 +1610,7 @@ export default function WasteLogPage() {
                               <div className="text-xs text-gray-500 dark:text-neutral-400 mt-0.5 truncate">{item.description}</div>
                             )}
                             {item.library_type && (
-                              <div className="text-xs text-emerald-600 dark:text-[#EC4899] mt-1">
+                              <div className="text-xs text-emerald-600 dark:text-[#D37E91] mt-1">
                                 {item.source === 'library' ? 'From ' : 'Linked to '}
                                 {item.library_type.replace('_library', '').replace(/_/g, ' ')}
                               </div>
@@ -2195,7 +2195,7 @@ export default function WasteLogPage() {
                                   <div className="text-xs text-gray-500 dark:text-neutral-400 mt-0.5 truncate">{item.description}</div>
                                 )}
                                 {item.library_type && (
-                                  <div className="text-xs text-emerald-600 dark:text-[#EC4899] mt-1">
+                                  <div className="text-xs text-emerald-600 dark:text-[#D37E91] mt-1">
                                     Linked to {item.library_type.replace('_library', '').replace('_', ' ')}
                                   </div>
                                 )}

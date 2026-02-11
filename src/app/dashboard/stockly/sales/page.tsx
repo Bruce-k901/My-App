@@ -20,7 +20,7 @@ import {
   DollarSign,
   Clock,
   ArrowLeft
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -413,7 +413,7 @@ export default function SalesManagementPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -452,7 +452,7 @@ export default function SalesManagementPage() {
           </button>
           <button
             onClick={() => setShowManualModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-[#EC4899] hover:bg-emerald-700 dark:hover:bg-[#EC4899]/90 text-white rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-[#D37E91] hover:bg-emerald-700 dark:hover:bg-[#D37E91]/90 text-white rounded-lg transition-colors"
           >
             <Plus className="w-5 h-5" />
             Add Sale
@@ -488,7 +488,7 @@ export default function SalesManagementPage() {
         
         <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-4">
           <div className="flex items-center gap-2 mb-1">
-            <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-[#EC4899]" />
+            <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-[#D37E91]" />
             <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-xs">GP %</span>
           </div>
           <p className={`text-xl font-bold ${getGpColor(totals.gp)}`}>{totals.gp.toFixed(1)}%</p>
@@ -514,11 +514,11 @@ export default function SalesManagementPage() {
       {/* Quick Link to GP Report */}
       <Link
         href="/dashboard/stockly/reports/gp"
-        className="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-500/10 dark:from-[#EC4899]/10 to-purple-500/10 border border-emerald-500/30 dark:border-[#EC4899]/30 rounded-xl hover:border-emerald-500/50 dark:hover:border-[#EC4899]/50 transition-colors"
+        className="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-500/10 dark:from-[#D37E91]/10 to-purple-500/10 border border-emerald-500/30 dark:border-[#D37E91]/30 rounded-xl hover:border-emerald-500/50 dark:hover:border-[#D37E91]/50 transition-colors"
       >
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-emerald-500/20 dark:bg-[#EC4899]/20 rounded-lg">
-            <TrendingUp className="w-6 h-6 text-emerald-600 dark:text-[#EC4899]" />
+          <div className="p-3 bg-emerald-500/20 dark:bg-[#D37E91]/20 rounded-lg">
+            <TrendingUp className="w-6 h-6 text-emerald-600 dark:text-[#D37E91]" />
           </div>
           <div>
             <h3 className="font-semibold text-[rgb(var(--text-primary))] dark:text-white">Gross Profit Report</h3>
@@ -549,7 +549,7 @@ export default function SalesManagementPage() {
               </button>
               <button
                 onClick={() => setShowManualModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-[#EC4899] hover:bg-emerald-700 dark:hover:bg-[#EC4899]/90 text-white rounded-lg transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-[#D37E91] hover:bg-emerald-700 dark:hover:bg-[#D37E91]/90 text-white rounded-lg transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Add Sale
@@ -668,7 +668,7 @@ export default function SalesManagementPage() {
                 />
                 <label
                   htmlFor="csv-upload"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-[#EC4899] hover:bg-emerald-700 dark:hover:bg-[#EC4899]/90 text-white rounded-lg cursor-pointer transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-[#D37E91] hover:bg-emerald-700 dark:hover:bg-[#D37E91]/90 text-white rounded-lg cursor-pointer transition-colors"
                 >
                   {importing ? (
                     <>
@@ -725,7 +725,7 @@ export default function SalesManagementPage() {
                   type="date"
                   value={manualEntry.sale_date}
                   onChange={(e) => setManualEntry({ ...manualEntry, sale_date: e.target.value })}
-                  className="w-full px-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-[#EC4899]"
+                  className="w-full px-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-[#D37E91]"
                 />
               </div>
               
@@ -740,7 +740,7 @@ export default function SalesManagementPage() {
                       value={manualEntry.gross_revenue}
                       onChange={(e) => setManualEntry({ ...manualEntry, gross_revenue: e.target.value })}
                       placeholder="0.00"
-                      className="w-full pl-7 pr-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/30 focus:outline-none focus:border-emerald-500 dark:focus:border-[#EC4899]"
+                      className="w-full pl-7 pr-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/30 focus:outline-none focus:border-emerald-500 dark:focus:border-[#D37E91]"
                     />
                   </div>
                 </div>
@@ -755,7 +755,7 @@ export default function SalesManagementPage() {
                       value={manualEntry.discounts}
                       onChange={(e) => setManualEntry({ ...manualEntry, discounts: e.target.value })}
                       placeholder="0.00"
-                      className="w-full pl-7 pr-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/30 focus:outline-none focus:border-emerald-500 dark:focus:border-[#EC4899]"
+                      className="w-full pl-7 pr-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/30 focus:outline-none focus:border-emerald-500 dark:focus:border-[#D37E91]"
                     />
                   </div>
                 </div>
@@ -768,7 +768,7 @@ export default function SalesManagementPage() {
                     type="number"
                     value={manualEntry.covers}
                     onChange={(e) => setManualEntry({ ...manualEntry, covers: e.target.value })}
-                    className="w-full px-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-[#D37E91]"
                   />
                 </div>
                 
@@ -777,7 +777,7 @@ export default function SalesManagementPage() {
                   <select
                     value={manualEntry.payment_method}
                     onChange={(e) => setManualEntry({ ...manualEntry, payment_method: e.target.value })}
-                    className="w-full px-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-[#D37E91]"
                   >
                     <option value="card">Card</option>
                     <option value="cash">Cash</option>
@@ -797,7 +797,7 @@ export default function SalesManagementPage() {
               <button
                 onClick={handleManualEntry}
                 disabled={saving || !manualEntry.gross_revenue}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-[#EC4899] hover:bg-emerald-700 dark:hover:bg-[#EC4899]/90 text-white rounded-lg transition-colors disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-[#D37E91] hover:bg-emerald-700 dark:hover:bg-[#D37E91]/90 text-white rounded-lg transition-colors disabled:opacity-50"
               >
                 {saving ? (
                   <>

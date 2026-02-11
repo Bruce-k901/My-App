@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { format } from 'date-fns';
-import { Loader2, Calendar, X } from 'lucide-react';
+import { Loader2, Calendar, X } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { cn } from '@/lib/utils';

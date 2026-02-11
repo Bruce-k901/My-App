@@ -1,52 +1,72 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { ThemePreference } from "@/types/user-preferences";
 
-type Theme = "light" | "dark";
+type ResolvedTheme = "light" | "dark";
 
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<ThemePreference>("dark");
+  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>("dark");
   const [mounted, setMounted] = useState(false);
+
+  const resolve = (pref: ThemePreference): ResolvedTheme => {
+    if (pref === "system") {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    }
+    return pref;
+  };
+
+  const applyTheme = (resolved: ResolvedTheme) => {
+    const root = document.documentElement;
+    root.classList.remove("dark", "light");
+    root.classList.add(resolved);
+    setResolvedTheme(resolved);
+  };
 
   useEffect(() => {
     setMounted(true);
-    // Get theme from localStorage or default to dark
-    const stored = localStorage.getItem("theme") as Theme | null;
-    if (stored && (stored === "light" || stored === "dark")) {
-      setTheme(stored);
-      applyTheme(stored);
-    } else {
-      // Check system preference
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const initialTheme = prefersDark ? "dark" : "light";
-      setTheme(initialTheme);
-      applyTheme(initialTheme);
-    }
+    const stored = localStorage.getItem("theme") as ThemePreference | null;
+    const pref: ThemePreference =
+      stored === "light" || stored === "dark" || stored === "system"
+        ? stored
+        : "dark";
+    setTheme(pref);
+    applyTheme(resolve(pref));
   }, []);
 
-  const applyTheme = (newTheme: Theme) => {
-    const root = document.documentElement;
-    if (newTheme === "dark") {
-      root.classList.add("dark");
-      root.classList.remove("light");
-    } else {
-      root.classList.add("light");
-      root.classList.remove("dark");
-    }
-  };
+  // Listen for system theme changes when in system mode
+  useEffect(() => {
+    if (theme !== "system") return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = () => applyTheme(resolve("system"));
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [theme]);
 
   const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    applyTheme(newTheme);
+    // Cycle: dark → light → system → dark
+    const order: ThemePreference[] = ["dark", "light", "system"];
+    const idx = order.indexOf(theme);
+    const next = order[(idx + 1) % order.length];
+    setTheme(next);
+    localStorage.setItem("theme", next);
+    applyTheme(resolve(next));
   };
 
-  const setThemeValue = (newTheme: Theme) => {
+  const setThemeValue = (newTheme: ThemePreference) => {
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
-    applyTheme(newTheme);
+    applyTheme(resolve(newTheme));
   };
 
-  return { theme, toggleTheme, setTheme: setThemeValue, mounted };
+  return {
+    theme,           // raw preference: 'light' | 'dark' | 'system'
+    resolvedTheme,   // actual applied theme: 'light' | 'dark'
+    toggleTheme,
+    setTheme: setThemeValue,
+    mounted,
+  };
 }

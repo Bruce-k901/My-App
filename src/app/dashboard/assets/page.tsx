@@ -10,7 +10,7 @@ import { useToast } from '@/components/ui/ToastProvider';
 import SiteSelector from "@/components/ui/SiteSelector";
 import { useSiteFilter } from '@/hooks/useSiteFilter';
 import Link from "next/link";
-import { Plus, Upload, Download, Archive } from "lucide-react";
+import { Plus, Upload, Download, Archive } from '@/components/ui/icons';
 
 type Asset = {
   id: string;
@@ -39,6 +39,8 @@ type Asset = {
   notes: string | null;
   working_temp_min: number | null;
   working_temp_max: number | null;
+  ppm_group_id: string | null;
+  ppm_group_name: string | null;
 };
 
 export default function AssetsPage() {
@@ -93,15 +95,20 @@ export default function AssetsPage() {
         ...assetsData.map(asset => asset.warranty_contractor_id).filter(Boolean)
       ])];
       
-      // Fetch sites and contractors in parallel
-      const [sitesResult, contractorsResult] = await Promise.all([
+      // Get unique PPM group IDs
+      const groupIds = [...new Set(assetsData.map(asset => asset.ppm_group_id).filter(Boolean))];
+
+      // Fetch sites, contractors, and PPM groups in parallel
+      const [sitesResult, contractorsResult, groupsResult] = await Promise.all([
         siteIds.length > 0 ? supabase.from('sites').select('id, name').in('id', siteIds) : { data: [] },
-        contractorIds.length > 0 ? supabase.from('contractors').select('id, name').in('id', contractorIds) : { data: [] }
+        contractorIds.length > 0 ? supabase.from('contractors').select('id, name').in('id', contractorIds) : { data: [] },
+        groupIds.length > 0 ? supabase.from('ppm_groups').select('id, name').in('id', groupIds) : { data: [] }
       ]);
-      
+
       // Create lookup maps
       const sitesMap = new Map((sitesResult.data || []).map(site => [site.id, site.name]));
       const contractorsMap = new Map((contractorsResult.data || []).map(contractor => [contractor.id, contractor.name]));
+      const groupsMap = new Map((groupsResult.data || []).map(g => [g.id, g.name]));
       
       // Transform the data to match the expected format
       const transformedData = assetsData.map((asset: any) => ({
@@ -110,6 +117,8 @@ export default function AssetsPage() {
         ppm_contractor_name: asset.ppm_contractor_id ? contractorsMap.get(asset.ppm_contractor_id) || null : null,
         reactive_contractor_name: asset.reactive_contractor_id ? contractorsMap.get(asset.reactive_contractor_id) || null : null,
         warranty_contractor_name: asset.warranty_contractor_id ? contractorsMap.get(asset.warranty_contractor_id) || null : null,
+        ppm_group_id: asset.ppm_group_id || null,
+        ppm_group_name: asset.ppm_group_id ? groupsMap.get(asset.ppm_group_id) || null : null,
       }));
       
       // Site filtering is now handled by applySiteFilter in the query

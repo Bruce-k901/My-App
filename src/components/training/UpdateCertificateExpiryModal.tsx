@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Calendar, Save } from 'lucide-react';
+import { X, Calendar, Save } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
@@ -12,8 +12,6 @@ interface UpdateCertificateExpiryModalProps {
   currentExpiryDate: string | null;
   employeeName: string;
   courseName: string;
-  profileId?: string; // For legacy records
-  certificateType?: string; // For legacy records
   onSuccess: (newExpiryDate: string) => void;
 }
 
@@ -24,8 +22,6 @@ export function UpdateCertificateExpiryModal({
   currentExpiryDate,
   employeeName,
   courseName,
-  profileId,
-  certificateType,
   onSuccess,
 }: UpdateCertificateExpiryModalProps) {
   const [newExpiryDate, setNewExpiryDate] = useState<string>(
@@ -47,7 +43,6 @@ export function UpdateCertificateExpiryModal({
       return;
     }
 
-    // Don't allow dates in the past
     if (selectedDate < new Date()) {
       toast.error('Expiry date cannot be in the past');
       return;
@@ -56,20 +51,13 @@ export function UpdateCertificateExpiryModal({
     setSaving(true);
 
     try {
-      const response = await fetch(`/api/training/records/${trainingRecordId}/update-expiry`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          expiry_date: newExpiryDate,
-          profile_id: profileId, // For legacy records
-          certificate_type: certificateType, // For legacy records
-        }),
-      });
+      // Write directly to training_records - DB trigger syncs to profile fields
+      const { error: updateError } = await supabase
+        .from('training_records')
+        .update({ expiry_date: newExpiryDate })
+        .eq('id', trainingRecordId);
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to update expiry date');
-      }
+      if (updateError) throw updateError;
 
       toast.success('Certificate expiry date updated');
       onSuccess(newExpiryDate);
@@ -84,13 +72,13 @@ export function UpdateCertificateExpiryModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-neutral-800 rounded-lg border border-neutral-700 w-full max-w-md shadow-xl">
+      <div className="bg-white dark:bg-neutral-800 rounded-lg border border-gray-200 dark:border-neutral-700 w-full max-w-md shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-neutral-700">
-          <h2 className="text-xl font-semibold text-white">Update Certificate Expiry Date</h2>
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-neutral-700">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Update Certificate Expiry Date</h2>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-neutral-700 rounded-lg transition-colors"
+            className="p-1 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg transition-colors"
             disabled={saving}
           >
             <X className="w-5 h-5 text-gray-500 dark:text-white/60" />
@@ -101,17 +89,17 @@ export function UpdateCertificateExpiryModal({
         <div className="p-6 space-y-4">
           <div>
             <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Employee</p>
-            <p className="text-white font-medium">{employeeName}</p>
+            <p className="text-gray-900 dark:text-white font-medium">{employeeName}</p>
           </div>
 
           <div>
             <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Course</p>
-            <p className="text-white font-medium">{courseName}</p>
+            <p className="text-gray-900 dark:text-white font-medium">{courseName}</p>
           </div>
 
           <div>
             <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Current Expiry Date</p>
-            <p className="text-white">
+            <p className="text-gray-900 dark:text-white">
               {currentExpiryDate
                 ? new Date(currentExpiryDate).toLocaleDateString('en-GB', {
                     day: 'numeric',
@@ -123,7 +111,7 @@ export function UpdateCertificateExpiryModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-2">
+            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
               New Expiry Date <span className="text-red-400">*</span>
             </label>
             <div className="relative">
@@ -132,30 +120,30 @@ export function UpdateCertificateExpiryModal({
                 value={newExpiryDate}
                 onChange={(e) => setNewExpiryDate(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-4 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-neutral-700 border border-gray-300 dark:border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 disabled={saving}
               />
               <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-white/60 pointer-events-none" />
             </div>
-            <p className="text-xs text-neutral-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-neutral-500 mt-1">
               Select a future date for the new certificate expiry
             </p>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-neutral-700">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-neutral-700">
           <button
             onClick={onClose}
             disabled={saving}
-            className="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-lg transition-colors disabled:opacity-50"
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-gray-900 dark:text-white rounded-lg transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving || !newExpiryDate}
-            className="px-4 py-2 bg-[#EC4899] hover:bg-[#EC4899]/80 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {saving ? (
               <>

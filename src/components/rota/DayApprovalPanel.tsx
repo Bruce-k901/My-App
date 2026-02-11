@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, AlertCircle, Clock, DollarSign, TrendingUp, TrendingDown, Percent, ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react';
+import { Check, AlertCircle, Clock, DollarSign, TrendingUp, TrendingDown, Percent, ChevronDown, ChevronUp, CheckCircle2 } from '@/components/ui/icons';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 

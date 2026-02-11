@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AlertTriangle, Plus, Filter, Search, Download, Eye, UserX, Calendar } from 'lucide-react';
+import { AlertTriangle, Plus, Filter, Search, Download, Eye, UserX, Calendar } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/Button';
@@ -234,13 +234,13 @@ export default function StaffSicknessPage() {
             placeholder="Search by staff name or symptoms..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:border-[#EC4899]/50 dark:focus:border-pink-500/50"
+            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:border-[#D37E91]/50 dark:focus:border-[#D37E91]/50"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#EC4899]/50 dark:focus:border-pink-500/50"
+          className="px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91]/50 dark:focus:border-[#D37E91]/50"
         >
           <option value="all">All Status</option>
           <option value="active">Active Exclusions</option>
@@ -353,7 +353,7 @@ export default function StaffSicknessPage() {
                     type="text"
                     value={formData.staff_member_name}
                     onChange={(e) => setFormData({ ...formData, staff_member_name: e.target.value })}
-                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#D37E91]/50"
                     placeholder="John Smith"
                     required
                   />
@@ -365,7 +365,7 @@ export default function StaffSicknessPage() {
                     type="date"
                     value={formData.illness_onset_date}
                     onChange={(e) => setFormData({ ...formData, illness_onset_date: e.target.value })}
-                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
+                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-[#D37E91]/50"
                     required
                   />
                 </div>
@@ -376,7 +376,7 @@ export default function StaffSicknessPage() {
                 <textarea
                   value={formData.symptoms}
                   onChange={(e) => setFormData({ ...formData, symptoms: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#D37E91]/50"
                   placeholder="e.g., Vomiting, diarrhoea, fever, nausea"
                   rows={3}
                   required
@@ -390,7 +390,7 @@ export default function StaffSicknessPage() {
                     type="date"
                     value={formData.exclusion_period_start}
                     onChange={(e) => setFormData({ ...formData, exclusion_period_start: e.target.value })}
-                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
+                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-[#D37E91]/50"
                     required
                   />
                 </div>
@@ -401,7 +401,7 @@ export default function StaffSicknessPage() {
                     type="date"
                     value={formData.exclusion_period_end || ''}
                     onChange={(e) => setFormData({ ...formData, exclusion_period_end: e.target.value || null })}
-                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
+                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-[#D37E91]/50"
                   />
                 </div>
               </div>
@@ -412,7 +412,7 @@ export default function StaffSicknessPage() {
                   type="date"
                   value={formData.return_to_work_date || ''}
                   onChange={(e) => setFormData({ ...formData, return_to_work_date: e.target.value || null })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-[#D37E91]/50"
                 />
               </div>
 
@@ -480,7 +480,7 @@ export default function StaffSicknessPage() {
                 <textarea
                   value={formData.notes || ''}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#D37E91]/50"
                   placeholder="Additional information, actions taken, etc."
                   rows={3}
                 />
@@ -490,7 +490,7 @@ export default function StaffSicknessPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={handleSave}
-                className="flex-1 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
+                className="flex-1 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200"
               >
                 {selectedRecord ? 'Update' : 'Log'} Record
               </button>

@@ -100,7 +100,7 @@ export default function AdminDashboard() {
 
 function Widget({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-neutral-800 bg-[#141823] p-4 shadow-[0_0_20px_rgba(236,72,153,0.12)]">
+    <div className="rounded-xl border border-neutral-800 bg-[#141823] p-4 shadow-[0_0_20px_rgba(211, 126, 145,0.12)]">
       <h2 className="text-lg font-semibold mb-3">{title}</h2>
       {children}
     </div>

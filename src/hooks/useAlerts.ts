@@ -16,11 +16,60 @@ const VIBRATION_PATTERNS = {
   urgent: [300, 100, 300, 100, 500], // long urgent pattern (overdue/critical)
 };
 
-// Sound files (located in /public/sounds/)
-const SOUND_FILES = {
-  task: '/sounds/task-alert.mp3',
-  message: '/sounds/message-ping.mp3',
-  urgent: '/sounds/urgent-alert.mp3',
+// Synthesised notification sounds using Web Audio API (no files needed)
+function createAudioContext(): AudioContext | null {
+  try {
+    return new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+  } catch {
+    return null;
+  }
+}
+
+function playTone(
+  ctx: AudioContext,
+  frequency: number,
+  duration: number,
+  startTime: number,
+  type: OscillatorType = 'sine',
+  volume = 0.3,
+) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(frequency, startTime);
+  gain.gain.setValueAtTime(volume, startTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(startTime);
+  osc.stop(startTime + duration);
+}
+
+function playTaskSound(ctx: AudioContext) {
+  // Gentle two-tone chime
+  const t = ctx.currentTime;
+  playTone(ctx, 880, 0.15, t, 'sine', 0.25);
+  playTone(ctx, 1100, 0.2, t + 0.15, 'sine', 0.2);
+}
+
+function playMessageSound(ctx: AudioContext) {
+  // Quick pop/ping
+  const t = ctx.currentTime;
+  playTone(ctx, 1200, 0.1, t, 'sine', 0.2);
+}
+
+function playUrgentSound(ctx: AudioContext) {
+  // Insistent triple beep
+  const t = ctx.currentTime;
+  playTone(ctx, 800, 0.15, t, 'square', 0.15);
+  playTone(ctx, 800, 0.15, t + 0.25, 'square', 0.15);
+  playTone(ctx, 1000, 0.25, t + 0.5, 'square', 0.18);
+}
+
+const SOUND_PLAYERS = {
+  task: playTaskSound,
+  message: playMessageSound,
+  urgent: playUrgentSound,
 };
 
 // Default alert settings
@@ -38,37 +87,71 @@ export interface AlertSettings {
   messagesEnabled: boolean;
 }
 
+// Check if current time falls within quiet hours
+function isInQuietHours(): boolean {
+  try {
+    const prefs = JSON.parse(localStorage.getItem('opsly_user_preferences') || '{}');
+    const qh = prefs.quiet_hours;
+    if (!qh?.enabled || !qh.start || !qh.end) return false;
+
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const [startH, startM] = qh.start.split(':').map(Number);
+    const [endH, endM] = qh.end.split(':').map(Number);
+    const startMinutes = startH * 60 + startM;
+    const endMinutes = endH * 60 + endM;
+
+    // Handle overnight range (e.g. 22:00 - 07:00)
+    if (startMinutes > endMinutes) {
+      return currentMinutes >= startMinutes || currentMinutes < endMinutes;
+    }
+    return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+  } catch {
+    return false;
+  }
+}
+
 export function useAlerts() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
   const { profile } = useAppContext();
   const [settings, setSettings] = useState<AlertSettings>(DEFAULT_SETTINGS);
 
-  // Load settings from profile or localStorage
+  // Load settings from profile, user preferences, or localStorage
   useEffect(() => {
-    // First try to get settings from profile (database)
+    // Start with defaults
+    let merged = { ...DEFAULT_SETTINGS };
+
+    // Layer 1: profile alert_settings from database
     if (profile?.alert_settings) {
-      setSettings({
-        soundsEnabled: profile.alert_settings.sounds_enabled ?? DEFAULT_SETTINGS.soundsEnabled,
-        vibrationEnabled: profile.alert_settings.vibration_enabled ?? DEFAULT_SETTINGS.vibrationEnabled,
-        taskRemindersEnabled: profile.alert_settings.task_reminders ?? DEFAULT_SETTINGS.taskRemindersEnabled,
-        messagesEnabled: profile.alert_settings.messages ?? DEFAULT_SETTINGS.messagesEnabled,
-      });
-      return;
+      merged = {
+        soundsEnabled: profile.alert_settings.sounds_enabled ?? merged.soundsEnabled,
+        vibrationEnabled: profile.alert_settings.vibration_enabled ?? merged.vibrationEnabled,
+        taskRemindersEnabled: profile.alert_settings.task_reminders ?? merged.taskRemindersEnabled,
+        messagesEnabled: profile.alert_settings.messages ?? merged.messagesEnabled,
+      };
     }
 
-    // Fallback to localStorage
+    // Layer 2: user preferences (sound_enabled / vibration_enabled overrides)
     try {
-      const stored = localStorage.getItem('opsly_alert_settings');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setSettings({
-          ...DEFAULT_SETTINGS,
-          ...parsed,
-        });
-      }
-    } catch (e) {
-      console.debug('Could not load alert settings from localStorage');
+      const prefs = JSON.parse(localStorage.getItem('opsly_user_preferences') || '{}');
+      if (prefs.sound_enabled === false) merged.soundsEnabled = false;
+      if (prefs.sound_enabled === true) merged.soundsEnabled = true;
+      if (prefs.vibration_enabled === false) merged.vibrationEnabled = false;
+      if (prefs.vibration_enabled === true) merged.vibrationEnabled = true;
+    } catch { /* ignore */ }
+
+    // Layer 3: legacy localStorage fallback
+    if (!profile?.alert_settings) {
+      try {
+        const stored = localStorage.getItem('opsly_alert_settings');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          merged = { ...merged, ...parsed };
+        }
+      } catch { /* ignore */ }
     }
+
+    setSettings(merged);
   }, [profile?.alert_settings]);
 
   // Save settings to localStorage (as backup)
@@ -101,27 +184,28 @@ export function useAlerts() {
     if (!settings.soundsEnabled) return;
 
     try {
-      // Stop any currently playing sound
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
+      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+        audioCtxRef.current = createAudioContext();
       }
 
-      const audio = new Audio(SOUND_FILES[type]);
-      audio.volume = 0.7; // Not too loud
-      audioRef.current = audio;
+      const ctx = audioCtxRef.current;
+      if (!ctx) return;
 
-      // Play and handle errors gracefully
-      audio.play().catch((e) => {
-        // Autoplay blocked - user hasn't interacted yet
-        console.debug('Sound playback blocked:', e.message);
-      });
+      // Resume context if suspended (autoplay policy)
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+
+      SOUND_PLAYERS[type](ctx);
     } catch (e) {
       console.debug('Audio not available');
     }
   }, [settings.soundsEnabled]);
 
   const alert = useCallback((options: AlertOptions = {}) => {
+    // Suppress alerts during quiet hours
+    if (isInQuietHours()) return;
+
     const {
       vibrate: shouldVibrate = true,
       sound = 'task',

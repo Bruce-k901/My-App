@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { DollarSign, X } from 'lucide-react';
+import { DollarSign, X } from '@/components/ui/icons';
 
 interface ForecastInputProps {
   date: string;
@@ -43,14 +43,14 @@ export function ForecastInput({ date, currentForecast, onSave, onClose }: Foreca
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder="0.00"
-            className="w-full pl-7 pr-2 py-1.5 bg-neutral-900 border border-neutral-700 rounded text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#EC4899]"
+            className="w-full pl-7 pr-2 py-1.5 bg-neutral-900 border border-neutral-700 rounded text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#D37E91]"
             autoFocus
           />
         </div>
         <div className="flex gap-2">
           <button
             type="submit"
-            className="flex-1 px-2 py-1 bg-[#EC4899] hover:bg-[#EC4899]/90 text-white text-xs rounded transition-colors"
+            className="flex-1 px-2 py-1 bg-[#D37E91] hover:bg-[#D37E91]/90 text-white text-xs rounded transition-colors"
           >
             Save
           </button>

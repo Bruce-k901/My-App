@@ -13,7 +13,7 @@ import Label from '@/components/ui/Label';
 import Textarea from '@/components/ui/Textarea';
 import Checkbox from '@/components/ui/Checkbox';
 import { LibraryType, LibraryInfo } from '@/lib/types/stockly';
-import { Loader2, Package, Box, Coffee, Heart, Shield, FlaskConical } from 'lucide-react';
+import { Loader2, Package, Box, Coffee, Heart, Shield, FlaskConical } from '@/components/ui/icons';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';

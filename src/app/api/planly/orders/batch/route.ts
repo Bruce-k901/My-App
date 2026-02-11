@@ -138,12 +138,11 @@ export async function POST(request: NextRequest) {
 
         updated++;
       } else {
-        // Create new order with site_id for proper filtering
+        // Create new order (site access is through customer relationship)
         const { data: newOrder, error: orderError } = await supabase
           .from('planly_orders')
           .insert({
             customer_id,
-            site_id,
             delivery_date,
             status: 'confirmed',
             total_value: totalValue,

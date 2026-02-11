@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, Circle } from 'lucide-react';
+import { CheckCircle2, Circle } from '@/components/ui/icons';
 
 interface ChecklistRendererProps {
   items: Array<{ text: string; completed: boolean }>;

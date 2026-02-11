@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/Button';
-import { Loader2, CheckCircle, AlertTriangle, Plus, Link } from 'lucide-react';
+import { Loader2, CheckCircle, AlertTriangle, Plus, Link } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { generateRecipeId } from '@/lib/utils/recipeIdGenerator';
 import { toast } from 'sonner';

@@ -7,7 +7,7 @@ import Link from "next/link";
 import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout";
 import { Button, Input } from "@/components/ui";
 import GlassCard from "@/components/ui/GlassCard";
-import { Eye, EyeOff, RefreshCw } from "lucide-react";
+import { Eye, EyeOff, RefreshCw } from "@/components/ui/icons";
 
 export default function SignupPage() {
   const supabase = createClient();
@@ -227,7 +227,7 @@ export default function SignupPage() {
                       setEmailSent(false);
                       setPendingSignupData(null);
                     }}
-                    className="text-[#EC4899] hover:text-[#EC4899]/80 underline"
+                    className="text-[#D37E91] hover:text-[#D37E91]/80 underline"
                   >
                     try again
                   </button>
@@ -298,7 +298,7 @@ export default function SignupPage() {
                     role: e.target.value as "Owner" | "Admin" | "Manager",
                   })
                 }
-                className="w-full rounded-md bg-black/40 border border-white/20 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#EC4899] focus:border-[#EC4899]"
+                className="w-full rounded-md bg-black/40 border border-white/20 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
               >
                 <option value="Owner">Owner</option>
                 <option value="Admin">Admin</option>

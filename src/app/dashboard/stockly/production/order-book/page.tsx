@@ -1,6 +1,6 @@
 "use client";
 
-import { Package, Loader2 } from 'lucide-react';
+import { Package, Loader2 } from '@/components/ui/icons';
 
 export default function OrderBookPage() {
   return (

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
-import { Plus, Search, Edit, Trash2, Phone, Mail, User, AlertCircle, Wrench, Building2 } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Phone, Mail, User, AlertCircle, Wrench, Building2 } from '@/components/ui/icons';
 import { toast } from 'sonner';
 
 interface EmergencyContact {
@@ -245,7 +245,7 @@ export default function EmergencyContactsPage() {
         </div>
         <button
           onClick={handleNew}
-          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
+          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200"
         >
           <Plus className="w-4 h-4" />
           Add Contact
@@ -261,13 +261,13 @@ export default function EmergencyContactsPage() {
             placeholder="Search contacts..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+            className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#D37E91]/50"
           />
         </div>
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
+          className="px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-[#D37E91]/50"
         >
           <option value="all">All Types</option>
           {Object.entries(CONTACT_TYPE_LABELS).map(([value, label]) => (
@@ -294,8 +294,8 @@ export default function EmergencyContactsPage() {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-4 flex-1">
-                    <div className="p-2 bg-pink-500/10 rounded-lg">
-                      <Icon className="w-5 h-5 text-pink-400" />
+                    <div className="p-2 bg-[#D37E91]/15 rounded-lg">
+                      <Icon className="w-5 h-5 text-[#D37E91]" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
@@ -365,7 +365,7 @@ export default function EmergencyContactsPage() {
                 <select
                   value={formData.contact_type}
                   onChange={(e) => setFormData({ ...formData, contact_type: e.target.value as any })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-[#D37E91]/50"
                 >
                   {Object.entries(CONTACT_TYPE_LABELS).map(([value, label]) => (
                     <option key={value} value={value}>{label}</option>
@@ -379,7 +379,7 @@ export default function EmergencyContactsPage() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#D37E91]/50"
                   placeholder="John Smith"
                   required
                 />
@@ -391,7 +391,7 @@ export default function EmergencyContactsPage() {
                   type="tel"
                   value={formData.phone_number}
                   onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#D37E91]/50"
                   placeholder="+44 123 456 7890"
                   required
                 />
@@ -403,7 +403,7 @@ export default function EmergencyContactsPage() {
                   type="email"
                   value={formData.email || ''}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#D37E91]/50"
                   placeholder="john@example.com"
                 />
               </div>
@@ -414,7 +414,7 @@ export default function EmergencyContactsPage() {
                   type="text"
                   value={formData.role_title || ''}
                   onChange={(e) => setFormData({ ...formData, role_title: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#D37E91]/50"
                   placeholder="e.g., First Aider, Site Manager"
                 />
               </div>
@@ -424,7 +424,7 @@ export default function EmergencyContactsPage() {
                 <textarea
                   value={formData.notes || ''}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#D37E91]/50"
                   placeholder="Additional information..."
                   rows={3}
                 />
@@ -436,7 +436,7 @@ export default function EmergencyContactsPage() {
                   type="number"
                   value={formData.display_order}
                   onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#D37E91]/50"
                   min="0"
                 />
               </div>
@@ -456,7 +456,7 @@ export default function EmergencyContactsPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={handleSave}
-                className="flex-1 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
+                className="flex-1 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200"
               >
                 {editingContact ? 'Update' : 'Add'} Contact
               </button>

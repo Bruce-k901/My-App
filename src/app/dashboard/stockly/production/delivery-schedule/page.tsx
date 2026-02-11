@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Loader2 } from 'lucide-react';
+import { MapPin, Loader2 } from '@/components/ui/icons';
 
 export default function DeliverySchedulePage() {
   return (

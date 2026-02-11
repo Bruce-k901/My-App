@@ -20,9 +20,11 @@ import {
   Calendar,
   UserCircle,
   Building2,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { useState, useEffect, useMemo } from 'react';
 import { COURSES } from '@/lib/navigation-constants';
+import { useSidebarMode } from '@/hooks/useSidebarMode';
+import { SidebarPin } from '@/components/layout/SidebarPin';
 
 interface NavItem {
   label: string;
@@ -144,14 +146,7 @@ const navItems: NavItem[] = [
     children: [
       { label: 'Pay Runs', href: '/dashboard/people/payroll' },
       { label: 'Pay Rates', href: '/dashboard/people/payroll/rates' },
-      { label: 'My Payslips', href: '/dashboard/people/payroll/my-payslips' },
     ],
-  },
-  {
-    label: 'My Payslips',
-    href: '/dashboard/people/payroll/my-payslips',
-    icon: Wallet,
-    roles: ['staff'],
   },
   {
     label: 'Recruitment',
@@ -212,14 +207,14 @@ export function TeamlyNavItem({ item }: { item: NavItem }) {
         }}
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors relative ${
           isActive
-            ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-medium'
-            : 'text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05]'
-        } ${isActive ? 'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-blue-600 dark:before:bg-blue-400' : ''}`}
+            ? 'bg-teamly-dark/[0.08] dark:bg-teamly/10 text-teamly-dark dark:text-teamly font-medium'
+            : 'text-[#888] dark:text-white/50 hover:text-[#555] dark:hover:text-white/80 hover:bg-teamly-dark/[0.04] dark:hover:bg-teamly/5'
+        } ${isActive ? 'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-teamly-dark dark:before:bg-teamly' : ''}`}
       >
         <item.icon className="w-5 h-5 flex-shrink-0" />
         <span className="flex-1">{item.label}</span>
         {item.badge && (
-          <span className="px-2 py-0.5 bg-blue-500 dark:bg-blue-500 text-white text-xs rounded-full">
+          <span className="px-2 py-0.5 bg-teamly dark:bg-teamly text-white text-xs rounded-full">
             {item.badge}
           </span>
         )}
@@ -266,8 +261,8 @@ export function TeamlyNavItem({ item }: { item: NavItem }) {
                 href={child.href}
                 className={`block px-3 py-1.5 rounded text-sm transition-colors relative ${
                   isChildActive
-                    ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-blue-600 dark:before:bg-blue-400'
-                    : 'text-gray-500 dark:text-white/50 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05]'
+                    ? 'bg-teamly-dark/[0.08] dark:bg-teamly/10 text-teamly-dark dark:text-teamly font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-teamly-dark dark:before:bg-teamly'
+                    : 'text-[#888] dark:text-white/50 hover:text-[#555] dark:hover:text-white/80 hover:bg-teamly-dark/[0.04] dark:hover:bg-teamly/5'
                 }`}
               >
                 {child.label}
@@ -285,6 +280,7 @@ const APP_NAME = 'Teamly';
 
 export function TeamlySidebar() {
   const { profile } = useAppContext();
+  const { isCollapsed, showExpanded, isHoverExpanded, displayWidth, togglePin, handleMouseEnter, handleMouseLeave } = useSidebarMode();
   const userRole = profile?.app_role?.toLowerCase() || 'staff';
 
   const filteredItems = navItems.filter(item => {
@@ -293,37 +289,68 @@ export function TeamlySidebar() {
   });
 
   return (
-    <aside className="w-64 bg-white dark:bg-[#0f1220] border-r border-gray-200 dark:border-white/[0.06] flex flex-col h-full" suppressHydrationWarning>
+    <aside
+      className={`bg-sidebar-teamly-light dark:bg-sidebar-teamly border-r border-module-fg/[0.18] flex flex-col h-full transition-[width] duration-200 ${isHoverExpanded ? 'shadow-2xl z-50' : ''}`}
+      style={{ width: displayWidth }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      suppressHydrationWarning
+    >
       {/* Header */}
-      <div className="px-4 py-5 bg-neutral-900 border-b border-gray-200 dark:border-white/[0.06]">
+      <div className={`${!showExpanded ? 'px-2 py-3' : 'px-4 py-5'} bg-sidebar-teamly-light dark:bg-sidebar-teamly border-b border-module-fg/[0.18]`}>
         <Link href="/dashboard/people" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
-          <img
-            src="/module_logos/teamly.png"
-            alt="Teamly"
-            className="h-12 w-auto max-w-full"
-          />
+          <img src="/new_module_logos/teamly_light.svg" alt="Teamly" className={`${!showExpanded ? 'h-8' : 'h-12'} w-auto max-w-full dark:hidden`} />
+          <img src="/new_module_logos/teamly_dark.svg" alt="Teamly" className={`${!showExpanded ? 'h-8' : 'h-12'} w-auto max-w-full hidden dark:block`} />
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto p-4 space-y-1 teamly-sidebar-scrollbar">
-        {filteredItems.map((item) => (
-          <TeamlyNavItem key={item.href} item={item} />
-        ))}
+      <nav className={`flex-1 overflow-y-auto ${!showExpanded ? 'p-2 space-y-1' : 'p-4 space-y-1'} teamly-sidebar-scrollbar`}>
+        {!showExpanded ? (
+          filteredItems.map((item, index) => {
+            const Icon = item.icon;
+            const href = item.href || (item.children?.[0]?.href) || '#';
+            return (
+              <Link
+                key={`${item.label}-${index}`}
+                href={href}
+                className="flex items-center justify-center w-full h-10 rounded-lg text-[#888] dark:text-white/50 hover:bg-teamly-dark/[0.04] dark:hover:bg-teamly/5 hover:text-[#555] dark:hover:text-white/80 transition-colors"
+                title={item.label}
+              >
+                <Icon className="w-5 h-5" />
+              </Link>
+            );
+          })
+        ) : (
+          filteredItems.map((item) => (
+            <TeamlyNavItem key={item.href} item={item} />
+          ))
+        )}
       </nav>
 
-      {/* My Profile Quick Access */}
-      <div className="p-4 border-t border-gray-200 dark:border-white/[0.06]">
-        <Link
-          href={`/dashboard/people/${profile?.id}`}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
-        >
-          <UserCircle className="w-5 h-5" />
-          <div className="flex-1 min-w-0">
-            <p className="truncate text-gray-900 dark:text-white">{profile?.full_name || 'My Profile'}</p>
-            <p className="truncate text-xs text-gray-500 dark:text-white/50">{profile?.position_title || 'Employee'}</p>
+      {/* Profile + Pin */}
+      <div className="border-t border-module-fg/[0.18]">
+        {showExpanded ? (
+          <div className="p-4 pb-0">
+            <Link
+              href={`/dashboard/people/${profile?.id}`}
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#888] dark:text-white/50 hover:text-[#555] dark:hover:text-white/80 hover:bg-teamly-dark/[0.04] dark:hover:bg-teamly/5 transition-colors"
+            >
+              <UserCircle className="w-5 h-5" />
+              <div className="flex-1 min-w-0">
+                <p className="truncate text-[#1a1a1a] dark:text-white">{profile?.full_name || 'My Profile'}</p>
+                <p className="truncate text-xs text-gray-500 dark:text-white/50">{profile?.position_title || 'Employee'}</p>
+              </div>
+            </Link>
           </div>
-        </Link>
+        ) : (
+          <div className="flex justify-center py-2">
+            <Link href={`/dashboard/people/${profile?.id}`} title={profile?.full_name || 'My Profile'} className="text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors">
+              <UserCircle className="w-5 h-5" />
+            </Link>
+          </div>
+        )}
+        <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />
       </div>
     </aside>
   );

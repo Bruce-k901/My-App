@@ -8,11 +8,14 @@
 // 1. View certificate details (employee, type, current expiry)
 // 2. Update the expiry date when certificate is renewed
 // 3. Optionally book training if certificate needs renewal
+//
+// Writes to training_records (single source of truth).
+// DB trigger syncs changes back to profile cert fields automatically.
 // ============================================================================
 
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { X, Calendar, Award, AlertCircle, Loader2, User, Clock, ExternalLink } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
+import { X, Calendar, Award, AlertCircle, Loader2, User, Clock, ExternalLink } from '@/components/ui/icons'
 import type { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 
 interface CertificateTaskModalProps {
@@ -31,14 +34,21 @@ const CERTIFICATE_LABELS: Record<string, string> = {
   cossh: 'COSHH',
 }
 
+// Map certificate_type from task_data → training_courses.code
+const CERT_TYPE_TO_COURSE_CODE: Record<string, string | ((level?: number) => string)> = {
+  food_safety: (level?: number) => (level && level >= 3) ? 'FS-L3' : 'FS-L2',
+  h_and_s: 'HS-L2',
+  fire_marshal: 'FIRE',
+  first_aid: 'FAW',
+  cossh: 'COSHH',
+}
+
 export default function CertificateTaskModal({
   task,
   isOpen,
   onClose,
   onComplete
 }: CertificateTaskModalProps) {
-  const supabase = createClientComponentClient()
-
   // State
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
@@ -57,8 +67,15 @@ export default function CertificateTaskModal({
   const daysUntilExpiry = taskData?.days_until_expiry
   const level = taskData?.level
 
+  // training_certificate tasks come from training_records and carry course_id + course_name directly
+  const isTrainingRecord = sourceType === 'training_certificate'
+  const courseId = taskData?.course_id as string | undefined
+  const courseName = taskData?.course_name as string | undefined
+
   const isNoExpiry = sourceType === 'certificate_no_expiry'
-  const certificateLabel = CERTIFICATE_LABELS[certificateType] || certificateType
+  const certificateLabel = isTrainingRecord
+    ? (courseName || 'Training Certificate')
+    : (CERTIFICATE_LABELS[certificateType] || certificateType)
 
   // Load employee data
   useEffect(() => {
@@ -71,7 +88,7 @@ export default function CertificateTaskModal({
 
         const { data, error: profileError } = await supabase
           .from('profiles')
-          .select('id, full_name, email, food_safety_level, h_and_s_level, food_safety_expiry_date, h_and_s_expiry_date')
+          .select('id, full_name, email, company_id')
           .eq('id', profileId)
           .single()
 
@@ -93,30 +110,56 @@ export default function CertificateTaskModal({
     }
 
     loadEmployee()
-  }, [isOpen, profileId, supabase])
+  }, [isOpen, profileId])
 
   const handleUpdateExpiry = async () => {
-    if (!newExpiryDate || !profileId) return
+    if (!newExpiryDate || !profileId || !employee?.company_id) return
 
     try {
       setSubmitting(true)
       setError(null)
 
-      // Call the existing API with legacy- prefix for profile-based certs
-      const response = await fetch(`/api/training/records/legacy-${profileId}/update-expiry`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          expiry_date: newExpiryDate,
-          profile_id: profileId,
-          certificate_type: certificateType,
-        }),
+      // Resolve course ID - training_certificate tasks already have it, profile-based tasks need lookup
+      let resolvedCourseId: string
+
+      if (isTrainingRecord && courseId) {
+        resolvedCourseId = courseId
+      } else {
+        // Resolve course code from certificate_type
+        const codeResolver = CERT_TYPE_TO_COURSE_CODE[certificateType]
+        if (!codeResolver) throw new Error(`Unknown certificate type: ${certificateType}`)
+        const courseCode = typeof codeResolver === 'function' ? codeResolver(level) : codeResolver
+
+        // Look up the course
+        const { data: course, error: courseError } = await supabase
+          .from('training_courses')
+          .select('id')
+          .eq('company_id', employee.company_id)
+          .eq('code', courseCode)
+          .single()
+
+        if (courseError || !course) {
+          throw new Error(`Training course not found for code: ${courseCode}`)
+        }
+        resolvedCourseId = course.id
+      }
+
+      // Get current user for recorded_by
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      // Use complete_training() RPC - handles upsert
+      const { error: rpcError } = await supabase.rpc('complete_training', {
+        p_profile_id: profileId,
+        p_course_id: resolvedCourseId,
+        p_completed_at: new Date().toISOString().split('T')[0],
+        p_score: null,
+        p_certificate_number: null,
+        p_expiry_date: newExpiryDate,
+        p_recorded_by: user.id,
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to update expiry date')
-      }
+      if (rpcError) throw rpcError
 
       // Complete the task
       await completeTask()

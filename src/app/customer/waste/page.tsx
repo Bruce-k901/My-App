@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Calendar, TrendingUp, ArrowRight, Loader2 } from 'lucide-react';
+import { Calendar, TrendingUp, ArrowRight, Loader2 } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 
 export default function WasteTrackingPage() {
@@ -25,10 +25,10 @@ export default function WasteTrackingPage() {
         <Link href="/customer/waste/log">
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 hover:bg-white/[0.05] transition-colors cursor-pointer group">
             <div className="flex items-start justify-between mb-4">
-              <div className="p-3 bg-[#EC4899]/10 rounded-lg">
-                <Calendar className="w-6 h-6 text-[#EC4899]" />
+              <div className="p-3 bg-[#D37E91]/10 rounded-lg">
+                <Calendar className="w-6 h-6 text-[#D37E91]" />
               </div>
-              <ArrowRight className="w-5 h-5 text-white/40 group-hover:text-[#EC4899] transition-colors" />
+              <ArrowRight className="w-5 h-5 text-white/40 group-hover:text-[#D37E91] transition-colors" />
             </div>
             <h2 className="text-lg font-semibold text-white mb-2">Log Today's Sales</h2>
             <p className="text-sm text-white/60">
@@ -59,7 +59,7 @@ export default function WasteTrackingPage() {
         <h3 className="text-lg font-semibold text-white mb-4">How It Works</h3>
         <div className="space-y-3 text-sm text-white/60">
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-[#EC4899]/20 text-[#EC4899] flex items-center justify-center text-xs font-semibold mt-0.5 flex-shrink-0">
+            <div className="w-6 h-6 rounded-full bg-[#D37E91]/20 text-[#D37E91] flex items-center justify-center text-xs font-semibold mt-0.5 flex-shrink-0">
               1
             </div>
             <div>
@@ -67,7 +67,7 @@ export default function WasteTrackingPage() {
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-[#EC4899]/20 text-[#EC4899] flex items-center justify-center text-xs font-semibold mt-0.5 flex-shrink-0">
+            <div className="w-6 h-6 rounded-full bg-[#D37E91]/20 text-[#D37E91] flex items-center justify-center text-xs font-semibold mt-0.5 flex-shrink-0">
               2
             </div>
             <div>
@@ -75,7 +75,7 @@ export default function WasteTrackingPage() {
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-[#EC4899]/20 text-[#EC4899] flex items-center justify-center text-xs font-semibold mt-0.5 flex-shrink-0">
+            <div className="w-6 h-6 rounded-full bg-[#D37E91]/20 text-[#D37E91] flex items-center justify-center text-xs font-semibold mt-0.5 flex-shrink-0">
               3
             </div>
             <div>

@@ -4,7 +4,7 @@ import React, { ErrorInfo, Component, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { WidgetConfig, MODULE_COLORS, WidgetProps } from '@/types/dashboard';
 import { WidgetSkeleton } from './WidgetSkeleton';
-import { ChevronDown, ChevronUp, AlertCircle, RefreshCw } from 'lucide-react';
+import { ChevronDown, ChevronUp, AlertCircle, RefreshCw } from '@/components/ui/icons';
 import Link from 'next/link';
 
 interface WidgetWrapperProps {
@@ -54,7 +54,7 @@ class WidgetErrorBoundary extends Component<
               this.setState({ hasError: false, error: null });
               this.props.onRetry();
             }}
-            className="flex items-center gap-1 text-xs text-pink-500 hover:text-pink-400"
+            className="flex items-center gap-1 text-xs text-[#D37E91] hover:text-[#D37E91]"
           >
             <RefreshCw className="w-3 h-3" />
             Retry
@@ -200,7 +200,7 @@ export function WidgetCard({
         <div className="mt-3 pt-3 border-t border-theme dark:border-white/[0.06]">
           <Link
             href={viewAllHref}
-            className="text-xs text-pink-500 hover:text-pink-400 font-medium"
+            className="text-xs text-[#D37E91] hover:text-[#D37E91] font-medium"
           >
             {viewAllLabel} →
           </Link>
@@ -229,7 +229,7 @@ export function WidgetEmptyState({
       {icon && <div className="text-[rgb(var(--text-tertiary))] dark:text-white/30 mb-2">{icon}</div>}
       <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2">{message}</p>
       {actionLabel && actionHref && (
-        <Link href={actionHref} className="text-xs text-pink-500 hover:text-pink-400 font-medium">
+        <Link href={actionHref} className="text-xs text-[#D37E91] hover:text-[#D37E91] font-medium">
           {actionLabel}
         </Link>
       )}
@@ -243,7 +243,7 @@ export function WidgetEmptyState({
 export function WidgetLoading() {
   return (
     <div className="flex items-center justify-center p-4 h-full min-h-[80px]">
-      <div className="w-6 h-6 border-2 border-pink-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-6 h-6 border-2 border-[#D37E91] border-t-transparent rounded-full animate-spin" />
     </div>
   );
 }

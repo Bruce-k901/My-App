@@ -20,7 +20,7 @@ import {
   RefreshCw,
   Eye,
   EyeOff,
-} from "lucide-react";
+} from "@/components/ui/icons";
 import { toast } from "sonner";
 
 interface KnowledgeEntry {
@@ -246,7 +246,7 @@ export default function AIKnowledgeBasePage() {
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <Brain className="w-8 h-8 text-[#EC4899]" />
+            <Brain className="w-8 h-8 text-[#D37E91]" />
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
               AI Knowledge Base
             </h1>
@@ -294,7 +294,7 @@ export default function AIKnowledgeBasePage() {
                 placeholder="Search knowledge base..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+                className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
               />
             </div>
 
@@ -302,7 +302,7 @@ export default function AIKnowledgeBasePage() {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+              className="px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
             >
               <option value="">All Categories</option>
               {CATEGORIES.map((cat) => (
@@ -336,7 +336,7 @@ export default function AIKnowledgeBasePage() {
             {/* Add New */}
             <button
               onClick={openCreateForm}
-              className="flex items-center gap-2 px-4 py-2 bg-[#EC4899] hover:bg-[#EC4899]/90 text-white rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/90 text-white rounded-lg transition-colors"
             >
               <Plus className="w-4 h-4" />
               <span className="text-sm">Add Entry</span>
@@ -346,7 +346,7 @@ export default function AIKnowledgeBasePage() {
 
         {/* Create/Edit Form */}
         {(isCreating || editingEntry) && (
-          <div className="bg-white dark:bg-white/[0.03] border border-[#EC4899]/30 rounded-xl p-6 mb-6">
+          <div className="bg-white dark:bg-white/[0.03] border border-[#D37E91]/30 rounded-xl p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 {editingEntry ? "Edit Entry" : "New Knowledge Entry"}
@@ -370,7 +370,7 @@ export default function AIKnowledgeBasePage() {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g., How to create a new checklist"
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                 />
               </div>
 
@@ -382,7 +382,7 @@ export default function AIKnowledgeBasePage() {
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                 >
                   {CATEGORIES.map((cat) => (
                     <option key={cat.value} value={cat.value}>
@@ -402,7 +402,7 @@ export default function AIKnowledgeBasePage() {
                   value={formData.subcategory}
                   onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
                   placeholder="e.g., Checkly, Temperature Logs"
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                 />
               </div>
 
@@ -416,7 +416,7 @@ export default function AIKnowledgeBasePage() {
                   value={formData.tags}
                   onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
                   placeholder="e.g., checklist, tasks, compliance"
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                 />
               </div>
 
@@ -430,7 +430,7 @@ export default function AIKnowledgeBasePage() {
                   value={formData.source}
                   onChange={(e) => setFormData({ ...formData, source: e.target.value })}
                   placeholder="e.g., Internal docs, FSA guidelines"
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                 />
               </div>
 
@@ -444,7 +444,7 @@ export default function AIKnowledgeBasePage() {
                   value={formData.summary}
                   onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
                   placeholder="Brief one-line description"
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                 />
               </div>
 
@@ -458,7 +458,7 @@ export default function AIKnowledgeBasePage() {
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                   placeholder="Write detailed information here. This is what the AI will use to answer questions. Include step-by-step instructions, important notes, and any relevant details."
                   rows={8}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 resize-y"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 resize-y"
                 />
               </div>
             </div>
@@ -474,7 +474,7 @@ export default function AIKnowledgeBasePage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 px-4 py-2 bg-[#EC4899] hover:bg-[#EC4899]/90 text-white rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/90 text-white rounded-lg transition-colors disabled:opacity-50"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 <span>{editingEntry ? "Update" : "Create"}</span>
@@ -493,7 +493,7 @@ export default function AIKnowledgeBasePage() {
 
           {loading ? (
             <div className="p-12 text-center">
-              <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin mx-auto mb-4" />
+              <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin mx-auto mb-4" />
               <p className="text-gray-600 dark:text-white/60">Loading entries...</p>
             </div>
           ) : entries.length === 0 ? (
@@ -528,7 +528,7 @@ export default function AIKnowledgeBasePage() {
                         )}
                       </div>
                       <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className="px-2 py-0.5 text-xs bg-[#EC4899]/10 text-[#EC4899] rounded">
+                        <span className="px-2 py-0.5 text-xs bg-[#D37E91]/10 text-[#D37E91] rounded">
                           {CATEGORIES.find((c) => c.value === entry.category)?.label || entry.category}
                         </span>
                         {entry.subcategory && (

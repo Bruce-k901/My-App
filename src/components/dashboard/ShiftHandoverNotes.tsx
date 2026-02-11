@@ -35,7 +35,7 @@ export default function ShiftHandoverNotes() {
   };
 
   return (
-    <section className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)] fade-in-soft">
+    <section className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(211, 126, 145,0.05)] fade-in-soft">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-2xl font-semibold">Shift Handover Notes</h3>
         {savedAt && <span className="text-xs text-slate-400">Saved at {savedAt}</span>}
@@ -44,7 +44,7 @@ export default function ShiftHandoverNotes() {
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         placeholder="Key updates for the next shift..."
-        className="w-full h-24 bg-black/30 border border-white/10 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500/40 textarea-hover-glow"
+        className="w-full h-24 bg-black/30 border border-white/10 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 textarea-hover-glow"
       />
       <div className="flex justify-end mt-2">
         <button

@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Package, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { Package, AlertTriangle, CheckCircle, XCircle } from '@/components/ui/icons';
 import type { PlanlyBadgeData } from '@/types/planly';
 
 interface PlanlyBadgeProps {

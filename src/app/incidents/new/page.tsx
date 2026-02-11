@@ -119,7 +119,7 @@ function NewIncidentForm() {
           <button
             type="submit"
             disabled={submitting}
-            className="bg-transparent border border-[#EC4899] text-[#EC4899] px-4 py-2 rounded hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] disabled:opacity-50 disabled:border-white/20 disabled:text-white/40 transition-all duration-200"
+            className="bg-transparent border border-[#D37E91] text-[#D37E91] px-4 py-2 rounded hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] disabled:opacity-50 disabled:border-white/20 disabled:text-white/40 transition-all duration-200"
           >
             {submitting ? "Submitting..." : "Submit Report"}
           </button>

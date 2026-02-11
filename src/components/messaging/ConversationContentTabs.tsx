@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { MessageSquare, FileText, Image as ImageIcon, CheckSquare, Download } from 'lucide-react';
+import { MessageSquare, FileText, Image as ImageIcon, CheckSquare, Download } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import type { Message } from '@/types/messaging';
 import MessageImageGallery from './MessageImageGallery';
@@ -204,7 +204,7 @@ export default function ConversationContentTabs({ conversationId }: Conversation
               className={`
                 flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg transition-all text-xs sm:text-sm font-medium flex-shrink-0
                 ${isActive
-                  ? 'bg-transparent text-[#EC4899] border border-[#EC4899]'
+                  ? 'bg-transparent text-[#D37E91] border border-[#D37E91]'
                   : 'text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white/80 hover:bg-gray-50 dark:hover:bg-white/[0.05]'
                 }
               `}
@@ -215,7 +215,7 @@ export default function ConversationContentTabs({ conversationId }: Conversation
                 <span className={`
                   text-xs px-1.5 sm:px-2 py-0.5 rounded-full
                   ${isActive
-                    ? 'bg-pink-100 dark:bg-[#EC4899]/30 text-pink-700 dark:text-[#EC4899]'
+                    ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/30 text-[#D37E91] dark:text-[#D37E91]'
                     : 'bg-gray-100 dark:bg-white/[0.1] text-gray-600 dark:text-white/60'
                   }
                 `}>
@@ -241,7 +241,7 @@ export default function ConversationContentTabs({ conversationId }: Conversation
                   className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.03] transition-colors"
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <FileText className="h-5 w-5 text-[#EC4899] flex-shrink-0" />
+                    <FileText className="h-5 w-5 text-[#D37E91] flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-gray-900 dark:text-white truncate">{file.file_name || 'Unknown file'}</p>
                       {file.file_size && (
@@ -327,7 +327,7 @@ export default function ConversationContentTabs({ conversationId }: Conversation
                     </p>
                   )}
                   <button
-                    className="mt-2 text-xs text-[#EC4899] hover:underline"
+                    className="mt-2 text-xs text-[#D37E91] hover:underline"
                     onClick={(e) => {
                       e.stopPropagation();
                       window.location.href = `/dashboard/tasks?task=${task.id}`;

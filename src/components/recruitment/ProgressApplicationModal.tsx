@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Loader2, ThumbsUp, ThumbsDown, MessageSquare, Users as UsersIcon, Calendar, Clock, MapPin, User } from 'lucide-react'
+import { X, Loader2, ThumbsUp, ThumbsDown, MessageSquare, Users as UsersIcon, Calendar, Clock, MapPin, User } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
 import TimePicker from '@/components/ui/TimePicker'
@@ -306,7 +306,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                     break_minutes: 0,
                     role_required: application.job.title,
                     status: 'scheduled',
-                    color: '#EC4899', // Pink for trial shifts
+                    color: '#D37E91', // Pink for trial shifts
                     notes: `🎯 TRIAL SHIFT - ${candidate.full_name}\nCandidate for: ${application.job.title}\nContact: ${contactName}\nLocation: ${selectedSite?.name || 'Site'}\nPayment: ${trialPaymentTerms === 'unpaid' ? 'Unpaid' : trialPaymentTerms === 'paid' ? `Paid £${trialPaymentRate}/hr` : 'Paid if hired'}`,
                     hourly_rate: trialPaymentTerms === 'paid' && trialPaymentRate ? Math.round(parseFloat(trialPaymentRate) * 100) : null
                   }
@@ -551,7 +551,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                       onChange={(e) => setManagerNotes(e.target.value)}
                       placeholder={`What went well? Any concerns? Key takeaways from the ${mode}...`}
                       rows={4}
-                      className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 resize-none"
+                      className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 resize-none"
                     />
                   </div>
 
@@ -567,7 +567,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                         onChange={(e) => setTeamFeedback(e.target.value)}
                         placeholder="What did the team think? How did they fit in?"
                         rows={3}
-                        className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 resize-none"
+                        className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 resize-none"
                       />
                     </div>
                   )}
@@ -590,7 +590,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                               type="date"
                               value={trialDate}
                               onChange={(e) => setTrialDate(e.target.value)}
-                              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+                              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
                             />
                           </div>
                           <div>
@@ -614,7 +614,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                           <select
                             value={trialDuration}
                             onChange={(e) => setTrialDuration(e.target.value)}
-                            className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899] [&>option]:bg-[#1a1d24] [&>option]:text-white"
+                            className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91] [&>option]:bg-[#1a1d24] [&>option]:text-white"
                           >
                             <option value="2">2 hours</option>
                             <option value="3">3 hours</option>
@@ -634,7 +634,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                             <select
                               value={trialSiteId}
                               onChange={(e) => setTrialSiteId(e.target.value)}
-                              className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899] [&>option]:bg-[#1a1d24] [&>option]:text-white"
+                              className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91] [&>option]:bg-[#1a1d24] [&>option]:text-white"
                             >
                               <option value="">Select a site...</option>
                               {sites.map(site => (
@@ -650,7 +650,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                                 value={trialSiteId}
                                 onChange={(e) => setTrialSiteId(e.target.value)}
                                 placeholder="e.g., Main Kitchen, 123 High Street, London"
-                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899]"
+                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
                               />
                               <p className="text-xs text-white/40 mt-1">
                                 💡 No sites found. Enter location manually or set up sites in your company settings.
@@ -675,7 +675,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                               value={trialContactPerson}
                               onChange={(e) => setTrialContactPerson(e.target.value)}
                               disabled={!trialSiteId}
-                              className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899] disabled:opacity-50 disabled:cursor-not-allowed [&>option]:bg-[#1a1d24] [&>option]:text-white"
+                              className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91] disabled:opacity-50 disabled:cursor-not-allowed [&>option]:bg-[#1a1d24] [&>option]:text-white"
                             >
                               <option value="">{trialSiteId ? 'Select contact person...' : 'Select a site first'}</option>
                               {siteStaff.map(person => (
@@ -691,7 +691,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                                 value={trialContactPerson}
                                 onChange={(e) => setTrialContactPerson(e.target.value)}
                                 placeholder="e.g., John Smith (Manager)"
-                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899]"
+                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
                               />
                               {trialSiteId && siteStaff.length === 0 && !loadingSiteStaff && (
                                 <p className="text-xs text-white/40 mt-1">
@@ -712,7 +712,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                             value={trialWhatToBring}
                             onChange={(e) => setTrialWhatToBring(e.target.value)}
                             placeholder="e.g., Black shoes, apron, ID, etc."
-                            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899]"
+                            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
                           />
                         </div>
 
@@ -726,7 +726,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                             onChange={(e) => setTrialAdditionalInfo(e.target.value)}
                             placeholder="Parking info, where to enter, what to expect, etc."
                             rows={3}
-                            className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 resize-none"
+                            className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 resize-none"
                           />
                         </div>
 
@@ -806,7 +806,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                                 value={trialPaymentRate}
                                 onChange={(e) => setTrialPaymentRate(e.target.value)}
                                 placeholder="e.g., 11.50"
-                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899]"
+                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
                               />
                             </div>
                           )}
@@ -821,7 +821,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                               onChange={(e) => setTrialPaymentNotes(e.target.value)}
                               placeholder="Any additional payment details or conditions..."
                               rows={2}
-                              className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 resize-none"
+                              className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 resize-none"
                             />
                           </div>
                         </div>
@@ -833,7 +833,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                               type="checkbox"
                               checked={addToRota}
                               onChange={(e) => setAddToRota(e.target.checked)}
-                              className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#EC4899] focus:ring-[#EC4899]"
+                              className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#D37E91] focus:ring-[#D37E91]"
                             />
                             <div>
                               <div className="text-white text-sm font-medium">
@@ -861,7 +861,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                     onChange={(e) => setRejectionMessage(e.target.value)}
                     placeholder="Optional personal message to include in rejection email..."
                     rows={4}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899] resize-none"
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] resize-none"
                   />
                 </div>
               )}
@@ -878,7 +878,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                 onChange={(e) => setRejectionMessage(e.target.value)}
                 placeholder="You can add a personal message here, or leave blank for the standard rejection email..."
                 rows={4}
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899] resize-none"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] resize-none"
               />
             </div>
           )}
@@ -890,7 +890,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
               id="send-rejection-email"
               checked={sendEmail}
               onChange={(e) => setSendEmail(e.target.checked)}
-              className="w-4 h-4 rounded accent-[#EC4899]"
+              className="w-4 h-4 rounded accent-[#D37E91]"
             />
             <label htmlFor="send-rejection-email" className="text-sm text-white/70 cursor-pointer">
               Send email notification to candidate
@@ -913,7 +913,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
             className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 disabled:opacity-50 ${
               progression === 'reject' || mode === 'reject'
                 ? 'bg-red-500 hover:bg-red-600 text-white'
-                : 'bg-[#EC4899] hover:bg-[#EC4899]/90 text-white'
+                : 'bg-[#D37E91] hover:bg-[#D37E91]/90 text-white'
             }`}
           >
             {saving && <Loader2 className="w-4 h-4 animate-spin" />}

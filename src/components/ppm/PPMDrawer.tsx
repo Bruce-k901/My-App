@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X, Calendar, MapPin, User, Wrench, Clock, FileText, Save, CheckCircle, Upload } from 'lucide-react';
+import { X, Calendar, MapPin, User, Wrench, Clock, FileText, Save, CheckCircle, Upload } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/ToastProvider';
 import { getPPMStatus, formatServiceDate, getFrequencyText, getStatusDisplayText, calculateNextServiceDate } from '@/utils/ppmHelpers';

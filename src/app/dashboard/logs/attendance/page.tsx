@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 // Temporarily removing icons to debug
-// import { Clock, MapPin, User, CheckCircle, XCircle } from 'lucide-react';
+// import { Clock, MapPin, User, CheckCircle, XCircle } from '@/components/ui/icons';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 // import { Button } from '@/components/ui';
@@ -230,7 +230,7 @@ export default function AttendanceLogsPage() {
         {/* Header */}
         <div className="mb-4 sm:mb-6">
           <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-            {/* <Clock className="w-8 h-8 text-pink-500" /> */}
+            {/* <Clock className="w-8 h-8 text-[#D37E91]" /> */}
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Attendance Register</h1>
           </div>
           <p className="text-white/60 text-sm sm:text-base">View clock-in and clock-out records</p>
@@ -255,7 +255,7 @@ export default function AttendanceLogsPage() {
                     }}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       filter === f
-                        ? 'bg-transparent text-[#EC4899] border border-[#EC4899] shadow-[0_0_12px_rgba(236,72,153,0.7)]'
+                        ? 'bg-transparent text-[#D37E91] border border-[#D37E91] shadow-[0_0_12px_rgba(211, 126, 145,0.7)]'
                         : 'bg-transparent border border-white/[0.1] text-white/80 hover:border-white/[0.2] hover:text-white'
                     }`}
                   >
@@ -273,7 +273,7 @@ export default function AttendanceLogsPage() {
                       type="date"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
-                      className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
+                      className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-white/[0.2]"
                     />
                   </div>
                   <div>
@@ -282,7 +282,7 @@ export default function AttendanceLogsPage() {
                       type="date"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
-                      className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
+                      className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-white/[0.2]"
                     />
                   </div>
                 </div>
@@ -296,7 +296,7 @@ export default function AttendanceLogsPage() {
                 <select
                   value={selectedSiteId || ''}
                   onChange={(e) => setSelectedSiteId(e.target.value || null)}
-                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
+                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-white/[0.2]"
                 >
                   <option value="" className="bg-[#0B0D13]">All Sites</option>
                   {sites.map((site) => (
@@ -315,7 +315,7 @@ export default function AttendanceLogsPage() {
                 <select
                   value={selectedUserId || ''}
                   onChange={(e) => setSelectedUserId(e.target.value || null)}
-                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 focus:border-[#EC4899]/50 transition-all hover:border-white/[0.2]"
+                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-white/[0.2]"
                 >
                   <option value="" className="bg-[#0B0D13]">All Staff</option>
                   {users.map((user) => (
@@ -331,7 +331,7 @@ export default function AttendanceLogsPage() {
             <div className="flex items-end">
               <button
                 onClick={loadAttendance}
-                className="px-4 py-2 bg-transparent text-[#EC4899] border border-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all whitespace-nowrap"
+                className="px-4 py-2 bg-transparent text-[#D37E91] border border-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all whitespace-nowrap"
               >
                 Refresh
               </button>
@@ -343,7 +343,7 @@ export default function AttendanceLogsPage() {
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
-              <div className="inline-block w-8 h-8 border-4 border-[#EC4899] border-t-transparent rounded-full animate-spin" />
+              <div className="inline-block w-8 h-8 border-4 border-[#D37E91] border-t-transparent rounded-full animate-spin" />
               <p className="mt-4 text-white/60">Loading attendance records...</p>
             </div>
           ) : attendance.length === 0 ? (

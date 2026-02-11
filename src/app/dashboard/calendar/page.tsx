@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { format, addDays, startOfDay, isSameDay } from "date-fns";
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, MessageSquare, Plus, X, CheckCircle2, Send, Bell, FileText, Users, History, Zap, Phone, CheckSquare } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Clock, MessageSquare, Plus, X, CheckCircle2, Send, Bell, FileText, Users, History, Zap, Phone, CheckSquare } from "@/components/ui/icons";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
@@ -725,7 +725,7 @@ export default function ManagerCalendarPage() {
     tasksFromTable.filter(t => t.due_date === dateStr).forEach(task => {
       const taskType = task.metadata?.task_type || "task";
       let color = "blue";
-      let type: "task" | "meeting" | "call" | "note" = "task";
+      let type: "task" | "meeting" | "call" | "note" | "reminder" = "task";
       
       switch (taskType) {
         case "meeting":
@@ -739,6 +739,10 @@ export default function ManagerCalendarPage() {
         case "note":
           type = "note";
           color = "gray";
+          break;
+        case "reminder":
+          type = "reminder";
+          color = "amber";
           break;
         default:
           type = "task";
@@ -890,7 +894,7 @@ export default function ManagerCalendarPage() {
       if (item.itemType === 'reminder') return '#F59E0B';
       if (item.itemType === 'tableTask') {
         if (item.status === 'completed') return '#10B981';
-        return '#EC4899';
+        return '#D37E91';
       }
       if (item.priority === 'high') return '#EF4444';
       if (item.priority === 'medium') return '#F59E0B';
@@ -910,7 +914,7 @@ export default function ManagerCalendarPage() {
       return (
         <div
           key={item.id}
-          className={`bg-white/5 border border-white/10 rounded-xl p-4 ${isCompleted ? 'opacity-60' : ''}`}
+          className={`bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-4 ${isCompleted ? 'opacity-60' : ''}`}
         >
           <div className="flex items-start gap-3">
             <div className="p-2 rounded-lg flex-shrink-0" style={{ backgroundColor: `${color}20` }}>
@@ -918,17 +922,17 @@ export default function ManagerCalendarPage() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className={`text-white font-medium ${isCompleted ? 'line-through' : ''}`}>
+                <span className={`text-gray-900 dark:text-white font-medium ${isCompleted ? 'line-through' : ''}`}>
                   {item.title}
                 </span>
-                {isCompleted && <CheckCircle2 size={14} className="text-green-400 flex-shrink-0" />}
+                {isCompleted && <CheckCircle2 size={14} className="text-green-500 dark:text-green-400 flex-shrink-0" />}
               </div>
-              <div className="flex items-center gap-3 mt-2 text-xs text-white/40">
+              <div className="flex items-center gap-3 mt-2 text-xs text-gray-400 dark:text-white/40">
                 <span className="flex items-center gap-1">
                   <Clock size={12} />
                   {item.time ? format(new Date(`2000-01-01T${item.time}`), 'h:mm a') : 'All day'}
                 </span>
-                {item.itemType === 'reminder' && <span className="text-amber-400">Reminder</span>}
+                {item.itemType === 'reminder' && <span className="text-amber-500 dark:text-amber-400">Reminder</span>}
               </div>
             </div>
           </div>
@@ -940,28 +944,28 @@ export default function ManagerCalendarPage() {
       if (items.length === 0) return null;
       return (
         <div className="mb-6">
-          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">{title}</h3>
+          <h3 className="text-xs font-semibold text-gray-400 dark:text-white/40 uppercase tracking-wider mb-3">{title}</h3>
           <div className="space-y-3">{items.map(renderMobileItem)}</div>
         </div>
       );
     };
 
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-white">
+      <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-gray-900 dark:text-white">
         {/* Header with date navigation */}
-        <div className="sticky top-0 z-20 bg-[#0a0a0a] border-b border-white/10">
+        <div className="sticky top-0 z-20 bg-white dark:bg-[#0a0a0a] border-b border-gray-200 dark:border-white/10">
           <div className="px-4 py-4 flex items-center justify-between">
-            <button onClick={goToPrevDay} className="p-2 rounded-full bg-white/5 active:bg-white/10">
-              <ChevronLeft className="w-5 h-5 text-white" />
+            <button onClick={goToPrevDay} className="p-2 rounded-full bg-gray-100 dark:bg-white/5 active:bg-gray-200 dark:active:bg-white/10">
+              <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-white" />
             </button>
             <button onClick={goToToday} className="flex-1 text-center">
-              <div className={`text-lg font-semibold ${mobileIsToday ? 'text-[#EC4899]' : 'text-white'}`}>
+              <div className={`text-lg font-semibold ${mobileIsToday ? 'text-[#D37E91]' : 'text-gray-900 dark:text-white'}`}>
                 {format(mobileSelectedDay, 'EEEE')}
               </div>
-              <div className="text-sm text-white/60">{format(mobileSelectedDay, 'd MMMM yyyy')}</div>
+              <div className="text-sm text-gray-500 dark:text-white/60">{format(mobileSelectedDay, 'd MMMM yyyy')}</div>
             </button>
-            <button onClick={goToNextDay} className="p-2 rounded-full bg-white/5 active:bg-white/10">
-              <ChevronRight className="w-5 h-5 text-white" />
+            <button onClick={goToNextDay} className="p-2 rounded-full bg-gray-100 dark:bg-white/5 active:bg-gray-200 dark:active:bg-white/10">
+              <ChevronRight className="w-5 h-5 text-gray-700 dark:text-white" />
             </button>
           </div>
 
@@ -976,13 +980,13 @@ export default function ManagerCalendarPage() {
                   key={i}
                   onClick={() => setMobileSelectedDay(day)}
                   className={`flex-1 min-w-[40px] py-2 px-1 rounded-lg text-center transition-colors ${
-                    isSelected ? 'bg-[#EC4899]/20 border border-[#EC4899]/50' : 'bg-white/5 border border-transparent'
+                    isSelected ? 'bg-[#D37E91]/20 border border-[#D37E91]/50' : 'bg-gray-100 dark:bg-white/5 border border-transparent'
                   }`}
                 >
-                  <div className={`text-[10px] ${isSelected ? 'text-[#EC4899]' : dayIsToday ? 'text-blue-400' : 'text-white/40'}`}>
+                  <div className={`text-[10px] ${isSelected ? 'text-[#D37E91]' : dayIsToday ? 'text-blue-500 dark:text-blue-400' : 'text-gray-400 dark:text-white/40'}`}>
                     {format(day, 'EEE')}
                   </div>
-                  <div className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-white/70'}`}>
+                  <div className={`text-sm font-medium ${isSelected ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-white/70'}`}>
                     {format(day, 'd')}
                   </div>
                 </button>
@@ -995,20 +999,20 @@ export default function ManagerCalendarPage() {
         <div className="px-4 py-4 pb-24">
           {/* Notes for the day */}
           {mobileNotes && (
-            <div className="mb-6 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-amber-400 text-sm font-medium mb-2">
+            <div className="mb-6 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl p-4">
+              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 text-sm font-medium mb-2">
                 <FileText size={16} />
                 Notes
               </div>
-              <p className="text-white/70 text-sm whitespace-pre-wrap">{mobileNotes}</p>
+              <p className="text-gray-600 dark:text-white/70 text-sm whitespace-pre-wrap">{mobileNotes}</p>
             </div>
           )}
 
           {allMobileItems.length === 0 && !mobileNotes ? (
-            <div className="bg-white/5 border border-white/10 rounded-xl p-8 text-center">
-              <CalendarDays className="w-12 h-12 text-white/20 mx-auto mb-3" />
-              <p className="text-white/40">No items scheduled</p>
-              <p className="text-white/30 text-sm mt-1">
+            <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-8 text-center">
+              <CalendarDays className="w-12 h-12 text-gray-300 dark:text-white/20 mx-auto mb-3" />
+              <p className="text-gray-400 dark:text-white/40">No items scheduled</p>
+              <p className="text-gray-300 dark:text-white/30 text-sm mt-1">
                 {mobileIsToday ? "You're all clear for today!" : 'Nothing scheduled for this day'}
               </p>
             </div>
@@ -1033,8 +1037,8 @@ export default function ManagerCalendarPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="p-2 sm:p-3 rounded-xl bg-pink-500/10 border border-pink-500/20">
-              <CalendarDays className="w-5 h-5 sm:w-6 sm:h-6 text-pink-400" />
+            <div className="p-2 sm:p-3 rounded-xl bg-[#D37E91]/15 border border-[#D37E91]/20">
+              <CalendarDays className="w-5 h-5 sm:w-6 sm:h-6 text-[#D37E91]" />
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Manager Calendar & Diary</h1>
@@ -1043,7 +1047,7 @@ export default function ManagerCalendarPage() {
           </div>
           <Link
             href="/dashboard/tasks/my-tasks"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out text-sm font-medium"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 ease-in-out text-sm font-medium"
           >
             <CheckCircle2 className="w-4 h-4" />
             View My Tasks
@@ -1066,7 +1070,7 @@ export default function ManagerCalendarPage() {
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
                   activeTab === tab.id
-                    ? "border-pink-500 text-pink-400"
+                    ? "border-[#D37E91] text-[#D37E91]"
                     : "border-transparent text-slate-400 hover:text-slate-300"
                 }`}
               >
@@ -1079,7 +1083,7 @@ export default function ManagerCalendarPage() {
 
         {/* Calendar View */}
         {activeTab === "calendar" && (
-          <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-6 shadow-[0_0_12px_rgba(236,72,153,0.05)]">
+          <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-6 shadow-[0_0_12px_rgba(211,126,145,0.05)]">
             {/* Calendar Header */}
             <div className="flex items-center justify-between mb-6">
               <button
@@ -1124,7 +1128,7 @@ export default function ManagerCalendarPage() {
                     key={dateStr}
                     className={`aspect-square p-2 rounded-lg border transition-all relative group ${
                       isSelected
-                        ? "bg-pink-500/20 border-pink-500/50 shadow-[0_0_12px_rgba(236,72,153,0.3)]"
+                        ? "bg-[#D37E91]/25 border-[#D37E91]/50 shadow-[0_0_12px_rgba(211,126,145,0.3)]"
                         : isToday
                         ? "bg-blue-500/10 border-blue-500/30"
                         : "bg-black/20 border-white/10 hover:border-white/20"
@@ -1151,7 +1155,7 @@ export default function ManagerCalendarPage() {
                           transition-opacity duration-200
                           w-6 h-6 
                           rounded-full 
-                          bg-[#EC4899] hover:bg-[#EC4899]/80
+                          bg-[#D37E91] hover:bg-[#D37E91]/80
                           flex items-center justify-center
                           text-white
                           shadow-sm hover:shadow-md
@@ -1243,7 +1247,7 @@ export default function ManagerCalendarPage() {
                       save(selectedDate);
                     }}
                     placeholder="Add notes for this date..."
-                    className="w-full h-24 bg-black/30 border border-white/10 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500/40 resize-none"
+                    className="w-full h-24 bg-black/30 border border-white/10 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 resize-none"
                   />
                 </div>
 
@@ -1392,7 +1396,7 @@ export default function ManagerCalendarPage() {
                         save(date);
                       }}
                       placeholder="Add notes..."
-                      className="w-full h-32 bg-black/50 border border-white/10 rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500/40 resize-none"
+                      className="w-full h-32 bg-black/50 border border-white/10 rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 resize-none"
                     />
                   </div>
                 ))
@@ -1482,14 +1486,14 @@ export default function ManagerCalendarPage() {
                     placeholder="Task title"
                     value={newTask.title}
                     onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
                   />
                   <div className="grid grid-cols-2 gap-3">
                     <input
                       type="date"
                       value={newTask.dueDate}
                       onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
                     />
                     <TimePicker
                       value={newTask.dueTime}
@@ -1500,7 +1504,7 @@ export default function ManagerCalendarPage() {
                   <select
                     value={newTask.assignedTo}
                     onChange={(e) => setNewTask({ ...newTask, assignedTo: e.target.value })}
-                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
                   >
                     <option value="">Assign to (optional)</option>
                     {users.map((user) => (
@@ -1512,7 +1516,7 @@ export default function ManagerCalendarPage() {
                   <select
                     value={newTask.priority}
                     onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
                   >
                     <option value="low">Low Priority</option>
                     <option value="medium">Medium Priority</option>
@@ -1521,7 +1525,7 @@ export default function ManagerCalendarPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={addTask}
-                      className="flex-1 px-4 py-2 rounded-lg bg-pink-500/10 border border-pink-500/30 text-pink-400 hover:bg-pink-500/20 transition-colors"
+                      className="flex-1 px-4 py-2 rounded-lg bg-[#D37E91]/15 border border-[#D37E91]/30 text-[#D37E91] hover:bg-[#D37E91]/25 transition-colors"
                     >
                       Add Task
                     </button>
@@ -1536,7 +1540,7 @@ export default function ManagerCalendarPage() {
               ) : (
                 <button
                   onClick={() => setShowTaskForm(true)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-slate-400 hover:border-pink-500/30 hover:text-pink-400 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-slate-400 hover:border-[#D37E91]/30 hover:text-[#D37E91] transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   Add Task
@@ -1600,14 +1604,14 @@ export default function ManagerCalendarPage() {
                     placeholder="Reminder title"
                     value={newReminder.title}
                     onChange={(e) => setNewReminder({ ...newReminder, title: e.target.value })}
-                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
                   />
                   <div className="grid grid-cols-2 gap-3">
                     <input
                       type="date"
                       value={newReminder.date}
                       onChange={(e) => setNewReminder({ ...newReminder, date: e.target.value })}
-                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
                     />
                     <TimePicker
                       value={newReminder.time}
@@ -1618,7 +1622,7 @@ export default function ManagerCalendarPage() {
                   <select
                     value={newReminder.repeat}
                     onChange={(e) => setNewReminder({ ...newReminder, repeat: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
                   >
                     <option value="once">Once</option>
                     <option value="daily">Daily</option>
@@ -1627,7 +1631,7 @@ export default function ManagerCalendarPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={addReminder}
-                      className="flex-1 px-4 py-2 rounded-lg bg-pink-500/10 border border-pink-500/30 text-pink-400 hover:bg-pink-500/20 transition-colors"
+                      className="flex-1 px-4 py-2 rounded-lg bg-[#D37E91]/15 border border-[#D37E91]/30 text-[#D37E91] hover:bg-[#D37E91]/25 transition-colors"
                     >
                       Add Reminder
                     </button>
@@ -1642,7 +1646,7 @@ export default function ManagerCalendarPage() {
               ) : (
                 <button
                   onClick={() => setShowReminderForm(true)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-slate-400 hover:border-pink-500/30 hover:text-pink-400 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-slate-400 hover:border-[#D37E91]/30 hover:text-[#D37E91] transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   Add Reminder
@@ -1661,7 +1665,7 @@ export default function ManagerCalendarPage() {
                   onClick={() => setShowMessageHistory(!showMessageHistory)}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${
                     showMessageHistory
-                      ? "bg-pink-500/10 border border-pink-500/30 text-pink-400"
+                      ? "bg-[#D37E91]/15 border border-[#D37E91]/30 text-[#D37E91]"
                       : "bg-white/5 border border-white/10 text-slate-400 hover:text-slate-300"
                   }`}
                 >
@@ -1755,7 +1759,7 @@ export default function ManagerCalendarPage() {
                     <select
                       value={newMessage.recipient}
                       onChange={(e) => setNewMessage({ ...newMessage, recipient: e.target.value as any })}
-                      className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                      className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
                     >
                       <option value="manager">Manager</option>
                       <option value="owner">Owner/Admin</option>
@@ -1766,28 +1770,28 @@ export default function ManagerCalendarPage() {
                       placeholder="Subject"
                       value={newMessage.subject}
                       onChange={(e) => setNewMessage({ ...newMessage, subject: e.target.value })}
-                      className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                      className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
                     />
                     <textarea
                       placeholder="Message"
                       value={newMessage.message}
                       onChange={(e) => setNewMessage({ ...newMessage, message: e.target.value })}
                       rows={4}
-                      className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40 resize-none"
+                      className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 resize-none"
                     />
                     <label className="flex items-center gap-2 text-sm text-slate-300">
                       <input
                         type="checkbox"
                         checked={newMessage.urgent}
                         onChange={(e) => setNewMessage({ ...newMessage, urgent: e.target.checked })}
-                        className="w-4 h-4 rounded border-white/20 bg-black/50 text-pink-500 focus:ring-pink-500/40"
+                        className="w-4 h-4 rounded border-white/20 bg-black/50 text-[#D37E91] focus:ring-[#D37E91]/40"
                       />
                       Mark as urgent
                     </label>
                     <div className="flex gap-2">
                       <button
                         onClick={addMessage}
-                        className="flex-1 px-4 py-2 rounded-lg bg-pink-500/10 border border-pink-500/30 text-pink-400 hover:bg-pink-500/20 transition-colors"
+                        className="flex-1 px-4 py-2 rounded-lg bg-[#D37E91]/15 border border-[#D37E91]/30 text-[#D37E91] hover:bg-[#D37E91]/25 transition-colors"
                       >
                         Add Message
                       </button>
@@ -1802,7 +1806,7 @@ export default function ManagerCalendarPage() {
                 ) : (
                   <button
                     onClick={() => setShowMessageForm(true)}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-slate-400 hover:border-pink-500/30 hover:text-pink-400 transition-colors"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-slate-400 hover:border-[#D37E91]/30 hover:text-[#D37E91] transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     Add Message

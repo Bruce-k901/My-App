@@ -16,7 +16,7 @@ import {
   CheckCircle,
   Loader2,
   X,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import Papa from 'papaparse';
 import { cn } from '@/lib/utils';
 import { useDestinationGroups } from '@/hooks/planly/useDestinationGroups';

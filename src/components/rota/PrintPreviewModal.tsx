@@ -1,6 +1,6 @@
 'use client';
 
-import { X, Printer } from 'lucide-react';
+import { X, Printer } from '@/components/ui/icons';
 import { useEffect, useRef } from 'react';
 
 interface PrintPreviewModalProps {
@@ -42,13 +42,13 @@ export function PrintPreviewModal({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06] bg-white/[0.03]">
           <div className="flex items-center gap-3">
-            <Printer className="w-5 h-5 text-[#EC4899]" />
+            <Printer className="w-5 h-5 text-[#D37E91]" />
             <h2 className="text-xl font-semibold text-white">Print Preview</h2>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={handlePrint}
-              className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out flex items-center gap-2"
+              className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out flex items-center gap-2"
             >
               <Printer className="w-4 h-4" />
               Print
@@ -84,7 +84,7 @@ export function PrintPreviewModal({
             </button>
             <button
               onClick={handlePrint}
-              className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out"
+              className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out"
             >
               Print
             </button>

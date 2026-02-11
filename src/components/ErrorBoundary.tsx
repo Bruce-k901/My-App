@@ -1,7 +1,7 @@
   "use client";
 
   import React, { Component, ReactNode } from "react";
-  import { AlertTriangle } from "lucide-react";
+  import { AlertTriangle } from '@/components/ui/icons';
   import Button from "@/components/ui/Button";
 
   interface Props {
@@ -84,7 +84,7 @@
               <div className="flex gap-2 pt-2">
                 <Button
                   onClick={this.handleReset}
-                  className="flex-1 bg-pink-500 hover:bg-pink-600 text-white"
+                  className="flex-1 bg-[#D37E91] hover:bg-[#D37E91] text-white"
                 >
                   Go to Dashboard
                 </Button>

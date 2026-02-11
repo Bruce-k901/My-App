@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
-import { ArrowLeft, Archive, Loader2 } from 'lucide-react';
+import { ArrowLeft, Archive, Loader2 } from '@/components/ui/icons';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -38,7 +38,7 @@ export default function SOPsArchivePage() {
         .select('*')
         .eq('company_id', companyId)
         .eq('status', 'Archived')
-        .order('archived_at', { ascending: false, nullsFirst: false });
+        .order('archived_at', { ascending: false, nullsFirst: true });
 
       if (error) throw error;
       setSops(data || []);
@@ -75,7 +75,7 @@ export default function SOPsArchivePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -103,7 +103,7 @@ export default function SOPsArchivePage() {
           placeholder="Search archived SOPs..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-white/5 border border-[rgb(var(--border))] dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:border-[#EC4899] dark:focus:border-[#EC4899]"
+          className="w-full pl-10 pr-4 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-white/5 border border-[rgb(var(--border))] dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:border-[#D37E91] dark:focus:border-[#D37E91]"
         />
         <Archive className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-white/40" />
       </div>
@@ -149,7 +149,7 @@ export default function SOPsArchivePage() {
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => handleRestore(sop.id)}
-                        className="px-3 py-1.5 bg-[#EC4899]/10 dark:bg-[#EC4899]/10 hover:bg-[#EC4899]/20 dark:hover:bg-[#EC4899]/20 text-[#EC4899] dark:text-[#EC4899] border border-[#EC4899]/30 dark:border-[#EC4899]/30 rounded-lg transition-colors text-sm"
+                        className="px-3 py-1.5 bg-[#D37E91]/10 dark:bg-[#D37E91]/10 hover:bg-[#D37E91]/20 dark:hover:bg-[#D37E91]/20 text-[#D37E91] dark:text-[#D37E91] border border-[#D37E91]/30 dark:border-[#D37E91]/30 rounded-lg transition-colors text-sm"
                       >
                         Restore
                       </button>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { MessageSquare, Loader2 } from 'lucide-react';
+import { MessageSquare, Loader2 } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 
 interface MessageThread {
@@ -45,7 +45,7 @@ export default function MessagesPage() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
         </div>
       </div>
     );
@@ -79,7 +79,7 @@ export default function MessagesPage() {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-medium text-white">{thread.subject || 'No subject'}</span>
                     {thread.unread_count > 0 && (
-                      <span className="px-2 py-0.5 bg-[#EC4899] text-white text-xs rounded-full">
+                      <span className="px-2 py-0.5 bg-[#D37E91] text-white text-xs rounded-full">
                         {thread.unread_count}
                       </span>
                     )}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Upload, Download, FileText, X, CheckCircle, AlertTriangle, FileCheck, RefreshCw, ExternalLink } from 'lucide-react';
+import { Search, Upload, Download, FileText, X, CheckCircle, AlertTriangle, FileCheck, RefreshCw, ExternalLink } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -440,7 +440,7 @@ export default function COSHHDataPage() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search chemicals by name, manufacturer, or use case..."
-          className="w-full bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg pl-10 pr-4 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:border-[#EC4899]/50 dark:focus:border-[#EC4899]/50 transition-colors"
+          className="w-full bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg pl-10 pr-4 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:border-[#D37E91]/50 dark:focus:border-[#D37E91]/50 transition-colors"
         />
       </div>
 
@@ -542,7 +542,7 @@ export default function COSHHDataPage() {
                           {selectedFile ? (
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                <FileText size={16} className="text-[#EC4899]" />
+                                <FileText size={16} className="text-[#D37E91]" />
                                 <span className="text-sm text-gray-900 dark:text-white">{selectedFile.name}</span>
                               </div>
                               <button

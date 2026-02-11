@@ -5,7 +5,7 @@ import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, AlertTriangle, Info, Loader2, Check } from 'lucide-react';
+import { ArrowLeft, Calendar, AlertTriangle, Info, Loader2, Check } from '@/components/ui/icons';
 import type { LeaveType, LeaveBalanceView } from '@/types/teamly';
 
 export default function LeaveRequestPage() {

@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Search, Sparkles, Calendar } from "lucide-react";
+import { Menu, Search, Sparkles, Calendar } from '@/components/ui/icons';
+import { cn } from "@/lib/utils";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { ContextSwitcher } from "./ContextSwitcher";
@@ -16,6 +17,8 @@ import { BurgerMenu } from "./BurgerMenu";
 import { useAppContext } from "@/context/AppContext";
 import { useSiteContext } from "@/contexts/SiteContext";
 import { usePanelStore } from "@/lib/stores/panel-store";
+import { MODULE_HEX, type ModuleKey } from "@/config/module-colors";
+import { useTheme } from "@/hooks/useTheme";
 
 interface HeaderProps {
   onMobileMenuClick?: () => void;
@@ -23,26 +26,29 @@ interface HeaderProps {
   onMobileMenuClose?: () => void;
 }
 
-export function Header({ 
-  onMobileMenuClick, 
+export function Header({
+  onMobileMenuClick,
   isMobileMenuOpen: externalIsMobileMenuOpen,
-  onMobileMenuClose 
+  onMobileMenuClose
 }: HeaderProps) {
   const { role, profile, user, signOut } = useAppContext();
   const siteContext = useSiteContext();
   const pathname = usePathname();
-  const { setAiAssistantOpen, setCalendarOpen } = usePanelStore();
-  
+  const { setAiAssistantOpen, setCalendarOpen, setSearchOpen } = usePanelStore();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+
   // Detect current module from pathname for color accents
-  const getModuleColor = () => {
-    if (pathname?.startsWith('/dashboard/stockly')) return '#10B981'; // Emerald
-    if (pathname?.startsWith('/dashboard/people')) return '#2563EB'; // Blue
-    if (pathname?.startsWith('/dashboard/assets') || pathname?.startsWith('/dashboard/ppm')) return '#0284C7'; // Sky blue
-    if (pathname?.startsWith('/dashboard/planly')) return '#14B8A6'; // Teal
-    if (pathname?.startsWith('/dashboard/forecastly')) return '#7C3AED'; // Purple
+  const getModuleColor = (): string | null => {
+    const pick = (key: ModuleKey) => isDark ? MODULE_HEX[key].light : MODULE_HEX[key].dark;
+    if (pathname?.startsWith('/dashboard/stockly')) return pick('stockly');
+    if (pathname?.startsWith('/dashboard/people')) return pick('teamly');
+    if (pathname?.startsWith('/dashboard/assets') || pathname?.startsWith('/dashboard/ppm')) return pick('assetly');
+    if (pathname?.startsWith('/dashboard/planly')) return pick('planly');
+    if (pathname?.startsWith('/dashboard/forecastly')) return '#7C3AED'; // Forecastly
     if (pathname?.startsWith('/dashboard/todays_tasks') || pathname?.startsWith('/dashboard/tasks') ||
         pathname?.startsWith('/dashboard/checklists') || pathname?.startsWith('/dashboard/incidents') ||
-        pathname?.startsWith('/dashboard/sops') || pathname?.startsWith('/dashboard/risk-assessments')) return '#EC4899'; // Magenta
+        pathname?.startsWith('/dashboard/sops') || pathname?.startsWith('/dashboard/risk-assessments')) return pick('checkly');
     // Burger menu pages - Navy blue
     if (pathname?.startsWith('/dashboard/sites') ||
         pathname?.startsWith('/dashboard/users') ||
@@ -57,7 +63,7 @@ export function Header({
         pathname?.startsWith('/dashboard/profile')) return '#1E40AF'; // Navy blue
     return null; // Default - no module color
   };
-  
+
   const moduleColor = getModuleColor();
   
   const [isBurgerMenuOpen, setIsBurgerMenuOpen] = useState(false);
@@ -105,16 +111,10 @@ export function Header({
   return (
     <>
       <header
-        className="h-16 bg-blue-50 dark:bg-[#1a1a1a] border-b border-blue-200 dark:border-white/[0.06] px-6 flex items-center justify-between fixed top-0 left-0 right-0 z-40 print:hidden"
-        style={moduleColor ? {
-          borderBottomColor: moduleColor === '#EC4899' ? 'rgba(236, 72, 153, 0.3)' :
-                             moduleColor === '#10B981' ? 'rgba(16, 185, 129, 0.3)' :
-                             moduleColor === '#2563EB' ? 'rgba(37, 99, 235, 0.3)' :
-                             moduleColor === '#0284C7' ? 'rgba(2, 132, 199, 0.3)' :
-                             moduleColor === '#14B8A6' ? 'rgba(20, 184, 166, 0.3)' :
-                             moduleColor === '#7C3AED' ? 'rgba(124, 58, 237, 0.3)' :
-                             moduleColor === '#1E40AF' ? 'rgba(30, 64, 175, 0.3)' : undefined
-        } : {}}
+        className={cn(
+          "h-16 border-b px-6 flex items-center justify-between fixed top-0 left-0 right-0 z-40 print:hidden",
+          "bg-[rgb(var(--module-bg-tint))] border-module-fg/[0.18]"
+        )}
       >
         {/* Left Section */}
         <div className="flex items-center gap-4">
@@ -130,9 +130,9 @@ export function Header({
           {/* Logo - Abbreviated (icon only) */}
           <Link href="/dashboard" className="flex items-center">
             <img
-              src="/opsly_new_hexstyle_favicon.PNG"
+              src="/new_logos_opsly/opsly-mark.svg"
               alt="Opsly"
-              className="h-10 w-10 object-contain transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(236,72,153,0.5)]"
+              className="h-10 w-10 object-contain transition-all duration-200 hover:drop-shadow-[0_0_12px_rgba(211,126,145,0.5)]"
               loading="eager"
             />
           </Link>
@@ -154,7 +154,10 @@ export function Header({
         </div>
 
         {/* Mobile Search Icon */}
-        <button className="lg:hidden p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors">
+        <button
+          onClick={() => setSearchOpen(true)}
+          className="lg:hidden p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+        >
           <Search className="w-5 h-5" />
         </button>
 
@@ -180,7 +183,7 @@ export function Header({
           {/* Ask AI Button */}
           <button
             onClick={() => setAiAssistantOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#EC4899]/10 border border-[#EC4899]/50 text-[#EC4899] hover:bg-[#EC4899]/20 hover:shadow-[0_0_12px_rgba(236,72,153,0.5)] transition-all h-10"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#D37E91]/10 border border-[#D37E91]/50 text-[#D37E91] hover:bg-[#D37E91]/20 hover:shadow-[0_0_12px_rgba(211,126,145,0.5)] transition-all h-10"
             aria-label="Ask AI Assistant"
           >
             <Sparkles className="w-4 h-4 flex-shrink-0" />
@@ -194,7 +197,7 @@ export function Header({
             className={`
               hidden lg:flex items-center justify-center w-10 h-10 rounded-lg transition-all
               ${isBurgerMenuOpen
-                ? "bg-black/[0.05] dark:bg-white/[0.08] border border-[#EC4899]"
+                ? "bg-black/[0.05] dark:bg-white/[0.08] border border-[#D37E91]"
                 : "bg-black/[0.03] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] hover:bg-black/[0.05] dark:hover:bg-white/[0.06]"
               }
             `}

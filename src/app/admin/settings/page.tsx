@@ -1,6 +1,6 @@
 "use client";
 
-import { Settings, Construction } from 'lucide-react';
+import { Settings, Construction } from '@/components/ui/icons';
 
 export default function AdminSettingsPage() {
   return (

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { X, Save, Send, Loader2, Edit } from 'lucide-react'
+import { X, Save, Send, Loader2, Edit } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import Select from '@/components/ui/Select'
 
@@ -336,7 +336,7 @@ export default function EditOfferModal({
           <button
             onClick={() => handleSave(true)}
             disabled={saving || sending || loading || !startDate || !payRate}
-            className="px-4 py-2 rounded-lg text-sm bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 rounded-lg text-sm bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all disabled:opacity-50 flex items-center gap-2"
           >
             {sending ? (
               <>

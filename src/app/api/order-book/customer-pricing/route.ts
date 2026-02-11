@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 /**
  * GET /api/order-book/customer-pricing
@@ -9,7 +10,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify user is authenticated
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
@@ -25,7 +26,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { data: pricing, error } = await supabase
+    // Check if user is a platform admin for RLS bypass
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_platform_admin, app_role')
+      .eq('auth_user_id', user.id)
+      .maybeSingle();
+    const isPlatformAdmin = !!(profile?.is_platform_admin || profile?.app_role === 'Owner');
+    const client = isPlatformAdmin ? getSupabaseAdmin() : supabase;
+
+    const { data: pricing, error } = await client
       .from('order_book_customer_pricing')
       .select('product_id, custom_price')
       .eq('customer_id', customerId);

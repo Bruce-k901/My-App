@@ -41,13 +41,15 @@ import {
   Paperclip,
   HelpCircle,
   Lightbulb
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { useAppContext } from '@/context/AppContext';
 import { usePathname, useRouter } from 'next/navigation';
 import { captureScreenshot, blobToDataURL } from './ScreenshotCapture';
-import { Camera, Save } from 'lucide-react';
+import { Camera, Save } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { usePanelStore } from '@/lib/stores/panel-store';
+import { useTheme } from '@/hooks/useTheme';
+import { TicketCreationModal } from './TicketCreationModal';
 
 // ============================================================================
 // TYPES
@@ -77,12 +79,12 @@ interface QuickAction {
 // ============================================================================
 
 function detectModule(pathname: string): string {
-  if (pathname?.startsWith('/dashboard/todays_tasks') || 
-      pathname?.startsWith('/dashboard/tasks') || 
-      pathname?.startsWith('/dashboard/checklists') || 
-      pathname?.startsWith('/dashboard/incidents') || 
-      pathname?.startsWith('/dashboard/sops') || 
-      pathname?.startsWith('/dashboard/risk-assessments') || 
+  if (pathname?.startsWith('/dashboard/todays_tasks') ||
+      pathname?.startsWith('/dashboard/tasks') ||
+      pathname?.startsWith('/dashboard/checklists') ||
+      pathname?.startsWith('/dashboard/incidents') ||
+      pathname?.startsWith('/dashboard/sops') ||
+      pathname?.startsWith('/dashboard/risk-assessments') ||
       pathname?.startsWith('/dashboard/logs')) {
     return 'checkly';
   }
@@ -91,7 +93,8 @@ function detectModule(pathname: string): string {
   if (pathname?.startsWith('/dashboard/planly')) return 'planly';
   if (pathname?.startsWith('/dashboard/assets') || pathname?.startsWith('/dashboard/ppm')) return 'assetly';
   if (pathname?.startsWith('/dashboard/messaging')) return 'msgly';
-  return 'dashboard';
+  // Return 'general' for dashboard home and other non-module-specific pages
+  return 'general';
 }
 
 // ============================================================================
@@ -165,17 +168,20 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [showContactOptions, setShowContactOptions] = useState(false);
-  const [ticketMode, setTicketMode] = useState<'none' | 'issue' | 'idea' | 'question' | null>(null);
-  const [ticketDescription, setTicketDescription] = useState('');
   const [capturingScreenshot, setCapturingScreenshot] = useState(false);
-  const [pendingTicketData, setPendingTicketData] = useState<{title: string, description: string, type: string} | null>(null);
   const [generationMode, setGenerationMode] = useState<'none' | 'sop' | 'risk-assessment' | null>(null);
   const [generationData, setGenerationData] = useState<{procedure?: string, activity?: string, requirements?: string, isCoshh?: boolean, content?: string, type: 'sop' | 'risk-assessment'} | null>(null);
   const [pendingSave, setPendingSave] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
   const [conversations, setConversations] = useState<Array<{id: string, title: string | null, updated_at: string, last_message?: string}>>([]);
-  
+  const [showTicketModal, setShowTicketModal] = useState(false);
+  const [pendingTicket, setPendingTicket] = useState<{
+    title: string;
+    type: 'issue' | 'idea' | 'question';
+    screenshot?: string;
+  } | null>(null);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -183,6 +189,8 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
   const { profile, companyId, siteId } = useAppContext();
   const pathname = usePathname();
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
   
   // Generate session ID for conversation tracking (persist across remounts)
   const sessionIdRef = useRef<string>(crypto.randomUUID());
@@ -231,10 +239,10 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
   // Check if message is ticket-related
   const isTicketQuery = (content: string): {isTicket: boolean, type?: 'issue' | 'idea' | 'question'} => {
     const lower = content.toLowerCase();
-    if (lower.includes('report an issue') || lower.includes('report issue') || lower.includes('i want to report')) {
+    if (lower.includes('report an issue') || lower.includes('report issue') || lower.includes('i need to report') || lower.includes('i want to report')) {
       return { isTicket: true, type: 'issue' };
     }
-    if (lower.includes('submit an idea') || lower.includes('submit idea') || lower.includes('i want to submit')) {
+    if (lower.includes('submit an idea') || lower.includes('submit idea') || lower.includes('i have an idea') || lower.includes('idea for')) {
       return { isTicket: true, type: 'idea' };
     }
     if (lower.includes('i have a question') || lower.includes('question about')) {
@@ -472,12 +480,12 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
 
   // Create ticket
   const createTicket = async (title: string, description: string, type: string, screenshot?: string) => {
-    if (!companyId || !profile?.id) {
-      throw new Error('Missing company or user information');
+    if (!companyId) {
+      throw new Error('Missing company information');
     }
 
     const module = detectModule(pathname);
-    
+
     const response = await fetch('/api/assistant/tickets', {
       method: 'POST',
       headers: {
@@ -491,8 +499,7 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
         page_url: pathname,
         screenshot,
         company_id: companyId,
-        site_id: siteId || null,
-        user_id: profile.id
+        site_id: siteId || null
       })
     });
 
@@ -517,6 +524,59 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
     } finally {
       setCapturingScreenshot(false);
     }
+  };
+
+  // Handle ticket modal submission
+  const handleTicketModalSubmit = async (description: string, screenshot?: string) => {
+    if (!pendingTicket) return;
+
+    setShowTicketModal(false);
+    setIsLoading(true);
+
+    try {
+      const result = await createTicket(
+        pendingTicket.title,
+        description,
+        pendingTicket.type,
+        screenshot
+      );
+
+      const successMessage: Message = {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: `✅ Ticket ${result.ticketNumber} created successfully${screenshot ? ' with screenshot' : ''}! Assigned to ${result.assignedTo}. We'll get back to you soon.`,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, successMessage]);
+    } catch (error: any) {
+      const errorMessage: Message = {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: `Sorry, I couldn't create the ticket: ${error.message}. Please try again or contact support directly at support@opsly.app`,
+        timestamp: new Date(),
+        isError: true
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setPendingTicket(null);
+      setIsLoading(false);
+    }
+  };
+
+  // Handle ticket modal close
+  const handleTicketModalClose = () => {
+    setShowTicketModal(false);
+    setPendingTicket(null);
+
+    const cancelMessage: Message = {
+      id: crypto.randomUUID(),
+      role: 'assistant',
+      content: 'Ticket creation cancelled. Let me know if you need help with anything else!',
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, cancelMessage]);
   };
 
   // Send message to API
@@ -561,42 +621,56 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
     try {
       // Check if this is a ticket query
       const ticketCheck = isTicketQuery(currentInput);
-      
-      if (ticketCheck.isTicket && ticketCheck.type) {
-        // Start ticket flow
-        setTicketMode(ticketCheck.type);
-        setTicketDescription(currentInput);
-        
-        // Ask for more details if needed
-        const assistantMessage: Message = {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          content: `I'd be happy to help you ${ticketCheck.type === 'issue' ? 'report this issue' : ticketCheck.type === 'idea' ? 'submit this idea' : 'with this question'}. Could you provide more details about what you're experiencing or what you'd like to share?`,
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, assistantMessage]);
-        setIsLoading(false);
-        return;
-      }
 
-      // If in ticket mode and user provides description
-      if (ticketMode && ticketMode !== 'none') {
-        const fullDescription = ticketDescription ? `${ticketDescription}\n\n${currentInput}` : currentInput;
-        setTicketDescription(fullDescription);
-        
-        // Extract title
-        const title = await extractTicketTitle(fullDescription);
-        setPendingTicketData({ title, description: fullDescription, type: ticketMode });
-        
-        // Ask about screenshot
-        const assistantMessage: Message = {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          content: `I'll create a ticket for: "${title}". Would you like to attach a screenshot?`,
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, assistantMessage]);
-        setIsLoading(false);
+      if (ticketCheck.isTicket && ticketCheck.type) {
+        // Show ticket creation modal
+        setIsLoading(true);
+
+        try {
+          // Extract title from the message
+          const title = await extractTicketTitle(currentInput);
+
+          // Automatically capture screenshot
+          let screenshot: string | undefined;
+          try {
+            setCapturingScreenshot(true);
+            screenshot = await handleScreenshotCapture();
+          } catch (screenshotError) {
+            console.error('Screenshot capture failed:', screenshotError);
+            // Continue without screenshot if capture fails
+          } finally {
+            setCapturingScreenshot(false);
+          }
+
+          // Store pending ticket data and show modal
+          setPendingTicket({
+            title,
+            type: ticketCheck.type,
+            screenshot
+          });
+          setShowTicketModal(true);
+
+          // Show message indicating modal is open
+          const modalMessage: Message = {
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            content: '📝 Please provide additional details and review the screenshot in the ticket form.',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, modalMessage]);
+        } catch (error: any) {
+          const errorMessage: Message = {
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            content: `Sorry, I couldn't prepare the ticket form: ${error.message}. Please try again.`,
+            timestamp: new Date(),
+            isError: true
+          };
+          setMessages(prev => [...prev, errorMessage]);
+        } finally {
+          setIsLoading(false);
+        }
+
         return;
       }
 
@@ -835,53 +909,8 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
     }
   };
 
-  // Handle ticket creation with optional screenshot
-  const handleCreateTicket = async (withScreenshot: boolean) => {
-    if (!pendingTicketData) return;
-    
-    setIsLoading(true);
-    try {
-      let screenshot: string | undefined;
-      
-      if (withScreenshot) {
-        screenshot = await handleScreenshotCapture();
-      }
-      
-      const result = await createTicket(
-        pendingTicketData.title,
-        pendingTicketData.description,
-        pendingTicketData.type,
-        screenshot
-      );
-      
-      const successMessage: Message = {
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        content: `✅ Ticket ${result.ticketNumber} created and assigned to ${result.assignedTo}. We'll get back to you soon!`,
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, successMessage]);
-      
-      // Reset ticket state
-      setTicketMode(null);
-      setTicketDescription('');
-      setPendingTicketData(null);
-      
-    } catch (error: any) {
-      const errorMessage: Message = {
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        content: `Sorry, I couldn't create the ticket: ${error.message}. Please try again.`,
-        timestamp: new Date(),
-        isError: true
-      };
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
+  // Old handleCreateTicket function removed - tickets now created automatically in sendMessage
+
   // Handle form submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -919,9 +948,6 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
 
       setCurrentConversationId(data.id);
       setMessages([]);
-      setTicketMode(null);
-      setTicketDescription('');
-      setPendingTicketData(null);
       setGenerationMode(null);
       setGenerationData(null);
       setPendingSave(false);
@@ -1000,9 +1026,6 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
 
       setMessages(loadedMessages);
       setCurrentConversationId(conversationId);
-      setTicketMode(null);
-      setTicketDescription('');
-      setPendingTicketData(null);
       setGenerationMode(null);
       setGenerationData(null);
       setPendingSave(false);
@@ -1181,39 +1204,54 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[9999]"
+            className={`fixed inset-0 backdrop-blur-sm z-[9999] ${
+              isDark ? 'bg-black/20' : 'bg-black/10'
+            }`}
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           />
-          
+
           {/* Chat Panel */}
-          <div 
+          <div
             data-assistant-widget
-            className={`${position === 'top-right' 
-              ? 'fixed inset-0 sm:inset-auto sm:top-20 sm:right-4' 
+            className={`${position === 'top-right'
+              ? 'fixed inset-0 sm:inset-auto sm:top-20 sm:right-4'
               : 'fixed inset-0 sm:inset-auto sm:bottom-6 sm:right-6'
-            } z-[10000] 
-              w-full sm:w-[440px] h-full sm:h-[700px] sm:max-h-[85vh] 
-              bg-[#0f1220] border-0 sm:border border-white/[0.06] rounded-none sm:rounded-2xl shadow-2xl 
+            } z-[10000]
+              w-full sm:w-[440px] h-full sm:h-[700px] sm:max-h-[85vh]
+              ${isDark ? 'bg-[#0f1220] border-white/[0.06]' : 'bg-white border-gray-200'}
+              border-0 sm:border rounded-none sm:rounded-2xl shadow-2xl
               flex flex-col overflow-hidden`}
             onClick={(e) => e.stopPropagation()}
           >
           {/* Header */}
-          <div className="relative flex items-center justify-between px-4 py-3 sm:py-3 border-b border-white/[0.06] bg-white/[0.03] flex-shrink-0">
+          <div className={`relative flex items-center justify-between px-4 py-3 sm:py-3 border-b flex-shrink-0 ${
+            isDark ? 'border-white/[0.06] bg-white/[0.03]' : 'border-gray-200 bg-gray-50'
+          }`}>
             <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-              <div className="p-1.5 sm:p-2 bg-white/[0.06] rounded-lg border border-[#EC4899]/20 flex-shrink-0">
-                <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-[#EC4899]" />
+              <div className={`p-1.5 sm:p-2 rounded-lg border border-[#D37E91]/20 flex-shrink-0 ${
+                isDark ? 'bg-white/[0.06]' : 'bg-[#D37E91]/10'
+              }`}>
+                <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-[#D37E91]" />
               </div>
               <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-white text-sm sm:text-base truncate">Opsly Assistant</h3>
-                <p className="text-xs text-white/60 hidden sm:block">Your operations copilot</p>
+                <h3 className={`font-semibold text-sm sm:text-base truncate ${
+                  isDark ? 'text-white' : 'text-gray-900'
+                }`}>Opsly Assistant</h3>
+                <p className={`text-xs hidden sm:block ${
+                  isDark ? 'text-white/60' : 'text-gray-500'
+                }`}>Your operations copilot</p>
               </div>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               {/* New Chat Button */}
               <button
                 onClick={createNewConversation}
-                className="p-2 rounded-lg hover:bg-white/[0.06] text-white/60 hover:text-white transition-colors flex-shrink-0"
+                className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
+                  isDark
+                    ? 'hover:bg-white/[0.06] text-white/60 hover:text-white'
+                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                }`}
                 aria-label="New Chat"
                 title="Start new chat"
               >
@@ -1222,7 +1260,11 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
               {/* History Button */}
               <button
                 onClick={() => setShowHistory(!showHistory)}
-                className="p-2 rounded-lg hover:bg-white/[0.06] text-white/60 hover:text-white transition-colors flex-shrink-0"
+                className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
+                  isDark
+                    ? 'hover:bg-white/[0.06] text-white/60 hover:text-white'
+                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                }`}
                 aria-label="Chat History"
                 title="View chat history"
               >
@@ -1231,10 +1273,12 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
               {/* Contact Human Button */}
               <button
                 onClick={handleContactHuman}
-                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg 
-                  bg-transparent text-[#EC4899] border border-[#EC4899] text-xs font-medium
-                  hover:shadow-[0_0_8px_rgba(236,72,153,0.5)] hover:bg-[#EC4899]/10
-                  transition-all duration-200 ease-in-out"
+                className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg
+                  bg-transparent text-[#D37E91] border border-[#D37E91] text-xs font-medium
+                  hover:shadow-[0_0_8px_rgba(211,126,145,0.5)]
+                  transition-all duration-200 ease-in-out ${
+                    isDark ? 'hover:bg-[#D37E91]/10' : 'hover:bg-[#D37E91]/10'
+                  }`}
                 aria-label="Contact Human Support"
                 title="Speak to a human"
               >
@@ -1243,7 +1287,11 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
               </button>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-2 rounded-lg hover:bg-white/[0.06] text-white/60 hover:text-white transition-colors flex-shrink-0"
+                className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
+                  isDark
+                    ? 'hover:bg-white/[0.06] text-white/60 hover:text-white'
+                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                }`}
                 aria-label="Close"
                 title="Close assistant"
               >
@@ -1254,19 +1302,29 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
 
           {/* History Panel */}
           {showHistory && (
-            <div className="absolute top-full left-0 right-0 bg-[#0f1220] border-b border-white/[0.06] z-[10001] max-h-[300px] overflow-y-auto shadow-2xl">
+            <div className={`absolute top-full left-0 right-0 border-b z-[10001] max-h-[300px] overflow-y-auto shadow-2xl ${
+              isDark ? 'bg-[#0f1220] border-white/[0.06]' : 'bg-white border-gray-200'
+            }`}>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-sm font-semibold text-white">Chat History</h4>
+                  <h4 className={`text-sm font-semibold ${
+                    isDark ? 'text-white' : 'text-gray-900'
+                  }`}>Chat History</h4>
                   <button
                     onClick={() => setShowHistory(false)}
-                    className="p-1 rounded hover:bg-white/[0.06] text-white/60 hover:text-white"
+                    className={`p-1 rounded ${
+                      isDark
+                        ? 'hover:bg-white/[0.06] text-white/60 hover:text-white'
+                        : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                    }`}
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
                 {conversations.length === 0 ? (
-                  <p className="text-xs text-white/60 text-center py-4">No previous conversations</p>
+                  <p className={`text-xs text-center py-4 ${
+                    isDark ? 'text-white/60' : 'text-gray-500'
+                  }`}>No previous conversations</p>
                 ) : (
                   <div className="space-y-2">
                     {conversations.map((conv) => (
@@ -1274,29 +1332,43 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                         key={conv.id}
                         className={`group relative w-full text-left p-3 rounded-lg border transition-colors ${
                           currentConversationId === conv.id
-                            ? 'bg-[#EC4899]/10 border-[#EC4899]/40'
-                            : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06]'
+                            ? isDark
+                              ? 'bg-[#D37E91]/10 border-[#D37E91]/40'
+                              : 'bg-[#D37E91]/10 border-[#D37E91]/30'
+                            : isDark
+                              ? 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06]'
+                              : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
                         }`}
                       >
                         <button
                           onClick={() => loadConversation(conv.id)}
                           className="w-full text-left"
                         >
-                          <div className="font-medium text-white text-sm mb-1">
+                          <div className={`font-medium text-sm mb-1 ${
+                            isDark ? 'text-white' : 'text-gray-900'
+                          }`}>
                             {conv.title || 'New conversation'}
                           </div>
                           {conv.last_message && (
-                            <div className="text-xs text-white/60 truncate">
+                            <div className={`text-xs truncate ${
+                              isDark ? 'text-white/60' : 'text-gray-500'
+                            }`}>
                               {conv.last_message}
                             </div>
                           )}
-                          <div className="text-xs text-white/40 mt-1">
+                          <div className={`text-xs mt-1 ${
+                            isDark ? 'text-white/40' : 'text-gray-400'
+                          }`}>
                             {new Date(conv.updated_at).toLocaleDateString()} {new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </button>
                         <button
                           onClick={(e) => archiveConversation(conv.id, e)}
-                          className="absolute top-2 right-2 p-1 rounded hover:bg-white/[0.1] text-white/40 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                          className={`absolute top-2 right-2 p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity ${
+                            isDark
+                              ? 'hover:bg-white/[0.1] text-white/40 hover:text-white'
+                              : 'hover:bg-gray-200 text-gray-400 hover:text-gray-900'
+                          }`}
                           title="Archive conversation"
                         >
                           <X className="w-3 h-3" />
@@ -1318,47 +1390,62 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
             {/* Welcome message if no messages */}
             {messages.length === 0 && (
               <div className="text-center py-4 sm:py-6">
-                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white/[0.03] border border-[#EC4899]/20 mb-3 sm:mb-4">
-                  <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-[#EC4899]" />
+                <div className={`inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full border border-[#D37E91]/20 mb-3 sm:mb-4 ${
+                  isDark ? 'bg-white/[0.03]' : 'bg-[#D37E91]/10'
+                }`}>
+                  <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-[#D37E91]" />
                 </div>
-                <h4 className="text-base sm:text-lg font-semibold text-white mb-2">
+                <h4 className={`text-base sm:text-lg font-semibold mb-2 ${
+                  isDark ? 'text-white' : 'text-gray-900'
+                }`}>
                   How can I help?
                 </h4>
-                <p className="text-xs sm:text-sm text-white/60 mb-4 sm:mb-6 max-w-xs mx-auto px-2">
+                <p className={`text-xs sm:text-sm mb-4 sm:mb-6 max-w-xs mx-auto px-2 ${
+                  isDark ? 'text-white/60' : 'text-gray-600'
+                }`}>
                   Ask me about any module - compliance, inventory, staffing, production, assets, or messaging.
                 </p>
-                
+
                 {/* Module indicator */}
                 {pathname && (
                   <div className="mb-3 text-center">
-                    <span className="inline-block px-2 py-1 rounded text-xs bg-white/[0.06] border border-white/[0.1] text-white/60">
+                    <span className={`inline-block px-2 py-1 rounded text-xs border ${
+                      isDark
+                        ? 'bg-white/[0.06] border-white/[0.1] text-white/60'
+                        : 'bg-gray-100 border-gray-200 text-gray-600'
+                    }`}>
                       {detectModule(pathname).charAt(0).toUpperCase() + detectModule(pathname).slice(1)} Module
                     </span>
                   </div>
                 )}
-                
+
                 {/* Quick Actions */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {getQuickActionsForModule(pathname || '').map((action, index) => (
                     <button
                       key={index}
                       onClick={() => handleQuickAction(action.query)}
-                      className="flex items-center gap-2 p-2.5 sm:p-3 rounded-lg bg-white/[0.03] border border-white/[0.06] 
-                        hover:bg-white/[0.08] hover:border-white/[0.12] transition-colors text-left"
+                      className={`flex items-center gap-2 p-2.5 sm:p-3 rounded-lg border transition-colors text-left ${
+                        isDark
+                          ? 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.08] hover:border-white/[0.12] text-white/80'
+                          : 'bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300 text-gray-700'
+                      }`}
                     >
                       {action.icon}
-                      <span className="text-xs sm:text-sm text-white/80">{action.label}</span>
+                      <span className="text-xs sm:text-sm">{action.label}</span>
                     </button>
                   ))}
                 </div>
-                
+
                 {/* Contact Human Quick Action */}
                 <button
                   onClick={handleContactHuman}
-                  className="mt-3 sm:mt-4 w-full flex items-center justify-center gap-2 p-2.5 sm:p-3 rounded-lg 
-                    bg-transparent border border-[#EC4899] text-[#EC4899]
-                    hover:shadow-[0_0_12px_rgba(236,72,153,0.5)] hover:bg-[#EC4899]/10
-                    transition-all duration-200 ease-in-out"
+                  className={`mt-3 sm:mt-4 w-full flex items-center justify-center gap-2 p-2.5 sm:p-3 rounded-lg
+                    bg-transparent border border-[#D37E91] text-[#D37E91]
+                    hover:shadow-[0_0_12px_rgba(211,126,145,0.5)]
+                    transition-all duration-200 ease-in-out ${
+                      isDark ? 'hover:bg-[#D37E91]/10' : 'hover:bg-[#D37E91]/10'
+                    }`}
                 >
                   <Headphones className="w-4 h-4" />
                   <span className="text-xs sm:text-sm font-medium">Speak to a Human</span>
@@ -1374,11 +1461,13 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
               >
                 {/* Avatar */}
                 <div className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center
-                  ${message.role === 'user' 
-                    ? 'bg-blue-500/20' 
-                    : message.isError 
-                      ? 'bg-red-500/20' 
-                      : 'bg-white/[0.06] border border-[#EC4899]/20'
+                  ${message.role === 'user'
+                    ? 'bg-blue-500/20'
+                    : message.isError
+                      ? 'bg-red-500/20'
+                      : isDark
+                        ? 'bg-white/[0.06] border border-[#D37E91]/20'
+                        : 'bg-[#D37E91]/10 border border-[#D37E91]/20'
                   }`}
                 >
                   {message.role === 'user' ? (
@@ -1386,37 +1475,47 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                   ) : message.isError ? (
                     <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-400" />
                   ) : (
-                    <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#EC4899]" />
+                    <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#D37E91]" />
                   )}
                 </div>
-                
+
                 {/* Message Content */}
                 <div className={`flex-1 max-w-[85%] sm:max-w-[280px] ${message.role === 'user' ? 'text-right' : ''}`}>
                   <div
                     className={`inline-block px-3 py-2 sm:px-4 sm:py-3 rounded-2xl text-xs sm:text-sm
                       ${message.role === 'user'
-                        ? 'bg-blue-500/20 text-white rounded-br-md'
+                        ? isDark
+                          ? 'bg-blue-500/20 text-white rounded-br-md'
+                          : 'bg-blue-100 text-blue-900 rounded-br-md'
                         : message.isError
-                          ? 'bg-red-500/10 border border-red-500/20 text-red-200 rounded-bl-md'
-                          : 'bg-white/[0.06] text-white/90 rounded-bl-md'
+                          ? isDark
+                            ? 'bg-red-500/10 border border-red-500/20 text-red-200 rounded-bl-md'
+                            : 'bg-red-50 border border-red-200 text-red-800 rounded-bl-md'
+                          : isDark
+                            ? 'bg-white/[0.06] text-white/90 rounded-bl-md'
+                            : 'bg-gray-100 text-gray-900 rounded-bl-md'
                       }`}
                   >
-                    <div 
+                    <div
                       className="whitespace-pre-wrap"
                       dangerouslySetInnerHTML={{ __html: formatContent(message.content) }}
                     />
                   </div>
-                  
+
                   {/* Sources (for assistant messages) */}
                   {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
-                    <div className="mt-2 flex items-center gap-1 text-xs text-white/40">
+                    <div className={`mt-2 flex items-center gap-1 text-xs ${
+                      isDark ? 'text-white/40' : 'text-gray-500'
+                    }`}>
                       <BookOpen className="w-3 h-3" />
                       <span>Sources: {message.sources.map(s => s.title).join(', ').substring(0, 60)}...</span>
                     </div>
                   )}
-                  
+
                   {/* Timestamp */}
-                  <div className={`text-xs text-white/30 mt-1 ${message.role === 'user' ? 'text-right' : ''}`}>
+                  <div className={`text-xs mt-1 ${message.role === 'user' ? 'text-right' : ''} ${
+                    isDark ? 'text-white/30' : 'text-gray-400'
+                  }`}>
                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
@@ -1426,66 +1525,41 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
             {/* Loading indicator */}
             {isLoading && (
               <div className="flex gap-3">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/[0.06] border border-[#EC4899]/20 flex items-center justify-center">
-                  <Bot className="w-4 h-4 text-[#EC4899]" />
+                <div className={`flex-shrink-0 w-8 h-8 rounded-full border border-[#D37E91]/20 flex items-center justify-center ${
+                  isDark ? 'bg-white/[0.06]' : 'bg-[#D37E91]/10'
+                }`}>
+                  <Bot className="w-4 h-4 text-[#D37E91]" />
                 </div>
-                <div className="flex items-center gap-2 px-4 py-3 rounded-2xl rounded-bl-md bg-white/[0.06]">
-                  <Loader2 className="w-4 h-4 text-[#EC4899] animate-spin" />
-                  <span className="text-sm text-white/60">
+                <div className={`flex items-center gap-2 px-4 py-3 rounded-2xl rounded-bl-md ${
+                  isDark ? 'bg-white/[0.06]' : 'bg-gray-100'
+                }`}>
+                  <Loader2 className="w-4 h-4 text-[#D37E91] animate-spin" />
+                  <span className={`text-sm ${
+                    isDark ? 'text-white/60' : 'text-gray-600'
+                  }`}>
                     {capturingScreenshot ? 'Capturing screenshot...' : 'Thinking...'}
                   </span>
                 </div>
               </div>
             )}
 
-            {/* Ticket creation prompt with screenshot option */}
-            {pendingTicketData && !isLoading && (
-              <div className="flex gap-3 mt-4">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/[0.06] border border-[#EC4899]/20 flex items-center justify-center">
-                  <Bot className="w-4 h-4 text-[#EC4899]" />
-                </div>
-                <div className="flex-1 max-w-[280px]">
-                  <div className="px-4 py-3 rounded-2xl rounded-bl-md bg-white/[0.06] border border-[#EC4899]/20">
-                    <p className="text-sm text-white/90 mb-3">
-                      Would you like to attach a screenshot?
-                    </p>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleCreateTicket(true)}
-                        disabled={capturingScreenshot}
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg 
-                          bg-transparent border border-[#EC4899] text-[#EC4899] text-xs font-medium
-                          hover:shadow-[0_0_8px_rgba(236,72,153,0.5)] hover:bg-[#EC4899]/10
-                          transition-all duration-200 ease-in-out disabled:opacity-50"
-                      >
-                        <Camera className="w-4 h-4" />
-                        <span>Yes, with screenshot</span>
-                      </button>
-                      <button
-                        onClick={() => handleCreateTicket(false)}
-                        disabled={capturingScreenshot}
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg 
-                          bg-transparent border border-white/[0.2] text-white/80 text-xs font-medium
-                          hover:bg-white/[0.08] hover:border-white/[0.3]
-                          transition-all duration-200 ease-in-out disabled:opacity-50"
-                      >
-                        <span>No, create ticket</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Ticket creation prompt removed - now automatic with screenshot */}
 
             {/* Save SOP/RA prompt */}
             {pendingSave && generationData && !isLoading && (
               <div className="flex gap-3 mt-4">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/[0.06] border border-[#EC4899]/20 flex items-center justify-center">
-                  <Bot className="w-4 h-4 text-[#EC4899]" />
+                <div className={`flex-shrink-0 w-8 h-8 rounded-full border border-[#D37E91]/20 flex items-center justify-center ${
+                  isDark ? 'bg-white/[0.06]' : 'bg-[#D37E91]/10'
+                }`}>
+                  <Bot className="w-4 h-4 text-[#D37E91]" />
                 </div>
                 <div className="flex-1 max-w-[280px]">
-                  <div className="px-4 py-3 rounded-2xl rounded-bl-md bg-white/[0.06] border border-[#EC4899]/20">
-                    <p className="text-sm text-white/90 mb-3">
+                  <div className={`px-4 py-3 rounded-2xl rounded-bl-md border border-[#D37E91]/20 ${
+                    isDark ? 'bg-white/[0.06]' : 'bg-[#D37E91]/10'
+                  }`}>
+                    <p className={`text-sm mb-3 ${
+                      isDark ? 'text-white/90' : 'text-gray-900'
+                    }`}>
                       Would you like me to save this to your {generationData.type === 'sop' ? 'SOP library' : 'Risk Assessments'}?
                     </p>
                     <div className="flex gap-2">
@@ -1495,16 +1569,16 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                           setIsLoading(true);
                           try {
                             let refCode: string;
-                            const title = generationData.type === 'sop' 
+                            const title = generationData.type === 'sop'
                               ? (generationData.procedure || 'SOP')
                               : (generationData.activity || 'Risk Assessment');
-                            
+
                             if (generationData.type === 'sop') {
                               refCode = await saveSOP(title, generationData.content);
                             } else {
                               refCode = await saveRiskAssessment(title, generationData.content, generationData.isCoshh || false);
                             }
-                            
+
                             const successMessage: Message = {
                               id: crypto.randomUUID(),
                               role: 'assistant',
@@ -1512,7 +1586,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                               timestamp: new Date()
                             };
                             setMessages(prev => [...prev, successMessage]);
-                            
+
                             // Reset state
                             setGenerationMode(null);
                             setGenerationData(null);
@@ -1531,10 +1605,12 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                           }
                         }}
                         disabled={isLoading}
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg 
-                          bg-transparent border border-[#EC4899] text-[#EC4899] text-xs font-medium
-                          hover:shadow-[0_0_8px_rgba(236,72,153,0.5)] hover:bg-[#EC4899]/10
-                          transition-all duration-200 ease-in-out disabled:opacity-50"
+                        className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg
+                          bg-transparent border border-[#D37E91] text-[#D37E91] text-xs font-medium
+                          hover:shadow-[0_0_8px_rgba(211,126,145,0.5)]
+                          transition-all duration-200 ease-in-out disabled:opacity-50 ${
+                            isDark ? 'hover:bg-[#D37E91]/10' : 'hover:bg-[#D37E91]/10'
+                          }`}
                       >
                         <Save className="w-4 h-4" />
                         <span>Yes, save it</span>
@@ -1546,10 +1622,13 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                           setGenerationData(null);
                         }}
                         disabled={isLoading}
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg 
-                          bg-transparent border border-white/[0.2] text-white/80 text-xs font-medium
-                          hover:bg-white/[0.08] hover:border-white/[0.3]
-                          transition-all duration-200 ease-in-out disabled:opacity-50"
+                        className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg
+                          bg-transparent border text-xs font-medium
+                          transition-all duration-200 ease-in-out disabled:opacity-50 ${
+                            isDark
+                              ? 'border-white/[0.2] text-white/80 hover:bg-white/[0.08] hover:border-white/[0.3]'
+                              : 'border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400'
+                          }`}
                       >
                         <span>No, thanks</span>
                       </button>
@@ -1562,31 +1641,42 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
             {/* Contact Human Options */}
             {showContactOptions && (
               <div className="flex gap-3 mt-4">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/[0.06] border border-[#EC4899]/20 flex items-center justify-center">
-                  <Headphones className="w-4 h-4 text-[#EC4899]" />
+                <div className={`flex-shrink-0 w-8 h-8 rounded-full border border-[#D37E91]/20 flex items-center justify-center ${
+                  isDark ? 'bg-white/[0.06]' : 'bg-[#D37E91]/10'
+                }`}>
+                  <Headphones className="w-4 h-4 text-[#D37E91]" />
                 </div>
                 <div className="flex-1 max-w-[280px]">
-                  <div className="px-4 py-3 rounded-2xl rounded-bl-md bg-white/[0.06] border border-[#EC4899]/20">
-                    <p className="text-sm text-white/90 mb-3">
+                  <div className={`px-4 py-3 rounded-2xl rounded-bl-md border border-[#D37E91]/20 ${
+                    isDark ? 'bg-white/[0.06]' : 'bg-[#D37E91]/10'
+                  }`}>
+                    <p className={`text-sm mb-3 ${
+                      isDark ? 'text-white/90' : 'text-gray-900'
+                    }`}>
                       Need to speak with a human? We're here to help!
                     </p>
                     <div className="space-y-2">
                       <button
                         onClick={openEmailSupport}
-                        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg 
-                          bg-transparent border border-[#EC4899] text-[#EC4899] text-xs font-medium
-                          hover:shadow-[0_0_8px_rgba(236,72,153,0.5)] hover:bg-[#EC4899]/10
-                          transition-all duration-200 ease-in-out"
+                        className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg
+                          bg-transparent border border-[#D37E91] text-[#D37E91] text-xs font-medium
+                          hover:shadow-[0_0_8px_rgba(211,126,145,0.5)]
+                          transition-all duration-200 ease-in-out ${
+                            isDark ? 'hover:bg-[#D37E91]/10' : 'hover:bg-[#D37E91]/10'
+                          }`}
                       >
                         <Mail className="w-4 h-4" />
                         <span>Email: support@opsly.app</span>
                       </button>
                       <button
                         onClick={goToSupportPage}
-                        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg 
-                          bg-transparent border border-white/[0.2] text-white/80 text-xs font-medium
-                          hover:bg-white/[0.08] hover:border-white/[0.3]
-                          transition-all duration-200 ease-in-out"
+                        className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg
+                          bg-transparent border text-xs font-medium
+                          transition-all duration-200 ease-in-out ${
+                            isDark
+                              ? 'border-white/[0.2] text-white/80 hover:bg-white/[0.08] hover:border-white/[0.3]'
+                              : 'border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400'
+                          }`}
                       >
                         <MessageCircle className="w-4 h-4" />
                         <span>View All Support Options</span>
@@ -1594,12 +1684,16 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                     </div>
                     <button
                       onClick={() => setShowContactOptions(false)}
-                      className="mt-2 text-xs text-white/40 hover:text-white/60 transition-colors"
+                      className={`mt-2 text-xs transition-colors ${
+                        isDark ? 'text-white/40 hover:text-white/60' : 'text-gray-500 hover:text-gray-700'
+                      }`}
                     >
                       Close
                     </button>
                   </div>
-                  <div className="text-xs text-white/30 mt-1">
+                  <div className={`text-xs mt-1 ${
+                    isDark ? 'text-white/30' : 'text-gray-400'
+                  }`}>
                     Support available Mon-Fri, 9 AM - 6 PM EST
                   </div>
                 </div>
@@ -1613,18 +1707,22 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
           {showScrollButton && (
             <button
               onClick={scrollToBottom}
-              className="absolute bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 p-2 rounded-full 
-                bg-transparent text-[#EC4899] border border-[#EC4899] shadow-lg 
-                hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out z-10"
+              className={`absolute bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 p-2 rounded-full
+                bg-transparent text-[#D37E91] border border-[#D37E91] shadow-lg
+                hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 ease-in-out z-10 ${
+                  !isDark ? 'hover:bg-[#D37E91]/10' : ''
+                }`}
             >
               <ChevronDown className="w-4 h-4" />
             </button>
           )}
           
           {/* Input Area */}
-          <form 
+          <form
             onSubmit={handleSubmit}
-            className="p-3 sm:p-4 border-t border-white/[0.06] bg-black/20 flex-shrink-0"
+            className={`p-3 sm:p-4 border-t flex-shrink-0 ${
+              isDark ? 'border-white/[0.06] bg-black/20' : 'border-gray-200 bg-gray-50'
+            }`}
           >
             <div className="flex items-center gap-2">
               <input
@@ -1634,17 +1732,22 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Ask about any module or feature..."
                 disabled={isLoading}
-                className="flex-1 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-white/[0.06] border border-white/[0.1] 
-                  text-white placeholder-white/40 text-xs sm:text-sm
-                  focus:outline-none focus:ring-2 focus:ring-[#EC4899]/40 focus:border-[#EC4899]/40
-                  disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`flex-1 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl border text-xs sm:text-sm
+                  focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40
+                  disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isDark
+                      ? 'bg-white/[0.06] border-white/[0.1] text-white placeholder-white/40'
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                  }`}
               />
               <button
                 type="submit"
                 disabled={!inputValue.trim() || isLoading}
-                className="p-2.5 sm:p-3 rounded-xl bg-transparent text-[#EC4899] border border-[#EC4899] flex-shrink-0
-                  hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out
-                  disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                className={`p-2.5 sm:p-3 rounded-xl bg-transparent text-[#D37E91] border border-[#D37E91] flex-shrink-0
+                  hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 ease-in-out
+                  disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none ${
+                    !isDark && !isLoading && inputValue.trim() ? 'hover:bg-[#D37E91]/10' : ''
+                  }`}
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
@@ -1653,18 +1756,32 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                 )}
               </button>
             </div>
-            
+
             {/* Disclaimer */}
-            <p className="text-xs text-white/30 text-center mt-2 hidden sm:block">
+            <p className={`text-xs text-center mt-2 hidden sm:block ${
+              isDark ? 'text-white/30' : 'text-gray-500'
+            }`}>
               AI responses are guidance only. Always verify critical compliance info.
             </p>
           </form>
           </div>
         </>
       )}
+
+      {/* Ticket Creation Modal */}
+      {pendingTicket && (
+        <TicketCreationModal
+          isOpen={showTicketModal}
+          onClose={handleTicketModalClose}
+          onSubmit={handleTicketModalSubmit}
+          initialTitle={pendingTicket.title}
+          type={pendingTicket.type}
+          screenshot={pendingTicket.screenshot}
+        />
+      )}
     </>
   );
-  
+
   // Use portal to render outside normal DOM hierarchy for stability
   return createPortal(widgetContent, document.body);
 }

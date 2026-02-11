@@ -61,7 +61,29 @@
       "Bash(supabase db diff:*)",
       "Bash(git push:*)",
       "Bash(findstr:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(Remove-Item -Recurse -Force \"c:\\\\Users\\\\bruce\\\\my-app\\\\.next\")",
+      "Bash(more:*)",
+      "Bash(for:*)",
+      "Bash(do curl -s -o /dev/null -w \"Attempt $i: %{http_code}\\\\n\" http://localhost:3000/dashboard/people/schedule)",
+      "Bash(do cp \"src/app/dashboard/stockly/reports/$dir/page.tsx\" \"src/app/dashboard/reports/stockly/$dir/page.tsx\")",
+      "Bash(Remove-Item \"c:\\\\Users\\\\bruce\\\\my-app\\\\.next\\\\lock\" -ErrorAction SilentlyContinue)",
+      "Bash(del:*)",
+      "Bash(admin)",
+      "Bash(manifest \")",
+      "Bash(Select-String -Pattern \"task_templates\" -Context 0,20)",
+      "Bash(git checkout:*)",
+      "Bash(cat:*)",
+      "Bash(git status:*)",
+      "Bash(xargs -d '\\\\n' git add:*)",
+      "Bash(Select-String -Pattern \"training_records\")",
+      "Bash(Select-Object -First 20)",
+      "Bash(python:*)",
+      "Bash(xargs:*)",
+      "Bash(git log:*)",
+      "Bash(powershell -File:*)",
+      "Bash(node:*)",
+      "Bash(npm uninstall:*)"
     ]
   }
 }

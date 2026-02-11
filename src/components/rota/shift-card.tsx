@@ -2,7 +2,7 @@
 
 import { useDroppable } from '@dnd-kit/core';
 import { Shift } from './types';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from '@/components/ui/icons';
 import { useState } from 'react';
 
 interface ShiftCardProps {
@@ -42,13 +42,13 @@ export function ShiftCard({
       ref={setNodeRef}
       className={`group relative rounded border-l-2 transition-all ${
         shift.profile_id
-          ? 'bg-gray-100 dark:bg-neutral-800 border-[#EC4899]'
+          ? 'bg-gray-100 dark:bg-neutral-800 border-[#D37E91]'
           : 'bg-gray-50 dark:bg-neutral-800/50 border-dashed border-gray-300 dark:border-neutral-500'
       } ${
-        !shift.profile_id && isOver ? 'bg-pink-50 dark:bg-[#EC4899]/10 border-[#EC4899]' : ''
+        !shift.profile_id && isOver ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/10 border-[#D37E91]' : ''
       }`}
       style={{ 
-        borderLeftColor: shift.color || '#EC4899',
+        borderLeftColor: shift.color || '#D37E91',
       }}
     >
       <div className="p-2">

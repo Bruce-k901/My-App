@@ -53,7 +53,7 @@ export function YesNoChecklistFeature({
               value={item.text}
               onChange={(e) => updateItem(index, e.target.value)}
               placeholder="Enter question/item"
-              className="w-full px-4 py-2 rounded-lg bg-white dark:bg-[#0f1220] border border-gray-300 dark:border-neutral-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 mb-3"
+              className="w-full px-4 py-2 rounded-lg bg-white dark:bg-[#0f1220] border border-gray-300 dark:border-neutral-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91] mb-3"
             />
             <div className="flex gap-3">
               <button
@@ -92,7 +92,7 @@ export function YesNoChecklistFeature({
         <button
           type="button"
           onClick={addItem}
-          className="text-sm text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300 transition-colors"
+          className="text-sm text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] transition-colors"
         >
           + Add Yes/No Question
         </button>

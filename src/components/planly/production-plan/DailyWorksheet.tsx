@@ -20,7 +20,7 @@ import {
   Download,
   RefreshCw,
   Loader2,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { pdf } from '@react-pdf/renderer';
 import { Button } from '@/components/ui/Button';
 import { ProductionPlanPDF } from '@/lib/pdf/templates/ProductionPlanPDF';

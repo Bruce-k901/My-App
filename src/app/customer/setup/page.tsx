@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { supabase } from '@/lib/supabase';
-import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Loader2, CheckCircle2, AlertCircle } from '@/components/ui/icons';
 
 function SetupContent() {
   const searchParams = useSearchParams();
@@ -100,12 +100,11 @@ function SetupContent() {
         throw new Error('Failed to create account');
       }
 
-      // Link auth_user_id to customer record
+      // Link auth to customer record (activate in planly)
       const { error: updateError } = await supabase
-        .from('order_book_customers')
+        .from('planly_customers')
         .update({
-          auth_user_id: authData.user.id,
-          status: 'active',
+          is_active: true,
         })
         .eq('id', customerId);
 

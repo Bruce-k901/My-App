@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, MapPin, Check } from "lucide-react";
+import { ChevronDown, MapPin, Check } from '@/components/ui/icons';
 import { useAppContext } from "@/context/AppContext";
+import { useSiteContext } from "@/contexts/SiteContext";
 import { supabase } from "@/lib/supabase";
 import { createPortal } from "react-dom";
 
@@ -13,6 +14,7 @@ interface Site {
 
 export function SiteFilter() {
   const { company, setSelectedSite, profile, selectedSiteId: contextSelectedSiteId } = useAppContext();
+  const { setSelectedSite: setSiteContextSite } = useSiteContext();
   const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
   const [sites, setSites] = useState<Site[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -63,6 +65,7 @@ export function SiteFilter() {
             // Auto-select home site for staff
             setSelectedSiteId(homeSiteId);
             setSelectedSite(homeSiteId);
+            setSiteContextSite(homeSiteId);
           }
         } else {
           // Managers/Admins/Owners/Platform Admins: load all sites for selected company
@@ -83,6 +86,7 @@ export function SiteFilter() {
                 console.log('🏢 [SiteFilter] Selected site not in new company, clearing selection');
                 setSelectedSiteId(null);
                 setSelectedSite(null);
+                setSiteContextSite("all");
                 localStorage.removeItem("selectedSiteId");
               }
             }
@@ -113,18 +117,22 @@ export function SiteFilter() {
         if (site) {
           console.log('🏢 [SiteFilter] Loading stored site from localStorage:', stored);
           setSelectedSiteId(stored);
-          // Also update AppContext
+          // Also update AppContext and SiteContext
           setSelectedSite(stored);
+          setSiteContextSite(stored);
         }
       }
     }
-  }, [sites, mounted, setSelectedSite]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sites, mounted]);
 
   const handleSiteSelect = (siteId: string | null) => {
     console.log('🏢 [SiteFilter] handleSiteSelect called with siteId:', siteId);
     setSelectedSiteId(siteId);
     // Update AppContext so other components can react to the change
     setSelectedSite(siteId);
+    // Update SiteContext so useSiteFilter() consumers also react (null → "all")
+    setSiteContextSite(siteId ?? "all");
     if (siteId) {
       localStorage.setItem("selectedSiteId", siteId);
     } else {
@@ -188,7 +196,7 @@ export function SiteFilter() {
           h-10 px-4 rounded-lg border flex items-center gap-2 min-w-[200px]
           transition-all
           ${isOpen
-            ? "bg-black/[0.05] dark:bg-white/[0.08] border-[#EC4899]"
+            ? "bg-black/[0.05] dark:bg-white/[0.08] border-[#D37E91]"
             : "bg-black/[0.03] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] hover:bg-black/[0.05] dark:hover:bg-white/[0.06]"
           }
         `}
@@ -217,7 +225,7 @@ export function SiteFilter() {
             className="w-full px-4 py-2 flex items-center gap-3 hover:bg-black/[0.05] dark:hover:bg-white/[0.06] transition-colors text-left"
           >
             <span className="flex-1 text-[rgb(var(--text-primary))] dark:text-white font-medium">All Sites</span>
-            {!selectedSiteId && <Check className="w-4 h-4 text-[#EC4899]" />}
+            {!selectedSiteId && <Check className="w-4 h-4 text-[#D37E91]" />}
           </button>
 
           {/* Divider */}
@@ -232,7 +240,7 @@ export function SiteFilter() {
             >
               <MapPin className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-white/60" />
               <span className="flex-1 text-[rgb(var(--text-primary))] dark:text-white">{site.name}</span>
-              {selectedSiteId === site.id && <Check className="w-4 h-4 text-[#EC4899]" />}
+              {selectedSiteId === site.id && <Check className="w-4 h-4 text-[#D37E91]" />}
             </button>
           ))}
 

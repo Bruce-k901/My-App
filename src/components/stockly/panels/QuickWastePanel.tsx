@@ -14,7 +14,7 @@ import {
   Check,
   X,
   AlertTriangle
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface StockItem {
   id: string;

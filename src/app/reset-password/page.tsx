@@ -6,7 +6,7 @@ import { AuthLayout } from "@/components/layouts";
 import GlassCard from "@/components/ui/GlassCard";
 import { supabase } from "@/lib/supabase";
 import { redirectToDashboard } from "@/lib/auth";
-import { Eye, EyeOff, Sparkles, Clipboard } from "lucide-react";
+import { Eye, EyeOff, Sparkles, Clipboard } from '@/components/ui/icons';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -181,7 +181,7 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-full py-3 mt-4 font-semibold text-white border border-white/20 bg-transparent hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(236,72,153,0.4)]"
+            className="w-full rounded-full py-3 mt-4 font-semibold text-white border border-white/20 bg-transparent hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(211, 126, 145,0.4)]"
           >
             {loading ? "Updating…" : "Update password"}
           </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { X } from 'lucide-react';
+import { X } from '@/components/ui/icons';
 import type { TopicCategory } from '@/types/messaging';
 
 interface TopicTagModalProps {
@@ -14,7 +14,7 @@ const TOPICS: Array<{ label: string; value: TopicCategory; color: string; bgColo
   { label: '🛡️ Safety', value: 'safety', color: 'text-red-600 dark:text-red-500', bgColor: 'bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20' },
   { label: '🔧 Maintenance', value: 'maintenance', color: 'text-orange-600 dark:text-orange-500', bgColor: 'bg-orange-50 dark:bg-orange-500/10 hover:bg-orange-100 dark:hover:bg-orange-500/20' },
   { label: '🔄 Operations', value: 'operations', color: 'text-cyan-600 dark:text-cyan-500', bgColor: 'bg-cyan-50 dark:bg-cyan-500/10 hover:bg-cyan-100 dark:hover:bg-cyan-500/20' },
-  { label: '👥 HR', value: 'hr', color: 'text-pink-600 dark:text-pink-500', bgColor: 'bg-pink-50 dark:bg-pink-500/10 hover:bg-pink-100 dark:hover:bg-pink-500/20' },
+  { label: '👥 HR', value: 'hr', color: 'text-[#D37E91] dark:text-[#D37E91]', bgColor: 'bg-[#D37E91]/10 dark:bg-[#D37E91]/15 hover:bg-[#D37E91]/10 dark:hover:bg-[#D37E91]/25' },
   { label: '✅ Compliance', value: 'compliance', color: 'text-green-600 dark:text-green-500', bgColor: 'bg-green-50 dark:bg-green-500/10 hover:bg-green-100 dark:hover:bg-green-500/20' },
   { label: '⚠️ Incidents', value: 'incidents', color: 'text-red-700 dark:text-red-600', bgColor: 'bg-red-50 dark:bg-red-600/10 hover:bg-red-100 dark:hover:bg-red-600/20' },
   { label: '💬 General', value: 'general', color: 'text-gray-600 dark:text-gray-400', bgColor: 'bg-gray-50 dark:bg-gray-500/10 hover:bg-gray-100 dark:hover:bg-gray-500/20' },
@@ -80,14 +80,14 @@ export default function TopicTagModal({ isOpen, onClose, currentTopic, onSelectT
                 onClick={() => handleSelect(topic.value)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border transition-all ${
                   isSelected
-                    ? `border-[#EC4899] bg-pink-50 dark:bg-[#EC4899]/10 ${topic.color}`
+                    ? `border-[#D37E91] bg-[#D37E91]/10 dark:bg-[#D37E91]/10 ${topic.color}`
                     : `border-gray-200 dark:border-white/[0.06] ${topic.bgColor} ${topic.color}`
                 }`}
               >
                 <span className="text-lg">{topic.label.split(' ')[0]}</span>
                 <span className="flex-1 text-left font-medium">{topic.label.split(' ').slice(1).join(' ')}</span>
                 {isSelected && (
-                  <span className="text-[#EC4899] text-sm font-medium">✓ Selected</span>
+                  <span className="text-[#D37E91] text-sm font-medium">✓ Selected</span>
                 )}
               </button>
             );

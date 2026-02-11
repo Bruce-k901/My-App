@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/components/ui/icons';
 
 interface SlideOutPanelProps {
   isOpen: boolean;

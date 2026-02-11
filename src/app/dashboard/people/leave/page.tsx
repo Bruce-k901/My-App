@@ -13,7 +13,7 @@ import {
   XCircle,
   ChevronLeft,
   ChevronRight
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import type { LeaveBalanceView, LeaveRequestView, LeaveCalendarEvent } from '@/types/teamly';
 
 export default function LeaveManagementPage() {

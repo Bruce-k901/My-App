@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useMessages } from '@/hooks/useMessages';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { formatMessageTime } from '@/lib/utils/dateUtils';
-import { Edit2, Trash2, Reply, Smile, MoreVertical, Copy, Forward, Check, CheckSquare, Tag } from 'lucide-react';
+import { Edit2, Trash2, Reply, Smile, MoreVertical, Copy, Forward, Check, CheckSquare, Tag } from '@/components/ui/icons';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
@@ -21,7 +21,7 @@ const TOPICS: Array<{ label: string; value: TopicCategory; color: string }> = [
   { label: '🛡️ Safety', value: 'safety', color: 'text-red-500' },
   { label: '🔧 Maintenance', value: 'maintenance', color: 'text-orange-500' },
   { label: '🔄 Operations', value: 'operations', color: 'text-cyan-500' },
-  { label: '👥 HR', value: 'hr', color: 'text-pink-500' },
+  { label: '👥 HR', value: 'hr', color: 'text-[#D37E91]' },
   { label: '✅ Compliance', value: 'compliance', color: 'text-green-500' },
   { label: '⚠️ Incidents', value: 'incidents', color: 'text-red-600' },
   { label: '💬 General', value: 'general', color: 'text-white/60' },
@@ -82,7 +82,7 @@ function FileAttachmentDisplay({ file }: { file: { url: string; name: string; si
     >
       <span className="text-2xl flex-shrink-0">{getFileIcon(file.type)}</span>
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-pink-600 dark:text-pink-400 truncate group-hover:text-pink-700 dark:group-hover:text-pink-300">
+        <div className="text-sm font-medium text-[#D37E91] dark:text-[#D37E91] truncate group-hover:text-[#D37E91] dark:group-hover:text-[#D37E91]">
           {file.name}
         </div>
         <div className="text-xs text-gray-500 dark:text-white/40">{formatFileSize(file.size)}</div>
@@ -365,7 +365,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                 className={`flex gap-2 sm:gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}
               >
                 {showAvatar && !isOwn && (
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-100 dark:bg-pink-500/20 flex items-center justify-center text-xs font-semibold text-pink-600 dark:text-pink-400">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/25 flex items-center justify-center text-xs font-semibold text-[#D37E91] dark:text-[#D37E91]">
                     {message.sender?.full_name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 )}
@@ -384,7 +384,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
 
                   {message.reply_to && message.reply_to.id && (
                     <div
-                      className={`mb-2 px-3 py-2 bg-pink-50 dark:bg-white/[0.08] border-l-3 border-pink-500 dark:border-pink-500/70 rounded text-xs ${
+                      className={`mb-2 px-3 py-2 bg-[#D37E91]/10 dark:bg-white/[0.08] border-l-3 border-[#D37E91] dark:border-[#D37E91]/70 rounded text-xs ${
                         isOwn ? 'ml-auto' : ''
                       }`}
                       onClick={(e) => {
@@ -394,16 +394,16 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                         if (repliedMessageElement) {
                           repliedMessageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                           // Highlight briefly
-                          repliedMessageElement.classList.add('ring-2', 'ring-pink-500/50');
+                          repliedMessageElement.classList.add('ring-2', 'ring-[#D37E91]/50');
                           setTimeout(() => {
-                            repliedMessageElement.classList.remove('ring-2', 'ring-pink-500/50');
+                            repliedMessageElement.classList.remove('ring-2', 'ring-[#D37E91]/50');
                           }, 2000);
                         }
                       }}
                       style={{ cursor: 'pointer' }}
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <Reply className="w-3 h-3 text-pink-600 dark:text-pink-400 flex-shrink-0" />
+                        <Reply className="w-3 h-3 text-[#D37E91] dark:text-[#D37E91] flex-shrink-0" />
                         <div className="text-xs text-gray-600 dark:text-white/50 font-medium">
                           {message.reply_to.sender?.full_name || message.reply_to.sender?.email?.split('@')[0] || 'Unknown'}
                         </div>
@@ -423,7 +423,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                   {/* Forwarded message indicator */}
                   {message.metadata?.forwarded_from_message_id && (
                     <div className="flex items-center gap-2 mb-2 text-xs text-gray-600 dark:text-white/50">
-                      <Forward className="w-3 h-3 text-pink-600 dark:text-pink-400 flex-shrink-0" />
+                      <Forward className="w-3 h-3 text-[#D37E91] dark:text-[#D37E91] flex-shrink-0" />
                       <span>
                         Forwarded from {message.metadata?.forwarded_from_sender || 'Unknown'}
                       </span>
@@ -433,7 +433,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                   <div
                     className={`group relative px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base ${
                       isOwn
-                        ? 'bg-pink-100 dark:bg-white/[0.03] border border-pink-200 dark:border-white/[0.06] text-gray-900 dark:text-white'
+                        ? 'bg-[#D37E91]/10 dark:bg-white/[0.03] border border-[#D37E91]/30 dark:border-white/[0.06] text-gray-900 dark:text-white'
                         : 'bg-gray-100 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white'
                     }`}
                   >
@@ -519,7 +519,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                             ref={(el) => {
                               if (el) menuRefs.current.set(message.id, el);
                             }}
-                            className="absolute right-0 bottom-full mb-2 bg-white dark:bg-white/[0.95] backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 dark:border-white/20 py-1 min-w-[160px] z-50"
+                            className="absolute right-0 bottom-full mb-2 bg-white dark:bg-[#1a1c24] backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 dark:border-white/[0.1] py-1 min-w-[160px] z-50"
                           >
                             <button
                               onClick={(e) => {
@@ -593,8 +593,8 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                 setTopicTagMessage(message);
                                 setActiveMenuId(null);
                               }}
-                              className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 transition-colors ${
-                                message.topic ? 'text-[#EC4899]' : 'text-gray-700'
+                              className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-white/10 transition-colors ${
+                                message.topic ? 'text-[#D37E91]' : 'text-gray-700 dark:text-white/80'
                               }`}
                             >
                               <Tag className="w-4 h-4" />
@@ -609,7 +609,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                   }
                                   setActiveMenuId(null);
                                 }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                               >
                                 <Trash2 className="w-4 h-4" />
                                 Delete
@@ -648,8 +648,8 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
         {/* Typing Indicator */}
         {typingUsers.length > 0 && (
           <div className="flex gap-3">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-100 dark:bg-pink-500/20 flex items-center justify-center">
-              <div className="w-2 h-2 bg-pink-600 dark:bg-pink-400 rounded-full animate-pulse" />
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/25 flex items-center justify-center">
+              <div className="w-2 h-2 bg-[#D37E91] dark:bg-[#D37E91] rounded-full animate-pulse" />
             </div>
             <div className="px-4 py-2 bg-gray-100 dark:bg-white/[0.05] rounded-lg">
               <div className="flex gap-1">

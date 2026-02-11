@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, UtensilsCrossed, AlertCircle, Info } from 'lucide-react';
+import { X, UtensilsCrossed, AlertCircle, Info } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';

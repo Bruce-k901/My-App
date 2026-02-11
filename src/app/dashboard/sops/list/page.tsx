@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { Search, FileText, CheckCircle, AlertCircle, Archive, Edit, Eye, ChevronDown, ChevronUp, FileBox } from 'lucide-react';
+import { Search, FileText, CheckCircle, AlertCircle, Archive, Edit, Eye, ChevronDown, ChevronUp, FileBox } from '@/components/ui/icons';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -196,29 +196,50 @@ function SOPsListContent() {
   };
 
   const handleArchiveSOP = async (sopId: string) => {
-    if (!confirm('Archive this SOP? It will be moved to archived SOPs.')) return;
+    if (!confirm('Archive this SOP? All versions will be moved to archived SOPs.')) return;
 
     try {
       setArchivingId(sopId);
 
-      // Archive the SOP - set both status and archived_at for proper tracking
+      // Find the base pattern for this SOP so we archive ALL versions
+      const sop = sops.find((s: any) => s.id === sopId);
+      const refCode = sop?.ref_code || '';
+      const baseMatch = refCode.match(/^(.+)-\d+$/);
+      const basePattern = baseMatch ? baseMatch[1] : refCode;
+
+      // Archive ALL versions of this SOP (matching base pattern) so older versions don't resurface
+      const { data: allVersions, error: fetchError } = await supabase
+        .from('sop_entries')
+        .select('id')
+        .eq('company_id', companyId)
+        .neq('status', 'Archived')
+        .like('ref_code', `${basePattern}-%`);
+
+      if (fetchError) throw fetchError;
+
+      const idsToArchive = (allVersions || []).map((v: any) => v.id);
+      if (idsToArchive.length === 0) idsToArchive.push(sopId);
+
       const { error } = await supabase
         .from('sop_entries')
         .update({
           status: 'Archived',
           archived_at: new Date().toISOString()
         })
-        .eq('id', sopId)
+        .in('id', idsToArchive)
         .eq('company_id', companyId);
 
       if (error) throw error;
 
-      // Remove from local state
-      setSops(prev => prev.filter(sop => sop.id !== sopId));
+      // Remove all archived versions from local state
+      const archivedSet = new Set(idsToArchive);
+      setSops(prev => prev.filter((s: any) => !archivedSet.has(s.id)));
 
       showToast({
         title: 'SOP archived',
-        description: 'SOP has been moved to archived SOPs',
+        description: idsToArchive.length > 1
+          ? `${idsToArchive.length} versions moved to archived SOPs`
+          : 'SOP has been moved to archived SOPs',
         type: 'success'
       });
     } catch (error: any) {
@@ -354,7 +375,7 @@ function SOPsListContent() {
                               <StatusIcon size={20} className={statusBadge.text} />
                             </div>
                             <div className="text-left flex-1 min-w-0">
-                              <h4 className="text-[rgb(var(--text-primary))] dark:text-white font-medium group-hover:text-[#EC4899] dark:group-hover:text-magenta-400 transition-colors break-words">
+                              <h4 className="text-[rgb(var(--text-primary))] dark:text-white font-medium group-hover:text-[#D37E91] dark:group-hover:text-magenta-400 transition-colors break-words">
                                 {sop.title}
                               </h4>
                               <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-400 mt-1">
@@ -379,7 +400,7 @@ function SOPsListContent() {
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={(e) => handleEditSOP(sop, e)}
-                                className="px-2 sm:px-3 py-2 bg-[#EC4899]/20 dark:bg-magenta-500/20 hover:bg-[#EC4899]/30 dark:hover:bg-magenta-500/30 border border-[#EC4899]/40 dark:border-magenta-500/40 rounded-lg text-[#EC4899] dark:text-magenta-400 flex items-center gap-1 sm:gap-2 transition-colors text-sm"
+                                className="px-2 sm:px-3 py-2 bg-[#D37E91]/20 dark:bg-magenta-500/20 hover:bg-[#D37E91]/30 dark:hover:bg-magenta-500/30 border border-[#D37E91]/40 dark:border-magenta-500/40 rounded-lg text-[#D37E91] dark:text-magenta-400 flex items-center gap-1 sm:gap-2 transition-colors text-sm"
                               >
                                 <Edit size={16} />
                                 <span className="hidden sm:inline">Edit</span>

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAppContext } from '@/context/AppContext'
 import { supabase } from '@/lib/supabase'
-import { Loader2, CheckCircle, XCircle, Calendar, Mail, User } from 'lucide-react'
+import { Loader2, CheckCircle, XCircle, Calendar, Mail, User } from '@/components/ui/icons'
 import { toast } from 'sonner'
 
 type ConfirmationResponse = {
@@ -137,7 +137,7 @@ export default function ConfirmationsPage() {
       case 'trial':
         return <span className="px-2 py-1 text-xs rounded bg-purple-500/20 text-purple-400 border border-purple-500/30">👔 Trial</span>
       case 'offer':
-        return <span className="px-2 py-1 text-xs rounded bg-pink-500/20 text-pink-400 border border-pink-500/30">💼 Offer</span>
+        return <span className="px-2 py-1 text-xs rounded bg-[#D37E91]/25 text-[#D37E91] border border-[#D37E91]/30">💼 Offer</span>
       default:
         return null
     }
@@ -159,7 +159,7 @@ export default function ConfirmationsPage() {
           onClick={() => setFilter('unprocessed')}
           className={`px-4 py-2 rounded-lg text-sm transition-all ${
             filter === 'unprocessed'
-              ? 'bg-[#EC4899]/20 text-blue-600 dark:text-blue-400 border border-[#EC4899]/30'
+              ? 'bg-[#D37E91]/20 text-blue-600 dark:text-blue-400 border border-[#D37E91]/30'
               : 'bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white/60 border border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
           }`}
         >
@@ -169,7 +169,7 @@ export default function ConfirmationsPage() {
           onClick={() => setFilter('all')}
           className={`px-4 py-2 rounded-lg text-sm transition-all ${
             filter === 'all'
-              ? 'bg-[#EC4899]/20 text-blue-600 dark:text-blue-400 border border-[#EC4899]/30'
+              ? 'bg-[#D37E91]/20 text-blue-600 dark:text-blue-400 border border-[#D37E91]/30'
               : 'bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white/60 border border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
           }`}
         >
@@ -266,7 +266,7 @@ export default function ConfirmationsPage() {
                 <div className="flex items-center gap-3">
                   <Link
                     href={`/dashboard/people/recruitment/candidates/${(response.candidate as any).id}`}
-                    className="px-3 py-1.5 text-xs rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-[#EC4899]/30 hover:bg-blue-100 dark:hover:bg-blue-500/20"
+                    className="px-3 py-1.5 text-xs rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-[#D37E91]/30 hover:bg-blue-100 dark:hover:bg-blue-500/20"
                   >
                     View Candidate
                   </Link>

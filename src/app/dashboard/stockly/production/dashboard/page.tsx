@@ -12,7 +12,7 @@ import {
   Loader2,
   RefreshCw,
   Printer
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import ProductionTimeline from '@/components/stockly/production/ProductionTimeline';
 import OrderBookGrid from '@/components/stockly/production/OrderBookGrid';
 import CapacityStatus from '@/components/stockly/production/CapacityStatus';
@@ -290,7 +290,7 @@ export default function ProductionDashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -308,13 +308,13 @@ export default function ProductionDashboardPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={loadDashboardData}
-            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
+            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
           >
             <RefreshCw className="w-4 h-4" />
             Refresh Plan
           </button>
           <button
-            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
+            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
           >
             <Printer className="w-4 h-4" />
             Print Week
@@ -327,14 +327,14 @@ export default function ProductionDashboardPage() {
         <div className="flex items-center justify-between">
           <button
             onClick={handlePrevWeek}
-            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
+            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
           >
             <ChevronLeft className="w-4 h-4" />
             Prev Week
           </button>
           
           <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-[#EC4899]" />
+            <Calendar className="w-5 h-5 text-[#D37E91]" />
             <span className="text-white font-medium">
               Week of {formatWeekRange(start, end)}
             </span>
@@ -342,7 +342,7 @@ export default function ProductionDashboardPage() {
           
           <button
             onClick={handleNextWeek}
-            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
+            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
           >
             Next Week
             <ChevronRight className="w-4 h-4" />
@@ -415,7 +415,7 @@ export default function ProductionDashboardPage() {
                 onClick={() => setSelectedDay(day.date)}
                 className={`flex-1 min-w-[120px] px-4 py-3 rounded-lg transition-all duration-200 ${
                   selectedDay === day.date
-                    ? 'bg-[#EC4899]/20 border border-[#EC4899] text-white'
+                    ? 'bg-[#D37E91]/20 border border-[#D37E91] text-white'
                     : 'bg-white/[0.02] border border-white/[0.06] text-white/60 hover:bg-white/[0.05]'
                 }`}
               >

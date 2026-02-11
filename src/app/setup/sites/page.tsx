@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from '@/components/ui/icons';
 import { AppProvider, useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import SetupLayout from "@/components/setup/SetupLayout";

@@ -114,7 +114,7 @@ export default function SiteDetailPage() {
             </div>
 
             <div className="flex justify-end gap-2 mt-4">
-              <button onClick={() => setFormOpen(true)} className="px-4 py-2 rounded-md bg-pink-500/20 border border-pink-500/40 text-pink-300 hover:bg-pink-500/30">Edit</button>
+              <button onClick={() => setFormOpen(true)} className="px-4 py-2 rounded-md bg-[#D37E91]/25 border border-[#D37E91]/40 text-[#D37E91] hover:bg-[#D37E91]/35">Edit</button>
               <button onClick={handleDelete} className="px-4 py-2 rounded-md bg-red-500/20 border border-red-500/40 text-red-400 hover:bg-red-500/30">Delete</button>
             </div>
           </div>

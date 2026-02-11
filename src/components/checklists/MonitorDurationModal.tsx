@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Clock, Check } from 'lucide-react'
+import { X, Clock, Check } from '@/components/ui/icons'
 import { Button } from '@/components/ui/Button'
 
 interface MonitorDurationModalProps {

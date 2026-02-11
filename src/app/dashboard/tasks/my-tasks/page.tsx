@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, Clock, AlertCircle, Calendar, Trash2, Edit2, X, Play, Pause, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, Calendar, Trash2, Edit2, X, Play, Pause, Loader2, ChevronDown, ChevronUp } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -324,7 +324,7 @@ export default function MyTasksPage() {
           </p>
           <a 
             href="/dashboard/business" 
-            className="inline-block px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
+            className="inline-block px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200"
           >
             Go to Business Details
           </a>
@@ -413,16 +413,16 @@ export default function MyTasksPage() {
       {/* Show Configurations */}
       {loadingConfigs ? (
             <div className="text-center py-12">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#EC4899]/10 dark:bg-pink-500/10 mb-4">
-                <Loader2 className="w-8 h-8 text-[#EC4899] dark:text-pink-400 animate-spin" />
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/15 mb-4">
+                <Loader2 className="w-8 h-8 text-[#D37E91] dark:text-[#D37E91] animate-spin" />
               </div>
               <h3 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-2">Loading configurations...</h3>
             </div>
           ) : configs.length === 0 ? (
             <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-8">
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#EC4899]/10 dark:bg-pink-500/10 mb-4">
-                  <CheckCircle className="w-8 h-8 text-[#EC4899] dark:text-pink-400" />
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/15 mb-4">
+                  <CheckCircle className="w-8 h-8 text-[#D37E91] dark:text-[#D37E91]" />
                 </div>
                 <h2 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-2">No task configurations</h2>
                 <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 max-w-md mx-auto">

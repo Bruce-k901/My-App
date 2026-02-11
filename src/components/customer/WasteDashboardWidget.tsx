@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Calendar, TrendingUp, AlertCircle, Loader2 } from 'lucide-react';
+import { Calendar, TrendingUp, AlertCircle, Loader2 } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 
 interface PendingLog {
@@ -101,7 +101,7 @@ export function WasteDashboardWidget() {
     return (
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6">
         <div className="flex items-center justify-center min-h-[120px]">
-          <Loader2 className="w-6 h-6 text-[#EC4899] animate-spin" />
+          <Loader2 className="w-6 h-6 text-[#D37E91] animate-spin" />
         </div>
       </div>
     );
@@ -119,7 +119,7 @@ export function WasteDashboardWidget() {
     return (
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6">
         <div className="flex items-center justify-center min-h-[120px]">
-          <Loader2 className="w-6 h-6 text-[#EC4899] animate-spin" />
+          <Loader2 className="w-6 h-6 text-[#D37E91] animate-spin" />
         </div>
       </div>
     );
@@ -133,7 +133,7 @@ export function WasteDashboardWidget() {
           <h2 className="text-lg font-semibold text-white">Waste Tracking</h2>
           <Link
             href="/customer/waste/insights"
-            className="text-sm text-[#EC4899] hover:text-[#EC4899]/80 transition-colors"
+            className="text-sm text-[#D37E91] hover:text-[#D37E91]/80 transition-colors"
           >
             View Insights →
           </Link>
@@ -146,7 +146,7 @@ export function WasteDashboardWidget() {
           <Link href="/customer/waste/log">
             <Button
               variant="primary"
-              className="bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] min-h-[44px]"
+              className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] min-h-[44px]"
             >
               Log Sales
             </Button>
@@ -162,7 +162,7 @@ export function WasteDashboardWidget() {
         <h2 className="text-lg font-semibold text-white">Waste Tracking</h2>
         <Link
           href="/customer/waste/insights"
-          className="text-sm text-[#EC4899] hover:text-[#EC4899]/80 transition-colors"
+          className="text-sm text-[#D37E91] hover:text-[#D37E91]/80 transition-colors"
         >
           View Insights →
         </Link>
@@ -186,7 +186,7 @@ export function WasteDashboardWidget() {
               <Link href={`/customer/waste/log?order_id=${pendingLog.order_id}`}>
                 <Button
                   variant="primary"
-                  className="w-full sm:w-auto bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] min-h-[44px]"
+                  className="w-full sm:w-auto bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] min-h-[44px]"
                 >
                   <Calendar className="w-4 h-4 mr-2" />
                   Log Now
@@ -210,7 +210,7 @@ export function WasteDashboardWidget() {
             </div>
             <div>
               <div className="text-xs text-white/60 mb-1">Potential Savings</div>
-              <div className="text-lg font-semibold text-[#EC4899]">
+              <div className="text-lg font-semibold text-[#D37E91]">
                 {formatCurrency(summary.total_waste_cost * 0.1)}
               </div>
             </div>
@@ -235,7 +235,7 @@ export function WasteDashboardWidget() {
           <Link href="/customer/waste/log">
             <Button
               variant="primary"
-              className="bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] min-h-[44px]"
+              className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] min-h-[44px]"
             >
               Log Sales
             </Button>

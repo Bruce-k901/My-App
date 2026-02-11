@@ -18,7 +18,7 @@ import {
   Clock,
   XCircle,
   MessageSquare
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface SupportTicket {
   id: string;
@@ -181,7 +181,7 @@ export default function TicketsPage() {
 
   const getModuleColor = (module: string) => {
     const colors: Record<string, string> = {
-      checkly: 'text-pink-400 bg-pink-500/20 border-pink-500/40',
+      checkly: 'text-[#D37E91] bg-[#D37E91]/25 border-[#D37E91]/40',
       stockly: 'text-green-400 bg-green-500/20 border-green-500/40',
       teamly: 'text-blue-400 bg-blue-500/20 border-blue-500/40',
       planly: 'text-teal-400 bg-teal-500/20 border-teal-500/40',
@@ -236,7 +236,7 @@ export default function TicketsPage() {
                   value={filters.search}
                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                   placeholder="Search tickets..."
-                  className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                  className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
                 />
               </div>
             </div>
@@ -247,7 +247,7 @@ export default function TicketsPage() {
               <select
                 value={filters.status}
                 onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
               >
                 <option value="all">All</option>
                 <option value="open">Open</option>
@@ -263,7 +263,7 @@ export default function TicketsPage() {
               <select
                 value={filters.type}
                 onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
               >
                 <option value="all">All</option>
                 <option value="issue">Issue</option>
@@ -278,7 +278,7 @@ export default function TicketsPage() {
               <select
                 value={filters.module}
                 onChange={(e) => setFilters({ ...filters, module: e.target.value })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
               >
                 <option value="all">All</option>
                 <option value="checkly">Checkly</option>
@@ -298,7 +298,7 @@ export default function TicketsPage() {
       {loading ? (
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91] mx-auto mb-4"></div>
             <p className="text-gray-400">Loading tickets...</p>
           </div>
         </div>
@@ -320,7 +320,7 @@ export default function TicketsPage() {
                 onClick={() => setSelectedTicket(ticket)}
                 className={`p-4 bg-white/[0.03] border rounded-lg cursor-pointer transition-colors ${
                   selectedTicket?.id === ticket.id
-                    ? 'border-pink-500/40 bg-pink-500/10'
+                    ? 'border-[#D37E91]/40 bg-[#D37E91]/15'
                     : 'border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.06]'
                 }`}
               >
@@ -380,7 +380,7 @@ export default function TicketsPage() {
                 <select
                   value={selectedTicket.status}
                   onChange={(e) => updateTicketStatus(selectedTicket.id, e.target.value)}
-                  className="px-3 py-1 bg-white/[0.06] border border-white/[0.1] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+                  className="px-3 py-1 bg-white/[0.06] border border-white/[0.1] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
                 >
                   <option value="open">Open</option>
                   <option value="in_progress">In Progress</option>
@@ -448,7 +448,7 @@ export default function TicketsPage() {
                       href={selectedTicket.page_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-pink-400 hover:text-pink-300"
+                      className="text-sm text-[#D37E91] hover:text-[#D37E91]"
                     >
                       View Page
                     </a>

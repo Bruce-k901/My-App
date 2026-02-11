@@ -8,7 +8,7 @@ import { MessageInput } from './MessageInput';
 import ConversationContentTabs from './ConversationContentTabs';
 import { ConversationHeader } from './ConversationHeader';
 import { useMessages } from '@/hooks/useMessages';
-import { MessageSquare, Menu, ArrowLeft } from 'lucide-react';
+import { MessageSquare, Menu, ArrowLeft } from '@/components/ui/icons';
 import type { Message } from '@/types/messaging';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
@@ -209,7 +209,7 @@ export function Messaging() {
               {isMobile && (
                 <button
                   onClick={() => setIsSidebarOpen(true)}
-                  className="mt-4 px-4 py-2 bg-transparent text-magenta-500 border-2 border-magenta-500 rounded-lg hover:shadow-[0_0_15px_rgba(236,72,153,0.5)] transition-all"
+                  className="mt-4 px-4 py-2 bg-transparent text-magenta-500 border-2 border-magenta-500 rounded-lg hover:shadow-[0_0_15px_rgba(211, 126, 145,0.5)] transition-all"
                 >
                   View Conversations
                 </button>

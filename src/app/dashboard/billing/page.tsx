@@ -13,7 +13,7 @@ import {
   FileText,
   ExternalLink,
   Loader2,
-} from "lucide-react";
+} from '@/components/ui/icons';
 import { Button } from "@/components/ui";
 import Link from "next/link";
 

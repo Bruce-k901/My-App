@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui";
 import UploadGlobalDocModal from "@/components/modals/UploadGlobalDocModal";
 import { useAppContext } from "@/context/AppContext";
-import { Trash2, X, Archive, ArrowLeft, FileText, Edit } from "lucide-react";
+import { Trash2, X, Archive, ArrowLeft, FileText, Edit } from '@/components/ui/icons';
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import DocumentReviewModal from "@/components/modals/DocumentReviewModal";
@@ -327,13 +327,13 @@ export default function DocumentsPoliciesSection() {
           {showArchived && (
             <button
               onClick={() => router.push('/dashboard/documents')}
-              className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors"
+              className="flex items-center gap-2 text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-white transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Back to Documents</span>
             </button>
           )}
-          <h3 className="text-white font-semibold">
+          <h3 className="text-gray-900 dark:text-white font-semibold">
             {showArchived ? "Archived Documents" : "Global Documents"}
           </h3>
         </div>
@@ -354,17 +354,17 @@ export default function DocumentsPoliciesSection() {
       </div>
 
       {/* EHO Requirements Helper */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+      <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h4 className="text-sm font-semibold text-white mb-1">EHO Required Documents</h4>
-            <p className="text-xs text-white/60">
+            <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">EHO Required Documents</h4>
+            <p className="text-xs text-gray-500 dark:text-white/60">
               Upload these documents to improve your EHO Readiness Pack score
             </p>
           </div>
           <div className="text-right">
-            <div className="text-lg font-bold text-green-400">{uploadedDocs.length}</div>
-            <div className="text-xs text-white/60">of {expectedDocuments.length}</div>
+            <div className="text-lg font-bold text-green-600 dark:text-green-400">{uploadedDocs.length}</div>
+            <div className="text-xs text-gray-500 dark:text-white/60">of {expectedDocuments.length}</div>
           </div>
         </div>
         
@@ -376,20 +376,20 @@ export default function DocumentsPoliciesSection() {
                 key={doc.name}
                 className={`flex items-center gap-2 text-xs p-2 rounded ${
                   isUploaded
-                    ? 'bg-green-500/10 border border-green-500/30'
-                    : 'bg-white/[0.03] border border-white/[0.1]'
+                    ? 'bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30'
+                    : 'bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1]'
                 }`}
               >
                 {isUploaded ? (
-                  <span className="text-green-400">✓</span>
+                  <span className="text-green-600 dark:text-green-400">✓</span>
                 ) : (
-                  <span className="text-red-400">○</span>
+                  <span className="text-red-500 dark:text-red-400">○</span>
                 )}
-                <span className={`flex-1 ${isUploaded ? 'text-white/80' : 'text-white/60'}`}>
+                <span className={`flex-1 ${isUploaded ? 'text-gray-700 dark:text-white/80' : 'text-gray-500 dark:text-white/60'}`}>
                   {doc.name}
                 </span>
                 {doc.required && (
-                  <span className="text-xs px-1.5 py-0.5 bg-red-500/20 text-red-400 rounded">Required</span>
+                  <span className="text-xs px-1.5 py-0.5 bg-red-100 dark:bg-red-500/20 text-red-500 dark:text-red-400 rounded">Required</span>
                 )}
               </div>
             )
@@ -397,8 +397,8 @@ export default function DocumentsPoliciesSection() {
         </div>
         
         {missingDocs.length > 0 && (
-          <div className="mt-3 pt-3 border-t border-white/[0.1]">
-            <p className="text-xs text-yellow-400">
+          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/[0.1]">
+            <p className="text-xs text-yellow-600 dark:text-yellow-400">
               ⚠ {missingDocs.length} required document{missingDocs.length > 1 ? 's' : ''} missing
             </p>
           </div>
@@ -410,19 +410,19 @@ export default function DocumentsPoliciesSection() {
         <div className="relative group">
           <>
             <div
-                className="block rounded-xl p-4 border border-pink-500/40 bg-white/[0.06] hover:border-pink-500/60 hover:bg-white/[0.08] transition-all duration-200 pr-12 group"
+                className="block rounded-xl p-4 border border-[#D37E91] dark:border-[#D37E91]/40 bg-[#D37E91]/10 dark:bg-white/[0.06] hover:border-[#D37E91] dark:hover:border-[#D37E91]/60 hover:bg-[#D37E91]/10 dark:hover:bg-white/[0.08] transition-all duration-200 pr-12 group"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="text-white font-medium">Latest Upload: {latestDoc.name}</div>
-                    <div className="text-slate-400 text-sm">
+                    <div className="text-gray-900 dark:text-white font-medium">Latest Upload: {latestDoc.name}</div>
+                    <div className="text-gray-500 dark:text-slate-400 text-sm">
                       {latestDoc.category} · {latestDoc.version || "v1"}
                       {latestDoc.expiry_date ? ` · expires ${new Date(latestDoc.expiry_date).toLocaleDateString()}` : ""}
                       {latestDoc.created_at ? ` · uploaded ${new Date(latestDoc.created_at).toLocaleDateString()}` : ""}
                     </div>
-                    {latestDoc.notes && <div className="text-slate-400 text-sm mt-1">{latestDoc.notes}</div>}
+                    {latestDoc.notes && <div className="text-gray-500 dark:text-slate-400 text-sm mt-1">{latestDoc.notes}</div>}
                     {(!latestDoc.file_path || isPlaceholderFilePath(latestDoc.file_path) || latestDoc.is_placeholder) && (
-                      <div className="text-amber-300 text-xs mt-2">
+                      <div className="text-amber-600 dark:text-amber-300 text-xs mt-2">
                         Placeholder document (no file uploaded yet)
                       </div>
                     )}
@@ -435,7 +435,7 @@ export default function DocumentsPoliciesSection() {
                           setReplaceDoc(latestDoc);
                           setOpen(true);
                         }}
-                        className="p-2.5 rounded-lg bg-[#EC4899]/10 hover:bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30 hover:border-[#EC4899]/50 transition-colors"
+                        className="p-2.5 rounded-lg bg-[#D37E91]/10 hover:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/30 hover:border-[#D37E91]/50 transition-colors"
                         title="Upload file for this placeholder document"
                       >
                         <FileText className="w-5 h-5" />
@@ -448,7 +448,7 @@ export default function DocumentsPoliciesSection() {
                           setSelectedDocument(latestDoc);
                           setShowReviewModal(true);
                         }}
-                        className="p-2.5 rounded-lg bg-[#EC4899]/10 hover:bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30 hover:border-[#EC4899]/50 transition-colors"
+                        className="p-2.5 rounded-lg bg-[#D37E91]/10 hover:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/30 hover:border-[#D37E91]/50 transition-colors"
                         title="Edit document - update expiry date or upload new version"
                         disabled={!latestDoc.file_path || isPlaceholderFilePath(latestDoc.file_path)}
                       >
@@ -489,17 +489,17 @@ export default function DocumentsPoliciesSection() {
       )}
 
       {loading ? (
-        <p className="text-slate-400">Loading documents…</p>
+        <p className="text-gray-500 dark:text-slate-400">Loading documents…</p>
       ) : error ? (
-        <p className="text-red-400">Error: {error}</p>
+        <p className="text-red-500 dark:text-red-400">Error: {error}</p>
       ) : docs.length === 0 ? (
-        <p className="text-slate-400">No documents yet. Upload one to get started.</p>
+        <p className="text-gray-500 dark:text-slate-400">No documents yet. Upload one to get started.</p>
       ) : (
         <>
           {/* Info about renaming */}
           {docs.some(d => !expectedDocuments.find(ed => ed.name === d.name)) && (
-            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-4">
-              <p className="text-xs text-yellow-400">
+            <div className="bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/30 rounded-lg p-3 mb-4">
+              <p className="text-xs text-yellow-600 dark:text-yellow-400">
                 💡 <strong>Tip:</strong> Some documents may not match EHO requirements. 
                 When uploading new documents, use the "Document Type" selector to ensure they're recognized by the EHO Readiness Pack.
               </p>
@@ -522,27 +522,27 @@ export default function DocumentsPoliciesSection() {
                 >
                   <>
                     <div
-                        className={`block rounded-xl p-4 border ${isNew ? "border-blue-500/60 bg-blue-500/10" : isEHORequired ? "border-green-500/30" : "border-white/[0.1] hover:border-white/[0.2]"} ${isEHORequired && !isNew ? "bg-green-500/5" : !isNew ? "bg-white/[0.06]" : ""} hover:bg-white/[0.08] transition-all duration-200 pr-12 group`}
+                        className={`block rounded-xl p-4 border ${isNew ? "border-blue-300 dark:border-blue-500/60 bg-blue-50 dark:bg-blue-500/10" : isEHORequired ? "border-green-200 dark:border-green-500/30" : "border-gray-200 dark:border-white/[0.1] hover:border-gray-300 dark:hover:border-white/[0.2]"} ${isEHORequired && !isNew ? "bg-green-50 dark:bg-green-500/5" : !isNew ? "bg-white dark:bg-white/[0.06]" : ""} hover:bg-gray-50 dark:hover:bg-white/[0.08] transition-all duration-200 pr-12 group`}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <div className="text-white font-medium">{d.name}</div>
+                              <div className="text-gray-900 dark:text-white font-medium">{d.name}</div>
                               {isEHORequired && (
-                                <span className="text-xs px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded">EHO</span>
+                                <span className="text-xs px-1.5 py-0.5 bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 rounded">EHO</span>
                               )}
                               {needsUpload && (
-                                <span className="text-xs px-1.5 py-0.5 bg-amber-500/20 text-amber-300 rounded">
+                                <span className="text-xs px-1.5 py-0.5 bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-300 rounded">
                                   Placeholder
                                 </span>
                               )}
                             </div>
-                            <div className="text-slate-400 text-sm">
+                            <div className="text-gray-500 dark:text-slate-400 text-sm">
                               {d.category} · {d.version || "v1"}
                               {d.expiry_date ? ` · expires ${new Date(d.expiry_date).toLocaleDateString()}` : ""}
                               {d.created_at ? ` · uploaded ${new Date(d.created_at).toLocaleDateString()}` : ""}
                             </div>
-                            {d.notes && <div className="text-slate-400 text-sm mt-1">{d.notes}</div>}
+                            {d.notes && <div className="text-gray-500 dark:text-slate-400 text-sm mt-1">{d.notes}</div>}
                           </div>
                           <div className="flex items-center gap-3">
                             {!showArchived && needsUpload && (
@@ -552,7 +552,7 @@ export default function DocumentsPoliciesSection() {
                                   setReplaceDoc(d);
                                   setOpen(true);
                                 }}
-                                className="p-2.5 rounded-lg bg-[#EC4899]/10 hover:bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30 hover:border-[#EC4899]/50 transition-colors"
+                                className="p-2.5 rounded-lg bg-[#D37E91]/10 hover:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/30 hover:border-[#D37E91]/50 transition-colors"
                                 title="Upload file for this placeholder document"
                               >
                                 <FileText className="w-5 h-5" />
@@ -565,7 +565,7 @@ export default function DocumentsPoliciesSection() {
                                 setSelectedDocument(d);
                                 setShowReviewModal(true);
                               }}
-                              className="p-2.5 rounded-lg bg-[#EC4899]/10 hover:bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30 hover:border-[#EC4899]/50 transition-colors"
+                              className="p-2.5 rounded-lg bg-[#D37E91]/10 hover:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/30 hover:border-[#D37E91]/50 transition-colors"
                               title="Edit document - update expiry date or upload new version"
                               disabled={!d.file_path || isPlaceholderFilePath(d.file_path)}
                             >

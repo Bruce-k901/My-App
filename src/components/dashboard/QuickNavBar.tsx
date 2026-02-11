@@ -4,13 +4,14 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import {
   ClipboardCheck,
-  ClipboardList,
   Users,
   Factory,
   ShoppingCart,
   PackageCheck,
+  Calendar,
+  MessageSquare,
   type LucideIcon,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { useEnabledModules } from '@/hooks/dashboard';
 import { useIsMobile } from '@/hooks/useIsMobile';
@@ -30,26 +31,17 @@ interface QuickNavItem {
 
 /**
  * Quick navigation items configuration
- * Module colours: checkly=fuchsia, stockly=emerald, teamly=blue, planly=orange
+ * Module colours: checkly=teamly (blush), stockly=emerald, teamly=blue, planly=orange, msgly=teal
  */
 const QUICK_NAV_ITEMS: QuickNavItem[] = [
   {
-    id: 'opening_checks',
-    label: 'Opening Checks',
-    href: '/dashboard/todays_tasks?type=opening',
+    id: 'todays_tasks',
+    label: "Today's Tasks",
+    href: '/dashboard/todays_tasks',
     module: 'checkly',
     icon: ClipboardCheck,
-    iconColor: 'text-fuchsia-400',
-    hoverBorder: 'hover:border-fuchsia-400',
-  },
-  {
-    id: 'closing_checks',
-    label: 'Closing Checks',
-    href: '/dashboard/todays_tasks?type=closing',
-    module: 'checkly',
-    icon: ClipboardList,
-    iconColor: 'text-fuchsia-400',
-    hoverBorder: 'hover:border-fuchsia-400',
+    iconColor: 'text-teamly',
+    hoverBorder: 'hover:border-teamly',
   },
   {
     id: 'todays_rota',
@@ -61,13 +53,31 @@ const QUICK_NAV_ITEMS: QuickNavItem[] = [
     hoverBorder: 'hover:border-blue-400',
   },
   {
-    id: 'production_tasks',
-    label: 'Production Tasks',
+    id: 'production_plan',
+    label: 'Production Plan',
     href: '/dashboard/planly/production-plan',
     module: 'planly',
     icon: Factory,
     iconColor: 'text-orange-400',
     hoverBorder: 'hover:border-orange-400',
+  },
+  {
+    id: 'calendar',
+    label: 'Calendar',
+    href: '/dashboard/calendar',
+    module: 'checkly',
+    icon: Calendar,
+    iconColor: 'text-teamly',
+    hoverBorder: 'hover:border-teamly',
+  },
+  {
+    id: 'messages',
+    label: 'Messages',
+    href: '/dashboard/messaging',
+    module: 'msgly',
+    icon: MessageSquare,
+    iconColor: 'text-teal-400',
+    hoverBorder: 'hover:border-teal-400',
   },
   {
     id: 'place_orders',
@@ -104,36 +114,67 @@ export function QuickNavBar() {
 
   return (
     <div className="mb-5">
-      <div className="text-[9px] font-semibold uppercase tracking-[0.1em] text-white/40 mb-2">
-        Quick Actions
-      </div>
+      {/* Framed container matching chart widget style */}
       <div
         className={cn(
-          'gap-2',
-          isMobile
-            ? 'grid grid-cols-2' // 2 columns on mobile for touch-friendly buttons
-            : 'flex flex-wrap' // Horizontal row on desktop
+          'bg-white dark:bg-[#171B2D]',
+          'border-2 border-module-fg/[0.12]',
+          'rounded-xl',
+          'p-4',
+          'shadow-lg shadow-black/[0.03] dark:shadow-black/20'
         )}
       >
-        {filteredItems.map((item) => (
-          <Link
-            key={item.id}
-            href={item.href}
+        {/* Header */}
+        <div className="flex items-center gap-2 mb-3">
+          <span
             className={cn(
-              'flex items-center gap-2 px-3.5 py-2',
-              'bg-white/[0.03] border border-white/[0.06] rounded-lg',
-              'text-sm text-white/60 font-medium',
-              'hover:bg-white/[0.06] transition-all duration-150',
-              item.hoverBorder,
-              isMobile && 'min-h-[44px] justify-center' // Touch-friendly on mobile
+              'text-[9px] font-semibold uppercase tracking-[0.06em]',
+              'px-1.5 py-0.5 rounded',
+              'text-slate-600 dark:text-slate-400',
+              'bg-slate-100 dark:bg-slate-800/50'
             )}
           >
-            <item.icon className={cn('w-4 h-4 flex-shrink-0', item.iconColor)} />
-            <span className={cn(isMobile ? 'text-xs' : 'whitespace-nowrap')}>
-              {item.label}
-            </span>
-          </Link>
-        ))}
+            Actions
+          </span>
+          <span className="text-[13px] font-semibold text-[rgb(var(--text-primary))]">
+            Quick Access
+          </span>
+        </div>
+
+        {/* Buttons Grid */}
+        <div
+          className={cn(
+            'gap-2',
+            isMobile
+              ? 'grid grid-cols-2' // 2 columns on mobile for touch-friendly buttons
+              : 'flex flex-wrap' // Horizontal row on desktop
+          )}
+        >
+          {filteredItems.map((item) => (
+            <Link
+              key={item.id}
+              href={item.href}
+              className={cn(
+                'flex items-center gap-2 px-3.5 py-2.5',
+                'bg-slate-50 dark:bg-slate-900/50',
+                'border-2 border-module-fg/[0.12]',
+                'rounded-lg',
+                'text-sm text-[rgb(var(--text-primary))] font-medium',
+                'hover:bg-slate-100 dark:hover:bg-slate-800/50',
+                'hover:border-module-fg/[0.25]',
+                'hover:shadow-md',
+                'transition-all duration-200',
+                item.hoverBorder,
+                isMobile && 'min-h-[48px] justify-center' // Touch-friendly on mobile
+              )}
+            >
+              <item.icon className={cn('w-4 h-4 flex-shrink-0', item.iconColor)} strokeWidth={2.5} />
+              <span className={cn(isMobile ? 'text-xs' : 'whitespace-nowrap')}>
+                {item.label}
+              </span>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );

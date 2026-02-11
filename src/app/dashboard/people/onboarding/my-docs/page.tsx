@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import { useAppContext } from '@/context/AppContext'
 import { supabase } from '@/lib/supabase'
-import { Loader2, FileText, CheckCircle, ExternalLink, Package } from 'lucide-react'
+import { Loader2, FileText, CheckCircle, ExternalLink, Package } from '@/components/ui/icons'
 import { toast } from 'sonner'
 
 type Assignment = {
@@ -216,7 +216,7 @@ export default function MyOnboardingDocsPage() {
           <h1 className="text-xl font-semibold text-gray-900 dark:text-white">My Onboarding Documents</h1>
           <p className="text-sm text-gray-900 dark:text-white/60">Review and acknowledge your onboarding documents</p>
         </div>
-        <Link href="/dashboard/people" className="text-sm text-[#EC4899] hover:underline">
+        <Link href="/dashboard/people" className="text-sm text-[#D37E91] hover:underline">
           Back
         </Link>
       </div>
@@ -253,7 +253,7 @@ export default function MyOnboardingDocsPage() {
                 {/* Pack Header */}
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div className="flex items-start gap-3">
-                    <Package className="w-6 h-6 text-[#EC4899] flex-shrink-0 mt-1" />
+                    <Package className="w-6 h-6 text-[#D37E91] flex-shrink-0 mt-1" />
                     <div>
                       <h2 className="text-gray-900 dark:text-white font-semibold text-lg">{pack?.name || 'Onboarding Pack'}</h2>
                       <div className="text-xs text-gray-900 dark:text-white/50 mt-1">
@@ -269,7 +269,7 @@ export default function MyOnboardingDocsPage() {
 
                   {/* Progress */}
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-[#EC4899]">
+                    <div className="text-2xl font-bold text-[#D37E91]">
                       {totalDocs > 0 ? Math.round((acknowledgedDocs / totalDocs) * 100) : 0}%
                     </div>
                     <div className="text-xs text-gray-900 dark:text-white/50">
@@ -282,7 +282,7 @@ export default function MyOnboardingDocsPage() {
                 <div className="mb-6">
                   <div className="h-2 bg-gray-100 dark:bg-white/[0.05] rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-[#EC4899] to-[#EC4899]/70 transition-all duration-500"
+                      className="h-full bg-gradient-to-r from-[#D37E91] to-[#D37E91]/70 transition-all duration-500"
                       style={{ width: `${totalDocs > 0 ? (acknowledgedDocs / totalDocs) * 100 : 0}%` }}
                     />
                   </div>
@@ -327,7 +327,7 @@ export default function MyOnboardingDocsPage() {
                               <button
                                 onClick={() => openDoc(d)}
                                 disabled={!isAvailable || openingDocId === gd?.id}
-                                className="text-sm text-[#EC4899] hover:underline flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="text-sm text-[#D37E91] hover:underline flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                               >
                                 <ExternalLink className="w-4 h-4" />
                                 {openingDocId === gd?.id ? 'Opening…' : 'Open'}

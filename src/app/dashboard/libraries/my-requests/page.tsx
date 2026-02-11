@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Clock, CheckCircle2, XCircle, Package, Eye, Trash2 } from 'lucide-react';
+import { Clock, CheckCircle2, XCircle, Package, Eye, Trash2 } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useRouter } from 'next/navigation';
@@ -124,7 +124,7 @@ export default function MyLibraryRequestsPage() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-2 h-8 bg-pink-500 rounded-full"></div>
+            <div className="w-2 h-8 bg-[#D37E91] rounded-full"></div>
             <div>
               <h1 className="text-lg font-semibold text-white">My Library Requests</h1>
               <p className="text-sm text-neutral-400">View and track your custom library requests</p>

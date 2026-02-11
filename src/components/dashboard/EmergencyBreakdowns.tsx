@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle } from '@/components/ui/icons';
 import { formatDistanceToNow } from "date-fns";
 
 interface Breakdown {
@@ -94,13 +94,13 @@ export default function EmergencyBreakdowns() {
 
   if (!data.length)
     return (
-      <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)] text-white/70 flex items-center justify-center">
+      <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(211, 126, 145,0.05)] text-white/70 flex items-center justify-center">
         <p>No pending maintenance tasks. All systems operational.</p>
       </div>
     );
 
   return (
-    <div className="rounded-2xl bg-red-950/30 border border-red-500/40 p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)]">
+    <div className="rounded-2xl bg-red-950/30 border border-red-500/40 p-5 shadow-[0_0_12px_rgba(211, 126, 145,0.05)]">
       <div className="flex items-center gap-2 mb-4">
         <AlertTriangle className="w-5 h-5 text-red-400" />
         <h2 className="text-lg font-semibold text-red-400">Pending Maintenance</h2>

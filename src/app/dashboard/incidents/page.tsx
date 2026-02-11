@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { AlertTriangle, Plus, Filter, Search, Download, Eye, ShieldAlert, Utensils, MessageSquareWarning, UserX } from 'lucide-react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { AlertTriangle, Plus, Filter, Search, Download, Eye, ShieldAlert, Utensils, MessageSquareWarning, UserX } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/Button';
@@ -36,7 +37,16 @@ interface Incident {
 }
 
 export default function IncidentsPage() {
+  return (
+    <Suspense fallback={<div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen p-6"><p className="text-gray-600 dark:text-white/60">Loading...</p></div>}>
+      <IncidentsPageContent />
+    </Suspense>
+  );
+}
+
+function IncidentsPageContent() {
   const { companyId, siteId } = useAppContext();
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<IncidentType>('accident');
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,10 +60,45 @@ export default function IncidentsPage() {
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [viewingIncident, setViewingIncident] = useState<Incident | null>(null);
+  const [deepLinkHandled, setDeepLinkHandled] = useState(false);
 
   useEffect(() => {
     fetchIncidents();
   }, [companyId, siteId, activeTab]);
+
+  // Handle ?openIncident=<id> deep-link from dashboard widgets
+  useEffect(() => {
+    const openIncidentId = searchParams.get('openIncident');
+    if (openIncidentId && !deepLinkHandled && !loading) {
+      setDeepLinkHandled(true);
+      const found = incidents.find(i => i.id === openIncidentId);
+      if (found) {
+        setViewingIncident(found);
+        setIsViewerOpen(true);
+      } else {
+        // Incident not in current filtered list; fetch it directly
+        fetchAndOpenIncident(openIncidentId);
+      }
+    }
+  }, [searchParams, incidents, loading, deepLinkHandled]);
+
+  async function fetchAndOpenIncident(id: string) {
+    try {
+      const { data, error } = await supabase
+        .from('incidents')
+        .select('*')
+        .eq('id', id)
+        .single();
+      if (error) throw error;
+      if (data) {
+        setViewingIncident(data);
+        setIsViewerOpen(true);
+      }
+    } catch (err) {
+      console.error('Error fetching incident:', err);
+      toast.error('Could not find the requested incident');
+    }
+  }
 
   async function fetchIncidents() {
     // Staff sickness uses a different table, so skip fetching for that tab
@@ -74,7 +119,7 @@ export default function IncidentsPage() {
 
       // Map tab to incident types in database
       const incidentTypeMap: Record<string, string[]> = {
-        accident: ['emergency', 'accident', 'injury', 'near_miss'],
+        accident: ['emergency', 'accident', 'injury', 'near_miss', 'slip_trip', 'cut', 'burn', 'fall', 'fall_from_height', 'electrical', 'fire', 'chemical', 'other'],
         food_poisoning: ['food_poisoning'],
         customer_complaint: ['customer_complaint', 'complaint'],
       };
@@ -276,14 +321,14 @@ export default function IncidentsPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-              <AlertTriangle className="w-8 h-8 text-red-600 dark:text-pink-400" />
+              <AlertTriangle className="w-8 h-8 text-red-600 dark:text-[#D37E91]" />
               Incident Reports
             </h1>
             <p className="text-gray-600 dark:text-white/60">Track and manage safety incidents and accidents</p>
           </div>
           <Button
             onClick={handleReportIncident}
-            className="bg-[#EC4899] hover:bg-[#EC4899]/90 text-white dark:bg-red-600 dark:hover:bg-red-700"
+            className="bg-[#D37E91] hover:bg-[#D37E91]/90 text-white dark:bg-red-600 dark:hover:bg-red-700"
           >
             <Plus className="w-4 h-4 mr-2" />
             {activeTab === 'staff_sickness' ? 'Log Sickness' : 'Report Incident'}
@@ -302,7 +347,7 @@ export default function IncidentsPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${
                     isActive
-                      ? 'bg-[#EC4899]/10 dark:bg-pink-500/20 text-[#EC4899] dark:text-pink-400 border border-[#EC4899]/30 dark:border-pink-500/30'
+                      ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91] border border-[#D37E91]/30 dark:border-[#D37E91]/30'
                       : 'text-gray-600 dark:text-white/60 hover:bg-gray-100 dark:hover:bg-white/[0.05] hover:text-gray-900 dark:hover:text-white'
                   }`}
                 >
@@ -329,7 +374,7 @@ export default function IncidentsPage() {
                   placeholder={`Search ${activeTabInfo.label.toLowerCase()}...`}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50 dark:focus:ring-pink-500"
+                  className="w-full pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                 />
               </div>
 
@@ -381,7 +426,7 @@ export default function IncidentsPage() {
             </p>
             <Button
               onClick={() => window.location.href = '/dashboard/incidents/staff-sickness'}
-              className="bg-[#EC4899] hover:bg-[#EC4899]/90 text-white dark:bg-purple-600 dark:hover:bg-purple-700"
+              className="bg-[#D37E91] hover:bg-[#D37E91]/90 text-white dark:bg-purple-600 dark:hover:bg-purple-700"
             >
               <UserX className="w-4 h-4 mr-2" />
               Open Sickness Log
@@ -406,7 +451,7 @@ export default function IncidentsPage() {
             {!searchTerm && statusFilter === 'all' && severityFilter === 'all' && (
               <Button
                 onClick={handleReportIncident}
-                className="bg-[#EC4899] hover:bg-[#EC4899]/90 text-white dark:bg-red-600 dark:hover:bg-red-700"
+                className="bg-[#D37E91] hover:bg-[#D37E91]/90 text-white dark:bg-red-600 dark:hover:bg-red-700"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Report First {activeTab === 'customer_complaint' ? 'Complaint' : 'Incident'}
@@ -528,6 +573,9 @@ export default function IncidentsPage() {
         onClose={() => {
           setIsViewerOpen(false);
           setViewingIncident(null);
+        }}
+        onUpdate={() => {
+          fetchIncidents();
         }}
         onDownload={async (incident) => {
           try {

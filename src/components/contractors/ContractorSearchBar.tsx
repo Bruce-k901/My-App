@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, Building2, MapPin, Globe, Plus } from 'lucide-react';
+import { Search, Building2, MapPin, Globe, Plus } from '@/components/ui/icons';
 import { useToast } from '@/components/ui/ToastProvider';
 
 type SearchResult = {

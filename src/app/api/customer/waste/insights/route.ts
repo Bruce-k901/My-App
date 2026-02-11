@@ -32,11 +32,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(emptyData);
     }
 
-    // Get customer record
+    // Get customer record from planly
     const { data: customer } = await supabase
-      .from('order_book_customers')
+      .from('planly_customers')
       .select('id')
       .eq('email', user.email?.toLowerCase() || '')
+      .eq('is_active', true)
       .maybeSingle();
 
     if (!customer) {

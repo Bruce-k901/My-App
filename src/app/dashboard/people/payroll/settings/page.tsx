@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Label from '@/components/ui/Label';
 import Select from '@/components/ui/Select';
-import { ArrowLeft, Save, Calendar, Info } from 'lucide-react';
+import { ArrowLeft, Save, Calendar, Info } from '@/components/ui/icons';
 import Link from 'next/link';
 import { toast } from 'sonner';
 

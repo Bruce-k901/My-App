@@ -40,11 +40,15 @@ export function SuppressConsoleWarnings() {
         (msg.includes("_next/static/media") && msg.includes("preload")) ||
         (msg.includes("_next/static") && msg.includes("preload")) ||
         (msg.includes("app/layout.css") || (msg.includes("app/dashboard") && msg.includes(".css"))) ||
-        msg.includes("checkly_logo_touching_blocks")
+        msg.includes("new_module_logos")
       );
       
+      // Recharts ResponsiveContainer warns during initial render before layout
+      const isRechartsLayoutWarning = msg.includes("width") && msg.includes("height") && msg.includes("chart should be greater than 0");
+
       return (
         isPreloadWarning ||
+        isRechartsLayoutWarning ||
         // Suppress push subscription errors (expected when table doesn't exist or profile missing)
         msg.includes("error saving push subscription") ||
         msg.includes("error registering push subscription") ||
@@ -158,7 +162,7 @@ export function SuppressConsoleWarnings() {
             // Check for preload-related entries
             const isPreloadEntry = (
               entryType === "link" ||
-              entryName.includes("checkly_logo_touching_blocks") ||
+              entryName.includes("new_module_logos") ||
               (entryName.includes("_next/static/media") && (entryName.includes(".svg") || entryName.includes(".png") || entryName.includes(".jpg") || entryName.includes(".jpeg") || entryName.includes(".webp"))) ||
               (entryName.includes("_next/static/css") && entryName.includes(".css")) ||
               (entryName.includes("_next/static") && (entryName.includes(".css") || entryName.includes(".svg") || entryName.includes(".png") || entryName.includes(".jpg") || entryName.includes(".jpeg") || entryName.includes(".webp"))) ||

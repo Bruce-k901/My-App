@@ -30,7 +30,7 @@ import {
   Plus,
   CheckCircle2,
   CalendarCheck
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import type { EmergencyContact } from '@/types/teamly';
 import EmployeeSiteAssignmentsModal from '@/components/people/EmployeeSiteAssignmentsModal';
 import { EmployeeTrainingTab } from '@/components/training/EmployeeTrainingTab';
@@ -2240,7 +2240,7 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Documents</h3>
         <button
           onClick={() => setUploadOpen(true)}
-          className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out flex items-center gap-2"
+          className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           Upload
@@ -2288,7 +2288,7 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
           <p className="text-gray-500 dark:text-white/60 mb-4">No documents uploaded yet</p>
           <button
             onClick={() => setUploadOpen(true)}
-            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out"
+            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out"
           >
             Upload Document
           </button>
@@ -2310,7 +2310,7 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => handleDownload(doc)}
-                  className="text-sm text-[#EC4899] hover:underline"
+                  className="text-sm text-[#D37E91] hover:underline"
                 >
                   Download
                 </button>
@@ -2407,7 +2407,7 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
                 </button>
                 <button
                   onClick={handleUpload}
-                  className="px-4 py-2 bg-[#EC4899] text-gray-900 dark:text-white rounded-lg disabled:opacity-50"
+                  className="px-4 py-2 bg-[#D37E91] text-gray-900 dark:text-white rounded-lg disabled:opacity-50"
                   disabled={uploading}
                 >
                   {uploading ? 'Uploading…' : 'Upload'}
@@ -2428,7 +2428,7 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
           <button
             onClick={sendPack}
             disabled={sendingPack || !selectedPackId}
-            className="px-4 py-2 bg-[#EC4899] text-gray-900 dark:text-white rounded-lg disabled:opacity-50"
+            className="px-4 py-2 bg-[#D37E91] text-gray-900 dark:text-white rounded-lg disabled:opacity-50"
           >
             {sendingPack ? 'Sending…' : 'Send pack'}
           </button>
@@ -2482,7 +2482,7 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
           {packs.length === 0 ? (
             <div className="text-sm text-gray-900 dark:text-white/70">
               No packs exist for these filters.{' '}
-              <button className="text-[#EC4899] hover:underline" onClick={() => setCreatingPack(true)}>
+              <button className="text-[#D37E91] hover:underline" onClick={() => setCreatingPack(true)}>
                 Create one
               </button>
               .
@@ -2530,7 +2530,7 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
               <div className="flex items-end justify-end">
                 <button
                   onClick={createPack}
-                  className="px-4 py-2 bg-[#EC4899] text-gray-900 dark:text-white rounded-lg"
+                  className="px-4 py-2 bg-[#D37E91] text-gray-900 dark:text-white rounded-lg"
                 >
                   Save pack
                 </button>
@@ -2576,7 +2576,7 @@ function PayTaxTab({ employee, onUpdate }: { employee: Employee; onUpdate: () =>
       {/* Pay Details */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <CreditCard className="w-5 h-5 text-[#EC4899]" />
+          <CreditCard className="w-5 h-5 text-[#D37E91]" />
           Pay Details
         </h3>
         <div className="space-y-3">
@@ -2624,7 +2624,7 @@ function PayTaxTab({ employee, onUpdate }: { employee: Employee; onUpdate: () =>
       {/* Tax & Deductions */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <Shield className="w-5 h-5 text-[#EC4899]" />
+          <Shield className="w-5 h-5 text-[#D37E91]" />
           Tax & Deductions
         </h3>
         <div className="space-y-3">
@@ -2855,7 +2855,7 @@ function EditEmployeeModal({
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-t-lg text-sm font-medium whitespace-nowrap transition-colors ${
                   activeTab === tab.id
-                    ? 'bg-neutral-800 text-gray-900 dark:text-white border-b-2 border-[#EC4899]'
+                    ? 'bg-neutral-800 text-gray-900 dark:text-white border-b-2 border-[#D37E91]'
                     : 'text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white hover:bg-neutral-800'
                 }`}
               >
@@ -2871,7 +2871,7 @@ function EditEmployeeModal({
           {activeTab === 'personal' && (
             <div className="space-y-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <User className="w-5 h-5 text-[#EC4899]" />
+                <User className="w-5 h-5 text-[#D37E91]" />
                 Personal Information
               </h2>
               
@@ -2886,7 +2886,7 @@ function EditEmployeeModal({
                     value={formData.full_name || ''}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -2900,7 +2900,7 @@ function EditEmployeeModal({
                     value={formData.email || ''}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -2913,7 +2913,7 @@ function EditEmployeeModal({
                     name="phone_number"
                     value={formData.phone_number || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -2926,7 +2926,7 @@ function EditEmployeeModal({
                     name="date_of_birth"
                     value={formData.date_of_birth || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -2938,7 +2938,7 @@ function EditEmployeeModal({
                     name="gender"
                     value={formData.gender || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   >
                     <option value="">Select...</option>
                     <option value="male">Male</option>
@@ -2958,7 +2958,7 @@ function EditEmployeeModal({
                     name="nationality"
                     value={formData.nationality || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
               </div>
@@ -2976,7 +2976,7 @@ function EditEmployeeModal({
                       name="address_line_1"
                       value={formData.address_line_1 || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                     />
                   </div>
                   
@@ -2989,7 +2989,7 @@ function EditEmployeeModal({
                       name="address_line_2"
                       value={formData.address_line_2 || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                     />
                   </div>
                   
@@ -3002,7 +3002,7 @@ function EditEmployeeModal({
                       name="city"
                       value={formData.city || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                     />
                   </div>
                   
@@ -3015,7 +3015,7 @@ function EditEmployeeModal({
                       name="county"
                       value={formData.county || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                     />
                   </div>
                   
@@ -3028,7 +3028,7 @@ function EditEmployeeModal({
                       name="postcode"
                       value={formData.postcode || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                     />
                   </div>
                   
@@ -3041,7 +3041,7 @@ function EditEmployeeModal({
                       name="country"
                       value={formData.country || 'United Kingdom'}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -3054,7 +3054,7 @@ function EditEmployeeModal({
                   <button
                     type="button"
                     onClick={addEmergencyContact}
-                    className="flex items-center gap-1 text-sm text-[#EC4899] hover:text-[#EC4899]/80"
+                    className="flex items-center gap-1 text-sm text-[#D37E91] hover:text-[#D37E91]/80"
                   >
                     <Plus className="w-4 h-4" />
                     Add Contact
@@ -3069,7 +3069,7 @@ function EditEmployeeModal({
                         type="text"
                         value={contact.name}
                         onChange={(e) => handleEmergencyContactChange(index, 'name', e.target.value)}
-                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -3079,7 +3079,7 @@ function EditEmployeeModal({
                         value={contact.relationship}
                         onChange={(e) => handleEmergencyContactChange(index, 'relationship', e.target.value)}
                         placeholder="e.g., Spouse, Parent"
-                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -3088,7 +3088,7 @@ function EditEmployeeModal({
                         type="tel"
                         value={contact.phone}
                         onChange={(e) => handleEmergencyContactChange(index, 'phone', e.target.value)}
-                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                       />
                     </div>
                     <div className="flex items-end gap-2">
@@ -3098,7 +3098,7 @@ function EditEmployeeModal({
                           type="email"
                           value={contact.email || ''}
                           onChange={(e) => handleEmergencyContactChange(index, 'email', e.target.value)}
-                          className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                          className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                         />
                       </div>
                       {emergencyContacts.length > 1 && (
@@ -3120,7 +3120,7 @@ function EditEmployeeModal({
           {activeTab === 'employment' && (
             <div className="space-y-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-[#EC4899]" />
+                <Briefcase className="w-5 h-5 text-[#D37E91]" />
                 Employment Details
               </h2>
               
@@ -3135,7 +3135,7 @@ function EditEmployeeModal({
                     value={formData.employee_number || ''}
                     onChange={handleChange}
                     placeholder="e.g., EMP001"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -3148,7 +3148,7 @@ function EditEmployeeModal({
                     name="position_title"
                     value={formData.position_title || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -3161,7 +3161,7 @@ function EditEmployeeModal({
                     name="department"
                     value={formData.department || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -3173,7 +3173,7 @@ function EditEmployeeModal({
                     name="app_role"
                     value={formData.app_role || 'Staff'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   >
                     <option value="Staff">Staff</option>
                     <option value="Manager">Manager</option>
@@ -3190,7 +3190,7 @@ function EditEmployeeModal({
                     name="home_site"
                     value={formData.home_site || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   >
                     <option value="">Select site...</option>
                     {sites && sites.length > 0 ? (
@@ -3232,7 +3232,7 @@ function EditEmployeeModal({
                     name="reports_to"
                     value={formData.reports_to || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   >
                     <option value="">Select manager...</option>
                     {managers.map(manager => (
@@ -3249,7 +3249,7 @@ function EditEmployeeModal({
                     name="boh_foh"
                     value={formData.boh_foh || 'FOH'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   >
                     <option value="FOH">Front of House</option>
                     <option value="BOH">Back of House</option>
@@ -3266,7 +3266,7 @@ function EditEmployeeModal({
                     name="start_date"
                     value={formData.start_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -3279,7 +3279,7 @@ function EditEmployeeModal({
                     name="probation_end_date"
                     value={formData.probation_end_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -3291,7 +3291,7 @@ function EditEmployeeModal({
                     name="contract_type"
                     value={formData.contract_type || 'permanent'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   >
                     <option value="permanent">Permanent</option>
                     <option value="fixed_term">Fixed Term</option>
@@ -3313,7 +3313,7 @@ function EditEmployeeModal({
                     value={formData.contracted_hours || ''}
                     onChange={handleChange}
                     step="0.5"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -3327,7 +3327,7 @@ function EditEmployeeModal({
                     value={formData.hourly_rate || ''}
                     onChange={handleChange}
                     step="0.01"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -3341,7 +3341,7 @@ function EditEmployeeModal({
                     value={formData.salary || ''}
                     onChange={handleChange}
                     step="100"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -3353,7 +3353,7 @@ function EditEmployeeModal({
                     name="pay_frequency"
                     value={formData.pay_frequency || 'monthly'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   >
                     <option value="weekly">Weekly</option>
                     <option value="fortnightly">Fortnightly</option>
@@ -3372,7 +3372,7 @@ function EditEmployeeModal({
                     value={formData.notice_period_weeks || '1'}
                     onChange={handleChange}
                     min="1"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
               </div>
@@ -3382,7 +3382,7 @@ function EditEmployeeModal({
           {activeTab === 'compliance' && (
             <div className="space-y-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <Shield className="w-5 h-5 text-[#EC4899]" />
+                <Shield className="w-5 h-5 text-[#D37E91]" />
                 Compliance & Right to Work
               </h2>
               
@@ -3397,7 +3397,7 @@ function EditEmployeeModal({
                     value={formData.national_insurance_number || ''}
                     onChange={handleChange}
                     placeholder="e.g., AB123456C"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent uppercase"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent uppercase"
                   />
                 </div>
                 
@@ -3409,7 +3409,7 @@ function EditEmployeeModal({
                     name="right_to_work_status"
                     value={formData.right_to_work_status || 'pending'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   >
                     <option value="pending">Pending Verification</option>
                     <option value="verified">Verified</option>
@@ -3426,7 +3426,7 @@ function EditEmployeeModal({
                     name="right_to_work_document_type"
                     value={formData.right_to_work_document_type || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   >
                     <option value="">Select...</option>
                     <option value="passport">UK/EU Passport</option>
@@ -3446,7 +3446,7 @@ function EditEmployeeModal({
                     name="right_to_work_expiry"
                     value={formData.right_to_work_expiry || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                   <p className="text-xs text-gray-500 dark:text-white/60 mt-1">Leave blank if no expiry (e.g., British citizen)</p>
                 </div>
@@ -3464,7 +3464,7 @@ function EditEmployeeModal({
                       name="dbs_status"
                       value={formData.dbs_status || 'not_required'}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                     >
                       <option value="not_required">Not Required</option>
                       <option value="pending">Pending</option>
@@ -3482,7 +3482,7 @@ function EditEmployeeModal({
                       name="dbs_certificate_number"
                       value={formData.dbs_certificate_number || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                     />
                   </div>
                   
@@ -3495,7 +3495,7 @@ function EditEmployeeModal({
                       name="dbs_check_date"
                       value={formData.dbs_check_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -3506,7 +3506,7 @@ function EditEmployeeModal({
           {activeTab === 'banking' && (
             <div className="space-y-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-[#EC4899]" />
+                <CreditCard className="w-5 h-5 text-[#D37E91]" />
                 Bank Details
               </h2>
               <p className="text-sm text-gray-500 dark:text-white/60">
@@ -3523,7 +3523,7 @@ function EditEmployeeModal({
                     name="bank_name"
                     value={formData.bank_name || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -3536,7 +3536,7 @@ function EditEmployeeModal({
                     name="bank_account_name"
                     value={formData.bank_account_name || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -3550,7 +3550,7 @@ function EditEmployeeModal({
                     value={formData.bank_sort_code || ''}
                     onChange={handleChange}
                     placeholder="XX-XX-XX"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -3565,7 +3565,7 @@ function EditEmployeeModal({
                     onChange={handleChange}
                     placeholder="8 digits"
                     maxLength={8}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
               </div>
@@ -3575,7 +3575,7 @@ function EditEmployeeModal({
           {activeTab === 'leave' && (
             <div className="space-y-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#EC4899]" />
+                <Calendar className="w-5 h-5 text-[#D37E91]" />
                 Leave Allowance
               </h2>
               
@@ -3590,7 +3590,7 @@ function EditEmployeeModal({
                     value={formData.annual_leave_allowance || '28'}
                     onChange={handleChange}
                     step="0.5"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                   <p className="text-xs text-gray-500 dark:text-white/60 mt-1">UK statutory minimum is 28 days (including bank holidays)</p>
                 </div>
@@ -3601,7 +3601,7 @@ function EditEmployeeModal({
           {activeTab === 'pay' && (
             <div className="space-y-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <CreditCardIcon className="w-5 h-5 text-[#EC4899]" />
+                <CreditCardIcon className="w-5 h-5 text-[#D37E91]" />
                 Pay & Tax Details
               </h2>
               
@@ -3616,7 +3616,7 @@ function EditEmployeeModal({
                     value={formData.tax_code || ''}
                     onChange={handleChange}
                     placeholder="e.g., 1257L"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent uppercase"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent uppercase"
                   />
                 </div>
                 
@@ -3630,7 +3630,7 @@ function EditEmployeeModal({
                       name="student_loan"
                       checked={formData.student_loan || false}
                       onChange={handleChange}
-                      className="w-4 h-4 text-[#EC4899] bg-neutral-700 border-neutral-600 rounded focus:ring-[#EC4899]"
+                      className="w-4 h-4 text-[#D37E91] bg-neutral-700 border-neutral-600 rounded focus:ring-[#D37E91]"
                     />
                     <span className="text-sm text-neutral-300">Has student loan</span>
                   </div>
@@ -3645,7 +3645,7 @@ function EditEmployeeModal({
                       name="student_loan_plan"
                       value={formData.student_loan_plan || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                     >
                       <option value="">Select plan...</option>
                       <option value="plan_1">Plan 1</option>
@@ -3666,7 +3666,7 @@ function EditEmployeeModal({
                       name="pension_enrolled"
                       checked={formData.pension_enrolled || false}
                       onChange={handleChange}
-                      className="w-4 h-4 text-[#EC4899] bg-neutral-700 border-neutral-600 rounded focus:ring-[#EC4899]"
+                      className="w-4 h-4 text-[#D37E91] bg-neutral-700 border-neutral-600 rounded focus:ring-[#D37E91]"
                     />
                     <span className="text-sm text-neutral-300">Enrolled in pension</span>
                   </div>
@@ -3685,7 +3685,7 @@ function EditEmployeeModal({
                       step="0.1"
                       min="0"
                       max="100"
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                     />
                   </div>
                 )}
@@ -3700,7 +3700,7 @@ function EditEmployeeModal({
                       name="p45_received"
                       checked={formData.p45_received || false}
                       onChange={handleChange}
-                      className="w-4 h-4 text-[#EC4899] bg-neutral-700 border-neutral-600 rounded focus:ring-[#EC4899]"
+                      className="w-4 h-4 text-[#D37E91] bg-neutral-700 border-neutral-600 rounded focus:ring-[#D37E91]"
                     />
                     <span className="text-sm text-neutral-300">P45 received</span>
                   </div>
@@ -3712,7 +3712,7 @@ function EditEmployeeModal({
           {activeTab === 'training' && (
             <div className="space-y-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-[#EC4899]" />
+                <GraduationCap className="w-5 h-5 text-[#D37E91]" />
                 Training & Certifications
               </h2>
               
@@ -3725,7 +3725,7 @@ function EditEmployeeModal({
                     name="food_safety_level"
                     value={formData.food_safety_level || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   >
                     <option value="">Not certified</option>
                     <option value="1">Level 1</option>
@@ -3744,7 +3744,7 @@ function EditEmployeeModal({
                     name="food_safety_expiry_date"
                     value={formData.food_safety_expiry_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -3756,7 +3756,7 @@ function EditEmployeeModal({
                     name="h_and_s_level"
                     value={formData.h_and_s_level || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   >
                     <option value="">Not certified</option>
                     <option value="1">Level 1</option>
@@ -3775,7 +3775,7 @@ function EditEmployeeModal({
                     name="h_and_s_expiry_date"
                     value={formData.h_and_s_expiry_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                   />
                 </div>
                 
@@ -3789,7 +3789,7 @@ function EditEmployeeModal({
                       name="fire_marshal_trained"
                       checked={formData.fire_marshal_trained || false}
                       onChange={handleChange}
-                      className="w-4 h-4 text-[#EC4899] bg-neutral-700 border-neutral-600 rounded focus:ring-[#EC4899]"
+                      className="w-4 h-4 text-[#D37E91] bg-neutral-700 border-neutral-600 rounded focus:ring-[#D37E91]"
                     />
                     <span className="text-sm text-neutral-300">Fire marshal trained</span>
                   </div>
@@ -3805,7 +3805,7 @@ function EditEmployeeModal({
                       name="fire_marshal_expiry_date"
                       value={formData.fire_marshal_expiry_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                     />
                   </div>
                 )}
@@ -3820,7 +3820,7 @@ function EditEmployeeModal({
                       name="first_aid_trained"
                       checked={formData.first_aid_trained || false}
                       onChange={handleChange}
-                      className="w-4 h-4 text-[#EC4899] bg-neutral-700 border-neutral-600 rounded focus:ring-[#EC4899]"
+                      className="w-4 h-4 text-[#D37E91] bg-neutral-700 border-neutral-600 rounded focus:ring-[#D37E91]"
                     />
                     <span className="text-sm text-neutral-300">First aid trained</span>
                   </div>
@@ -3836,7 +3836,7 @@ function EditEmployeeModal({
                       name="first_aid_expiry_date"
                       value={formData.first_aid_expiry_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                     />
                   </div>
                 )}
@@ -3851,7 +3851,7 @@ function EditEmployeeModal({
                       name="cossh_trained"
                       checked={formData.cossh_trained || false}
                       onChange={handleChange}
-                      className="w-4 h-4 text-[#EC4899] bg-neutral-700 border-neutral-600 rounded focus:ring-[#EC4899]"
+                      className="w-4 h-4 text-[#D37E91] bg-neutral-700 border-neutral-600 rounded focus:ring-[#D37E91]"
                     />
                     <span className="text-sm text-neutral-300">COSSH trained</span>
                   </div>
@@ -3867,7 +3867,7 @@ function EditEmployeeModal({
                       name="cossh_expiry_date"
                       value={formData.cossh_expiry_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EC4899] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                     />
                   </div>
                 )}
@@ -3887,7 +3887,7 @@ function EditEmployeeModal({
           <button
             onClick={onSave}
             disabled={saving}
-            className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {saving ? (
               <>

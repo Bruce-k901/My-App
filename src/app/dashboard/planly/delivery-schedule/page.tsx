@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, addDays } from 'date-fns';
-import { ChevronLeft, ChevronRight, Calendar, Printer } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Printer } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { useDeliverySchedule } from '@/hooks/planly/useDeliverySchedule';

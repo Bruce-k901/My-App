@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, AlertTriangle, CheckCircle, Calendar, Edit, FileBox, FileText, Shield } from 'lucide-react';
+import { Search, AlertTriangle, CheckCircle, Calendar, Edit, FileBox, FileText, Shield } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -127,10 +127,10 @@ export default function RiskAssessmentsPage() {
     <div className="space-y-4 sm:space-y-6">
       {/* Stats Cards - Improved Design */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-white dark:bg-neutral-800/50 border border-gray-200 dark:border-white/[0.1] rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-[0_0_20px_rgba(236,72,153,0.15)] hover:border-[#EC4899]/30 dark:hover:border-magenta-500/30 group">
+        <div className="bg-white dark:bg-neutral-800/50 border border-gray-200 dark:border-white/[0.1] rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-[0_0_20px_rgba(211,126,145,0.15)] hover:border-[#D37E91]/30 dark:hover:border-magenta-500/30 group">
           <div className="flex items-center justify-between mb-3">
             <div className="text-gray-600 dark:text-neutral-400 text-sm font-medium">Total RAs</div>
-            <FileText className="w-5 h-5 text-gray-400 dark:text-neutral-500 group-hover:text-[#EC4899] dark:group-hover:text-magenta-400 transition-colors" />
+            <FileText className="w-5 h-5 text-gray-400 dark:text-neutral-500 group-hover:text-[#D37E91] dark:group-hover:text-magenta-400 transition-colors" />
           </div>
           <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.total}</div>
           <div className="text-xs text-gray-500 dark:text-neutral-500 mt-1">Active assessments</div>
@@ -249,7 +249,7 @@ export default function RiskAssessmentsPage() {
               return (
                 <div
                   key={assessment.id}
-                  className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-xl p-3 sm:p-4 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)] hover:bg-gray-50 dark:hover:bg-neutral-800/70 transition-colors cursor-pointer"
+                  className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-xl p-3 sm:p-4 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(211,126,145,0.2)] hover:bg-gray-50 dark:hover:bg-neutral-800/70 transition-colors cursor-pointer"
                   onClick={() => router.push(`/dashboard/risk-assessments/view/${assessment.id}`)}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
@@ -298,7 +298,7 @@ export default function RiskAssessmentsPage() {
                             : '/dashboard/risk-assessments/general-template';
                           router.push(`${templatePath}?edit=${assessment.id}`);
                         }}
-                        className="px-2 sm:px-3 py-2 bg-[#EC4899]/20 hover:bg-[#EC4899]/30 border border-[#EC4899]/40 rounded-lg text-[#EC4899] flex items-center gap-1 sm:gap-2 transition-colors text-sm"
+                        className="px-2 sm:px-3 py-2 bg-[#D37E91]/20 hover:bg-[#D37E91]/30 border border-[#D37E91]/40 rounded-lg text-[#D37E91] flex items-center gap-1 sm:gap-2 transition-colors text-sm"
                         title="Edit RA"
                       >
                         <Edit size={16} />

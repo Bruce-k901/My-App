@@ -14,11 +14,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get customer record
+    // Get customer record from planly
     const { data: customer } = await supabase
-      .from('order_book_customers')
-      .select('id, company_id')
+      .from('planly_customers')
+      .select('id, site_id')
       .eq('email', user.email?.toLowerCase() || '')
+      .eq('is_active', true)
       .maybeSingle();
 
     if (!customer) {
@@ -27,10 +28,7 @@ export async function GET(request: NextRequest) {
 
     const { data: ratings, error: ratingsError } = await supabase
       .from('order_book_product_ratings')
-      .select(`
-        *,
-        product:order_book_products(id, name, image_url)
-      `)
+      .select('*')
       .eq('customer_id', customer.id)
       .order('created_at', { ascending: false });
 
@@ -42,9 +40,43 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Resolve product names from planly_products → ingredients_library
+    const productIds = [...new Set((ratings || []).map((r: any) => r.product_id))];
+    let productNameMap = new Map<string, string>();
+
+    if (productIds.length > 0) {
+      const { data: planlyProducts } = await supabase
+        .from('planly_products')
+        .select('id, stockly_product_id')
+        .in('id', productIds);
+
+      const stocklyIds = (planlyProducts || []).map(p => p.stockly_product_id).filter(Boolean);
+      if (stocklyIds.length > 0) {
+        const { data: ingredients } = await supabase
+          .from('ingredients_library')
+          .select('id, ingredient_name')
+          .in('id', stocklyIds);
+
+        const ingMap = new Map((ingredients || []).map(i => [i.id, i.ingredient_name]));
+        (planlyProducts || []).forEach(p => {
+          const name = ingMap.get(p.stockly_product_id);
+          if (name) productNameMap.set(p.id, name);
+        });
+      }
+    }
+
+    // Attach product info to ratings
+    const ratingsWithProducts = (ratings || []).map((r: any) => ({
+      ...r,
+      product: {
+        id: r.product_id,
+        name: productNameMap.get(r.product_id) || 'Unknown Product',
+      },
+    }));
+
     return NextResponse.json({
       success: true,
-      data: ratings || [],
+      data: ratingsWithProducts,
     });
   } catch (error: any) {
     console.error('Error in GET /api/customer/ratings:', error);
@@ -68,16 +100,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get customer record
+    // Get customer record from planly
     const { data: customer } = await supabase
-      .from('order_book_customers')
-      .select('id, company_id')
+      .from('planly_customers')
+      .select('id, site_id')
       .eq('email', user.email?.toLowerCase() || '')
+      .eq('is_active', true)
       .maybeSingle();
 
     if (!customer) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
+
+    // Get company_id from site
+    const { data: site } = await supabase
+      .from('sites')
+      .select('company_id')
+      .eq('id', customer.site_id)
+      .single();
 
     const body = await request.json();
     const {
@@ -135,7 +175,7 @@ export async function POST(request: NextRequest) {
       const { data: created, error: createError } = await supabase
         .from('order_book_product_ratings')
         .insert({
-          company_id: customer.company_id,
+          company_id: site?.company_id,
           customer_id: customer.id,
           product_id,
           rating,

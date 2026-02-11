@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Calendar, Download, FileText, FileJson, Archive, Loader2, AlertCircle, CheckCircle2, Building2, ChevronDown, ChevronUp } from 'lucide-react'
+import { Calendar, Download, FileText, FileJson, Archive, Loader2, AlertCircle, CheckCircle2, Building2, ChevronDown, ChevronUp, ShieldCheck } from '@/components/ui/icons'
 import { useAppContext } from '@/context/AppContext'
 import { Button } from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
@@ -47,6 +47,7 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
   const [summaryLoading, setSummaryLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [reportGeneratorExpanded, setReportGeneratorExpanded] = useState(false)
+  const [fullPackLoading, setFullPackLoading] = useState(false)
 
   // Fetch sites list - wait for context to load
   useEffect(() => {
@@ -54,7 +55,7 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
       console.log('Context still loading, waiting...')
       return
     }
-    
+
     if (companyId) {
       console.log('Context loaded, fetching sites for companyId:', companyId)
       fetchSites()
@@ -68,7 +69,7 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
     const today = new Date()
     const thirtyDaysAgo = new Date(today)
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-    
+
     setEndDate(today.toISOString().split('T')[0])
     setStartDate(thirtyDaysAgo.toISOString().split('T')[0])
   }, [])
@@ -92,7 +93,7 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
       console.warn('fetchSites: No companyId available')
       return
     }
-    
+
     setSitesLoading(true)
     try {
       // Fetch sites user has access to via user_site_access or company_id
@@ -101,7 +102,7 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
         .select('id, name, address_line1, address_line2, city, postcode')
         .eq('company_id', companyId)
         .order('name')
-      
+
       if (sitesError) {
         const errorDetails = {
           message: sitesError.message,
@@ -112,9 +113,9 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
         console.error('Supabase error fetching sites:', JSON.stringify(errorDetails, null, 2))
         throw new Error(sitesError.message || 'Failed to fetch sites')
       }
-      
+
       setSites(sitesData || [])
-      
+
       // If no site selected and we have sites, select the first one
       if (!selectedSiteId && sitesData && sitesData.length > 0) {
         setSelectedSiteId(sitesData[0].id)
@@ -139,16 +140,16 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
       console.warn('loadSummary: Missing required params', { selectedSiteId, startDate, endDate })
       return
     }
-    
+
     setSummaryLoading(true)
     setError(null)
-    
+
     try {
       const url = `/api/eho/summary?site_id=${selectedSiteId}&start_date=${startDate}&end_date=${endDate}`
       console.log('Loading summary from:', url)
-      
+
       const response = await fetch(url)
-      
+
       if (!response.ok) {
         let errorMessage = 'Failed to load summary'
         try {
@@ -162,7 +163,7 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
         }
         throw new Error(errorMessage)
       }
-      
+
       const result = await response.json()
       console.log('Summary loaded successfully:', result)
       setSummary(result.data || [])
@@ -195,7 +196,7 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
     const start = new Date(startDate)
     const end = new Date(endDate)
     const daysDiff = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
-    
+
     if (daysDiff > 180) {
       toast.error('Date range cannot exceed 180 days (6 months)')
       return
@@ -211,6 +212,7 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
         start_date: startDate,
         end_date: endDate,
         format: exportFormat,
+        full_report: 'true',
         include_missed: includeMissedTasks.toString()
       })
 
@@ -221,7 +223,7 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
       // Call appropriate endpoint based on format
       let endpoint = '/api/eho/export'
       let method = 'POST'
-      
+
       if (exportFormat === 'json') {
         endpoint = '/api/eho/export/json'
         method = 'POST'
@@ -258,10 +260,13 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
             // Auto-trigger print dialog after a short delay
             setTimeout(() => {
               newWindow.print()
+              // Revoke after print dialog is triggered
+              window.URL.revokeObjectURL(url)
             }, 500)
           }
+        } else {
+          window.URL.revokeObjectURL(url)
         }
-        window.URL.revokeObjectURL(url)
       } else if (exportFormat === 'json') {
         // JSON download
         const blob = await response.blob()
@@ -283,7 +288,7 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
       }
 
       toast.success('Report generated successfully!')
-      
+
       if (onReportGenerated) {
         const filename = `eho-report-${startDate}-to-${endDate}.${exportFormat === 'json' ? 'json' : exportFormat === 'zip' ? 'zip' : 'pdf'}`
         onReportGenerated(filename)
@@ -297,6 +302,63 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
     }
   }
 
+  async function generateFullPack() {
+    if (!selectedSiteId) {
+      toast.error('Please select a site')
+      return
+    }
+
+    // Default to last 90 days if no dates set
+    const end = endDate || new Date().toISOString().split('T')[0]
+    const start = startDate || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+
+    setFullPackLoading(true)
+    setError(null)
+
+    try {
+      const params = new URLSearchParams({
+        site_id: selectedSiteId,
+        start_date: start,
+        end_date: end,
+        format: 'pdf',
+        full_report: 'true',
+      })
+
+      const response = await fetch(`/api/eho/export?${params.toString()}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        throw new Error(errorData.error || 'Failed to generate EHO pack')
+      }
+
+      const html = await response.text()
+      const blob = new Blob([html], { type: 'text/html' })
+      const url = window.URL.createObjectURL(blob)
+      const newWindow = window.open(url, '_blank')
+      if (newWindow) {
+        newWindow.onload = () => {
+          setTimeout(() => {
+            newWindow.print()
+            window.URL.revokeObjectURL(url)
+          }, 1000)
+        }
+      } else {
+        window.URL.revokeObjectURL(url)
+      }
+
+      toast.success('Full EHO Pack generated successfully!')
+    } catch (err: any) {
+      console.error('Error generating full EHO pack:', err)
+      setError(err.message)
+      toast.error(err.message || 'Failed to generate EHO pack')
+    } finally {
+      setFullPackLoading(false)
+    }
+  }
+
   const templateCategories = [
     { value: 'food_safety', label: 'Food Safety' },
     { value: 'h_and_s', label: 'Health & Safety' },
@@ -307,8 +369,8 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
 
   const totalTasks = summary.reduce((sum, s) => sum + s.total_tasks, 0)
   const totalCompleted = summary.reduce((sum, s) => sum + s.completed_tasks, 0)
-  const overallCompletionRate = totalTasks > 0 
-    ? Math.round((totalCompleted / totalTasks) * 100) 
+  const overallCompletionRate = totalTasks > 0
+    ? Math.round((totalCompleted / totalTasks) * 100)
     : 0
 
   // Show loading state while context is loading
@@ -316,8 +378,8 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
     return (
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 text-pink-400 animate-spin" />
-          <span className="ml-3 text-white/60">Loading...</span>
+          <Loader2 className="w-8 h-8 text-[#D37E91] dark:text-[#D37E91] animate-spin" />
+          <span className="ml-3 text-gray-500 dark:text-white/60">Loading...</span>
         </div>
       </div>
     )
@@ -327,14 +389,14 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">EHO Readiness Pack</h1>
-        <p className="text-neutral-400">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">EHO Readiness Pack</h1>
+        <p className="text-gray-500 dark:text-neutral-400">
           Analyze your compliance readiness and generate comprehensive reports for Environmental Health Officer inspections
         </p>
       </div>
 
       {/* Site Selector - Always Visible */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+      <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
         <Select
           label="Site"
           value={selectedSiteId}
@@ -359,53 +421,96 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
         <EHOReadinessDashboard siteId={selectedSiteId} />
       )}
 
+      {/* Full EHO Pack Button */}
+      {selectedSiteId && (
+        <div className="bg-gradient-to-r from-[#D37E91]/10 to-purple-50 dark:from-[#D37E91]/15 dark:to-purple-500/10 border border-[#D37E91]/30 dark:border-[#D37E91]/20 rounded-xl p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-lg bg-[#D37E91]/10 dark:bg-[#D37E91]/25 flex items-center justify-center flex-shrink-0">
+                <ShieldCheck className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Full EHO Compliance Pack</h2>
+                <p className="text-sm text-gray-600 dark:text-white/60 mt-1">
+                  Generate a comprehensive A-Z compliance report covering all 14 sections — temperature logs, cleaning records,
+                  training certificates, incidents, pest control, COSHH, equipment, documentation, and more.
+                </p>
+                <p className="text-xs text-gray-400 dark:text-white/40 mt-2">
+                  {startDate && endDate
+                    ? `Report period: ${startDate} to ${endDate}`
+                    : 'Defaults to the last 90 days if no dates are set below'
+                  }
+                </p>
+              </div>
+            </div>
+            <Button
+              onClick={generateFullPack}
+              disabled={fullPackLoading}
+              className="flex items-center gap-2 whitespace-nowrap flex-shrink-0"
+            >
+              {fullPackLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" />
+                  Generate Full Pack
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Report Generator - Collapsible */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
+      <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
         <button
           onClick={() => setReportGeneratorExpanded(!reportGeneratorExpanded)}
-          className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/[0.05] transition-colors"
+          className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
         >
           <div>
-            <h2 className="text-lg font-semibold text-white">Generate Report</h2>
-            <p className="text-sm text-white/60">Export compliance data as PDF, JSON, or ZIP</p>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Generate Report</h2>
+            <p className="text-sm text-gray-500 dark:text-white/60">Export compliance data as PDF, JSON, or ZIP</p>
           </div>
           {reportGeneratorExpanded ? (
-            <ChevronUp className="w-5 h-5 text-white/60" />
+            <ChevronUp className="w-5 h-5 text-gray-400 dark:text-white/60" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-white/60" />
+            <ChevronDown className="w-5 h-5 text-gray-400 dark:text-white/60" />
           )}
         </button>
 
         {reportGeneratorExpanded && (
-          <div className="px-6 pb-6 pt-2 border-t border-white/[0.06] space-y-6">
+          <div className="px-6 pb-6 pt-2 border-t border-gray-200 dark:border-white/[0.06] space-y-6">
             {/* Date Range */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
                   Start Date
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40" />
                   <input
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
+                    className="w-full pl-10 pr-4 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91] dark:focus:border-[#D37E91]/50"
                     max={endDate}
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
                   End Date
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40" />
                   <input
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
+                    className="w-full pl-10 pr-4 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91] dark:focus:border-[#D37E91]/50"
                     min={startDate}
                     max={new Date().toISOString().split('T')[0]}
                   />
@@ -415,14 +520,14 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
 
             {/* Template Categories */}
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
                 Template Categories (optional - leave empty for all)
               </label>
               <div className="flex flex-wrap gap-2">
                 {templateCategories.map((cat) => (
                   <label
                     key={cat.value}
-                    className="flex items-center gap-2 px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg cursor-pointer hover:bg-white/[0.08] transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors"
                   >
                     <input
                       type="checkbox"
@@ -434,9 +539,9 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
                           setSelectedCategories(selectedCategories.filter(c => c !== cat.value))
                         }
                       }}
-                      className="w-4 h-4 text-pink-500 rounded focus:ring-pink-500"
+                      className="w-4 h-4 text-[#D37E91] rounded focus:ring-[#D37E91]"
                     />
-                    <span className="text-sm text-white/80">{cat.label}</span>
+                    <span className="text-sm text-gray-700 dark:text-white/80">{cat.label}</span>
                   </label>
                 ))}
               </div>
@@ -449,15 +554,15 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
                   type="checkbox"
                   checked={includeMissedTasks}
                   onChange={(e) => setIncludeMissedTasks(e.target.checked)}
-                  className="w-4 h-4 text-pink-500 rounded focus:ring-pink-500"
+                  className="w-4 h-4 text-[#D37E91] rounded focus:ring-[#D37E91]"
                 />
-                <span className="text-sm text-white/80">Include missed tasks in report</span>
+                <span className="text-sm text-gray-700 dark:text-white/80">Include missed tasks in report</span>
               </label>
             </div>
 
             {/* Export Format */}
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
                 Export Format
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -465,12 +570,12 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
                   onClick={() => setExportFormat('pdf')}
                   className={`flex flex-col items-center gap-2 p-4 border rounded-lg transition-all ${
                     exportFormat === 'pdf'
-                      ? 'border-pink-500/50 bg-pink-500/10'
-                      : 'border-white/[0.1] bg-white/[0.03] hover:bg-white/[0.05]'
+                      ? 'border-[#D37E91] dark:border-[#D37E91]/50 bg-[#D37E91]/10 dark:bg-[#D37E91]/15'
+                      : 'border-gray-200 dark:border-white/[0.1] bg-white dark:bg-white/[0.03] hover:bg-gray-50 dark:hover:bg-white/[0.05]'
                   }`}
                 >
-                  <FileText className={`w-6 h-6 ${exportFormat === 'pdf' ? 'text-pink-400' : 'text-white/60'}`} />
-                  <span className={`text-sm font-medium ${exportFormat === 'pdf' ? 'text-pink-400' : 'text-white/70'}`}>
+                  <FileText className={`w-6 h-6 ${exportFormat === 'pdf' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-gray-400 dark:text-white/60'}`} />
+                  <span className={`text-sm font-medium ${exportFormat === 'pdf' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-gray-600 dark:text-white/70'}`}>
                     PDF
                   </span>
                 </button>
@@ -478,12 +583,12 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
                   onClick={() => setExportFormat('json')}
                   className={`flex flex-col items-center gap-2 p-4 border rounded-lg transition-all ${
                     exportFormat === 'json'
-                      ? 'border-pink-500/50 bg-pink-500/10'
-                      : 'border-white/[0.1] bg-white/[0.03] hover:bg-white/[0.05]'
+                      ? 'border-[#D37E91] dark:border-[#D37E91]/50 bg-[#D37E91]/10 dark:bg-[#D37E91]/15'
+                      : 'border-gray-200 dark:border-white/[0.1] bg-white dark:bg-white/[0.03] hover:bg-gray-50 dark:hover:bg-white/[0.05]'
                   }`}
                 >
-                  <FileJson className={`w-6 h-6 ${exportFormat === 'json' ? 'text-pink-400' : 'text-white/60'}`} />
-                  <span className={`text-sm font-medium ${exportFormat === 'json' ? 'text-pink-400' : 'text-white/70'}`}>
+                  <FileJson className={`w-6 h-6 ${exportFormat === 'json' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-gray-400 dark:text-white/60'}`} />
+                  <span className={`text-sm font-medium ${exportFormat === 'json' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-gray-600 dark:text-white/70'}`}>
                     JSON
                   </span>
                 </button>
@@ -491,12 +596,12 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
                   onClick={() => setExportFormat('zip')}
                   className={`flex flex-col items-center gap-2 p-4 border rounded-lg transition-all ${
                     exportFormat === 'zip'
-                      ? 'border-pink-500/50 bg-pink-500/10'
-                      : 'border-white/[0.1] bg-white/[0.03] hover:bg-white/[0.05]'
+                      ? 'border-[#D37E91] dark:border-[#D37E91]/50 bg-[#D37E91]/10 dark:bg-[#D37E91]/15'
+                      : 'border-gray-200 dark:border-white/[0.1] bg-white dark:bg-white/[0.03] hover:bg-gray-50 dark:hover:bg-white/[0.05]'
                   }`}
                 >
-                  <Archive className={`w-6 h-6 ${exportFormat === 'zip' ? 'text-pink-400' : 'text-white/60'}`} />
-                  <span className={`text-sm font-medium ${exportFormat === 'zip' ? 'text-pink-400' : 'text-white/70'}`}>
+                  <Archive className={`w-6 h-6 ${exportFormat === 'zip' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-gray-400 dark:text-white/60'}`} />
+                  <span className={`text-sm font-medium ${exportFormat === 'zip' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-gray-600 dark:text-white/70'}`}>
                     ZIP
                   </span>
                 </button>
@@ -505,20 +610,20 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
 
             {/* Summary Preview */}
             {summary.length > 0 && (
-              <div className="bg-white/[0.05] border border-white/[0.1] rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-white mb-3">Quick Summary</h3>
+              <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg p-4">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Quick Summary</h3>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <div className="text-xs text-white/60 mb-1">Total Tasks</div>
-                    <div className="text-lg font-bold text-white">{totalTasks}</div>
+                    <div className="text-xs text-gray-500 dark:text-white/60 mb-1">Total Tasks</div>
+                    <div className="text-lg font-bold text-gray-900 dark:text-white">{totalTasks}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-white/60 mb-1">Completed</div>
-                    <div className="text-lg font-bold text-green-400">{totalCompleted}</div>
+                    <div className="text-xs text-gray-500 dark:text-white/60 mb-1">Completed</div>
+                    <div className="text-lg font-bold text-green-600 dark:text-green-400">{totalCompleted}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-white/60 mb-1">Rate</div>
-                    <div className="text-lg font-bold text-pink-400">{overallCompletionRate}%</div>
+                    <div className="text-xs text-gray-500 dark:text-white/60 mb-1">Rate</div>
+                    <div className="text-lg font-bold text-[#D37E91] dark:text-[#D37E91]">{overallCompletionRate}%</div>
                   </div>
                 </div>
               </div>
@@ -526,11 +631,11 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
 
             {/* Error Display */}
             {error && (
-              <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4 flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <div className="bg-red-50 dark:bg-red-500/10 border border-red-300 dark:border-red-500/50 rounded-lg p-4 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-medium text-red-400 mb-1">Error</div>
-                  <div className="text-sm text-red-300">{error}</div>
+                  <div className="font-medium text-red-700 dark:text-red-400 mb-1">Error</div>
+                  <div className="text-sm text-red-600 dark:text-red-300">{error}</div>
                 </div>
               </div>
             )}
@@ -562,4 +667,3 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
     </div>
   )
 }
-

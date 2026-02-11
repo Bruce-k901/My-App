@@ -23,7 +23,7 @@ import {
   Mail,
   MoreVertical,
   Clock
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import SmartOrderSuggestions from '@/components/stockly/SmartOrderSuggestions';
 import DeliveryScheduleInfo from '@/components/stockly/DeliveryScheduleInfo';
 

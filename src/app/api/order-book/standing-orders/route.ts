@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 /**
  * GET /api/order-book/standing-orders
@@ -9,17 +10,26 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify user is authenticated
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Check if user is a platform admin for RLS bypass
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_platform_admin, app_role')
+      .eq('auth_user_id', user.id)
+      .maybeSingle();
+    const isPlatformAdmin = !!(profile?.is_platform_admin || profile?.app_role === 'Owner');
+    const client = isPlatformAdmin ? getSupabaseAdmin() : supabase;
+
     const customerId = request.nextUrl.searchParams.get('customer_id');
     const supplierId = request.nextUrl.searchParams.get('supplier_id');
 
-    let query = supabase
+    let query = client
       .from('order_book_standing_orders')
       .select(`
         *,

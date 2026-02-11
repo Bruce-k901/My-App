@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { Pencil, Trash2, ChevronDown, ChevronRight } from '@/components/ui/icons';
 
 type Props = {
   sites: any[];

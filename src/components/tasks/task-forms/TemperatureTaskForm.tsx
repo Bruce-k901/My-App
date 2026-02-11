@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Camera, X } from 'lucide-react'
+import { Camera, X } from '@/components/ui/icons'
 import type { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 import type { TemperatureTaskData, TaskCompletionPayload, OutOfRangeAsset, Asset } from '@/types/task-completion-types'
 import { AssetTemperatureInput } from '../components/AssetTemperatureInput'

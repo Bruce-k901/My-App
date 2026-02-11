@@ -20,7 +20,7 @@ import {
   Banknote,
   Map as MapIcon,
   User,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { toast } from 'sonner';
@@ -359,7 +359,7 @@ export default function RolesAndPermissionsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-              <Shield className="w-6 h-6 text-[#EC4899]" />
+              <Shield className="w-6 h-6 text-[#D37E91]" />
               Roles & Permissions
             </h1>
             <p className="text-gray-500 dark:text-white/60">
@@ -369,7 +369,7 @@ export default function RolesAndPermissionsPage() {
           <PermissionGate permission="settings.roles">
             <Button
               onClick={handleNewRole}
-              className="bg-transparent border border-blue-600 dark:border-blue-400 text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+              className="bg-transparent border border-blue-600 dark:border-blue-400 text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Role
@@ -408,7 +408,7 @@ export default function RolesAndPermissionsPage() {
                   </Button>
                   <Button
                     onClick={handleSeedDefaultRoles}
-                    className="bg-transparent border border-blue-600 dark:border-blue-400 text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] text-sm"
+                    className="bg-transparent border border-blue-600 dark:border-blue-400 text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] text-sm"
                   >
                     <Shield className="w-4 h-4 mr-2" />
                     Seed Default Roles
@@ -436,7 +436,7 @@ export default function RolesAndPermissionsPage() {
                     onClick={() => handleSelectRole(role.id)}
                     className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                       isSelected
-                        ? 'bg-[#EC4899]/10 border-blue-200 dark:border-blue-500/50'
+                        ? 'bg-[#D37E91]/10 border-blue-200 dark:border-blue-500/50'
                         : 'bg-gray-50 dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.12]'
                     }`}
                   >
@@ -456,7 +456,7 @@ export default function RolesAndPermissionsPage() {
                         </div>
                       </div>
                       {isSelected && (
-                        <Check className="w-4 h-4 text-[#EC4899]" />
+                        <Check className="w-4 h-4 text-[#D37E91]" />
                       )}
                     </div>
                   </div>
@@ -493,7 +493,7 @@ export default function RolesAndPermissionsPage() {
                       <Button
                         onClick={handleSaveRole}
                         disabled={updateMutation.isPending || updatePermissionsMutation.isPending}
-                        className="bg-transparent border border-blue-600 dark:border-blue-400 text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+                        className="bg-transparent border border-blue-600 dark:border-blue-400 text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
                       >
                         <Save className="w-4 h-4 mr-2" />
                         Save
@@ -536,7 +536,7 @@ export default function RolesAndPermissionsPage() {
                         onChange={(e) => setRoleForm({ ...roleForm, description: e.target.value })}
                         placeholder="Describe this role's responsibilities..."
                         rows={3}
-                        className="w-full px-3 py-2 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-md text-gray-900 dark:text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+                        className="w-full px-3 py-2 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-md text-gray-900 dark:text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                       />
                     </div>
                     
@@ -609,7 +609,7 @@ export default function RolesAndPermissionsPage() {
                                       type="checkbox"
                                       checked={isEnabled}
                                       onChange={() => togglePermission(permission.id)}
-                                      className="w-4 h-4 rounded border-gray-300 dark:border-white/[0.2] bg-white dark:bg-white/[0.05] text-[#EC4899] focus:ring-[#EC4899]/50"
+                                      className="w-4 h-4 rounded border-gray-300 dark:border-white/[0.2] bg-white dark:bg-white/[0.05] text-[#D37E91] focus:ring-[#D37E91]/50"
                                     />
                                     <div className="flex-1">
                                       <div className="flex items-center gap-2">
@@ -633,7 +633,7 @@ export default function RolesAndPermissionsPage() {
                                     <select
                                       value={assignment?.scope || 'self'}
                                       onChange={(e) => updatePermissionScope(permission.id, e.target.value as PermissionScope)}
-                                      className="ml-4 px-3 py-1.5 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-md text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+                                      className="ml-4 px-3 py-1.5 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-md text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                                       onClick={(e) => e.stopPropagation()}
                                     >
                                       {SCOPE_OPTIONS.map(opt => (

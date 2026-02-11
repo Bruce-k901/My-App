@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/Button';
 import { StockCountWithDetails } from '@/lib/types/stockly';
-import { Loader2, Lock, AlertTriangle } from 'lucide-react';
+import { Loader2, Lock, AlertTriangle } from '@/components/ui/icons';
 
 interface LockModalProps {
   isOpen: boolean;

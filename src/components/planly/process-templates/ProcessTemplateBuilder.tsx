@@ -18,7 +18,7 @@ import {
   arrayMove,
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
-import { ArrowLeft, Loader2, Plus, Save, AlertTriangle, ChefHat } from 'lucide-react';
+import { ArrowLeft, Loader2, Plus, Save, AlertTriangle, ChefHat } from '@/components/ui/icons';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';

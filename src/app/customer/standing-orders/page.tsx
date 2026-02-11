@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Edit, Pause, Play, Loader2, Plus, Minus } from 'lucide-react';
+import { ArrowLeft, Edit, Pause, Play, Loader2, Plus, Minus } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import {
   getCustomerProfile,
@@ -56,7 +56,7 @@ export default function StandingOrdersPage() {
       }
 
       // Load products
-      const productsData = await getProductCatalog(customerData.supplier_id);
+      const productsData = await getProductCatalog(customerData.site_id);
       setProducts(productsData);
     } catch (error) {
       console.error('Error loading data:', error);
@@ -158,7 +158,7 @@ export default function StandingOrdersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -183,7 +183,7 @@ export default function StandingOrdersPage() {
           <Link href="/customer/order/new">
             <Button
               variant="primary"
-              className="bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] min-h-[44px]"
+              className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] min-h-[44px]"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create Standing Order
@@ -212,7 +212,7 @@ export default function StandingOrdersPage() {
               <Button
                 onClick={handleTogglePause}
                 variant="ghost"
-                className="text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] min-h-[44px]"
+                className="text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] min-h-[44px]"
                 disabled={saving}
               >
                 {standingOrder.is_paused ? (
@@ -230,7 +230,7 @@ export default function StandingOrdersPage() {
               <Button
                 onClick={() => setIsEditing(true)}
                 variant="ghost"
-                className="text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] min-h-[44px]"
+                className="text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] min-h-[44px]"
               >
                 <Edit className="w-4 h-4 mr-2" />
                 Edit
@@ -270,7 +270,7 @@ export default function StandingOrdersPage() {
                 onClick={() => toggleDeliveryDay(day.value)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium min-h-[44px] transition-all ${
                   editedDeliveryDays.includes(day.value)
-                    ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]'
+                    ? 'bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]'
                     : 'bg-white/[0.03] text-white/60 border border-white/[0.06] hover:bg-white/[0.05]'
                 }`}
               >
@@ -285,7 +285,7 @@ export default function StandingOrdersPage() {
               return (
                 <span
                   key={day}
-                  className="px-4 py-2 bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899] rounded-lg text-sm font-medium"
+                  className="px-4 py-2 bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91] rounded-lg text-sm font-medium"
                 >
                   {dayLabel}
                 </span>
@@ -321,7 +321,7 @@ export default function StandingOrdersPage() {
                             <h4 className="font-medium text-white text-sm truncate">
                               {product.name}
                             </h4>
-                            <p className="text-[#EC4899] text-xs mt-1">
+                            <p className="text-[#D37E91] text-xs mt-1">
                               {formatCurrency(product.base_price)} / {product.unit}
                             </p>
                           </div>
@@ -351,7 +351,7 @@ export default function StandingOrdersPage() {
                             type="button"
                             onClick={() => addProduct(product.id)}
                             variant="ghost"
-                            className="w-full mt-2 text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] min-h-[44px]"
+                            className="w-full mt-2 text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] min-h-[44px]"
                           >
                             <Plus className="w-4 h-4 mr-2" />
                             Add
@@ -368,7 +368,7 @@ export default function StandingOrdersPage() {
               <Button
                 onClick={handleSave}
                 variant="primary"
-                className="flex-1 bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] min-h-[44px]"
+                className="flex-1 bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] min-h-[44px]"
                 disabled={saving || editedDeliveryDays.length === 0 || editedItems.length === 0}
               >
                 {saving ? (

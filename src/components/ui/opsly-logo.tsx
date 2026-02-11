@@ -56,18 +56,35 @@ export const OpslyLogo: React.FC<OpslyLogoProps> = ({
   const height = heightMap[size];
   const width = widthMap[size];
 
-  const logoSrc = "/new_logos_opsly/opsly_new_hexstyle_logo.png";
+  // Pick the right logo: mark-only for icon variant, full logo for horizontal/stacked
+  const logoSrcDark = variant === 'icon-only'
+    ? "/new_logos_opsly/opsly-mark.svg"
+    : "/new_logos_opsly/opsly-logo-dark.svg";
+  const logoSrcLight = variant === 'icon-only'
+    ? "/new_logos_opsly/opsly-mark.svg"
+    : "/new_logos_opsly/opsly-logo-light.svg";
 
   const logoElement = (
-    <img
-      src={logoSrc}
-      alt="Opsly"
-      width={width}
-      height={height}
-      className={className}
-      loading="eager"
-      decoding="async"
-    />
+    <>
+      <img
+        src={logoSrcLight}
+        alt="Opsly"
+        width={width}
+        height={height}
+        className={`dark:hidden ${className}`}
+        loading="eager"
+        decoding="async"
+      />
+      <img
+        src={logoSrcDark}
+        alt="Opsly"
+        width={width}
+        height={height}
+        className={`hidden dark:block ${className}`}
+        loading="eager"
+        decoding="async"
+      />
+    </>
   );
 
   // If not animated, return logo directly
@@ -91,7 +108,7 @@ export const OpslyLogo: React.FC<OpslyLogoProps> = ({
           isGlowing ? 'opacity-60' : 'opacity-0'
         }`}
         style={{
-          background: 'radial-gradient(circle, rgba(236, 72, 153, 0.4) 0%, rgba(59, 130, 246, 0.4) 100%)',
+          background: 'radial-gradient(circle, rgba(211, 126, 145, 0.4) 0%, rgba(59, 130, 246, 0.4) 100%)',
           transform: 'scale(1.5)',
           left: '-50%',
           right: '-50%',
@@ -103,7 +120,7 @@ export const OpslyLogo: React.FC<OpslyLogoProps> = ({
       {/* Logo with pulse effect */}
       <div
         className={`transition-all duration-300 ${
-          isGlowing ? 'drop-shadow-[0_0_20px_rgba(236,72,153,0.6)]' : ''
+          isGlowing ? 'drop-shadow-[0_0_20px_rgba(211,126,145,0.6)]' : ''
         }`}
       >
         {logoElement}

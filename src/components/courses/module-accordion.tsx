@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronRight, FileText, Activity, ListChecks } from "lucide-react";
+import { ChevronDown, ChevronRight, FileText, Activity, ListChecks } from '@/components/ui/icons';
 
 interface ModulePageSummary {
   id: string;

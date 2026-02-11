@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui';
-import { Download, Smartphone, CheckCircle2, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { Download, Smartphone, CheckCircle2, ExternalLink, ChevronDown, ChevronUp } from '@/components/ui/icons';
 import { showInstallPrompt, isInstalled, getPWAStatus } from '@/lib/pwa';
 
 export function PWAInstallSection() {

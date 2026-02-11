@@ -11,7 +11,7 @@ import {
   CheckCircle, 
   Archive, 
   ClipboardList 
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { Database } from '@/lib/database.types';
 import AssetLogsDrawer from './AssetLogsDrawer';
 

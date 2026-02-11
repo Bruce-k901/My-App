@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { useAppContext } from '@/context/AppContext'
-import { FileText, ExternalLink, Loader2, Upload } from 'lucide-react'
+import { FileText, ExternalLink, Loader2, Upload } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import UploadGlobalDocModal from '@/components/modals/UploadGlobalDocModal'
 
@@ -222,7 +222,7 @@ export default function OnboardingDocsPage() {
           <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Onboarding docs</h1>
           <p className="text-sm text-gray-900 dark:text-white/60">This page is for managers/admins to manage company onboarding documents.</p>
         </div>
-        <Link href="/dashboard/people/onboarding" className="text-sm text-[#EC4899] hover:underline">
+        <Link href="/dashboard/people/onboarding" className="text-sm text-[#D37E91] hover:underline">
           Back to onboarding
         </Link>
       </div>
@@ -257,7 +257,7 @@ export default function OnboardingDocsPage() {
           <button
             onClick={() => void seedStarterKit()}
             disabled={seeding || !companyId}
-            className="px-4 py-2 rounded-lg text-sm bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-lg text-sm bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
             title="Generate recommended onboarding document placeholders and starter packs"
           >
             {seeding ? 'Creating…' : '✨ Create starter kit'}
@@ -270,7 +270,7 @@ export default function OnboardingDocsPage() {
             >
               Refresh
             </button>
-            <Link href="/dashboard/people/onboarding" className="text-sm text-[#EC4899] hover:underline">
+            <Link href="/dashboard/people/onboarding" className="text-sm text-[#D37E91] hover:underline">
               Back to Onboarding
             </Link>
           </div>
@@ -407,7 +407,7 @@ export default function OnboardingDocsPage() {
                       className={`px-3 py-1.5 text-sm rounded-lg flex items-center gap-1.5 transition-all ${
                         hasFile 
                           ? 'text-gray-800 dark:text-white/80 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10' 
-                          : 'text-[#EC4899] bg-transparent border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] font-medium'
+                          : 'text-[#D37E91] bg-transparent border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] font-medium'
                       }`}
                       title={hasFile ? 'Replace this document with a new version' : 'Upload your document to replace this placeholder'}
                     >

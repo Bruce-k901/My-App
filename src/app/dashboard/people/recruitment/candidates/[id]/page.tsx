@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase'
 import { 
   Loader2, ArrowLeft, Mail, Phone, MapPin, Calendar, FileText, 
   Star, Edit, Trash2, Send, ExternalLink, Download, Briefcase
-} from 'lucide-react'
+} from '@/components/ui/icons'
 import { toast } from 'sonner'
 import Select from '@/components/ui/Select'
 import SendOfferModal from '@/components/recruitment/SendOfferModal'
@@ -321,7 +321,7 @@ export default function CandidateProfilePage() {
       screening: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
       interview: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
       trial: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
-      offer: 'bg-pink-500/10 text-pink-400 border-pink-500/30',
+      offer: 'bg-[#D37E91]/15 text-[#D37E91] border-[#D37E91]/30',
       accepted: 'bg-green-500/10 text-green-400 border-green-500/30',
       rejected: 'bg-red-500/10 text-red-400 border-red-500/30',
     }
@@ -366,7 +366,7 @@ export default function CandidateProfilePage() {
         </div>
         <button
           onClick={() => window.open(`mailto:${candidate.email}`, '_blank')}
-          className="px-4 py-2 rounded-lg text-sm bg-transparent text-blue-600 dark:text-blue-400 border border-[#EC4899] hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all flex items-center gap-2"
+          className="px-4 py-2 rounded-lg text-sm bg-transparent text-blue-600 dark:text-blue-400 border border-[#D37E91] hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all flex items-center gap-2"
         >
           <Mail className="w-4 h-4" />
           Send Email
@@ -1015,7 +1015,7 @@ export default function CandidateProfilePage() {
                                               toast.error('Failed to resend offer email')
                                             }
                                           }}
-                                          className="px-2 py-1 text-xs rounded bg-pink-500/10 text-pink-400 border border-pink-500/30 hover:bg-pink-500/20 flex items-center gap-1"
+                                          className="px-2 py-1 text-xs rounded bg-[#D37E91]/15 text-[#D37E91] border border-[#D37E91]/30 hover:bg-[#D37E91]/25 flex items-center gap-1"
                                         >
                                           <Send className="w-3 h-3" />
                                           Resend
@@ -1081,7 +1081,7 @@ export default function CandidateProfilePage() {
                               screening: 'bg-yellow-500',
                               interview: 'bg-purple-500',
                               trial: 'bg-orange-500',
-                              offer: 'bg-pink-500',
+                              offer: 'bg-[#D37E91]',
                               accepted: 'bg-green-500',
                               rejected: 'bg-red-500',
                               withdrawn: 'bg-gray-500',
@@ -1197,7 +1197,7 @@ export default function CandidateProfilePage() {
                               setSelectedApplication(app)
                               setShowSendOffer(true)
                             }}
-                            className="w-full px-3 py-2 rounded-lg text-xs bg-transparent text-blue-600 dark:text-blue-400 border border-[#EC4899] hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all font-medium"
+                            className="w-full px-3 py-2 rounded-lg text-xs bg-transparent text-blue-600 dark:text-blue-400 border border-[#D37E91] hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all font-medium"
                           >
                             💼 Send Offer
                           </button>
@@ -1221,7 +1221,7 @@ export default function CandidateProfilePage() {
                               setSelectedApplication(app)
                               setShowSendOffer(true)
                             }}
-                            className="w-full px-3 py-2 rounded-lg text-xs bg-transparent text-blue-600 dark:text-blue-400 border border-[#EC4899] hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all font-medium"
+                            className="w-full px-3 py-2 rounded-lg text-xs bg-transparent text-blue-600 dark:text-blue-400 border border-[#D37E91] hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all font-medium"
                           >
                             💼 Send New Offer
                           </button>
@@ -1340,7 +1340,7 @@ export default function CandidateProfilePage() {
                                 toast.error('Failed to resend offer email')
                               }
                             }}
-                            className="w-full px-3 py-1.5 text-xs rounded-lg bg-pink-500/10 text-pink-400 border border-pink-500/30 hover:bg-pink-500/20 flex items-center justify-center gap-2"
+                            className="w-full px-3 py-1.5 text-xs rounded-lg bg-[#D37E91]/15 text-[#D37E91] border border-[#D37E91]/30 hover:bg-[#D37E91]/25 flex items-center justify-center gap-2"
                           >
                             <Mail className="w-3.5 h-3.5" />
                             Resend Offer Email
@@ -1405,7 +1405,7 @@ export default function CandidateProfilePage() {
                     }
                   }
                 }}
-                className="w-full px-3 py-2 rounded-lg text-sm bg-transparent text-blue-600 dark:text-blue-400 border border-[#EC4899] hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all flex items-center justify-center gap-2"
+                className="w-full px-3 py-2 rounded-lg text-sm bg-transparent text-blue-600 dark:text-blue-400 border border-[#D37E91] hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] transition-all flex items-center justify-center gap-2"
               >
                 <Download className="w-4 h-4" />
                 Download CV
@@ -1469,7 +1469,7 @@ export default function CandidateProfilePage() {
                   <button
                     onClick={handleSaveNotes}
                     disabled={savingNotes}
-                    className="flex-1 px-3 py-1.5 rounded text-xs bg-[#EC4899]/20 text-blue-600 dark:text-blue-400 border border-[#EC4899]/30 hover:bg-[#EC4899]/30 disabled:opacity-50"
+                    className="flex-1 px-3 py-1.5 rounded text-xs bg-[#D37E91]/20 text-blue-600 dark:text-blue-400 border border-[#D37E91]/30 hover:bg-[#D37E91]/30 disabled:opacity-50"
                   >
                     {savingNotes ? 'Saving...' : 'Save'}
                   </button>

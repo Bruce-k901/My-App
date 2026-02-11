@@ -13,7 +13,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { X, Shield, Calendar, AlertCircle, Loader2, CheckCircle, AlertTriangle, ExternalLink } from 'lucide-react'
+import { X, Shield, Calendar, AlertCircle, Loader2, CheckCircle, AlertTriangle, ExternalLink } from '@/components/ui/icons'
 import type { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 
 interface RAReviewModalProps {

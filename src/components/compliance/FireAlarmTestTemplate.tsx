@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
-import { AlertTriangle, Edit2, X } from "lucide-react";
+import { AlertTriangle, Edit2, X } from '@/components/ui/icons';
 import TimePicker from "@/components/ui/TimePicker";
 
 interface Asset {

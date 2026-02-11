@@ -5,7 +5,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Suspense } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
-import { CheckCircle2, Clock, AlertTriangle, Calendar, TrendingUp, FileText, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, Clock, AlertTriangle, Calendar, TrendingUp, FileText, ShieldCheck } from '@/components/ui/icons';
 import Link from 'next/link';
 
 interface TaskMetrics {
@@ -177,7 +177,7 @@ function TasksDashboardContent() {
         </div>
         <Link
           href="/dashboard/tasks/my-tasks"
-          className="px-4 py-2 bg-[#EC4899] hover:bg-[#EC4899]/90 text-white rounded-lg transition-colors"
+          className="px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/90 text-white rounded-lg transition-colors"
         >
           View All Tasks
         </Link>
@@ -189,7 +189,7 @@ function TasksDashboardContent() {
         <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Today's Tasks</h3>
-            <Calendar className="w-5 h-5 text-[#EC4899]" />
+            <Calendar className="w-5 h-5 text-[#D37E91]" />
           </div>
           <div className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{metrics?.totalToday || 0}</div>
           <div className="text-sm text-[rgb(var(--text-tertiary))] dark:text-white/40 mt-1">
@@ -244,7 +244,7 @@ function TasksDashboardContent() {
               href="/dashboard/todays_tasks"
               className="flex items-center gap-3 p-4 bg-theme-button dark:bg-white/[0.05] hover:bg-theme-button-hover dark:hover:bg-white/[0.08] rounded-lg transition-colors border border-theme dark:border-white/[0.06]"
             >
-              <Calendar className="w-5 h-5 text-[#EC4899]" />
+              <Calendar className="w-5 h-5 text-[#D37E91]" />
               <div>
                 <div className="font-medium text-[rgb(var(--text-primary))] dark:text-white">Today's Tasks</div>
                 <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-white/60">View today</div>
@@ -254,7 +254,7 @@ function TasksDashboardContent() {
               href="/dashboard/tasks/my-tasks"
               className="flex items-center gap-3 p-4 bg-theme-button dark:bg-white/[0.05] hover:bg-theme-button-hover dark:hover:bg-white/[0.08] rounded-lg transition-colors border border-theme dark:border-white/[0.06]"
             >
-              <CheckCircle2 className="w-5 h-5 text-[#EC4899]" />
+              <CheckCircle2 className="w-5 h-5 text-[#D37E91]" />
               <div>
                 <div className="font-medium text-[rgb(var(--text-primary))] dark:text-white">My Tasks</div>
                 <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-white/60">Assigned to me</div>
@@ -264,7 +264,7 @@ function TasksDashboardContent() {
               href="/dashboard/tasks/compliance"
               className="flex items-center gap-3 p-4 bg-theme-button dark:bg-white/[0.05] hover:bg-theme-button-hover dark:hover:bg-white/[0.08] rounded-lg transition-colors border border-theme dark:border-white/[0.06]"
             >
-              <ShieldCheck className="w-5 h-5 text-[#EC4899]" />
+              <ShieldCheck className="w-5 h-5 text-[#D37E91]" />
               <div>
                 <div className="font-medium text-[rgb(var(--text-primary))] dark:text-white">Compliance</div>
                 <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-white/60">Templates</div>
@@ -274,7 +274,7 @@ function TasksDashboardContent() {
               href="/dashboard/tasks/templates"
               className="flex items-center gap-3 p-4 bg-theme-button dark:bg-white/[0.05] hover:bg-theme-button-hover dark:hover:bg-white/[0.08] rounded-lg transition-colors border border-theme dark:border-white/[0.06]"
             >
-              <FileText className="w-5 h-5 text-[#EC4899]" />
+              <FileText className="w-5 h-5 text-[#D37E91]" />
               <div>
                 <div className="font-medium text-[rgb(var(--text-primary))] dark:text-white">Templates</div>
                 <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-white/60">Custom templates</div>
@@ -289,7 +289,7 @@ function TasksDashboardContent() {
             <h2 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white">Recent Tasks</h2>
             <Link
               href="/dashboard/tasks/my-tasks"
-              className="text-sm text-[#EC4899] hover:text-[#EC4899]/80"
+              className="text-sm text-[#D37E91] hover:text-[#D37E91]/80"
             >
               View all
             </Link>

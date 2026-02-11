@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Package, Plus, CheckCircle } from 'lucide-react';
+import { Search, Package, Plus, CheckCircle } from '@/components/ui/icons';
 import UnifiedLibrarySearch from '@/components/UnifiedLibrarySearch';
 import { findOrCreateStockItemFromLibrary, getStockItemWithLibrary } from '@/lib/stockly/stock-utils';
 import { supabase } from '@/lib/supabase';
@@ -214,7 +214,7 @@ export function StockItemSelector({
             onClick={() => setSearchMode('library')}
             className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               searchMode === 'library'
-                ? 'bg-pink-100 dark:bg-[#EC4899]/20 text-pink-700 dark:text-[#EC4899] border border-pink-300 dark:border-[#EC4899]/30'
+                ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/20 text-[#D37E91] dark:text-[#D37E91] border border-[#D37E91] dark:border-[#D37E91]/30'
                 : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-neutral-400 border border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
             }`}
           >
@@ -228,7 +228,7 @@ export function StockItemSelector({
             onClick={() => setSearchMode('stock')}
             className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               searchMode === 'stock'
-                ? 'bg-pink-100 dark:bg-[#EC4899]/20 text-pink-700 dark:text-[#EC4899] border border-pink-300 dark:border-[#EC4899]/30'
+                ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/20 text-[#D37E91] dark:text-[#D37E91] border border-[#D37E91] dark:border-[#D37E91]/30'
                 : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-neutral-400 border border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
             }`}
           >
@@ -249,7 +249,7 @@ export function StockItemSelector({
           />
           {creating && (
             <div className="text-sm text-gray-600 dark:text-neutral-400 flex items-center gap-2">
-              <div className="animate-spin h-4 w-4 border-2 border-emerald-600 dark:border-[#EC4899] border-t-transparent rounded-full" />
+              <div className="animate-spin h-4 w-4 border-2 border-emerald-600 dark:border-[#D37E91] border-t-transparent rounded-full" />
               Creating stock item from library...
             </div>
           )}
@@ -271,7 +271,7 @@ export function StockItemSelector({
               value={stockSearchTerm}
               onChange={(e) => setStockSearchTerm(e.target.value)}
               placeholder="Type to search stock items..."
-              className="w-full bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-[#EC4899] focus:border-emerald-500 dark:focus:border-[#EC4899] transition-colors"
+              className="w-full bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-[#D37E91] focus:border-emerald-500 dark:focus:border-[#D37E91] transition-colors"
               autoFocus
             />
           </div>
@@ -303,7 +303,7 @@ export function StockItemSelector({
                   key={item.id}
                   type="button"
                   onClick={() => handleStockItemSelect(item)}
-                  className="w-full text-left px-3 py-2 hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg text-sm border border-gray-200 dark:border-white/10 hover:border-emerald-300 dark:hover:border-[#EC4899]/30 transition-colors bg-white dark:bg-transparent"
+                  className="w-full text-left px-3 py-2 hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg text-sm border border-gray-200 dark:border-white/10 hover:border-emerald-300 dark:hover:border-[#D37E91]/30 transition-colors bg-white dark:bg-transparent"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
@@ -312,12 +312,12 @@ export function StockItemSelector({
                         <div className="text-xs text-gray-500 dark:text-neutral-400 mt-0.5 truncate">{item.description}</div>
                       )}
                       {item.library_type && (
-                        <div className="text-xs text-emerald-600 dark:text-[#EC4899] mt-1 font-medium">
+                        <div className="text-xs text-emerald-600 dark:text-[#D37E91] mt-1 font-medium">
                           Linked to {item.library_type.replace('_library', '').replace('_', ' ')}
                         </div>
                       )}
                     </div>
-                    <CheckCircle className="text-emerald-600 dark:text-[#EC4899] flex-shrink-0 ml-2" size={18} />
+                    <CheckCircle className="text-emerald-600 dark:text-[#D37E91] flex-shrink-0 ml-2" size={18} />
                   </div>
                 </button>
               ))}

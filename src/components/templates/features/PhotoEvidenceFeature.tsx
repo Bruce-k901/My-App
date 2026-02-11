@@ -63,7 +63,7 @@ export function PhotoEvidenceFeature({
           className="hidden"
           id="photo-upload"
         />
-        <span className="inline-block px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.12] hover:border-pink-500 dark:hover:border-white/[0.25] cursor-pointer transition-all duration-150 shadow-sm dark:shadow-[0_0_10px_rgba(236,72,153,0.15)] hover:shadow-md dark:hover:shadow-[0_0_14px_rgba(236,72,153,0.25)] font-medium">
+        <span className="inline-block px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.12] hover:border-[#D37E91] dark:hover:border-white/[0.25] cursor-pointer transition-all duration-150 shadow-sm dark:shadow-[0_0_10px_rgba(211, 126, 145,0.15)] hover:shadow-md dark:hover:shadow-[0_0_14px_rgba(211, 126, 145,0.25)] font-medium">
           Upload Photo
         </span>
       </label>

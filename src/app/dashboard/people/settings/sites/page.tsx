@@ -7,7 +7,7 @@ import SiteFormNew from '@/components/sites/SiteFormNew';
 import SiteToolbar from '@/components/sites/SiteToolbar';
 import SiteCard from '@/components/sites/SiteCard';
 import { Button } from '@/components/ui/Button';
-import { Building2, ArrowLeft, Download, Plus, Upload } from 'lucide-react';
+import { Building2, ArrowLeft, Download, Plus, Upload } from '@/components/ui/icons';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import Papa from 'papaparse';

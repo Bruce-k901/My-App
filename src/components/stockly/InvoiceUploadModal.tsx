@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Upload, X, FileText, Loader2 } from 'lucide-react';
+import { Upload, X, FileText, Loader2 } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -205,7 +205,7 @@ export function InvoiceUploadModal({ isOpen, onClose, onSuccess }: InvoiceUpload
             </label>
 
             {!file ? (
-              <div className="border-2 border-dashed border-neutral-700 rounded-lg p-8 text-center hover:border-[#EC4899]/50 transition-colors">
+              <div className="border-2 border-dashed border-neutral-700 rounded-lg p-8 text-center hover:border-[#D37E91]/50 transition-colors">
                 <input
                   type="file"
                   id="file-upload"
@@ -220,7 +220,7 @@ export function InvoiceUploadModal({ isOpen, onClose, onSuccess }: InvoiceUpload
                 >
                   <Upload className="text-slate-400" size={32} />
                   <div>
-                    <span className="text-[#EC4899] font-medium">Click to upload</span>
+                    <span className="text-[#D37E91] font-medium">Click to upload</span>
                     <span className="text-slate-400"> or drag and drop</span>
                   </div>
                   <p className="text-xs text-slate-500">
@@ -231,7 +231,7 @@ export function InvoiceUploadModal({ isOpen, onClose, onSuccess }: InvoiceUpload
             ) : (
               <div className="border border-neutral-700 rounded-lg p-4 flex items-center justify-between bg-white/[0.03]">
                 <div className="flex items-center gap-3">
-                  <FileText className="text-[#EC4899]" size={24} />
+                  <FileText className="text-[#D37E91]" size={24} />
                   <div>
                     <p className="text-sm text-white font-medium">{file.name}</p>
                     <p className="text-xs text-slate-400">

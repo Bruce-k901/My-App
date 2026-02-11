@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Calendar, Upload, FileText, Archive } from 'lucide-react'
+import { X, Calendar, Upload, FileText, Archive } from '@/components/ui/icons'
 import { supabase } from '@/lib/supabase'
 import { useAppContext } from '@/context/AppContext'
 import { Button } from '@/components/ui/Button'
@@ -209,16 +209,16 @@ export default function DocumentReviewModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[#0B0D13] border border-white/[0.06] rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-[#0B0D13] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-bold text-white">Review Document</h2>
-            <p className="text-sm text-neutral-400 mt-1">{documentName}</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Review Document</h2>
+            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-1">{documentName}</p>
           </div>
           <button
             onClick={onClose}
-            className="text-neutral-400 hover:text-white transition-colors"
+            className="text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-white transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -227,19 +227,19 @@ export default function DocumentReviewModal({
         {/* Action Selection */}
         {!action && (
           <div className="space-y-3 mb-6">
-            <p className="text-sm text-neutral-300 mb-4">
+            <p className="text-sm text-gray-600 dark:text-neutral-300 mb-4">
               How would you like to handle this document review?
             </p>
             
             <button
               onClick={() => setAction('update_expiry')}
-              className="w-full p-4 bg-white/[0.03] border border-white/[0.06] rounded-lg hover:bg-white/[0.06] transition-colors text-left"
+              className="w-full p-4 bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors text-left"
             >
               <div className="flex items-center gap-3">
-                <Calendar className="h-5 w-5 text-blue-400" />
+                <Calendar className="h-5 w-5 text-blue-500 dark:text-blue-400" />
                 <div>
-                  <div className="font-medium text-white">Update Expiry Date</div>
-                  <div className="text-sm text-neutral-400">
+                  <div className="font-medium text-gray-900 dark:text-white">Update Expiry Date</div>
+                  <div className="text-sm text-gray-500 dark:text-neutral-400">
                     Document is still relevant, just extend the expiry date
                   </div>
                 </div>
@@ -248,13 +248,13 @@ export default function DocumentReviewModal({
 
             <button
               onClick={() => setAction('upload_new_version')}
-              className="w-full p-4 bg-white/[0.03] border border-white/[0.06] rounded-lg hover:bg-white/[0.06] transition-colors text-left"
+              className="w-full p-4 bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors text-left"
             >
               <div className="flex items-center gap-3">
-                <Upload className="h-5 w-5 text-green-400" />
+                <Upload className="h-5 w-5 text-green-500 dark:text-green-400" />
                 <div>
-                  <div className="font-medium text-white">Upload New Version</div>
-                  <div className="text-sm text-neutral-400">
+                  <div className="font-medium text-gray-900 dark:text-white">Upload New Version</div>
+                  <div className="text-sm text-gray-500 dark:text-neutral-400">
                     Replace with updated document (old version will be archived)
                   </div>
                 </div>
@@ -267,25 +267,25 @@ export default function DocumentReviewModal({
         {action === 'update_expiry' && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-white mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                 New Expiry Date
               </label>
               <input
                 type="date"
                 value={newExpiryDate}
                 onChange={(e) => setNewExpiryDate(e.target.value)}
-                className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91]"
                 min={new Date().toISOString().split('T')[0]}
               />
               {currentExpiryDate && (
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
                   Current expiry: {new Date(currentExpiryDate).toLocaleDateString()}
                 </p>
               )}
             </div>
 
             {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+              <div className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg text-red-500 dark:text-red-400 text-sm">
                 {error}
               </div>
             )}
@@ -316,7 +316,7 @@ export default function DocumentReviewModal({
         {action === 'upload_new_version' && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-white mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                 Version Number
               </label>
               <input
@@ -324,20 +324,20 @@ export default function DocumentReviewModal({
                 value={newVersion}
                 onChange={(e) => setNewVersion(e.target.value)}
                 placeholder="e.g., v2, v3"
-                className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91]"
               />
               {currentVersion && (
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
                   Current version: {currentVersion}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                 New Document File
               </label>
-              <div className="border border-white/[0.06] border-dashed rounded-lg p-6 text-center">
+              <div className="border border-gray-300 dark:border-white/[0.06] border-dashed rounded-lg p-6 text-center">
                 <input
                   type="file"
                   id="new-document-file"
@@ -349,34 +349,34 @@ export default function DocumentReviewModal({
                   htmlFor="new-document-file"
                   className="cursor-pointer flex flex-col items-center gap-2"
                 >
-                  <Upload className="h-8 w-8 text-neutral-400" />
-                  <span className="text-sm text-neutral-300">
+                  <Upload className="h-8 w-8 text-gray-400 dark:text-neutral-400" />
+                  <span className="text-sm text-gray-600 dark:text-neutral-300">
                     {newFile ? newFile.name : 'Click to select file'}
                   </span>
-                  <span className="text-xs text-neutral-400">
+                  <span className="text-xs text-gray-500 dark:text-neutral-400">
                     PDF, Word, Excel, or Image (max 10MB)
                   </span>
                 </label>
               </div>
               {newFile && (
-                <div className="mt-2 flex items-center gap-2 text-sm text-green-400">
+                <div className="mt-2 flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
                   <FileText className="h-4 w-4" />
                   {newFile.name} ({(newFile.size / 1024 / 1024).toFixed(2)} MB)
                 </div>
               )}
             </div>
 
-            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+            <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-lg p-3">
               <div className="flex items-start gap-2">
-                <Archive className="h-4 w-4 text-blue-400 mt-0.5" />
-                <div className="text-xs text-blue-300">
+                <Archive className="h-4 w-4 text-blue-500 dark:text-blue-400 mt-0.5" />
+                <div className="text-xs text-blue-600 dark:text-blue-300">
                   <strong>Note:</strong> The current version will be automatically moved to the archive folder when you upload the new version.
                 </div>
               </div>
             </div>
 
             {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+              <div className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg text-red-500 dark:text-red-400 text-sm">
                 {error}
               </div>
             )}

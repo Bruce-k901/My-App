@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import UserEntityCard from "@/components/users/UserEntityCard";
 // Import directly to avoid caching issues - remove lazy loading temporarily
 import AddUserModal from "@/components/users/AddUserModal";
-import { Plus, Search, Archive, ChevronLeft, Upload, Download } from "lucide-react";
+import { Plus, Search, Archive, ChevronLeft, Upload, Download } from '@/components/ui/icons';
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
@@ -654,7 +654,7 @@ export default function UsersTab() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-slate-400">Loading users...</div>
+        <div className="text-gray-500 dark:text-slate-400">Loading users...</div>
       </div>
     );
   }
@@ -670,7 +670,7 @@ export default function UsersTab() {
             placeholder={viewArchived ? "Search archived users..." : "Search users..."}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         
@@ -770,8 +770,8 @@ export default function UsersTab() {
               }}
               className={`inline-flex items-center justify-center h-11 w-11 rounded-lg border transition-all duration-150 ease-in-out ${
                 viewArchived
-                  ? "border-[#EC4899] text-[#EC4899] bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]"
-                  : "border-orange-400 text-orange-400 bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_8px_#fb923c]"
+                  ? "border-[#D37E91] text-[#D37E91] bg-transparent hover:bg-[#D37E91]/10 dark:hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(211,126,145,0.25)]"
+                  : "border-orange-400 text-orange-400 bg-transparent hover:bg-orange-50 dark:hover:bg-white/[0.04] hover:shadow-[0_0_8px_#fb923c]"
               }`}
               aria-label={viewArchived ? "Back to Users" : "View Archived"}
             >
@@ -784,7 +784,7 @@ export default function UsersTab() {
             <Tooltip label="Add User" side="top">
               <button
                 onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-[#EC4899] text-[#EC4899] bg-transparent hover:bg-white/[0.04] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]"
+                className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-[#D37E91] text-[#D37E91] bg-transparent hover:bg-[#D37E91]/10 dark:hover:bg-white/[0.04] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(211,126,145,0.25)]"
                 aria-label="Add User"
               >
                 <Plus className="h-5 w-5" />
@@ -796,7 +796,7 @@ export default function UsersTab() {
           <Tooltip label="Download Users" side="top">
             <button
               onClick={handleDownload}
-              className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white hover:bg-white/[0.12] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)]"
+              className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-gray-300 dark:border-white/[0.12] bg-gray-50 dark:bg-white/[0.06] text-gray-600 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.12] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(211,126,145,0.25)]"
               aria-label="Download Users"
             >
               <Download className="h-5 w-5" />
@@ -809,7 +809,7 @@ export default function UsersTab() {
               <button
                 onClick={handleUploadClick}
                 disabled={uploading}
-                className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white hover:bg-white/[0.12] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(236,72,153,0.25)] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-gray-300 dark:border-white/[0.12] bg-gray-50 dark:bg-white/[0.06] text-gray-600 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.12] transition-all duration-150 ease-in-out hover:shadow-[0_0_12px_rgba(211,126,145,0.25)] disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Upload Users"
               >
                 <Upload className="h-5 w-5" />
@@ -831,7 +831,7 @@ export default function UsersTab() {
       {/* Users list */}
       <div className="space-y-4">
         {filteredUsers.length === 0 ? (
-          <div className="text-center py-12 text-slate-400">
+          <div className="text-center py-12 text-gray-500 dark:text-slate-400">
             {searchQuery 
               ? `No ${viewArchived ? 'archived ' : ''}users found matching your search.` 
               : viewArchived 

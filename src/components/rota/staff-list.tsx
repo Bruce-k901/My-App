@@ -7,7 +7,7 @@ import {
   AlertCircle, 
   CheckCircle,
   Search,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { useState, useMemo } from 'react';
 
 interface StaffListProps {
@@ -55,14 +55,14 @@ function DraggableStaffCard({
       {...attributes}
       className={`p-2 bg-neutral-800/80 rounded-lg border cursor-grab active:cursor-grabbing transition-all hover:border-neutral-500 ${
         person.is_ready ? 'border-neutral-700' : 'border-amber-500/30'
-      } ${isDragging ? 'ring-2 ring-[#EC4899]' : ''}`}
+      } ${isDragging ? 'ring-2 ring-[#D37E91]' : ''}`}
     >
       <div className="flex items-center gap-2">
         {/* Avatar */}
         {person.avatar_url ? (
           <img src={person.avatar_url} alt="" className="w-8 h-8 rounded-full flex-shrink-0" />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#EC4899] to-blue-500 flex items-center justify-center text-white text-xs font-medium flex-shrink-0">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#D37E91] to-blue-500 flex items-center justify-center text-white text-xs font-medium flex-shrink-0">
             {person.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
           </div>
         )}
@@ -169,7 +169,7 @@ export function StaffList({
             type="checkbox"
             checked={showAllStaff}
             onChange={(e) => setShowAllStaff(e.target.checked)}
-            className="rounded border-neutral-600 bg-neutral-700 text-[#EC4899]"
+            className="rounded border-neutral-600 bg-neutral-700 text-[#D37E91]"
           />
           Show all company staff
         </label>

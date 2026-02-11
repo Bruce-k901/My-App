@@ -1,6 +1,6 @@
 // Service Worker for PWA - Offline Support & Push Notifications
-const CACHE_NAME = 'checkly-v2'; // Updated to clear old favicon cache
-const RUNTIME_CACHE = 'checkly-runtime-v2';
+const CACHE_NAME = 'opsly-v3'; // Rebrand - clear old cache
+const RUNTIME_CACHE = 'opsly-runtime-v3';
 
 // Global error handler for unhandled promise rejections
 self.addEventListener('error', (event) => {
@@ -287,8 +287,8 @@ self.addEventListener('push', function(event) {
 
   const options = {
     body: data.body || data.message || 'You have a new notification',
-    icon: data.icon || '/opsly_new_hexstyle_favicon.PNG',
-    badge: data.badge || '/opsly_new_hexstyle_favicon.PNG',
+    icon: data.icon || '/android-chrome-192x192.png',
+    badge: data.badge || '/android-chrome-192x192.png',
     tag: data.tag || data.id || 'default', // Prevents duplicate notifications
     renotify: true, // Vibrate even if same tag
     requireInteraction: data.urgent || notificationType === 'urgent' || false, // Stay until dismissed if urgent
@@ -377,21 +377,170 @@ self.addEventListener('notificationclick', function(event) {
   );
 });
 
-// Background sync (for offline form submissions)
+// Background sync (for offline writes)
 self.addEventListener('sync', function(event) {
   console.log('[SW] Background sync:', event.tag);
-  
+
+  if (event.tag === 'sync-offline-writes') {
+    event.waitUntil(syncPendingWrites());
+  }
+
+  // Legacy support for old tag
   if (event.tag === 'sync-forms') {
-    event.waitUntil(
-      // Sync any pending form submissions
-      syncPendingForms()
-    );
+    event.waitUntil(syncPendingWrites());
   }
 });
 
-async function syncPendingForms() {
-  // This would sync any forms saved in IndexedDB while offline
-  // Implementation depends on your form submission logic
-  console.log('[SW] Syncing pending forms...');
+async function syncPendingWrites() {
+  console.log('[SW] Syncing pending writes...');
+
+  try {
+    // Open IndexedDB
+    const db = await openDB('opsly-offline', 1);
+
+    // Get all pending writes
+    const tx = db.transaction('pendingWrites', 'readonly');
+    const store = tx.objectStore('pendingWrites');
+    const index = store.index('by_status');
+    const pending = await index.getAll('pending');
+
+    console.log(`[SW] Found ${pending.length} pending writes to sync`);
+
+    for (const write of pending) {
+      try {
+        // Update status to syncing
+        const updateTx = db.transaction('pendingWrites', 'readwrite');
+        await updateTx.objectStore('pendingWrites').put({
+          ...write,
+          status: 'syncing'
+        });
+        await updateTx.done;
+
+        // Check if there are associated files
+        const filesTx = db.transaction('queuedFiles', 'readonly');
+        const queuedFile = await filesTx.objectStore('queuedFiles').get(write.id);
+
+        let body;
+        let headers = {};
+
+        if (queuedFile) {
+          // Build FormData if files exist
+          const formData = new FormData();
+          formData.append('file', queuedFile.blob, queuedFile.filename);
+          formData.append('data', JSON.stringify(write.payload));
+          body = formData;
+          // Don't set Content-Type header - browser will set it with boundary
+        } else {
+          // Regular JSON payload
+          body = JSON.stringify(write.payload);
+          headers = { 'Content-Type': 'application/json' };
+        }
+
+        // Attempt POST
+        const response = await fetch(write.endpoint, {
+          method: 'POST',
+          headers: headers,
+          body: body,
+          credentials: 'include' // Include cookies for auth
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        console.log(`[SW] Successfully synced: ${write.operation}`);
+
+        // Success - remove from queue
+        const deleteTx = db.transaction(['pendingWrites', 'queuedFiles'], 'readwrite');
+        await deleteTx.objectStore('pendingWrites').delete(write.id);
+
+        if (queuedFile) {
+          await deleteTx.objectStore('queuedFiles').delete(write.id);
+        }
+
+        await deleteTx.done;
+
+        // Show success notification
+        await self.registration.showNotification('Synced', {
+          body: `${write.operation.replace(/_/g, ' ')} completed`,
+          badge: '/android-chrome-192x192.png',
+          icon: '/android-chrome-192x192.png',
+          tag: `sync-${write.id}`,
+          requireInteraction: false,
+          silent: true
+        });
+
+      } catch (error) {
+        console.error(`[SW] Failed to sync ${write.operation}:`, error);
+
+        // Failed - increment retries
+        const retries = write.retries + 1;
+        const updateTx = db.transaction('pendingWrites', 'readwrite');
+
+        if (retries >= 5) {
+          // Max retries - mark as failed
+          await updateTx.objectStore('pendingWrites').put({
+            ...write,
+            status: 'failed',
+            error: error.message,
+            retries: retries
+          });
+
+          // Show error notification
+          await self.registration.showNotification('Sync Failed', {
+            body: `${write.operation.replace(/_/g, ' ')} failed after ${retries} attempts`,
+            badge: '/android-chrome-192x192.png',
+            icon: '/android-chrome-192x192.png',
+            tag: `sync-fail-${write.id}`,
+            requireInteraction: true
+          });
+        } else {
+          // Retry later - reset to pending
+          await updateTx.objectStore('pendingWrites').put({
+            ...write,
+            status: 'pending',
+            retries: retries
+          });
+        }
+
+        await updateTx.done;
+      }
+    }
+
+    console.log('[SW] Sync complete');
+  } catch (error) {
+    console.error('[SW] Sync process failed:', error);
+  }
+}
+
+// Helper function to open IndexedDB (duplicated for service worker context)
+function openDB(name, version) {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(name, version);
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+
+      // Create stores if they don't exist (same as main db.ts)
+      if (!db.objectStoreNames.contains('cachedReads')) {
+        const cachedReads = db.createObjectStore('cachedReads', { keyPath: 'key' });
+        cachedReads.createIndex('by_timestamp', 'timestamp');
+        cachedReads.createIndex('by_module', 'module');
+      }
+
+      if (!db.objectStoreNames.contains('pendingWrites')) {
+        const pendingWrites = db.createObjectStore('pendingWrites', { keyPath: 'id' });
+        pendingWrites.createIndex('by_timestamp', 'timestamp');
+        pendingWrites.createIndex('by_status', 'status');
+      }
+
+      if (!db.objectStoreNames.contains('queuedFiles')) {
+        db.createObjectStore('queuedFiles', { keyPath: 'writeId' });
+      }
+    };
+  });
 }
 

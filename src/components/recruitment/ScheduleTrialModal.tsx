@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Calendar, Clock, MapPin, Briefcase, Loader2 } from 'lucide-react'
+import { X, Calendar, Clock, MapPin, Briefcase, Loader2 } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
 import TimePicker from '@/components/ui/TimePicker'
@@ -144,7 +144,7 @@ export default function ScheduleTrialModal({ candidate, application, companyId, 
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899]"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
               />
             </div>
             <div>
@@ -169,7 +169,7 @@ export default function ScheduleTrialModal({ candidate, application, companyId, 
             <select
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#EC4899] [&>option]:bg-[#1a1d24] [&>option]:text-white"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91] [&>option]:bg-[#1a1d24] [&>option]:text-white"
             >
               <option value="2 hours">2 hours</option>
               <option value="3 hours">3 hours</option>
@@ -191,7 +191,7 @@ export default function ScheduleTrialModal({ candidate, application, companyId, 
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Office/restaurant address"
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899]"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
             />
           </div>
 
@@ -205,7 +205,7 @@ export default function ScheduleTrialModal({ candidate, application, companyId, 
               onChange={(e) => setWhatToBring(e.target.value)}
               placeholder="e.g., Work shoes, ID, uniform, etc."
               rows={2}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899] resize-none"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] resize-none"
             />
           </div>
 
@@ -219,7 +219,7 @@ export default function ScheduleTrialModal({ candidate, application, companyId, 
               onChange={(e) => setAdditionalInfo(e.target.value)}
               placeholder="e.g., Parking info, who to ask for, dress code..."
               rows={3}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4899] resize-none"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] resize-none"
             />
           </div>
 
@@ -230,7 +230,7 @@ export default function ScheduleTrialModal({ candidate, application, companyId, 
               id="send-trial-email"
               checked={sendEmail}
               onChange={(e) => setSendEmail(e.target.checked)}
-              className="w-4 h-4 rounded accent-[#EC4899]"
+              className="w-4 h-4 rounded accent-[#D37E91]"
             />
             <label htmlFor="send-trial-email" className="text-sm text-white/70 cursor-pointer">
               Send email invitation to candidate
@@ -250,7 +250,7 @@ export default function ScheduleTrialModal({ candidate, application, companyId, 
           <button
             onClick={handleSubmit}
             disabled={saving}
-            className="px-4 py-2 rounded-lg text-sm bg-[#EC4899] hover:bg-[#EC4899]/90 text-white font-medium flex items-center gap-2 disabled:opacity-50"
+            className="px-4 py-2 rounded-lg text-sm bg-[#D37E91] hover:bg-[#D37E91]/90 text-white font-medium flex items-center gap-2 disabled:opacity-50"
           >
             {saving && <Loader2 className="w-4 h-4 animate-spin" />}
             Schedule Trial Shift

@@ -109,7 +109,7 @@ export default function BusinessDetailsTab() {
           phone: selectedCompany.phone || "",
           website: selectedCompany.website || "",
           country: selectedCompany.country || "",
-          contact_email: selectedCompany.contact_email || selectedCompany.email || profileRow?.email || "",
+          contact_email: selectedCompany.contact_email || selectedCompany.email || profile?.email || "",
           address_line1: selectedCompany.address_line1 || "",
           address_line2: selectedCompany.address_line2 || "",
           city: selectedCompany.city || "",
@@ -629,15 +629,15 @@ export default function BusinessDetailsTab() {
   // Show helpful message if form is empty and user has company_id
   if (!form?.id && !form?.name && profile?.company_id && hasInitialized && !loading) {
     return (
-      <div className="rounded-xl bg-white/[0.06] border border-white/[0.1] px-4 py-3 text-sm text-slate-300">
-        <p className="font-medium mb-2">⚠️ Company Data Not Found</p>
+      <div className="rounded-xl bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] px-4 py-3 text-sm text-gray-600 dark:text-slate-300">
+        <p className="font-medium mb-2 text-gray-900 dark:text-white">Company Data Not Found</p>
         <p className="mb-2">
           Your account is linked to a company, but the company data could not be loaded.
         </p>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-gray-500 dark:text-slate-400">
           Company ID: {profile.company_id}
         </p>
-        <p className="text-xs text-slate-400 mt-2">
+        <p className="text-xs text-gray-500 dark:text-slate-400 mt-2">
           Please contact an administrator or try refreshing the page.
         </p>
       </div>
@@ -663,7 +663,7 @@ export default function BusinessDetailsTab() {
           <label className="block text-sm font-medium mb-1 capitalize">
             {field === "name" ? "Business Name" : field.replace("_", " ")}
             {requiredFields.includes(field) && (
-              <span className="text-pink-500 ml-1">*</span>
+              <span className="text-[#D37E91] ml-1">*</span>
             )}
           </label>
           {field === "industry" ? (
@@ -671,7 +671,7 @@ export default function BusinessDetailsTab() {
               name="industry"
               value={(form as any).industry || ""}
               onChange={handleChange}
-              className="w-full bg-gray-800 p-1.5 rounded-md text-sm focus:ring-1 focus:ring-pink-500"
+              className="w-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white p-1.5 rounded-md text-sm focus:ring-1 focus:ring-[#D37E91]"
             >
               <option value="">Select industry</option>
               {industryList.map((opt) => (
@@ -683,7 +683,7 @@ export default function BusinessDetailsTab() {
               name="country"
               value={(form as any).country || ""}
               onChange={handleChange}
-              className="w-full bg-gray-800 p-1.5 rounded-md text-sm focus:ring-1 focus:ring-pink-500"
+              className="w-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white p-1.5 rounded-md text-sm focus:ring-1 focus:ring-[#D37E91]"
             >
               <option value="">Select country</option>
               {countryList.map((opt) => (
@@ -697,7 +697,7 @@ export default function BusinessDetailsTab() {
               value={(form as any)[field] || ""}
               onChange={handleChange}
               placeholder={field === "name" ? "Enter business name" : `Enter ${field.replace("_", " ")}`}
-              className="bg-gray-800 p-1.5 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-pink-500"
+              className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white p-1.5 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#D37E91]"
             />
           )}
         </div>
@@ -705,7 +705,7 @@ export default function BusinessDetailsTab() {
 
       {/* Address Section */}
       <div className="col-span-full mt-4">
-        <h3 className="text-sm font-semibold text-gray-300 mb-2">Address</h3>
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Address</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <Field label="Address Line 1" name="address_line1" value={(form as any).address_line1} onChange={handleChange} />
           <Field label="Address Line 2" name="address_line2" value={(form as any).address_line2} onChange={handleChange} />
@@ -714,13 +714,13 @@ export default function BusinessDetailsTab() {
 
           {/* Contact Email under City (left column) */}
           <div className="flex flex-col">
-            <label className="block text-sm font-medium mb-1">Contact Email <span className="text-pink-500">*</span></label>
+            <label className="block text-sm font-medium mb-1">Contact Email <span className="text-[#D37E91]">*</span></label>
             <input
               type="email"
               name="contact_email"
               value={(form as any).contact_email || ""}
               onChange={handleChange}
-              className="bg-gray-800 p-1.5 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-pink-500"
+              className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white p-1.5 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#D37E91]"
             />
           </div>
 
@@ -741,14 +741,14 @@ export default function BusinessDetailsTab() {
           type="button"
           onClick={handleSave}
           disabled={saving}
-          className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-md transition-all duration-200 text-sm"
+          className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-md transition-all duration-200 text-sm"
         >
           {saving ? "Saving..." : (form as any).id ? "Update Company" : "Create Company"}
         </button>
         <button
           type="button"
           onClick={() => setForm(contextCompany || {})}
-          className="px-4 py-2 bg-gray-700 rounded-md hover:bg-gray-600 text-sm"
+          className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 text-sm"
         >
           Cancel
         </button>
@@ -778,7 +778,7 @@ function Field({ label, name, value, onChange }: FieldProps) {
         name={name}
         value={value || ""}
         onChange={onChange}
-        className="bg-gray-800 p-1.5 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-pink-500"
+        className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white p-1.5 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#D37E91]"
       />
     </div>
   );

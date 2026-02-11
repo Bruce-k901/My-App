@@ -12,7 +12,7 @@ import {
   AlertTriangle,
   CheckCircle,
   DollarSign
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { useMemo, useState } from 'react';
 
 interface DayColumnProps {
@@ -77,17 +77,17 @@ export function DayColumn({
     <div 
       ref={setNodeRef}
       className={`flex flex-col border-r border-gray-200 dark:border-neutral-800 last:border-r-0 transition-colors ${
-        isOver ? 'bg-pink-50 dark:bg-[#EC4899]/10' : ''
-      } ${isToday ? 'bg-pink-50/50 dark:bg-[#EC4899]/5' : ''} ${isWeekend ? 'bg-gray-50 dark:bg-neutral-900/50' : ''}`}
+        isOver ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/10' : ''
+      } ${isToday ? 'bg-[#D37E91]/10/50 dark:bg-[#D37E91]/5' : ''} ${isWeekend ? 'bg-gray-50 dark:bg-neutral-900/50' : ''}`}
     >
       {/* Day Header - Compact */}
-      <div className={`p-1.5 border-b border-gray-200 dark:border-neutral-800 ${isToday ? 'bg-pink-50 dark:bg-[#EC4899]/10' : ''}`}>
+      <div className={`p-1.5 border-b border-gray-200 dark:border-neutral-800 ${isToday ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/10' : ''}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-1">
-            <span className={`text-xs font-medium ${isToday ? 'text-[#EC4899]' : 'text-gray-500 dark:text-white/60'}`}>
+            <span className={`text-xs font-medium ${isToday ? 'text-[#D37E91]' : 'text-gray-500 dark:text-white/60'}`}>
               {dayName}
             </span>
-            <span className={`text-lg font-bold ${isToday ? 'text-[#EC4899]' : 'text-gray-900 dark:text-white'}`}>
+            <span className={`text-lg font-bold ${isToday ? 'text-[#D37E91]' : 'text-gray-900 dark:text-white'}`}>
               {dayNum}
             </span>
           </div>

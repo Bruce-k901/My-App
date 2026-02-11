@@ -14,11 +14,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get customer record
+    // Get customer record from planly
     const { data: customer } = await supabase
-      .from('order_book_customers')
-      .select('id, company_id')
+      .from('planly_customers')
+      .select('id, site_id')
       .eq('email', user.email?.toLowerCase() || '')
+      .eq('is_active', true)
       .maybeSingle();
 
     if (!customer) {
@@ -102,16 +103,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get customer record
+    // Get customer record from planly
     const { data: customer } = await supabase
-      .from('order_book_customers')
-      .select('id, company_id')
+      .from('planly_customers')
+      .select('id, site_id')
       .eq('email', user.email?.toLowerCase() || '')
+      .eq('is_active', true)
       .maybeSingle();
 
     if (!customer) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
+
+    // Get company_id from site
+    const { data: site } = await supabase
+      .from('sites')
+      .select('company_id')
+      .eq('id', customer.site_id)
+      .single();
 
     const body = await request.json();
     const { subject, content, related_order_id, related_product_id } = body;
@@ -124,7 +133,7 @@ export async function POST(request: NextRequest) {
     const { data: thread, error: threadError } = await supabase
       .from('order_book_message_threads')
       .insert({
-        company_id: customer.company_id,
+        company_id: site?.company_id,
         customer_id: customer.id,
         subject,
         related_order_id,

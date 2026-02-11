@@ -10,7 +10,7 @@ import {
   AlertTriangle,
   CheckCircle,
   Info
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface CostPanelProps {
   rota: Rota;

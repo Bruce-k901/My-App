@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, User, Settings, LogOut } from "lucide-react";
+import { ChevronDown, User, Settings, LogOut } from "@/components/ui/icons";
 import { useAppContext } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
@@ -62,12 +62,12 @@ export function ProfileDropdown() {
         className={`
           flex items-center gap-2 h-10 px-3 rounded-lg transition-all
           ${isOpen
-            ? "bg-black/[0.05] dark:bg-white/[0.08] border border-[#EC4899]"
+            ? "bg-black/[0.05] dark:bg-white/[0.08] border border-[#D37E91]"
             : "bg-black/[0.03] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] hover:bg-black/[0.05] dark:hover:bg-white/[0.06]"
           }
         `}
       >
-        <div className="w-8 h-8 rounded-full bg-[#EC4899] flex items-center justify-center text-white font-medium text-sm">
+        <div className="w-8 h-8 rounded-full bg-[#D37E91] flex items-center justify-center text-white font-medium text-sm">
           {initials}
         </div>
         <ChevronDown className={`w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-white/60 transition-transform ${isOpen ? "rotate-180" : ""}`} />
@@ -85,7 +85,7 @@ export function ProfileDropdown() {
           {/* User Info */}
           <div className="px-4 py-3 border-b border-[rgb(var(--border))] dark:border-white/[0.06]">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#EC4899] flex items-center justify-center text-white font-medium">
+              <div className="w-10 h-10 rounded-full bg-[#D37E91] flex items-center justify-center text-white font-medium">
                 {initials}
               </div>
               <div className="flex-1 min-w-0">

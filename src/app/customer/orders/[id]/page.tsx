@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, FileText, Loader2, Download } from 'lucide-react';
+import { ArrowLeft, Calendar, FileText, Loader2, Download } from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import {
   getCustomerProfile,
@@ -53,7 +53,7 @@ export default function OrderDetailPage() {
       }
 
       // Fetch order items directly from the database for this specific order
-      const itemsResponse = await fetch(`/api/order-book/orders/${orderId}/items`);
+      const itemsResponse = await fetch(`/api/customer/orders/${orderId}/items`);
       if (itemsResponse.ok) {
         const itemsData = await itemsResponse.json();
         foundOrder.items = itemsData.data || [];
@@ -66,7 +66,7 @@ export default function OrderDetailPage() {
       setOrder(foundOrder);
 
       // Load products
-      const productsData = await getProductCatalog(customerData.supplier_id);
+      const productsData = await getProductCatalog(customerData.site_id);
       const sorted = productsData.sort((a, b) => {
         if (a.category !== b.category) {
           return (a.category || 'Other').localeCompare(b.category || 'Other');
@@ -97,7 +97,7 @@ export default function OrderDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-[#EC4899] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
       </div>
     );
   }
@@ -108,7 +108,7 @@ export default function OrderDetailPage() {
         <p className="text-white/60">Order not found</p>
         <Link
           href="/customer/orders"
-          className="text-[#EC4899] hover:text-[#EC4899]/80 text-sm mt-4 inline-block"
+          className="text-[#D37E91] hover:text-[#D37E91]/80 text-sm mt-4 inline-block"
         >
           ← Back to Orders
         </Link>
@@ -259,7 +259,7 @@ export default function OrderDetailPage() {
         </div>
         <div className="flex items-center justify-between pt-4 border-t border-white/[0.06]">
           <span className="text-lg font-semibold text-white">Total</span>
-          <span className="text-2xl font-bold text-[#EC4899]">{formatCurrency(order.total)}</span>
+          <span className="text-2xl font-bold text-[#D37E91]">{formatCurrency(order.total)}</span>
         </div>
       </div>
 
@@ -267,7 +267,7 @@ export default function OrderDetailPage() {
       {order.status === 'delivered' && (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-[#EC4899]" />
+            <FileText className="w-5 h-5 text-[#D37E91]" />
             Invoice
           </h2>
           <p className="text-white/60 text-sm mb-4">
@@ -275,7 +275,7 @@ export default function OrderDetailPage() {
           </p>
           <Button
             variant="ghost"
-            className="bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] min-h-[44px]"
+            className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] min-h-[44px]"
             disabled
           >
             <Download className="w-4 h-4 mr-2" />

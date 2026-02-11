@@ -22,13 +22,13 @@ export default function Error({
         <div className="flex gap-4">
           <Button
             onClick={reset}
-            className="bg-[#EC4899] hover:bg-[#EC4899]/80 text-white"
+            className="bg-[#D37E91] hover:bg-[#D37E91]/80 text-white"
           >
             Try again
           </Button>
           <Button
             onClick={() => window.location.href = '/admin/login'}
-            className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+            className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
           >
             Go to Login
           </Button>

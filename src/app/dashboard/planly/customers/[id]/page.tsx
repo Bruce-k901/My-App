@@ -2,7 +2,7 @@
 
 import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2 } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { useAppContext } from '@/context/AppContext';
 import { CustomerForm } from '@/components/planly/customers/CustomerForm';

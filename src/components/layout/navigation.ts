@@ -20,7 +20,7 @@ export interface MenuSection {
 export const SIDEBAR_MENUS = {
   editTasks: [
     { id: 'my-tasks', label: 'My Tasks', path: '/dashboard/tasks/my-tasks' },
-    { id: 'templates', label: 'Templates', path: '/dashboard/tasks/templates' },
+    { id: 'templates', label: 'Custom Templates', path: '/dashboard/tasks/templates' },
     { id: 'compliance', label: 'Compliance Tasks', path: '/dashboard/tasks/compliance' }
   ],
   todayChecks: [
@@ -36,10 +36,10 @@ export const BURGER_MENU_SECTIONS: MenuSection[] = [
     id: 'organization',
     label: 'ORGANIZATION',
     items: [
+      { id: 'business-setup', label: 'Getting Started', path: '/dashboard/business', icon: 'Rocket' },
       { id: 'sites', label: 'Sites', path: '/dashboard/sites', icon: 'MapPin' },
       { id: 'users', label: 'Users & Roles', path: '/dashboard/users', icon: 'Users' },
       { id: 'companies', label: 'Companies & Brands', path: '/settings/companies', icon: 'Building2' },
-      { id: 'business-setup', label: 'Business Setup', path: '/dashboard/business', icon: 'Target' },
       { id: 'documents', label: 'Documents', path: '/dashboard/documents', icon: 'FileText' },
     ]
   },
@@ -49,6 +49,7 @@ export const BURGER_MENU_SECTIONS: MenuSection[] = [
     items: [
       { id: 'reports', label: 'Reports', path: '/dashboard/reports', icon: 'BarChart3' },
       { id: 'eho-readiness', label: 'EHO Readiness', path: '/dashboard/eho-report', icon: 'ShieldCheck' },
+      { id: 'my-tickets', label: 'My Tickets', path: '/dashboard/support/my-tickets', icon: 'LifeBuoy' },
       { id: 'archive', label: 'Archive Center', path: '/dashboard/archive', icon: 'Archive' },
     ]
   },
@@ -97,7 +98,7 @@ export const getMenuItemsByRole = (role: 'admin' | 'manager' | 'team'): MenuSect
       })
   }
 
-  // Team role: Workspace (Reports, EHO Readiness, Archive Center), Account
+  // Team role: Workspace (Reports, EHO Readiness, My Tickets, Archive Center), Account
   return allSections
     .filter(section => ['workspace', 'account'].includes(section.id))
     .map(section => {
@@ -105,7 +106,7 @@ export const getMenuItemsByRole = (role: 'admin' | 'manager' | 'team'): MenuSect
         return {
           ...section,
           items: section.items.filter(item =>
-            ['reports', 'eho-readiness', 'archive'].includes(item.id)
+            ['reports', 'eho-readiness', 'my-tickets', 'archive'].includes(item.id)
           )
         }
       }
@@ -116,21 +117,3 @@ export const getMenuItemsByRole = (role: 'admin' | 'manager' | 'team'): MenuSect
 // Tab types
 export type ActiveTab = 'edit-tasks' | 'today-checks'
 
-// Color palette
-export const COLORS = {
-  background: {
-    dark: '#09090B',
-    light: '#141419',
-    hover: '#1A1A20'
-  },
-  border: '#2A2A2F',
-  text: {
-    primary: '#FFFFFF',
-    secondary: '#A3A3A3',
-    tertiary: '#717171'
-  },
-  accent: '#FF006E',
-  success: '#10B981',
-  warning: '#F59E0B',
-  error: '#FF4040'
-}

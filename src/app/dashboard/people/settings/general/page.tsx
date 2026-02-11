@@ -8,7 +8,7 @@ import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import { toast } from 'sonner';
 import TimePicker from '@/components/ui/TimePicker';
-import { Settings, Save, ArrowLeft, Building2, Clock, DollarSign, Calendar, Download, Plus, Trash2 } from 'lucide-react';
+import { Settings, Save, ArrowLeft, Building2, Clock, DollarSign, Calendar, Download, Plus, Trash2 } from '@/components/ui/icons';
 import Link from 'next/link';
 import { GeneralSettings, DEFAULT_GENERAL_SETTINGS, BusinessHours, DayHours } from '@/types/general-settings';
 import { useCompanyClosures, useCreateCompanyClosure, useDeleteCompanyClosure } from '@/hooks/use-company-closures';
@@ -153,7 +153,7 @@ export default function GeneralSettingsPage() {
             Back to Settings
           </Link>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-            <Settings className="w-6 h-6 text-[#EC4899]" />
+            <Settings className="w-6 h-6 text-[#D37E91]" />
             General Settings
           </h1>
           <p className="text-gray-500 dark:text-white/60">
@@ -166,7 +166,7 @@ export default function GeneralSettingsPage() {
             disabled={loadingCompany || !companyId}
             loading={loadingCompany}
             variant="outline"
-            className="border-blue-600 dark:border-blue-400 text-[#EC4899] hover:bg-blue-50 dark:hover:bg-blue-500/10"
+            className="border-blue-600 dark:border-blue-400 text-[#D37E91] hover:bg-blue-50 dark:hover:bg-blue-500/10"
           >
             <Download className="w-4 h-4 mr-2" />
             Import from Business Details
@@ -186,7 +186,7 @@ export default function GeneralSettingsPage() {
       {/* Company Info Section */}
       <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-          <Building2 className="w-5 h-5 text-[#EC4899]" />
+          <Building2 className="w-5 h-5 text-[#D37E91]" />
           Company Information
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -269,7 +269,7 @@ export default function GeneralSettingsPage() {
       {/* Time & Locale Section */}
       <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-          <Clock className="w-5 h-5 text-[#EC4899]" />
+          <Clock className="w-5 h-5 text-[#D37E91]" />
           Time & Locale
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -322,7 +322,7 @@ export default function GeneralSettingsPage() {
       {/* Working Hours Section */}
       <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-          <Clock className="w-5 h-5 text-[#EC4899]" />
+          <Clock className="w-5 h-5 text-[#D37E91]" />
           Working Hours
         </h2>
         <div className="space-y-4">
@@ -386,7 +386,7 @@ export default function GeneralSettingsPage() {
       {/* Pay Periods Section */}
       <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-          <DollarSign className="w-5 h-5 text-[#EC4899]" />
+          <DollarSign className="w-5 h-5 text-[#D37E91]" />
           Pay Periods
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -435,7 +435,7 @@ export default function GeneralSettingsPage() {
       {/* Currency Section */}
       <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-          <DollarSign className="w-5 h-5 text-[#EC4899]" />
+          <DollarSign className="w-5 h-5 text-[#D37E91]" />
           Currency
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -488,7 +488,7 @@ export default function GeneralSettingsPage() {
       {/* Fiscal Year Section */}
       <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-[#EC4899]" />
+          <Calendar className="w-5 h-5 text-[#D37E91]" />
           Fiscal Year
         </h2>
         <div>
@@ -520,7 +520,7 @@ export default function GeneralSettingsPage() {
       {/* Company-Wide Planned Closures Section */}
       <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-[#EC4899]" />
+          <Calendar className="w-5 h-5 text-[#D37E91]" />
           Company-Wide Planned Closures
         </h2>
         <p className="text-sm text-gray-500 dark:text-white/60 mb-4">
@@ -596,7 +596,7 @@ export default function GeneralSettingsPage() {
             disabled={!newClosure.start || !newClosure.end || createClosure.isPending}
             loading={createClosure.isPending}
             variant="outline"
-            className="border-blue-600 dark:border-blue-400 text-[#EC4899] hover:bg-blue-50 dark:hover:bg-blue-500/10"
+            className="border-blue-600 dark:border-blue-400 text-[#D37E91] hover:bg-blue-50 dark:hover:bg-blue-500/10"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Closure

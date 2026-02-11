@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Check } from 'lucide-react';
+import { Check } from '@/components/ui/icons';
 import { WidgetCard, CountBadge, MiniItem } from '../WidgetCard';
 import { supabase } from '@/lib/supabase';
 
@@ -33,16 +33,10 @@ export default function LowStockWidget({ siteId, companyId }: LowStockWidgetProp
 
     async function fetchLowStock() {
       try {
-        // Query stock_levels view/table for items below reorder level
+        // Query stock_levels view (public view over stockly.stock_levels)
         let query = supabase
           .from('stock_levels')
-          .select(`
-            id,
-            stock_item_id,
-            current_quantity,
-            stock_item:stock_items(id, name, unit, reorder_level)
-          `)
-          .eq('company_id', companyId);
+          .select('id, stock_item_id, quantity')
 
         if (siteId && siteId !== 'all') {
           query = query.eq('site_id', siteId);
@@ -51,26 +45,39 @@ export default function LowStockWidget({ siteId, companyId }: LowStockWidgetProp
         const { data, error } = await query;
 
         if (error) {
-          if (error.code === '42P01') {
-            console.debug('stock_levels table not available');
-            setLoading(false);
-            return;
-          }
-          throw error;
+          // Table may not exist yet (42P01) or other query error — degrade gracefully
+          setLoading(false);
+          return;
         }
 
-        // Filter items below reorder level
+        // Fetch stock item details separately (FK to view doesn't support joins)
+        const itemIds = [...new Set((data || []).map((sl: any) => sl.stock_item_id).filter(Boolean))];
+        const itemMap = new Map<string, { name: string; par_level: number }>();
+        if (itemIds.length > 0) {
+          const { data: items } = await supabase
+            .from('stock_items')
+            .select('id, name, par_level')
+            .eq('company_id', companyId)
+            .in('id', itemIds);
+          (items || []).forEach((si: any) => itemMap.set(si.id, { name: si.name, par_level: si.par_level || 0 }));
+        }
+
+        // Filter items below par level (reorder level)
         const lowItems = (data || []).filter((item: any) => {
-          const reorderLevel = item.stock_item?.reorder_level || 0;
-          return item.current_quantity < reorderLevel;
+          const stockItem = itemMap.get(item.stock_item_id);
+          const parLevel = stockItem?.par_level || 0;
+          return parLevel > 0 && item.quantity < parLevel;
         });
 
-        const formatted: LowStockItem[] = lowItems.slice(0, 3).map((item: any) => ({
-          id: item.id,
-          name: item.stock_item?.name || 'Unknown Item',
-          quantity: `${item.current_quantity || 0} ${item.stock_item?.unit || ''} left`.trim(),
-          isCritical: item.current_quantity <= 0 || item.current_quantity < (item.stock_item?.reorder_level || 0) * 0.5,
-        }));
+        const formatted: LowStockItem[] = lowItems.slice(0, 3).map((item: any) => {
+          const stockItem = itemMap.get(item.stock_item_id);
+          return {
+            id: item.id,
+            name: stockItem?.name || 'Unknown Item',
+            quantity: `${item.quantity || 0} left`,
+            isCritical: item.quantity <= 0 || item.quantity < (stockItem?.par_level || 0) * 0.5,
+          };
+        });
 
         setItems(formatted);
         setTotalCount(lowItems.length);
@@ -88,9 +95,9 @@ export default function LowStockWidget({ siteId, companyId }: LowStockWidgetProp
     return (
       <WidgetCard title="Low Stock Alerts" module="stockly" viewAllHref="/dashboard/stockly/stock-items">
         <div className="animate-pulse space-y-2">
-          <div className="h-8 bg-white/5 rounded w-24" />
-          <div className="h-3 bg-white/5 rounded" />
-          <div className="h-3 bg-white/5 rounded w-3/4" />
+          <div className="h-8 bg-black/5 dark:bg-white/5 rounded w-24" />
+          <div className="h-3 bg-black/5 dark:bg-white/5 rounded" />
+          <div className="h-3 bg-black/5 dark:bg-white/5 rounded w-3/4" />
         </div>
       </WidgetCard>
     );
@@ -119,6 +126,7 @@ export default function LowStockWidget({ siteId, companyId }: LowStockWidgetProp
             text={item.name}
             sub={item.quantity}
             status={item.isCritical ? 'urgent' : 'warning'}
+            href="/dashboard/stockly/stock-items"
           />
         ))}
       </div>

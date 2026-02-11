@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { Shield, Loader2, AlertCircle } from 'lucide-react';
+import { Shield, Loader2, AlertCircle } from '@/components/ui/icons';
 import { AdminFaviconSetter } from '@/components/admin/AdminFaviconSetter';
 
 export default function AdminLoginPage() {
@@ -63,8 +63,8 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md">
         {/* Logo/Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#EC4899]/10 mb-4">
-            <Shield className="w-8 h-8 text-[#EC4899]" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#D37E91]/10 mb-4">
+            <Shield className="w-8 h-8 text-[#D37E91]" />
           </div>
           <h1 className="text-2xl font-bold text-white">Opsly Admin</h1>
           <p className="text-white/60 mt-2">Platform Administration Portal</p>
@@ -88,7 +88,7 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/40 focus:border-[#EC4899]/40"
+              className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
               placeholder="admin@opsly.app"
             />
           </div>
@@ -102,7 +102,7 @@ export default function AdminLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/40 focus:border-[#EC4899]/40"
+              className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
               placeholder="••••••••"
             />
           </div>
@@ -110,7 +110,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] disabled:opacity-50 disabled:cursor-not-allowed font-semibold rounded-lg transition-all duration-200 ease-in-out flex items-center justify-center gap-2"
+            className="w-full py-3 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] disabled:opacity-50 disabled:cursor-not-allowed font-semibold rounded-lg transition-all duration-200 ease-in-out flex items-center justify-center gap-2"
           >
             {loading ? (
               <>

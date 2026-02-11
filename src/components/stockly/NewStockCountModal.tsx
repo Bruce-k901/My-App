@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -384,7 +384,7 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
                   onClick={() => setFormData(prev => ({ ...prev, count_type: type.value as any }))}
                   className={`p-4 rounded-lg border-2 transition-all ${
                     formData.count_type === type.value
-                      ? 'border-[#EC4899] bg-[#EC4899]/10'
+                      ? 'border-[#D37E91] bg-[#D37E91]/10'
                       : 'border-neutral-700 bg-white/[0.03] hover:border-neutral-600'
                   }`}
                 >
@@ -423,7 +423,7 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
                           type="checkbox"
                           checked={formData.categories.includes(category.id)}
                           onChange={() => toggleCategory(category.id)}
-                          className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-[#EC4899] focus:ring-[#EC4899]"
+                          className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-[#D37E91] focus:ring-[#D37E91]"
                         />
                         <span className="text-white text-sm">{category.name}</span>
                       </label>
@@ -452,7 +452,7 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
                           type="checkbox"
                           checked={formData.storage_areas.includes(area.id)}
                           onChange={() => toggleStorageArea(area.id)}
-                          className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-[#EC4899] focus:ring-[#EC4899]"
+                          className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-[#D37E91] focus:ring-[#D37E91]"
                         />
                         <span className="text-white text-sm">{area.name}</span>
                         {area.area_type && (
@@ -473,7 +473,7 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
               value={formData.notes}
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               rows={3}
-              className="w-full px-3 py-2 bg-white/[0.03] border border-neutral-800 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#EC4899]/40"
+              className="w-full px-3 py-2 bg-white/[0.03] border border-neutral-800 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
               placeholder="Optional notes about this count..."
             />
           </div>

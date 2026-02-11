@@ -14,7 +14,7 @@ import {
   Download,
   ArrowRight,
   BookOpen,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 
 interface CourseAssignment {
   id: string;
@@ -188,7 +188,7 @@ export default function MyTrainingPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91]" />
       </div>
     );
   }
@@ -237,7 +237,7 @@ export default function MyTrainingPage() {
                   </div>
                   <Link
                     href={`/training/confirm/${assignment.id}`}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#EC4899] hover:bg-[#EC4899]/80 text-white rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/80 text-white rounded-lg transition-colors"
                   >
                     Confirm & Start
                     <ArrowRight className="w-4 h-4" />
@@ -356,7 +356,7 @@ export default function MyTrainingPage() {
                       <Link
                         href={`/api/certificates/${record.id}`}
                         target="_blank"
-                        className="flex items-center gap-2 px-4 py-2 bg-[#EC4899] hover:bg-[#EC4899]/80 text-white rounded-lg transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/80 text-white rounded-lg transition-colors"
                       >
                         <Download className="w-4 h-4" />
                         Certificate

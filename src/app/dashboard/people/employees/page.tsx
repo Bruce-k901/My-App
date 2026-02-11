@@ -32,7 +32,7 @@ import {
   ChevronUp,
   GraduationCap,
   Edit,
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import type { EmergencyContact } from '@/types/teamly';
 import EmployeeSiteAssignmentsModal from '@/components/people/EmployeeSiteAssignmentsModal';
 import AddExecutiveModal from '@/components/users/AddExecutiveModal';

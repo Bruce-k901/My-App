@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { Target, Plus, Calendar, TrendingUp } from 'lucide-react';
+import { Target, Plus, Calendar, TrendingUp } from '@/components/ui/icons';
 import type { GoalView } from '@/types/teamly';
 
 export default function GoalsPage() {
@@ -85,7 +85,7 @@ export default function GoalsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91]" />
       </div>
     );
   }
@@ -100,7 +100,7 @@ export default function GoalsPage() {
         </div>
         <Link
           href="/dashboard/people/reviews/goals/new"
-          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] rounded-lg hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200 ease-in-out"
+          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out"
         >
           <Plus className="w-5 h-5" />
           New Goal
@@ -115,7 +115,7 @@ export default function GoalsPage() {
               onClick={() => setViewMode('my')}
               className={`px-4 py-2 text-sm transition-colors ${
                 viewMode === 'my' 
-                  ? 'bg-transparent border border-[#EC4899] text-[#EC4899]' 
+                  ? 'bg-transparent border border-[#D37E91] text-[#D37E91]' 
                   : 'bg-white dark:bg-white/[0.03] text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white'
               }`}
             >
@@ -125,7 +125,7 @@ export default function GoalsPage() {
               onClick={() => setViewMode('team')}
               className={`px-4 py-2 text-sm transition-colors ${
                 viewMode === 'team' 
-                  ? 'bg-transparent border border-[#EC4899] text-[#EC4899]' 
+                  ? 'bg-transparent border border-[#D37E91] text-[#D37E91]' 
                   : 'bg-white dark:bg-white/[0.03] text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white'
               }`}
             >
@@ -141,7 +141,7 @@ export default function GoalsPage() {
               onClick={() => setFilter(f)}
               className={`px-4 py-2 rounded-lg text-sm transition-colors ${
                 filter === f 
-                  ? 'bg-transparent border border-[#EC4899] text-[#EC4899]' 
+                  ? 'bg-transparent border border-[#D37E91] text-[#D37E91]' 
                   : 'bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white'
               }`}
             >
@@ -170,7 +170,7 @@ export default function GoalsPage() {
                   <div className="flex items-center gap-2 mb-1">
                     <Link
                       href={`/dashboard/people/reviews/goals/${goal.goal_id}`}
-                      className="text-gray-900 dark:text-white font-medium hover:text-[#EC4899] transition-colors"
+                      className="text-gray-900 dark:text-white font-medium hover:text-[#D37E91] transition-colors"
                     >
                       {goal.title}
                     </Link>
@@ -210,7 +210,7 @@ export default function GoalsPage() {
                   <div className="h-2 bg-white/[0.05] rounded-full overflow-hidden">
                     <div 
                       className={`h-full transition-all ${
-                        goal.progress_percentage >= 100 ? 'bg-green-500' : 'bg-[#EC4899]'
+                        goal.progress_percentage >= 100 ? 'bg-green-500' : 'bg-[#D37E91]'
                       }`}
                       style={{ width: `${Math.min(goal.progress_percentage, 100)}%` }}
                     />
@@ -228,7 +228,7 @@ export default function GoalsPage() {
                           }}
                           className={`flex-1 py-1 text-xs rounded transition-colors ${
                             goal.progress_percentage >= p 
-                              ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/30' 
+                              ? 'bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/30' 
                               : 'bg-white/[0.05] text-gray-500 dark:text-white/60 hover:bg-white/[0.1] border border-gray-200 dark:border-white/[0.06]'
                           }`}
                         >

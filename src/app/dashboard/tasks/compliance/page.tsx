@@ -3,12 +3,13 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { TaskFromTemplateModal } from "@/components/templates/TaskFromTemplateModal";
-import { Search, Clock, FileText, Calendar, Copy, CheckCircle2, Utensils, ShieldAlert, Flame, ClipboardCheck } from "lucide-react";
+import { Search, Clock, FileText, Calendar, Copy, CheckCircle2, Utensils, ShieldAlert, Flame, ClipboardCheck } from '@/components/ui/icons';
 import { TaskTemplate } from "@/types/checklist-types";
 import { useAppContext } from "@/context/AppContext";
 import { COMPLIANCE_MODULE_SLUGS, COMPLIANCE_MODULE_TEMPLATES, getAllTemplates } from "@/data/compliance-templates";
 import { enrichTemplateWithDefinition } from "@/lib/templates/enrich-template";
 import Select from "@/components/ui/Select";
+import BackToSetup from "@/components/dashboard/BackToSetup";
 
 const FREQUENCY_LABELS: Record<string, string> = {
   daily: 'Daily',
@@ -315,7 +316,7 @@ export default function CompliancePage() {
       'health_safety': 'bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-300 dark:border-red-500/20',
       'fire_safety': 'bg-orange-100 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-300 dark:border-orange-500/20',
       'cleaning': 'bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-300 dark:border-purple-500/20',
-      'compliance': 'bg-pink-100 dark:bg-pink-500/10 text-pink-700 dark:text-pink-400 border-pink-300 dark:border-pink-500/20',
+      'compliance': 'bg-[#D37E91]/10 dark:bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91] border-[#D37E91] dark:border-[#D37E91]/20',
       'maintenance': 'bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-500/20'
     };
     return colors[category] || 'bg-gray-100 dark:bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-300 dark:border-gray-500/20';
@@ -327,7 +328,7 @@ export default function CompliancePage() {
       'health_safety': 'bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-300 dark:border-red-500/20',
       'fire_safety': 'bg-orange-100 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-300 dark:border-orange-500/20',
       'cleaning': 'bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-300 dark:border-purple-500/20',
-      'compliance': 'bg-pink-100 dark:bg-pink-500/10 text-pink-700 dark:text-pink-400 border-pink-300 dark:border-pink-500/20',
+      'compliance': 'bg-[#D37E91]/10 dark:bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91] border-[#D37E91] dark:border-[#D37E91]/20',
       'maintenance': 'bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-500/20'
     };
     return colors[auditCategory] || 'bg-gray-100 dark:bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-300 dark:border-gray-500/20';
@@ -337,6 +338,7 @@ export default function CompliancePage() {
 
   return (
     <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#0f1220] text-[rgb(var(--text-primary))] dark:text-white border border-[rgb(var(--border))] dark:border-neutral-800 rounded-xl p-4 sm:p-6 lg:p-8">
+      <BackToSetup />
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">Compliance Templates</h1>
@@ -352,7 +354,7 @@ export default function CompliancePage() {
             placeholder="Search compliance templates..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-theme-button dark:bg-white/[0.06] border border-theme dark:border-white/[0.1] rounded-lg text-theme-primary dark:text-white placeholder:text-theme-tertiary dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-pink-500/40"
+            className="w-full pl-10 pr-4 py-2 bg-theme-button dark:bg-white/[0.06] border border-theme dark:border-white/[0.1] rounded-lg text-theme-primary dark:text-white placeholder:text-theme-tertiary dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
           />
         </div>
         
@@ -376,7 +378,7 @@ export default function CompliancePage() {
       {/* Loading State */}
       {loading && (
         <div className="mt-8 text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500"></div>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91]"></div>
           <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mt-2">Loading compliance templates...</p>
         </div>
       )}
@@ -396,8 +398,8 @@ export default function CompliancePage() {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 pr-2">
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="p-2 bg-pink-500/10 rounded-lg flex-shrink-0">
-                        <Icon className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+                      <div className="p-2 bg-[#D37E91]/15 rounded-lg flex-shrink-0">
+                        <Icon className="w-4 h-4 text-[#D37E91] dark:text-[#D37E91]" />
                       </div>
                       <h3 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">{template.name}</h3>
                     </div>
@@ -457,7 +459,7 @@ export default function CompliancePage() {
                     e.stopPropagation();
                     handleUseTemplate(template);
                   }}
-                  className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-pink-100 dark:bg-pink-500/20 border border-pink-300 dark:border-pink-500/40 rounded-lg text-pink-700 dark:text-pink-400 hover:bg-pink-200 dark:hover:bg-pink-500/30 transition-colors group-hover:border-pink-400 dark:group-hover:border-pink-500/60"
+                  className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-[#D37E91]/10 dark:bg-[#D37E91]/25 border border-[#D37E91] dark:border-[#D37E91]/40 rounded-lg text-[#D37E91] dark:text-[#D37E91] hover:bg-[#D37E91]/20 dark:hover:bg-[#D37E91]/35 transition-colors group-hover:border-[#D37E91] dark:group-hover:border-[#D37E91]/60"
                 >
                   <Copy className="h-4 w-4" />
                   <span className="text-sm font-medium">Use Template</span>
@@ -483,7 +485,7 @@ export default function CompliancePage() {
                 setSearchTerm('');
                 setFilterCategory('all');
               }}
-              className="text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300 text-sm mt-2"
+              className="text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] text-sm mt-2"
             >
               Clear filters
             </button>

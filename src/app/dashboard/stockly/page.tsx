@@ -23,7 +23,7 @@ import {
   Warehouse,
   ShoppingCart,
   FileText
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import Link from 'next/link';
 
 // Panel Components
@@ -355,52 +355,11 @@ export default function StocklyDashboard() {
   };
 
   const quickActions = [
-    {
-      id: 'order',
-      title: 'New Order',
-      description: 'Create purchase order',
-      icon: FileText,
-      color: 'from-emerald-500/20 to-emerald-600/20',
-      iconColor: 'text-emerald-600 dark:text-emerald-400',
-      borderColor: 'border-emerald-500/30',
-      href: '/dashboard/stockly/orders/new'
-    },
-    {
-      id: 'delivery',
-      title: 'Receive Delivery',
-      description: 'Log incoming stock',
-      icon: Truck,
-      color: 'from-blue-500/20 to-blue-600/20',
-      iconColor: 'text-blue-400',
-      borderColor: 'border-blue-500/30'
-    },
-    {
-      id: 'waste',
-      title: 'Record Waste',
-      description: 'Log wastage or loss',
-      icon: Trash2,
-      color: 'from-red-500/20 to-red-600/20',
-      iconColor: 'text-red-400',
-      borderColor: 'border-red-500/30'
-    },
-    {
-      id: 'staff',
-      title: 'Staff Purchase',
-      description: 'Sell to team member',
-      icon: User,
-      color: 'from-green-500/20 to-green-600/20',
-      iconColor: 'text-green-400',
-      borderColor: 'border-green-500/30'
-    },
-    {
-      id: 'count',
-      title: 'Quick Count',
-      description: 'Spot check items',
-      icon: ClipboardList,
-      color: 'from-purple-500/20 to-purple-600/20',
-      iconColor: 'text-purple-400',
-      borderColor: 'border-purple-500/30'
-    }
+    { id: 'order', title: 'New Order', description: 'Create purchase order', icon: FileText, href: '/dashboard/stockly/orders/new' },
+    { id: 'delivery', title: 'Receive Delivery', description: 'Log incoming stock', icon: Truck },
+    { id: 'waste', title: 'Record Waste', description: 'Log wastage or loss', icon: Trash2 },
+    { id: 'staff', title: 'Staff Purchase', description: 'Sell to team member', icon: User },
+    { id: 'count', title: 'Quick Count', description: 'Spot check items', icon: ClipboardList }
   ];
 
   const setupLinks = [
@@ -418,19 +377,19 @@ export default function StocklyDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-module-fg animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
-      <div className="max-w-5xl mx-auto p-6 space-y-6">
+    <div className="w-full min-h-screen">
+      <div className="w-full p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-              <Package className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+              <Package className="w-8 h-8 text-module-fg" />
               Stockly
             </h1>
             <p className="text-gray-600 dark:text-white/60 text-sm flex items-center gap-2 mt-1">
@@ -452,12 +411,14 @@ export default function StocklyDashboard() {
             <Component
               key={action.id}
               {...props}
-              className={`relative overflow-hidden bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-5 text-left transition-all hover:scale-[1.02] hover:shadow-lg hover:bg-gray-50 dark:hover:bg-white/[0.05] group`}
+              className="relative overflow-hidden bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-xl p-5 text-left transition-all hover:bg-module-fg/[0.08] hover:border-module-fg hover:-translate-y-px group"
             >
-              <action.icon className={`w-8 h-8 ${action.iconColor} mb-3`} />
-              <h3 className="text-gray-900 dark:text-white font-semibold">{action.title}</h3>
-              <p className="text-gray-600 dark:text-white/60 text-sm">{action.description}</p>
-              <ArrowRight className="absolute bottom-4 right-4 w-5 h-5 text-gray-400 dark:text-white/20 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
+              <div className="w-10 h-10 rounded-lg bg-module-fg/[0.10] flex items-center justify-center mb-3">
+                <action.icon className="w-5 h-5 text-module-fg" />
+              </div>
+              <h3 className="text-[rgb(var(--text-primary))] font-semibold">{action.title}</h3>
+              <p className="text-[rgb(var(--text-tertiary))] text-sm">{action.description}</p>
+              <ArrowRight className="absolute bottom-4 right-4 w-5 h-5 text-[rgb(var(--text-tertiary))] group-hover:text-module-fg transition-colors" />
             </Component>
           );
         })}
@@ -465,29 +426,29 @@ export default function StocklyDashboard() {
 
         {/* Alerts */}
         {alerts.length > 0 && (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
-          <div className="px-4 py-3 border-b border-gray-200 dark:border-white/[0.06] flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-            <span className="text-sm font-medium text-gray-900 dark:text-white">Alerts</span>
-            <span className="text-xs text-gray-500 dark:text-white/40">({alerts.length})</span>
+          <div className="bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-xl overflow-hidden">
+          <div className="px-4 py-3 border-b border-module-fg/[0.12] flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-module-fg" />
+            <span className="text-sm font-medium text-[rgb(var(--text-primary))]">Alerts</span>
+            <span className="text-xs text-[rgb(var(--text-tertiary))]">({alerts.length})</span>
           </div>
-          <div className="divide-y divide-gray-200 dark:divide-white/[0.03]">
+          <div className="divide-y divide-module-fg/[0.10]">
             {alerts.map((alert) => (
               <Link
                 key={alert.id}
                 href={alert.link || '#'}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
+                className="flex items-center gap-3 px-4 py-3 hover:bg-module-fg/[0.08] transition-colors group"
               >
                 <div className={`w-2 h-2 rounded-full ${
                   alert.severity === 'danger' ? 'bg-red-500' :
                   alert.severity === 'warning' ? 'bg-amber-500' :
-                  'bg-blue-500'
+                  'bg-module-fg'
                 }`} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-gray-900 dark:text-white text-sm font-medium">{alert.title}</p>
-                  <p className="text-gray-500 dark:text-white/40 text-xs truncate">{alert.description}</p>
+                  <p className="text-[rgb(var(--text-primary))] text-sm font-medium">{alert.title}</p>
+                  <p className="text-[rgb(var(--text-tertiary))] text-xs truncate">{alert.description}</p>
                 </div>
-                <ArrowRight className="w-4 h-4 text-gray-400 dark:text-white/20" />
+                <ArrowRight className="w-4 h-4 text-[rgb(var(--text-tertiary))] group-hover:text-module-fg transition-colors" />
               </Link>
             ))}
           </div>
@@ -498,52 +459,52 @@ export default function StocklyDashboard() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Link
           href="/dashboard/stockly/stock-items"
-          className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-white/[0.05] hover:border-emerald-500/50 dark:hover:border-emerald-500/50 transition-all cursor-pointer group"
+          className="bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-xl p-4 hover:bg-module-fg/[0.08] hover:border-module-fg/[0.18] transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-2 mb-2">
-            <Package className="w-4 h-4 text-gray-500 dark:text-white/40 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
-            <span className="text-gray-600 dark:text-white/60 text-xs">Stock Value</span>
+            <Package className="w-4 h-4 text-module-fg" />
+            <span className="text-[rgb(var(--text-tertiary))] text-xs">Stock Value</span>
           </div>
-          <p className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{formatCurrency(stats.stockValue)}</p>
+          <p className="text-xl font-bold text-module-fg">{formatCurrency(stats.stockValue)}</p>
         </Link>
-        
+
         <Link
           href="/dashboard/stockly/deliveries"
-          className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-white/[0.05] hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-all cursor-pointer group"
+          className="bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-xl p-4 hover:bg-module-fg/[0.08] hover:border-module-fg/[0.18] transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-2 mb-2">
-            <Truck className="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors" />
-            <span className="text-gray-600 dark:text-white/60 text-xs">Deliveries Today</span>
+            <Truck className="w-4 h-4 text-module-fg" />
+            <span className="text-[rgb(var(--text-tertiary))] text-xs">Deliveries Today</span>
           </div>
-          <p className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">{formatCurrency(stats.deliveriesToday)}</p>
+          <p className="text-xl font-bold text-module-fg">{formatCurrency(stats.deliveriesToday)}</p>
         </Link>
         
         <Link
           href="/dashboard/stockly/reports/wastage"
-          className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-white/[0.05] hover:border-red-500/50 dark:hover:border-red-500/50 transition-all cursor-pointer group"
+          className="bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-xl p-4 hover:bg-module-fg/[0.08] hover:border-module-fg/[0.18] transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-2 mb-2">
-            <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400 group-hover:text-red-700 dark:group-hover:text-red-300 transition-colors" />
-            <span className="text-gray-600 dark:text-white/60 text-xs">Wastage Today</span>
+            <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
+            <span className="text-[rgb(var(--text-tertiary))] text-xs">Wastage Today</span>
           </div>
-          <p className="text-xl font-bold text-red-600 dark:text-red-400 group-hover:text-red-700 dark:group-hover:text-red-300 transition-colors">
+          <p className="text-xl font-bold text-red-600 dark:text-red-400">
             {stats.wastageToday > 0 ? `-${formatCurrency(stats.wastageToday)}` : '£0'}
           </p>
         </Link>
-        
+
         <Link
           href="/dashboard/stockly/reports/gp"
-          className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-white/[0.05] hover:border-emerald-500/50 dark:hover:border-emerald-500/50 transition-all cursor-pointer group"
+          className="bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-xl p-4 hover:bg-module-fg/[0.08] hover:border-module-fg/[0.18] transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-2 mb-2">
-            <TrendingDown className={`w-4 h-4 transition-colors ${
-              stats.gpPercent && stats.gpPercent >= 70 ? 'text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300' : 'text-amber-600 dark:text-amber-400 group-hover:text-amber-700 dark:group-hover:text-amber-300'
+            <TrendingDown className={`w-4 h-4 ${
+              stats.gpPercent && stats.gpPercent >= 70 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'
             }`} />
-            <span className="text-gray-600 dark:text-white/60 text-xs">Latest GP</span>
+            <span className="text-[rgb(var(--text-tertiary))] text-xs">Latest GP</span>
           </div>
-          <p className={`text-xl font-bold transition-colors ${
-            stats.gpPercent && stats.gpPercent >= 70 ? 'text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300' : 
-            stats.gpPercent ? 'text-amber-600 dark:text-amber-400 group-hover:text-amber-700 dark:group-hover:text-amber-300' : 'text-gray-500 dark:text-white/40'
+          <p className={`text-xl font-bold ${
+            stats.gpPercent && stats.gpPercent >= 70 ? 'text-emerald-600 dark:text-emerald-400' :
+            stats.gpPercent ? 'text-amber-600 dark:text-amber-400' : 'text-[rgb(var(--text-tertiary))]'
           }`}>
             {stats.gpPercent ? `${stats.gpPercent}%` : '-'}
           </p>
@@ -551,15 +512,15 @@ export default function StocklyDashboard() {
         </div>
 
         {/* Quick Search */}
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+        <div className="bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-xl p-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-white/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-module-fg" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Quick search stock items..."
-            className="w-full pl-10 pr-4 py-3 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
+            className="w-full pl-10 pr-4 py-3 bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-lg text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] focus:outline-none focus:ring-2 focus:ring-module-fg/[0.25] focus:border-module-fg/[0.25]"
           />
           {searching && (
             <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-white/40 animate-spin" />
@@ -595,11 +556,11 @@ export default function StocklyDashboard() {
           <Link
             key={link.href}
             href={link.href}
-            className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-white/[0.02] hover:bg-gray-50 dark:hover:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg transition-colors group"
+            className="flex items-center gap-3 px-4 py-3 border border-module-fg/[0.12] hover:bg-module-fg/[0.08] hover:border-module-fg/[0.18] rounded-lg transition-colors group"
           >
-            <link.icon className="w-5 h-5 text-gray-500 dark:text-white/40 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
-            <span className="text-gray-700 dark:text-white/80 group-hover:text-gray-900 dark:group-hover:text-white text-sm font-medium">{link.name}</span>
-            <ArrowRight className="w-4 h-4 text-gray-400 dark:text-white/20 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 ml-auto transition-colors" />
+            <link.icon className="w-5 h-5 text-module-fg transition-colors" />
+            <span className="text-[rgb(var(--text-secondary))] group-hover:text-[rgb(var(--text-primary))] text-sm font-medium">{link.name}</span>
+            <ArrowRight className="w-4 h-4 text-[rgb(var(--text-tertiary))] group-hover:text-module-fg ml-auto transition-colors" />
           </Link>
         ))}
         </div>

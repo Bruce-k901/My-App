@@ -21,7 +21,7 @@ import {
   HelpCircle,
   Lightbulb,
   PenLine
-} from 'lucide-react';
+} from '@/components/ui/icons';
 import { Button } from '@/components/ui';
 import { toast } from 'sonner';
 import { 
@@ -77,7 +77,7 @@ const SECTION_MODES = {
     shortLabel: 'Sign-off',
     description: 'Both parties must acknowledge and sign',
     color: 'pink',
-    bgClass: 'bg-pink-500/10 border-pink-500/20 text-pink-400',
+    bgClass: 'bg-[#D37E91]/15 border-[#D37E91]/20 text-[#D37E91]',
   },
 } as const;
 
@@ -360,7 +360,7 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
                         ? 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-500/20'
                         : mode === 'manager_shared'
                         ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'
-                        : 'bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-500/20'
+                        : 'bg-[#D37E91]/10 dark:bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91] border-[#D37E91]/30 dark:border-[#D37E91]/20'
                     }`}>
                       <ModeIcon className="w-3 h-3" />
                       {modeConfig.shortLabel}
@@ -586,14 +586,14 @@ function QuestionRow({
 
   if (isEditing && !isLocked) {
     return (
-      <div className="bg-white/[0.03] border border-[#EC4899]/30 rounded-lg p-4 space-y-3">
+      <div className="bg-white/[0.03] border border-[#D37E91]/30 rounded-lg p-4 space-y-3">
         <div>
           <label className="text-xs text-gray-500 dark:text-white/60 mb-1 block">Question</label>
           <textarea
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
             rows={2}
-            className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#EC4899]/50 resize-none"
+            className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#D37E91]/50 resize-none"
           />
         </div>
         <div>
@@ -601,7 +601,7 @@ function QuestionRow({
           <select
             value={editType}
             onChange={(e) => setEditType(e.target.value)}
-            className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"
+            className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
           >
             {QUESTION_TYPES.map(type => (
               <option key={type.value} value={type.value}>{type.label}</option>
@@ -618,7 +618,7 @@ function QuestionRow({
           <button
             onClick={handleSave}
             disabled={isPending}
-            className="px-3 py-1.5 text-sm bg-[#EC4899]/20 text-[#EC4899] rounded-lg hover:bg-[#EC4899]/30"
+            className="px-3 py-1.5 text-sm bg-[#D37E91]/20 text-[#D37E91] rounded-lg hover:bg-[#D37E91]/30"
           >
             Save
           </button>
@@ -685,7 +685,7 @@ function TemplateSettings({
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#EC4899]/50"
+            className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#D37E91]/50"
           />
         </div>
         <div>
@@ -694,7 +694,7 @@ function TemplateSettings({
             type="number"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
-            className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#EC4899]/50"
+            className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#D37E91]/50"
           />
         </div>
       </div>
@@ -705,7 +705,7 @@ function TemplateSettings({
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
-          className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#EC4899]/50 resize-none"
+          className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#D37E91]/50 resize-none"
         />
       </div>
 
@@ -716,7 +716,7 @@ function TemplateSettings({
           onChange={(e) => setWhenToUse(e.target.value)}
           rows={2}
           placeholder="Describe when this template should be used..."
-          className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#EC4899]/50 resize-none placeholder-neutral-600"
+          className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#D37E91]/50 resize-none placeholder-neutral-600"
         />
       </div>
 
@@ -727,7 +727,7 @@ function TemplateSettings({
           onChange={(e) => setTips(e.target.value)}
           rows={2}
           placeholder="Best practices and tips for conducting this review..."
-          className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#EC4899]/50 resize-none placeholder-neutral-600"
+          className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#D37E91]/50 resize-none placeholder-neutral-600"
         />
       </div>
 
@@ -735,7 +735,7 @@ function TemplateSettings({
         <Button
           onClick={handleSave}
           disabled={isPending}
-          className="bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]"
+          className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)]"
         >
           <Save className="w-4 h-4 mr-2" />
           Save Settings

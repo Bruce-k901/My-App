@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useAppContext } from '@/context/AppContext'
 import { supabase } from '@/lib/supabase'
-import { Loader2, Users, Package, CheckCircle } from 'lucide-react'
+import { Loader2, Users, Package, CheckCircle } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import Select from '@/components/ui/Select'
 
@@ -193,7 +193,7 @@ export default function PeopleToOnboardPage() {
           <h1 className="text-xl font-semibold text-gray-900 dark:text-white">People to Onboard</h1>
           <p className="text-sm text-gray-900 dark:text-white/60">This page is for managers/admins only.</p>
         </div>
-        <Link href="/dashboard/people/onboarding/my-docs" className="text-sm text-[#EC4899] hover:underline">
+        <Link href="/dashboard/people/onboarding/my-docs" className="text-sm text-[#D37E91] hover:underline">
           View My Onboarding Docs
         </Link>
       </div>
@@ -208,7 +208,7 @@ export default function PeopleToOnboardPage() {
           <h1 className="text-xl font-semibold text-gray-900 dark:text-white">People to Onboard</h1>
           <p className="text-sm text-gray-900 dark:text-white/60">Assign onboarding packs to employees and track their progress</p>
         </div>
-        <Link href="/dashboard/people" className="text-sm text-[#EC4899] hover:underline">
+        <Link href="/dashboard/people" className="text-sm text-[#D37E91] hover:underline">
           Back to People
         </Link>
       </div>
@@ -243,7 +243,7 @@ export default function PeopleToOnboardPage() {
           {/* Assign Pack Section */}
           <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Package className="w-5 h-5 text-[#EC4899]" />
+              <Package className="w-5 h-5 text-[#D37E91]" />
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Assign Onboarding Pack</h2>
             </div>
 
@@ -286,7 +286,7 @@ export default function PeopleToOnboardPage() {
                 <button
                   onClick={() => void assignPack()}
                   disabled={!assignEmployeeId || !assignPackId || assigning}
-                  className="w-full px-4 py-2 rounded-lg text-sm bg-transparent text-[#EC4899] border border-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-4 py-2 rounded-lg text-sm bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {assigning ? 'Assigning…' : 'Assign Pack'}
                 </button>
@@ -308,7 +308,7 @@ export default function PeopleToOnboardPage() {
           {/* Assignments List */}
           <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Users className="w-5 h-5 text-[#EC4899]" />
+              <Users className="w-5 h-5 text-[#D37E91]" />
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Assigned Onboarding ({assignments.length})</h2>
             </div>
 
@@ -346,7 +346,7 @@ export default function PeopleToOnboardPage() {
                         )}
                         <Link
                           href={`/dashboard/people/onboarding?employeeId=${a.profile_id}`}
-                          className="text-sm text-[#EC4899] hover:underline"
+                          className="text-sm text-[#D37E91] hover:underline"
                         >
                           View Details
                         </Link>

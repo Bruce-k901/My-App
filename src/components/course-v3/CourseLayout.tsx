@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Course, Module, Lesson, Slide } from '@/data/courses/schema';
 import Link from 'next/link';
-import { ArrowLeft, ChevronRight, ChevronLeft, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, ChevronRight, ChevronLeft, CheckCircle, AlertCircle } from '@/components/ui/icons';
 import { useRouter } from 'next/navigation';
 
 interface CourseLayoutProps {
@@ -37,7 +37,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
         <div className="flex items-center justify-center h-screen bg-[rgb(var(--background))] dark:bg-slate-900 text-[rgb(var(--text-primary))] dark:text-white">
             <div className="text-center">
                 <h1 className="text-2xl font-bold mb-4">Course Content Not Found</h1>
-                <Link href="/dashboard/courses" className="text-pink-600 dark:text-pink-500 hover:underline">Return to Courses</Link>
+                <Link href="/dashboard/courses" className="text-[#D37E91] dark:text-[#D37E91] hover:underline">Return to Courses</Link>
             </div>
         </div>
     );
@@ -105,7 +105,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
           {course.modules.map((module, mIdx) => (
             <div key={module.id}>
-              <h3 className={`text-xs font-bold uppercase tracking-wider mb-3 ${mIdx === currentModuleIndex ? 'text-pink-600 dark:text-pink-500' : 'text-[rgb(var(--text-tertiary))] dark:text-slate-500'}`}>
+              <h3 className={`text-xs font-bold uppercase tracking-wider mb-3 ${mIdx === currentModuleIndex ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-[rgb(var(--text-tertiary))] dark:text-slate-500'}`}>
                 Module {mIdx + 1}: {module.title}
               </h3>
               <div className="space-y-1">
@@ -114,7 +114,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
                     return (
                         <div 
                             key={lesson.id} 
-                            className={`px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${isActive ? 'bg-[rgb(var(--surface))] dark:bg-white/10 text-pink-600 dark:text-pink-400 font-medium' : 'text-[rgb(var(--text-secondary))] dark:text-slate-400 hover:text-[rgb(var(--text-primary))] dark:hover:text-slate-300 hover:bg-[rgb(var(--surface))] dark:hover:bg-white/5'}`}
+                            className={`px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${isActive ? 'bg-[rgb(var(--surface))] dark:bg-white/10 text-[#D37E91] dark:text-[#D37E91] font-medium' : 'text-[rgb(var(--text-secondary))] dark:text-slate-400 hover:text-[rgb(var(--text-primary))] dark:hover:text-slate-300 hover:bg-[rgb(var(--surface))] dark:hover:bg-white/5'}`}
                         >
                             {lesson.title}
                         </div>
@@ -191,7 +191,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
                   <div className="bg-[rgb(var(--surface-elevated))] dark:bg-slate-800 rounded-2xl overflow-hidden border border-[rgb(var(--border))] dark:border-white/10 shadow-2xl sticky top-8">
                     <div className="aspect-video bg-[rgb(var(--surface))] dark:bg-slate-900 flex items-center justify-center relative">
                         {/* Placeholder for actual image rendering */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-purple-500/20 mix-blend-overlay" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#D37E91]/25 to-purple-500/20 mix-blend-overlay" />
                         <img 
                             src={currentSlide.mediaUrl} 
                             alt={currentSlide.title} 
@@ -209,7 +209,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
             {currentSlide.type === 'scenario-decision' && (
                <div className="max-w-2xl mx-auto">
                  <div className="bg-gradient-to-br from-[rgb(var(--surface-elevated))] to-[rgb(var(--surface))] dark:from-slate-800 dark:to-slate-900 p-8 rounded-2xl border border-[rgb(var(--border))] dark:border-white/10 shadow-xl">
-                    <div className="w-12 h-12 bg-pink-500/20 rounded-xl flex items-center justify-center mb-6 text-pink-600 dark:text-pink-400">
+                    <div className="w-12 h-12 bg-[#D37E91]/25 rounded-xl flex items-center justify-center mb-6 text-[#D37E91] dark:text-[#D37E91]">
                         <AlertCircle size={24} />
                     </div>
                     <h2 className="text-2xl font-bold mb-2 text-[rgb(var(--text-primary))] dark:text-white">{currentSlide.title}</h2>
@@ -224,10 +224,10 @@ export function CourseLayout({ course }: CourseLayoutProps) {
                         <button 
                             key={idx} 
                             onClick={() => alert(`You chose: ${opt.label}\n\n(Full interactive scenario logic would go here)`)}
-                            className="w-full p-4 bg-[rgb(var(--surface))] dark:bg-white/5 hover:bg-[rgb(var(--surface-elevated))] dark:hover:bg-white/10 border border-[rgb(var(--border))] dark:border-white/10 hover:border-pink-500/50 rounded-xl text-left transition-all duration-200 flex items-center justify-between group"
+                            className="w-full p-4 bg-[rgb(var(--surface))] dark:bg-white/5 hover:bg-[rgb(var(--surface-elevated))] dark:hover:bg-white/10 border border-[rgb(var(--border))] dark:border-white/10 hover:border-[#D37E91]/50 rounded-xl text-left transition-all duration-200 flex items-center justify-between group"
                         >
                             <span className="font-medium text-[rgb(var(--text-secondary))] dark:text-slate-200 group-hover:text-[rgb(var(--text-primary))] dark:group-hover:text-white">{opt.label}</span>
-                            <ChevronRight className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-slate-500 group-hover:text-pink-600 dark:group-hover:text-pink-400" />
+                            <ChevronRight className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-slate-500 group-hover:text-[#D37E91] dark:group-hover:text-[#D37E91]" />
                         </button>
                         ))}
                     </div>
@@ -257,7 +257,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
                                                 <input 
                                                     type="radio" 
                                                     name={q.id} 
-                                                    className="w-4 h-4 text-pink-500 focus:ring-pink-500 bg-[rgb(var(--surface-elevated))] dark:bg-slate-800 border-[rgb(var(--border))] dark:border-slate-600"
+                                                    className="w-4 h-4 text-[#D37E91] focus:ring-[#D37E91] bg-[rgb(var(--surface-elevated))] dark:bg-slate-800 border-[rgb(var(--border))] dark:border-slate-600"
                                                     onChange={() => setQuizAnswers({...quizAnswers, [q.id]: optIdx})}
                                                     checked={quizAnswers[q.id] === optIdx}
                                                 />
@@ -269,7 +269,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
                             ))}
                             <button 
                                 onClick={handleQuizSubmit}
-                                className="w-full py-3 bg-pink-600 hover:bg-pink-500 rounded-xl font-bold transition-colors text-white"
+                                className="w-full py-3 bg-[#D37E91] hover:bg-[#D37E91] rounded-xl font-bold transition-colors text-white"
                             >
                                 Submit Assessment
                             </button>
@@ -308,7 +308,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
              
              <button 
                 onClick={handleNext}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white text-sm font-medium shadow-lg shadow-pink-500/20 transition-all hover:shadow-pink-500/40"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#D37E91] hover:bg-[#D37E91] text-white text-sm font-medium shadow-lg shadow-[#D37E91]/20 transition-all hover:shadow-[#D37E91]/40"
             >
                 {currentSlideIndex === currentLesson.slides.length - 1 && currentLessonIndex === currentModule.lessons.length - 1 && currentModuleIndex === course.modules.length - 1 
                     ? 'Finish Course' 
