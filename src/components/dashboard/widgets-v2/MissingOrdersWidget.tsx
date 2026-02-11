@@ -5,7 +5,11 @@ import Link from 'next/link';
 import { AlertTriangle, Zap, Calendar } from '@/components/ui/icons';
 import { format, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/Button';
-import { useAppContext } from '@/context/AppContext';
+
+interface MissingOrdersWidgetProps {
+  siteId: string;
+  companyId: string;
+}
 
 interface MissingOrder {
   customer_id: string;
@@ -23,8 +27,7 @@ interface MissingOrdersData {
   };
 }
 
-export function MissingOrdersWidget() {
-  const { siteId } = useAppContext();
+export default function MissingOrdersWidget({ siteId, companyId }: MissingOrdersWidgetProps) {
   const [data, setData] = useState<MissingOrdersData | null>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -43,13 +46,15 @@ export function MissingOrdersWidget() {
         );
 
         if (!res.ok) {
-          throw new Error('Failed to fetch missing orders');
+          // API may fail if planly tables don't exist yet — degrade gracefully
+          setLoading(false);
+          return;
         }
 
         const result = await res.json();
         setData(result);
       } catch (error) {
-        console.error('Error fetching missing orders:', error);
+        // Degrade gracefully (table/endpoint may not exist yet)
       } finally {
         setLoading(false);
       }

@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { WidgetCard, CountBadge, MiniItem } from '../WidgetCard';
 import { supabase } from '@/lib/supabase';
 
+// Cache table availability to avoid repeated 400s when table doesn't exist
+let tableAvailable: boolean | null = null;
+
 interface TrainingExpiriesWidgetProps {
   siteId: string;
   companyId: string;
@@ -30,66 +33,40 @@ export default function TrainingExpiriesWidget({ siteId, companyId }: TrainingEx
       return;
     }
 
+    // Table previously failed — skip the query entirely
+    if (tableAvailable === false) {
+      setLoading(false);
+      return;
+    }
+
     async function fetchExpiringTraining() {
       try {
-        const today = new Date();
-        const thirtyDaysLater = new Date(today);
-        thirtyDaysLater.setDate(today.getDate() + 30);
+        // Use the get_expiring_training RPC which handles joins server-side
 
-        const todayStr = today.toISOString().split('T')[0];
-        const futureStr = thirtyDaysLater.toISOString().split('T')[0];
-
-        let query = supabase
-          .from('training_records')
-          .select(`
-            id,
-            expiry_date,
-            course:training_courses!training_records_course_id_fkey(name),
-            profile:profiles!training_records_profile_id_fkey(id, full_name)
-          `)
-          .eq('company_id', companyId)
-          .gte('expiry_date', todayStr)
-          .lte('expiry_date', futureStr)
-          .order('expiry_date', { ascending: true })
-          .limit(3);
-
-        const { data, error } = await query;
+        const { data, error } = await supabase.rpc('get_expiring_training', {
+          p_company_id: companyId,
+          p_days_ahead: 30,
+        });
 
         if (error) {
-          // Table may not exist yet — degrade gracefully
+          console.warn('[TrainingExpiries] RPC failed:', error.code, error.message, error.details, error.hint);
+          tableAvailable = false;
           setLoading(false);
           return;
         }
 
-        const formatted: ExpiringTraining[] = (data || []).map((record: any) => {
-          const profile = record.profile || {};
-          const staffName = profile.full_name || 'Unknown';
+        const allItems: ExpiringTraining[] = (data || []).map((record: any) => ({
+          id: record.record_id,
+          staffName: record.employee_name || 'Unknown',
+          trainingName: record.course_name || 'Training',
+          daysUntil: record.days_until_expiry,
+        }));
 
-          const expiryDate = new Date(record.expiry_date);
-          const daysUntil = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
-          return {
-            id: record.id,
-            staffName,
-            trainingName: record.course?.name || 'Training',
-            daysUntil,
-          };
-        });
-
-        setItems(formatted);
-
-        // Get total count
-        let countQuery = supabase
-          .from('training_records')
-          .select('id', { count: 'exact', head: true })
-          .eq('company_id', companyId)
-          .gte('expiry_date', todayStr)
-          .lte('expiry_date', futureStr);
-
-        const { count } = await countQuery;
-        setTotalCount(count || 0);
+        setTotalCount(allItems.length);
+        setItems(allItems.slice(0, 3));
       } catch (err) {
-        console.error('Error fetching training expiries:', err);
+        console.warn('[TrainingExpiries] Unexpected error:', err);
+        tableAvailable = false;
       } finally {
         setLoading(false);
       }

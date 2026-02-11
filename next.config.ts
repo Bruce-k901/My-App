@@ -21,7 +21,6 @@ const nextConfig: NextConfig = {
   // These warnings are harmless but annoying - they occur due to HMR in development
   experimental: {
     optimizeCss: process.env.NODE_ENV === 'production', // Only enable in production
-    optimizePackageImports: ['@phosphor-icons/react'],
   },
 
   // Explicitly use webpack instead of Turbopack (Next.js 16 defaults to Turbopack)

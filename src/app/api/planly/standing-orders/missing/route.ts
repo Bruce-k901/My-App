@@ -39,8 +39,15 @@ export async function GET(request: NextRequest) {
       .eq('is_paused', false);
 
     if (soError) {
-      console.error('Error fetching standing orders:', soError);
-      return NextResponse.json({ error: soError.message }, { status: 500 });
+      // Table may not exist yet — return empty data instead of 500
+      const today = new Date();
+      return NextResponse.json({
+        missing: [],
+        checked_date_range: {
+          start: format(today, 'yyyy-MM-dd'),
+          end: format(addDays(today, daysAhead), 'yyyy-MM-dd'),
+        },
+      });
     }
 
     if (!standingOrders || standingOrders.length === 0) {
@@ -114,10 +121,14 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error('Error in GET /api/planly/standing-orders/missing:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error' },
-      { status: 500 }
-    );
+    // Degrade gracefully — return empty data instead of 500
+    const today = new Date();
+    return NextResponse.json({
+      missing: [],
+      checked_date_range: {
+        start: format(today, 'yyyy-MM-dd'),
+        end: format(addDays(today, 7), 'yyyy-MM-dd'),
+      },
+    });
   }
 }

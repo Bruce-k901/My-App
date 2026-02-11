@@ -1,5 +1,16 @@
 import { lazy, ComponentType } from 'react';
 
+// Wrapper to ensure dynamic imports always return a Promise,
+// even when webpack's filesystem cache resolves them synchronously.
+function safeLazy<P extends {}>(
+  importFn: () => Promise<{ default: ComponentType<P> }>
+) {
+  return lazy(() => {
+    const result = importFn();
+    return result instanceof Promise ? result : Promise.resolve(result);
+  });
+}
+
 export type WidgetSize = 'small' | 'medium' | 'large' | 'wide';
 export type WidgetSection = 'charts' | 'operational';
 export type ModuleId = 'checkly' | 'stockly' | 'teamly' | 'planly' | 'assetly' | 'msgly';
@@ -34,7 +45,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     module: 'checkly',
     size: 'medium',
     defaultRoles: ['Admin', 'Owner', 'Manager', 'Staff'],
-    component: lazy(() => import('@/components/dashboard/widgets-v2/ComplianceScoreWidget')),
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/ComplianceScoreWidget')),
   },
   overdue_checks: {
     id: 'overdue_checks',
@@ -42,7 +53,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     module: 'checkly',
     size: 'medium',
     defaultRoles: ['Admin', 'Owner', 'Manager', 'Staff'],
-    component: lazy(() => import('@/components/dashboard/widgets-v2/OverdueChecksWidget')),
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/OverdueChecksWidget')),
   },
   todays_checks: {
     id: 'todays_checks',
@@ -50,7 +61,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     module: 'checkly',
     size: 'medium',
     defaultRoles: ['Admin', 'Owner', 'Manager', 'Staff'],
-    component: lazy(() => import('@/components/dashboard/widgets-v2/TodaysChecksWidget')),
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/TodaysChecksWidget')),
   },
 
   // ── STOCKLY ──
@@ -60,7 +71,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     module: 'stockly',
     size: 'medium',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/widgets-v2/LowStockWidget')),
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/LowStockWidget')),
   },
   pending_stock_orders: {
     id: 'pending_stock_orders',
@@ -68,7 +79,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     module: 'stockly',
     size: 'medium',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/widgets-v2/PendingStockOrdersWidget')),
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/PendingStockOrdersWidget')),
   },
 
   // ── TEAMLY ──
@@ -78,7 +89,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     module: 'teamly',
     size: 'medium',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/widgets-v2/WhosOnTodayWidget')),
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/WhosOnTodayWidget')),
   },
   training_expiries: {
     id: 'training_expiries',
@@ -86,7 +97,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     module: 'teamly',
     size: 'medium',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/widgets-v2/TrainingExpiriesWidget')),
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/TrainingExpiriesWidget')),
   },
 
   // ── PLANLY ──
@@ -96,7 +107,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     module: 'planly',
     size: 'medium',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/widgets-v2/TodaysProductionWidget')),
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/TodaysProductionWidget')),
   },
   pending_customer_orders: {
     id: 'pending_customer_orders',
@@ -104,7 +115,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     module: 'planly',
     size: 'medium',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/widgets-v2/PendingCustomerOrdersWidget')),
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/PendingCustomerOrdersWidget')),
   },
   missing_orders: {
     id: 'missing_orders',
@@ -112,7 +123,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     module: 'planly',
     size: 'medium',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/widgets-v2/MissingOrdersWidget')),
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/MissingOrdersWidget')),
   },
 
   // ── ASSETLY ──
@@ -122,7 +133,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     module: 'assetly',
     size: 'medium',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/widgets-v2/OverdueMaintenanceWidget')),
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/OverdueMaintenanceWidget')),
   },
   asset_issues: {
     id: 'asset_issues',
@@ -130,7 +141,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     module: 'assetly',
     size: 'medium',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/widgets-v2/AssetIssuesWidget')),
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/AssetIssuesWidget')),
   },
 
   // ── DATA HEALTH ──
@@ -140,7 +151,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     module: 'checkly',
     size: 'medium',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/widgets-v2/DataHealthWidget')),
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/DataHealthWidget')),
   },
 
   // ── MSGLY ──
@@ -150,7 +161,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     module: 'msgly',
     size: 'medium',
     defaultRoles: ['Admin', 'Owner', 'Manager', 'Staff'],
-    component: lazy(() => import('@/components/dashboard/widgets-v2/UnreadMessagesWidget')),
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/UnreadMessagesWidget')),
   },
 
   // ── CHART WIDGETS ──
@@ -161,7 +172,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     size: 'wide',
     section: 'charts',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/charts/ComplianceTrendChart')),
+    component: safeLazy(() => import('@/components/dashboard/charts/ComplianceTrendChart')),
   },
   production_output_chart: {
     id: 'production_output_chart',
@@ -170,7 +181,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     size: 'wide',
     section: 'charts',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/charts/ProductionOutputChart')),
+    component: safeLazy(() => import('@/components/dashboard/charts/ProductionOutputChart')),
   },
   stock_health_chart: {
     id: 'stock_health_chart',
@@ -179,7 +190,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     size: 'wide',
     section: 'charts',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/charts/StockHealthChart')),
+    component: safeLazy(() => import('@/components/dashboard/charts/StockHealthChart')),
   },
   order_pipeline_chart: {
     id: 'order_pipeline_chart',
@@ -188,7 +199,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     size: 'wide',
     section: 'charts',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/charts/OrderPipelineChart')),
+    component: safeLazy(() => import('@/components/dashboard/charts/OrderPipelineChart')),
   },
   eho_score_chart: {
     id: 'eho_score_chart',
@@ -197,7 +208,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     size: 'wide',
     section: 'charts',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/charts/EHOScoreChart')),
+    component: safeLazy(() => import('@/components/dashboard/charts/EHOScoreChart')),
   },
   temperature_logs_chart: {
     id: 'temperature_logs_chart',
@@ -206,7 +217,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     size: 'wide',
     section: 'charts',
     defaultRoles: ['Admin', 'Owner', 'Manager'],
-    component: lazy(() => import('@/components/dashboard/charts/TemperatureLogsChart')),
+    component: safeLazy(() => import('@/components/dashboard/charts/TemperatureLogsChart')),
   },
 };
 
