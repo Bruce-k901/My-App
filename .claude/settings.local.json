@@ -83,7 +83,8 @@
       "Bash(git log:*)",
       "Bash(powershell -File:*)",
       "Bash(node:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(git merge:*)"
     ]
   }
 }
