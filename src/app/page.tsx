@@ -8,33 +8,16 @@ import Link from "next/link";
 import DarkVeil from "@/components/ui/DarkVeil";
 import AnimatedHeroLogo from "@/components/ui/AnimatedHeroLogo";
 import {
-  Shield,
-  ClipboardCheck,
-  Thermometer,
-  Wrench,
-  LayoutDashboard,
-  Bell,
+  ShieldCheck,
+  Key,
+  WifiOff,
   CheckCircle2,
-  ListChecks,
-  BarChart3,
-  FileText,
-  AlertTriangle,
-  Package,
-  Users,
-  Factory,
   ChevronLeft,
   ChevronRight,
   ArrowRight,
-  DollarSign,
-  Clock,
-  Zap,
-  Network,
-  MessageSquare,
-  ClipboardList,
   User,
   Briefcase,
   Building2,
-  ArrowLeftRight,
 } from '@/components/ui/icons';
 
 // Module data
@@ -382,145 +365,318 @@ function ModulesCarouselSection() {
   );
 }
 
-function TopBenefitsSection() {
-  const benefits = [
+function TrustSection() {
+  const features = [
     {
-      title: 'Compliance without chaos',
-      description: 'Logs, checks, and reports in one place. Be inspection-ready without last-minute firefighting.',
-      icon: CheckCircle2,
-      color: 'pink',
+      title: 'Data Security',
+      description: 'End-to-end encryption, row-level access controls, and infrastructure hosted on Supabase with SOC 2 compliance. Your operational data is protected at every layer.',
+      icon: ShieldCheck,
     },
     {
-      title: 'Less reactive, more proactive',
-      description: 'Automate alerts and cut noisy threads. Track temperature and incidents automatically.',
-      icon: Zap,
-      color: 'blue',
+      title: 'Data Ownership',
+      description: 'Your data belongs to you. Export everything at any time, no lock-in, no hidden fees. You maintain full control and portability.',
+      icon: Key,
     },
     {
-      title: 'Built to scale',
-      description: 'Roll out across sites with head office visibility. Start fast, grow easily.',
-      icon: BarChart3,
-      color: 'emerald',
-    },
-    {
-      title: 'Single source of truth',
-      description: 'Everyone stays aligned on one platform. Tasks, checks, logs, and incidents in one place.',
-      icon: FileText,
-      color: 'orange',
+      title: 'Offline Access',
+      description: 'Keep working when connectivity drops. Checks, logs, and tasks sync automatically when you are back online — critical for sites with unreliable signal.',
+      icon: WifiOff,
     },
   ];
 
-  const colorClasses = {
-    pink: {
-      gradient: 'from-white/[0.05]',
-      icon: 'text-white/40',
-      hover: 'group-hover:opacity-100',
-    },
-    blue: {
-      gradient: 'from-white/[0.05]',
-      icon: 'text-white/40',
-      hover: 'group-hover:opacity-100',
-    },
-    emerald: {
-      gradient: 'from-white/[0.05]',
-      icon: 'text-white/40',
-      hover: 'group-hover:opacity-100',
-    },
-    orange: {
-      gradient: 'from-white/[0.05]',
-      icon: 'text-white/40',
-      hover: 'group-hover:opacity-100',
-    },
-  };
-
   return (
     <section className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
-      {/* Elegant background */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-950/10 to-transparent" />
-      
+
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        {/* Section Header */}
         <div className="text-center mb-12 sm:mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-theme-primary mb-4">
-            Why Opsly Works
+            Built on{' '}
+            <span className="text-[#e8e8e8]">Trust</span>
           </h2>
           <p className="text-theme-tertiary text-sm sm:text-base max-w-2xl mx-auto">
-            Built for operations teams who need power and simplicity
+            Your operations data deserves the same care you put into running them
           </p>
         </div>
 
-        {/* Benefits Grid - More refined */}
-        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-16 sm:mb-20 md:mb-24">
-          {benefits.map((benefit, idx) => {
-            const Icon = benefit.icon;
-            const colors = colorClasses[benefit.color as keyof typeof colorClasses];
-            
+        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {features.map((feature, idx) => {
+            const Icon = feature.icon;
             return (
               <div key={idx} className="group relative">
-                <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} to-transparent opacity-0 ${colors.hover} transition-opacity duration-500 rounded-2xl`} />
-                <div className="relative p-6 sm:p-8 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300">
-                  <div className="flex items-start gap-4">
-                    <div className="mt-1 flex-shrink-0">
-                      <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${colors.icon}`} strokeWidth={1.5} />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg sm:text-xl font-light text-theme-primary mb-3">
-                        {benefit.title}
-                      </h3>
-                      <p className="text-theme-tertiary text-sm leading-relaxed">
-                        {benefit.description}
-                      </p>
-                    </div>
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
+                <div className="relative p-6 sm:p-8 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300 h-full">
+                  <div className="mb-4">
+                    <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-white/40" strokeWidth={1.5} />
                   </div>
+                  <h3 className="text-lg sm:text-xl font-light text-theme-primary mb-3">
+                    {feature.title}
+                  </h3>
+                  <p className="text-theme-tertiary text-sm leading-relaxed">
+                    {feature.description}
+                  </p>
                 </div>
               </div>
             );
           })}
         </div>
 
-        {/* Stats Section - Refined presentation */}
-        <div className="relative">
-          {/* Subtle separator */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-          
-          <div className="grid md:grid-cols-3 gap-8 sm:gap-12 max-w-5xl mx-auto pt-12 sm:pt-16">
-            {/* Stat 1 */}
-            <div className="text-center group">
-              <div className="relative inline-block mb-4">
-                <div className="text-4xl sm:text-5xl md:text-6xl font-light text-[#e8e8e8]">
-                  100+
-                </div>
-                <div className="absolute -inset-4 bg-white/[0.05] rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </div>
-              <div className="text-theme-tertiary text-sm">
-                Sites using Opsly
-              </div>
-            </div>
+      </div>
+    </section>
+  );
+}
 
-            {/* Stat 2 */}
-            <div className="text-center group">
-              <div className="relative inline-block mb-4">
-                <div className="text-4xl sm:text-5xl md:text-6xl font-light text-[#e8e8e8]">
-                  50K+
-                </div>
-                <div className="absolute -inset-4 bg-white/[0.05] rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </div>
-              <div className="text-theme-tertiary text-sm">
-                Checks completed daily
-              </div>
-            </div>
 
-            {/* Stat 3 */}
-            <div className="text-center group">
-              <div className="relative inline-block mb-4">
-                <div className="text-4xl sm:text-5xl md:text-6xl font-light text-[#e8e8e8]">
-                  75%
+const MODULE_LABEL_COLORS: Record<string, string> = {
+  checkly: 'text-checkly',
+  stockly: 'text-stockly',
+  teamly: 'text-teamly',
+  planly: 'text-planly',
+  assetly: 'text-assetly',
+  msgly: 'text-msgly',
+  dashboard: 'text-white/50',
+};
+
+const MODULE_DOT_COLORS: Record<string, string> = {
+  checkly: 'bg-checkly',
+  stockly: 'bg-stockly',
+  teamly: 'bg-teamly',
+  planly: 'bg-planly',
+  assetly: 'bg-assetly',
+  msgly: 'bg-msgly',
+  dashboard: 'bg-white/30',
+};
+
+type JourneyEntry = {
+  time: string;
+  activity: string;
+  detail: string;
+  modules: string[];
+};
+
+const journeyData: Record<string, { label: string; icon: typeof User; entries: JourneyEntry[] }> = {
+  staff: {
+    label: 'Staff',
+    icon: User,
+    entries: [
+      {
+        time: '6:00 AM',
+        activity: 'Clock in',
+        detail: 'On your phone, even in the stockroom with no signal — syncs when you are back online.',
+        modules: ['teamly'],
+      },
+      {
+        time: '6:15 AM',
+        activity: 'Opening checks',
+        detail: 'Today\'s tasks are ready: fridge temps, cleaning logs, prep checks. Tap through them one by one.',
+        modules: ['checkly'],
+      },
+      {
+        time: '9:00 AM',
+        activity: 'Delivery arrives',
+        detail: 'Snap a photo of the invoice. AI reads every line, matches items to your stock list automatically.',
+        modules: ['stockly'],
+      },
+      {
+        time: '10:30 AM',
+        activity: 'Fridge playing up',
+        detail: 'Take a photo, raise a callout on the asset record. Your manager gets a message instantly.',
+        modules: ['assetly', 'msgly'],
+      },
+      {
+        time: '2:00 PM',
+        activity: 'Quiet spell',
+        detail: 'Pick up your Level 2 Food Safety course right where you left off — on your phone.',
+        modules: ['teamly'],
+      },
+      {
+        time: '4:30 PM',
+        activity: 'Close down',
+        detail: 'Closing checks, log today\'s waste, clock out. All from one screen.',
+        modules: ['checkly', 'stockly', 'teamly'],
+      },
+    ],
+  },
+  manager: {
+    label: 'Managers',
+    icon: Briefcase,
+    entries: [
+      {
+        time: '7:00 AM',
+        activity: 'Morning dashboard',
+        detail: '3 staff clocked in, 12 tasks due today, 1 overnight temperature alert. Everything at a glance.',
+        modules: ['dashboard'],
+      },
+      {
+        time: '7:30 AM',
+        activity: 'Temperature breach',
+        detail: 'Walk-in hit -15\u00B0C at 2am, back to -18\u00B0C by 3am. Assign corrective action, log the outcome.',
+        modules: ['checkly'],
+      },
+      {
+        time: '9:30 AM',
+        activity: 'Invoice review',
+        detail: 'AI matched 47 of 50 lines automatically. Approve with two taps, flag the rest for checking.',
+        modules: ['stockly'],
+      },
+      {
+        time: '10:30 AM',
+        activity: 'Equipment callout',
+        detail: 'Staff flagged the fridge — book the contractor, track the repair on the asset record. All in one thread.',
+        modules: ['assetly', 'msgly'],
+      },
+      {
+        time: '1:00 PM',
+        activity: 'Build next week\'s rota',
+        detail: 'Drag shifts into place, see labour costs update live. Publish to the whole team in one tap.',
+        modules: ['teamly'],
+      },
+      {
+        time: '5:00 PM',
+        activity: 'End of day',
+        detail: 'Compliance at 94%. All closing tasks signed off across both your sites.',
+        modules: ['checkly'],
+      },
+    ],
+  },
+  senior: {
+    label: 'Senior Leaders',
+    icon: Building2,
+    entries: [
+      {
+        time: '8:00 AM',
+        activity: 'All-sites overview',
+        detail: '12 sites on one dashboard. Compliance scores, task completion, live alerts — no chasing managers for updates.',
+        modules: ['dashboard'],
+      },
+      {
+        time: '9:00 AM',
+        activity: 'Health check alert',
+        detail: 'Site 4 flagged: 3 overdue risk assessments. Delegate to the site manager with one click.',
+        modules: ['checkly'],
+      },
+      {
+        time: '10:00 AM',
+        activity: 'EHO inspection prep',
+        detail: 'Generate the full compliance pack for tomorrow\'s visit. One click, one PDF — ready to print.',
+        modules: ['checkly'],
+      },
+      {
+        time: '11:00 AM',
+        activity: 'Food cost review',
+        detail: 'Company-wide GP at 68%. Drill into Site 2\'s dip — waste up 18% this week. Message the manager.',
+        modules: ['stockly', 'msgly'],
+      },
+      {
+        time: '1:00 PM',
+        activity: 'Payroll',
+        detail: '\u00A347K across 12 sites. Review the summary, approve the run. Done.',
+        modules: ['teamly'],
+      },
+      {
+        time: '4:00 PM',
+        activity: 'Maintenance overview',
+        detail: '6 assets overdue for service across the estate. Prioritise, assign to contractors, track completion.',
+        modules: ['assetly'],
+      },
+    ],
+  },
+};
+
+const MODULE_NAMES: Record<string, string> = {
+  checkly: 'Checkly',
+  stockly: 'Stockly',
+  teamly: 'Teamly',
+  planly: 'Planly',
+  assetly: 'Assetly',
+  msgly: 'Msgly',
+  dashboard: 'Dashboard',
+};
+
+function DayJourneySection() {
+  const [activeRole, setActiveRole] = useState<string>('staff');
+  const role = journeyData[activeRole];
+
+  return (
+    <section className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/30 to-transparent" />
+
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-theme-primary mb-4">
+            A Day with{' '}
+            <span className="text-[#e8e8e8]">Opsly</span>
+          </h2>
+          <p className="text-theme-tertiary text-sm sm:text-base max-w-2xl mx-auto">
+            From open to close, every role stays connected on one platform
+          </p>
+        </div>
+
+        {/* Role Tabs */}
+        <div className="flex justify-center gap-2 sm:gap-3 mb-10 sm:mb-14">
+          {Object.entries(journeyData).map(([key, data]) => {
+            const Icon = data.icon;
+            const isActive = activeRole === key;
+            return (
+              <button
+                key={key}
+                onClick={() => setActiveRole(key)}
+                className={`flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-light transition-all duration-300 ${
+                  isActive
+                    ? 'bg-white/10 border border-white/15 text-theme-primary'
+                    : 'bg-transparent border border-white/5 text-theme-tertiary hover:border-white/10 hover:text-theme-secondary'
+                }`}
+              >
+                <Icon className="w-4 h-4" strokeWidth={1.5} />
+                {data.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Timeline */}
+        <div className="max-w-2xl mx-auto">
+          <div className="relative">
+            {/* Vertical line */}
+            <div className="absolute left-[4.5rem] sm:left-[5.5rem] top-2 bottom-2 w-px bg-gradient-to-b from-white/10 via-white/10 to-transparent" />
+
+            <div className="space-y-6 sm:space-y-8">
+              {role.entries.map((entry, idx) => (
+                <div key={`${activeRole}-${idx}`} className="flex gap-4 sm:gap-5">
+                  {/* Time */}
+                  <div className="w-16 sm:w-20 flex-shrink-0 text-right pt-0.5">
+                    <span className="text-xs sm:text-sm text-white/30 font-light tabular-nums">
+                      {entry.time}
+                    </span>
+                  </div>
+
+                  {/* Dot */}
+                  <div className="flex-shrink-0 pt-1.5 sm:pt-2 relative z-10">
+                    <div className="w-2 h-2 rounded-full bg-white/30 ring-4 ring-[#0B0D13]" />
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 pb-2">
+                    <h4 className="text-sm sm:text-base font-medium text-theme-primary mb-1">
+                      {entry.activity}
+                    </h4>
+                    <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed mb-2">
+                      {entry.detail}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {entry.modules.map((mod) => (
+                        <span
+                          key={mod}
+                          className={`inline-flex items-center gap-1.5 text-[10px] sm:text-xs ${MODULE_LABEL_COLORS[mod]}`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full ${MODULE_DOT_COLORS[mod]}`} />
+                          {MODULE_NAMES[mod]}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="absolute -inset-4 bg-module-fg/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </div>
-              <div className="text-theme-tertiary text-sm">
-                Reduction in compliance time
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -528,7 +684,6 @@ function TopBenefitsSection() {
     </section>
   );
 }
-
 
 export default function HomePage() {
   const router = useRouter();
@@ -670,404 +825,25 @@ export default function HomePage() {
       {/* MODULES CAROUSEL SECTION */}
       <ModulesCarouselSection />
 
-      {/* BEFORE/AFTER COMPARISON SECTION - Refined */}
-      <section className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
-        {/* Very subtle background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/30 to-transparent" />
-
-        <div className="container mx-auto px-4 sm:px-6 relative z-10">
-          {/* Section Header - More refined */}
-          <div className="text-center mb-12 sm:mb-16 md:mb-20">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light mb-4 text-theme-primary">
-              The Real Cost of{' '}
-              <span className="font-normal text-[#e8e8e8]">
-                Operations Chaos
-              </span>
-            </h2>
-            <p className="text-theme-tertiary text-sm sm:text-base">
-              See what happens when you unify your operations
-            </p>
-          </div>
-
-          {/* Before/After Grid - Table-like layout */}
-          <div className="max-w-6xl mx-auto">
-            {/* Header Row */}
-            <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 mb-8 sm:mb-10">
-              <div>
-                <span className="text-sm sm:text-base uppercase tracking-wider text-theme-tertiary font-bold">
-                  Before Opsly
-                </span>
-              </div>
-              <div>
-                <span className="text-sm sm:text-base uppercase tracking-wider text-theme-tertiary font-bold">
-                  After Opsly
-                </span>
-              </div>
-            </div>
-
-            {/* Table Rows */}
-            <div className="space-y-6 sm:space-y-8">
-              {/* Row 1 */}
-              <div className="grid lg:grid-cols-2 gap-6 sm:gap-8">
-                {/* Before Stat 1 */}
-                <div className="p-5 sm:p-6">
-                  <div className="flex items-start gap-4 sm:gap-5">
-                    <div className="mt-1 text-red-400/40 flex-shrink-0">
-                      <DollarSign className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={1.5} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-2xl sm:text-3xl font-light text-gray-200 mb-3 min-h-[3rem] flex items-center">
-                        £450<span className="text-theme-tertiary">/month</span>
-                      </div>
-                      <div className="text-theme-tertiary text-base leading-relaxed">
-                        Paying for multiple disconnected tools, each with their own subscription
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* After Stat 1 */}
-                <div className="p-5 sm:p-6">
-                  <div className="flex items-start gap-4 sm:gap-5">
-                    <div className="mt-1 text-white/40 flex-shrink-0">
-                      <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={1.5} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-2xl sm:text-3xl font-light text-gray-100 mb-3 min-h-[3rem] flex items-center">
-                        One Simple Price
-                      </div>
-                      <div className="text-theme-tertiary text-base leading-relaxed">
-                        All modules included, predictable costs, no surprise bills
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Row 2 */}
-              <div className="grid lg:grid-cols-2 gap-6 sm:gap-8">
-                {/* Before Stat 2 */}
-                <div className="p-5 sm:p-6">
-                  <div className="flex items-start gap-4 sm:gap-5">
-                    <div className="mt-1 text-red-400/40 flex-shrink-0">
-                      <Network className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={1.5} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-2xl sm:text-3xl font-light text-gray-200 mb-3 min-h-[3rem] flex items-center">
-                        5–10 <span className="text-theme-tertiary">Systems</span>
-                      </div>
-                      <div className="text-theme-tertiary text-base leading-relaxed">
-                        Different logins, duplicate data entry, nothing talks to each other
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* After Stat 2 */}
-                <div className="p-5 sm:p-6">
-                  <div className="flex items-start gap-4 sm:gap-5">
-                    <div className="mt-1 text-white/40 flex-shrink-0">
-                      <Network className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={1.5} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-2xl sm:text-3xl font-light text-gray-100 mb-3 min-h-[3rem] flex items-center">
-                        One Platform
-                      </div>
-                      <div className="text-theme-tertiary text-base leading-relaxed">
-                        Everything connected, single source of truth, one login
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Row 3 */}
-              <div className="grid lg:grid-cols-2 gap-6 sm:gap-8">
-                {/* Before Stat 3 */}
-                <div className="p-5 sm:p-6">
-                  <div className="flex items-start gap-4 sm:gap-5">
-                    <div className="mt-1 text-red-400/40 flex-shrink-0">
-                      <Clock className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={1.5} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-2xl sm:text-3xl font-light text-gray-200 mb-3 min-h-[3rem] flex items-center">
-                        Hours <span className="text-theme-tertiary">Wasted</span>
-                      </div>
-                      <div className="text-theme-tertiary text-base leading-relaxed">
-                        Manual data entry, reconciliation, and chasing information daily
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* After Stat 3 */}
-                <div className="p-5 sm:p-6">
-                  <div className="flex items-start gap-4 sm:gap-5">
-                    <div className="mt-1 text-white/40 flex-shrink-0">
-                      <Zap className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={1.5} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-2xl sm:text-3xl font-light text-gray-100 mb-3 min-h-[3rem] flex items-center">
-                        Automated
-                      </div>
-                      <div className="text-theme-tertiary text-base leading-relaxed">
-                        Workflows handle the busywork, your team focuses on what matters
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Refined CTA */}
-          <div className="text-center mt-12 sm:mt-16 md:mt-20">
-            <Link href="/signup">
-              <button className="group px-6 sm:px-8 py-3 sm:py-3.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-theme-primary font-light rounded-lg transition-all duration-300 text-sm sm:text-base">
-                Calculate Your Savings
-                <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
-              </button>
-            </Link>
-          </div>
+      {/* CTA STRIP */}
+      <div className="relative py-12 sm:py-16">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+        <div className="text-center">
+          <p className="text-theme-tertiary text-sm sm:text-base mb-5">
+            Ready to simplify your ops?
+          </p>
+          <Link href="/signup" className="btn-marketing-primary inline-block">
+            Start Free Trial
+          </Link>
         </div>
-      </section>
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+      </div>
 
-      {/* TOP BENEFITS SECTION */}
-      <TopBenefitsSection />
+      {/* TRUST SECTION */}
+      <TrustSection />
 
-      {/* INTEGRATION STORY - Connected Ecosystem */}
-      <section className="relative py-20 sm:py-24 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-950/10 to-transparent" />
-        
-        <div className="container mx-auto px-4 sm:px-6 relative z-10">
-          {/* Header - More impactful */}
-          <div className="text-center mb-12 sm:mb-16 md:mb-20">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-theme-primary mb-4">
-              Everything Works{' '}
-              <span className="text-[#e8e8e8]">
-                Together
-              </span>
-            </h2>
-            <p className="text-theme-tertiary text-base sm:text-lg max-w-2xl mx-auto">
-              Unlike fragmented point solutions, Opsly creates a unified data ecosystem where every module shares information seamlessly
-            </p>
-          </div>
-
-          {/* Central Hub Visualization */}
-          <div className="max-w-6xl mx-auto mb-12 sm:mb-16 md:mb-20">
-            <div className="relative">
-              {/* Central Dashboard Hub */}
-              <div className="flex justify-center mb-12 sm:mb-16">
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] via-white/[0.03] to-transparent rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500" />
-                  <div className="relative px-8 sm:px-12 py-6 sm:py-8 bg-gray-900/80 backdrop-blur-xl border border-white/20 rounded-2xl">
-                    <div className="text-center">
-                      <div className="flex justify-center mb-2">
-                        <BarChart3 className="w-8 h-8 sm:w-10 sm:h-10 text-white/50" />
-                      </div>
-                      <div className="text-lg sm:text-xl font-light text-theme-primary mb-1">Unified Dashboard</div>
-                      <div className="text-xs sm:text-sm text-theme-tertiary">All your ops KPIs in one place</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Connection Lines (decorative) */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none hidden md:block">
-                <svg className="w-full h-full opacity-20" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet">
-                  <line x1="400" y1="100" x2="200" y2="250" stroke="url(#gradient1)" strokeWidth="1" strokeDasharray="4 4" />
-                  <line x1="400" y1="100" x2="600" y2="250" stroke="url(#gradient1)" strokeWidth="1" strokeDasharray="4 4" />
-                  <line x1="400" y1="100" x2="400" y2="300" stroke="url(#gradient1)" strokeWidth="1" strokeDasharray="4 4" />
-                  <defs>
-                    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#e8e8e8" stopOpacity="0.2" />
-                      <stop offset="100%" stopColor="#e8e8e8" stopOpacity="0.05" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-
-              {/* Module Connections Grid */}
-              <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
-                {/* Checkly ↔ Assetly */}
-                <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
-                  <div className="relative p-5 sm:p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="flex items-center gap-1.5 text-white/70 text-xs sm:text-sm font-medium">
-                        <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                        Checkly
-                      </span>
-                      <ArrowLeftRight className="w-3 h-3 sm:w-4 sm:h-4 text-theme-secondary" />
-                      <span className="flex items-center gap-1.5 text-theme-tertiary/90 text-xs sm:text-sm font-medium">
-                        <Wrench className="w-3 h-3 sm:w-4 sm:h-4" />
-                        Assetly
-                      </span>
-                    </div>
-                    <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
-                      Instant issue reporting on equipment failures
-                    </p>
-                  </div>
-                </div>
-
-                {/* Stockly → Checkly */}
-                <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
-                  <div className="relative p-5 sm:p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="flex items-center gap-1.5 text-stockly text-xs sm:text-sm font-medium">
-                        <Package className="w-3 h-3 sm:w-4 sm:h-4" />
-                        Stockly
-                      </span>
-                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-theme-secondary" />
-                      <span className="flex items-center gap-1.5 text-checkly text-xs sm:text-sm font-medium">
-                        <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                        Checkly
-                      </span>
-                    </div>
-                    <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
-                      Recipes auto-generate SOPs and compliance checks
-                    </p>
-                  </div>
-                </div>
-
-                {/* Teamly → Stockly */}
-                <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
-                  <div className="relative p-5 sm:p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="flex items-center gap-1.5 text-teamly text-xs sm:text-sm font-medium">
-                        <Users className="w-3 h-3 sm:w-4 sm:h-4" />
-                        Teamly
-                      </span>
-                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-theme-secondary" />
-                      <span className="flex items-center gap-1.5 text-stockly text-xs sm:text-sm font-medium">
-                        <Package className="w-3 h-3 sm:w-4 sm:h-4" />
-                        Stockly
-                      </span>
-                    </div>
-                    <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
-                      Employee costs flow into recipe costing
-                    </p>
-                  </div>
-                </div>
-
-                {/* Planly → Stockly */}
-                <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
-                  <div className="relative p-5 sm:p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="flex items-center gap-1.5 text-planly text-xs sm:text-sm font-medium">
-                        <ClipboardList className="w-3 h-3 sm:w-4 sm:h-4" />
-                        Planly
-                      </span>
-                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-theme-secondary" />
-                      <span className="flex items-center gap-1.5 text-stockly text-xs sm:text-sm font-medium">
-                        <Package className="w-3 h-3 sm:w-4 sm:h-4" />
-                        Stockly
-                      </span>
-                    </div>
-                    <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
-                      Production orders check inventory levels
-                    </p>
-                  </div>
-                </div>
-
-                {/* Checkly → Reports */}
-                <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
-                  <div className="relative p-5 sm:p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="flex items-center gap-1.5 text-white/70 text-xs sm:text-sm font-medium">
-                        <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                        Checkly
-                      </span>
-                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-theme-secondary" />
-                      <span className="flex items-center gap-1.5 text-theme-tertiary/90 text-xs sm:text-sm font-medium">
-                        <BarChart3 className="w-3 h-3 sm:w-4 sm:h-4" />
-                        Reports
-                      </span>
-                    </div>
-                    <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
-                      Temperature data feeds compliance reports
-                    </p>
-                  </div>
-                </div>
-
-                {/* Msgly - Central Communication */}
-                <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
-                  <div className="relative p-5 sm:p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300">
-                    <div className="flex items-center justify-center gap-1.5 mb-3">
-                      <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-msgly" />
-                      <span className="text-msgly text-xs sm:text-sm font-medium">Msgly</span>
-                    </div>
-                    <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed text-center">
-                      Connects everyone and everything—discuss tasks, assets, incidents anywhere
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Hierarchical Data Section */}
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-8 sm:mb-12">
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-light text-theme-primary mb-3">
-                Role-Based Intelligence
-              </h3>
-              <p className="text-theme-tertiary text-sm sm:text-base">
-                Every user sees exactly what they need, when they need it
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
-              {/* Staff Level */}
-              <div className="group relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
-                <div className="relative p-5 sm:p-6 text-center">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
-                    <User className="w-6 h-6 sm:w-8 sm:h-8 text-white/60" />
-                  </div>
-                  <h4 className="text-base sm:text-lg font-light text-theme-primary mb-2">Staff</h4>
-                  <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
-                    Simple task lists and check completions for their site
-                  </p>
-                </div>
-              </div>
-
-              {/* Manager Level */}
-              <div className="group relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
-                <div className="relative p-5 sm:p-6 text-center">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
-                    <Briefcase className="w-6 h-6 sm:w-8 sm:h-8 text-white/60" />
-                  </div>
-                  <h4 className="text-base sm:text-lg font-light text-theme-primary mb-2">Managers</h4>
-                  <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
-                    Full oversight, analytics, and setup control for their locations
-                  </p>
-                </div>
-              </div>
-
-              {/* Regional/HQ Level */}
-              <div className="group relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
-                <div className="relative p-5 sm:p-6 text-center">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
-                    <Building2 className="w-6 h-6 sm:w-8 sm:h-8 text-white/50" />
-                  </div>
-                  <h4 className="text-base sm:text-lg font-light text-theme-primary mb-2">Regional & HQ</h4>
-                  <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
-                    Cross-site insights, trends, and company-wide performance metrics
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* DAY JOURNEY SECTION */}
+      <DayJourneySection />
 
       {/* CTA SECTION - Refined */}
       <section className="relative py-20 sm:py-24 md:py-32 overflow-hidden">

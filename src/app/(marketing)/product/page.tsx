@@ -13,177 +13,8 @@ import {
   ListChecks,
   BarChart3,
   FileText,
-  AlertTriangle,
-  ChevronDown,
-  ChevronUp,
+  ArrowRight,
 } from '@/components/ui/icons';
-import { useState } from "react";
-
-const pitfallFeaturePairs = [
-  {
-    pitfall: {
-      title: "Inspection Panic",
-      description: "Compliance records scattered and manual exports cause stress before EHO visits.",
-      icon: AlertTriangle,
-    },
-    feature: {
-      title: "EHO-Ready Pack",
-      description: "Automatic compliance export that removes inspection panic.",
-      icon: Shield,
-    },
-  },
-  {
-    pitfall: {
-      title: "Routines Without Reset/Proof",
-      description: "Paper lists don't reset and lack logs or timestamps.",
-      icon: ClipboardCheck,
-    },
-    feature: {
-      title: "Smart Digital Checklists",
-      description: "Resets daily/weekly, logged and time-stamped.",
-      icon: ClipboardCheck,
-    },
-  },
-  {
-    pitfall: {
-      title: "Forged or Missed Temp Logs",
-      description: "Manual temperature logging can be skipped or falsified.",
-      icon: AlertTriangle,
-    },
-    feature: {
-      title: "Temperature Logging with Alerts",
-      description: "Live readings, no forged data.",
-      icon: Thermometer,
-    },
-  },
-  {
-    pitfall: {
-      title: "Breakdown Roulette",
-      description: "Reactive maintenance leads to unpredictable downtime and costs.",
-      icon: AlertTriangle,
-    },
-    feature: {
-      title: "Asset Register & PPM Scheduler",
-      description: "Predictable maintenance, no breakdown roulette.",
-      icon: Wrench,
-    },
-  },
-  {
-    pitfall: {
-      title: "Untracked Maintenance Issues",
-      description: "Problems lack evidence and stall without an end-to-end process.",
-      icon: AlertTriangle,
-    },
-    feature: {
-      title: "Maintenance & Fault Reporting",
-      description: "Photo-driven issue tracking with repair lifecycle.",
-      icon: Wrench,
-    },
-  },
-  {
-    pitfall: {
-      title: "Fragmented Multi-Site Visibility",
-      description: "Managers can't see performance and compliance across locations.",
-      icon: LayoutDashboard,
-    },
-    feature: {
-      title: "Multi-Site Dashboards",
-      description: "Full visibility across all operations.",
-      icon: LayoutDashboard,
-    },
-  },
-  {
-    pitfall: {
-      title: "No Early Warnings",
-      description: "Failures are caught too late without proactive notifications.",
-      icon: AlertTriangle,
-    },
-    feature: {
-      title: "Alerts & Escalations",
-      description: "Proactive warnings before something fails.",
-      icon: Bell,
-    },
-  },
-  {
-    pitfall: {
-      title: "No Audit Trail",
-      description: "Task completion is disputed or unverifiable.",
-      icon: FileText,
-    },
-    feature: {
-      title: "Task Verification & Audit Trail",
-      description: "Indisputable evidence of completion.",
-      icon: CheckCircle2,
-    },
-  },
-  {
-    pitfall: {
-      title: "Inconsistent SOPs",
-      description: "Policies and templates vary by site and team.",
-      icon: ListChecks,
-    },
-    feature: {
-      title: "Policy & Template Control",
-      description: "Company-wide SOP standardisation.",
-      icon: ListChecks,
-    },
-  },
-  {
-    pitfall: {
-      title: "Blind Spots in Trends",
-      description: "Compliance and cost trends aren't visible for decision-making.",
-      icon: BarChart3,
-    },
-    feature: {
-      title: "Reporting & Analytics",
-      description: "Data-driven insights into compliance and cost trends.",
-      icon: BarChart3,
-    },
-  },
-];
-
-const benefits = [
-  {
-    title: "Compliance without chaos",
-    description: "Logs, checks, and reports in one place. Be inspection-ready without last-minute firefighting.",
-  },
-  {
-    title: "Less reactive, more proactive",
-    description: "Automate alerts, track temperature and incidents, and cut noisy WhatsApp threads.",
-  },
-  {
-    title: "Built to scale",
-    description: "Start fast, roll out across sites, and keep your head office fully in the loop.",
-  },
-  {
-    title: "Single source of truth",
-    description: "One platform for tasks, checks, logs, and incidents so everyone stays aligned.",
-  },
-  {
-    title: "Bulletproof audit trails",
-    description: "Time-stamped records and attachments give you defensible proof when it matters.",
-  },
-  {
-    title: "Smart automation & workflows",
-    description: "Assign tasks, trigger follow-ups, and auto-escalate issues to the right people.",
-  },
-  {
-    title: "Real-time alerts & escalations",
-    description: "Get notified instantly, escalate when unresolved, and reduce noisy back-and-forth.",
-  },
-  {
-    title: "Role-based access",
-    description: "Secure permissions for managers, staff, and auditors keep data safe and relevant.",
-  },
-  {
-    title: "Integrations & API",
-    description: "Connect to your tools, export data, and automate with a flexible API.",
-  },
-  {
-    title: "Mobile-first for busy teams",
-    description: "Easy on phones and tablets so field teams can log and resolve quickly.",
-  },
-];
 
 const painPoints = [
   "Compliance records scattered everywhere",
@@ -199,309 +30,266 @@ const modules = [
     id: "checkly",
     name: "Checkly",
     tagline: "Never miss a check again",
-    color: "#F1E194",
+    color: "text-checkly",
     description: "Complete compliance and quality control system with digital checklists, temperature monitoring, and EHO-ready reporting.",
-    features: [
-      "Digital checklists & task management",
-      "Temperature monitoring & alerts",
-      "Asset management & PPM",
-      "SOPs & risk assessments",
-      "EHO readiness reporting",
-      "Maintenance & fault reporting",
-    ],
   },
   {
     id: "stockly",
     name: "Stockly",
     tagline: "Know what you have, everywhere",
-    color: "#789A99",
+    color: "text-stockly",
     description: "Multi-site inventory management with recipe costing, waste tracking, and automated purchasing.",
-    features: [
-      "Multi-site inventory tracking",
-      "Recipe costing & GP analysis",
-      "Waste tracking & reporting",
-      "Purchase orders & invoicing",
-      "Supplier management",
-      "Stock level alerts",
-    ],
   },
   {
     id: "teamly",
     name: "Teamly",
     tagline: "Your team, organized",
-    color: "#D37E91",
+    color: "text-teamly",
     description: "Complete HR and payroll solution with recruitment, scheduling, and performance management.",
-    features: [
-      "HR & recruitment",
-      "Training & certifications",
-      "Shift scheduling & rota",
-      "Payroll processing",
-      "Attendance & time tracking",
-      "Performance reviews",
-    ],
   },
   {
     id: "planly",
     name: "Planly",
     tagline: "Plan, produce, deliver",
-    color: "#ACC8A2",
+    color: "text-planly",
     description: "Production scheduling and order management for manufacturing and food production businesses.",
-    features: [
-      "Production scheduling",
-      "Order book management",
-      "Customer management",
-      "Delivery planning",
-      "Sales tracking & reporting",
-      "Inventory integration",
-    ],
   },
   {
     id: "assetly",
     name: "Assetly",
     tagline: "Keep assets running smoothly",
-    color: "#F3E7D9",
+    color: "text-assetly",
     description: "Equipment tracking and maintenance management with PPM scheduling and service history.",
-    features: [
-      "Equipment tracking",
-      "Maintenance scheduling",
-      "Service history logs",
-      "Asset performance metrics",
-      "Fault reporting",
-      "Spare parts management",
-    ],
   },
   {
     id: "msgly",
     name: "Msgly",
     tagline: "Team communication, simplified",
-    color: "#CBDDE9",
+    color: "text-msgly",
     description: "Team chat, channels, and task management to replace noisy WhatsApp threads.",
-    features: [
-      "Team chat & channels",
-      "Task assignments",
-      "File sharing",
-      "Meeting scheduling",
-      "Direct messaging",
-      "Channel notifications",
-    ],
   },
 ];
 
-function ExpandablePair({ pair, index }: { pair: typeof pitfallFeaturePairs[0]; index: number }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md border border-white/20 overflow-hidden">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-6 text-left flex items-center justify-between hover:bg-white/[0.05] transition"
-      >
-        <div className="flex items-center gap-4">
-          <div className="flex items-center space-x-2">
-            <pair.pitfall.icon className="w-5 h-5 text-white/50" />
-            <span className="text-base font-semibold text-theme-primary">{pair.pitfall.title}</span>
-          </div>
-          <span className="text-theme-tertiary">→</span>
-          <div className="flex items-center space-x-2">
-            <pair.feature.icon className="w-5 h-5 text-white/70" />
-            <span className="text-base font-semibold text-white/70">{pair.feature.title}</span>
-          </div>
-        </div>
-        {isOpen ? (
-          <ChevronUp className="w-5 h-5 text-theme-tertiary" />
-        ) : (
-          <ChevronDown className="w-5 h-5 text-theme-tertiary" />
-        )}
-      </button>
-      {isOpen && (
-        <div className="px-6 pb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-lg bg-white/[0.02] p-4 border border-white/10">
-            <p className="text-theme-tertiary text-sm leading-relaxed">{pair.pitfall.description}</p>
-          </div>
-          <div className="rounded-lg bg-white/[0.02] p-4 border border-white/15">
-            <p className="text-theme-secondary text-sm leading-relaxed">{pair.feature.description}</p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+const howItWorks = [
+  {
+    problem: "Inspection Panic",
+    solution: "EHO-Ready Pack",
+    detail: "Automatic compliance export replaces last-minute scrambling before EHO visits.",
+    problemIcon: FileText,
+    solutionIcon: Shield,
+  },
+  {
+    problem: "Routines Without Proof",
+    solution: "Smart Digital Checklists",
+    detail: "Resets daily, logged and time-stamped. No more disputed completions.",
+    problemIcon: ClipboardCheck,
+    solutionIcon: ClipboardCheck,
+  },
+  {
+    problem: "Forged or Missed Temp Logs",
+    solution: "Temperature Logging with Alerts",
+    detail: "Live readings with breach alerts. No more manual logs you can't trust.",
+    problemIcon: Thermometer,
+    solutionIcon: Thermometer,
+  },
+  {
+    problem: "Breakdown Roulette",
+    solution: "Asset Register & PPM Scheduler",
+    detail: "Predictable maintenance replaces expensive reactive call-outs.",
+    problemIcon: Wrench,
+    solutionIcon: Wrench,
+  },
+  {
+    problem: "Fragmented Visibility",
+    solution: "Multi-Site Dashboards",
+    detail: "Full performance and compliance visibility across every location from one login.",
+    problemIcon: LayoutDashboard,
+    solutionIcon: LayoutDashboard,
+  },
+  {
+    problem: "No Early Warnings",
+    solution: "Alerts & Escalations",
+    detail: "Proactive notifications before something fails. Auto-escalate when unresolved.",
+    problemIcon: Bell,
+    solutionIcon: Bell,
+  },
+  {
+    problem: "No Audit Trail",
+    solution: "Task Verification & Evidence",
+    detail: "Time-stamped records and photo evidence give you defensible proof.",
+    problemIcon: FileText,
+    solutionIcon: CheckCircle2,
+  },
+  {
+    problem: "Inconsistent SOPs",
+    solution: "Policy & Template Control",
+    detail: "Company-wide SOP standardisation. One version of truth across all sites.",
+    problemIcon: ListChecks,
+    solutionIcon: ListChecks,
+  },
+  {
+    problem: "Blind Spots in Trends",
+    solution: "Reporting & Analytics",
+    detail: "Data-driven insights into compliance, cost, and performance trends.",
+    problemIcon: BarChart3,
+    solutionIcon: BarChart3,
+  },
+];
 
 export default function ProductPage() {
   return (
     <>
-      {/* Single DarkVeil Background Container */}
-      <div className="relative overflow-hidden">
-        {/* Single DarkVeil Background - covers all sections */}
+      {/* HERO with DarkVeil */}
+      <section className="relative text-center pt-6 pb-16 sm:pb-20 md:pt-8 md:pb-24 min-h-[350px] sm:min-h-[400px] flex flex-col justify-start overflow-hidden">
         <div className="absolute inset-0 w-full h-full -z-0">
-          <div className="w-full h-full min-h-screen">
+          <div className="w-full h-full">
             <DarkVeil />
           </div>
         </div>
-
-        {/* HERO */}
-        <section className="relative text-center pt-6 pb-8 sm:pb-10 md:pt-8 md:pb-12 min-h-[350px] sm:min-h-[400px] flex flex-col justify-start">
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-10 pt-6 sm:pt-8">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold leading-[1.15] text-[#e8e8e8] mb-4 sm:mb-6 px-2">
-              One platform. Complete operations. Zero chaos.
-            </h1>
-            <p className="text-base sm:text-lg md:text-xl text-checkly-gray max-w-2xl mx-auto mb-6 sm:mb-8 px-4">
-              From compliance to inventory, people to production—everything your multi-site operation needs.
-            </p>
-            <div className="flex justify-center gap-3 sm:gap-4 mb-0 px-4">
-              <Link href="/signup" className="btn-marketing-primary">
-                Get Started
-              </Link>
-            </div>
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-light leading-[1.15] text-[#e8e8e8] mb-4 sm:mb-6">
+            One platform.{' '}
+            <span className="font-normal">Complete operations.</span>
+          </h1>
+          <p className="text-base sm:text-lg text-theme-tertiary max-w-2xl mx-auto mb-8">
+            From compliance to inventory, people to production — everything your multi-site operation needs.
+          </p>
+          <div className="flex justify-center gap-4">
+            <Link href="/signup" className="btn-marketing-primary text-sm sm:text-base">
+              Start Free Trial
+            </Link>
+            <Link href="/contact" className="btn-marketing-secondary text-sm sm:text-base">
+              Book a Demo
+            </Link>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* THE PROBLEM */}
-        <section className="relative px-4 sm:px-6 -mt-12 sm:-mt-16 md:-mt-24 pb-10 sm:pb-14 text-gray-200">
-          <div className="relative z-10 max-w-7xl mx-auto mb-6 sm:mb-8 px-4 sm:px-6">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-theme-primary mb-2">
-              The Problem
+      {/* THE PROBLEM */}
+      <section className="relative py-16 sm:py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/30 to-transparent" />
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          <div className="text-center mb-10 sm:mb-14">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-light text-theme-primary mb-3">
+              Sound Familiar?
             </h2>
           </div>
-          <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {painPoints.map((point, idx) => (
               <div
                 key={idx}
-                className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-white/20 hover:shadow-[0_0_10px_rgba(255,255,255,0.08)] transition"
+                className="p-5 rounded-xl border border-white/5 bg-white/[0.02] hover:border-white/10 transition-all duration-300"
               >
                 <p className="text-theme-tertiary text-sm leading-relaxed">{point}</p>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* THE SOLUTION - 6 MODULES */}
-        <section className="relative px-4 sm:px-6 pb-10 sm:pb-14 text-gray-200">
-          <div className="relative z-10 max-w-7xl mx-auto mb-6 sm:mb-8 px-4 sm:px-6">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-theme-primary mb-2">
-              The Solution
+      {/* SIX MODULES */}
+      <section className="relative py-16 sm:py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-950/10 to-transparent" />
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          <div className="text-center mb-10 sm:mb-14">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-light text-theme-primary mb-3">
+              Six Modules.{' '}
+              <span className="text-[#e8e8e8]">One Platform.</span>
             </h2>
-          </div>
-          <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {modules.map((module) => (
-              <div
-                key={module.id}
-                className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-white/20 hover:shadow-[0_0_10px_rgba(255,255,255,0.08)] transition"
-              >
-                <h3 className="text-xl font-semibold text-theme-primary mb-2">{module.name}</h3>
-                <p className="text-white/70 text-sm mb-3">{module.tagline}</p>
-                <p className="text-theme-tertiary text-sm mb-4 leading-relaxed">{module.description}</p>
-                <Link href={`#${module.id}`} className="text-white/70 hover:text-white text-sm font-medium">
-                  Learn more →
-                </Link>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* HOW IT WORKS - Pitfall-Feature Pairs */}
-        <section className="relative px-4 sm:px-6 pb-10 sm:pb-14 text-gray-200">
-          <div className="relative z-10 max-w-7xl mx-auto mb-6 sm:mb-8 px-4 sm:px-6">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-theme-primary mb-2">
-              How It Works
-            </h2>
-          </div>
-          <div className="relative z-10 max-w-7xl mx-auto space-y-4">
-            {pitfallFeaturePairs.map((pair, idx) => (
-              <ExpandablePair key={idx} pair={pair} index={idx} />
-            ))}
-          </div>
-        </section>
-
-        {/* MODULE DEEP-DIVES */}
-        {modules.map((module) => (
-          <section
-            key={module.id}
-            id={module.id}
-            className="relative px-4 sm:px-6 pb-10 sm:pb-14 text-gray-200 scroll-mt-20"
-          >
-            <div className="relative z-10 max-w-7xl mx-auto mb-6 sm:mb-8 px-4 sm:px-6">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-2" style={{ color: module.color }}>
-                {module.name}
-              </h2>
-              <p className="text-center text-white/70 text-sm sm:text-base">{module.tagline}</p>
-            </div>
-            <div className="relative z-10 max-w-7xl mx-auto">
-              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 sm:p-8 border border-white/20">
-                <p className="text-theme-tertiary mb-6 leading-relaxed">{module.description}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {module.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-start gap-2">
-                      <CheckCircle2 className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: `${module.color}99` }} />
-                      <span className="text-sm text-theme-tertiary">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-                {/* Screenshot placeholder */}
-                <div className="mt-6 aspect-video rounded-lg bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10" />
-              </div>
-            </div>
-          </section>
-        ))}
-
-        {/* KEY BENEFITS */}
-        <section className="relative px-4 sm:px-6 pb-10 sm:pb-14 text-gray-200">
-          <div className="relative z-10 max-w-7xl mx-auto mb-6 sm:mb-8 px-4 sm:px-6">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-theme-primary mb-2">
-              Key Benefits
-            </h2>
-          </div>
-          <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {benefits.map((benefit, idx) => (
-              <div
-                key={idx}
-                className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-white/20 hover:shadow-[0_0_10px_rgba(255,255,255,0.08)] transition"
-              >
-                <h3 className="text-xl font-semibold text-theme-primary mb-2">{benefit.title}</h3>
-                <p className="text-theme-tertiary text-sm leading-relaxed">{benefit.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="relative px-4 sm:px-6 pb-10 sm:pb-14 text-gray-200">
-          <div className="relative z-10 max-w-7xl mx-auto text-center">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-theme-primary mb-4">
-              Ready to Get Started?
-            </h2>
-            <p className="text-theme-tertiary mb-6 max-w-2xl mx-auto">
-              Join businesses that replaced fragmented tools with Opsly
+            <p className="text-theme-tertiary text-sm sm:text-base max-w-2xl mx-auto">
+              Each module works on its own. Together, they replace your entire ops stack.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/signup" className="btn-marketing-primary">
-                Start Free Trial
-              </Link>
-              <Link href="/contact" className="btn-marketing-secondary">
-                Book a Demo
-              </Link>
-            </div>
           </div>
-        </section>
-      </div>
-
-      {/* FOOTER */}
-      <footer className="bg-checkly-dark text-checkly-light py-4 sm:py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 flex flex-col md:flex-row justify-between items-center text-sm gap-4">
-          <p>© {new Date().getFullYear()} Opsly. All rights reserved.</p>
-          <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
-            <Link href="/privacy" className="hover:underline">
-              Privacy
-            </Link>
-            <Link href="/terms" className="hover:underline">
-              Terms
-            </Link>
-            <Link href="/contact" className="hover:underline">
-              Contact
-            </Link>
+          <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {modules.map((mod) => (
+              <div
+                key={mod.id}
+                className="group relative"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
+                <div className="relative p-6 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300 h-full">
+                  <h3 className={`text-lg font-medium ${mod.color} mb-1`}>{mod.name}</h3>
+                  <p className="text-white/50 text-xs mb-3">{mod.tagline}</p>
+                  <p className="text-theme-tertiary text-sm leading-relaxed">{mod.description}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </footer>
+      </section>
+
+      {/* HOW IT WORKS - Flat pairs */}
+      <section className="relative py-16 sm:py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/30 to-transparent" />
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          <div className="text-center mb-10 sm:mb-14">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-light text-theme-primary mb-3">
+              How It{' '}
+              <span className="text-[#e8e8e8]">Works</span>
+            </h2>
+            <p className="text-theme-tertiary text-sm sm:text-base max-w-2xl mx-auto">
+              Every common operational headache has a built-in answer
+            </p>
+          </div>
+          <div className="max-w-3xl mx-auto space-y-4">
+            {howItWorks.map((item, idx) => {
+              const SolutionIcon = item.solutionIcon;
+              return (
+                <div
+                  key={idx}
+                  className="flex items-start gap-4 p-5 rounded-xl border border-white/5 bg-white/[0.02] hover:border-white/10 transition-all duration-300"
+                >
+                  <div className="flex-shrink-0 mt-0.5">
+                    <SolutionIcon className="w-5 h-5 text-white/30" strokeWidth={1.5} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-white/40 text-sm line-through decoration-white/20">{item.problem}</span>
+                      <ArrowRight className="w-3 h-3 text-white/20 flex-shrink-0" />
+                      <span className="text-theme-primary text-sm font-medium">{item.solution}</span>
+                    </div>
+                    <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">{item.detail}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="relative py-20 sm:py-24 md:py-32 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-900/95 to-black" />
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full filter blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full filter blur-3xl" />
+        </div>
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-theme-primary mb-4 sm:mb-6">
+              Ready to Simplify Your{' '}
+              <span className="text-[#e8e8e8]">Operations</span>?
+            </h2>
+            <p className="text-theme-tertiary text-base sm:text-lg mb-8 sm:mb-12">
+              Join businesses that replaced fragmented tools with Opsly
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link href="/contact" className="btn-marketing-secondary text-sm sm:text-base">
+                Book a Demo
+              </Link>
+              <Link href="/signup" className="btn-marketing-primary text-sm sm:text-base">
+                Start Free Trial
+              </Link>
+            </div>
+            <div className="mt-8 sm:mt-12 flex items-center justify-center gap-2 text-xs sm:text-sm text-theme-tertiary">
+              <CheckCircle2 className="w-4 h-4" />
+              <span>No credit card required</span>
+              <span className="text-theme-secondary">·</span>
+              <span>14-day free trial</span>
+            </div>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
