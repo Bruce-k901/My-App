@@ -2,11 +2,11 @@
   "crons": [
     {
       "path": "/api/cron/health-check",
-      "schedule": "0 6 * * 3"
+      "schedule": "0 3 * * *"
     },
     {
       "path": "/api/cron/health-check-reminders",
-      "schedule": "0 * * * *"
+      "schedule": "0 3 * * *"
     }
   ],
   "buildCommand": "npm run build",
