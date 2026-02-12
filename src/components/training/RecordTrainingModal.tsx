@@ -221,8 +221,8 @@ export default function RecordTrainingModal({
     }
   };
 
-  const inputClass = 'w-full px-3 py-2 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
-  const labelClass = 'block text-sm font-medium text-gray-700 dark:text-white/80 mb-1.5';
+  const inputClass = 'w-full px-3 py-2 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
+  const labelClass = 'block text-sm font-medium text-theme-secondary mb-1.5';
 
   // Find employee/course display names for locked fields
   const lockedEmployeeName = employeeName || employees.find(e => e.id === formData.profile_id)?.full_name;
@@ -337,7 +337,7 @@ export default function RecordTrainingModal({
                 className={inputClass}
               />
               {selectedCourse?.certification_validity_months && !isEditMode && (
-                <p className="text-xs text-gray-500 dark:text-white/50 mt-1">
+                <p className="text-xs text-theme-tertiary mt-1">
                   Auto-calculated: {selectedCourse.certification_validity_months} months from completion
                 </p>
               )}
@@ -405,7 +405,7 @@ export default function RecordTrainingModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-sm text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white transition-colors"
+                className="px-4 py-2 text-sm text-theme-secondary hover:text-theme-primary transition-colors"
               >
                 Cancel
               </button>

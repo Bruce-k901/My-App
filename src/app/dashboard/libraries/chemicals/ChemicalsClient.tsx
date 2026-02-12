@@ -545,19 +545,19 @@ export default function ChemicalsClient() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-2 h-8 bg-[#D37E91] rounded-full"></div>
+            <div className="w-2 h-8 bg-module-fg rounded-full"></div>
             <div>
-              <h1 className="text-lg font-semibold text-white">Chemicals Library</h1>
-              <p className="text-sm text-neutral-400">Manage cleaning chemicals and COSHH data</p>
+              <h1 className="text-lg font-semibold text-theme-primary">Chemicals Library</h1>
+              <p className="text-sm text-theme-tertiary">Manage cleaning chemicals and COSHH data</p>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={handleUploadClick} className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-white flex items-center gap-2">
+          <button onClick={handleUploadClick} className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary flex items-center gap-2">
             <Upload size={16} />
             Upload CSV
           </button>
-          <button onClick={handleDownloadCSV} className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-white flex items-center gap-2">
+          <button onClick={handleDownloadCSV} className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary flex items-center gap-2">
             <Download size={16} />
             Download CSV
           </button>
@@ -611,7 +611,7 @@ export default function ChemicalsClient() {
               setNewRowIds(prev => new Set(prev).add(tempId));
             }}
             aria-label="Add Chemical"
-            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-[0_0_14px_rgba(233,0,126,0.55)] transition"
+            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-module-glow transition"
           >
             <Plus size={18} />
             <span className="sr-only">Add Chemical</span>
@@ -620,24 +620,24 @@ export default function ChemicalsClient() {
       </div>
 
       <div className="flex-1 relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-tertiary" size={20} />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search chemicals..."
-          className="w-full bg-neutral-800 border border-neutral-600 rounded-lg pl-10 pr-4 py-2 text-white placeholder-neutral-400"
+          className="w-full bg-neutral-800 border border-neutral-600 rounded-lg pl-10 pr-4 py-2 text-theme-primary placeholder-neutral-400"
         />
       </div>
 
       {loading ? (
-        <div className="text-neutral-400 text-center py-8">Loading chemicals...</div>
+        <div className="text-theme-tertiary text-center py-8">Loading chemicals...</div>
       ) : filteredItems.length === 0 ? (
-        <div className="bg-neutral-800/50 rounded-xl p-8 text-center border border-neutral-700">
-          <p className="text-neutral-400">No chemicals found.</p>
+        <div className="bg-neutral-800/50 rounded-xl p-8 text-center border border-theme">
+          <p className="text-theme-tertiary">No chemicals found.</p>
         </div>
       ) : (
-        <div className="bg-neutral-800/50 rounded-xl border border-neutral-700 overflow-hidden">
+        <div className="bg-neutral-800/50 rounded-xl border border-theme overflow-hidden">
           <table className="w-full">
             <thead className="bg-neutral-900">
               <tr>
@@ -652,20 +652,20 @@ export default function ChemicalsClient() {
                 const expanded = expandedRows.has(item.id);
                 return (
                   <React.Fragment key={item.id}>
-                    <tr className="border-t border-neutral-700 hover:bg-neutral-800/50">
+                    <tr className="border-t border-theme hover:bg-neutral-800/50">
                       <td className="px-2 py-3 align-top">
                         <button
                           aria-label={expanded ? 'Collapse' : 'Expand'}
                           onClick={() => toggleRow(item.id)}
-                          className="p-1 rounded hover:bg-neutral-800 text-neutral-300"
+                          className="p-1 rounded hover:bg-neutral-800 text-theme-tertiary"
                         >
                           {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         </button>
                       </td>
-                      <td className="px-4 py-3 text-white">
+                      <td className="px-4 py-3 text-theme-primary">
                         {editingRowId === item.id ? (
                           <input
-                            className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                            className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                             value={rowDraft?.product_name ?? ''}
                             onChange={(e) => setRowDraft((d: any) => ({ ...d, product_name: e.target.value }))}
                           />
@@ -673,15 +673,15 @@ export default function ChemicalsClient() {
                           <div className="flex items-center gap-2">
                             <span>{item.product_name}</span>
                             {item.supplier && (
-                              <span className="text-neutral-400 text-sm">• {item.supplier}</span>
+                              <span className="text-theme-tertiary text-sm">• {item.supplier}</span>
                             )}
                           </div>
                         )}
                       </td>
-                      <td className="px-2 py-3 text-neutral-400 text-sm whitespace-nowrap">
+                      <td className="px-2 py-3 text-theme-tertiary text-sm whitespace-nowrap">
                         {editingRowId === item.id ? (
                           <input
-                            className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                            className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                             value={rowDraft?.manufacturer ?? ''}
                             onChange={(e) => setRowDraft((d: any) => ({ ...d, manufacturer: e.target.value }))}
                           />
@@ -689,10 +689,10 @@ export default function ChemicalsClient() {
                           item.manufacturer || '-'
                         )}
                       </td>
-                      <td className="px-2 py-3 text-neutral-400 text-sm whitespace-nowrap">
+                      <td className="px-2 py-3 text-theme-tertiary text-sm whitespace-nowrap">
                         {editingRowId === item.id ? (
                           <input
-                            className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                            className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                             value={rowDraft?.pack_size ?? ''}
                             onChange={(e) => setRowDraft((d: any) => ({ ...d, pack_size: e.target.value }))}
                           />
@@ -705,43 +705,43 @@ export default function ChemicalsClient() {
                       <tr className="border-t border-neutral-800/60">
                         <td colSpan={4} className="px-4 py-4 bg-neutral-900/40">
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Use Case</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Use Case</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   value={rowDraft?.use_case ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, use_case: e.target.value }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{item.use_case || '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.use_case || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Hazards</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Hazards</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   placeholder="Comma-separated"
                                   value={(rowDraft?.hazard_symbols || []).join(', ')}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, hazard_symbols: e.target.value.split(',').map(s => s.trim()).filter(Boolean) }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white flex items-center gap-2">
+                                <div className="text-sm text-theme-primary flex items-center gap-2">
                                   {item.hazard_symbols && item.hazard_symbols.length > 0 ? (
                                     <>
                                       <AlertTriangle size={14} className="text-red-400" />
                                       <span>{item.hazard_symbols.join(', ')}</span>
                                     </>
                                   ) : (
-                                    <span className="text-neutral-400">None</span>
+                                    <span className="text-theme-tertiary">None</span>
                                   )}
                                 </div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">COSHH Sheet</div>
-                              <div className="text-sm text-white flex items-center gap-2">
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">COSHH Sheet</div>
+                              <div className="text-sm text-theme-primary flex items-center gap-2">
                                 {item.hasCOSHHSheet ? (
                                   <>
                                     <CheckCircle size={16} className="text-green-400" />
@@ -755,98 +755,98 @@ export default function ChemicalsClient() {
                                 )}
                               </div>
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Contact Time</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Contact Time</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   value={rowDraft?.contact_time ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, contact_time: e.target.value }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{item.contact_time || '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.contact_time || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Dilution</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Dilution</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   value={rowDraft?.dilution_ratio ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, dilution_ratio: e.target.value }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{item.dilution_ratio || '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.dilution_ratio || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Required PPE</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Required PPE</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   placeholder="Comma-separated"
                                   value={(rowDraft?.required_ppe || []).join(', ')}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, required_ppe: e.target.value.split(',').map(s => s.trim()).filter(Boolean) }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{(item.required_ppe || []).join(', ') || '-'}</div>
+                                <div className="text-sm text-theme-primary">{(item.required_ppe || []).join(', ') || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Supplier</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Supplier</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   value={rowDraft?.supplier ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, supplier: e.target.value }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{item.supplier || '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.supplier || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Unit Cost</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Unit Cost</div>
                               {editingRowId === item.id ? (
                                 <input
                                   type="number"
                                   step="0.01"
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   value={rowDraft?.unit_cost ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, unit_cost: e.target.value }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{item.unit_cost ? `£${item.unit_cost}` : '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.unit_cost ? `£${item.unit_cost}` : '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Storage</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Storage</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   value={rowDraft?.storage_requirements ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, storage_requirements: e.target.value }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{item.storage_requirements || '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.storage_requirements || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Linked Risks</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Linked Risks</div>
                               {editingRowId === item.id ? (
                                 <input
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary"
                                   placeholder="Comma-separated"
                                   value={(rowDraft?.linked_risks || []).join(', ')}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, linked_risks: e.target.value.split(',').map(s => s.trim()).filter(Boolean) }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white">{(item.linked_risks || []).join(', ') || '-'}</div>
+                                <div className="text-sm text-theme-primary">{(item.linked_risks || []).join(', ') || '-'}</div>
                               )}
                             </div>
                             
                             {/* Stockly Fields Section */}
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3 md:col-span-2 lg:col-span-3">
-                              <div className="text-xs font-semibold text-neutral-300 mb-2 uppercase">Stock Management</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs font-semibold text-theme-tertiary mb-2 uppercase">Stock Management</div>
                               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                                 <div className="flex items-center gap-2">
                                   {editingRowId === item.id ? (
@@ -854,49 +854,49 @@ export default function ChemicalsClient() {
                                   ) : (
                                     <input type="checkbox" checked={item.track_stock ?? false} disabled className="w-4 h-4 rounded border-neutral-600 bg-neutral-800" />
                                   )}
-                                  <label className="text-xs text-neutral-400">Track Stock</label>
+                                  <label className="text-xs text-theme-tertiary">Track Stock</label>
                                 </div>
                               </div>
                             </div>
                             
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">SKU</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">SKU</div>
                               {editingRowId === item.id ? (
-                                <input className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.sku ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, sku: e.target.value }))} />
+                                <input className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary" value={rowDraft?.sku ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, sku: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-white">{item.sku || '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.sku || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Current Stock</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Current Stock</div>
                               {editingRowId === item.id ? (
-                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.current_stock ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, current_stock: e.target.value }))} />
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary" value={rowDraft?.current_stock ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, current_stock: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-white">{item.current_stock != null ? item.current_stock : '0'}</div>
+                                <div className="text-sm text-theme-primary">{item.current_stock != null ? item.current_stock : '0'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Par Level</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Par Level</div>
                               {editingRowId === item.id ? (
-                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.par_level ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, par_level: e.target.value }))} />
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary" value={rowDraft?.par_level ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, par_level: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-white">{item.par_level != null ? item.par_level : '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.par_level != null ? item.par_level : '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Reorder Point</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Reorder Point</div>
                               {editingRowId === item.id ? (
-                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.reorder_point ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_point: e.target.value }))} />
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary" value={rowDraft?.reorder_point ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_point: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-white">{item.reorder_point != null ? item.reorder_point : '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.reorder_point != null ? item.reorder_point : '-'}</div>
                               )}
                             </div>
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                              <div className="text-xs text-neutral-400">Reorder Qty</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Reorder Qty</div>
                               {editingRowId === item.id ? (
-                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white" value={rowDraft?.reorder_qty ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_qty: e.target.value }))} />
+                                <input type="number" step="0.01" className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary" value={rowDraft?.reorder_qty ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_qty: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-white">{item.reorder_qty != null ? item.reorder_qty : '-'}</div>
+                                <div className="text-sm text-theme-primary">{item.reorder_qty != null ? item.reorder_qty : '-'}</div>
                               )}
                             </div>
                             {item.low_stock_alert && (
@@ -905,22 +905,22 @@ export default function ChemicalsClient() {
                               </div>
                             )}
                             {item.stock_value != null && item.stock_value > 0 && (
-                              <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3">
-                                <div className="text-xs text-neutral-400">Stock Value</div>
-                                <div className="text-sm text-white">£{item.stock_value.toFixed(2)}</div>
+                              <div className="bg-neutral-800/60 border border-theme rounded-lg p-3">
+                                <div className="text-xs text-theme-tertiary">Stock Value</div>
+                                <div className="text-sm text-theme-primary">£{item.stock_value.toFixed(2)}</div>
                               </div>
                             )}
                             
-                            <div className="bg-neutral-800/60 border border-neutral-700 rounded-lg p-3 md:col-span-2 lg:col-span-3">
-                              <div className="text-xs text-neutral-400">Notes</div>
+                            <div className="bg-neutral-800/60 border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs text-theme-tertiary">Notes</div>
                               {editingRowId === item.id ? (
                                 <textarea
-                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white min-h-[80px]"
+                                  className="w-full bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-theme-primary min-h-[80px]"
                                   value={rowDraft?.notes ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, notes: e.target.value }))}
                                 />
                               ) : (
-                                <div className="text-sm text-white whitespace-pre-wrap">{item.notes || '-'}</div>
+                                <div className="text-sm text-theme-primary whitespace-pre-wrap">{item.notes || '-'}</div>
                               )}
                             </div>
                           </div>
@@ -929,7 +929,7 @@ export default function ChemicalsClient() {
                               <>
                                 <button
                                   onClick={() => saveRowEdit(item.id)}
-                                  className="px-3 py-2 rounded-lg border border-magenta-500/60 text-white bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-[0_0_14px_rgba(233,0,126,0.55)] transition flex items-center gap-2"
+                                  className="px-3 py-2 rounded-lg border border-magenta-500/60 text-theme-primary bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-module-glow transition flex items-center gap-2"
                                 >
                                   <Save size={16} className="text-magenta-400" />
                                   <span>Save</span>
@@ -952,8 +952,8 @@ export default function ChemicalsClient() {
                                   } else {
                                     cancelRowEdit();
                                   }
-                                }} className="px-3 py-2 rounded-lg border border-neutral-600 text-white bg-white/5 backdrop-blur-sm hover:bg-white/10 transition flex items-center gap-2">
-                                  <X size={16} className="text-neutral-300" />
+                                }} className="px-3 py-2 rounded-lg border border-neutral-600 text-theme-primary bg-white/5 backdrop-blur-sm hover:bg-white/10 transition flex items-center gap-2">
+                                  <X size={16} className="text-theme-tertiary" />
                                   <span>Cancel</span>
                                 </button>
                               </>
@@ -962,7 +962,7 @@ export default function ChemicalsClient() {
                                 <button
                                   aria-label="Edit Chemical"
                                   onClick={() => handleEdit(item)}
-                                  className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-[0_0_14px_rgba(233,0,126,0.55)] transition"
+                                  className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-module-glow transition"
                                 >
                                   <Edit size={16} />
                                   <span className="sr-only">Edit</span>
@@ -970,7 +970,7 @@ export default function ChemicalsClient() {
                                 <button
                                   aria-label="Delete Chemical"
                                   onClick={() => handleDelete(item.id)}
-                                  className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-red-500/60 text-red-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-red-400 hover:shadow-[0_0_14px_rgba(239,68,68,0.55)] transition"
+                                  className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-red-500/60 text-red-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-red-400 hover:shadow-module-glow transition"
                                 >
                                   <Trash2 size={16} />
                                   <span className="sr-only">Delete</span>
@@ -991,9 +991,9 @@ export default function ChemicalsClient() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-neutral-900 rounded-xl border border-neutral-700 p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-neutral-900 rounded-xl border border-theme p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-theme-primary">
                 {editingItem ? 'Edit Chemical' : 'Add Chemical'}
               </h2>
               <button
@@ -1002,7 +1002,7 @@ export default function ChemicalsClient() {
                   setEditingItem(null);
                   resetForm();
                 }}
-                className="text-neutral-400 hover:text-white"
+                className="text-theme-tertiary hover:text-white"
               >
                 <X size={20} />
               </button>

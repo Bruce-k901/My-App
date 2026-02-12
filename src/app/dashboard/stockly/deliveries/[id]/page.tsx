@@ -1615,9 +1615,9 @@ export default function DeliveryReviewPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
+      <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-white">Loading delivery...</div>
+          <div className="text-theme-primary">Loading delivery...</div>
         </div>
       </div>
     );
@@ -1625,9 +1625,9 @@ export default function DeliveryReviewPage() {
 
   if (!delivery) {
     return (
-      <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
+      <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-white">Delivery not found</div>
+          <div className="text-theme-primary">Delivery not found</div>
         </div>
       </div>
     );
@@ -1646,7 +1646,7 @@ export default function DeliveryReviewPage() {
   }, 0) || 0;
 
   return (
-    <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
+    <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-4 md:p-8">
       <div className="max-w-[95rem] mx-auto">
         {/* Header */}
         <div className="mb-6">
@@ -1661,10 +1661,10 @@ export default function DeliveryReviewPage() {
 
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold text-theme-primary mb-2">
                 Review Delivery
               </h1>
-              <p className="text-slate-400 text-sm">
+              <p className="text-theme-tertiary text-sm">
                 {delivery.supplier?.name} • {formatDate(delivery.delivery_date)}
               </p>
             </div>
@@ -1682,8 +1682,8 @@ export default function DeliveryReviewPage() {
           <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/30 rounded-xl p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-lg font-semibold text-white">Matching Purchase Orders Found</h2>
-                <p className="text-sm text-slate-400 mt-1">
+                <h2 className="text-lg font-semibold text-theme-primary">Matching Purchase Orders Found</h2>
+                <p className="text-sm text-theme-tertiary mt-1">
                   {suggestedPOs.length} order{suggestedPOs.length > 1 ? 's' : ''} from {delivery.supplier?.name} match this delivery
                 </p>
               </div>
@@ -1699,13 +1699,13 @@ export default function DeliveryReviewPage() {
                   className={`p-4 rounded-lg border transition-colors ${
                     idx === 0
                       ? 'bg-blue-500/10 border-blue-500/40'
-                      : 'bg-white/[0.03] border-neutral-700 hover:border-neutral-600'
+                      : 'bg-white/[0.03] border-theme hover:border-neutral-600'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3">
-                        <span className="text-lg font-semibold text-white">{po.order_number}</span>
+                        <span className="text-lg font-semibold text-theme-primary">{po.order_number}</span>
                         {idx === 0 && (
                           <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/20 text-green-400 border border-green-500/30">
                             Best Match
@@ -1715,14 +1715,14 @@ export default function DeliveryReviewPage() {
                           Score: {po.matchScore}
                         </span>
                       </div>
-                      <div className="text-sm text-slate-400 mt-1">
+                      <div className="text-sm text-theme-tertiary mt-1">
                         Ordered: {formatDate(po.order_date)}
                         {po.expected_delivery && (
                           <span> • Expected: {formatDate(po.expected_delivery)}</span>
                         )}
                         <span> • {po.lines?.length || 0} items • {formatCurrency(po.total)}</span>
                       </div>
-                      <div className="text-xs text-slate-500 mt-1">{po.matchReason}</div>
+                      <div className="text-xs text-theme-tertiary mt-1">{po.matchReason}</div>
                     </div>
                     <Button
                       onClick={() => linkDeliveryToPO(po.id)}
@@ -1737,8 +1737,8 @@ export default function DeliveryReviewPage() {
               ))}
             </div>
 
-            <div className="mt-4 pt-4 border-t border-neutral-700 flex items-center justify-between">
-              <span className="text-xs text-slate-500">
+            <div className="mt-4 pt-4 border-t border-theme flex items-center justify-between">
+              <span className="text-xs text-theme-tertiary">
                 Not the right order? See all orders below or <button
                   onClick={() => {
                     fetchAvailablePOs(delivery.supplier_id);
@@ -1751,7 +1751,7 @@ export default function DeliveryReviewPage() {
               </span>
               <button
                 onClick={() => setSuggestedPOs([])}
-                className="text-xs text-slate-500 hover:text-slate-400"
+                className="text-xs text-theme-tertiary hover:text-theme-tertiary"
               >
                 Dismiss
               </button>
@@ -1764,16 +1764,16 @@ export default function DeliveryReviewPage() {
           <div className={`border rounded-xl p-6 mb-6 ${
             suggestedPOs.length === 0
               ? 'bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30'
-              : 'bg-white/[0.02] border-neutral-700'
+              : 'bg-white/[0.02] border-theme'
           }`}>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-lg font-semibold text-white">
+                <h2 className="text-lg font-semibold text-theme-primary">
                   {suggestedPOs.length === 0
                     ? `Select Purchase Order from ${delivery.supplier?.name}`
                     : `All Orders from ${delivery.supplier?.name}`}
                 </h2>
-                <p className="text-sm text-slate-400 mt-1">
+                <p className="text-sm text-theme-tertiary mt-1">
                   {suggestedPOs.length === 0
                     ? `No automatic matches found. ${availablePOs.length} order${availablePOs.length > 1 ? 's' : ''} available to link manually.`
                     : `${availablePOs.length - suggestedPOs.length} additional order${(availablePOs.length - suggestedPOs.length) !== 1 ? 's' : ''} available`}
@@ -1793,12 +1793,12 @@ export default function DeliveryReviewPage() {
                 return (
                   <div
                     key={po.id}
-                    className="p-3 rounded-lg border bg-white/[0.02] border-neutral-700 hover:border-neutral-600 transition-colors"
+                    className="p-3 rounded-lg border bg-white/[0.02] border-theme hover:border-neutral-600 transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3">
-                          <span className="font-medium text-white">{po.order_number}</span>
+                          <span className="font-medium text-theme-primary">{po.order_number}</span>
                           <span className={`px-2 py-0.5 text-xs rounded-full ${
                             po.status === 'draft'
                               ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
@@ -1806,12 +1806,12 @@ export default function DeliveryReviewPage() {
                               ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
                               : po.status === 'confirmed'
                               ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                              : 'bg-neutral-500/20 text-neutral-400 border border-neutral-500/30'
+                              : 'bg-neutral-500/20 text-theme-tertiary border border-neutral-500/30'
                           }`}>
                             {po.status}
                           </span>
                         </div>
-                        <div className="text-sm text-slate-400 mt-1">
+                        <div className="text-sm text-theme-tertiary mt-1">
                           Ordered: {formatDate(po.order_date)}
                           {po.expected_delivery && (
                             <span> • Expected: {formatDate(po.expected_delivery)}</span>
@@ -1841,10 +1841,10 @@ export default function DeliveryReviewPage() {
           <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl px-6 py-4 mb-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <span className="text-sm font-medium text-white">
+                <span className="text-sm font-medium text-theme-primary">
                   Linked to PO: <span className="text-blue-400">{purchaseOrder.order_number}</span>
                 </span>
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-theme-tertiary">
                   Ordered: {formatDate(purchaseOrder.order_date)}
                   {purchaseOrder.expected_delivery && (
                     <span> • Expected: {formatDate(purchaseOrder.expected_delivery)}</span>
@@ -1865,10 +1865,10 @@ export default function DeliveryReviewPage() {
 
         {/* Invoice Header Info */}
         <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Invoice Details</h2>
+          <h2 className="text-lg font-semibold text-theme-primary mb-4">Invoice Details</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Invoice Number</label>
+              <label className="block text-xs text-theme-tertiary mb-1">Invoice Number</label>
               <Input
                 value={deliveryFormData.invoice_number}
                 onChange={(e) =>
@@ -1878,7 +1878,7 @@ export default function DeliveryReviewPage() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Invoice Date</label>
+              <label className="block text-xs text-theme-tertiary mb-1">Invoice Date</label>
               <Input
                 type="date"
                 value={deliveryFormData.invoice_date}
@@ -1888,7 +1888,7 @@ export default function DeliveryReviewPage() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Delivery Note</label>
+              <label className="block text-xs text-theme-tertiary mb-1">Delivery Note</label>
               <Input
                 value={deliveryFormData.delivery_note_number}
                 onChange={(e) =>
@@ -1898,8 +1898,8 @@ export default function DeliveryReviewPage() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Total</label>
-              <div className="text-lg font-semibold text-white">
+              <label className="block text-xs text-theme-tertiary mb-1">Total</label>
+              <div className="text-lg font-semibold text-theme-primary">
                 {formatCurrency(delivery.total)}
               </div>
             </div>
@@ -1917,8 +1917,8 @@ export default function DeliveryReviewPage() {
           <div className="p-6 border-b border-neutral-800">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-white">Line Items</h2>
-                <p className="text-sm text-slate-400 mt-1">
+                <h2 className="text-lg font-semibold text-theme-primary">Line Items</h2>
+                <p className="text-sm text-theme-tertiary mt-1">
                   {unmatchedLines.length > 0
                     ? `${unmatchedLines.length} item(s) need matching`
                     : 'All items matched'}
@@ -1937,13 +1937,13 @@ export default function DeliveryReviewPage() {
             <table className="w-full min-w-[1200px]">
               <thead className="bg-white/[0.05] border-b border-neutral-800">
                 <tr>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-slate-400 uppercase">
+                  <th className="px-2 py-2 text-left text-xs font-medium text-theme-tertiary uppercase">
                     Status
                   </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-slate-400 uppercase">
+                  <th className="px-2 py-2 text-left text-xs font-medium text-theme-tertiary uppercase">
                     Description
                   </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-slate-400 uppercase">
+                  <th className="px-2 py-2 text-left text-xs font-medium text-theme-tertiary uppercase">
                     Code
                   </th>
                   {purchaseOrder && (
@@ -1951,11 +1951,11 @@ export default function DeliveryReviewPage() {
                       Ord
                     </th>
                   )}
-                  <th className="px-2 py-2 text-right text-xs font-medium text-slate-400 uppercase">
+                  <th className="px-2 py-2 text-right text-xs font-medium text-theme-tertiary uppercase">
                     Rec
                   </th>
                   {purchaseOrder && (
-                    <th className="px-2 py-2 text-center text-xs font-medium text-slate-400 uppercase">
+                    <th className="px-2 py-2 text-center text-xs font-medium text-theme-tertiary uppercase">
                       Diff
                     </th>
                   )}
@@ -1964,21 +1964,21 @@ export default function DeliveryReviewPage() {
                       PO £
                     </th>
                   )}
-                  <th className="px-2 py-2 text-right text-xs font-medium text-slate-400 uppercase">
+                  <th className="px-2 py-2 text-right text-xs font-medium text-theme-tertiary uppercase">
                     Price
                   </th>
                   {purchaseOrder && (
-                    <th className="px-2 py-2 text-center text-xs font-medium text-slate-400 uppercase">
+                    <th className="px-2 py-2 text-center text-xs font-medium text-theme-tertiary uppercase">
                       Diff
                     </th>
                   )}
-                  <th className="px-2 py-2 text-right text-xs font-medium text-slate-400 uppercase">
+                  <th className="px-2 py-2 text-right text-xs font-medium text-theme-tertiary uppercase">
                     Total
                   </th>
-                  <th className="px-2 py-2 text-left text-xs font-medium text-slate-400 uppercase">
+                  <th className="px-2 py-2 text-left text-xs font-medium text-theme-tertiary uppercase">
                     Matched To
                   </th>
-                  <th className="px-2 py-2 text-center text-xs font-medium text-slate-400 uppercase">
+                  <th className="px-2 py-2 text-center text-xs font-medium text-theme-tertiary uppercase">
                     {purchaseOrder ? 'Accept' : 'Actions'}
                   </th>
                 </tr>
@@ -1998,8 +1998,8 @@ export default function DeliveryReviewPage() {
                         <td className="px-2 py-2 whitespace-nowrap">
                           {getMatchStatusBadge(line.match_status)}
                         </td>
-                        <td className="px-2 py-2 text-sm text-white">{line.description}</td>
-                        <td className="px-2 py-2 text-sm text-slate-300">
+                        <td className="px-2 py-2 text-sm text-theme-primary">{line.description}</td>
+                        <td className="px-2 py-2 text-sm text-theme-secondary">
                           {line.supplier_code || '—'}
                         </td>
                         {purchaseOrder && (() => {
@@ -2060,7 +2060,7 @@ export default function DeliveryReviewPage() {
                                 {poLine ? poQty : '—'}
                               </td>
                               {/* Delivered */}
-                              <td className="px-2 py-2 text-sm text-white text-right">
+                              <td className="px-2 py-2 text-sm text-theme-primary text-right">
                                 {deliveredQty}
                               </td>
                               {/* Qty Diff */}
@@ -2078,7 +2078,7 @@ export default function DeliveryReviewPage() {
                                     <span className="text-xs text-green-400">—</span>
                                   )
                                 ) : (
-                                  <span className="text-xs text-slate-500">—</span>
+                                  <span className="text-xs text-theme-tertiary">—</span>
                                 )}
                               </td>
                               {/* PO Price */}
@@ -2086,7 +2086,7 @@ export default function DeliveryReviewPage() {
                                 {poLine && poPrice > 0 ? formatCurrency(poPrice) : '—'}
                               </td>
                               {/* Invoice Price */}
-                              <td className="px-2 py-2 text-sm text-white text-right">
+                              <td className="px-2 py-2 text-sm text-theme-primary text-right">
                                 {formatCurrency(invoicePrice)}
                               </td>
                               {/* Price Diff */}
@@ -2104,7 +2104,7 @@ export default function DeliveryReviewPage() {
                                     <span className="text-xs text-green-400">—</span>
                                   )
                                 ) : (
-                                  <span className="text-xs text-slate-500">—</span>
+                                  <span className="text-xs text-theme-tertiary">—</span>
                                 )}
                               </td>
                             </>
@@ -2113,20 +2113,20 @@ export default function DeliveryReviewPage() {
                         {!purchaseOrder && (
                           <>
                             {/* Delivered (no PO) */}
-                            <td className="px-2 py-2 text-sm text-white text-right">
+                            <td className="px-2 py-2 text-sm text-theme-primary text-right">
                               {line.quantity_ordered}
                             </td>
                             {/* Invoice Price (no PO) */}
-                            <td className="px-2 py-2 text-sm text-white text-right">
+                            <td className="px-2 py-2 text-sm text-theme-primary text-right">
                               {formatCurrency(line.unit_price)}
                             </td>
                           </>
                         )}
                         {/* Total */}
-                        <td className="px-2 py-2 text-sm text-white font-medium text-right">
+                        <td className="px-2 py-2 text-sm text-theme-primary font-medium text-right">
                           {formatCurrency(line.line_total_inc_vat || line.line_total)}
                         </td>
-                        <td className="px-2 py-2 text-sm text-slate-300">
+                        <td className="px-2 py-2 text-sm text-theme-secondary">
                           {(() => {
                             // Get the best available name, filtering out "Unknown Item"
                             const candidates = [
@@ -2178,7 +2178,7 @@ export default function DeliveryReviewPage() {
                                 className={`px-2 py-1 text-xs rounded-lg transition-colors disabled:opacity-50 ${
                                   acceptanceState.state === 'accept_all'
                                     ? 'bg-green-500/30 text-green-400 border border-green-500/50'
-                                    : 'bg-white/5 text-slate-400 border border-neutral-700 hover:border-green-500/50'
+                                    : 'bg-white/5 text-theme-tertiary border border-theme hover:border-green-500/50'
                                 }`}
                               >
                                 ✓ Accept
@@ -2189,7 +2189,7 @@ export default function DeliveryReviewPage() {
                                 className={`px-2 py-1 text-xs rounded-lg transition-colors disabled:opacity-50 ${
                                   acceptanceState.state === 'reject_all'
                                     ? 'bg-red-500/30 text-red-400 border border-red-500/50'
-                                    : 'bg-white/5 text-slate-400 border border-neutral-700 hover:border-red-500/50'
+                                    : 'bg-white/5 text-theme-tertiary border border-theme hover:border-red-500/50'
                                 }`}
                               >
                                 ✗ Reject
@@ -2254,7 +2254,7 @@ export default function DeliveryReviewPage() {
                               <button
                                 onClick={() => saveLineAcceptance(line.id, 'accept_all', line)}
                                 disabled={saving}
-                                className="text-xs text-slate-400 hover:text-white underline disabled:opacity-50"
+                                className="text-xs text-theme-tertiary hover:text-white underline disabled:opacity-50"
                               >
                                 Undo
                               </button>
@@ -2280,7 +2280,7 @@ export default function DeliveryReviewPage() {
           }}>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle className="text-xl font-semibold text-white">
+                <DialogTitle className="text-xl font-semibold text-theme-primary">
                   Match Line Item
                 </DialogTitle>
               </DialogHeader>
@@ -2290,22 +2290,22 @@ export default function DeliveryReviewPage() {
                 {(() => {
                   const matchingLine = delivery.lines?.find(l => l.id === matchingLineId);
                   return matchingLine ? (
-                    <div className="bg-white/[0.05] border border-neutral-700 rounded-lg p-3">
-                      <div className="text-xs text-slate-400 mb-1">Matching invoice line:</div>
-                      <div className="text-sm text-white font-medium">{matchingLine.description}</div>
+                    <div className="bg-white/[0.05] border border-theme rounded-lg p-3">
+                      <div className="text-xs text-theme-tertiary mb-1">Matching invoice line:</div>
+                      <div className="text-sm text-theme-primary font-medium">{matchingLine.description}</div>
                       {matchingLine.supplier_code && (
-                        <div className="text-xs text-slate-400 mt-1">Code: {matchingLine.supplier_code}</div>
+                        <div className="text-xs text-theme-tertiary mt-1">Code: {matchingLine.supplier_code}</div>
                       )}
                     </div>
                   ) : null;
                 })()}
 
                 <div>
-                  <label className="block text-sm text-slate-300 mb-2">
+                  <label className="block text-sm text-theme-secondary mb-2">
                     Products from {delivery.supplier?.name || 'this supplier'} ({productVariants.length})
                   </label>
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-tertiary" size={18} />
                     <Input
                       placeholder="Filter products..."
                       value={searchTerm}
@@ -2326,17 +2326,17 @@ export default function DeliveryReviewPage() {
                         onClick={() => {
                           matchLineToVariant(matchingLineId, variant.id);
                         }}
-                        className="w-full text-left p-3 rounded-lg border border-neutral-700 hover:border-[#D37E91] transition-colors bg-white/[0.03]"
+                        className="w-full text-left p-3 rounded-lg border border-theme hover:border-module-fg transition-colors bg-white/[0.03]"
                       >
-                        <div className="font-medium text-white">{variant.stock_item?.name || variant.supplier_description}</div>
-                        <div className="text-xs text-slate-400 mt-1">
+                        <div className="font-medium text-theme-primary">{variant.stock_item?.name || variant.supplier_description}</div>
+                        <div className="text-xs text-theme-tertiary mt-1">
                           {variant.supplier_description}
                           {variant.supplier_code && ` • Code: ${variant.supplier_code}`}
                         </div>
                       </button>
                     ))
                   ) : (
-                    <div className="text-center py-8 text-slate-400 text-sm">
+                    <div className="text-center py-8 text-theme-tertiary text-sm">
                       {searchTerm
                         ? 'No products match your search. Try a different term or create a new item.'
                         : `No products found from ${delivery.supplier?.name || 'this supplier'}. Use "Create New" to add one.`
@@ -2370,13 +2370,13 @@ export default function DeliveryReviewPage() {
           <Dialog open={showCreateItemModal} onOpenChange={setShowCreateItemModal}>
             <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle className="text-xl font-semibold text-white">
+                <DialogTitle className="text-xl font-semibold text-theme-primary">
                   Create New Stock Item
                 </DialogTitle>
               </DialogHeader>
 
               <div className="space-y-4 mt-4">
-                <p className="text-sm text-slate-300">
+                <p className="text-sm text-theme-secondary">
                   This will create a new stock item and product variant from the invoice line item.
                 </p>
                 <Button
@@ -2417,14 +2417,14 @@ export default function DeliveryReviewPage() {
           <Dialog open={showPOLinkModal} onOpenChange={setShowPOLinkModal}>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle className="text-xl font-semibold text-white">
+                <DialogTitle className="text-xl font-semibold text-theme-primary">
                   Link to Purchase Order
                 </DialogTitle>
               </DialogHeader>
 
               <div className="space-y-4 mt-4">
-                <p className="text-sm text-slate-300">
-                  Select a Purchase Order from <span className="text-white font-medium">{delivery.supplier?.name}</span> to compare quantities and track variances.
+                <p className="text-sm text-theme-secondary">
+                  Select a Purchase Order from <span className="text-theme-primary font-medium">{delivery.supplier?.name}</span> to compare quantities and track variances.
                 </p>
 
                 <div className="max-h-96 overflow-y-auto space-y-2">
@@ -2434,12 +2434,12 @@ export default function DeliveryReviewPage() {
                         key={po.id}
                         onClick={() => linkDeliveryToPO(po.id)}
                         disabled={saving}
-                        className="w-full text-left p-4 rounded-lg border border-neutral-700 hover:border-blue-500 transition-colors bg-white/[0.03]"
+                        className="w-full text-left p-4 rounded-lg border border-theme hover:border-blue-500 transition-colors bg-white/[0.03]"
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="font-medium text-white">{po.order_number}</div>
-                            <div className="text-xs text-slate-400 mt-1">
+                            <div className="font-medium text-theme-primary">{po.order_number}</div>
+                            <div className="text-xs text-theme-tertiary mt-1">
                               Ordered: {formatDate(po.order_date)}
                               {po.expected_delivery && (
                                 <span> • Expected: {formatDate(po.expected_delivery)}</span>
@@ -2447,21 +2447,21 @@ export default function DeliveryReviewPage() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="text-lg font-semibold text-white">{formatCurrency(po.total)}</div>
-                            <div className="text-xs text-slate-400">{po.lines?.length || 0} items</div>
+                            <div className="text-lg font-semibold text-theme-primary">{formatCurrency(po.total)}</div>
+                            <div className="text-xs text-theme-tertiary">{po.lines?.length || 0} items</div>
                           </div>
                         </div>
                         {/* Show first few items */}
                         {po.lines && po.lines.length > 0 && (
-                          <div className="mt-3 pt-3 border-t border-neutral-700">
-                            <div className="text-xs text-slate-400 space-y-1">
+                          <div className="mt-3 pt-3 border-t border-theme">
+                            <div className="text-xs text-theme-tertiary space-y-1">
                               {po.lines.slice(0, 3).map((line, idx) => (
                                 <div key={idx}>
                                   {line.product_variant?.product_name || line.product_variant?.supplier_description || 'Item'} × {line.quantity_ordered}
                                 </div>
                               ))}
                               {po.lines.length > 3 && (
-                                <div className="text-slate-500">+{po.lines.length - 3} more items...</div>
+                                <div className="text-theme-tertiary">+{po.lines.length - 3} more items...</div>
                               )}
                             </div>
                           </div>
@@ -2469,7 +2469,7 @@ export default function DeliveryReviewPage() {
                       </button>
                     ))
                   ) : (
-                    <div className="text-center py-8 text-slate-400">
+                    <div className="text-center py-8 text-theme-tertiary">
                       <p>No active Purchase Orders found for this supplier.</p>
                       <p className="text-sm mt-2">Only POs with status &quot;sent&quot;, &quot;confirmed&quot;, or &quot;partial&quot; are shown.</p>
                     </div>

@@ -35,7 +35,7 @@ export default function Checkbox({ checked, onCheckedChange, disabled, className
           </svg>
         )}
       </span>
-      {label && <span className="text-sm text-gray-900 dark:text-white/90">{label}</span>}
+      {label && <span className="text-sm text-theme-primary/90">{label}</span>}
     </label>
   );
 }

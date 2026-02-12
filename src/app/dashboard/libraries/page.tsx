@@ -69,19 +69,19 @@ export default function LibrariesPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold text-white mb-6">All Libraries</h1>
+      <h1 className="text-2xl font-bold text-theme-primary mb-6">All Libraries</h1>
       {loading ? (
-        <div className="text-white/60">Loading libraries…</div>
+        <div className="text-theme-tertiary">Loading libraries…</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {items.map((it) => (
             <Link key={it.id} href={it.href} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5 hover:bg-white/[0.06] transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-white font-semibold">{it.name}</div>
-                  <div className="text-white/50 text-sm">{counts[it.id] ?? 0} items</div>
+                  <div className="text-theme-primary font-semibold">{it.name}</div>
+                  <div className="text-theme-tertiary text-sm">{counts[it.id] ?? 0} items</div>
                 </div>
-                <div className="text-white/30">→</div>
+                <div className="text-theme-disabled">→</div>
               </div>
             </Link>
           ))}

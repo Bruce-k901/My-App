@@ -67,14 +67,14 @@ export default function SlideOutPanel({
             {/* Header */}
             <div className="px-6 py-4 border-b border-white/10 flex items-start justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-white">{title}</h2>
+                <h2 className="text-xl font-semibold text-theme-primary">{title}</h2>
                 {subtitle && (
-                  <p className="text-sm text-white/50 mt-1">{subtitle}</p>
+                  <p className="text-sm text-theme-tertiary mt-1">{subtitle}</p>
                 )}
               </div>
               <button
                 onClick={onClose}
-                className="p-2 -mr-2 rounded-lg hover:bg-white/5 text-white/40 hover:text-white transition-colors"
+                className="p-2 -mr-2 rounded-lg hover:bg-white/5 text-theme-tertiary hover:text-white transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>

@@ -57,7 +57,7 @@ export default function DashboardHomePage() {
         : 'User');
 
     return (
-      <div className="min-h-screen bg-[#0f1220] text-white">
+      <div className="min-h-screen bg-[rgb(var(--surface-elevated))] text-theme-primary">
         {/* Mobile Header - UNCHANGED */}
         <MobileHeader
           userName={userName}
@@ -80,7 +80,7 @@ export default function DashboardHomePage() {
   // Desktop View
   return (
     <div className="flex flex-col w-full">
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 flex flex-col gap-4 text-white">
+      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 flex flex-col gap-4 text-theme-primary">
         {/* Welcome Header - UNCHANGED */}
         <WelcomeHeader />
 
@@ -89,7 +89,7 @@ export default function DashboardHomePage() {
 
         {!loading && !companyId && (
           <div className="bg-[#171B2D] border border-white/[0.06] rounded-xl p-6 w-full">
-            <p className="text-white/60 text-center">
+            <p className="text-theme-tertiary text-center">
               Company setup required to view compliance summary. Please complete your company profile.
             </p>
           </div>

@@ -186,14 +186,14 @@ export default function AdminLibraryRequestDetailPage() {
           </span>
         );
       default:
-        return <span className="px-3 py-1 bg-neutral-700 text-neutral-400 rounded-full text-sm">{status}</span>;
+        return <span className="px-3 py-1 bg-neutral-700 text-theme-tertiary rounded-full text-sm">{status}</span>;
     }
   };
 
   if (loading) {
     return (
       <div className="p-6">
-        <div className="text-neutral-400 text-center py-8">Loading request...</div>
+        <div className="text-theme-tertiary text-center py-8">Loading request...</div>
       </div>
     );
   }
@@ -201,7 +201,7 @@ export default function AdminLibraryRequestDetailPage() {
   if (!request) {
     return (
       <div className="p-6">
-        <div className="text-neutral-400 text-center py-8">Request not found</div>
+        <div className="text-theme-tertiary text-center py-8">Request not found</div>
       </div>
     );
   }
@@ -217,16 +217,16 @@ export default function AdminLibraryRequestDetailPage() {
           onClick={() => router.back()}
           className="p-2 hover:bg-neutral-800 rounded-lg"
         >
-          <ArrowLeft size={20} className="text-neutral-400" />
+          <ArrowLeft size={20} className="text-theme-tertiary" />
         </button>
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-xl font-semibold text-white">{request.library_name}</h1>
+            <h1 className="text-xl font-semibold text-theme-primary">{request.library_name}</h1>
             {getStatusBadge(request.status)}
           </div>
-          <div className="flex items-center gap-4 text-sm text-neutral-400">
-            <span>Company: <strong className="text-neutral-300">{company?.name || 'Unknown'}</strong></span>
-            <span>Requested by: <strong className="text-neutral-300">{requester?.full_name || requester?.email || 'Unknown'}</strong></span>
+          <div className="flex items-center gap-4 text-sm text-theme-tertiary">
+            <span>Company: <strong className="text-theme-tertiary">{company?.name || 'Unknown'}</strong></span>
+            <span>Requested by: <strong className="text-theme-tertiary">{requester?.full_name || requester?.email || 'Unknown'}</strong></span>
             <span>Table: <code className="bg-neutral-900 px-1 rounded">{request.table_name}</code></span>
           </div>
         </div>
@@ -237,23 +237,23 @@ export default function AdminLibraryRequestDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Description */}
           {request.description && (
-            <div className="bg-neutral-800/50 rounded-xl border border-neutral-700 p-6">
-              <h2 className="text-lg font-semibold text-white mb-2">Description</h2>
-              <p className="text-neutral-300">{request.description}</p>
+            <div className="bg-neutral-800/50 rounded-xl border border-theme p-6">
+              <h2 className="text-lg font-semibold text-theme-primary mb-2">Description</h2>
+              <p className="text-theme-tertiary">{request.description}</p>
             </div>
           )}
 
           {/* Fields */}
           {request.fields && Array.isArray(request.fields) && request.fields.length > 0 && (
-            <div className="bg-neutral-800/50 rounded-xl border border-neutral-700 p-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Fields ({request.fields.length})</h2>
+            <div className="bg-neutral-800/50 rounded-xl border border-theme p-6">
+              <h2 className="text-lg font-semibold text-theme-primary mb-4">Fields ({request.fields.length})</h2>
               <div className="space-y-3">
                 {request.fields.map((field: any, idx: number) => (
-                  <div key={idx} className="bg-neutral-900/50 border border-neutral-700 rounded-lg p-4">
+                  <div key={idx} className="bg-neutral-900/50 border border-theme rounded-lg p-4">
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <h3 className="text-white font-medium">{field.name}</h3>
-                        <p className="text-xs text-neutral-400">
+                        <h3 className="text-theme-primary font-medium">{field.name}</h3>
+                        <p className="text-xs text-theme-tertiary">
                           Column: <code className="bg-neutral-800 px-1 rounded">{field.column}</code> • Type: {field.type}
                         </p>
                       </div>
@@ -267,14 +267,14 @@ export default function AdminLibraryRequestDetailPage() {
                       </div>
                     </div>
                     {field.default && (
-                      <p className="text-xs text-neutral-500">Default: {field.default}</p>
+                      <p className="text-xs text-theme-tertiary">Default: {field.default}</p>
                     )}
                     {field.category_options && field.category_options.length > 0 && (
                       <div className="mt-2">
-                        <p className="text-xs text-neutral-500 mb-1">Options:</p>
+                        <p className="text-xs text-theme-tertiary mb-1">Options:</p>
                         <div className="flex flex-wrap gap-1">
                           {field.category_options.map((opt: string, optIdx: number) => (
-                            <span key={optIdx} className="px-2 py-0.5 bg-neutral-800 text-neutral-300 rounded text-xs">
+                            <span key={optIdx} className="px-2 py-0.5 bg-neutral-800 text-theme-tertiary rounded text-xs">
                               {opt}
                             </span>
                           ))}
@@ -289,30 +289,30 @@ export default function AdminLibraryRequestDetailPage() {
 
           {/* Generated SQL */}
           {request.generated_sql && (
-            <div className="bg-neutral-800/50 rounded-xl border border-neutral-700 p-6">
+            <div className="bg-neutral-800/50 rounded-xl border border-theme p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-white">Generated SQL</h2>
+                <h2 className="text-lg font-semibold text-theme-primary">Generated SQL</h2>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={copySQL}
-                    className="px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-white flex items-center gap-2 text-sm"
+                    className="px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-theme-primary flex items-center gap-2 text-sm"
                   >
                     <Copy size={14} />
                     Copy
                   </button>
                   <button
                     onClick={downloadSQL}
-                    className="px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-white flex items-center gap-2 text-sm"
+                    className="px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-theme-primary flex items-center gap-2 text-sm"
                   >
                     <Download size={14} />
                     Download
                   </button>
                 </div>
               </div>
-              <pre className="bg-neutral-900 border border-neutral-700 rounded-lg p-4 overflow-x-auto text-xs text-neutral-300 font-mono max-h-[600px] overflow-y-auto">
+              <pre className="bg-neutral-900 border border-theme rounded-lg p-4 overflow-x-auto text-xs text-theme-tertiary font-mono max-h-[600px] overflow-y-auto">
                 {request.generated_sql}
               </pre>
-              <p className="text-xs text-neutral-500 mt-2">
+              <p className="text-xs text-theme-tertiary mt-2">
                 💡 Copy this SQL and execute it in Supabase SQL Editor to create the table.
               </p>
             </div>
@@ -323,38 +323,38 @@ export default function AdminLibraryRequestDetailPage() {
         <div className="space-y-6">
           {/* Actions Card */}
           {request.status === 'pending' && (
-            <div className="bg-neutral-800/50 rounded-xl border border-neutral-700 p-6 sticky top-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Review Actions</h2>
+            <div className="bg-neutral-800/50 rounded-xl border border-theme p-6 sticky top-6">
+              <h2 className="text-lg font-semibold text-theme-primary mb-4">Review Actions</h2>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-2">Review Notes</label>
+                  <label className="block text-sm text-theme-tertiary mb-2">Review Notes</label>
                   <textarea
                     value={reviewNotes}
                     onChange={(e) => setReviewNotes(e.target.value)}
                     placeholder="Optional notes about this request..."
                     rows={4}
-                    className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                    className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                   />
                 </div>
 
                 <button
                   onClick={handleApprove}
                   disabled={saving}
-                  className="w-full px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                  className="w-full px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg),0.7)] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-theme-tertiary rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
                 >
                   <CheckCircle2 size={16} />
                   {saving ? 'Processing...' : 'Approve Request'}
                 </button>
 
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-2">Rejection Reason *</label>
+                  <label className="block text-sm text-theme-tertiary mb-2">Rejection Reason *</label>
                   <textarea
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
                     placeholder="Required if rejecting..."
                     rows={3}
-                    className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                    className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                   />
                 </div>
 
@@ -371,31 +371,31 @@ export default function AdminLibraryRequestDetailPage() {
           )}
 
           {request.status === 'approved' && (
-            <div className="bg-neutral-800/50 rounded-xl border border-neutral-700 p-6 sticky top-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Deployment</h2>
+            <div className="bg-neutral-800/50 rounded-xl border border-theme p-6 sticky top-6">
+              <h2 className="text-lg font-semibold text-theme-primary mb-4">Deployment</h2>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-2">Deployment Notes</label>
+                  <label className="block text-sm text-theme-tertiary mb-2">Deployment Notes</label>
                   <textarea
                     value={deploymentNotes}
                     onChange={(e) => setDeploymentNotes(e.target.value)}
                     placeholder="Notes about deployment..."
                     rows={3}
-                    className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                    className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                   />
                 </div>
 
                 <button
                   onClick={handleMarkDeployed}
                   disabled={saving}
-                  className="w-full px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                  className="w-full px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg),0.7)] disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-theme-tertiary rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
                 >
                   <Save size={16} />
                   {saving ? 'Processing...' : 'Mark as Deployed'}
                 </button>
 
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-theme-tertiary">
                   ⚠️ Make sure you've executed the SQL in Supabase SQL Editor before marking as deployed.
                 </p>
               </div>
@@ -403,46 +403,46 @@ export default function AdminLibraryRequestDetailPage() {
           )}
 
           {/* Info Card */}
-          <div className="bg-neutral-800/50 rounded-xl border border-neutral-700 p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Request Info</h2>
+          <div className="bg-neutral-800/50 rounded-xl border border-theme p-6">
+            <h2 className="text-lg font-semibold text-theme-primary mb-4">Request Info</h2>
             <div className="space-y-3 text-sm">
               <div>
-                <span className="text-neutral-400">Submitted:</span>
-                <p className="text-white mt-1">
+                <span className="text-theme-tertiary">Submitted:</span>
+                <p className="text-theme-primary mt-1">
                   {new Date(request.created_at).toLocaleString('en-GB')}
                 </p>
               </div>
               {request.reviewed_at && (
                 <div>
-                  <span className="text-neutral-400">Reviewed:</span>
-                  <p className="text-white mt-1">
+                  <span className="text-theme-tertiary">Reviewed:</span>
+                  <p className="text-theme-primary mt-1">
                     {new Date(request.reviewed_at).toLocaleString('en-GB')}
                   </p>
                 </div>
               )}
               {request.deployed_at && (
                 <div>
-                  <span className="text-neutral-400">Deployed:</span>
-                  <p className="text-white mt-1">
+                  <span className="text-theme-tertiary">Deployed:</span>
+                  <p className="text-theme-primary mt-1">
                     {new Date(request.deployed_at).toLocaleString('en-GB')}
                   </p>
                 </div>
               )}
               {request.review_notes && (
                 <div>
-                  <span className="text-neutral-400">Review Notes:</span>
-                  <p className="text-white mt-1">{request.review_notes}</p>
+                  <span className="text-theme-tertiary">Review Notes:</span>
+                  <p className="text-theme-primary mt-1">{request.review_notes}</p>
                 </div>
               )}
               {request.rejection_reason && (
                 <div>
-                  <span className="text-neutral-400">Rejection Reason:</span>
+                  <span className="text-theme-tertiary">Rejection Reason:</span>
                   <p className="text-red-400 mt-1">{request.rejection_reason}</p>
                 </div>
               )}
               {request.deployment_notes && (
                 <div>
-                  <span className="text-neutral-400">Deployment Notes:</span>
+                  <span className="text-theme-tertiary">Deployment Notes:</span>
                   <p className="text-green-400 mt-1">{request.deployment_notes}</p>
                 </div>
               )}

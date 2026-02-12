@@ -218,17 +218,17 @@ export function TicketCreationModal({
           <div className="flex items-center gap-3">
             <Icon className={`h-6 w-6 ${config.color}`} />
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-theme-primary">
                 Create {type.charAt(0).toUpperCase() + type.slice(1)} Ticket
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{initialTitle}</p>
+              <p className="text-sm text-theme-secondary">{initialTitle}</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-theme-hover rounded-lg transition-colors"
           >
-            <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+            <X className="h-5 w-5 text-theme-tertiary" />
           </button>
         </div>
 
@@ -236,7 +236,7 @@ export function TicketCreationModal({
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
               Description / Additional Notes
             </label>
             <textarea
@@ -244,7 +244,7 @@ export function TicketCreationModal({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Please provide details about your issue, idea, or question..."
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
-                       bg-white dark:bg-gray-900 text-gray-900 dark:text-white
+                       bg-white dark:bg-gray-900 text-theme-primary
                        focus:ring-2 focus:ring-blue-500 focus:border-transparent
                        resize-none"
               rows={4}
@@ -256,7 +256,7 @@ export function TicketCreationModal({
           {screenshot && (
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="block text-sm font-medium text-theme-secondary">
                   Screenshot
                 </label>
                 <div className="flex gap-2">
@@ -296,7 +296,7 @@ export function TicketCreationModal({
               </div>
 
               {blurAreas.length > 0 && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                <p className="text-xs text-theme-tertiary mt-2">
                   ✓ {blurAreas.length} area{blurAreas.length > 1 ? 's' : ''} will be blurred
                 </p>
               )}
@@ -305,18 +305,18 @@ export function TicketCreationModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-end gap-3 p-4 border-t border-theme">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300
-                     hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium text-theme-secondary
+                     hover:bg-theme-hover rounded-lg transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={!description.trim()}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700
+            className="px-4 py-2 text-sm font-medium text-white bg-module-fg hover:bg-module-fg/90
                      rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Create Ticket

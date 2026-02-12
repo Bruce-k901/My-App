@@ -181,7 +181,7 @@ export default function PricingPage() {
 
   if (!siteId) {
     return (
-      <div className="container mx-auto py-6 text-center text-gray-500 dark:text-white/60">
+      <div className="container mx-auto py-6 text-center text-theme-tertiary">
         Please select a site
       </div>
     );
@@ -191,17 +191,17 @@ export default function PricingPage() {
     <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-theme-primary">
           Product Pricing
         </h1>
-        <p className="text-sm text-gray-500 dark:text-white/60">
+        <p className="text-sm text-theme-tertiary">
           Manage list prices and customer-specific pricing
         </p>
       </div>
 
       {/* Customer Selector */}
       <div className="max-w-sm relative z-[100]">
-        <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+        <label className="block text-sm font-medium text-theme-secondary mb-2">
           Select Customer
         </label>
         <CustomerSelector
@@ -213,33 +213,33 @@ export default function PricingPage() {
 
       {/* Content */}
       {!customerId ? (
-        <div className="rounded-lg border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] p-12 text-center">
-          <p className="text-gray-500 dark:text-white/60">
+        <div className="rounded-lg border border-theme bg-white dark:bg-white/[0.02] p-12 text-center">
+          <p className="text-theme-tertiary">
             Select a customer to configure pricing
           </p>
         </div>
       ) : isLoadingProducts || isLoadingPrices ? (
-        <div className="rounded-lg border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] p-12 flex items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-[#14B8A6]" />
-          <span className="ml-2 text-gray-500 dark:text-white/60">
+        <div className="rounded-lg border border-theme bg-white dark:bg-white/[0.02] p-12 flex items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-module-fg" />
+          <span className="ml-2 text-theme-tertiary">
             Loading pricing data...
           </span>
         </div>
       ) : products.length === 0 ? (
-        <div className="rounded-lg border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] p-12 text-center">
-          <p className="text-gray-500 dark:text-white/60">
+        <div className="rounded-lg border border-theme bg-white dark:bg-white/[0.02] p-12 text-center">
+          <p className="text-theme-tertiary">
             No products available. Please add products first.
           </p>
         </div>
       ) : (
         <>
           {/* Customer Info */}
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-white/60">
+          <div className="flex items-center gap-2 text-sm text-theme-secondary">
             <span>Editing prices for:</span>
-            <span className="font-medium text-gray-900 dark:text-white">
+            <span className="font-medium text-theme-primary">
               {customerName}
             </span>
-            <span className="text-gray-400 dark:text-white/40">
+            <span className="text-theme-tertiary">
               ({customerPrices.length} custom{' '}
               {customerPrices.length === 1 ? 'price' : 'prices'})
             </span>

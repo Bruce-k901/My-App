@@ -278,7 +278,7 @@ export default function WasteLogPage() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
-          <p className="text-white/60 mb-4">No order found</p>
+          <p className="text-theme-tertiary mb-4">No order found</p>
           <Link href="/customer/dashboard">
             <Button variant="secondary">Back to Dashboard</Button>
           </Link>
@@ -297,20 +297,20 @@ export default function WasteLogPage() {
     <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
       {/* Header */}
       <div className="mb-6">
-        <Link href="/customer/dashboard" className="inline-flex items-center gap-2 text-white/60 hover:text-white mb-4">
+        <Link href="/customer/dashboard" className="inline-flex items-center gap-2 text-theme-tertiary hover:text-white mb-4">
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Dashboard</span>
         </Link>
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">End of Day Report</h1>
-        <p className="text-white/60 text-sm sm:text-base">
+        <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary mb-2">End of Day Report</h1>
+        <p className="text-theme-tertiary text-sm sm:text-base">
           {format(new Date(order.delivery_date), 'EEEE, d MMMM yyyy')}
         </p>
       </div>
 
       {/* Order Summary */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
-        <div className="text-sm text-white/80 mb-1">Today's delivery from supplier</div>
-        <div className="text-lg font-semibold text-white">Order for {format(new Date(order.delivery_date), 'd MMM yyyy')}</div>
+        <div className="text-sm text-theme-secondary mb-1">Today's delivery from supplier</div>
+        <div className="text-lg font-semibold text-theme-primary">Order for {format(new Date(order.delivery_date), 'd MMM yyyy')}</div>
         <div className="text-sm text-green-400 mt-1">✓ Delivered</div>
       </div>
 
@@ -326,13 +326,13 @@ export default function WasteLogPage() {
             <div key={item.id} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-white">{item.product.name}</h3>
-                  <p className="text-sm text-white/60">Ordered: {item.quantity} {item.product.unit}</p>
+                  <h3 className="text-lg font-semibold text-theme-primary">{item.product.name}</h3>
+                  <p className="text-sm text-theme-tertiary">Ordered: {item.quantity} {item.product.unit}</p>
                 </div>
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   How many sold?
                 </label>
                 <div className="flex items-center gap-3">
@@ -340,7 +340,7 @@ export default function WasteLogPage() {
                     onClick={() => decrement(item.id)}
                     className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
                   >
-                    <Minus className="w-4 h-4 text-white" />
+                    <Minus className="w-4 h-4 text-theme-primary" />
                   </button>
                   <input
                     type="number"
@@ -348,19 +348,19 @@ export default function WasteLogPage() {
                     max={item.quantity}
                     value={soldQuantities[item.id] || 0}
                     onChange={(e) => updateSoldQty(item.id, parseInt(e.target.value) || 0)}
-                    className="w-20 px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white text-center focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                    className="w-20 px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-center focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                   />
                   <button
                     onClick={() => increment(item.id)}
                     className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
                   >
-                    <Plus className="w-4 h-4 text-white" />
+                    <Plus className="w-4 h-4 text-theme-primary" />
                   </button>
                 </div>
                 <div className="flex gap-2 mt-2">
                   <button
                     onClick={() => setSoldAll(item.id)}
-                    className="text-xs px-3 py-1 bg-green-500/20 text-green-300 rounded hover:bg-green-500/30 transition-colors"
+                    className="text-xs px-3 py-1 bg-green-500/20 text-green-300 rounded hover:bg-module-fg/10 transition-colors"
                   >
                     <Check className="w-3 h-3 inline mr-1" />
                     Sold All
@@ -377,7 +377,7 @@ export default function WasteLogPage() {
 
               <div className="pt-4 border-t border-white/[0.06]">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-white/60">Unsold:</span>
+                  <span className="text-sm text-theme-tertiary">Unsold:</span>
                   <div className="text-right">
                     <div className={`text-lg font-semibold ${
                       status === 'success' ? 'text-green-400' :
@@ -386,7 +386,7 @@ export default function WasteLogPage() {
                     }`}>
                       {waste} units ({wastePercent}%)
                     </div>
-                    <div className="text-sm text-white/60">
+                    <div className="text-sm text-theme-tertiary">
                       £{wasteCost.toFixed(2)} waste
                     </div>
                   </div>
@@ -399,18 +399,18 @@ export default function WasteLogPage() {
 
       {/* Daily Summary */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
-        <h3 className="text-lg font-semibold text-white mb-4">Daily Summary</h3>
+        <h3 className="text-lg font-semibold text-theme-primary mb-4">Daily Summary</h3>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-white/60">Total Ordered:</span>
-            <span className="text-white">{totalOrdered} units</span>
+            <span className="text-theme-tertiary">Total Ordered:</span>
+            <span className="text-theme-primary">{totalOrdered} units</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-white/60">Total Sold:</span>
+            <span className="text-theme-tertiary">Total Sold:</span>
             <span className="text-green-400 font-semibold">{totalSold} units</span>
           </div>
           <div className="flex justify-between text-sm pt-2 border-t border-white/[0.06]">
-            <span className="text-white/60">Total Waste:</span>
+            <span className="text-theme-tertiary">Total Waste:</span>
             <div className="text-right">
               <div className={`font-semibold ${
                 wastePercent < 15 ? 'text-green-400' :
@@ -419,7 +419,7 @@ export default function WasteLogPage() {
               }`}>
                 {totalWaste} units ({wastePercent}%)
               </div>
-              <div className="text-xs text-white/60">£{wasteCost.toFixed(2)}</div>
+              <div className="text-xs text-theme-tertiary">£{wasteCost.toFixed(2)}</div>
             </div>
           </div>
         </div>

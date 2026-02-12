@@ -212,11 +212,11 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
         {/* Supplier & Invoice */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-1">Supplier *</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Supplier *</label>
             <select
               value={supplierId}
               onChange={(e) => setSupplierId(e.target.value)}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-magenta-500"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-magenta-500"
             >
               <option value="">Select supplier...</option>
               {suppliers.map(s => (
@@ -225,31 +225,31 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-1">Invoice #</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Invoice #</label>
             <input
               type="text"
               value={invoiceNumber}
               onChange={(e) => setInvoiceNumber(e.target.value)}
               placeholder="Optional"
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-magenta-500"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-magenta-500"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-white/80 mb-1">Delivery Date</label>
+          <label className="block text-sm font-medium text-theme-secondary mb-1">Delivery Date</label>
           <input
             type="date"
             value={deliveryDate}
             onChange={(e) => setDeliveryDate(e.target.value)}
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-magenta-500"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-magenta-500"
           />
         </div>
 
         {/* Items */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="text-sm font-medium text-white/80">Items</label>
+            <label className="text-sm font-medium text-theme-secondary">Items</label>
             <button
               onClick={() => setShowItemSearch(true)}
               className="flex items-center gap-1 text-sm text-magenta-400 hover:text-magenta-300"
@@ -262,7 +262,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
           {lines.length === 0 ? (
             <div className="border border-dashed border-white/10 rounded-lg p-8 text-center">
               <Truck className="w-10 h-10 text-white/20 mx-auto mb-2" />
-              <p className="text-white/40 text-sm">No items added yet</p>
+              <p className="text-theme-tertiary text-sm">No items added yet</p>
               <button
                 onClick={() => setShowItemSearch(true)}
                 className="mt-2 text-magenta-400 text-sm hover:underline"
@@ -276,31 +276,31 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
                 <div key={idx} className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
                   <div className="flex items-start gap-3">
                     <div className="flex-1">
-                      <p className="text-white font-medium text-sm">{line.name}</p>
+                      <p className="text-theme-primary font-medium text-sm">{line.name}</p>
                       <div className="grid grid-cols-3 gap-2 mt-2">
                         <div>
-                          <label className="text-xs text-white/40">Qty</label>
+                          <label className="text-xs text-theme-tertiary">Qty</label>
                           <input
                             type="number"
                             step="0.01"
                             value={line.quantity}
                             onChange={(e) => updateLine(idx, { quantity: parseFloat(e.target.value) || 0 })}
-                            className="w-full px-2 py-1 bg-white/5 border border-white/10 rounded text-white text-sm"
+                            className="w-full px-2 py-1 bg-white/5 border border-white/10 rounded text-theme-primary text-sm"
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-white/40">Unit Price</label>
+                          <label className="text-xs text-theme-tertiary">Unit Price</label>
                           <input
                             type="number"
                             step="0.01"
                             value={line.unit_price}
                             onChange={(e) => updateLine(idx, { unit_price: parseFloat(e.target.value) || 0 })}
-                            className="w-full px-2 py-1 bg-white/5 border border-white/10 rounded text-white text-sm"
+                            className="w-full px-2 py-1 bg-white/5 border border-white/10 rounded text-theme-primary text-sm"
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-white/40">Total</label>
-                          <p className="px-2 py-1 text-white text-sm font-medium">
+                          <label className="text-xs text-theme-tertiary">Total</label>
+                          <p className="px-2 py-1 text-theme-primary text-sm font-medium">
                             £{line.total.toFixed(2)}
                           </p>
                         </div>
@@ -308,7 +308,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
                     </div>
                     <button
                       onClick={() => removeLine(idx)}
-                      className="p-1 text-white/40 hover:text-red-400"
+                      className="p-1 text-theme-tertiary hover:text-red-400"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -323,16 +323,16 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
         {lines.length > 0 && (
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-white/60">Subtotal</span>
-              <span className="text-white">£{subtotal.toFixed(2)}</span>
+              <span className="text-theme-tertiary">Subtotal</span>
+              <span className="text-theme-primary">£{subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-white/60">VAT (20%)</span>
-              <span className="text-white">£{vat.toFixed(2)}</span>
+              <span className="text-theme-tertiary">VAT (20%)</span>
+              <span className="text-theme-primary">£{vat.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-lg font-semibold border-t border-white/10 pt-2">
-              <span className="text-white">Total</span>
-              <span className="text-white">£{total.toFixed(2)}</span>
+              <span className="text-theme-primary">Total</span>
+              <span className="text-theme-primary">£{total.toFixed(2)}</span>
             </div>
           </div>
         )}
@@ -342,7 +342,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
       <div className="p-4 border-t border-white/10 flex items-center gap-3">
         <button
           onClick={onCancel}
-          className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors"
+          className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-theme-primary rounded-lg transition-colors"
         >
           Cancel
         </button>
@@ -365,16 +365,16 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 pt-20">
           <div className="bg-[#1a1a2e] border border-white/10 rounded-xl w-full max-w-md max-h-[60vh] flex flex-col">
             <div className="p-4 border-b border-white/10 flex items-center gap-3">
-              <Search className="w-5 h-5 text-white/40" />
+              <Search className="w-5 h-5 text-theme-tertiary" />
               <input
                 type="text"
                 value={itemSearch}
                 onChange={(e) => setItemSearch(e.target.value)}
                 placeholder="Search stock items..."
                 autoFocus
-                className="flex-1 bg-transparent text-white placeholder:text-white/40 focus:outline-none"
+                className="flex-1 bg-transparent text-theme-primary placeholder:text-theme-tertiary focus:outline-none"
               />
-              <button onClick={() => setShowItemSearch(false)} className="text-white/40 hover:text-white">
+              <button onClick={() => setShowItemSearch(false)} className="text-theme-tertiary hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -385,12 +385,12 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
                   onClick={() => addLine(item)}
                   className="w-full px-3 py-2 flex items-center justify-between hover:bg-white/5 rounded-lg text-left"
                 >
-                  <span className="text-white">{item.name}</span>
-                  <span className="text-white/40 text-sm">{item.stock_unit}</span>
+                  <span className="text-theme-primary">{item.name}</span>
+                  <span className="text-theme-tertiary text-sm">{item.stock_unit}</span>
                 </button>
               ))}
               {filteredItems.length === 0 && (
-                <p className="p-4 text-center text-white/40">No items found</p>
+                <p className="p-4 text-center text-theme-tertiary">No items found</p>
               )}
             </div>
           </div>

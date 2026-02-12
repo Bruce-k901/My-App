@@ -92,7 +92,7 @@ export default function DataHealthWidget({ siteId, companyId }: DataHealthWidget
             {score != null ? `${Math.round(score)}%` : '—'}
           </span>
           {scoreDelta != null && scoreDelta !== 0 && (
-            <span className={`text-xs font-medium ${scoreDelta > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            <span className={`text-xs font-medium ${scoreDelta > 0 ? 'text-module-fg' : 'text-red-400'}`}>
               {scoreDelta > 0 ? '+' : ''}{scoreDelta.toFixed(1)}%
             </span>
           )}

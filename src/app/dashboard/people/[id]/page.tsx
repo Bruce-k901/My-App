@@ -685,15 +685,15 @@ export default function EmployeeProfilePage() {
   };
 
   const getRoleColor = (role: string | null | undefined) => {
-    if (!role) return 'bg-neutral-500/20 text-gray-500 dark:text-white/60';
+    if (!role) return 'bg-neutral-500/20 text-theme-tertiary';
     const roleLower = role.toLowerCase();
     switch (roleLower) {
       case 'admin': return 'bg-purple-500/20 text-purple-400';
       case 'owner': return 'bg-amber-500/20 text-amber-400';
       case 'manager': return 'bg-blue-500/20 text-blue-400';
       case 'general_manager': return 'bg-blue-500/20 text-blue-400';
-      case 'staff': return 'bg-neutral-500/20 text-gray-500 dark:text-white/60';
-      default: return 'bg-neutral-500/20 text-gray-500 dark:text-white/60';
+      case 'staff': return 'bg-neutral-500/20 text-theme-tertiary';
+      default: return 'bg-neutral-500/20 text-theme-tertiary';
     }
   };
 
@@ -702,7 +702,7 @@ export default function EmployeeProfilePage() {
       case 'active': return 'bg-green-500/20 text-green-400';
       case 'onboarding': return 'bg-amber-500/20 text-amber-400';
       case 'inactive': return 'bg-red-500/20 text-red-400';
-      default: return 'bg-neutral-500/20 text-gray-500 dark:text-white/60';
+      default: return 'bg-neutral-500/20 text-theme-tertiary';
     }
   };
 
@@ -743,8 +743,8 @@ export default function EmployeeProfilePage() {
   if (!employee) {
     return (
       <div className="text-center py-12">
-        <User className="w-12 h-12 text-gray-500 dark:text-white/50 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Employee not found</h3>
+        <User className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-theme-primary mb-2">Employee not found</h3>
         <Link
           href="/dashboard/people/employees"
           className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
@@ -760,17 +760,17 @@ export default function EmployeeProfilePage() {
       {/* Back Button */}
       <Link
         href="/dashboard/people/employees"
-        className="inline-flex items-center gap-2 text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
+        className="inline-flex items-center gap-2 text-theme-secondary hover:text-theme-primary transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Employees
       </Link>
 
       {/* Header Card */}
-      <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 shadow-sm dark:shadow-none">
+ <div className="bg-theme-surface ] border border-theme rounded-lg p-6 shadow-sm dark:shadow-none">
         <div className="flex flex-col md:flex-row md:items-start gap-6">
           {/* Avatar */}
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-500 dark:to-blue-600 flex items-center justify-center text-gray-900 dark:text-white text-2xl font-semibold flex-shrink-0">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-500 dark:to-blue-600 flex items-center justify-center text-theme-primary text-2xl font-semibold flex-shrink-0">
             {employee.avatar_url ? (
               <img 
                 src={employee.avatar_url} 
@@ -785,7 +785,7 @@ export default function EmployeeProfilePage() {
           {/* Info */}
           <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{employee.full_name}</h1>
+              <h1 className="text-2xl font-bold text-theme-primary">{employee.full_name}</h1>
               <div className="flex items-center gap-2">
                 <span className={`px-2 py-1 text-xs rounded-full ${getRoleColor(employee.app_role)}`}>
                   {employee.app_role}
@@ -796,30 +796,30 @@ export default function EmployeeProfilePage() {
               </div>
             </div>
             
-            <p className="text-gray-600 dark:text-white/70 mb-1">{employee.position_title || 'No title'}</p>
+            <p className="text-theme-secondary mb-1">{employee.position_title || 'No title'}</p>
             {employee.department && (
-              <p className="text-gray-500 dark:text-white/50 text-sm">{employee.department}</p>
+              <p className="text-theme-tertiary text-sm">{employee.department}</p>
             )}
             
             <div className="flex flex-wrap gap-4 mt-4 text-sm">
-              <div className="flex items-center gap-2 text-gray-600 dark:text-white/70">
+              <div className="flex items-center gap-2 text-theme-secondary">
                 <Mail className="w-4 h-4" />
-                <a href={`mailto:${employee.email}`} className="hover:text-gray-900 dark:hover:text-white">{employee.email}</a>
+                <a href={`mailto:${employee.email}`} className="hover:text-theme-primary">{employee.email}</a>
               </div>
               {employee.phone_number && (
-                <div className="flex items-center gap-2 text-gray-600 dark:text-white/70">
+                <div className="flex items-center gap-2 text-theme-secondary">
                   <Phone className="w-4 h-4" />
-                  <a href={`tel:${employee.phone_number}`} className="hover:text-gray-900 dark:hover:text-white">{employee.phone_number}</a>
+                  <a href={`tel:${employee.phone_number}`} className="hover:text-theme-primary">{employee.phone_number}</a>
                 </div>
               )}
               {employee.sites?.name && (
-                <div className="flex items-center gap-2 text-gray-600 dark:text-white/70">
+                <div className="flex items-center gap-2 text-theme-secondary">
                   <MapPin className="w-4 h-4" />
                   <span>{employee.sites.name}</span>
                 </div>
               )}
               {employee.manager?.full_name && (
-                <div className="flex items-center gap-2 text-gray-600 dark:text-white/70">
+                <div className="flex items-center gap-2 text-theme-secondary">
                   <Briefcase className="w-4 h-4" />
                   <span>Reports to: {employee.manager.full_name}</span>
                 </div>
@@ -831,7 +831,7 @@ export default function EmployeeProfilePage() {
           <div className="flex flex-col gap-3">
             <button
               onClick={handleEdit}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-transparent border border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow dark:hover:shadow-module-glow rounded-lg font-medium transition-all duration-200 ease-in-out"
             >
               <Edit className="w-4 h-4" />
               Edit Profile
@@ -874,7 +874,7 @@ export default function EmployeeProfilePage() {
                 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors
                 ${activeTab === tab.id
                   ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30'
-                  : 'text-gray-500 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.08] dark:bg-white/[0.05]'
+                  : 'text-theme-tertiary hover:text-theme-primary hover:bg-gray-100 dark:hover:bg-white/[0.08] dark:bg-white/[0.05]'
                 }
               `}
             >
@@ -886,7 +886,7 @@ export default function EmployeeProfilePage() {
       </div>
 
       {/* Tab Content */}
-      <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 shadow-sm dark:shadow-none">
+ <div className="bg-theme-surface ] border border-theme rounded-lg p-6 shadow-sm dark:shadow-none">
         {activeTab === 'overview' && (
           <OverviewTab 
             employee={employee} 
@@ -903,7 +903,7 @@ export default function EmployeeProfilePage() {
           <DocumentsTab employeeId={employee.id} />
         )}
         {activeTab === 'leave' && (
-          <div className="text-gray-500 dark:text-white/60 text-center py-8">
+          <div className="text-theme-tertiary text-center py-8">
             <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p>Leave management coming in Phase 2</p>
           </div>
@@ -922,7 +922,7 @@ export default function EmployeeProfilePage() {
           <PayTaxTab employee={employee} onUpdate={fetchEmployee} />
         )}
         {activeTab === 'notes' && (
-          <div className="text-gray-500 dark:text-white/60 text-center py-8">
+          <div className="text-theme-tertiary text-center py-8">
             <MessageSquare className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p>Notes coming soon</p>
           </div>
@@ -1040,7 +1040,7 @@ function OverviewTab({ employee, tenure, onUpdate, sites, onOpenSiteAssignments 
       <div className="space-y-6">
         {/* Personal Information */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
             <User className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             Personal Information
           </h3>
@@ -1063,7 +1063,7 @@ function OverviewTab({ employee, tenure, onUpdate, sites, onOpenSiteAssignments 
 
         {/* Compliance */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
             <Shield className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             Compliance
           </h3>
@@ -1137,7 +1137,7 @@ function OverviewTab({ employee, tenure, onUpdate, sites, onOpenSiteAssignments 
       <div className="space-y-6">
         {/* Employment Details */}
         <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
           <Briefcase className="w-5 h-5 text-blue-500 dark:text-blue-400" />
           Employment Details
         </h3>
@@ -1201,7 +1201,7 @@ function OverviewTab({ employee, tenure, onUpdate, sites, onOpenSiteAssignments 
             options={sites.map(site => ({ value: site.id, label: site.name }))}
           />
           {onOpenSiteAssignments && (
-            <div className="pt-3 border-t border-gray-300 dark:border-white/[0.1]">
+            <div className="pt-3 border-t border-theme">
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mb-3">
                 <p className="text-xs text-blue-300">
                   <strong>Multi-Site Assignment:</strong> Allow this employee to work at other sites
@@ -1209,12 +1209,12 @@ function OverviewTab({ employee, tenure, onUpdate, sites, onOpenSiteAssignments 
               </div>
               <button
                 onClick={() => onOpenSiteAssignments(employee)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-transparent border-2 border-blue-500 text-blue-400 hover:bg-blue-500/10 hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg transition-all font-medium"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-transparent border-2 border-blue-500 text-blue-400 hover:bg-module-fg/10 hover:shadow-module-glow rounded-lg transition-all font-medium"
               >
                 <MapPin className="w-5 h-5" />
                 Manage Site Assignments
               </button>
-              <p className="text-xs text-neutral-500 mt-2 text-center">
+              <p className="text-xs text-theme-tertiary mt-2 text-center">
                 Allow this employee to work at other sites during specified date ranges
               </p>
             </div>
@@ -1295,7 +1295,7 @@ function OverviewTab({ employee, tenure, onUpdate, sites, onOpenSiteAssignments 
 
         {/* Banking */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
             <CreditCard className="w-5 h-5 text-blue-500 dark:text-blue-400" />
             Bank Details
           </h3>
@@ -1390,17 +1390,17 @@ function ProbationReviewsSection({ employeeId, startDate }: { employeeId: string
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+      <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
         <CalendarCheck className="w-5 h-5 text-blue-500 dark:text-blue-400" />
         Probation Reviews
       </h3>
       <div className="space-y-3">
         {loadingReviews ? (
           <div className="flex items-center justify-center py-4">
-            <Loader2 className="h-4 w-4 animate-spin text-gray-500 dark:text-white/60" />
+            <Loader2 className="h-4 w-4 animate-spin text-theme-tertiary" />
           </div>
         ) : probationReviews.length === 0 ? (
-          <div className="text-sm text-gray-500 dark:text-white/60 py-2">
+          <div className="text-sm text-theme-tertiary py-2">
             {startDate 
               ? 'No probation review scheduled yet'
               : 'Set start date to auto-schedule probation review'}
@@ -1432,24 +1432,24 @@ function ProbationReviewsSection({ employeeId, startDate }: { employeeId: string
             return (
               <div 
                 key={schedule.id}
-                className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-gray-300 dark:hover:border-white/[0.1] transition-colors"
+                className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg p-4 hover:border-gray-300 dark:hover:border-white/[0.1] transition-colors"
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h4 className="text-gray-900 dark:text-white font-medium">
+                      <h4 className="text-theme-primary font-medium">
                         {schedule.template?.name || 'Probation Review'}
                       </h4>
-                      <span className={`px-2 py-0.5 rounded text-xs border ${statusColors[schedule.status] || 'bg-neutral-500/10 text-gray-500 dark:text-white/60 border-neutral-500/30'}`}>
+                      <span className={`px-2 py-0.5 rounded text-xs border ${statusColors[schedule.status] || 'bg-neutral-500/10 text-theme-tertiary border-neutral-500/30'}`}>
                         {schedule.status?.replace('_', ' ') || 'Unknown'}
                       </span>
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-white/60 space-y-1">
+                    <div className="text-sm text-theme-tertiary space-y-1">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-3 w-3" />
                         <span>Scheduled: {scheduledDate}</span>
                         {daysUntil !== null && (
-                          <span className={daysUntil < 0 ? 'text-red-400' : daysUntil <= 7 ? 'text-yellow-400' : 'text-neutral-500'}>
+                          <span className={daysUntil < 0 ? 'text-red-400' : daysUntil <= 7 ? 'text-yellow-400' : 'text-theme-tertiary'}>
                             ({daysUntil < 0 ? `${Math.abs(daysUntil)} days overdue` : daysUntil === 0 ? 'Today' : `${daysUntil} days away`})
                           </span>
                         )}
@@ -1465,14 +1465,14 @@ function ProbationReviewsSection({ employeeId, startDate }: { employeeId: string
                   {schedule.review_id ? (
                     <Link
                       href={`/dashboard/people/reviews/${schedule.review_id}`}
-                      className="ml-4 px-3 py-1.5 bg-transparent border border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 rounded text-sm hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-all"
+                      className="ml-4 px-3 py-1.5 bg-transparent border border-module-fg text-module-fg rounded text-sm hover:shadow-module-glow dark:hover:shadow-module-glow transition-all"
                     >
                       View Review
                     </Link>
                   ) : (
                     <Link
                       href={`/dashboard/people/reviews/schedule`}
-                      className="ml-4 px-3 py-1.5 bg-transparent border border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 rounded text-sm hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-all"
+                      className="ml-4 px-3 py-1.5 bg-transparent border border-module-fg text-module-fg rounded text-sm hover:shadow-module-glow dark:hover:shadow-module-glow transition-all"
                     >
                       Start Review
                     </Link>
@@ -1661,14 +1661,14 @@ function InfoRow({
   if (!fieldName || !employeeId) {
     // Non-editable row - but maintain alignment with editable rows
     return (
-      <div className="flex justify-between items-center py-2 border-b border-neutral-700 group">
-        <span className="text-gray-500 dark:text-white/60">{label}</span>
+      <div className="flex justify-between items-center py-2 border-b border-theme group">
+        <span className="text-theme-tertiary">{label}</span>
         <div className="flex items-center gap-2 flex-1 justify-end">
           <span className={`text-right ${
             status === 'success' ? 'text-green-400' :
             status === 'warning' ? 'text-amber-400' :
             status === 'error' ? 'text-red-400' :
-            'text-gray-900 dark:text-white'
+            'text-theme-primary'
           }`}>
             {value}
           </span>
@@ -1688,8 +1688,8 @@ function InfoRow({
   }
 
   return (
-    <div className="flex justify-between items-center py-2 border-b border-neutral-700 group">
-      <span className="text-gray-500 dark:text-white/60">{label}</span>
+    <div className="flex justify-between items-center py-2 border-b border-theme group">
+      <span className="text-theme-tertiary">{label}</span>
       <div className="flex items-center gap-2 flex-1 justify-end">
         {isEditing ? (
           <>
@@ -1697,7 +1697,7 @@ function InfoRow({
               <select
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded text-gray-900 dark:text-white text-sm"
+ className="flex-1 max-w-xs px-2 py-1 bg-theme-surface ] border border-theme rounded text-theme-primary text-sm"
                 autoFocus
                 disabled={options.length === 0}
               >
@@ -1714,7 +1714,7 @@ function InfoRow({
               <select
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded text-gray-900 dark:text-white text-sm"
+ className="flex-1 max-w-xs px-2 py-1 bg-theme-surface ] border border-theme rounded text-theme-primary text-sm"
                 autoFocus
               >
                 <option value="">Not set</option>
@@ -1726,7 +1726,7 @@ function InfoRow({
                 type="date"
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded text-gray-900 dark:text-white text-sm"
+ className="flex-1 max-w-xs px-2 py-1 bg-theme-surface ] border border-theme rounded text-theme-primary text-sm"
                 autoFocus
               />
             ) : type === 'number' ? (
@@ -1734,14 +1734,14 @@ function InfoRow({
                 type="number"
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded text-gray-900 dark:text-white text-sm"
+ className="flex-1 max-w-xs px-2 py-1 bg-theme-surface ] border border-theme rounded text-theme-primary text-sm"
                 autoFocus
               />
             ) : type === 'textarea' ? (
               <textarea
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded text-gray-900 dark:text-white text-sm"
+ className="flex-1 max-w-xs px-2 py-1 bg-theme-surface ] border border-theme rounded text-theme-primary text-sm"
                 rows={2}
                 autoFocus
               />
@@ -1750,7 +1750,7 @@ function InfoRow({
                 type="text"
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded text-gray-900 dark:text-white text-sm"
+ className="flex-1 max-w-xs px-2 py-1 bg-theme-surface ] border border-theme rounded text-theme-primary text-sm"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSave();
@@ -1761,14 +1761,14 @@ function InfoRow({
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-2 py-1 bg-green-600 hover:bg-green-700 text-gray-900 dark:text-white text-xs rounded disabled:opacity-50"
+              className="px-2 py-1 bg-green-600 hover:bg-green-700 text-theme-primary text-xs rounded disabled:opacity-50"
             >
               {saving ? '...' : '✓'}
             </button>
             <button
               onClick={handleCancel}
               disabled={saving}
-              className="px-2 py-1 bg-neutral-700 hover:bg-neutral-600 text-gray-900 dark:text-white text-xs rounded disabled:opacity-50"
+              className="px-2 py-1 bg-neutral-700 hover:bg-neutral-600 text-theme-primary text-xs rounded disabled:opacity-50"
             >
               ✕
             </button>
@@ -1779,7 +1779,7 @@ function InfoRow({
               status === 'success' ? 'text-green-400' :
               status === 'warning' ? 'text-amber-400' :
               status === 'error' ? 'text-red-400' :
-              'text-gray-900 dark:text-white'
+              'text-theme-primary'
             }`}>
               {value}
             </span>
@@ -2226,7 +2226,7 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
   });
 
   if (loading) {
-    return <div className="text-gray-500 dark:text-white/60">Loading documents...</div>;
+    return <div className="text-theme-tertiary">Loading documents...</div>;
   }
 
   return (
@@ -2237,10 +2237,10 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
         </div>
       )}
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Documents</h3>
+        <h3 className="text-lg font-semibold text-theme-primary">Documents</h3>
         <button
           onClick={() => setUploadOpen(true)}
-          className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out flex items-center gap-2"
+          className="px-4 py-2 bg-transparent border border-module-fg text-module-fg rounded-lg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] transition-all duration-200 ease-in-out flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           Upload
@@ -2248,17 +2248,17 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
       </div>
 
       {/* Required docs checklist */}
-      <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+      <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-xl p-4">
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Required employee documents</h4>
-            <p className="text-xs text-gray-900 dark:text-white/60">Checklist (can be configured per role later)</p>
+            <h4 className="text-sm font-semibold text-theme-primary mb-1">Required employee documents</h4>
+            <p className="text-xs text-theme-primary/60">Checklist (can be configured per role later)</p>
           </div>
           <div className="text-right">
             <div className="text-lg font-bold text-green-400">
               {REQUIRED_DOCS.filter((d) => d.required && (uploadedByType.get(d.key)?.length || 0) > 0).length}
             </div>
-            <div className="text-xs text-gray-900 dark:text-white/60">of {REQUIRED_DOCS.filter((d) => d.required).length}</div>
+            <div className="text-xs text-theme-primary/60">of {REQUIRED_DOCS.filter((d) => d.required).length}</div>
           </div>
         </div>
 
@@ -2269,12 +2269,12 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
               <div
                 key={d.key}
                 className={`flex items-center gap-2 text-xs p-2 rounded ${
-                  has ? 'bg-green-500/10 border border-green-500/30' : 'bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.1]'
+                  has ? 'bg-green-500/10 border border-green-500/30' : 'bg-gray-50 dark:bg-white/[0.03] border border-theme'
                 }`}
               >
                 <span className={has ? 'text-green-400' : 'text-red-400'}>{has ? '✓' : '○'}</span>
-                <span className={`flex-1 ${has ? 'text-gray-900 dark:text-white/80' : 'text-gray-900 dark:text-white/60'}`}>{d.label}</span>
-                {d.help && <span className="text-gray-900 dark:text-white/40">{d.help}</span>}
+                <span className={`flex-1 ${has ? 'text-theme-primary/80' : 'text-theme-primary/60'}`}>{d.label}</span>
+                {d.help && <span className="text-theme-primary/40">{d.help}</span>}
               </div>
             );
           })}
@@ -2284,11 +2284,11 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
       {/* Document list */}
       {documents.length === 0 ? (
         <div className="text-center py-8">
-          <FileText className="w-12 h-12 text-neutral-500 mx-auto mb-4" />
-          <p className="text-gray-500 dark:text-white/60 mb-4">No documents uploaded yet</p>
+          <FileText className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
+          <p className="text-theme-tertiary mb-4">No documents uploaded yet</p>
           <button
             onClick={() => setUploadOpen(true)}
-            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out"
+            className="px-4 py-2 bg-transparent border border-module-fg text-module-fg rounded-lg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] transition-all duration-200 ease-in-out"
           >
             Upload Document
           </button>
@@ -2298,10 +2298,10 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
           {documents.map((doc) => (
             <div key={doc.id} className="flex items-center justify-between p-3 bg-neutral-700/50 rounded-lg">
               <div className="flex items-center gap-3">
-                <FileText className="w-5 h-5 text-gray-500 dark:text-white/60" />
+                <FileText className="w-5 h-5 text-theme-tertiary" />
                 <div>
-                  <p className="text-gray-900 dark:text-white">{doc.title}</p>
-                  <p className="text-sm text-gray-500 dark:text-white/60">
+                  <p className="text-theme-primary">{doc.title}</p>
+                  <p className="text-sm text-theme-tertiary">
                     {doc.document_type}
                     {doc.expires_at ? ` · expires ${new Date(doc.expires_at).toLocaleDateString('en-GB')}` : ''}
                   </p>
@@ -2310,13 +2310,13 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => handleDownload(doc)}
-                  className="text-sm text-[#D37E91] hover:underline"
+                  className="text-sm text-module-fg hover:underline"
                 >
                   Download
                 </button>
                 <button
                   onClick={() => handleDelete(doc)}
-                  className="p-2 rounded-lg hover:bg-white/5 text-gray-500 dark:text-white/60 hover:text-red-400"
+                  className="p-2 rounded-lg hover:bg-white/5 text-theme-tertiary hover:text-red-400"
                   title="Delete"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -2330,12 +2330,12 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
       {/* Upload modal */}
       {uploadOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="w-full max-w-lg bg-neutral-900 border border-gray-300 dark:border-white/[0.1] rounded-xl p-5">
+          <div className="w-full max-w-lg bg-neutral-900 border border-theme rounded-xl p-5">
             <div className="flex items-center justify-between mb-4">
-              <h4 className="text-gray-900 dark:text-white font-semibold">Upload document</h4>
+              <h4 className="text-theme-primary font-semibold">Upload document</h4>
               <button
                 onClick={() => setUploadOpen(false)}
-                className="p-2 hover:bg-neutral-800 rounded-lg text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white"
+                className="p-2 hover:bg-neutral-800 rounded-lg text-theme-tertiary hover:text-theme-primary"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -2343,11 +2343,11 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
 
             <div className="space-y-3">
               <div>
-                <label className="block text-sm text-gray-900 dark:text-white/70 mb-1">Document type</label>
+                <label className="block text-sm text-theme-primary/70 mb-1">Document type</label>
                 <select
                   value={docType}
                   onChange={(e) => setDocType(e.target.value)}
-                  className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 bg-neutral-800 border border-theme rounded-lg text-theme-primary"
                 >
                   {REQUIRED_DOCS.map((d) => (
                     <option key={d.key} value={d.key}>
@@ -2358,56 +2358,56 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
               </div>
 
               <div>
-                <label className="block text-sm text-gray-900 dark:text-white/70 mb-1">Title</label>
+                <label className="block text-sm text-theme-primary/70 mb-1">Title</label>
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Passport, Contract v1"
-                  className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 bg-neutral-800 border border-theme rounded-lg text-theme-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-900 dark:text-white/70 mb-1">Expiry date (optional)</label>
+                <label className="block text-sm text-theme-primary/70 mb-1">Expiry date (optional)</label>
                 <input
                   type="date"
                   value={expiresAt}
                   onChange={(e) => setExpiresAt(e.target.value)}
-                  className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 bg-neutral-800 border border-theme rounded-lg text-theme-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-900 dark:text-white/70 mb-1">Notes (optional)</label>
+                <label className="block text-sm text-theme-primary/70 mb-1">Notes (optional)</label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
-                  className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 bg-neutral-800 border border-theme rounded-lg text-theme-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-900 dark:text-white/70 mb-1">File</label>
+                <label className="block text-sm text-theme-primary/70 mb-1">File</label>
                 <input
                   type="file"
                   onChange={(e) => setFile(e.target.files?.[0] || null)}
-                  className="w-full text-gray-900 dark:text-white"
+                  className="w-full text-theme-primary"
                 />
-                <p className="text-xs text-gray-900 dark:text-white/40 mt-1">PDF, images, Word. Stored privately.</p>
+                <p className="text-xs text-theme-primary/40 mt-1">PDF, images, Word. Stored privately.</p>
               </div>
 
               <div className="flex justify-end gap-2 pt-2">
                 <button
                   onClick={() => setUploadOpen(false)}
-                  className="px-4 py-2 bg-neutral-800 border border-neutral-700 text-gray-900 dark:text-white rounded-lg"
+                  className="px-4 py-2 bg-neutral-800 border border-theme text-theme-primary rounded-lg"
                   disabled={uploading}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleUpload}
-                  className="px-4 py-2 bg-[#D37E91] text-gray-900 dark:text-white rounded-lg disabled:opacity-50"
+                  className="px-4 py-2 bg-module-fg text-theme-primary rounded-lg disabled:opacity-50"
                   disabled={uploading}
                 >
                   {uploading ? 'Uploading…' : 'Upload'}
@@ -2419,16 +2419,16 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
       )}
 
       {/* Onboarding pack sending */}
-      <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+      <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-xl p-4">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Send onboarding pack</h4>
-            <p className="text-xs text-gray-900 dark:text-white/60">Role-based: filter by BOH/FOH and hourly/salaried</p>
+            <h4 className="text-sm font-semibold text-theme-primary mb-1">Send onboarding pack</h4>
+            <p className="text-xs text-theme-primary/60">Role-based: filter by BOH/FOH and hourly/salaried</p>
           </div>
           <button
             onClick={sendPack}
             disabled={sendingPack || !selectedPackId}
-            className="px-4 py-2 bg-[#D37E91] text-gray-900 dark:text-white rounded-lg disabled:opacity-50"
+            className="px-4 py-2 bg-module-fg text-theme-primary rounded-lg disabled:opacity-50"
           >
             {sendingPack ? 'Sending…' : 'Send pack'}
           </button>
@@ -2436,11 +2436,11 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
           <div>
-            <label className="block text-xs text-gray-900 dark:text-white/70 mb-1">BOH/FOH</label>
+            <label className="block text-xs text-theme-primary/70 mb-1">BOH/FOH</label>
             <select
               value={bohFoh}
               onChange={(e) => setBohFoh(e.target.value as any)}
-              className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-gray-900 dark:text-white"
+              className="w-full px-3 py-2 bg-neutral-800 border border-theme rounded-lg text-theme-primary"
             >
               <option value="FOH">FOH</option>
               <option value="BOH">BOH</option>
@@ -2448,22 +2448,22 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
             </select>
           </div>
           <div>
-            <label className="block text-xs text-gray-900 dark:text-white/70 mb-1">Pay type</label>
+            <label className="block text-xs text-theme-primary/70 mb-1">Pay type</label>
             <select
               value={payType}
               onChange={(e) => setPayType(e.target.value as any)}
-              className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-gray-900 dark:text-white"
+              className="w-full px-3 py-2 bg-neutral-800 border border-theme rounded-lg text-theme-primary"
             >
               <option value="hourly">Hourly</option>
               <option value="salaried">Salaried</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs text-gray-900 dark:text-white/70 mb-1">Pack</label>
+            <label className="block text-xs text-theme-primary/70 mb-1">Pack</label>
             <select
               value={selectedPackId}
               onChange={(e) => setSelectedPackId(e.target.value)}
-              className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-gray-900 dark:text-white"
+              className="w-full px-3 py-2 bg-neutral-800 border border-theme rounded-lg text-theme-primary"
             >
               {packs.length === 0 ? (
                 <option value="">No packs found</option>
@@ -2480,15 +2480,15 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
 
         <div className="mt-4">
           {packs.length === 0 ? (
-            <div className="text-sm text-gray-900 dark:text-white/70">
+            <div className="text-sm text-theme-primary/70">
               No packs exist for these filters.{' '}
-              <button className="text-[#D37E91] hover:underline" onClick={() => setCreatingPack(true)}>
+              <button className="text-module-fg hover:underline" onClick={() => setCreatingPack(true)}>
                 Create one
               </button>
               .
             </div>
           ) : (
-            <div className="text-xs text-gray-900 dark:text-white/60">
+            <div className="text-xs text-theme-primary/60">
               {packDocs.length ? `${packDocs.length} document(s) in this pack.` : 'Select a pack to preview documents.'}
             </div>
           )}
@@ -2497,9 +2497,9 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
         {packDocs.length > 0 && (
           <div className="mt-3 space-y-2">
             {packDocs.map((d: any) => (
-              <div key={d.id} className="flex items-center justify-between text-sm p-2 rounded bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
-                <div className="text-gray-900 dark:text-white/80">{d.global_documents?.name || 'Document'}</div>
-                <div className="text-gray-900 dark:text-white/40">{d.global_documents?.category || ''}</div>
+              <div key={d.id} className="flex items-center justify-between text-sm p-2 rounded bg-gray-50 dark:bg-white/[0.03] border border-theme">
+                <div className="text-theme-primary/80">{d.global_documents?.name || 'Document'}</div>
+                <div className="text-theme-primary/40">{d.global_documents?.category || ''}</div>
               </div>
             ))}
           </div>
@@ -2508,29 +2508,29 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
         {creatingPack && (
           <div className="mt-4 border-t border-white/[0.08] pt-4">
             <div className="flex items-center justify-between mb-2">
-              <h5 className="text-gray-900 dark:text-white font-semibold text-sm">Create pack</h5>
+              <h5 className="text-theme-primary font-semibold text-sm">Create pack</h5>
               <button
                 onClick={() => setCreatingPack(false)}
-                className="text-gray-900 dark:text-white/60 hover:text-gray-900 dark:text-white text-sm"
+                className="text-theme-primary/60 hover:text-theme-primary text-sm"
               >
                 Close
               </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-gray-900 dark:text-white/70 mb-1">Pack name</label>
+                <label className="block text-xs text-theme-primary/70 mb-1">Pack name</label>
                 <input
                   value={newPackName}
                   onChange={(e) => setNewPackName(e.target.value)}
-                  className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 bg-neutral-800 border border-theme rounded-lg text-theme-primary"
                   placeholder="e.g. FOH Hourly Starter Pack"
                 />
-                <p className="text-xs text-gray-900 dark:text-white/40 mt-1">Saved with current filters: {bohFoh} / {payType}</p>
+                <p className="text-xs text-theme-primary/40 mt-1">Saved with current filters: {bohFoh} / {payType}</p>
               </div>
               <div className="flex items-end justify-end">
                 <button
                   onClick={createPack}
-                  className="px-4 py-2 bg-[#D37E91] text-gray-900 dark:text-white rounded-lg"
+                  className="px-4 py-2 bg-module-fg text-theme-primary rounded-lg"
                 >
                   Save pack
                 </button>
@@ -2539,10 +2539,10 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
 
             <div className="mt-3">
               <div className="flex items-center justify-between gap-3 mb-2">
-                <div className="text-xs text-gray-900 dark:text-white/60">Select global documents to include:</div>
+                <div className="text-xs text-theme-primary/60">Select global documents to include:</div>
                 <button
                   onClick={applySuggestedPackSelection}
-                  className="text-xs px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 border border-white/10 text-gray-900 dark:text-white"
+                  className="text-xs px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 border border-white/10 text-theme-primary"
                   type="button"
                 >
                   Use suggested pack
@@ -2550,14 +2550,14 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
               </div>
               <div className="max-h-56 overflow-auto space-y-1">
                 {globalDocs.map((d: any) => (
-                  <label key={d.id} className="flex items-center gap-2 text-sm text-gray-900 dark:text-white/80 p-2 rounded bg-white/[0.02] border border-gray-200 dark:border-white/[0.06]">
+                  <label key={d.id} className="flex items-center gap-2 text-sm text-theme-primary/80 p-2 rounded bg-white/[0.02] border border-theme">
                     <input
                       type="checkbox"
                       checked={newPackDocIds.has(d.id)}
                       onChange={() => toggleNewPackDoc(d.id)}
                     />
                     <span className="flex-1">{d.name}</span>
-                    <span className="text-gray-900 dark:text-white/40 text-xs">{d.category || ''}</span>
+                    <span className="text-theme-primary/40 text-xs">{d.category || ''}</span>
                   </label>
                 ))}
               </div>
@@ -2575,8 +2575,8 @@ function PayTaxTab({ employee, onUpdate }: { employee: Employee; onUpdate: () =>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Pay Details */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <CreditCard className="w-5 h-5 text-[#D37E91]" />
+        <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+          <CreditCard className="w-5 h-5 text-module-fg" />
           Pay Details
         </h3>
         <div className="space-y-3">
@@ -2623,8 +2623,8 @@ function PayTaxTab({ employee, onUpdate }: { employee: Employee; onUpdate: () =>
 
       {/* Tax & Deductions */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <Shield className="w-5 h-5 text-[#D37E91]" />
+        <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+          <Shield className="w-5 h-5 text-module-fg" />
           Tax & Deductions
         </h3>
         <div className="space-y-3">
@@ -2714,38 +2714,38 @@ function AttendanceTab({ employeeId }: { employeeId: string }) {
   };
 
   if (loading) {
-    return <div className="text-gray-500 dark:text-white/60">Loading attendance...</div>;
+    return <div className="text-theme-tertiary">Loading attendance...</div>;
   }
 
   if (attendance.length === 0) {
     return (
       <div className="text-center py-8">
-        <Clock className="w-12 h-12 text-neutral-500 mx-auto mb-4" />
-        <p className="text-gray-500 dark:text-white/60">No attendance records yet</p>
+        <Clock className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
+        <p className="text-theme-tertiary">No attendance records yet</p>
       </div>
     );
   }
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Attendance</h3>
+      <h3 className="text-lg font-semibold text-theme-primary mb-4">Recent Attendance</h3>
       <div className="space-y-2">
         {attendance.map((record) => (
           <div key={record.id} className="flex items-center justify-between p-3 bg-neutral-700/50 rounded-lg">
             <div>
-              <p className="text-gray-900 dark:text-white">
+              <p className="text-theme-primary">
                 {new Date(record.clock_in_time).toLocaleDateString('en-GB', { 
                   weekday: 'short', 
                   day: 'numeric', 
                   month: 'short' 
                 })}
               </p>
-              <p className="text-sm text-gray-500 dark:text-white/60">
+              <p className="text-sm text-theme-tertiary">
                 {record.sites?.name || 'Unknown site'}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-gray-900 dark:text-white">
+              <p className="text-theme-primary">
                 {new Date(record.clock_in_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                 {' - '}
                 {record.clock_out_time 
@@ -2754,7 +2754,7 @@ function AttendanceTab({ employeeId }: { employeeId: string }) {
                 }
               </p>
               {record.total_hours && (
-                <p className="text-sm text-gray-500 dark:text-white/60">{record.total_hours.toFixed(1)} hours</p>
+                <p className="text-sm text-theme-tertiary">{record.total_hours.toFixed(1)} hours</p>
               )}
             </div>
           </div>
@@ -2826,12 +2826,12 @@ function EditEmployeeModal({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-neutral-800">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Employee</h2>
-            <p className="text-gray-500 dark:text-white/60 mt-1">{employee.full_name}</p>
+            <h2 className="text-2xl font-bold text-theme-primary">Edit Employee</h2>
+            <p className="text-theme-tertiary mt-1">{employee.full_name}</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-neutral-800 rounded-lg text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white transition-colors"
+            className="p-2 hover:bg-neutral-800 rounded-lg text-theme-tertiary hover:text-theme-primary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -2855,8 +2855,8 @@ function EditEmployeeModal({
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-t-lg text-sm font-medium whitespace-nowrap transition-colors ${
                   activeTab === tab.id
-                    ? 'bg-neutral-800 text-gray-900 dark:text-white border-b-2 border-[#D37E91]'
-                    : 'text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white hover:bg-neutral-800'
+                    ? 'bg-neutral-800 text-theme-primary border-b-2 border-module-fg'
+                    : 'text-theme-tertiary hover:text-theme-primary hover:bg-neutral-800'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -2870,14 +2870,14 @@ function EditEmployeeModal({
         <div className="flex-1 overflow-y-auto p-6">
           {activeTab === 'personal' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <User className="w-5 h-5 text-[#D37E91]" />
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
+                <User className="w-5 h-5 text-module-fg" />
                 Personal Information
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Full Name <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -2886,12 +2886,12 @@ function EditEmployeeModal({
                     value={formData.full_name || ''}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Email <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -2900,12 +2900,12 @@ function EditEmployeeModal({
                     value={formData.email || ''}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Phone Number
                   </label>
                   <input
@@ -2913,12 +2913,12 @@ function EditEmployeeModal({
                     name="phone_number"
                     value={formData.phone_number || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Date of Birth
                   </label>
                   <input
@@ -2926,19 +2926,19 @@ function EditEmployeeModal({
                     name="date_of_birth"
                     value={formData.date_of_birth || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Gender
                   </label>
                   <select
                     name="gender"
                     value={formData.gender || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   >
                     <option value="">Select...</option>
                     <option value="male">Male</option>
@@ -2950,7 +2950,7 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Nationality
                   </label>
                   <input
@@ -2958,17 +2958,17 @@ function EditEmployeeModal({
                     name="nationality"
                     value={formData.nationality || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
               </div>
               
               {/* Address */}
-              <div className="border-t border-neutral-700 pt-4">
-                <h3 className="text-md font-medium text-gray-900 dark:text-white mb-4">Address</h3>
+              <div className="border-t border-theme pt-4">
+                <h3 className="text-md font-medium text-theme-primary mb-4">Address</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       Address Line 1
                     </label>
                     <input
@@ -2976,12 +2976,12 @@ function EditEmployeeModal({
                       name="address_line_1"
                       value={formData.address_line_1 || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                     />
                   </div>
                   
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       Address Line 2
                     </label>
                     <input
@@ -2989,12 +2989,12 @@ function EditEmployeeModal({
                       name="address_line_2"
                       value={formData.address_line_2 || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       City
                     </label>
                     <input
@@ -3002,12 +3002,12 @@ function EditEmployeeModal({
                       name="city"
                       value={formData.city || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       County
                     </label>
                     <input
@@ -3015,12 +3015,12 @@ function EditEmployeeModal({
                       name="county"
                       value={formData.county || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       Postcode
                     </label>
                     <input
@@ -3028,12 +3028,12 @@ function EditEmployeeModal({
                       name="postcode"
                       value={formData.postcode || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       Country
                     </label>
                     <input
@@ -3041,20 +3041,20 @@ function EditEmployeeModal({
                       name="country"
                       value={formData.country || 'United Kingdom'}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                     />
                   </div>
                 </div>
               </div>
               
               {/* Emergency Contacts */}
-              <div className="border-t border-neutral-700 pt-4">
+              <div className="border-t border-theme pt-4">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-md font-medium text-gray-900 dark:text-white">Emergency Contacts</h3>
+                  <h3 className="text-md font-medium text-theme-primary">Emergency Contacts</h3>
                   <button
                     type="button"
                     onClick={addEmergencyContact}
-                    className="flex items-center gap-1 text-sm text-[#D37E91] hover:text-[#D37E91]/80"
+                    className="flex items-center gap-1 text-sm text-module-fg hover:text-module-fg/80"
                   >
                     <Plus className="w-4 h-4" />
                     Add Contact
@@ -3064,41 +3064,41 @@ function EditEmployeeModal({
                 {emergencyContacts.map((contact, index) => (
                   <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 p-4 bg-neutral-700/30 rounded-lg">
                     <div>
-                      <label className="block text-sm font-medium text-neutral-300 mb-1">Name</label>
+                      <label className="block text-sm font-medium text-theme-tertiary mb-1">Name</label>
                       <input
                         type="text"
                         value={contact.name}
                         onChange={(e) => handleEmergencyContactChange(index, 'name', e.target.value)}
-                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-300 mb-1">Relationship</label>
+                      <label className="block text-sm font-medium text-theme-tertiary mb-1">Relationship</label>
                       <input
                         type="text"
                         value={contact.relationship}
                         onChange={(e) => handleEmergencyContactChange(index, 'relationship', e.target.value)}
                         placeholder="e.g., Spouse, Parent"
-                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-300 mb-1">Phone</label>
+                      <label className="block text-sm font-medium text-theme-tertiary mb-1">Phone</label>
                       <input
                         type="tel"
                         value={contact.phone}
                         onChange={(e) => handleEmergencyContactChange(index, 'phone', e.target.value)}
-                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                       />
                     </div>
                     <div className="flex items-end gap-2">
                       <div className="flex-1">
-                        <label className="block text-sm font-medium text-neutral-300 mb-1">Email</label>
+                        <label className="block text-sm font-medium text-theme-tertiary mb-1">Email</label>
                         <input
                           type="email"
                           value={contact.email || ''}
                           onChange={(e) => handleEmergencyContactChange(index, 'email', e.target.value)}
-                          className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                          className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                         />
                       </div>
                       {emergencyContacts.length > 1 && (
@@ -3119,14 +3119,14 @@ function EditEmployeeModal({
 
           {activeTab === 'employment' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-[#D37E91]" />
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
+                <Briefcase className="w-5 h-5 text-module-fg" />
                 Employment Details
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Employee Number
                   </label>
                   <input
@@ -3135,12 +3135,12 @@ function EditEmployeeModal({
                     value={formData.employee_number || ''}
                     onChange={handleChange}
                     placeholder="e.g., EMP001"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Position / Job Title
                   </label>
                   <input
@@ -3148,12 +3148,12 @@ function EditEmployeeModal({
                     name="position_title"
                     value={formData.position_title || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Department
                   </label>
                   <input
@@ -3161,19 +3161,19 @@ function EditEmployeeModal({
                     name="department"
                     value={formData.department || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     App Role
                   </label>
                   <select
                     name="app_role"
                     value={formData.app_role || 'Staff'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   >
                     <option value="Staff">Staff</option>
                     <option value="Manager">Manager</option>
@@ -3183,14 +3183,14 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Home Site
                   </label>
                   <select
                     name="home_site"
                     value={formData.home_site || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   >
                     <option value="">Select site...</option>
                     {sites && sites.length > 0 ? (
@@ -3204,7 +3204,7 @@ function EditEmployeeModal({
                 </div>
 
                 {onOpenSiteAssignments && (
-                  <div className="md:col-span-2 pt-4 border-t border-neutral-700">
+                  <div className="md:col-span-2 pt-4 border-t border-theme">
                     <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mb-3">
                       <p className="text-xs text-blue-300">
                         <strong>Multi-Site Assignment:</strong> Allow this employee to work at other sites
@@ -3213,26 +3213,26 @@ function EditEmployeeModal({
                     <button
                       onClick={() => onOpenSiteAssignments(employee)}
                       type="button"
-                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-transparent border-2 border-blue-500 text-blue-400 hover:bg-blue-500/10 hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg transition-all font-medium"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-transparent border-2 border-blue-500 text-blue-400 hover:bg-module-fg/10 hover:shadow-module-glow rounded-lg transition-all font-medium"
                     >
                       <MapPin className="w-5 h-5" />
                       Manage Site Assignments
                     </button>
-                    <p className="text-xs text-neutral-500 mt-2 text-center">
+                    <p className="text-xs text-theme-tertiary mt-2 text-center">
                       Allow this employee to work at other sites during specified date ranges
                     </p>
                   </div>
                 )}
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Reports To
                   </label>
                   <select
                     name="reports_to"
                     value={formData.reports_to || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   >
                     <option value="">Select manager...</option>
                     {managers.map(manager => (
@@ -3242,14 +3242,14 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     BOH / FOH
                   </label>
                   <select
                     name="boh_foh"
                     value={formData.boh_foh || 'FOH'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   >
                     <option value="FOH">Front of House</option>
                     <option value="BOH">Back of House</option>
@@ -3258,7 +3258,7 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Start Date
                   </label>
                   <input
@@ -3266,12 +3266,12 @@ function EditEmployeeModal({
                     name="start_date"
                     value={formData.start_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Probation End Date
                   </label>
                   <input
@@ -3279,19 +3279,19 @@ function EditEmployeeModal({
                     name="probation_end_date"
                     value={formData.probation_end_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Contract Type
                   </label>
                   <select
                     name="contract_type"
                     value={formData.contract_type || 'permanent'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   >
                     <option value="permanent">Permanent</option>
                     <option value="fixed_term">Fixed Term</option>
@@ -3304,7 +3304,7 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Contracted Hours (per week)
                   </label>
                   <input
@@ -3313,12 +3313,12 @@ function EditEmployeeModal({
                     value={formData.contracted_hours || ''}
                     onChange={handleChange}
                     step="0.5"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Hourly Rate (£)
                   </label>
                   <input
@@ -3327,12 +3327,12 @@ function EditEmployeeModal({
                     value={formData.hourly_rate || ''}
                     onChange={handleChange}
                     step="0.01"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Annual Salary (£)
                   </label>
                   <input
@@ -3341,19 +3341,19 @@ function EditEmployeeModal({
                     value={formData.salary || ''}
                     onChange={handleChange}
                     step="100"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Pay Frequency
                   </label>
                   <select
                     name="pay_frequency"
                     value={formData.pay_frequency || 'monthly'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   >
                     <option value="weekly">Weekly</option>
                     <option value="fortnightly">Fortnightly</option>
@@ -3363,7 +3363,7 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Notice Period (weeks)
                   </label>
                   <input
@@ -3372,7 +3372,7 @@ function EditEmployeeModal({
                     value={formData.notice_period_weeks || '1'}
                     onChange={handleChange}
                     min="1"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
               </div>
@@ -3381,14 +3381,14 @@ function EditEmployeeModal({
 
           {activeTab === 'compliance' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <Shield className="w-5 h-5 text-[#D37E91]" />
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
+                <Shield className="w-5 h-5 text-module-fg" />
                 Compliance & Right to Work
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     National Insurance Number
                   </label>
                   <input
@@ -3397,19 +3397,19 @@ function EditEmployeeModal({
                     value={formData.national_insurance_number || ''}
                     onChange={handleChange}
                     placeholder="e.g., AB123456C"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent uppercase"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent uppercase"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Right to Work Status
                   </label>
                   <select
                     name="right_to_work_status"
                     value={formData.right_to_work_status || 'pending'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   >
                     <option value="pending">Pending Verification</option>
                     <option value="verified">Verified</option>
@@ -3419,14 +3419,14 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     RTW Document Type
                   </label>
                   <select
                     name="right_to_work_document_type"
                     value={formData.right_to_work_document_type || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   >
                     <option value="">Select...</option>
                     <option value="passport">UK/EU Passport</option>
@@ -3438,7 +3438,7 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     RTW Expiry Date
                   </label>
                   <input
@@ -3446,25 +3446,25 @@ function EditEmployeeModal({
                     name="right_to_work_expiry"
                     value={formData.right_to_work_expiry || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
-                  <p className="text-xs text-gray-500 dark:text-white/60 mt-1">Leave blank if no expiry (e.g., British citizen)</p>
+                  <p className="text-xs text-theme-tertiary mt-1">Leave blank if no expiry (e.g., British citizen)</p>
                 </div>
               </div>
               
               {/* DBS Section */}
-              <div className="border-t border-neutral-700 pt-4">
-                <h3 className="text-md font-medium text-gray-900 dark:text-white mb-4">DBS Check</h3>
+              <div className="border-t border-theme pt-4">
+                <h3 className="text-md font-medium text-theme-primary mb-4">DBS Check</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       DBS Status
                     </label>
                     <select
                       name="dbs_status"
                       value={formData.dbs_status || 'not_required'}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                     >
                       <option value="not_required">Not Required</option>
                       <option value="pending">Pending</option>
@@ -3474,7 +3474,7 @@ function EditEmployeeModal({
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       DBS Certificate Number
                     </label>
                     <input
@@ -3482,12 +3482,12 @@ function EditEmployeeModal({
                       name="dbs_certificate_number"
                       value={formData.dbs_certificate_number || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       DBS Check Date
                     </label>
                     <input
@@ -3495,7 +3495,7 @@ function EditEmployeeModal({
                       name="dbs_check_date"
                       value={formData.dbs_check_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -3505,17 +3505,17 @@ function EditEmployeeModal({
 
           {activeTab === 'banking' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-[#D37E91]" />
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
+                <CreditCard className="w-5 h-5 text-module-fg" />
                 Bank Details
               </h2>
-              <p className="text-sm text-gray-500 dark:text-white/60">
+              <p className="text-sm text-theme-tertiary">
                 Bank details are used for payroll export only and are stored securely.
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Bank Name
                   </label>
                   <input
@@ -3523,12 +3523,12 @@ function EditEmployeeModal({
                     name="bank_name"
                     value={formData.bank_name || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Account Holder Name
                   </label>
                   <input
@@ -3536,12 +3536,12 @@ function EditEmployeeModal({
                     name="bank_account_name"
                     value={formData.bank_account_name || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Sort Code
                   </label>
                   <input
@@ -3550,12 +3550,12 @@ function EditEmployeeModal({
                     value={formData.bank_sort_code || ''}
                     onChange={handleChange}
                     placeholder="XX-XX-XX"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Account Number
                   </label>
                   <input
@@ -3565,7 +3565,7 @@ function EditEmployeeModal({
                     onChange={handleChange}
                     placeholder="8 digits"
                     maxLength={8}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
               </div>
@@ -3574,14 +3574,14 @@ function EditEmployeeModal({
 
           {activeTab === 'leave' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#D37E91]" />
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-module-fg" />
                 Leave Allowance
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Annual Leave Allowance (days)
                   </label>
                   <input
@@ -3590,9 +3590,9 @@ function EditEmployeeModal({
                     value={formData.annual_leave_allowance || '28'}
                     onChange={handleChange}
                     step="0.5"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
-                  <p className="text-xs text-gray-500 dark:text-white/60 mt-1">UK statutory minimum is 28 days (including bank holidays)</p>
+                  <p className="text-xs text-theme-tertiary mt-1">UK statutory minimum is 28 days (including bank holidays)</p>
                 </div>
               </div>
             </div>
@@ -3600,14 +3600,14 @@ function EditEmployeeModal({
 
           {activeTab === 'pay' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <CreditCardIcon className="w-5 h-5 text-[#D37E91]" />
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
+                <CreditCardIcon className="w-5 h-5 text-module-fg" />
                 Pay & Tax Details
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Tax Code
                   </label>
                   <input
@@ -3616,12 +3616,12 @@ function EditEmployeeModal({
                     value={formData.tax_code || ''}
                     onChange={handleChange}
                     placeholder="e.g., 1257L"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent uppercase"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent uppercase"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Student Loan
                   </label>
                   <div className="flex items-center gap-2 mt-2">
@@ -3630,22 +3630,22 @@ function EditEmployeeModal({
                       name="student_loan"
                       checked={formData.student_loan || false}
                       onChange={handleChange}
-                      className="w-4 h-4 text-[#D37E91] bg-neutral-700 border-neutral-600 rounded focus:ring-[#D37E91]"
+                      className="w-4 h-4 text-module-fg bg-neutral-700 border-neutral-600 rounded focus:ring-module-fg"
                     />
-                    <span className="text-sm text-neutral-300">Has student loan</span>
+                    <span className="text-sm text-theme-tertiary">Has student loan</span>
                   </div>
                 </div>
                 
                 {formData.student_loan && (
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       Student Loan Plan
                     </label>
                     <select
                       name="student_loan_plan"
                       value={formData.student_loan_plan || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                     >
                       <option value="">Select plan...</option>
                       <option value="plan_1">Plan 1</option>
@@ -3657,7 +3657,7 @@ function EditEmployeeModal({
                 )}
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Pension Enrolled
                   </label>
                   <div className="flex items-center gap-2 mt-2">
@@ -3666,15 +3666,15 @@ function EditEmployeeModal({
                       name="pension_enrolled"
                       checked={formData.pension_enrolled || false}
                       onChange={handleChange}
-                      className="w-4 h-4 text-[#D37E91] bg-neutral-700 border-neutral-600 rounded focus:ring-[#D37E91]"
+                      className="w-4 h-4 text-module-fg bg-neutral-700 border-neutral-600 rounded focus:ring-module-fg"
                     />
-                    <span className="text-sm text-neutral-300">Enrolled in pension</span>
+                    <span className="text-sm text-theme-tertiary">Enrolled in pension</span>
                   </div>
                 </div>
                 
                 {formData.pension_enrolled && (
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       Pension Contribution (%)
                     </label>
                     <input
@@ -3685,13 +3685,13 @@ function EditEmployeeModal({
                       step="0.1"
                       min="0"
                       max="100"
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                     />
                   </div>
                 )}
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     P45 Received
                   </label>
                   <div className="flex items-center gap-2 mt-2">
@@ -3700,9 +3700,9 @@ function EditEmployeeModal({
                       name="p45_received"
                       checked={formData.p45_received || false}
                       onChange={handleChange}
-                      className="w-4 h-4 text-[#D37E91] bg-neutral-700 border-neutral-600 rounded focus:ring-[#D37E91]"
+                      className="w-4 h-4 text-module-fg bg-neutral-700 border-neutral-600 rounded focus:ring-module-fg"
                     />
-                    <span className="text-sm text-neutral-300">P45 received</span>
+                    <span className="text-sm text-theme-tertiary">P45 received</span>
                   </div>
                 </div>
               </div>
@@ -3711,21 +3711,21 @@ function EditEmployeeModal({
 
           {activeTab === 'training' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-[#D37E91]" />
+              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
+                <GraduationCap className="w-5 h-5 text-module-fg" />
                 Training & Certifications
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Food Safety Level
                   </label>
                   <select
                     name="food_safety_level"
                     value={formData.food_safety_level || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   >
                     <option value="">Not certified</option>
                     <option value="1">Level 1</option>
@@ -3736,7 +3736,7 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Food Safety Expiry Date
                   </label>
                   <input
@@ -3744,19 +3744,19 @@ function EditEmployeeModal({
                     name="food_safety_expiry_date"
                     value={formData.food_safety_expiry_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Health & Safety Level
                   </label>
                   <select
                     name="h_and_s_level"
                     value={formData.h_and_s_level || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   >
                     <option value="">Not certified</option>
                     <option value="1">Level 1</option>
@@ -3767,7 +3767,7 @@ function EditEmployeeModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Health & Safety Expiry Date
                   </label>
                   <input
@@ -3775,12 +3775,12 @@ function EditEmployeeModal({
                     name="h_and_s_expiry_date"
                     value={formData.h_and_s_expiry_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     Fire Marshal Trained
                   </label>
                   <div className="flex items-center gap-2 mt-2">
@@ -3789,15 +3789,15 @@ function EditEmployeeModal({
                       name="fire_marshal_trained"
                       checked={formData.fire_marshal_trained || false}
                       onChange={handleChange}
-                      className="w-4 h-4 text-[#D37E91] bg-neutral-700 border-neutral-600 rounded focus:ring-[#D37E91]"
+                      className="w-4 h-4 text-module-fg bg-neutral-700 border-neutral-600 rounded focus:ring-module-fg"
                     />
-                    <span className="text-sm text-neutral-300">Fire marshal trained</span>
+                    <span className="text-sm text-theme-tertiary">Fire marshal trained</span>
                   </div>
                 </div>
                 
                 {formData.fire_marshal_trained && (
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       Fire Marshal Expiry Date
                     </label>
                     <input
@@ -3805,13 +3805,13 @@ function EditEmployeeModal({
                       name="fire_marshal_expiry_date"
                       value={formData.fire_marshal_expiry_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                     />
                   </div>
                 )}
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     First Aid Trained
                   </label>
                   <div className="flex items-center gap-2 mt-2">
@@ -3820,15 +3820,15 @@ function EditEmployeeModal({
                       name="first_aid_trained"
                       checked={formData.first_aid_trained || false}
                       onChange={handleChange}
-                      className="w-4 h-4 text-[#D37E91] bg-neutral-700 border-neutral-600 rounded focus:ring-[#D37E91]"
+                      className="w-4 h-4 text-module-fg bg-neutral-700 border-neutral-600 rounded focus:ring-module-fg"
                     />
-                    <span className="text-sm text-neutral-300">First aid trained</span>
+                    <span className="text-sm text-theme-tertiary">First aid trained</span>
                   </div>
                 </div>
                 
                 {formData.first_aid_trained && (
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       First Aid Expiry Date
                     </label>
                     <input
@@ -3836,13 +3836,13 @@ function EditEmployeeModal({
                       name="first_aid_expiry_date"
                       value={formData.first_aid_expiry_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                     />
                   </div>
                 )}
                 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-300 mb-1">
+                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
                     COSSH Trained
                   </label>
                   <div className="flex items-center gap-2 mt-2">
@@ -3851,15 +3851,15 @@ function EditEmployeeModal({
                       name="cossh_trained"
                       checked={formData.cossh_trained || false}
                       onChange={handleChange}
-                      className="w-4 h-4 text-[#D37E91] bg-neutral-700 border-neutral-600 rounded focus:ring-[#D37E91]"
+                      className="w-4 h-4 text-module-fg bg-neutral-700 border-neutral-600 rounded focus:ring-module-fg"
                     />
-                    <span className="text-sm text-neutral-300">COSSH trained</span>
+                    <span className="text-sm text-theme-tertiary">COSSH trained</span>
                   </div>
                 </div>
                 
                 {formData.cossh_trained && (
                   <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       COSSH Expiry Date
                     </label>
                     <input
@@ -3867,7 +3867,7 @@ function EditEmployeeModal({
                       name="cossh_expiry_date"
                       value={formData.cossh_expiry_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
                     />
                   </div>
                 )}
@@ -3880,14 +3880,14 @@ function EditEmployeeModal({
         <div className="flex items-center justify-end gap-3 p-6 border-t border-neutral-800">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-gray-900 dark:text-white rounded-lg transition-colors"
+            className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-theme-primary rounded-lg transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={onSave}
             disabled={saving}
-            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {saving ? (
               <>

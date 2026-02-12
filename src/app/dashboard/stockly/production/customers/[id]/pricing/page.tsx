@@ -166,10 +166,10 @@ export default function CustomPricingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0B0D13] p-6">
+      <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-12">
-            <p className="text-white/60">Loading pricing...</p>
+            <p className="text-theme-tertiary">Loading pricing...</p>
           </div>
         </div>
       </div>
@@ -177,7 +177,7 @@ export default function CustomPricingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] p-6">
+    <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -185,14 +185,14 @@ export default function CustomPricingPage() {
             <Button
               variant="ghost"
               onClick={() => router.push(`/dashboard/stockly/production/customers/${customerId}`)}
-              className="text-white/60 hover:text-white"
+              className="text-theme-tertiary hover:text-white"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to {customerName || 'Customer'}
             </Button>
             <div>
-              <h1 className="text-2xl font-bold text-white">Custom Pricing</h1>
-              <p className="text-white/50 text-sm mt-1">
+              <h1 className="text-2xl font-bold text-theme-primary">Custom Pricing</h1>
+              <p className="text-theme-tertiary text-sm mt-1">
                 Override standard prices for {customerName || 'this customer'}
               </p>
             </div>
@@ -205,11 +205,11 @@ export default function CustomPricingPage() {
             <table className="min-w-full text-sm">
               <thead className="bg-white/[0.05] border-b border-white/[0.06]">
                 <tr>
-                  <th className="text-left px-4 py-3 font-semibold text-emerald-400">Product</th>
-                  <th className="text-left px-4 py-3 font-semibold text-emerald-400">Standard Price</th>
-                  <th className="text-left px-4 py-3 font-semibold text-emerald-400">Custom Price</th>
-                  <th className="text-left px-4 py-3 font-semibold text-emerald-400">Discount</th>
-                  <th className="text-right px-4 py-3 font-semibold text-emerald-400">Actions</th>
+                  <th className="text-left px-4 py-3 font-semibold text-module-fg">Product</th>
+                  <th className="text-left px-4 py-3 font-semibold text-module-fg">Standard Price</th>
+                  <th className="text-left px-4 py-3 font-semibold text-module-fg">Custom Price</th>
+                  <th className="text-left px-4 py-3 font-semibold text-module-fg">Discount</th>
+                  <th className="text-right px-4 py-3 font-semibold text-module-fg">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.06]">
@@ -218,53 +218,53 @@ export default function CustomPricingPage() {
                     {/* Product */}
                     <td className="px-4 py-4">
                       <div>
-                        <div className="font-medium text-white">{product.name}</div>
+                        <div className="font-medium text-theme-primary">{product.name}</div>
                         {product.category && (
-                          <div className="text-xs text-white/40">{product.category}</div>
+                          <div className="text-xs text-theme-tertiary">{product.category}</div>
                         )}
                       </div>
                     </td>
 
                     {/* Standard Price */}
                     <td className="px-4 py-4">
-                      <div className="text-white">{formatCurrency(product.base_price)}</div>
-                      <div className="text-xs text-white/40">per {product.unit}</div>
+                      <div className="text-theme-primary">{formatCurrency(product.base_price)}</div>
+                      <div className="text-xs text-theme-tertiary">per {product.unit}</div>
                     </td>
 
                     {/* Custom Price */}
                     <td className="px-4 py-4">
                       {editingProductId === product.id ? (
                         <div className="flex items-center gap-2">
-                          <span className="text-white/60">£</span>
+                          <span className="text-theme-tertiary">£</span>
                           <Input
                             type="number"
                             step="0.01"
                             value={editPrice}
                             onChange={(e) => setEditPrice(e.target.value)}
-                            className="w-24 h-8 text-sm focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50"
+                            className="w-24 h-8 text-sm focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
                             autoFocus
                           />
                         </div>
                       ) : product.has_custom_pricing && product.custom_price !== null ? (
                         <div>
-                          <div className="text-emerald-400 font-medium">
+                          <div className="text-module-fg font-medium">
                             {formatCurrency(product.custom_price)}
                           </div>
-                          <div className="text-xs text-white/40">per {product.unit}</div>
+                          <div className="text-xs text-theme-tertiary">per {product.unit}</div>
                         </div>
                       ) : (
-                        <span className="text-white/40">—</span>
+                        <span className="text-theme-tertiary">—</span>
                       )}
                     </td>
 
                     {/* Discount */}
                     <td className="px-4 py-4">
                       {product.discount_percent !== null && product.discount_percent > 0 ? (
-                        <span className="px-2 py-1 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                        <span className="px-2 py-1 rounded-md text-xs font-medium bg-module-fg/10 text-emerald-500 border border-module-fg/30">
                           {product.discount_percent.toFixed(1)}% off
                         </span>
                       ) : (
-                        <span className="text-white/40">—</span>
+                        <span className="text-theme-tertiary">—</span>
                       )}
                     </td>
 
@@ -275,14 +275,14 @@ export default function CustomPricingPage() {
                           <>
                             <button
                               onClick={() => handleSavePrice(product.id)}
-                              className="p-1.5 rounded-md hover:bg-emerald-500/20 text-emerald-400 transition-colors"
+                              className="p-1.5 rounded-md hover:bg-module-fg/10 text-module-fg transition-colors"
                               aria-label="Save"
                             >
                               <Save className="w-4 h-4" />
                             </button>
                             <button
                               onClick={handleCancelEdit}
-                              className="p-1.5 rounded-md hover:bg-white/10 text-white/60 transition-colors"
+                              className="p-1.5 rounded-md hover:bg-white/10 text-theme-tertiary transition-colors"
                               aria-label="Cancel"
                             >
                               <X className="w-4 h-4" />
@@ -311,7 +311,7 @@ export default function CustomPricingPage() {
                               <Button
                                 variant="secondary"
                                 onClick={() => handleSetPrice(product)}
-                                className="px-3 py-1.5 text-xs bg-transparent text-emerald-400 border border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)]"
+                                className="px-3 py-1.5 text-xs bg-transparent text-module-fg border border-emerald-500 hover:shadow-module-glow"
                               >
                                 Set Custom Price
                               </Button>
@@ -327,7 +327,7 @@ export default function CustomPricingPage() {
           </div>
 
           {products.length === 0 && (
-            <div className="text-center py-12 text-white/60">No products available</div>
+            <div className="text-center py-12 text-theme-tertiary">No products available</div>
           )}
         </div>
       </div>

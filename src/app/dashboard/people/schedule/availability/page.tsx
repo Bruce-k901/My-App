@@ -272,8 +272,8 @@ export default function MyAvailabilityPage() {
   const renderPatternsView = () => (
     <div className="space-y-4">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-white">Weekly Availability Pattern</h2>
-        <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
+        <h2 className="text-xl font-semibold text-theme-primary">Weekly Availability Pattern</h2>
+        <p className="text-sm text-theme-tertiary mt-1">
           Set your regular weekly availability. This will apply to all weeks unless overridden.
         </p>
       </div>
@@ -308,14 +308,14 @@ export default function MyAvailabilityPage() {
         {/* Week Navigation */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-semibold text-white">Availability Calendar</h2>
-            <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
+            <h2 className="text-xl font-semibold text-theme-primary">Availability Calendar</h2>
+            <p className="text-sm text-theme-tertiary mt-1">
               View and manage specific date overrides and time-off requests.
             </p>
           </div>
           <Button
             onClick={() => setShowRequestModal(true)}
-            className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out"
+            className="bg-transparent text-module-fg border border-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] transition-all duration-200 ease-in-out"
           >
             <Plus className="w-4 h-4 mr-2" />
             Request Time Off
@@ -323,23 +323,23 @@ export default function MyAvailabilityPage() {
         </div>
 
         {/* Week selector */}
-        <div className="flex items-center justify-between bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 hover:border-white/[0.12] transition-colors">
+        <div className="flex items-center justify-between bg-theme-surface border border-theme rounded-lg p-4 hover:border-theme-hover transition-colors">
           <Button
             onClick={() => setCurrentWeek(subWeeks(currentWeek, 1))}
             variant="ghost"
             size="sm"
-            className="text-gray-500 dark:text-white/60 hover:text-white hover:bg-white/[0.05] transition-colors"
+            className="text-theme-secondary hover:text-theme-primary hover:bg-theme-hover transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
           </Button>
-          <div className="text-white font-medium">
+          <div className="text-theme-primary font-medium">
             Week of {format(weekStart, 'MMM dd, yyyy')}
           </div>
           <Button
             onClick={() => setCurrentWeek(addWeeks(currentWeek, 1))}
             variant="ghost"
             size="sm"
-            className="text-gray-500 dark:text-white/60 hover:text-white hover:bg-white/[0.05] transition-colors"
+            className="text-theme-secondary hover:text-theme-primary hover:bg-theme-hover transition-colors"
           >
             <ChevronRight className="w-5 h-5" />
           </Button>
@@ -381,7 +381,7 @@ export default function MyAvailabilityPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-module-fg animate-spin" />
       </div>
     );
   }
@@ -391,8 +391,8 @@ export default function MyAvailabilityPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">My Availability</h1>
-          <p className="text-gray-500 dark:text-white/60 mt-1">
+          <h1 className="text-2xl font-bold text-theme-primary">My Availability</h1>
+          <p className="text-theme-tertiary mt-1">
             Manage your work availability and request time off
           </p>
         </div>
@@ -401,7 +401,7 @@ export default function MyAvailabilityPage() {
         {isManager && (
           <a href="/dashboard/people/my-availability/requests">
             <Button
-              className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out"
+              className="bg-transparent text-module-fg border border-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] transition-all duration-200 ease-in-out"
             >
               <Calendar className="w-4 h-4 mr-2" />
               Review Requests
@@ -421,13 +421,13 @@ export default function MyAvailabilityPage() {
       )} */}
         
       {/* View Toggle */}
-      <div className="flex gap-2 bg-white/[0.03] border border-white/[0.06] rounded-lg p-1">
+      <div className="flex gap-2 bg-theme-button border border-theme rounded-lg p-1">
         <button
           onClick={() => setView('patterns')}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
             view === 'patterns'
-              ? 'bg-[#D37E91] text-white'
-              : 'text-gray-500 dark:text-white/60 hover:text-white'
+              ? 'bg-module-fg text-white'
+              : 'text-theme-secondary hover:text-theme-primary'
           }`}
         >
           <Calendar className="w-4 h-4 inline mr-2" />
@@ -437,8 +437,8 @@ export default function MyAvailabilityPage() {
           onClick={() => setView('calendar')}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
             view === 'calendar'
-              ? 'bg-[#D37E91] text-white'
-              : 'text-gray-500 dark:text-white/60 hover:text-white'
+              ? 'bg-module-fg text-white'
+              : 'text-theme-secondary hover:text-theme-primary'
           }`}
         >
           <Clock className="w-4 h-4 inline mr-2" />
@@ -580,53 +580,53 @@ function PatternCard({ day, pattern, onSave }: PatternCardProps) {
   }, []);
 
   return (
-    <Card className="p-4 bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] transition-colors">
+    <Card className="p-4 bg-theme-surface border border-theme hover:border-theme-hover transition-colors shadow-sm dark:shadow-none">
       <div className="space-y-3">
-        <h3 className="font-semibold text-white">{day.label}</h3>
-        
+        <h3 className="font-semibold text-theme-primary">{day.label}</h3>
+
         {/* Period checkboxes - always visible */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
+          <label className="flex items-center gap-2 cursor-pointer hover:text-theme-primary transition-colors">
             <input
               type="checkbox"
               checked={periods.allDay}
               onChange={() => handlePeriodChange('allDay')}
-              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#D37E91] focus:ring-[#D37E91] focus:ring-2"
+              className="w-4 h-4 rounded border-theme bg-theme-surface text-module-fg focus:ring-module-fg focus:ring-2"
             />
-            <span className="text-sm text-neutral-300">All Day</span>
+            <span className="text-sm text-theme-secondary">All Day</span>
           </label>
-          <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
+          <label className="flex items-center gap-2 cursor-pointer hover:text-theme-primary transition-colors">
             <input
               type="checkbox"
               checked={periods.am}
               onChange={() => handlePeriodChange('am')}
-              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#D37E91] focus:ring-[#D37E91] focus:ring-2"
+              className="w-4 h-4 rounded border-theme bg-theme-surface text-module-fg focus:ring-module-fg focus:ring-2"
             />
-            <span className="text-sm text-neutral-300">AM (9am - 12pm)</span>
+            <span className="text-sm text-theme-secondary">AM (9am - 12pm)</span>
           </label>
-          <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
+          <label className="flex items-center gap-2 cursor-pointer hover:text-theme-primary transition-colors">
             <input
               type="checkbox"
               checked={periods.pm}
               onChange={() => handlePeriodChange('pm')}
-              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#D37E91] focus:ring-[#D37E91] focus:ring-2"
+              className="w-4 h-4 rounded border-theme bg-theme-surface text-module-fg focus:ring-module-fg focus:ring-2"
             />
-            <span className="text-sm text-neutral-300">PM (12pm - 5pm)</span>
+            <span className="text-sm text-theme-secondary">PM (12pm - 5pm)</span>
           </label>
           {!periods.allDay && !periods.am && !periods.pm && (
-            <div className="text-xs text-neutral-500 italic">Not available this day</div>
+            <div className="text-xs text-red-500 dark:text-red-400 italic">Not available this day</div>
           )}
         </div>
 
         {/* Notes - always visible */}
         <div>
-          <label className="text-xs text-gray-500 dark:text-white/60 block mb-1">Notes (optional)</label>
+          <label className="text-xs text-theme-tertiary block mb-1">Notes (optional)</label>
           <input
             type="text"
             value={notes}
             onChange={(e) => handleNotesChange(e.target.value)}
             placeholder="e.g., School pickup at 3pm"
-            className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white text-sm focus:outline-none focus:border-[#D37E91] focus:ring-1 focus:ring-[#D37E91] transition-colors"
+            className="w-full bg-theme-surface border border-theme rounded-md px-3 py-2 text-theme-primary text-sm focus:outline-none focus:border-module-fg focus:ring-1 focus:ring-module-fg transition-colors"
           />
         </div>
       </div>
@@ -678,48 +678,48 @@ function DayCard({ date, override, pattern, onRequestTimeOff }: DayCardProps) {
 
   let status: 'available' | 'unavailable' | 'pending' | 'approved' = 'available';
   let displayText = '';
-  let statusColor = 'text-gray-500 dark:text-white/60';
+  let statusColor = 'text-theme-tertiary';
 
   if (override) {
     if (override.override_type === 'time_off_request') {
       status = override.request_status === 'approved' ? 'approved' : 'pending';
       displayText = override.request_status === 'approved' ? 'Time Off (Approved)' : 'Pending Request';
-      statusColor = override.request_status === 'approved' ? 'text-red-400' : 'text-yellow-400';
+      statusColor = override.request_status === 'approved' ? 'text-red-500 dark:text-red-400' : 'text-amber-600 dark:text-yellow-400';
     } else if (override.override_type === 'unavailable') {
       status = 'unavailable';
       displayText = 'Unavailable';
-      statusColor = 'text-red-400';
+      statusColor = 'text-red-500 dark:text-red-400';
     }
   } else if (pattern) {
     displayText = getPatternDisplayText(pattern);
     if (pattern.is_available) {
-      statusColor = 'text-green-400';
+      statusColor = 'text-green-600 dark:text-green-400';
     } else {
       status = 'unavailable';
-      statusColor = 'text-neutral-500';
+      statusColor = 'text-theme-tertiary';
     }
   } else {
     // No pattern exists - default to "All Day" (matching the Weekly Pattern view default)
     displayText = 'All Day';
-    statusColor = 'text-green-400';
+    statusColor = 'text-green-600 dark:text-green-400';
   }
 
   return (
     <div
       className={`p-3 rounded-lg border transition-all ${
         isToday
-          ? 'border-[#D37E91] bg-[#D37E91]/10'
-          : 'border-white/[0.06] bg-white/[0.03] hover:border-white/[0.12]'
+          ? 'border-module-fg bg-module-fg/10'
+          : 'border-theme bg-theme-surface hover:border-theme-hover shadow-sm dark:shadow-none'
       } ${isPast ? 'opacity-50' : ''}`}
     >
       <div className="text-center mb-2">
-        <div className="text-xs text-gray-500 dark:text-white/60 uppercase">{format(date, 'EEE')}</div>
-        <div className={`text-lg font-semibold ${isToday ? 'text-[#D37E91]' : 'text-white'}`}>
+        <div className="text-xs text-theme-secondary uppercase font-medium">{format(date, 'EEE')}</div>
+        <div className={`text-lg font-bold ${isToday ? 'text-module-fg' : 'text-theme-primary'}`}>
           {format(date, 'd')}
         </div>
       </div>
 
-      <div className={`text-xs ${statusColor} text-center min-h-[32px] flex items-center justify-center`}>
+      <div className={`text-xs font-medium ${statusColor} text-center min-h-[32px] flex items-center justify-center`}>
         {displayText || 'Available'}
       </div>
 
@@ -728,7 +728,7 @@ function DayCard({ date, override, pattern, onRequestTimeOff }: DayCardProps) {
           onClick={onRequestTimeOff}
           size="sm"
           variant="ghost"
-          className="w-full mt-2 text-xs text-gray-500 dark:text-white/60 hover:text-[#D37E91]"
+          className="w-full mt-2 text-xs text-theme-secondary hover:text-module-fg border border-theme hover:border-module-fg/30"
         >
           Request Time Off
         </Button>
@@ -774,13 +774,13 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#0B0D13] border border-white/[0.06] rounded-lg max-w-md w-full p-6">
+    <div className="fixed inset-0 bg-black/60 dark:bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-theme-surface-elevated border border-theme rounded-lg max-w-md w-full p-6 shadow-lg">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-white">Request Time Off</h2>
+          <h2 className="text-xl font-semibold text-theme-primary">Request Time Off</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 dark:text-white/60 hover:text-white transition-colors"
+            className="text-theme-tertiary hover:text-theme-primary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -789,23 +789,23 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Date */}
           <div>
-            <label className="text-sm text-gray-500 dark:text-white/60 block mb-2">Date</label>
+            <label className="text-sm text-theme-secondary block mb-2">Date</label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required
-              className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#D37E91] focus:ring-1 focus:ring-[#D37E91] transition-colors"
+              className="w-full bg-theme-surface border border-theme rounded-md px-3 py-2 text-theme-primary focus:outline-none focus:border-module-fg focus:ring-1 focus:ring-module-fg transition-colors"
             />
           </div>
 
           {/* Type */}
           <div>
-            <label className="text-sm text-gray-500 dark:text-white/60 block mb-2">Type</label>
+            <label className="text-sm text-theme-secondary block mb-2">Type</label>
             <select
               value={type}
               onChange={(e) => setType(e.target.value as 'time_off_request' | 'leave')}
-              className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white focus:outline-none focus:border-[#D37E91] focus:ring-1 focus:ring-[#D37E91] transition-colors"
+              className="w-full bg-theme-surface border border-theme rounded-md px-3 py-2 text-theme-primary focus:outline-none focus:border-module-fg focus:ring-1 focus:ring-module-fg transition-colors"
             >
               <option value="time_off_request">Time Off Request</option>
               <option value="leave">Leave (Holiday/Sick)</option>
@@ -819,9 +819,9 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
               id="partial-day"
               checked={isPartialDay}
               onChange={(e) => setIsPartialDay(e.target.checked)}
-              className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-[#D37E91] focus:ring-[#D37E91]"
+              className="w-4 h-4 rounded border-theme bg-theme-surface text-module-fg focus:ring-module-fg"
             />
-            <label htmlFor="partial-day" className="text-sm text-neutral-300">
+            <label htmlFor="partial-day" className="text-sm text-theme-secondary">
               Partial day (specify times)
             </label>
           </div>
@@ -830,7 +830,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
           {isPartialDay && (
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-gray-500 dark:text-white/60 block mb-1">Start Time</label>
+                <label className="text-xs text-theme-tertiary block mb-1">Start Time</label>
                 <TimePicker
                   value={startTime}
                   onChange={(value) => setStartTime(value)}
@@ -839,7 +839,7 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 dark:text-white/60 block mb-1">End Time</label>
+                <label className="text-xs text-theme-tertiary block mb-1">End Time</label>
                 <TimePicker
                   value={endTime}
                   onChange={(value) => setEndTime(value)}
@@ -852,14 +852,14 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
 
           {/* Reason */}
           <div>
-            <label className="text-sm text-gray-500 dark:text-white/60 block mb-2">Reason</label>
+            <label className="text-sm text-theme-secondary block mb-2">Reason</label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               required
               rows={3}
               placeholder="Please provide a reason for your request..."
-              className="w-full bg-neutral-900 border border-neutral-700 rounded-md px-3 py-2 text-white resize-none focus:outline-none focus:border-[#D37E91] focus:ring-1 focus:ring-[#D37E91] transition-colors"
+              className="w-full bg-theme-surface border border-theme rounded-md px-3 py-2 text-theme-primary resize-none focus:outline-none focus:border-module-fg focus:ring-1 focus:ring-module-fg transition-colors"
             />
           </div>
 
@@ -869,14 +869,14 @@ function TimeOffRequestModal({ selectedDate, onClose, onSubmit }: TimeOffRequest
               type="button"
               onClick={onClose}
               variant="ghost"
-              className="flex-1 text-gray-500 dark:text-white/60"
+              className="flex-1 text-theme-tertiary"
               disabled={submitting}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all duration-200 ease-in-out"
+              className="flex-1 bg-transparent text-module-fg border border-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] transition-all duration-200 ease-in-out"
               disabled={submitting}
             >
               {submitting ? (

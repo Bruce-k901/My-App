@@ -80,7 +80,7 @@ export function KPICard({
               className={cn(
                 'text-xs font-bold flex items-center gap-1 px-2 py-1 rounded-full',
                 trend > 0
-                  ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10'
+                  ? 'text-module-fg bg-module-fg/10'
                   : 'text-teamly dark:text-teamly bg-teamly/10'
               )}
             >
@@ -94,13 +94,13 @@ export function KPICard({
           <div className={cn('text-3xl font-bold leading-none tracking-tight', color)}>
             {value}
             {subtitle && (
-              <span className="text-base font-medium text-slate-500 dark:text-slate-400 ml-0.5">
+ <span className="text-base font-medium text-theme-tertiary ml-0.5">
                 /{subtitle}
               </span>
             )}
           </div>
           {/* Label - better contrast */}
-          <div className="text-xs font-medium text-slate-600 dark:text-slate-400 leading-snug">
+ <div className="text-xs font-medium text-theme-secondary leading-snug">
             {label}
           </div>
         </div>

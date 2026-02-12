@@ -51,7 +51,7 @@ export default function CustomerPage({ params }: CustomerPageProps) {
   if (!siteId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
+        <div className="text-theme-tertiary">Please select a site</div>
       </div>
     );
   }
@@ -59,7 +59,7 @@ export default function CustomerPage({ params }: CustomerPageProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#14B8A6]" />
+        <Loader2 className="h-8 w-8 animate-spin text-module-fg" />
       </div>
     );
   }
@@ -70,7 +70,7 @@ export default function CustomerPage({ params }: CustomerPageProps) {
         <div className="text-center py-12">
           <div className="text-red-500 dark:text-red-400 mb-4">{error || 'Customer not found'}</div>
           <Link href="/dashboard/planly/customers">
-            <Button variant="outline" className="bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white">
+            <Button variant="outline" className="bg-theme-surface border-theme text-theme-secondary">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Customers
             </Button>
@@ -85,13 +85,13 @@ export default function CustomerPage({ params }: CustomerPageProps) {
       <div className="mb-6">
         <Link
           href="/dashboard/planly/customers"
-          className="inline-flex items-center gap-2 text-gray-500 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-theme-tertiary hover:text-theme-primary transition-colors mb-4"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Customers
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Customer</h1>
-        <p className="text-gray-500 dark:text-white/60">{customer.name}</p>
+        <h1 className="text-2xl font-bold text-theme-primary">Edit Customer</h1>
+        <p className="text-theme-tertiary">{customer.name}</p>
       </div>
       <CustomerForm siteId={siteId} customer={customer} />
     </div>

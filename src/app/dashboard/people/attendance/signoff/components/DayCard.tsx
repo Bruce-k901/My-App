@@ -60,7 +60,7 @@ export default function DayCard({
   
   // Variance badge color
   function getVarianceColor(variance: number): string {
-    if (variance === 0) return 'text-gray-500 dark:text-white/60';
+    if (variance === 0) return 'text-theme-tertiary';
     if (variance > 0) return 'text-green-600 dark:text-green-400';
     return 'text-red-600 dark:text-red-400';
   }
@@ -100,8 +100,8 @@ export default function DayCard({
 
   return (
     <div className={`
-      bg-white dark:bg-white/[0.03] border rounded-xl overflow-hidden
-      ${allSignedOff ? 'border-green-200 dark:border-green-500/30' : hasIssues ? 'border-yellow-200 dark:border-amber-500/30' : 'border-gray-200 dark:border-white/[0.06]'}
+      bg-theme-surface border rounded-xl overflow-hidden
+      ${allSignedOff ? 'border-green-200 dark:border-green-500/30' : hasIssues ? 'border-yellow-200 dark:border-amber-500/30' : 'border-theme'}
     `}>
       {/* Day Header */}
       <div 
@@ -114,12 +114,12 @@ export default function DayCard({
           ) : hasIssues ? (
             <AlertTriangle className="w-5 h-5 text-amber-400" />
           ) : (
-            <Clock className="w-5 h-5 text-gray-500 dark:text-white/60" />
+            <Clock className="w-5 h-5 text-theme-tertiary" />
           )}
           
           <div>
             <h3 className="font-semibold">{day.dayName}</h3>
-            <p className="text-sm text-gray-500 dark:text-white/60">
+            <p className="text-sm text-theme-tertiary">
               {new Date(day.date).toLocaleDateString('en-GB', { 
                 day: 'numeric', 
                 month: 'long' 
@@ -131,7 +131,7 @@ export default function DayCard({
         <div className="flex items-center gap-4">
           {/* Day summary */}
           <div className="text-right text-sm">
-            <p className="text-gray-500 dark:text-white/60">
+            <p className="text-theme-tertiary">
               {day.signedOffCount}/{day.totalCount} signed off
             </p>
             <p className={getVarianceColor(day.totalVariance)}>
@@ -146,25 +146,25 @@ export default function DayCard({
                 e.stopPropagation();
                 onSignOffDay(day.date, true);
               }}
-              className="text-xs bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 px-3 py-1.5 rounded-lg transition-all duration-200 ease-in-out"
+              className="text-xs bg-transparent border border-module-fg text-module-fg hover:bg-module-fg/10 px-3 py-1.5 rounded-lg transition-all duration-200 ease-in-out"
             >
               Sign Off All
             </button>
           )}
           
           {expanded ? (
-            <ChevronUp className="w-5 h-5 text-gray-500 dark:text-white/60" />
+            <ChevronUp className="w-5 h-5 text-theme-tertiary" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-gray-500 dark:text-white/60" />
+            <ChevronDown className="w-5 h-5 text-theme-tertiary" />
           )}
         </div>
       </div>
       
       {/* Records Table */}
       {expanded && (
-        <div className="border-t border-gray-200 dark:border-white/[0.06]">
+        <div className="border-t border-theme">
           {day.records.length === 0 ? (
-            <div className="p-6 text-center text-gray-500 dark:text-white/50">
+            <div className="p-6 text-center text-theme-tertiary">
               <p>No scheduled shifts for this day</p>
               <button
                 onClick={() => onAddRecord(null)}
@@ -175,8 +175,8 @@ export default function DayCard({
             </div>
           ) : (
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 dark:bg-white/[0.05]">
-                <tr className="text-left text-gray-500 dark:text-white/60">
+              <thead className="bg-theme-button">
+                <tr className="text-left text-theme-tertiary">
                   <th className="px-4 py-2 font-medium">Staff</th>
                   <th className="px-4 py-2 font-medium">Scheduled</th>
                   <th className="px-4 py-2 font-medium">Actual</th>
@@ -188,13 +188,13 @@ export default function DayCard({
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-white/[0.06]">
                 {day.records.map((record, idx) => (
-                  <tr key={`${record.staffId}-${idx}`} className="hover:bg-gray-50 dark:hover:bg-white/[0.02]">
+                  <tr key={`${record.staffId}-${idx}`} className="hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02]">
                     {/* Staff Name */}
                     <td className="px-4 py-3">
                       <div>
                         <p className="font-medium">{record.staffName}</p>
                         {record.positionTitle && (
-                          <p className="text-xs text-gray-500 dark:text-white/50">{record.positionTitle}</p>
+                          <p className="text-xs text-theme-tertiary">{record.positionTitle}</p>
                         )}
                       </div>
                     </td>
@@ -202,13 +202,13 @@ export default function DayCard({
                     {/* Scheduled */}
                     <td className="px-4 py-3">
                       <p>{formatTime(record.scheduledStart)} - {formatTime(record.scheduledEnd)}</p>
-                      <p className="text-xs text-gray-500 dark:text-white/50">{formatHours(record.scheduledHours)}</p>
+                      <p className="text-xs text-theme-tertiary">{formatHours(record.scheduledHours)}</p>
                     </td>
                     
                     {/* Actual */}
                     <td className="px-4 py-3">
                       <p>{formatTime(record.actualClockIn)} - {formatTime(record.actualClockOut)}</p>
-                      <p className="text-xs text-gray-500 dark:text-white/50">{formatHours(record.actualHours)}</p>
+                      <p className="text-xs text-theme-tertiary">{formatHours(record.actualHours)}</p>
                     </td>
                     
                     {/* Variance */}
@@ -238,12 +238,12 @@ export default function DayCard({
                             }
                           `}
                         >
-                          {record.signedOff && <Check className="w-4 h-4 text-white" />}
+                          {record.signedOff && <Check className="w-4 h-4 text-theme-primary" />}
                         </button>
                       ) : record.signedOff ? (
                         <Check className="w-5 h-5 text-green-600 dark:text-green-400 mx-auto" />
                       ) : (
-                        <span className="text-gray-400 dark:text-white/40">—</span>
+                        <span className="text-theme-tertiary">—</span>
                       )}
                     </td>
                     
@@ -254,7 +254,7 @@ export default function DayCard({
                           <button
                             onClick={() => onEditRecord(record)}
                             disabled={isLocked}
-                            className="p-1 text-gray-500 dark:text-white/60 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-1 text-theme-tertiary hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                             title="Edit times"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -278,8 +278,8 @@ export default function DayCard({
           )}
           
           {/* Day totals footer */}
-          <div className="bg-gray-50 dark:bg-white/[0.05] px-4 py-3 flex items-center justify-between text-sm border-t border-gray-200 dark:border-white/[0.06]">
-            <span className="text-gray-500 dark:text-white/60">Day Total</span>
+          <div className="bg-theme-button px-4 py-3 flex items-center justify-between text-sm border-t border-theme">
+            <span className="text-theme-tertiary">Day Total</span>
             <div className="flex items-center gap-6">
               <span>Scheduled: <strong>{day.totalScheduledHours.toFixed(2)}h</strong></span>
               <span>Actual: <strong>{day.totalActualHours.toFixed(2)}h</strong></span>

@@ -5,9 +5,8 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import MarketingSubPageLayout from "@/components/layouts/MarketingSubPageLayout";
 import Link from "next/link";
-import { Button } from "@/components/ui";
 import DarkVeil from "@/components/ui/DarkVeil";
-import { OpslyLogo } from "@/components/ui/opsly-logo";
+import AnimatedHeroLogo from "@/components/ui/AnimatedHeroLogo";
 import {
   Shield,
   ClipboardCheck,
@@ -204,46 +203,46 @@ function ModulesCarouselSection() {
 
   const colorClasses: Record<string, { text: string; border: string; gradient: string; icon: string; dot: string }> = {
     checkly: {
-      text: 'text-[#D37E91]',
-      border: 'hover:border-[#D37E91]/50 hover:shadow-[0_0_18px_rgba(211, 126, 145,0.35)]',
-      gradient: 'bg-gradient-to-br from-[#3a2028] to-gray-900',
-      icon: 'text-[#D37E91]',
-      dot: 'bg-[#D37E91]',
+      text: 'text-checkly',
+      border: 'hover:border-checkly/30 hover:shadow-[0_0_15px_rgba(241,225,148,0.15)]',
+      gradient: 'bg-checkly/[0.04]',
+      icon: 'text-checkly',
+      dot: 'bg-checkly',
     },
     stockly: {
-      text: 'text-emerald-400',
-      border: 'hover:border-emerald-400/50 hover:shadow-[0_0_18px_rgba(16,185,129,0.35)]',
-      gradient: 'bg-gradient-to-br from-emerald-900 to-gray-900',
-      icon: 'text-emerald-400',
-      dot: 'bg-emerald-400',
+      text: 'text-stockly',
+      border: 'hover:border-stockly/30 hover:shadow-[0_0_15px_rgba(120,154,153,0.15)]',
+      gradient: 'bg-stockly/[0.04]',
+      icon: 'text-stockly',
+      dot: 'bg-stockly',
     },
     teamly: {
-      text: 'text-blue-400',
-      border: 'hover:border-blue-400/50 hover:shadow-[0_0_18px_rgba(59,130,246,0.35)]',
-      gradient: 'bg-gradient-to-br from-blue-900 to-gray-900',
-      icon: 'text-blue-400',
-      dot: 'bg-blue-400',
+      text: 'text-teamly',
+      border: 'hover:border-teamly/30 hover:shadow-[0_0_15px_rgba(211,126,145,0.15)]',
+      gradient: 'bg-teamly/[0.04]',
+      icon: 'text-teamly',
+      dot: 'bg-teamly',
     },
     planly: {
-      text: 'text-purple-400',
-      border: 'hover:border-purple-400/50 hover:shadow-[0_0_18px_rgba(139,92,246,0.35)]',
-      gradient: 'bg-gradient-to-br from-purple-900 to-gray-900',
-      icon: 'text-purple-400',
-      dot: 'bg-purple-400',
+      text: 'text-planly',
+      border: 'hover:border-planly/30 hover:shadow-[0_0_15px_rgba(172,200,162,0.15)]',
+      gradient: 'bg-planly/[0.04]',
+      icon: 'text-planly',
+      dot: 'bg-planly',
     },
     assetly: {
-      text: 'text-amber-400',
-      border: 'hover:border-amber-400/50 hover:shadow-[0_0_18px_rgba(245,158,11,0.35)]',
-      gradient: 'bg-gradient-to-br from-amber-900 to-gray-900',
-      icon: 'text-amber-400',
-      dot: 'bg-amber-400',
+      text: 'text-assetly',
+      border: 'hover:border-assetly/30 hover:shadow-[0_0_15px_rgba(243,231,217,0.15)]',
+      gradient: 'bg-assetly/[0.04]',
+      icon: 'text-assetly',
+      dot: 'bg-assetly',
     },
     msgly: {
-      text: 'text-cyan-400',
-      border: 'hover:border-cyan-400/50 hover:shadow-[0_0_18px_rgba(6,182,212,0.35)]',
-      gradient: 'bg-gradient-to-br from-cyan-900 to-gray-900',
-      icon: 'text-cyan-400',
-      dot: 'bg-cyan-400',
+      text: 'text-msgly',
+      border: 'hover:border-msgly/30 hover:shadow-[0_0_15px_rgba(203,221,233,0.15)]',
+      gradient: 'bg-msgly/[0.04]',
+      icon: 'text-msgly',
+      dot: 'bg-msgly',
     },
   };
 
@@ -286,10 +285,10 @@ function ModulesCarouselSection() {
   return (
     <section className="py-8 sm:py-10 md:py-12 px-2 sm:px-4 relative">
       <div className="max-w-[95%] sm:max-w-[90%] lg:max-w-[85%] xl:max-w-[1400px] mx-auto">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-4 text-white">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-4 text-theme-primary">
           Six Modules. One Platform.
         </h2>
-        <p className="text-center text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">
+        <p className="text-center text-theme-tertiary mb-4 sm:mb-6 text-sm sm:text-base">
           Everything your operation needs, working together seamlessly
         </p>
 
@@ -320,14 +319,14 @@ function ModulesCarouselSection() {
                     marginRight: `${gap}px`,
                   }}
                 >
-                  <h3 className="text-2xl font-bold text-white mb-2">{module.name}</h3>
+                  <h3 className="text-2xl font-bold text-theme-primary mb-2">{module.name}</h3>
                   <p className={`text-base mb-4 ${colors.text}`}>{module.tagline}</p>
                   
                   <ul className="space-y-2 mb-4">
                     {module.features.map((feature, i) => (
                       <li key={i} className="flex items-start gap-2">
                         <CheckCircle2 className={`w-4 h-4 ${colors.icon} mt-0.5 flex-shrink-0`} />
-                        <span className="text-sm text-gray-300">{feature}</span>
+                        <span className="text-sm text-theme-tertiary">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -349,14 +348,14 @@ function ModulesCarouselSection() {
             className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full p-3 border border-white/20 transition z-10"
             aria-label="Previous module"
           >
-            <ChevronLeft className="w-6 h-6 text-white" />
+            <ChevronLeft className="w-6 h-6 text-theme-primary" />
           </button>
           <button
             onClick={next}
             className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full p-3 border border-white/20 transition z-10"
             aria-label="Next module"
           >
-            <ChevronRight className="w-6 h-6 text-white" />
+            <ChevronRight className="w-6 h-6 text-theme-primary" />
           </button>
 
           {/* Progress Indicator Dots */}
@@ -413,23 +412,23 @@ function TopBenefitsSection() {
 
   const colorClasses = {
     pink: {
-      gradient: 'from-[#D37E91]/15',
-      icon: 'text-[#D37E91]/50',
+      gradient: 'from-white/[0.05]',
+      icon: 'text-white/40',
       hover: 'group-hover:opacity-100',
     },
     blue: {
-      gradient: 'from-blue-500/10',
-      icon: 'text-blue-400/50',
+      gradient: 'from-white/[0.05]',
+      icon: 'text-white/40',
       hover: 'group-hover:opacity-100',
     },
     emerald: {
-      gradient: 'from-emerald-500/10',
-      icon: 'text-emerald-400/50',
+      gradient: 'from-white/[0.05]',
+      icon: 'text-white/40',
       hover: 'group-hover:opacity-100',
     },
     orange: {
-      gradient: 'from-orange-500/10',
-      icon: 'text-orange-400/50',
+      gradient: 'from-white/[0.05]',
+      icon: 'text-white/40',
       hover: 'group-hover:opacity-100',
     },
   };
@@ -442,10 +441,10 @@ function TopBenefitsSection() {
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-theme-primary mb-4">
             Why Opsly Works
           </h2>
-          <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto">
+          <p className="text-theme-tertiary text-sm sm:text-base max-w-2xl mx-auto">
             Built for operations teams who need power and simplicity
           </p>
         </div>
@@ -465,10 +464,10 @@ function TopBenefitsSection() {
                       <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${colors.icon}`} strokeWidth={1.5} />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg sm:text-xl font-light text-white mb-3">
+                      <h3 className="text-lg sm:text-xl font-light text-theme-primary mb-3">
                         {benefit.title}
                       </h3>
-                      <p className="text-gray-400 text-sm leading-relaxed">
+                      <p className="text-theme-tertiary text-sm leading-relaxed">
                         {benefit.description}
                       </p>
                     </div>
@@ -488,12 +487,12 @@ function TopBenefitsSection() {
             {/* Stat 1 */}
             <div className="text-center group">
               <div className="relative inline-block mb-4">
-                <div className="text-4xl sm:text-5xl md:text-6xl font-light text-transparent bg-clip-text bg-gradient-to-br from-[#D37E91] to-[#D37E91]/80">
+                <div className="text-4xl sm:text-5xl md:text-6xl font-light text-[#e8e8e8]">
                   100+
                 </div>
-                <div className="absolute -inset-4 bg-[#D37E91]/15 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute -inset-4 bg-white/[0.05] rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
-              <div className="text-gray-400 text-sm">
+              <div className="text-theme-tertiary text-sm">
                 Sites using Opsly
               </div>
             </div>
@@ -501,12 +500,12 @@ function TopBenefitsSection() {
             {/* Stat 2 */}
             <div className="text-center group">
               <div className="relative inline-block mb-4">
-                <div className="text-4xl sm:text-5xl md:text-6xl font-light text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-blue-600">
+                <div className="text-4xl sm:text-5xl md:text-6xl font-light text-[#e8e8e8]">
                   50K+
                 </div>
-                <div className="absolute -inset-4 bg-blue-500/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute -inset-4 bg-white/[0.05] rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
-              <div className="text-gray-400 text-sm">
+              <div className="text-theme-tertiary text-sm">
                 Checks completed daily
               </div>
             </div>
@@ -514,12 +513,12 @@ function TopBenefitsSection() {
             {/* Stat 3 */}
             <div className="text-center group">
               <div className="relative inline-block mb-4">
-                <div className="text-4xl sm:text-5xl md:text-6xl font-light text-transparent bg-clip-text bg-gradient-to-br from-emerald-400 to-emerald-600">
+                <div className="text-4xl sm:text-5xl md:text-6xl font-light text-[#e8e8e8]">
                   75%
                 </div>
-                <div className="absolute -inset-4 bg-emerald-500/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute -inset-4 bg-module-fg/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
-              <div className="text-gray-400 text-sm">
+              <div className="text-theme-tertiary text-sm">
                 Reduction in compliance time
               </div>
             </div>
@@ -536,6 +535,7 @@ export default function HomePage() {
   const [checking, setChecking] = useState(true);
   const [showMarketing, setShowMarketing] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [heroColor, setHeroColor] = useState('#e8e8e8');
   const hasCheckedRef = React.useRef(false);
 
   // Ensure we're on client-side before checking session
@@ -598,7 +598,7 @@ export default function HomePage() {
   if (checking && !showMarketing) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-neutral-950">
-        <div className="text-white">Checking authentication...</div>
+        <div className="text-theme-primary">Checking authentication...</div>
       </div>
     );
   }
@@ -607,7 +607,7 @@ export default function HomePage() {
   if (!showMarketing && !checking) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-neutral-950">
-        <div className="text-white">Redirecting...</div>
+        <div className="text-theme-primary">Redirecting...</div>
       </div>
     );
   }
@@ -625,48 +625,44 @@ export default function HomePage() {
         
         {/* Content */}
         <div className="relative z-10 max-w-6xl mx-auto">
-          <div className="flex justify-center mb-4 sm:mb-6">
-            <OpslyLogo 
-              variant="horizontal" 
-              size="xl" 
-              showTagline 
-              className=""
-              animated={true}
-              delay={300}
-            />
+          <div className="flex justify-center mb-1 sm:mb-2 w-full max-w-2xl mx-auto">
+            <AnimatedHeroLogo onColorChange={setHeroColor} />
           </div>
-          
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 px-2 bg-gradient-to-r from-magenta-500 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(211, 126, 145,0.4)]">
+
+          <h1
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 px-2"
+            style={{ color: heroColor, transition: 'color 0.4s ease-out' }}
+          >
             Run Your Operations on One Platform
           </h1>
           
-          <p className="text-slate-300 max-w-3xl mx-auto text-base sm:text-lg md:text-xl leading-relaxed mb-4 sm:mb-6 px-4">
+          <p className="text-theme-secondary max-w-3xl mx-auto text-base sm:text-lg md:text-xl leading-relaxed mb-4 sm:mb-6 px-4">
             Opsly unifies compliance, inventory, people, and production for hospitality, 
             retail, and manufacturing businesses. Stop juggling 5+ tools. Start running smarter.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 mb-4 sm:mb-6">
-            <Link href="/signup">
-              <Button variant="primary">Start Free Trial</Button>
+            <Link href="/signup" className="btn-marketing-primary text-sm sm:text-base">
+              Start Free Trial
             </Link>
-            <Link href="/contact">
-              <Button variant="primary">Book a Demo</Button>
+            <Link href="/contact" className="btn-marketing-secondary text-sm sm:text-base">
+              Book a Demo
             </Link>
           </div>
           
           {/* Module badges */}
           <div className="flex flex-wrap justify-center gap-2 sm:gap-3 px-4 pb-2">
-            <span className="text-xs sm:text-sm text-gray-400">Checkly</span>
-            <span className="text-xs sm:text-sm text-gray-600">•</span>
-            <span className="text-xs sm:text-sm text-gray-400">Stockly</span>
-            <span className="text-xs sm:text-sm text-gray-600">•</span>
-            <span className="text-xs sm:text-sm text-gray-400">Teamly</span>
-            <span className="text-xs sm:text-sm text-gray-600">•</span>
-            <span className="text-xs sm:text-sm text-gray-400">Planly</span>
-            <span className="text-xs sm:text-sm text-gray-600">•</span>
-            <span className="text-xs sm:text-sm text-gray-400">Assetly</span>
-            <span className="text-xs sm:text-sm text-gray-600">•</span>
-            <span className="text-xs sm:text-sm text-gray-400">Msgly</span>
+            <span className="text-xs sm:text-sm font-medium text-checkly">Checkly</span>
+            <span className="text-xs sm:text-sm text-white/30">•</span>
+            <span className="text-xs sm:text-sm font-medium text-stockly">Stockly</span>
+            <span className="text-xs sm:text-sm text-white/30">•</span>
+            <span className="text-xs sm:text-sm font-medium text-teamly">Teamly</span>
+            <span className="text-xs sm:text-sm text-white/30">•</span>
+            <span className="text-xs sm:text-sm font-medium text-planly">Planly</span>
+            <span className="text-xs sm:text-sm text-white/30">•</span>
+            <span className="text-xs sm:text-sm font-medium text-assetly">Assetly</span>
+            <span className="text-xs sm:text-sm text-white/30">•</span>
+            <span className="text-xs sm:text-sm font-medium text-msgly">Msgly</span>
           </div>
         </div>
       </section>
@@ -682,13 +678,13 @@ export default function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           {/* Section Header - More refined */}
           <div className="text-center mb-12 sm:mb-16 md:mb-20">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light mb-4 text-white">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light mb-4 text-theme-primary">
               The Real Cost of{' '}
-              <span className="font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#D37E91]/80 to-[#544349]/80">
+              <span className="font-normal text-[#e8e8e8]">
                 Operations Chaos
               </span>
             </h2>
-            <p className="text-gray-400 text-sm sm:text-base">
+            <p className="text-theme-tertiary text-sm sm:text-base">
               See what happens when you unify your operations
             </p>
           </div>
@@ -698,12 +694,12 @@ export default function HomePage() {
             {/* Header Row */}
             <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 mb-8 sm:mb-10">
               <div>
-                <span className="text-sm sm:text-base uppercase tracking-wider text-gray-500 font-bold">
+                <span className="text-sm sm:text-base uppercase tracking-wider text-theme-tertiary font-bold">
                   Before Opsly
                 </span>
               </div>
               <div>
-                <span className="text-sm sm:text-base uppercase tracking-wider text-gray-400 font-bold">
+                <span className="text-sm sm:text-base uppercase tracking-wider text-theme-tertiary font-bold">
                   After Opsly
                 </span>
               </div>
@@ -721,9 +717,9 @@ export default function HomePage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-2xl sm:text-3xl font-light text-gray-200 mb-3 min-h-[3rem] flex items-center">
-                        £450<span className="text-gray-500">/month</span>
+                        £450<span className="text-theme-tertiary">/month</span>
                       </div>
-                      <div className="text-gray-500 text-base leading-relaxed">
+                      <div className="text-theme-tertiary text-base leading-relaxed">
                         Paying for multiple disconnected tools, each with their own subscription
                       </div>
                     </div>
@@ -733,14 +729,14 @@ export default function HomePage() {
                 {/* After Stat 1 */}
                 <div className="p-5 sm:p-6">
                   <div className="flex items-start gap-4 sm:gap-5">
-                    <div className="mt-1 text-emerald-400/50 flex-shrink-0">
+                    <div className="mt-1 text-white/40 flex-shrink-0">
                       <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={1.5} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-2xl sm:text-3xl font-light text-gray-100 mb-3 min-h-[3rem] flex items-center">
                         One Simple Price
                       </div>
-                      <div className="text-gray-400 text-base leading-relaxed">
+                      <div className="text-theme-tertiary text-base leading-relaxed">
                         All modules included, predictable costs, no surprise bills
                       </div>
                     </div>
@@ -758,9 +754,9 @@ export default function HomePage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-2xl sm:text-3xl font-light text-gray-200 mb-3 min-h-[3rem] flex items-center">
-                        5–10 <span className="text-gray-500">Systems</span>
+                        5–10 <span className="text-theme-tertiary">Systems</span>
                       </div>
-                      <div className="text-gray-500 text-base leading-relaxed">
+                      <div className="text-theme-tertiary text-base leading-relaxed">
                         Different logins, duplicate data entry, nothing talks to each other
                       </div>
                     </div>
@@ -770,14 +766,14 @@ export default function HomePage() {
                 {/* After Stat 2 */}
                 <div className="p-5 sm:p-6">
                   <div className="flex items-start gap-4 sm:gap-5">
-                    <div className="mt-1 text-emerald-400/50 flex-shrink-0">
+                    <div className="mt-1 text-white/40 flex-shrink-0">
                       <Network className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={1.5} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-2xl sm:text-3xl font-light text-gray-100 mb-3 min-h-[3rem] flex items-center">
                         One Platform
                       </div>
-                      <div className="text-gray-400 text-base leading-relaxed">
+                      <div className="text-theme-tertiary text-base leading-relaxed">
                         Everything connected, single source of truth, one login
                       </div>
                     </div>
@@ -795,9 +791,9 @@ export default function HomePage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-2xl sm:text-3xl font-light text-gray-200 mb-3 min-h-[3rem] flex items-center">
-                        Hours <span className="text-gray-500">Wasted</span>
+                        Hours <span className="text-theme-tertiary">Wasted</span>
                       </div>
-                      <div className="text-gray-500 text-base leading-relaxed">
+                      <div className="text-theme-tertiary text-base leading-relaxed">
                         Manual data entry, reconciliation, and chasing information daily
                       </div>
                     </div>
@@ -807,14 +803,14 @@ export default function HomePage() {
                 {/* After Stat 3 */}
                 <div className="p-5 sm:p-6">
                   <div className="flex items-start gap-4 sm:gap-5">
-                    <div className="mt-1 text-emerald-400/50 flex-shrink-0">
+                    <div className="mt-1 text-white/40 flex-shrink-0">
                       <Zap className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={1.5} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-2xl sm:text-3xl font-light text-gray-100 mb-3 min-h-[3rem] flex items-center">
                         Automated
                       </div>
-                      <div className="text-gray-400 text-base leading-relaxed">
+                      <div className="text-theme-tertiary text-base leading-relaxed">
                         Workflows handle the busywork, your team focuses on what matters
                       </div>
                     </div>
@@ -827,7 +823,7 @@ export default function HomePage() {
           {/* Refined CTA */}
           <div className="text-center mt-12 sm:mt-16 md:mt-20">
             <Link href="/signup">
-              <button className="group px-6 sm:px-8 py-3 sm:py-3.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white font-light rounded-lg transition-all duration-300 text-sm sm:text-base">
+              <button className="group px-6 sm:px-8 py-3 sm:py-3.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-theme-primary font-light rounded-lg transition-all duration-300 text-sm sm:text-base">
                 Calculate Your Savings
                 <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
               </button>
@@ -846,13 +842,13 @@ export default function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           {/* Header - More impactful */}
           <div className="text-center mb-12 sm:mb-16 md:mb-20">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-white mb-4">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-theme-primary mb-4">
               Everything Works{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D37E91] to-[#544349]">
+              <span className="text-[#e8e8e8]">
                 Together
               </span>
             </h2>
-            <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
+            <p className="text-theme-tertiary text-base sm:text-lg max-w-2xl mx-auto">
               Unlike fragmented point solutions, Opsly creates a unified data ecosystem where every module shares information seamlessly
             </p>
           </div>
@@ -863,14 +859,14 @@ export default function HomePage() {
               {/* Central Dashboard Hub */}
               <div className="flex justify-center mb-12 sm:mb-16">
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#D37E91]/25 via-purple-500/20 to-blue-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] via-white/[0.03] to-transparent rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500" />
                   <div className="relative px-8 sm:px-12 py-6 sm:py-8 bg-gray-900/80 backdrop-blur-xl border border-white/20 rounded-2xl">
                     <div className="text-center">
                       <div className="flex justify-center mb-2">
-                        <BarChart3 className="w-8 h-8 sm:w-10 sm:h-10 text-[#D37E91]/70" />
+                        <BarChart3 className="w-8 h-8 sm:w-10 sm:h-10 text-white/50" />
                       </div>
-                      <div className="text-lg sm:text-xl font-light text-white mb-1">Unified Dashboard</div>
-                      <div className="text-xs sm:text-sm text-gray-400">All your ops KPIs in one place</div>
+                      <div className="text-lg sm:text-xl font-light text-theme-primary mb-1">Unified Dashboard</div>
+                      <div className="text-xs sm:text-sm text-theme-tertiary">All your ops KPIs in one place</div>
                     </div>
                   </div>
                 </div>
@@ -884,8 +880,8 @@ export default function HomePage() {
                   <line x1="400" y1="100" x2="400" y2="300" stroke="url(#gradient1)" strokeWidth="1" strokeDasharray="4 4" />
                   <defs>
                     <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#D37E91" stopOpacity="0.3" />
-                      <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.3" />
+                      <stop offset="0%" stopColor="#e8e8e8" stopOpacity="0.2" />
+                      <stop offset="100%" stopColor="#e8e8e8" stopOpacity="0.05" />
                     </linearGradient>
                   </defs>
                 </svg>
@@ -895,20 +891,20 @@ export default function HomePage() {
               <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
                 {/* Checkly ↔ Assetly */}
                 <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#D37E91]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
                   <div className="relative p-5 sm:p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="flex items-center gap-1.5 text-[#D37E91]/90 text-xs sm:text-sm font-medium">
+                      <span className="flex items-center gap-1.5 text-white/70 text-xs sm:text-sm font-medium">
                         <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
                         Checkly
                       </span>
-                      <ArrowLeftRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" />
-                      <span className="flex items-center gap-1.5 text-gray-400/90 text-xs sm:text-sm font-medium">
+                      <ArrowLeftRight className="w-3 h-3 sm:w-4 sm:h-4 text-theme-secondary" />
+                      <span className="flex items-center gap-1.5 text-theme-tertiary/90 text-xs sm:text-sm font-medium">
                         <Wrench className="w-3 h-3 sm:w-4 sm:h-4" />
                         Assetly
                       </span>
                     </div>
-                    <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
+                    <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
                       Instant issue reporting on equipment failures
                     </p>
                   </div>
@@ -916,20 +912,20 @@ export default function HomePage() {
 
                 {/* Stockly → Checkly */}
                 <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
                   <div className="relative p-5 sm:p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="flex items-center gap-1.5 text-orange-400/90 text-xs sm:text-sm font-medium">
+                      <span className="flex items-center gap-1.5 text-stockly text-xs sm:text-sm font-medium">
                         <Package className="w-3 h-3 sm:w-4 sm:h-4" />
                         Stockly
                       </span>
-                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" />
-                      <span className="flex items-center gap-1.5 text-[#D37E91]/90 text-xs sm:text-sm font-medium">
+                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-theme-secondary" />
+                      <span className="flex items-center gap-1.5 text-checkly text-xs sm:text-sm font-medium">
                         <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
                         Checkly
                       </span>
                     </div>
-                    <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
+                    <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
                       Recipes auto-generate SOPs and compliance checks
                     </p>
                   </div>
@@ -937,20 +933,20 @@ export default function HomePage() {
 
                 {/* Teamly → Stockly */}
                 <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
                   <div className="relative p-5 sm:p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="flex items-center gap-1.5 text-purple-400/90 text-xs sm:text-sm font-medium">
+                      <span className="flex items-center gap-1.5 text-teamly text-xs sm:text-sm font-medium">
                         <Users className="w-3 h-3 sm:w-4 sm:h-4" />
                         Teamly
                       </span>
-                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" />
-                      <span className="flex items-center gap-1.5 text-orange-400/90 text-xs sm:text-sm font-medium">
+                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-theme-secondary" />
+                      <span className="flex items-center gap-1.5 text-stockly text-xs sm:text-sm font-medium">
                         <Package className="w-3 h-3 sm:w-4 sm:h-4" />
                         Stockly
                       </span>
                     </div>
-                    <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
+                    <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
                       Employee costs flow into recipe costing
                     </p>
                   </div>
@@ -958,20 +954,20 @@ export default function HomePage() {
 
                 {/* Planly → Stockly */}
                 <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
                   <div className="relative p-5 sm:p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="flex items-center gap-1.5 text-blue-400/90 text-xs sm:text-sm font-medium">
+                      <span className="flex items-center gap-1.5 text-planly text-xs sm:text-sm font-medium">
                         <ClipboardList className="w-3 h-3 sm:w-4 sm:h-4" />
                         Planly
                       </span>
-                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" />
-                      <span className="flex items-center gap-1.5 text-orange-400/90 text-xs sm:text-sm font-medium">
+                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-theme-secondary" />
+                      <span className="flex items-center gap-1.5 text-stockly text-xs sm:text-sm font-medium">
                         <Package className="w-3 h-3 sm:w-4 sm:h-4" />
                         Stockly
                       </span>
                     </div>
-                    <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
+                    <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
                       Production orders check inventory levels
                     </p>
                   </div>
@@ -979,20 +975,20 @@ export default function HomePage() {
 
                 {/* Checkly → Reports */}
                 <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#D37E91]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
                   <div className="relative p-5 sm:p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="flex items-center gap-1.5 text-[#D37E91]/90 text-xs sm:text-sm font-medium">
+                      <span className="flex items-center gap-1.5 text-white/70 text-xs sm:text-sm font-medium">
                         <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
                         Checkly
                       </span>
-                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" />
-                      <span className="flex items-center gap-1.5 text-gray-400/90 text-xs sm:text-sm font-medium">
+                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-theme-secondary" />
+                      <span className="flex items-center gap-1.5 text-theme-tertiary/90 text-xs sm:text-sm font-medium">
                         <BarChart3 className="w-3 h-3 sm:w-4 sm:h-4" />
                         Reports
                       </span>
                     </div>
-                    <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
+                    <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
                       Temperature data feeds compliance reports
                     </p>
                   </div>
@@ -1000,13 +996,13 @@ export default function HomePage() {
 
                 {/* Msgly - Central Communication */}
                 <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
-                  <div className="relative p-5 sm:p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-green-400/20 transition-all duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+                  <div className="relative p-5 sm:p-6 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-white/10 transition-all duration-300">
                     <div className="flex items-center justify-center gap-1.5 mb-3">
-                      <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-green-400/90" />
-                      <span className="text-green-400/90 text-xs sm:text-sm font-medium">Msgly</span>
+                      <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-msgly" />
+                      <span className="text-msgly text-xs sm:text-sm font-medium">Msgly</span>
                     </div>
-                    <p className="text-gray-400 text-xs sm:text-sm leading-relaxed text-center">
+                    <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed text-center">
                       Connects everyone and everything—discuss tasks, assets, incidents anywhere
                     </p>
                   </div>
@@ -1018,10 +1014,10 @@ export default function HomePage() {
           {/* Hierarchical Data Section */}
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-8 sm:mb-12">
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-light text-white mb-3">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-light text-theme-primary mb-3">
                 Role-Based Intelligence
               </h3>
-              <p className="text-gray-400 text-sm sm:text-base">
+              <p className="text-theme-tertiary text-sm sm:text-base">
                 Every user sees exactly what they need, when they need it
               </p>
             </div>
@@ -1029,13 +1025,13 @@ export default function HomePage() {
             <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
               {/* Staff Level */}
               <div className="group relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
                 <div className="relative p-5 sm:p-6 text-center">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-blue-500/10 flex items-center justify-center">
-                    <User className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400/70" />
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
+                    <User className="w-6 h-6 sm:w-8 sm:h-8 text-white/60" />
                   </div>
-                  <h4 className="text-base sm:text-lg font-light text-white mb-2">Staff</h4>
-                  <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
+                  <h4 className="text-base sm:text-lg font-light text-theme-primary mb-2">Staff</h4>
+                  <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
                     Simple task lists and check completions for their site
                   </p>
                 </div>
@@ -1043,13 +1039,13 @@ export default function HomePage() {
 
               {/* Manager Level */}
               <div className="group relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
                 <div className="relative p-5 sm:p-6 text-center">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-purple-500/10 flex items-center justify-center">
-                    <Briefcase className="w-6 h-6 sm:w-8 sm:h-8 text-purple-400/70" />
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
+                    <Briefcase className="w-6 h-6 sm:w-8 sm:h-8 text-white/60" />
                   </div>
-                  <h4 className="text-base sm:text-lg font-light text-white mb-2">Managers</h4>
-                  <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
+                  <h4 className="text-base sm:text-lg font-light text-theme-primary mb-2">Managers</h4>
+                  <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
                     Full oversight, analytics, and setup control for their locations
                   </p>
                 </div>
@@ -1057,13 +1053,13 @@ export default function HomePage() {
 
               {/* Regional/HQ Level */}
               <div className="group relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#D37E91]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
                 <div className="relative p-5 sm:p-6 text-center">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-[#D37E91]/15 flex items-center justify-center">
-                    <Building2 className="w-6 h-6 sm:w-8 sm:h-8 text-[#D37E91]/70" />
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
+                    <Building2 className="w-6 h-6 sm:w-8 sm:h-8 text-white/50" />
                   </div>
-                  <h4 className="text-base sm:text-lg font-light text-white mb-2">Regional & HQ</h4>
-                  <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
+                  <h4 className="text-base sm:text-lg font-light text-theme-primary mb-2">Regional & HQ</h4>
+                  <p className="text-theme-tertiary text-xs sm:text-sm leading-relaxed">
                     Cross-site insights, trends, and company-wide performance metrics
                   </p>
                 </div>
@@ -1085,42 +1081,41 @@ export default function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             {/* Heading */}
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-white mb-4 sm:mb-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-theme-primary mb-4 sm:mb-6">
               Ready to Simplify Your{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D37E91] to-[#544349]">
+              <span className="text-[#e8e8e8]">
                 Operations
               </span>
               ?
             </h2>
             
             {/* Subheading */}
-            <p className="text-gray-400 text-base sm:text-lg mb-8 sm:mb-12">
+            <p className="text-theme-tertiary text-base sm:text-lg mb-8 sm:mb-12">
               Join businesses that replaced fragmented tools with Opsly
             </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/contact">
-                <button className="group px-6 sm:px-8 py-3 sm:py-4 bg-white/10 hover:bg-white/[0.15] border border-white/20 hover:border-white/30 text-white font-light rounded-lg transition-all duration-300 backdrop-blur-sm text-sm sm:text-base">
-                  Book a Demo
-                  <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                <button className="btn-marketing-secondary text-sm sm:text-base">
+                  Book a Demo →
                 </button>
               </Link>
               
               <Link href="/signup">
-                <button className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-[#D37E91]/90 to-[#544349]/90 hover:from-[#D37E91] hover:to-[#544349] text-white font-light rounded-lg transition-all duration-300 shadow-lg shadow-[#D37E91]/20 text-sm sm:text-base">
+                <button className="btn-marketing-primary text-sm sm:text-base">
                   Start Free Trial
                 </button>
               </Link>
             </div>
 
             {/* Trust indicator */}
-            <div className="mt-8 sm:mt-12 flex items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
+            <div className="mt-8 sm:mt-12 flex items-center justify-center gap-2 text-xs sm:text-sm text-theme-tertiary">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
               <span>No credit card required</span>
-              <span className="text-gray-700">•</span>
+              <span className="text-theme-secondary">•</span>
               <span>14-day free trial</span>
             </div>
           </div>

@@ -377,7 +377,7 @@ export default function AddEmployeePage() {
                 flex items-center gap-1.5 px-4 py-2 rounded-t-lg text-sm font-medium whitespace-nowrap transition-all relative
                 ${activeSection === section.id
                   ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 border-b-2 border-blue-500 dark:border-blue-500 shadow-sm'
-                  : 'text-theme-secondary hover:text-theme-primary hover:bg-blue-50/50 dark:hover:bg-blue-500/10 hover:border-b-2 hover:border-blue-300 dark:hover:border-blue-500/30'
+                  : 'text-theme-secondary hover:text-theme-primary hover:bg-blue-50/50 dark:hover:bg-module-fg/10 hover:border-b-2 hover:border-blue-300 dark:hover:border-blue-500/30'
                 }
               `}
             >
@@ -1123,7 +1123,7 @@ export default function AddEmployeePage() {
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg border-0 shadow-[0_0_12px_rgba(59,130,246,0.4)] dark:shadow-[0_0_12px_rgba(59,130,246,0.5)] hover:shadow-[0_0_16px_rgba(59,130,246,0.6)] dark:hover:shadow-[0_0_16px_rgba(59,130,246,0.7)] transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+              className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg border-0 shadow-[0_0_12px_rgba(59,130,246,0.4)] dark:shadow-[0_0_12px_rgba(59,130,246,0.5)] hover:shadow-module-glow dark:hover:shadow-module-glow transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             >
               {loading ? (
                 <>

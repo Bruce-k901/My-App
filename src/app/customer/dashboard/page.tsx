@@ -159,7 +159,7 @@ export default function CustomerDashboardPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6">
           <h2 className="text-xl font-semibold text-red-400 mb-2">Error Loading Dashboard</h2>
-          <p className="text-white/60 mb-4">{error}</p>
+          <p className="text-theme-tertiary mb-4">{error}</p>
           <Button
             onClick={() => {
               setError(null);
@@ -179,10 +179,10 @@ export default function CustomerDashboardPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
       {/* Welcome Header */}
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary mb-2">
           Welcome, {customer?.business_name || 'Customer'}
         </h1>
-        <p className="text-white/60 text-sm sm:text-base">
+        <p className="text-theme-tertiary text-sm sm:text-base">
           Manage your orders and standing deliveries
         </p>
       </div>
@@ -201,8 +201,8 @@ export default function CustomerDashboardPage() {
 
       {/* Place Order */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
-        <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">Place Order</h2>
-        <p className="text-white/60 text-sm mb-4">
+        <h2 className="text-lg sm:text-xl font-semibold text-theme-primary mb-4">Place Order</h2>
+        <p className="text-theme-tertiary text-sm mb-4">
           {orderDays.length > 0
             ? `You have orders scheduled for ${orderDays
                 .map((day) => day.charAt(0).toUpperCase() + day.slice(1).slice(0, 3))
@@ -226,11 +226,11 @@ export default function CustomerDashboardPage() {
 
       {/* Upcoming Deliveries */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6">
-        <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">Upcoming Deliveries</h2>
+        <h2 className="text-lg sm:text-xl font-semibold text-theme-primary mb-4">Upcoming Deliveries</h2>
 
         {upcomingOrders.length === 0 ? (
-          <div className="text-center py-8 text-white/60">
-            <Calendar className="w-12 h-12 mx-auto mb-4 text-white/40" />
+          <div className="text-center py-8 text-theme-tertiary">
+            <Calendar className="w-12 h-12 mx-auto mb-4 text-theme-tertiary" />
             <p className="text-sm sm:text-base">No upcoming deliveries</p>
           </div>
         ) : (
@@ -245,7 +245,7 @@ export default function CustomerDashboardPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <Calendar className="w-4 h-4 text-[#D37E91]" />
-                      <span className="font-medium text-white">{formatDate(order.delivery_date)}</span>
+                      <span className="font-medium text-theme-primary">{formatDate(order.delivery_date)}</span>
                       <span
                         className={`text-xs px-2 py-0.5 rounded ${
                           order.status === 'confirmed'
@@ -258,7 +258,7 @@ export default function CustomerDashboardPage() {
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                       </span>
                     </div>
-                    <div className="text-sm text-white/60">
+                    <div className="text-sm text-theme-tertiary">
                       Order #{order.order_number} • {formatCurrency(order.total)}
                     </div>
                   </div>

@@ -37,7 +37,7 @@ export function PassFailFeature({
   return (
     <>
       <div className="border-t border-white/10 pt-6">
-        <h2 className="text-lg font-semibold text-white mb-4">Pass/Fail Assessment</h2>
+        <h2 className="text-lg font-semibold text-theme-primary mb-4">Pass/Fail Assessment</h2>
         <div className="flex gap-4">
           <button
             type="button"

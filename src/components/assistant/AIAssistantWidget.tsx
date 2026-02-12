@@ -1226,7 +1226,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
           >
           {/* Header */}
           <div className={`relative flex items-center justify-between px-4 py-3 sm:py-3 border-b flex-shrink-0 ${
-            isDark ? 'border-white/[0.06] bg-white/[0.03]' : 'border-gray-200 bg-gray-50'
+            isDark ? 'border-white/[0.06] bg-white/[0.03]' : 'border-gray-200 bg-theme-surface-elevated'
           }`}>
             <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
               <div className={`p-1.5 sm:p-2 rounded-lg border border-[#D37E91]/20 flex-shrink-0 ${
@@ -1236,10 +1236,10 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
               </div>
               <div className="min-w-0 flex-1">
                 <h3 className={`font-semibold text-sm sm:text-base truncate ${
-                  isDark ? 'text-white' : 'text-gray-900'
+                  isDark ? 'text-theme-primary' : 'text-theme-primary'
                 }`}>Opsly Assistant</h3>
                 <p className={`text-xs hidden sm:block ${
-                  isDark ? 'text-white/60' : 'text-gray-500'
+                  isDark ? 'text-theme-tertiary' : 'text-theme-tertiary'
                 }`}>Your operations copilot</p>
               </div>
             </div>
@@ -1249,8 +1249,8 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                 onClick={createNewConversation}
                 className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
                   isDark
-                    ? 'hover:bg-white/[0.06] text-white/60 hover:text-white'
-                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                    ? 'hover:bg-white/[0.06] text-theme-tertiary hover:text-white'
+                    : 'hover:bg-gray-100 text-theme-secondary hover:text-theme-primary'
                 }`}
                 aria-label="New Chat"
                 title="Start new chat"
@@ -1262,8 +1262,8 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                 onClick={() => setShowHistory(!showHistory)}
                 className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
                   isDark
-                    ? 'hover:bg-white/[0.06] text-white/60 hover:text-white'
-                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                    ? 'hover:bg-white/[0.06] text-theme-tertiary hover:text-white'
+                    : 'hover:bg-gray-100 text-theme-secondary hover:text-theme-primary'
                 }`}
                 aria-label="Chat History"
                 title="View chat history"
@@ -1275,7 +1275,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                 onClick={handleContactHuman}
                 className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg
                   bg-transparent text-[#D37E91] border border-[#D37E91] text-xs font-medium
-                  hover:shadow-[0_0_8px_rgba(211,126,145,0.5)]
+                  hover:shadow-module-glow
                   transition-all duration-200 ease-in-out ${
                     isDark ? 'hover:bg-[#D37E91]/10' : 'hover:bg-[#D37E91]/10'
                   }`}
@@ -1289,8 +1289,8 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                 onClick={() => setIsOpen(false)}
                 className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
                   isDark
-                    ? 'hover:bg-white/[0.06] text-white/60 hover:text-white'
-                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                    ? 'hover:bg-white/[0.06] text-theme-tertiary hover:text-white'
+                    : 'hover:bg-gray-100 text-theme-secondary hover:text-theme-primary'
                 }`}
                 aria-label="Close"
                 title="Close assistant"
@@ -1308,14 +1308,14 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
               <div className="p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className={`text-sm font-semibold ${
-                    isDark ? 'text-white' : 'text-gray-900'
+                    isDark ? 'text-theme-primary' : 'text-theme-primary'
                   }`}>Chat History</h4>
                   <button
                     onClick={() => setShowHistory(false)}
                     className={`p-1 rounded ${
                       isDark
-                        ? 'hover:bg-white/[0.06] text-white/60 hover:text-white'
-                        : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                        ? 'hover:bg-white/[0.06] text-theme-tertiary hover:text-white'
+                        : 'hover:bg-gray-100 text-theme-secondary hover:text-theme-primary'
                     }`}
                   >
                     <X className="w-4 h-4" />
@@ -1323,7 +1323,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                 </div>
                 {conversations.length === 0 ? (
                   <p className={`text-xs text-center py-4 ${
-                    isDark ? 'text-white/60' : 'text-gray-500'
+                    isDark ? 'text-theme-tertiary' : 'text-theme-tertiary'
                   }`}>No previous conversations</p>
                 ) : (
                   <div className="space-y-2">
@@ -1337,7 +1337,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                               : 'bg-[#D37E91]/10 border-[#D37E91]/30'
                             : isDark
                               ? 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06]'
-                              : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                              : 'bg-theme-surface-elevated border-gray-200 hover:bg-gray-100'
                         }`}
                       >
                         <button
@@ -1345,19 +1345,19 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                           className="w-full text-left"
                         >
                           <div className={`font-medium text-sm mb-1 ${
-                            isDark ? 'text-white' : 'text-gray-900'
+                            isDark ? 'text-theme-primary' : 'text-theme-primary'
                           }`}>
                             {conv.title || 'New conversation'}
                           </div>
                           {conv.last_message && (
                             <div className={`text-xs truncate ${
-                              isDark ? 'text-white/60' : 'text-gray-500'
+                              isDark ? 'text-theme-tertiary' : 'text-theme-tertiary'
                             }`}>
                               {conv.last_message}
                             </div>
                           )}
                           <div className={`text-xs mt-1 ${
-                            isDark ? 'text-white/40' : 'text-gray-400'
+                            isDark ? 'text-theme-tertiary' : 'text-theme-tertiary'
                           }`}>
                             {new Date(conv.updated_at).toLocaleDateString()} {new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </div>
@@ -1366,8 +1366,8 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                           onClick={(e) => archiveConversation(conv.id, e)}
                           className={`absolute top-2 right-2 p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity ${
                             isDark
-                              ? 'hover:bg-white/[0.1] text-white/40 hover:text-white'
-                              : 'hover:bg-gray-200 text-gray-400 hover:text-gray-900'
+                              ? 'hover:bg-white/[0.1] text-theme-tertiary hover:text-white'
+                              : 'hover:bg-gray-200 text-theme-tertiary hover:text-theme-primary'
                           }`}
                           title="Archive conversation"
                         >
@@ -1396,12 +1396,12 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                   <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-[#D37E91]" />
                 </div>
                 <h4 className={`text-base sm:text-lg font-semibold mb-2 ${
-                  isDark ? 'text-white' : 'text-gray-900'
+                  isDark ? 'text-theme-primary' : 'text-theme-primary'
                 }`}>
                   How can I help?
                 </h4>
                 <p className={`text-xs sm:text-sm mb-4 sm:mb-6 max-w-xs mx-auto px-2 ${
-                  isDark ? 'text-white/60' : 'text-gray-600'
+                  isDark ? 'text-theme-tertiary' : 'text-theme-secondary'
                 }`}>
                   Ask me about any module - compliance, inventory, staffing, production, assets, or messaging.
                 </p>
@@ -1411,8 +1411,8 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                   <div className="mb-3 text-center">
                     <span className={`inline-block px-2 py-1 rounded text-xs border ${
                       isDark
-                        ? 'bg-white/[0.06] border-white/[0.1] text-white/60'
-                        : 'bg-gray-100 border-gray-200 text-gray-600'
+                        ? 'bg-white/[0.06] border-white/[0.1] text-theme-tertiary'
+                        : 'bg-gray-100 border-gray-200 text-theme-secondary'
                     }`}>
                       {detectModule(pathname).charAt(0).toUpperCase() + detectModule(pathname).slice(1)} Module
                     </span>
@@ -1427,8 +1427,8 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                       onClick={() => handleQuickAction(action.query)}
                       className={`flex items-center gap-2 p-2.5 sm:p-3 rounded-lg border transition-colors text-left ${
                         isDark
-                          ? 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.08] hover:border-white/[0.12] text-white/80'
-                          : 'bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300 text-gray-700'
+                          ? 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.08] hover:border-white/[0.12] text-theme-secondary'
+                          : 'bg-theme-surface-elevated border-gray-200 hover:bg-gray-100 hover:border-gray-300 text-theme-secondary'
                       }`}
                     >
                       {action.icon}
@@ -1442,7 +1442,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                   onClick={handleContactHuman}
                   className={`mt-3 sm:mt-4 w-full flex items-center justify-center gap-2 p-2.5 sm:p-3 rounded-lg
                     bg-transparent border border-[#D37E91] text-[#D37E91]
-                    hover:shadow-[0_0_12px_rgba(211,126,145,0.5)]
+                    hover:shadow-module-glow
                     transition-all duration-200 ease-in-out ${
                       isDark ? 'hover:bg-[#D37E91]/10' : 'hover:bg-[#D37E91]/10'
                     }`}
@@ -1493,7 +1493,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                             : 'bg-red-50 border border-red-200 text-red-800 rounded-bl-md'
                           : isDark
                             ? 'bg-white/[0.06] text-white/90 rounded-bl-md'
-                            : 'bg-gray-100 text-gray-900 rounded-bl-md'
+                            : 'bg-gray-100 text-theme-primary rounded-bl-md'
                       }`}
                   >
                     <div
@@ -1505,7 +1505,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                   {/* Sources (for assistant messages) */}
                   {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
                     <div className={`mt-2 flex items-center gap-1 text-xs ${
-                      isDark ? 'text-white/40' : 'text-gray-500'
+                      isDark ? 'text-theme-tertiary' : 'text-theme-tertiary'
                     }`}>
                       <BookOpen className="w-3 h-3" />
                       <span>Sources: {message.sources.map(s => s.title).join(', ').substring(0, 60)}...</span>
@@ -1514,7 +1514,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
 
                   {/* Timestamp */}
                   <div className={`text-xs mt-1 ${message.role === 'user' ? 'text-right' : ''} ${
-                    isDark ? 'text-white/30' : 'text-gray-400'
+                    isDark ? 'text-theme-disabled' : 'text-theme-tertiary'
                   }`}>
                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
@@ -1535,7 +1535,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                 }`}>
                   <Loader2 className="w-4 h-4 text-[#D37E91] animate-spin" />
                   <span className={`text-sm ${
-                    isDark ? 'text-white/60' : 'text-gray-600'
+                    isDark ? 'text-theme-tertiary' : 'text-theme-secondary'
                   }`}>
                     {capturingScreenshot ? 'Capturing screenshot...' : 'Thinking...'}
                   </span>
@@ -1558,7 +1558,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                     isDark ? 'bg-white/[0.06]' : 'bg-[#D37E91]/10'
                   }`}>
                     <p className={`text-sm mb-3 ${
-                      isDark ? 'text-white/90' : 'text-gray-900'
+                      isDark ? 'text-white/90' : 'text-theme-primary'
                     }`}>
                       Would you like me to save this to your {generationData.type === 'sop' ? 'SOP library' : 'Risk Assessments'}?
                     </p>
@@ -1607,7 +1607,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                         disabled={isLoading}
                         className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg
                           bg-transparent border border-[#D37E91] text-[#D37E91] text-xs font-medium
-                          hover:shadow-[0_0_8px_rgba(211,126,145,0.5)]
+                          hover:shadow-module-glow
                           transition-all duration-200 ease-in-out disabled:opacity-50 ${
                             isDark ? 'hover:bg-[#D37E91]/10' : 'hover:bg-[#D37E91]/10'
                           }`}
@@ -1626,8 +1626,8 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                           bg-transparent border text-xs font-medium
                           transition-all duration-200 ease-in-out disabled:opacity-50 ${
                             isDark
-                              ? 'border-white/[0.2] text-white/80 hover:bg-white/[0.08] hover:border-white/[0.3]'
-                              : 'border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400'
+                              ? 'border-white/[0.2] text-theme-secondary hover:bg-white/[0.08] hover:border-white/[0.3]'
+                              : 'border-gray-300 text-theme-secondary hover:bg-gray-100 hover:border-gray-400'
                           }`}
                       >
                         <span>No, thanks</span>
@@ -1651,7 +1651,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                     isDark ? 'bg-white/[0.06]' : 'bg-[#D37E91]/10'
                   }`}>
                     <p className={`text-sm mb-3 ${
-                      isDark ? 'text-white/90' : 'text-gray-900'
+                      isDark ? 'text-white/90' : 'text-theme-primary'
                     }`}>
                       Need to speak with a human? We're here to help!
                     </p>
@@ -1660,7 +1660,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                         onClick={openEmailSupport}
                         className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg
                           bg-transparent border border-[#D37E91] text-[#D37E91] text-xs font-medium
-                          hover:shadow-[0_0_8px_rgba(211,126,145,0.5)]
+                          hover:shadow-module-glow
                           transition-all duration-200 ease-in-out ${
                             isDark ? 'hover:bg-[#D37E91]/10' : 'hover:bg-[#D37E91]/10'
                           }`}
@@ -1674,8 +1674,8 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                           bg-transparent border text-xs font-medium
                           transition-all duration-200 ease-in-out ${
                             isDark
-                              ? 'border-white/[0.2] text-white/80 hover:bg-white/[0.08] hover:border-white/[0.3]'
-                              : 'border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400'
+                              ? 'border-white/[0.2] text-theme-secondary hover:bg-white/[0.08] hover:border-white/[0.3]'
+                              : 'border-gray-300 text-theme-secondary hover:bg-gray-100 hover:border-gray-400'
                           }`}
                       >
                         <MessageCircle className="w-4 h-4" />
@@ -1685,14 +1685,14 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                     <button
                       onClick={() => setShowContactOptions(false)}
                       className={`mt-2 text-xs transition-colors ${
-                        isDark ? 'text-white/40 hover:text-white/60' : 'text-gray-500 hover:text-gray-700'
+                        isDark ? 'text-theme-tertiary hover:text-theme-tertiary' : 'text-theme-tertiary hover:text-theme-secondary'
                       }`}
                     >
                       Close
                     </button>
                   </div>
                   <div className={`text-xs mt-1 ${
-                    isDark ? 'text-white/30' : 'text-gray-400'
+                    isDark ? 'text-theme-disabled' : 'text-theme-tertiary'
                   }`}>
                     Support available Mon-Fri, 9 AM - 6 PM EST
                   </div>
@@ -1709,7 +1709,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
               onClick={scrollToBottom}
               className={`absolute bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 p-2 rounded-full
                 bg-transparent text-[#D37E91] border border-[#D37E91] shadow-lg
-                hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 ease-in-out z-10 ${
+                hover:shadow-module-glow transition-all duration-200 ease-in-out z-10 ${
                   !isDark ? 'hover:bg-[#D37E91]/10' : ''
                 }`}
             >
@@ -1721,7 +1721,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
           <form
             onSubmit={handleSubmit}
             className={`p-3 sm:p-4 border-t flex-shrink-0 ${
-              isDark ? 'border-white/[0.06] bg-black/20' : 'border-gray-200 bg-gray-50'
+              isDark ? 'border-white/[0.06] bg-black/20' : 'border-gray-200 bg-theme-surface-elevated'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -1736,15 +1736,15 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                   focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40
                   disabled:opacity-50 disabled:cursor-not-allowed ${
                     isDark
-                      ? 'bg-white/[0.06] border-white/[0.1] text-white placeholder-white/40'
-                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                      ? 'bg-white/[0.06] border-white/[0.1] text-theme-primary placeholder-white/40'
+                      : 'bg-white border-gray-300 text-theme-primary placeholder-gray-400'
                   }`}
               />
               <button
                 type="submit"
                 disabled={!inputValue.trim() || isLoading}
                 className={`p-2.5 sm:p-3 rounded-xl bg-transparent text-[#D37E91] border border-[#D37E91] flex-shrink-0
-                  hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 ease-in-out
+                  hover:shadow-module-glow transition-all duration-200 ease-in-out
                   disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none ${
                     !isDark && !isLoading && inputValue.trim() ? 'hover:bg-[#D37E91]/10' : ''
                   }`}
@@ -1759,7 +1759,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
 
             {/* Disclaimer */}
             <p className={`text-xs text-center mt-2 hidden sm:block ${
-              isDark ? 'text-white/30' : 'text-gray-500'
+              isDark ? 'text-theme-disabled' : 'text-theme-tertiary'
             }`}>
               AI responses are guidance only. Always verify critical compliance info.
             </p>

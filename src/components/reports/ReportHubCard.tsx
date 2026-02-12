@@ -33,29 +33,29 @@ export default function ReportHubCard({ moduleId, metrics, href, loading }: Repo
     <Link href={href} className="block group">
       <div
         className={`
-          bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-5
+          bg-theme-surface border border-theme rounded-xl p-5
           border-l-4 ${colors.border}
-          hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-all duration-200
+          hover:bg-theme-hover transition-all duration-200
           hover:shadow-lg dark:hover:shadow-none
         `}
       >
         <div className="flex items-center justify-between mb-1">
           <h3 className={`text-lg font-semibold ${colors.text}`}>{name}</h3>
-          <ArrowRight className="w-4 h-4 text-gray-400 dark:text-white/40 group-hover:text-gray-600 dark:group-hover:text-white/70 transition-colors" />
+          <ArrowRight className="w-4 h-4 text-theme-tertiary group-hover:text-theme-secondary dark:group-hover:text-theme-secondary transition-colors" />
         </div>
-        <p className="text-xs text-gray-500 dark:text-white/40 mb-4">{MODULE_ICONS[moduleId]}</p>
+        <p className="text-xs text-theme-tertiary mb-4">{MODULE_ICONS[moduleId]}</p>
 
         {loading ? (
           <div className="flex items-center gap-2 py-4">
-            <Loader2 className="w-4 h-4 text-gray-400 dark:text-white/40 animate-spin" />
-            <span className="text-sm text-gray-400 dark:text-white/40">Loading...</span>
+            <Loader2 className="w-4 h-4 text-theme-tertiary animate-spin" />
+            <span className="text-sm text-theme-tertiary">Loading...</span>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3">
             {metrics.map((metric) => (
               <div key={metric.label}>
-                <div className="text-xs text-gray-500 dark:text-white/40">{metric.label}</div>
-                <div className="text-sm font-semibold text-gray-900 dark:text-white">{metric.value}</div>
+                <div className="text-xs text-theme-tertiary">{metric.label}</div>
+                <div className="text-sm font-semibold text-theme-primary">{metric.value}</div>
               </div>
             ))}
           </div>

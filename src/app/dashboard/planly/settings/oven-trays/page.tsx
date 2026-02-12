@@ -102,7 +102,7 @@ export default function OvenAndTraysPage() {
   if (!siteId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
+        <div className="text-theme-tertiary">Please select a site</div>
       </div>
     );
   }
@@ -112,8 +112,8 @@ export default function OvenAndTraysPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-6 w-6 animate-spin text-gray-400 dark:text-white/40 mr-2" />
-        <span className="text-gray-500 dark:text-white/60">Loading...</span>
+        <Loader2 className="h-6 w-6 animate-spin text-theme-tertiary mr-2" />
+        <span className="text-theme-tertiary">Loading...</span>
       </div>
     );
   }
@@ -294,8 +294,8 @@ export default function OvenAndTraysPage() {
     <div className="container mx-auto py-6 max-w-4xl space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Oven & Trays</h1>
-        <p className="text-gray-500 dark:text-white/50 text-sm mt-1">
+        <h1 className="text-2xl font-bold text-theme-primary">Oven & Trays</h1>
+        <p className="text-theme-tertiary text-sm mt-1">
           Set up tray sizes and which products bake together. This generates your numbered tray layout.
         </p>
       </div>
@@ -307,8 +307,8 @@ export default function OvenAndTraysPage() {
           className={cn(
             'flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors',
             activeTab === 'trays'
-              ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm'
-              : 'text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white'
+              ? 'bg-theme-surface text-theme-primary shadow-sm'
+              : 'text-theme-secondary hover:text-theme-primary'
           )}
         >
           <LayoutGrid className="h-4 w-4" />
@@ -319,8 +319,8 @@ export default function OvenAndTraysPage() {
           className={cn(
             'flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors',
             activeTab === 'bake-groups'
-              ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm'
-              : 'text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white'
+              ? 'bg-theme-surface text-theme-primary shadow-sm'
+              : 'text-theme-secondary hover:text-theme-primary'
           )}
         >
           <Flame className="h-4 w-4" />
@@ -339,43 +339,43 @@ export default function OvenAndTraysPage() {
           </div>
 
           {traysList.length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 dark:bg-white/5 rounded-lg border border-dashed border-gray-200 dark:border-white/10">
+            <div className="text-center py-12 bg-theme-button rounded-lg border border-dashed border-theme">
               <LayoutGrid className="h-12 w-12 mx-auto text-gray-300 dark:text-white/20 mb-4" />
-              <p className="text-gray-400 dark:text-white/40 mb-4">No tray types created yet</p>
+              <p className="text-theme-tertiary mb-4">No tray types created yet</p>
               <Button onClick={openCreateTray} variant="outline">
                 <Plus className="h-4 w-4 mr-2" />
                 Create First Tray Type
               </Button>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-white/10">
+            <div className="overflow-hidden rounded-lg border border-theme">
               <table className="w-full">
-                <thead className="bg-gray-50 dark:bg-white/5">
+                <thead className="bg-theme-button">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                       Name
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                       Default Capacity
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                       Product Capacities
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-white/10 bg-white dark:bg-neutral-900">
+                <tbody className="divide-y divide-gray-200 dark:divide-white/10 bg-theme-surface">
                   {traysList.map((tray) => (
-                    <tr key={tray.id} className="hover:bg-gray-50 dark:hover:bg-white/5">
+                    <tr key={tray.id} className="hover:bg-theme-hover">
                       <td className="px-4 py-4">
-                        <div className="font-medium text-gray-900 dark:text-white">{tray.name}</div>
+                        <div className="font-medium text-theme-primary">{tray.name}</div>
                         {tray.description && (
-                          <div className="text-sm text-gray-500 dark:text-white/50">{tray.description}</div>
+                          <div className="text-sm text-theme-tertiary">{tray.description}</div>
                         )}
                       </td>
-                      <td className="px-4 py-4 text-gray-900 dark:text-white">{tray.default_capacity}</td>
+                      <td className="px-4 py-4 text-theme-primary">{tray.default_capacity}</td>
                       <td className="px-4 py-4">
                         {tray.capacity_profiles && tray.capacity_profiles.length > 0 ? (
                           <div className="flex flex-wrap gap-1">
@@ -389,20 +389,20 @@ export default function OvenAndTraysPage() {
                             ))}
                           </div>
                         ) : (
-                          <span className="text-gray-400 dark:text-white/40 text-sm">—</span>
+                          <span className="text-theme-tertiary text-sm">—</span>
                         )}
                       </td>
                       <td className="px-4 py-4 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => openEditTray(tray)}
-                            className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10"
+                            className="p-2 rounded-lg text-theme-tertiary hover:text-theme-secondary hover:bg-theme-muted"
                           >
                             <Pencil className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => openDeleteTray(tray.id)}
-                            className="p-2 rounded-lg text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
+                            className="p-2 rounded-lg text-theme-tertiary hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -421,7 +421,7 @@ export default function OvenAndTraysPage() {
       {activeTab === 'bake-groups' && (
         <div className="space-y-4">
           <div className="flex justify-between items-start">
-            <p className="text-sm text-gray-600 dark:text-white/60 max-w-xl">
+            <p className="text-sm text-theme-secondary max-w-xl">
               Products that bake at the same temperature and time. The tray plan groups these together so you can fill trays efficiently.
             </p>
             <Button onClick={handleAddBakeGroup}>
@@ -431,9 +431,9 @@ export default function OvenAndTraysPage() {
           </div>
 
           {bakeGroupsList.length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 dark:bg-white/5 rounded-lg border border-dashed border-gray-200 dark:border-white/10">
+            <div className="text-center py-12 bg-theme-button rounded-lg border border-dashed border-theme">
               <Flame className="h-12 w-12 mx-auto text-gray-300 dark:text-white/20 mb-4" />
-              <p className="text-gray-400 dark:text-white/40 mb-4">No bake groups created yet</p>
+              <p className="text-theme-tertiary mb-4">No bake groups created yet</p>
               <Button onClick={handleAddBakeGroup} variant="outline">
                 <Plus className="h-4 w-4 mr-2" />
                 Create First Bake Group
@@ -445,10 +445,10 @@ export default function OvenAndTraysPage() {
                 const groupProducts = getGroupProducts(group.id);
                 return (
                   <Card key={group.id} className="p-0">
-                    <CardHeader className="pb-3 border-b border-gray-200 dark:border-white/10">
+                    <CardHeader className="pb-3 border-b border-theme">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <GripVertical className="h-5 w-5 text-gray-400 dark:text-white/40 cursor-grab" />
+                          <GripVertical className="h-5 w-5 text-theme-tertiary cursor-grab" />
                           {editingBakeId === group.id ? (
                             <Input
                               autoFocus
@@ -467,7 +467,7 @@ export default function OvenAndTraysPage() {
                           ) : (
                             <button
                               onClick={() => startEditingBake(group)}
-                              className="text-lg font-semibold text-gray-900 dark:text-white hover:text-[#14B8A6] transition-colors"
+                              className="text-lg font-semibold text-theme-primary hover:text-module-fg transition-colors"
                             >
                               {group.name}
                             </button>
@@ -506,19 +506,19 @@ export default function OvenAndTraysPage() {
                     <CardContent className="pt-4">
                       <div className="space-y-2 mb-4">
                         {groupProducts.length === 0 ? (
-                          <p className="text-gray-400 dark:text-white/40 text-sm py-2">No products in this group</p>
+                          <p className="text-theme-tertiary text-sm py-2">No products in this group</p>
                         ) : (
                           groupProducts.map((product) => (
                             <div
                               key={product.id}
-                              className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10"
+                              className="flex items-center justify-between p-3 bg-theme-button rounded-lg border border-theme"
                             >
-                              <span className="text-gray-900 dark:text-white">
+                              <span className="text-theme-primary">
                                 {product.stockly_product?.ingredient_name || product.stockly_product?.name || 'Unknown Product'}
                               </span>
                               <button
                                 onClick={() => handleRemoveProductFromBake(product.id)}
-                                className="p-1.5 rounded text-gray-400 dark:text-white/40 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
+                                className="p-1.5 rounded text-theme-tertiary hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
                               >
                                 <X className="h-4 w-4" />
                               </button>
@@ -548,7 +548,7 @@ export default function OvenAndTraysPage() {
                               setAddingToGroupId(null);
                               setSelectedProductId('');
                             }}
-                            className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-white"
+                            className="p-2 rounded-lg text-theme-tertiary hover:text-theme-secondary"
                           >
                             <X className="h-4 w-4" />
                           </button>
@@ -591,7 +591,7 @@ export default function OvenAndTraysPage() {
                 value={trayForm.default_capacity}
                 onChange={(e) => setTrayForm((p) => ({ ...p, default_capacity: parseInt(e.target.value) || 1 }))}
               />
-              <p className="text-xs text-gray-500 dark:text-white/50 mt-1">How many items fit on this tray by default</p>
+              <p className="text-xs text-theme-tertiary mt-1">How many items fit on this tray by default</p>
             </div>
             <div>
               <Label>Description</Label>
@@ -611,7 +611,7 @@ export default function OvenAndTraysPage() {
                 </Button>
               </div>
               {trayForm.capacity_profiles.length === 0 ? (
-                <p className="text-sm text-gray-400 dark:text-white/40">
+                <p className="text-sm text-theme-tertiary">
                   No overrides — all products will use the default capacity
                 </p>
               ) : (

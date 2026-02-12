@@ -52,7 +52,7 @@ export default function Select({
   
   return (
     <div className={cn("relative", className)}>
-      {label && <label className="block text-xs text-[rgb(var(--text-secondary))] dark:text-slate-400 mb-1">{label}</label>}
+ {label && <label className="block text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">{label}</label>}
       
       <SelectPrimitive.Root
         value={internalValue}
@@ -62,10 +62,10 @@ export default function Select({
         <SelectPrimitive.Trigger
           className={cn(
             // Input-like base styles for consistency
-            "w-full h-10 rounded-md px-4 text-left text-theme-primary dark:text-white relative",
+ "w-full h-10 rounded-md px-4 text-left text-theme-primary relative",
             "bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50",
             "transition-all duration-150 ease-in-out",
-            "hover:border-blue-400 dark:hover:border-blue-500/70 hover:bg-theme-button-hover dark:hover:bg-theme-button-hover hover:shadow-[0_0_10px_rgba(59,130,246,0.2)] dark:hover:shadow-[0_0_10px_rgba(59,130,246,0.3)]",
+            "hover:border-blue-400 dark:hover:border-blue-500/70 hover:bg-theme-button-hover dark:hover:bg-theme-button-hover hover:shadow-module-glow dark:hover:shadow-module-glow",
             "focus:border-blue-500 dark:focus:border-blue-500 focus:shadow-[0_0_14px_rgba(59,130,246,0.3)] dark:focus:shadow-[0_0_14px_rgba(59,130,246,0.4)] focus:ring-0 focus:outline-none",
             "data-[state=open]:border-blue-500 dark:data-[state=open]:border-blue-500 data-[state=open]:shadow-[0_0_14px_rgba(59,130,246,0.3)] dark:data-[state=open]:shadow-[0_0_14px_rgba(59,130,246,0.4)]",
             disabled && "opacity-50 cursor-not-allowed",
@@ -75,10 +75,10 @@ export default function Select({
         >
           <SelectPrimitive.Value 
             placeholder={placeholder}
-            className={cn("text-sm", !value && "text-theme-tertiary dark:text-white/40")}
+            className={cn("text-sm", !value && "text-theme-tertiary dark:text-theme-tertiary")}
           />
           <SelectPrimitive.Icon>
-            <ChevronDown className="h-4 w-4 text-theme-secondary dark:text-white/70" />
+            <ChevronDown className="h-4 w-4 text-theme-secondary dark:text-theme-secondary" />
           </SelectPrimitive.Icon>
         </SelectPrimitive.Trigger>
 
@@ -107,7 +107,7 @@ export default function Select({
                       value={val}
                     className={cn(
                       "relative flex w-full cursor-default select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm outline-none",
-                      "text-theme-primary dark:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.06] focus:bg-black/[0.05] dark:focus:bg-white/[0.06]",
+ "text-theme-primary hover:bg-black/[0.05] dark:hover:bg-white/[0.06] focus:bg-black/[0.05] dark:focus:bg-white/[0.06]",
                       "data-[state=checked]:bg-black/[0.08] dark:data-[state=checked]:bg-white/[0.08]"
                     )}
                   >

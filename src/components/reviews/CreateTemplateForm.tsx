@@ -47,9 +47,9 @@ export function CreateTemplateForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 space-y-6 shadow-sm dark:shadow-none">
+    <form onSubmit={handleSubmit} className="bg-theme-surface border border-theme rounded-lg p-6 space-y-6 shadow-sm dark:shadow-none">
       <div className="space-y-2">
-        <Label className="text-gray-900 dark:text-white">Template Name <span className="text-blue-600 dark:text-blue-400">*</span></Label>
+        <Label className="text-theme-primary">Template Name <span className="text-blue-600 dark:text-blue-400">*</span></Label>
         <Input
           required
           placeholder="e.g., Q4 Performance Review"
@@ -59,23 +59,23 @@ export function CreateTemplateForm() {
       </div>
 
       <div className="space-y-2">
-        <Label className="text-gray-900 dark:text-white">Description</Label>
+        <Label className="text-theme-primary">Description</Label>
         <textarea
           placeholder="Brief description of this template's purpose"
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="w-full px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500/20 resize-none"
+          className="w-full px-4 py-2 bg-white dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus:outline-none focus:border-module-fg focus:ring-1 focus:ring-module-fg/20 resize-none"
           rows={3}
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label className="text-white">Template Type</Label>
+          <Label className="text-theme-primary">Template Type</Label>
           <select
             value={formData.template_type}
             onChange={(e) => setFormData({ ...formData, template_type: e.target.value as ReviewTemplate['template_type'] })}
-            className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
+            className="w-full px-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-module-fg"
           >
             <option value="custom">Custom</option>
             <option value="one_to_one">1-2-1</option>
@@ -89,7 +89,7 @@ export function CreateTemplateForm() {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-gray-900 dark:text-white">Recommended Duration (minutes)</Label>
+          <Label className="text-theme-primary">Recommended Duration (minutes)</Label>
           <Input
             type="number"
             min="5"
@@ -101,12 +101,12 @@ export function CreateTemplateForm() {
       </div>
 
       <div className="space-y-2">
-        <Label className="text-gray-900 dark:text-white">Instructions</Label>
+        <Label className="text-theme-primary">Instructions</Label>
         <textarea
           placeholder="Instructions for conducting this review"
           value={formData.instructions}
           onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
-          className="w-full px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500/20 resize-none"
+          className="w-full px-4 py-2 bg-white dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus:outline-none focus:border-module-fg focus:ring-1 focus:ring-module-fg/20 resize-none"
           rows={4}
         />
       </div>
@@ -117,18 +117,18 @@ export function CreateTemplateForm() {
             type="checkbox"
             checked={formData.requires_self_assessment}
             onChange={(e) => setFormData({ ...formData, requires_self_assessment: e.target.checked })}
-            className="w-4 h-4 rounded border-white/[0.06] bg-white/[0.05] text-[#D37E91]"
+            className="w-4 h-4 rounded border-theme bg-theme-surface accent-module-fg"
           />
-          <span className="text-white">Requires Self Assessment</span>
+          <span className="text-theme-primary">Requires Self Assessment</span>
         </label>
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
             checked={formData.requires_manager_assessment}
             onChange={(e) => setFormData({ ...formData, requires_manager_assessment: e.target.checked })}
-            className="w-4 h-4 rounded border-white/[0.06] bg-white/[0.05] text-[#D37E91]"
+            className="w-4 h-4 rounded border-theme bg-theme-surface accent-module-fg"
           />
-          <span className="text-white">Requires Manager Assessment</span>
+          <span className="text-theme-primary">Requires Manager Assessment</span>
         </label>
       </div>
 
@@ -144,7 +144,7 @@ export function CreateTemplateForm() {
           type="submit"
           variant="primary"
           disabled={isPending}
-          className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border-0 shadow-sm dark:shadow-none"
+          className="bg-module-fg hover:bg-module-fg/90 text-white border-0 shadow-sm dark:shadow-none"
         >
           {isPending ? 'Creating...' : 'Create Template'}
         </Button>

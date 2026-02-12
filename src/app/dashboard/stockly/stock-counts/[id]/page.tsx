@@ -629,7 +629,7 @@ export default function StockCountDetailPage() {
     switch (count.status) {
       case 'draft':
         return (
-          <span className="inline-flex items-center px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-600/20 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600/40 text-sm font-medium">
+ <span className="inline-flex items-center px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-600/20 text-theme-secondary border border-gray-200 dark:border-gray-600/40 text-sm font-medium">
             <FileText className="h-4 w-4 mr-2" />
             Draft
           </span>
@@ -644,7 +644,7 @@ export default function StockCountDetailPage() {
         );
       case 'finalized':
         return (
-          <span className="inline-flex items-center px-4 py-2 rounded-full bg-emerald-50 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/40 text-sm font-medium">
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-emerald-50 dark:bg-emerald-600/20 text-module-fg border border-module-fg/30 text-sm font-medium">
             <CheckCircle className="h-4 w-4 mr-2" />
             Finalized
           </span>
@@ -658,7 +658,7 @@ export default function StockCountDetailPage() {
         );
       case 'completed':
         return (
-          <span className="inline-flex items-center px-4 py-2 rounded-full bg-gray-50 dark:bg-gray-600/20 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600/40 text-sm font-medium">
+ <span className="inline-flex items-center px-4 py-2 rounded-full bg-gray-50 dark:bg-gray-600/20 text-theme-secondary border border-gray-200 dark:border-gray-600/40 text-sm font-medium">
             <CheckCircle className="h-4 w-4 mr-2" />
             Completed
           </span>
@@ -672,7 +672,7 @@ export default function StockCountDetailPage() {
         );
       case 'approved':
         return (
-          <span className="inline-flex items-center px-4 py-2 rounded-full bg-emerald-50 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/40 text-sm font-medium">
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-emerald-50 dark:bg-emerald-600/20 text-module-fg border border-module-fg/30 text-sm font-medium">
             <CheckCircle className="h-4 w-4 mr-2" />
             Approved
           </span>
@@ -689,22 +689,22 @@ export default function StockCountDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-[#0B0D13]">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-600 dark:text-emerald-400" />
+      <div className="flex items-center justify-center h-screen bg-theme-surface-elevated">
+        <Loader2 className="h-8 w-8 animate-spin text-module-fg" />
       </div>
     );
   }
 
   if (!count) {
     return (
-      <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+      <div className="w-full bg-theme-surface-elevated min-h-screen">
         <div className="container mx-auto py-8 px-4">
           <div className="text-center">
-            <AlertCircle className="h-16 w-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Count Not Found</h2>
+            <AlertCircle className="h-16 w-16 text-theme-disabled mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-theme-primary mb-2">Count Not Found</h2>
             <Button 
               onClick={() => router.push('/dashboard/stockly/stock-counts')}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-module-fg hover:bg-module-fg/90 text-white"
             >
               Back to Counts
             </Button>
@@ -715,13 +715,13 @@ export default function StockCountDetailPage() {
   }
 
   return (
-    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+    <div className="w-full bg-theme-surface-elevated min-h-screen">
       <div className="container mx-auto py-8 px-4 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
           <Link
             href="/dashboard/stockly/stock-counts"
-            className="inline-flex items-center mb-4 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            className="inline-flex items-center mb-4 text-theme-secondary hover:text-theme-primary transition-colors"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Counts
@@ -730,10 +730,10 @@ export default function StockCountDetailPage() {
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{count.name}</h1>
+                <h1 className="text-3xl font-bold text-theme-primary">{count.name}</h1>
                 {getStatusBadge()}
               </div>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-theme-secondary">
                 Count Date: {new Date(count.count_date).toLocaleDateString('en-GB', {
                   day: 'numeric',
                   month: 'long',
@@ -741,7 +741,7 @@ export default function StockCountDetailPage() {
                 })}
               </p>
               {count.notes && (
-                <p className="text-gray-500 dark:text-gray-500 text-sm mt-1">{count.notes}</p>
+ <p className="text-theme-tertiary text-sm mt-1">{count.notes}</p>
               )}
               {count.status === 'rejected' && count.rejection_reason && (
                 <div className="mt-2 p-3 bg-red-50 dark:bg-red-600/10 border border-red-200 dark:border-red-600/30 rounded-lg">
@@ -756,7 +756,7 @@ export default function StockCountDetailPage() {
             {count.status === 'draft' && (
               <Button
                 onClick={handleStartEntering}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-module-fg hover:bg-module-fg/90 text-white"
               >
                 <Edit className="mr-2 h-4 w-4" />
                 Start Entering Data
@@ -798,7 +798,7 @@ export default function StockCountDetailPage() {
             {count.status === 'finalized' && (
               <Button
                 onClick={() => setShowLockModal(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-module-fg hover:bg-module-fg/90 text-white"
               >
                 <Lock className="mr-2 h-4 w-4" />
                 Lock Count
@@ -810,7 +810,7 @@ export default function StockCountDetailPage() {
                 <Button
                   onClick={handleCompleteCount}
                   disabled={completing}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-module-fg hover:bg-module-fg/90 text-white"
                 >
                   <CheckCircle className="mr-2 h-4 w-4" />
                   {completing ? 'Completing...' : 'Complete Count'}
@@ -827,7 +827,7 @@ export default function StockCountDetailPage() {
                 )}
                 <Button
                   onClick={() => setShowFinalizeModal(true)}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="bg-module-fg hover:bg-module-fg/90 text-white"
                   disabled={count.status !== 'approved'}
                   title={count.status !== 'approved' ? 'Count must be approved before finalization' : 'Finalize and adjust stock levels'}
                 >
@@ -871,31 +871,31 @@ export default function StockCountDetailPage() {
           
           return (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Total Items</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{totalItems}</p>
+              <div className="bg-theme-surface border border-theme rounded-lg p-4">
+                <p className="text-theme-secondary text-sm">Total Items</p>
+                <p className="text-2xl font-bold text-theme-primary mt-1">{totalItems}</p>
               </div>
               
-              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Items Counted</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+              <div className="bg-theme-surface border border-theme rounded-lg p-4">
+                <p className="text-theme-secondary text-sm">Items Counted</p>
+                <p className="text-2xl font-bold text-theme-primary mt-1">
                   {itemsCounted}
-                  <span className="text-sm text-gray-500 dark:text-gray-500 ml-2">
+ <span className="text-sm text-theme-tertiary ml-2">
                     ({totalItems > 0 ? Math.round((itemsCounted / totalItems) * 100) : 0}%)
                   </span>
                 </p>
               </div>
               
-              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Variances</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{itemsWithVariance.length}</p>
+              <div className="bg-theme-surface border border-theme rounded-lg p-4">
+                <p className="text-theme-secondary text-sm">Variances</p>
+                <p className="text-2xl font-bold text-theme-primary mt-1">{itemsWithVariance.length}</p>
               </div>
               
-              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Variance Value</p>
+              <div className="bg-theme-surface border border-theme rounded-lg p-4">
+                <p className="text-theme-secondary text-sm">Variance Value</p>
                 <p className={`text-2xl font-bold mt-1 ${
                   totalVarianceValue < 0 ? 'text-red-600 dark:text-red-400' : 
-                  totalVarianceValue > 0 ? 'text-emerald-600 dark:text-green-400' : 'text-gray-900 dark:text-white'
+                  totalVarianceValue > 0 ? 'text-module-fg dark:text-green-400' : 'text-theme-primary'
                 }`}>
                   {totalVarianceValue < 0 ? '-' : totalVarianceValue > 0 ? '+' : ''}
                   £{Math.abs(totalVarianceValue).toFixed(2)}
@@ -906,14 +906,14 @@ export default function StockCountDetailPage() {
         })()}
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-white/[0.06] mb-6">
+      <div className="border-b border-theme mb-6">
         <div className="flex gap-4">
           <button
             onClick={() => setActiveTab('print')}
             className={`pb-4 px-2 font-medium transition-colors border-b-2 ${
               activeTab === 'print'
-                ? 'border-emerald-600 dark:border-emerald-600 text-emerald-600 dark:text-emerald-400'
-                : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                ? 'border-module-fg text-module-fg'
+                : 'border-transparent text-theme-secondary hover:text-theme-primary'
             }`}
           >
             <Printer className="inline-block mr-2 h-4 w-4" />
@@ -931,8 +931,8 @@ export default function StockCountDetailPage() {
             }}
             className={`pb-4 px-2 font-medium transition-colors border-b-2 ${
               activeTab === 'enter'
-                ? 'border-emerald-600 dark:border-emerald-600 text-emerald-600 dark:text-emerald-400'
-                : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                ? 'border-module-fg text-module-fg'
+                : 'border-transparent text-theme-secondary hover:text-theme-primary'
             }`}
           >
             <Edit className="inline-block mr-2 h-4 w-4" />
@@ -943,8 +943,8 @@ export default function StockCountDetailPage() {
             onClick={() => router.push(`/dashboard/stockly/stock-counts/${params.id}/review`)}
             className={`pb-4 px-2 font-medium transition-colors border-b-2 ${
               activeTab === 'review'
-                ? 'border-emerald-600 dark:border-emerald-600 text-emerald-600 dark:text-emerald-400'
-                : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                ? 'border-module-fg text-module-fg'
+                : 'border-transparent text-theme-secondary hover:text-theme-primary'
             }`}
           >
             <FileText className="inline-block mr-2 h-4 w-4" />
@@ -957,11 +957,11 @@ export default function StockCountDetailPage() {
       {activeTab === 'print' && (
         <div className="space-y-4">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Count Sheets by Library</h2>
+            <h2 className="text-xl font-semibold text-theme-primary">Count Sheets by Library</h2>
             <Button
               onClick={handleDownloadAll}
               variant="outline"
-              className="border-gray-300 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10"
+              className="border-gray-300 dark:border-white/[0.06] text-theme-secondary hover:bg-theme-muted"
             >
               <Download className="mr-2 h-4 w-4" />
               Download All PDFs
@@ -983,17 +983,17 @@ export default function StockCountDetailPage() {
               return (
                 <div
                   key={libraryType}
-                  className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6"
+                  className="bg-theme-surface border border-theme rounded-lg p-6"
                 >
                   <div className="flex justify-between items-start">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        {LibraryIcon && <LibraryIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        {LibraryIcon && <LibraryIcon className="h-5 w-5 text-module-fg" />}
+                        <h3 className="text-lg font-semibold text-theme-primary">
                           {libraryName}
                         </h3>
                       </div>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm">
+                      <p className="text-theme-secondary text-sm">
                         {libraryItems.length} items to count
                       </p>
                     </div>
@@ -1003,7 +1003,7 @@ export default function StockCountDetailPage() {
                         onClick={() => handleDownloadSheet(libraryType)}
                         variant="outline"
                         size="sm"
-                        className="border-gray-300 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10"
+                        className="border-gray-300 dark:border-white/[0.06] text-theme-secondary hover:bg-theme-muted"
                       >
                         <Download className="mr-2 h-4 w-4" />
                         Download PDF
@@ -1011,7 +1011,7 @@ export default function StockCountDetailPage() {
                       <Button
                         onClick={() => handlePrintSheet(libraryType)}
                         size="sm"
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                        className="bg-module-fg hover:bg-module-fg/90 text-white"
                       >
                         <Printer className="mr-2 h-4 w-4" />
                         Print
@@ -1022,9 +1022,9 @@ export default function StockCountDetailPage() {
               );
             })
             ) : (
-              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 text-center">
-                <AlertCircle className="h-8 w-8 text-gray-400 dark:text-gray-600 mx-auto mb-2" />
-                <p className="text-gray-600 dark:text-gray-400">
+              <div className="bg-theme-surface border border-theme rounded-lg p-6 text-center">
+                <AlertCircle className="h-8 w-8 text-theme-disabled mx-auto mb-2" />
+                <p className="text-theme-secondary">
                   {items.length === 0 
                     ? 'No items found for this count. Items will appear here once they are loaded.' 
                     : 'No libraries included in this count'}
@@ -1034,14 +1034,14 @@ export default function StockCountDetailPage() {
           })()}
 
           {count.status === 'draft' && (
-            <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-600/30 rounded-lg p-6 mt-8">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Ready to Start?</h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
+            <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-module-fg/30 rounded-lg p-6 mt-8">
+              <h3 className="text-lg font-semibold text-theme-primary mb-2">Ready to Start?</h3>
+              <p className="text-theme-secondary mb-4">
                 Once you've printed the count sheets and handed them out, click below to start entering data.
               </p>
               <Button
                 onClick={handleStartEntering}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-module-fg hover:bg-module-fg/90 text-white"
               >
                 Start Entering Data
               </Button>
@@ -1053,9 +1053,9 @@ export default function StockCountDetailPage() {
       {activeTab === 'enter' && (
         <>
           {count.status === 'draft' ? (
-            <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-600/30 rounded-lg p-6 text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-emerald-600 dark:text-emerald-400 mx-auto mb-4" />
-              <p className="text-gray-600 dark:text-gray-400">
+            <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-module-fg/30 rounded-lg p-6 text-center">
+              <Loader2 className="h-8 w-8 animate-spin text-module-fg mx-auto mb-4" />
+              <p className="text-theme-secondary">
                 Starting data entry...
               </p>
             </div>

@@ -406,14 +406,14 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-white">Add Manual Delivery</DialogTitle>
+          <DialogTitle className="text-xl font-semibold text-theme-primary">Add Manual Delivery</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 mt-4">
           {/* Header Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-slate-300 mb-2">
+              <label className="block text-sm text-theme-secondary mb-2">
                 Supplier <span className="text-red-400">*</span>
               </label>
               <Select
@@ -429,7 +429,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
             </div>
 
             <div>
-              <label className="block text-sm text-slate-300 mb-2">
+              <label className="block text-sm text-theme-secondary mb-2">
                 Delivery Date <span className="text-red-400">*</span>
               </label>
               <Input
@@ -441,7 +441,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
             </div>
 
             <div>
-              <label className="block text-sm text-slate-300 mb-2">Invoice Number</label>
+              <label className="block text-sm text-theme-secondary mb-2">Invoice Number</label>
               <Input
                 value={formData.invoice_number}
                 onChange={(e) => setFormData(prev => ({ ...prev, invoice_number: e.target.value }))}
@@ -451,7 +451,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
             </div>
 
             <div>
-              <label className="block text-sm text-slate-300 mb-2">Invoice Date</label>
+              <label className="block text-sm text-theme-secondary mb-2">Invoice Date</label>
               <Input
                 type="date"
                 value={formData.invoice_date}
@@ -461,7 +461,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
             </div>
 
             <div>
-              <label className="block text-sm text-slate-300 mb-2">Delivery Note Number</label>
+              <label className="block text-sm text-theme-secondary mb-2">Delivery Note Number</label>
               <Input
                 value={formData.delivery_note_number}
                 onChange={(e) => setFormData(prev => ({ ...prev, delivery_note_number: e.target.value }))}
@@ -474,7 +474,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
           {/* Line Items */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">Line Items</h3>
+              <h3 className="text-lg font-semibold text-theme-primary">Line Items</h3>
               <Button
                 onClick={addLineItem}
                 variant="outline"
@@ -488,8 +488,8 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
 
             {formData.lines.length === 0 ? (
               <div className="bg-white/[0.03] border border-gray-200 dark:border-neutral-800 rounded-lg p-8 text-center">
-                <p className="text-slate-400">No line items added yet</p>
-                <p className="text-sm text-slate-500 mt-2">
+                <p className="text-theme-tertiary">No line items added yet</p>
+                <p className="text-sm text-theme-tertiary mt-2">
                   {!formData.supplier_id
                     ? 'Select a supplier first'
                     : 'Click "Add Line Item" to get started'}
@@ -505,10 +505,10 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
                     <div className="grid grid-cols-12 gap-4 items-start">
                       {/* Search/Select Stock Item */}
                       <div className="col-span-12 md:col-span-5">
-                        <label className="block text-xs text-slate-400 mb-1">Item</label>
+                        <label className="block text-xs text-theme-tertiary mb-1">Item</label>
                         {searchingLineIndex === index ? (
                           <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-tertiary" size={16} />
                             <Input
                               placeholder="Search items..."
                               value={searchTerm}
@@ -521,19 +521,19 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
                               className="pl-10"
                               autoFocus
                             />
-                            <div className="absolute z-10 w-full mt-1 bg-neutral-900 border border-neutral-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                            <div className="absolute z-10 w-full mt-1 bg-neutral-900 border border-theme rounded-lg shadow-lg max-h-60 overflow-y-auto">
                               {filteredProductVariants.map((variant) => (
                                 <button
                                   key={variant.id}
                                   onClick={() => selectProductVariant(index, variant)}
                                   className="w-full text-left p-3 hover:bg-white/[0.05] border-b border-gray-200 dark:border-neutral-800 last:border-b-0"
                                 >
-                                  <div className="font-medium text-white">{variant.product_name}</div>
+                                  <div className="font-medium text-theme-primary">{variant.product_name}</div>
                                   {variant.supplier_code && (
-                                    <div className="text-xs text-slate-400">Code: {variant.supplier_code}</div>
+                                    <div className="text-xs text-theme-tertiary">Code: {variant.supplier_code}</div>
                                   )}
                                   {variant.current_price && (
-                                    <div className="text-xs text-slate-300">Last: {formatCurrency(variant.current_price)}</div>
+                                    <div className="text-xs text-theme-secondary">Last: {formatCurrency(variant.current_price)}</div>
                                   )}
                                 </button>
                               ))}
@@ -543,8 +543,8 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
                                   onClick={() => selectStockItem(index, item)}
                                   className="w-full text-left p-3 hover:bg-white/[0.05] border-b border-gray-200 dark:border-neutral-800 last:border-b-0"
                                 >
-                                  <div className="font-medium text-white">{item.name}</div>
-                                  <div className="text-xs text-slate-400">Stock Item</div>
+                                  <div className="font-medium text-theme-primary">{item.name}</div>
+                                  <div className="text-xs text-theme-tertiary">Stock Item</div>
                                 </button>
                               ))}
                             </div>
@@ -553,7 +553,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
                                 setSearchingLineIndex(null);
                                 setSearchTerm('');
                               }}
-                              className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                              className="absolute right-2 top-1/2 -translate-y-1/2 text-theme-tertiary hover:text-white"
                             >
                               <X size={16} />
                             </button>
@@ -580,7 +580,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
 
                       {/* Quantity */}
                       <div className="col-span-3 md:col-span-2">
-                        <label className="block text-xs text-slate-400 mb-1">Qty</label>
+                        <label className="block text-xs text-theme-tertiary mb-1">Qty</label>
                         <Input
                           type="number"
                           step="0.001"
@@ -593,7 +593,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
 
                       {/* Unit Price */}
                       <div className="col-span-3 md:col-span-2">
-                        <label className="block text-xs text-slate-400 mb-1">Unit Price</label>
+                        <label className="block text-xs text-theme-tertiary mb-1">Unit Price</label>
                         <Input
                           type="number"
                           step="0.01"
@@ -606,7 +606,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
 
                       {/* VAT Rate */}
                       <div className="col-span-3 md:col-span-2">
-                        <label className="block text-xs text-slate-400 mb-1">VAT Rate</label>
+                        <label className="block text-xs text-theme-tertiary mb-1">VAT Rate</label>
                         <Select
                           value={line.vat_rate?.toString() || '0'}
                           onValueChange={(val) => updateLineItem(index, 'vat_rate', parseFloat(val))}
@@ -620,8 +620,8 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
 
                       {/* Line Total Inc VAT */}
                       <div className="col-span-2 md:col-span-2">
-                        <label className="block text-xs text-slate-400 mb-1">Total</label>
-                        <div className="h-10 flex items-center px-3 bg-white/[0.05] border border-neutral-700 rounded text-white font-medium text-sm">
+                        <label className="block text-xs text-theme-tertiary mb-1">Total</label>
+                        <div className="h-10 flex items-center px-3 bg-white/[0.05] border border-theme rounded text-theme-primary font-medium text-sm">
                           {formatCurrency(line.line_total_inc_vat)}
                         </div>
                       </div>
@@ -631,14 +631,14 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
                         <button
                           onClick={() => removeLineItem(index)}
                           disabled={saving}
-                          className="p-2 text-slate-400 hover:text-red-400 transition-colors disabled:opacity-50"
+                          className="p-2 text-theme-tertiary hover:text-red-400 transition-colors disabled:opacity-50"
                         >
                           <Trash2 size={18} />
                         </button>
                       </div>
                     </div>
                     {/* VAT Breakdown */}
-                    <div className="mt-2 pt-2 border-t border-neutral-700 text-xs text-slate-400">
+                    <div className="mt-2 pt-2 border-t border-theme text-xs text-theme-tertiary">
                       Ex-VAT: {formatCurrency(line.line_total)} | VAT ({line.vat_rate}%): {formatCurrency(line.vat_amount)}
                     </div>
                   </div>
@@ -651,15 +651,15 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
           <div className="bg-white/[0.05] border border-gray-200 dark:border-neutral-800 rounded-lg p-4">
             <div className="flex justify-end">
               <div className="w-full md:w-64 space-y-2">
-                <div className="flex justify-between text-slate-300">
+                <div className="flex justify-between text-theme-secondary">
                   <span>Subtotal (Ex-VAT):</span>
                   <span className="font-medium">{formatCurrency(formData.subtotal)}</span>
                 </div>
-                <div className="flex justify-between text-slate-300">
+                <div className="flex justify-between text-theme-secondary">
                   <span>VAT:</span>
                   <span className="font-medium">{formatCurrency(formData.tax)}</span>
                 </div>
-                <div className="border-t border-neutral-700 pt-2 flex justify-between text-white">
+                <div className="border-t border-theme pt-2 flex justify-between text-theme-primary">
                   <span className="font-semibold">Total (Inc-VAT):</span>
                   <span className="font-bold text-lg">{formatCurrency(formData.total)}</span>
                 </div>

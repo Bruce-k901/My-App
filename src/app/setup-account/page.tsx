@@ -200,12 +200,12 @@ function SetupAccountContent() {
           Set Up Your Account
         </h1>
 
-        <p className="text-center text-gray-400 mb-8 text-sm">
+        <p className="text-center text-theme-tertiary mb-8 text-sm">
           Welcome! Please set your password and PIN code to complete your account setup.
         </p>
 
         {!canSetup && (
-          <p className="text-slate-400 text-sm mb-4 text-center">
+          <p className="text-theme-tertiary text-sm mb-4 text-center">
             Waiting for invitation session… If this page wasn't opened from your email link,
             please check your email and click the invitation link again.
           </p>
@@ -214,7 +214,7 @@ function SetupAccountContent() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Password Section */}
           <div>
-            <label className="block text-gray-400 text-sm mb-2">Password</label>
+            <label className="block text-theme-tertiary text-sm mb-2">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -224,12 +224,12 @@ function SetupAccountContent() {
                 required
                 minLength={8}
                 placeholder="Choose a strong password (min 8 characters)"
-                className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
+                className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-3 text-gray-400 hover:text-magenta-400 transition"
+                className="absolute right-4 top-3 text-theme-tertiary hover:text-magenta-400 transition"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -246,7 +246,7 @@ function SetupAccountContent() {
               <button
                 type="button"
                 onClick={() => navigator.clipboard.writeText(password)}
-                className="flex items-center gap-2 text-xs text-gray-400 hover:text-gray-300 transition mx-auto mt-2"
+                className="flex items-center gap-2 text-xs text-theme-tertiary hover:text-theme-tertiary transition mx-auto mt-2"
                 aria-label="Copy generated password"
               >
                 <Clipboard size={14} /> Copy generated password
@@ -256,7 +256,7 @@ function SetupAccountContent() {
 
           {/* Confirm Password */}
           <div>
-            <label className="block text-gray-400 text-sm mb-2">Confirm Password</label>
+            <label className="block text-theme-tertiary text-sm mb-2">Confirm Password</label>
             <div className="relative">
               <input
                 type={showConfirmPassword ? "text" : "password"}
@@ -266,12 +266,12 @@ function SetupAccountContent() {
                 required
                 minLength={8}
                 placeholder="Re-enter your password"
-                className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
+                className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-4 top-3 text-gray-400 hover:text-magenta-400 transition"
+                className="absolute right-4 top-3 text-theme-tertiary hover:text-magenta-400 transition"
                 aria-label={showConfirmPassword ? "Hide password" : "Show password"}
               >
                 {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -281,7 +281,7 @@ function SetupAccountContent() {
 
           {/* PIN Code Section */}
           <div>
-            <label className="block text-gray-400 text-sm mb-2">PIN Code (4 digits)</label>
+            <label className="block text-theme-tertiary text-sm mb-2">PIN Code (4 digits)</label>
             <div className="flex items-center gap-2">
               <div className="relative flex-1">
                 <input
@@ -296,12 +296,12 @@ function SetupAccountContent() {
                   maxLength={4}
                   minLength={4}
                   placeholder="Enter 4-digit PIN"
-                  className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
+                  className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPin(!showPin)}
-                  className="absolute right-4 top-3 text-gray-400 hover:text-magenta-400 transition"
+                  className="absolute right-4 top-3 text-theme-tertiary hover:text-magenta-400 transition"
                   aria-label={showPin ? "Hide PIN" : "Show PIN"}
                 >
                   {showPin ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -315,7 +315,7 @@ function SetupAccountContent() {
                 Generate
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-1">Your PIN is used for quick access to your account.</p>
+            <p className="text-xs text-theme-tertiary mt-1">Your PIN is used for quick access to your account.</p>
           </div>
 
           <button
@@ -347,11 +347,11 @@ function SetupAccountContent() {
           </button>
         </div>
 
-        <p className="mt-8 text-center text-xs text-gray-500">
+        <p className="mt-8 text-center text-xs text-theme-tertiary">
           By continuing, you agree to our {""}
-          <a href="/terms" className="underline underline-offset-4 hover:text-gray-300">Terms</a>
+          <a href="/terms" className="underline underline-offset-4 hover:text-theme-tertiary">Terms</a>
           {" "}and{" "}
-          <a href="/privacy" className="underline underline-offset-4 hover:text-gray-300">Privacy Policy</a>.
+          <a href="/privacy" className="underline underline-offset-4 hover:text-theme-tertiary">Privacy Policy</a>.
         </p>
       </GlassCard>
     </AuthLayout>
@@ -364,7 +364,7 @@ export default function SetupAccountPage() {
       <AuthLayout>
         <GlassCard>
           <div className="text-center py-8">
-            <p className="text-gray-400">Loading...</p>
+            <p className="text-theme-tertiary">Loading...</p>
           </div>
         </GlassCard>
       </AuthLayout>

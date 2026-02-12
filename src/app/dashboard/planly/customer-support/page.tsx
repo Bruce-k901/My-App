@@ -76,14 +76,14 @@ function StatusBadge({ status }: { status: string }) {
     open: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300',
     in_progress: 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300',
     resolved: 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300',
-    closed: 'bg-gray-100 text-gray-500 dark:bg-white/10 dark:text-white/50',
+ closed:'bg-gray-100 text-theme-tertiary dark:bg-white/10',
     pending: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300',
     approved: 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300',
     rejected: 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300',
   };
 
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${colors[status] || 'bg-gray-100 text-gray-500 dark:bg-white/10 dark:text-white/50'}`}>
+ <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${colors[status] ||'bg-gray-100 text-theme-tertiary dark:bg-white/10'}`}>
       {status.replace('_', ' ')}
     </span>
   );
@@ -238,17 +238,17 @@ export default function CustomerSupportPage() {
       <div className="container mx-auto py-6 px-4 max-w-4xl">
         <button
           onClick={() => { setSelectedIssue(null); setIssueComments([]); setReplyText(''); }}
-          className="flex items-center gap-2 text-gray-500 hover:text-gray-900 dark:text-white/60 dark:hover:text-white mb-4"
+          className="flex items-center gap-2 text-theme-tertiary hover:text-theme-primary/60 mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to issues
         </button>
 
-        <div className="bg-white border border-gray-200 dark:bg-white/[0.03] dark:border-white/[0.06] rounded-xl p-6 mb-4">
+ <div className="bg-theme-surface border border-gray-200 ] dark:border-white/[0.06] rounded-xl p-6 mb-4">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{selectedIssue.title}</h2>
-              <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
+              <h2 className="text-xl font-bold text-theme-primary">{selectedIssue.title}</h2>
+              <p className="text-sm text-theme-tertiary mt-1">
                 {selectedIssue.customer?.name || 'Unknown Customer'} &middot;{' '}
                 {format(new Date(selectedIssue.created_at), 'd MMM yyyy HH:mm')}
               </p>
@@ -256,20 +256,20 @@ export default function CustomerSupportPage() {
             <StatusBadge status={selectedIssue.status} />
           </div>
 
-          <div className="text-sm text-gray-500 dark:text-white/60 mb-2">Type: {selectedIssue.issue_type}</div>
+          <div className="text-sm text-theme-tertiary mb-2">Type: {selectedIssue.issue_type}</div>
           {selectedIssue.order && (
-            <div className="text-sm text-gray-500 dark:text-white/60 mb-2">
+            <div className="text-sm text-theme-tertiary mb-2">
               Related order: {format(new Date(selectedIssue.order.delivery_date), 'd MMM yyyy')}
             </div>
           )}
-          <p className="text-gray-700 dark:text-white/80 mt-4 whitespace-pre-wrap">{selectedIssue.description}</p>
+          <p className="text-theme-secondary mt-4 whitespace-pre-wrap">{selectedIssue.description}</p>
 
           {selectedIssue.status !== 'resolved' && selectedIssue.status !== 'closed' && (
             <div className="flex gap-2 mt-4">
               <Button
                 variant="outline"
                 onClick={() => updateIssueStatus(selectedIssue.id, 'resolved')}
-                className="text-green-600 border-green-300 hover:bg-green-50 dark:text-green-400 dark:border-green-500/30 dark:hover:bg-green-500/10"
+                className="text-green-600 border-green-300 hover:bg-green-50 dark:text-green-400 dark:border-green-500/30 dark:hover:bg-module-fg/10"
               >
                 <CheckCircle className="w-4 h-4 mr-1" />
                 Resolve
@@ -277,7 +277,7 @@ export default function CustomerSupportPage() {
               <Button
                 variant="outline"
                 onClick={() => updateIssueStatus(selectedIssue.id, 'closed')}
-                className="text-gray-400 border-gray-200 hover:bg-gray-50 dark:text-white/40 dark:border-white/10 dark:hover:bg-white/5"
+ className="text-theme-tertiary border-gray-200 hover:bg-theme-surface-elevated dark:border-white/10 dark:hover:bg-white/5"
               >
                 <XCircle className="w-4 h-4 mr-1" />
                 Close
@@ -294,29 +294,29 @@ export default function CustomerSupportPage() {
               className={`rounded-xl p-4 ${
                 c.commenter_type === 'admin'
                   ? 'bg-orange-50 border border-orange-200 dark:bg-orange-500/10 dark:border-orange-500/20 ml-8'
-                  : 'bg-white border border-gray-200 dark:bg-white/[0.03] dark:border-white/[0.06] mr-8'
+ :'bg-theme-surface border border-gray-200 ] dark:border-white/[0.06] mr-8'
               }`}
             >
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-medium text-gray-700 dark:text-white/80">
+                <span className="text-xs font-medium text-theme-secondary">
                   {c.commenter_type === 'admin' ? (c.commenter_name || 'You') : 'Customer'}
                 </span>
-                <span className="text-xs text-gray-400 dark:text-white/40">
+                <span className="text-xs text-theme-tertiary">
                   {format(new Date(c.created_at), 'd MMM HH:mm')}
                 </span>
               </div>
-              <p className="text-sm text-gray-600 dark:text-white/70 whitespace-pre-wrap">{c.comment}</p>
+              <p className="text-sm text-theme-secondary whitespace-pre-wrap">{c.comment}</p>
             </div>
           ))}
         </div>
 
         {/* Reply box */}
-        <div className="bg-white border border-gray-200 dark:bg-white/[0.03] dark:border-white/[0.06] rounded-xl p-4">
+ <div className="bg-theme-surface border border-gray-200 ] dark:border-white/[0.06] rounded-xl p-4">
           <textarea
             value={replyText}
             onChange={e => setReplyText(e.target.value)}
             placeholder="Write a response..."
-            className="w-full bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 border-none outline-none resize-none min-h-[80px]"
+            className="w-full bg-transparent text-theme-primary placeholder-gray-400 dark:placeholder-white/30 border-none outline-none resize-none min-h-[80px]"
           />
           <div className="flex justify-end mt-2">
             <Button
@@ -339,15 +339,15 @@ export default function CustomerSupportPage() {
       <div className="container mx-auto py-6 px-4 max-w-4xl">
         <button
           onClick={() => { setSelectedThread(null); setThreadMessages([]); setReplyText(''); }}
-          className="flex items-center gap-2 text-gray-500 hover:text-gray-900 dark:text-white/60 dark:hover:text-white mb-4"
+          className="flex items-center gap-2 text-theme-tertiary hover:text-theme-primary/60 mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to messages
         </button>
 
-        <div className="bg-white border border-gray-200 dark:bg-white/[0.03] dark:border-white/[0.06] rounded-xl p-6 mb-4">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">{selectedThread.subject || 'No subject'}</h2>
-          <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
+ <div className="bg-theme-surface border border-gray-200 ] dark:border-white/[0.06] rounded-xl p-6 mb-4">
+          <h2 className="text-xl font-bold text-theme-primary">{selectedThread.subject || 'No subject'}</h2>
+          <p className="text-sm text-theme-tertiary mt-1">
             {selectedThread.customer?.name || 'Unknown Customer'} &middot;{' '}
             {format(new Date(selectedThread.created_at), 'd MMM yyyy')}
           </p>
@@ -361,29 +361,29 @@ export default function CustomerSupportPage() {
               className={`rounded-xl p-4 ${
                 m.sender_type === 'admin'
                   ? 'bg-orange-50 border border-orange-200 dark:bg-orange-500/10 dark:border-orange-500/20 ml-8'
-                  : 'bg-white border border-gray-200 dark:bg-white/[0.03] dark:border-white/[0.06] mr-8'
+ :'bg-theme-surface border border-gray-200 ] dark:border-white/[0.06] mr-8'
               }`}
             >
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-medium text-gray-700 dark:text-white/80">
+                <span className="text-xs font-medium text-theme-secondary">
                   {m.sender_type === 'admin' ? (m.sender_name || 'You') : 'Customer'}
                 </span>
-                <span className="text-xs text-gray-400 dark:text-white/40">
+                <span className="text-xs text-theme-tertiary">
                   {format(new Date(m.created_at), 'd MMM HH:mm')}
                 </span>
               </div>
-              <p className="text-sm text-gray-600 dark:text-white/70 whitespace-pre-wrap">{m.content}</p>
+              <p className="text-sm text-theme-secondary whitespace-pre-wrap">{m.content}</p>
             </div>
           ))}
         </div>
 
         {/* Reply box */}
-        <div className="bg-white border border-gray-200 dark:bg-white/[0.03] dark:border-white/[0.06] rounded-xl p-4">
+ <div className="bg-theme-surface border border-gray-200 ] dark:border-white/[0.06] rounded-xl p-4">
           <textarea
             value={replyText}
             onChange={e => setReplyText(e.target.value)}
             placeholder="Write a reply..."
-            className="w-full bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 border-none outline-none resize-none min-h-[80px]"
+            className="w-full bg-transparent text-theme-primary placeholder-gray-400 dark:placeholder-white/30 border-none outline-none resize-none min-h-[80px]"
           />
           <div className="flex justify-end mt-2">
             <Button
@@ -415,10 +415,10 @@ export default function CustomerSupportPage() {
 
   return (
     <div className="container mx-auto py-6 px-4">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Customer Support</h1>
+      <h1 className="text-2xl font-bold text-theme-primary mb-6">Customer Support</h1>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6 border-b border-gray-200 dark:border-white/[0.06] pb-3">
+      <div className="flex gap-2 mb-6 border-b border-theme pb-3">
         {tabs.map(tab => {
           const Icon = tab.icon;
           const count = tabCounts[tab.key];
@@ -429,7 +429,7 @@ export default function CustomerSupportPage() {
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 activeTab === tab.key
                   ? 'bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300'
-                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-white/50 dark:hover:text-white dark:hover:bg-white/5'
+ :'text-theme-tertiary hover:text-theme-primary hover:bg-gray-100 /50 dark:hover:bg-white/5'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -454,27 +454,27 @@ export default function CustomerSupportPage() {
           {activeTab === 'issues' && (
             <div className="space-y-2">
               {issues.length === 0 ? (
-                <div className="text-center py-12 text-gray-400 dark:text-white/40">No customer issues yet</div>
+                <div className="text-center py-12 text-theme-tertiary">No customer issues yet</div>
               ) : (
                 issues.map(issue => (
                   <button
                     key={issue.id}
                     onClick={() => openIssue(issue)}
-                    className="w-full text-left bg-white border border-gray-200 dark:bg-white/[0.03] dark:border-white/[0.06] rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
+ className="w-full text-left bg-theme-surface border border-gray-200 ] dark:border-white/[0.06] rounded-xl p-4 hover:bg-theme-hover transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-gray-900 dark:text-white font-medium truncate">{issue.title}</span>
+                          <span className="text-theme-primary font-medium truncate">{issue.title}</span>
                           <StatusBadge status={issue.status} />
                         </div>
-                        <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-white/40">
+                        <div className="flex items-center gap-3 text-xs text-theme-tertiary">
                           <span>{issue.customer?.name || 'Unknown'}</span>
                           <span>{issue.issue_type}</span>
                           <span>{format(new Date(issue.created_at), 'd MMM yyyy')}</span>
                         </div>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-gray-300 dark:text-white/30 flex-shrink-0" />
+                      <ChevronRight className="w-4 h-4 text-gray-300 dark:text-theme-disabled flex-shrink-0" />
                     </div>
                   </button>
                 ))
@@ -486,18 +486,18 @@ export default function CustomerSupportPage() {
           {activeTab === 'messages' && (
             <div className="space-y-2">
               {threads.length === 0 ? (
-                <div className="text-center py-12 text-gray-400 dark:text-white/40">No customer messages yet</div>
+                <div className="text-center py-12 text-theme-tertiary">No customer messages yet</div>
               ) : (
                 threads.map(thread => (
                   <button
                     key={thread.id}
                     onClick={() => openThread(thread)}
-                    className="w-full text-left bg-white border border-gray-200 dark:bg-white/[0.03] dark:border-white/[0.06] rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
+ className="w-full text-left bg-theme-surface border border-gray-200 ] dark:border-white/[0.06] rounded-xl p-4 hover:bg-theme-hover transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-gray-900 dark:text-white font-medium truncate">
+                          <span className="text-theme-primary font-medium truncate">
                             {thread.subject || 'No subject'}
                           </span>
                           {thread.unread_count > 0 && (
@@ -506,7 +506,7 @@ export default function CustomerSupportPage() {
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-white/40">
+                        <div className="flex items-center gap-3 text-xs text-theme-tertiary">
                           <span>{thread.customer?.name || 'Unknown'}</span>
                           {thread.last_message && (
                             <span className="truncate max-w-[300px]">
@@ -517,12 +517,12 @@ export default function CustomerSupportPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className="text-xs text-gray-300 dark:text-white/30">
+                        <span className="text-xs text-gray-300 dark:text-theme-disabled">
                           {thread.last_message_at
                             ? format(new Date(thread.last_message_at), 'd MMM')
                             : ''}
                         </span>
-                        <ChevronRight className="w-4 h-4 text-gray-300 dark:text-white/30" />
+                        <ChevronRight className="w-4 h-4 text-gray-300 dark:text-theme-disabled" />
                       </div>
                     </div>
                   </button>
@@ -535,37 +535,37 @@ export default function CustomerSupportPage() {
           {activeTab === 'credits' && (
             <div className="space-y-2">
               {credits.length === 0 ? (
-                <div className="text-center py-12 text-gray-400 dark:text-white/40">No credit requests yet</div>
+                <div className="text-center py-12 text-theme-tertiary">No credit requests yet</div>
               ) : (
                 credits.map(cr => (
                   <div
                     key={cr.id}
-                    className="bg-white border border-gray-200 dark:bg-white/[0.03] dark:border-white/[0.06] rounded-xl p-4"
+ className="bg-theme-surface border border-gray-200 ] dark:border-white/[0.06] rounded-xl p-4"
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-gray-900 dark:text-white font-medium">
+                          <span className="text-theme-primary font-medium">
                             {cr.customer?.name || 'Unknown'}
                           </span>
                           <StatusBadge status={cr.status} />
                         </div>
-                        <p className="text-sm text-gray-500 dark:text-white/60">{cr.reason}</p>
+                        <p className="text-sm text-theme-tertiary">{cr.reason}</p>
                         {cr.order && (
-                          <p className="text-xs text-gray-400 dark:text-white/40 mt-1">
+                          <p className="text-xs text-theme-tertiary mt-1">
                             Order: {format(new Date(cr.order.delivery_date), 'd MMM yyyy')}
                           </p>
                         )}
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-gray-900 dark:text-white">
+                        <div className="text-lg font-bold text-theme-primary">
                           £{Number(cr.requested_amount).toFixed(2)}
                         </div>
-                        <div className="text-xs text-gray-400 dark:text-white/40">requested</div>
+                        <div className="text-xs text-theme-tertiary">requested</div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-white/40 mb-3">
+                    <div className="flex items-center gap-3 text-xs text-theme-tertiary mb-3">
                       <span>{format(new Date(cr.created_at), 'd MMM yyyy')}</span>
                       {cr.issue && <span>Issue: {cr.issue.title}</span>}
                     </div>
@@ -575,7 +575,7 @@ export default function CustomerSupportPage() {
                         <Button
                           variant="outline"
                           onClick={() => updateCreditStatus(cr.id, 'approved', cr.requested_amount)}
-                          className="text-green-600 border-green-300 hover:bg-green-50 dark:text-green-400 dark:border-green-500/30 dark:hover:bg-green-500/10 text-xs px-3 py-1"
+                          className="text-green-600 border-green-300 hover:bg-green-50 dark:text-green-400 dark:border-green-500/30 dark:hover:bg-module-fg/10 text-xs px-3 py-1"
                         >
                           <CheckCircle className="w-3 h-3 mr-1" />
                           Approve £{Number(cr.requested_amount).toFixed(2)}

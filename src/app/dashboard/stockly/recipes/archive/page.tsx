@@ -88,13 +88,13 @@ export default function RecipesArchivePage() {
       <div className="flex items-center gap-4">
         <Link
           href="/dashboard/stockly/recipes"
-          className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+          className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-theme-tertiary hover:text-white transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">Archived Recipes</h1>
-          <p className="text-white/60 text-sm mt-1">View and restore archived recipes</p>
+          <h1 className="text-2xl font-bold text-theme-primary">Archived Recipes</h1>
+          <p className="text-theme-tertiary text-sm mt-1">View and restore archived recipes</p>
         </div>
       </div>
 
@@ -105,19 +105,19 @@ export default function RecipesArchivePage() {
           placeholder="Search archived recipes..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:border-emerald-500"
+          className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-tertiary focus:outline-none focus:border-emerald-500"
         />
-        <Archive className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+        <Archive className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary" />
       </div>
 
       {/* Recipe List */}
       {filteredRecipes.length === 0 ? (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
           <Archive className="w-16 h-16 text-white/20 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-white mb-2">
+          <h3 className="text-xl font-semibold text-theme-primary mb-2">
             {recipes.length === 0 ? 'No archived recipes' : 'No matching recipes'}
           </h3>
-          <p className="text-white/60">
+          <p className="text-theme-tertiary">
             {recipes.length === 0 
               ? 'Archived recipes will appear here'
               : 'Try adjusting your search'
@@ -130,20 +130,20 @@ export default function RecipesArchivePage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-white/[0.06]">
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Recipe</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Code</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Version</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Archived</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Actions</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-theme-tertiary">Recipe</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-theme-tertiary">Code</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-theme-tertiary">Version</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-theme-tertiary">Archived</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-theme-tertiary">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredRecipes.map((recipe) => (
                   <tr key={recipe.id} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
-                    <td className="px-4 py-3 text-white font-medium">{recipe.name}</td>
-                    <td className="px-4 py-3 text-white/60 text-sm">{recipe.code || '-'}</td>
-                    <td className="px-4 py-3 text-white/60 text-sm">v{recipe.version_number || '1.0'}</td>
-                    <td className="px-4 py-3 text-white/60 text-sm">
+                    <td className="px-4 py-3 text-theme-primary font-medium">{recipe.name}</td>
+                    <td className="px-4 py-3 text-theme-tertiary text-sm">{recipe.code || '-'}</td>
+                    <td className="px-4 py-3 text-theme-tertiary text-sm">v{recipe.version_number || '1.0'}</td>
+                    <td className="px-4 py-3 text-theme-tertiary text-sm">
                       {recipe.archived_at 
                         ? new Date(recipe.archived_at).toLocaleDateString()
                         : '-'}
@@ -151,7 +151,7 @@ export default function RecipesArchivePage() {
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => handleRestore(recipe.id)}
-                        className="px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg transition-colors text-sm"
+                        className="px-3 py-1.5 bg-module-fg/10 hover:bg-module-fg/10 text-module-fg border border-module-fg/30 rounded-lg transition-colors text-sm"
                       >
                         Restore
                       </button>

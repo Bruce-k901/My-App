@@ -50,9 +50,9 @@ export default function TimePicker({
       className={`
         w-full px-3 py-2
         bg-white dark:bg-gray-900
-        border-2 border-gray-300 dark:border-gray-700
+        border-2 border-theme
         rounded-lg
-        text-gray-900 dark:text-white
+        text-theme-primary
         text-sm font-mono
         focus:outline-none focus:border-blue-500 dark:focus:border-blue-400
         focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/20

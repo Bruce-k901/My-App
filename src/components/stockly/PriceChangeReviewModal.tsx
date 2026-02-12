@@ -78,7 +78,7 @@ export function PriceChangeReviewModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col bg-[#0f1117] border-white/10">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-3 text-xl font-semibold text-white">
+          <DialogTitle className="flex items-center gap-3 text-xl font-semibold text-theme-primary">
             {significantChanges.length > 0 ? (
               <>
                 <AlertCircle className="text-amber-400" size={24} />
@@ -114,7 +114,7 @@ export function PriceChangeReviewModal({
 
           {/* Bulk actions */}
           <div className="flex items-center justify-between pb-3 border-b border-white/10">
-            <div className="text-sm text-white/60">
+            <div className="text-sm text-theme-tertiary">
               {localChanges.length} price change{localChanges.length > 1 ? 's' : ''} detected
               {acceptedCount > 0 && ` | ${acceptedCount} accepted`}
               {rejectedCount > 0 && ` | ${rejectedCount} rejected`}
@@ -137,7 +137,7 @@ export function PriceChangeReviewModal({
                 className={`
                   bg-white/[0.03] border rounded-lg p-4 transition-all cursor-pointer
                   ${change.accepted
-                    ? 'border-emerald-500/30 bg-emerald-500/5'
+                    ? 'border-module-fg/30 bg-emerald-500/5'
                     : 'border-white/10'
                   }
                   ${change.isSignificantChange && change.accepted
@@ -160,9 +160,9 @@ export function PriceChangeReviewModal({
                           }
                         `}
                       >
-                        {change.accepted && <Check size={14} className="text-white" />}
+                        {change.accepted && <Check size={14} className="text-theme-primary" />}
                       </div>
-                      <h3 className="font-medium text-white truncate">
+                      <h3 className="font-medium text-theme-primary truncate">
                         {change.ingredientName}
                       </h3>
                       {change.isSignificantChange && (
@@ -175,20 +175,20 @@ export function PriceChangeReviewModal({
                     {/* Price comparison */}
                     <div className="grid grid-cols-2 gap-4 text-sm ml-7">
                       <div>
-                        <div className="text-white/40 text-xs mb-1">Current</div>
-                        <div className="text-white font-mono">
+                        <div className="text-theme-tertiary text-xs mb-1">Current</div>
+                        <div className="text-theme-primary font-mono">
                           {formatUnitCost(change.currentUnitCost)}/unit
                         </div>
-                        <div className="text-white/50 text-xs mt-0.5">
+                        <div className="text-theme-tertiary text-xs mt-0.5">
                           {formatCurrency(change.currentPackCost)} for {change.currentPackSize}g
                         </div>
                       </div>
                       <div>
-                        <div className="text-white/40 text-xs mb-1">Invoice</div>
-                        <div className="text-white font-mono">
+                        <div className="text-theme-tertiary text-xs mb-1">Invoice</div>
+                        <div className="text-theme-primary font-mono">
                           {formatUnitCost(change.invoiceUnitCost)}/unit
                         </div>
-                        <div className="text-white/50 text-xs mt-0.5">
+                        <div className="text-theme-tertiary text-xs mt-0.5">
                           {formatCurrency(change.invoiceUnitPrice)} for {change.invoicePackSize}g
                         </div>
                       </div>
@@ -210,7 +210,7 @@ export function PriceChangeReviewModal({
                       )}
                       {formatPercent(change.unitCostChangePercent)}
                     </div>
-                    <div className="text-white/40 text-xs">
+                    <div className="text-theme-tertiary text-xs">
                       {change.isPriceIncrease ? '+' : ''}
                       {formatCurrency(Math.abs(change.packCostChange))}
                     </div>
@@ -220,17 +220,17 @@ export function PriceChangeReviewModal({
                 {/* Optional: Recipe impact preview */}
                 {change.affectedRecipes && change.affectedRecipes.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-white/10 ml-7">
-                    <div className="text-xs text-white/40 mb-2">
+                    <div className="text-xs text-theme-tertiary mb-2">
                       Affects {change.affectedRecipes.length} recipe{change.affectedRecipes.length > 1 ? 's' : ''}:
                     </div>
-                    <div className="text-xs text-white/50 space-y-1">
+                    <div className="text-xs text-theme-tertiary space-y-1">
                       {change.affectedRecipes.slice(0, 3).map(recipe => (
                         <div key={recipe.recipeId}>
                           {recipe.recipeName}: {formatCurrency(recipe.currentCost)} → {formatCurrency(recipe.newCost)}
                         </div>
                       ))}
                       {change.affectedRecipes.length > 3 && (
-                        <div className="text-white/30">
+                        <div className="text-theme-disabled">
                           + {change.affectedRecipes.length - 3} more...
                         </div>
                       )}
@@ -249,7 +249,7 @@ export function PriceChangeReviewModal({
           </Button>
           <div className="flex items-center gap-3">
             {rejectedCount > 0 && (
-              <div className="text-sm text-white/40">
+              <div className="text-sm text-theme-tertiary">
                 {rejectedCount} change{rejectedCount > 1 ? 's' : ''} will keep old price
               </div>
             )}

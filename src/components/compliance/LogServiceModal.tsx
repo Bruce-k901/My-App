@@ -212,11 +212,11 @@ export default function LogServiceModal({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-neutral-900 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-neutral-700">
-          <h2 className="text-xl font-semibold text-white">Log PPM Service</h2>
+        <div className="flex items-center justify-between p-6 border-b border-theme">
+          <h2 className="text-xl font-semibold text-theme-primary">Log PPM Service</h2>
           <button
             onClick={onClose}
-            className="text-neutral-400 hover:text-white transition-colors"
+            className="text-theme-tertiary hover:text-white transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -226,13 +226,13 @@ export default function LogServiceModal({
         <div className="p-6 space-y-6">
           {/* Asset Info */}
           <div>
-            <p className="text-sm text-neutral-400 mb-1">Asset</p>
-            <p className="text-white font-medium">{assetName}</p>
+            <p className="text-sm text-theme-tertiary mb-1">Asset</p>
+            <p className="text-theme-primary font-medium">{assetName}</p>
           </div>
 
           {/* Service Date */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               Service Date <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -241,21 +241,21 @@ export default function LogServiceModal({
                 value={serviceDate}
                 onChange={(e) => setServiceDate(e.target.value)}
                 max={new Date().toISOString().split('T')[0]}
-                className="w-full rounded-lg bg-neutral-800 border border-neutral-700 text-white px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg bg-neutral-800 border border-theme text-theme-primary px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 pointer-events-none" />
+              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary pointer-events-none" />
             </div>
           </div>
 
           {/* Contractor */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               Contractor
             </label>
             <select
               value={contractorId}
               onChange={(e) => setContractorId(e.target.value)}
-              className="w-full rounded-lg bg-neutral-800 border border-neutral-700 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg bg-neutral-800 border border-theme text-theme-primary px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select contractor</option>
               {contractors.map((contractor) => (
@@ -268,24 +268,24 @@ export default function LogServiceModal({
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               Notes
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={4}
-              className="w-full rounded-lg bg-neutral-800 border border-neutral-700 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full rounded-lg bg-neutral-800 border border-theme text-theme-primary px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               placeholder="Service notes, issues found, etc."
             />
           </div>
 
           {/* Certificate/Report Upload */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               Certificate/Report
             </label>
-            <div className="border-2 border-dashed border-neutral-700 rounded-lg p-6 text-center hover:border-neutral-600 transition-colors">
+            <div className="border-2 border-dashed border-theme rounded-lg p-6 text-center hover:border-neutral-600 transition-colors">
               <input
                 type="file"
                 id="file-upload"
@@ -297,8 +297,8 @@ export default function LogServiceModal({
                 htmlFor="file-upload"
                 className="cursor-pointer flex flex-col items-center gap-2"
               >
-                <Upload className="w-8 h-8 text-neutral-400" />
-                <span className="text-sm text-neutral-400">
+                <Upload className="w-8 h-8 text-theme-tertiary" />
+                <span className="text-sm text-theme-tertiary">
                   {file ? file.name : 'Drag & drop file or click to browse'}
                 </span>
               </label>
@@ -320,7 +320,7 @@ export default function LogServiceModal({
                     Auto-calculate next service date
                   </p>
                   {nextServiceDate && (
-                    <p className="text-xs text-neutral-300">
+                    <p className="text-xs text-theme-tertiary">
                       {serviceDate} + {asset.ppm_frequency_months} months = {new Date(nextServiceDate).toLocaleDateString()}
                     </p>
                   )}
@@ -337,10 +337,10 @@ export default function LogServiceModal({
           )}
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-700">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-theme">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-lg bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition-colors"
+              className="px-4 py-2 rounded-lg bg-neutral-800 text-theme-tertiary hover:bg-neutral-700 transition-colors"
               disabled={loading}
             >
               Cancel

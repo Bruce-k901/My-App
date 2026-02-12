@@ -135,7 +135,7 @@ export default function RecentDeliveriesWidget({ companyId, siteId }: WidgetProp
                   <p className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white truncate">
                     {delivery.supplier_name}
                   </p>
-                  <div className="flex items-center gap-1 text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40">
+                  <div className="flex items-center gap-1 text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
                     <Calendar className="w-3 h-3" />
                     {formatDate(delivery.received_date)}
                     {delivery.invoice_number && (

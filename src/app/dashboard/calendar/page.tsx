@@ -894,7 +894,7 @@ export default function ManagerCalendarPage() {
       if (item.itemType === 'reminder') return '#F59E0B';
       if (item.itemType === 'tableTask') {
         if (item.status === 'completed') return '#10B981';
-        return '#D37E91';
+        return 'rgb(var(--module-fg))';
       }
       if (item.priority === 'high') return '#EF4444';
       if (item.priority === 'medium') return '#F59E0B';
@@ -914,7 +914,7 @@ export default function ManagerCalendarPage() {
       return (
         <div
           key={item.id}
-          className={`bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-4 ${isCompleted ? 'opacity-60' : ''}`}
+          className={`bg-theme-button border border-theme rounded-xl p-4 ${isCompleted ? 'opacity-60' : ''}`}
         >
           <div className="flex items-start gap-3">
             <div className="p-2 rounded-lg flex-shrink-0" style={{ backgroundColor: `${color}20` }}>
@@ -922,12 +922,12 @@ export default function ManagerCalendarPage() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className={`text-gray-900 dark:text-white font-medium ${isCompleted ? 'line-through' : ''}`}>
+                <span className={`text-theme-primary font-medium ${isCompleted ? 'line-through' : ''}`}>
                   {item.title}
                 </span>
                 {isCompleted && <CheckCircle2 size={14} className="text-green-500 dark:text-green-400 flex-shrink-0" />}
               </div>
-              <div className="flex items-center gap-3 mt-2 text-xs text-gray-400 dark:text-white/40">
+              <div className="flex items-center gap-3 mt-2 text-xs text-theme-tertiary">
                 <span className="flex items-center gap-1">
                   <Clock size={12} />
                   {item.time ? format(new Date(`2000-01-01T${item.time}`), 'h:mm a') : 'All day'}
@@ -944,28 +944,28 @@ export default function ManagerCalendarPage() {
       if (items.length === 0) return null;
       return (
         <div className="mb-6">
-          <h3 className="text-xs font-semibold text-gray-400 dark:text-white/40 uppercase tracking-wider mb-3">{title}</h3>
+          <h3 className="text-xs font-semibold text-theme-tertiary uppercase tracking-wider mb-3">{title}</h3>
           <div className="space-y-3">{items.map(renderMobileItem)}</div>
         </div>
       );
     };
 
     return (
-      <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-gray-900 dark:text-white">
+      <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-theme-primary">
         {/* Header with date navigation */}
-        <div className="sticky top-0 z-20 bg-white dark:bg-[#0a0a0a] border-b border-gray-200 dark:border-white/10">
+        <div className="sticky top-0 z-20 bg-white dark:bg-[#0a0a0a] border-b border-theme">
           <div className="px-4 py-4 flex items-center justify-between">
             <button onClick={goToPrevDay} className="p-2 rounded-full bg-gray-100 dark:bg-white/5 active:bg-gray-200 dark:active:bg-white/10">
-              <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-white" />
+              <ChevronLeft className="w-5 h-5 text-theme-secondary" />
             </button>
             <button onClick={goToToday} className="flex-1 text-center">
-              <div className={`text-lg font-semibold ${mobileIsToday ? 'text-[#D37E91]' : 'text-gray-900 dark:text-white'}`}>
+              <div className={`text-lg font-semibold ${mobileIsToday ? 'text-module-fg' : 'text-theme-primary'}`}>
                 {format(mobileSelectedDay, 'EEEE')}
               </div>
-              <div className="text-sm text-gray-500 dark:text-white/60">{format(mobileSelectedDay, 'd MMMM yyyy')}</div>
+              <div className="text-sm text-theme-tertiary">{format(mobileSelectedDay, 'd MMMM yyyy')}</div>
             </button>
             <button onClick={goToNextDay} className="p-2 rounded-full bg-gray-100 dark:bg-white/5 active:bg-gray-200 dark:active:bg-white/10">
-              <ChevronRight className="w-5 h-5 text-gray-700 dark:text-white" />
+              <ChevronRight className="w-5 h-5 text-theme-secondary" />
             </button>
           </div>
 
@@ -980,13 +980,13 @@ export default function ManagerCalendarPage() {
                   key={i}
                   onClick={() => setMobileSelectedDay(day)}
                   className={`flex-1 min-w-[40px] py-2 px-1 rounded-lg text-center transition-colors ${
-                    isSelected ? 'bg-[#D37E91]/20 border border-[#D37E91]/50' : 'bg-gray-100 dark:bg-white/5 border border-transparent'
+                    isSelected ? 'bg-module-fg/[0.20] border border-module-fg/[0.50]' : 'bg-gray-100 dark:bg-white/5 border border-transparent'
                   }`}
                 >
-                  <div className={`text-[10px] ${isSelected ? 'text-[#D37E91]' : dayIsToday ? 'text-blue-500 dark:text-blue-400' : 'text-gray-400 dark:text-white/40'}`}>
+                  <div className={`text-[10px] ${isSelected ? 'text-module-fg' : dayIsToday ? 'text-blue-500 dark:text-blue-400' : 'text-theme-tertiary'}`}>
                     {format(day, 'EEE')}
                   </div>
-                  <div className={`text-sm font-medium ${isSelected ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-white/70'}`}>
+                  <div className={`text-sm font-medium ${isSelected ? 'text-theme-primary' : 'text-theme-secondary'}`}>
                     {format(day, 'd')}
                   </div>
                 </button>
@@ -1004,15 +1004,15 @@ export default function ManagerCalendarPage() {
                 <FileText size={16} />
                 Notes
               </div>
-              <p className="text-gray-600 dark:text-white/70 text-sm whitespace-pre-wrap">{mobileNotes}</p>
+              <p className="text-theme-secondary text-sm whitespace-pre-wrap">{mobileNotes}</p>
             </div>
           )}
 
           {allMobileItems.length === 0 && !mobileNotes ? (
-            <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-8 text-center">
+            <div className="bg-theme-button border border-theme rounded-xl p-8 text-center">
               <CalendarDays className="w-12 h-12 text-gray-300 dark:text-white/20 mx-auto mb-3" />
-              <p className="text-gray-400 dark:text-white/40">No items scheduled</p>
-              <p className="text-gray-300 dark:text-white/30 text-sm mt-1">
+              <p className="text-theme-tertiary">No items scheduled</p>
+              <p className="text-gray-300 dark:text-theme-disabled text-sm mt-1">
                 {mobileIsToday ? "You're all clear for today!" : 'Nothing scheduled for this day'}
               </p>
             </div>
@@ -1037,17 +1037,17 @@ export default function ManagerCalendarPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="p-2 sm:p-3 rounded-xl bg-[#D37E91]/15 border border-[#D37E91]/20">
-              <CalendarDays className="w-5 h-5 sm:w-6 sm:h-6 text-[#D37E91]" />
+            <div className="p-2 sm:p-3 rounded-xl bg-module-fg/[0.15] border border-module-fg/[0.20]">
+              <CalendarDays className="w-5 h-5 sm:w-6 sm:h-6 text-module-fg" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Manager Calendar & Diary</h1>
-              <p className="text-sm text-slate-400">Plan, organize, and track tasks, reminders, and messages</p>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-theme-primary">Manager Calendar & Diary</h1>
+              <p className="text-sm text-theme-tertiary">Plan, organize, and track tasks, reminders, and messages</p>
             </div>
           </div>
           <Link
             href="/dashboard/tasks/my-tasks"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 ease-in-out text-sm font-medium"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg rounded-lg hover:shadow-[0_0_12px_rgba(var(--module-fg),0.7)] transition-all duration-200 ease-in-out text-sm font-medium"
           >
             <CheckCircle2 className="w-4 h-4" />
             View My Tasks
@@ -1070,8 +1070,8 @@ export default function ManagerCalendarPage() {
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
                   activeTab === tab.id
-                    ? "border-[#D37E91] text-[#D37E91]"
-                    : "border-transparent text-slate-400 hover:text-slate-300"
+                    ? "border-module-fg text-module-fg"
+                    : "border-transparent text-theme-tertiary hover:text-theme-secondary"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -1090,23 +1090,23 @@ export default function ManagerCalendarPage() {
                 onClick={() => navigateMonth("prev")}
                 className="p-2 rounded-lg hover:bg-white/5 transition-colors"
               >
-                <ChevronLeft className="w-5 h-5 text-slate-400" />
+                <ChevronLeft className="w-5 h-5 text-theme-tertiary" />
               </button>
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-theme-primary">
                 {currentDate ? `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}` : ""}
               </h2>
               <button
                 onClick={() => navigateMonth("next")}
                 className="p-2 rounded-lg hover:bg-white/5 transition-colors"
               >
-                <ChevronRight className="w-5 h-5 text-slate-400" />
+                <ChevronRight className="w-5 h-5 text-theme-tertiary" />
               </button>
             </div>
 
             {/* Calendar Grid */}
             <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-3 sm:mb-4">
               {dayNames.map(day => (
-                <div key={day} className="text-center text-[10px] sm:text-xs font-medium text-slate-400 py-1 sm:py-2">
+                <div key={day} className="text-center text-[10px] sm:text-xs font-medium text-theme-tertiary py-1 sm:py-2">
                   {day}
                 </div>
               ))}
@@ -1128,7 +1128,7 @@ export default function ManagerCalendarPage() {
                     key={dateStr}
                     className={`aspect-square p-2 rounded-lg border transition-all relative group ${
                       isSelected
-                        ? "bg-[#D37E91]/25 border-[#D37E91]/50 shadow-[0_0_12px_rgba(211,126,145,0.3)]"
+                        ? "bg-module-fg/[0.25] border-module-fg/[0.50] shadow-[0_0_12px_rgba(var(--module-fg),0.3)]"
                         : isToday
                         ? "bg-blue-500/10 border-blue-500/30"
                         : "bg-black/20 border-white/10 hover:border-white/20"
@@ -1137,7 +1137,7 @@ export default function ManagerCalendarPage() {
                     <div className="flex items-center justify-between mb-1">
                       <button
                         onClick={() => setSelectedDate(dateStr)}
-                        className={`text-sm font-medium ${isToday ? "text-blue-400" : "text-slate-300"}`}
+                        className={`text-sm font-medium ${isToday ? "text-blue-400" : "text-theme-secondary"}`}
                       >
                         {date.getDate()}
                       </button>
@@ -1155,9 +1155,9 @@ export default function ManagerCalendarPage() {
                           transition-opacity duration-200
                           w-6 h-6 
                           rounded-full 
-                          bg-[#D37E91] hover:bg-[#D37E91]/80
+                          bg-module-fg hover:bg-module-fg/[0.80]
                           flex items-center justify-center
-                          text-white
+                          text-theme-primary
                           shadow-sm hover:shadow-md
                         "
                         aria-label="Create new task"
@@ -1191,7 +1191,7 @@ export default function ManagerCalendarPage() {
                           if (event.color === "blue") return "bg-blue-500/20 text-blue-400 border-blue-500/30";
                           if (event.color === "purple") return "bg-purple-500/20 text-purple-400 border-purple-500/30";
                           if (event.color === "green") return "bg-green-500/20 text-green-400 border-green-500/30";
-                          return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+                          return "bg-theme-surface-elevated0/20 text-theme-tertiary border-gray-500/30";
                         };
                         
                         return (
@@ -1218,7 +1218,7 @@ export default function ManagerCalendarPage() {
                       })}
                       {events.length > 3 && (
                         <div 
-                          className="text-xs text-slate-400 cursor-pointer hover:text-slate-300"
+                          className="text-xs text-theme-tertiary cursor-pointer hover:text-theme-secondary"
                           onClick={() => setSelectedDate(dateStr)}
                         >
                           +{events.length - 3} more
@@ -1233,13 +1233,13 @@ export default function ManagerCalendarPage() {
             {/* Selected Date Details */}
             {selectedDate && (
               <div className="mt-6 pt-6 border-t border-white/10">
-                <h3 className="text-lg font-semibold text-white mb-4">
+                <h3 className="text-lg font-semibold text-theme-primary mb-4">
                   {new Date(selectedDate).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
                 </h3>
                 
                 {/* Notes for selected date */}
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Notes</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">Notes</label>
                   <textarea
                     value={selectedDateNotes}
                     onChange={(e) => {
@@ -1247,14 +1247,14 @@ export default function ManagerCalendarPage() {
                       save(selectedDate);
                     }}
                     placeholder="Add notes for this date..."
-                    className="w-full h-24 bg-black/30 border border-white/10 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 resize-none"
+                    className="w-full h-24 bg-black/30 border border-white/10 rounded-xl p-3 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40] resize-none"
                   />
                 </div>
 
                 {/* Tasks for selected date */}
                 {(selectedDateTasks.length > 0 || selectedDateTasksFromTable.length > 0) && (
                   <div className="mb-4">
-                    <h4 className="text-sm font-semibold text-slate-300 mb-2">Tasks</h4>
+                    <h4 className="text-sm font-semibold text-theme-secondary mb-2">Tasks</h4>
                     <div className="space-y-2">
                       {/* Handover tasks */}
                       {selectedDateTasks.map(task => (
@@ -1273,9 +1273,9 @@ export default function ManagerCalendarPage() {
                           <div className="flex-1 flex items-center gap-2">
                             <CheckSquare className="w-4 h-4 text-blue-400 flex-shrink-0" />
                             <div className="flex-1">
-                              <div className="text-sm text-white">{task.title}</div>
+                              <div className="text-sm text-theme-primary">{task.title}</div>
                               {task.dueTime && (
-                                <div className="text-xs text-slate-400 flex items-center gap-1 mt-1">
+                                <div className="text-xs text-theme-tertiary flex items-center gap-1 mt-1">
                                   <Clock className="w-3 h-3" />
                                   {task.dueTime}
                                 </div>
@@ -1287,7 +1287,7 @@ export default function ManagerCalendarPage() {
                               e.stopPropagation();
                               createTaskInSystem(task);
                             }}
-                            className="px-2 py-1 text-xs rounded bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-green-500/20"
+                            className="px-2 py-1 text-xs rounded bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-module-fg/10"
                           >
                             Create
                           </button>
@@ -1303,7 +1303,7 @@ export default function ManagerCalendarPage() {
                             case "call":
                               return <Phone className="w-4 h-4 text-green-400 flex-shrink-0" />;
                             case "note":
-                              return <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />;
+                              return <FileText className="w-4 h-4 text-theme-tertiary flex-shrink-0" />;
                             default:
                               return <CheckSquare className="w-4 h-4 text-blue-400 flex-shrink-0" />;
                           }
@@ -1326,16 +1326,16 @@ export default function ManagerCalendarPage() {
                             <div className="flex-1 flex items-center gap-2">
                               {getTaskIcon()}
                               <div className="flex-1">
-                                <div className="text-sm text-white">{task.title}</div>
+                                <div className="text-sm text-theme-primary">{task.title}</div>
                                 <div className="flex items-center gap-3 mt-1">
                                   {task.due_time && (
-                                    <div className="text-xs text-slate-400 flex items-center gap-1">
+                                    <div className="text-xs text-theme-tertiary flex items-center gap-1">
                                       <Clock className="w-3 h-3" />
                                       {task.due_time}
                                     </div>
                                   )}
                                   {task.metadata?.participants && Array.isArray(task.metadata.participants) && task.metadata.participants.length > 0 && (
-                                    <div className="text-xs text-slate-400 flex items-center gap-1">
+                                    <div className="text-xs text-theme-tertiary flex items-center gap-1">
                                       <Users className="w-3 h-3" />
                                       {task.metadata.participants.length} participant{task.metadata.participants.length > 1 ? 's' : ''}
                                     </div>
@@ -1353,13 +1353,13 @@ export default function ManagerCalendarPage() {
                 {/* Reminders for selected date */}
                 {selectedDateReminders.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold text-slate-300 mb-2">Reminders</h4>
+                    <h4 className="text-sm font-semibold text-theme-secondary mb-2">Reminders</h4>
                     <div className="space-y-2">
                       {selectedDateReminders.map(reminder => (
                         <div key={reminder.id} className="bg-black/30 border border-white/10 rounded-lg p-3">
-                          <div className="text-sm text-white">{reminder.title}</div>
+                          <div className="text-sm text-theme-primary">{reminder.title}</div>
                           {reminder.time && (
-                            <div className="text-xs text-slate-400 flex items-center gap-1 mt-1">
+                            <div className="text-xs text-theme-tertiary flex items-center gap-1 mt-1">
                               <Clock className="w-3 h-3" />
                               {reminder.time}
                             </div>
@@ -1379,14 +1379,14 @@ export default function ManagerCalendarPage() {
           <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-6">
             <div className="space-y-4">
               {Object.keys(notes).length === 0 ? (
-                <div className="text-center py-12 text-slate-400">
+                <div className="text-center py-12 text-theme-tertiary">
                   <FileText className="w-12 h-12 mx-auto mb-2 opacity-50" />
                   <p>No notes yet. Select a date on the calendar to add notes.</p>
                 </div>
               ) : (
                 Object.entries(notes).map(([date, note]) => (
                   <div key={date} className="bg-black/30 border border-white/10 rounded-lg p-4">
-                    <div className="text-sm font-medium text-slate-300 mb-2">
+                    <div className="text-sm font-medium text-theme-secondary mb-2">
                       {new Date(date).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
                     </div>
                     <textarea
@@ -1396,7 +1396,7 @@ export default function ManagerCalendarPage() {
                         save(date);
                       }}
                       placeholder="Add notes..."
-                      className="w-full h-32 bg-black/50 border border-white/10 rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 resize-none"
+                      className="w-full h-32 bg-black/50 border border-white/10 rounded-lg p-3 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40] resize-none"
                     />
                   </div>
                 ))
@@ -1411,13 +1411,13 @@ export default function ManagerCalendarPage() {
             <div className="space-y-4">
               {taskTemplates.length > 0 && !showTaskForm && (
                 <div className="mb-4">
-                  <p className="text-xs text-slate-400 mb-2">Quick-add from templates:</p>
+                  <p className="text-xs text-theme-tertiary mb-2">Quick-add from templates:</p>
                   <div className="flex flex-wrap gap-2">
                     {taskTemplates.slice(0, 5).map((template) => (
                       <button
                         key={template.id}
                         onClick={() => addTaskFromTemplate(template)}
-                        className="px-3 py-1.5 text-xs rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500/20 transition-colors flex items-center gap-1"
+                        className="px-3 py-1.5 text-xs rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-module-fg/10 transition-colors flex items-center gap-1"
                       >
                         <Zap className="w-3 h-3" />
                         {template.name}
@@ -1428,7 +1428,7 @@ export default function ManagerCalendarPage() {
               )}
 
               {tasks.length === 0 && !showTaskForm && (
-                <div className="text-center py-12 text-slate-400">
+                <div className="text-center py-12 text-theme-tertiary">
                   <CheckCircle2 className="w-12 h-12 mx-auto mb-2 opacity-50" />
                   <p>No tasks created yet</p>
                 </div>
@@ -1438,8 +1438,8 @@ export default function ManagerCalendarPage() {
                 <div key={task.id} className="bg-black/30 border border-white/10 rounded-lg p-4">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <h4 className="font-medium text-white mb-1">{task.title}</h4>
-                      <div className="flex items-center gap-4 text-xs text-slate-400 flex-wrap">
+                      <h4 className="font-medium text-theme-primary mb-1">{task.title}</h4>
+                      <div className="flex items-center gap-4 text-xs text-theme-tertiary flex-wrap">
                         <span className="flex items-center gap-1">
                           <CalendarDays className="w-3 h-3" />
                           {new Date(task.dueDate).toLocaleDateString()}
@@ -1464,13 +1464,13 @@ export default function ManagerCalendarPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => createTaskInSystem(task)}
-                        className="px-3 py-1 text-xs rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-green-500/20 transition-colors"
+                        className="px-3 py-1 text-xs rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-module-fg/10 transition-colors"
                       >
                         Create Task
                       </button>
                       <button
                         onClick={() => removeTask(task.id)}
-                        className="p-1 text-slate-400 hover:text-red-400 transition-colors"
+                        className="p-1 text-theme-tertiary hover:text-red-400 transition-colors"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -1486,14 +1486,14 @@ export default function ManagerCalendarPage() {
                     placeholder="Task title"
                     value={newTask.title}
                     onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
                   />
                   <div className="grid grid-cols-2 gap-3">
                     <input
                       type="date"
                       value={newTask.dueDate}
                       onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
                     />
                     <TimePicker
                       value={newTask.dueTime}
@@ -1504,7 +1504,7 @@ export default function ManagerCalendarPage() {
                   <select
                     value={newTask.assignedTo}
                     onChange={(e) => setNewTask({ ...newTask, assignedTo: e.target.value })}
-                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
                   >
                     <option value="">Assign to (optional)</option>
                     {users.map((user) => (
@@ -1516,7 +1516,7 @@ export default function ManagerCalendarPage() {
                   <select
                     value={newTask.priority}
                     onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
                   >
                     <option value="low">Low Priority</option>
                     <option value="medium">Medium Priority</option>
@@ -1525,13 +1525,13 @@ export default function ManagerCalendarPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={addTask}
-                      className="flex-1 px-4 py-2 rounded-lg bg-[#D37E91]/15 border border-[#D37E91]/30 text-[#D37E91] hover:bg-[#D37E91]/25 transition-colors"
+                      className="flex-1 px-4 py-2 rounded-lg bg-module-fg/[0.15] border border-module-fg/30 text-module-fg hover:bg-module-fg/[0.25] transition-colors"
                     >
                       Add Task
                     </button>
                     <button
                       onClick={() => setShowTaskForm(false)}
-                      className="px-4 py-2 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 transition-colors"
+                      className="px-4 py-2 rounded-lg border border-white/10 text-theme-tertiary hover:bg-white/5 transition-colors"
                     >
                       Cancel
                     </button>
@@ -1540,7 +1540,7 @@ export default function ManagerCalendarPage() {
               ) : (
                 <button
                   onClick={() => setShowTaskForm(true)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-slate-400 hover:border-[#D37E91]/30 hover:text-[#D37E91] transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-theme-tertiary hover:border-module-fg/30 hover:text-module-fg transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   Add Task
@@ -1555,7 +1555,7 @@ export default function ManagerCalendarPage() {
           <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-6">
             <div className="space-y-4">
               {reminders.length === 0 && !showReminderForm && (
-                <div className="text-center py-12 text-slate-400">
+                <div className="text-center py-12 text-theme-tertiary">
                   <Bell className="w-12 h-12 mx-auto mb-2 opacity-50" />
                   <p>No reminders set</p>
                 </div>
@@ -1566,14 +1566,14 @@ export default function ManagerCalendarPage() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium text-white">{reminder.title}</h4>
+                        <h4 className="font-medium text-theme-primary">{reminder.title}</h4>
                         {reminder.notificationCreated && (
                           <span className="px-2 py-0.5 rounded text-xs bg-green-500/10 border border-green-500/30 text-green-400">
                             Scheduled
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-4 text-xs text-slate-400">
+                      <div className="flex items-center gap-4 text-xs text-theme-tertiary">
                         <span className="flex items-center gap-1">
                           <CalendarDays className="w-3 h-3" />
                           {new Date(reminder.date).toLocaleDateString()}
@@ -1589,7 +1589,7 @@ export default function ManagerCalendarPage() {
                     </div>
                     <button
                       onClick={() => removeReminder(reminder.id)}
-                      className="p-1 text-slate-400 hover:text-red-400 transition-colors"
+                      className="p-1 text-theme-tertiary hover:text-red-400 transition-colors"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -1604,14 +1604,14 @@ export default function ManagerCalendarPage() {
                     placeholder="Reminder title"
                     value={newReminder.title}
                     onChange={(e) => setNewReminder({ ...newReminder, title: e.target.value })}
-                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
                   />
                   <div className="grid grid-cols-2 gap-3">
                     <input
                       type="date"
                       value={newReminder.date}
                       onChange={(e) => setNewReminder({ ...newReminder, date: e.target.value })}
-                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                      className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
                     />
                     <TimePicker
                       value={newReminder.time}
@@ -1622,7 +1622,7 @@ export default function ManagerCalendarPage() {
                   <select
                     value={newReminder.repeat}
                     onChange={(e) => setNewReminder({ ...newReminder, repeat: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                    className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
                   >
                     <option value="once">Once</option>
                     <option value="daily">Daily</option>
@@ -1631,13 +1631,13 @@ export default function ManagerCalendarPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={addReminder}
-                      className="flex-1 px-4 py-2 rounded-lg bg-[#D37E91]/15 border border-[#D37E91]/30 text-[#D37E91] hover:bg-[#D37E91]/25 transition-colors"
+                      className="flex-1 px-4 py-2 rounded-lg bg-module-fg/[0.15] border border-module-fg/30 text-module-fg hover:bg-module-fg/[0.25] transition-colors"
                     >
                       Add Reminder
                     </button>
                     <button
                       onClick={() => setShowReminderForm(false)}
-                      className="px-4 py-2 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 transition-colors"
+                      className="px-4 py-2 rounded-lg border border-white/10 text-theme-tertiary hover:bg-white/5 transition-colors"
                     >
                       Cancel
                     </button>
@@ -1646,7 +1646,7 @@ export default function ManagerCalendarPage() {
               ) : (
                 <button
                   onClick={() => setShowReminderForm(true)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-slate-400 hover:border-[#D37E91]/30 hover:text-[#D37E91] transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-theme-tertiary hover:border-module-fg/30 hover:text-module-fg transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   Add Reminder
@@ -1665,8 +1665,8 @@ export default function ManagerCalendarPage() {
                   onClick={() => setShowMessageHistory(!showMessageHistory)}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${
                     showMessageHistory
-                      ? "bg-[#D37E91]/15 border border-[#D37E91]/30 text-[#D37E91]"
-                      : "bg-white/5 border border-white/10 text-slate-400 hover:text-slate-300"
+                      ? "bg-module-fg/[0.15] border border-module-fg/30 text-module-fg"
+                      : "bg-white/5 border border-white/10 text-theme-tertiary hover:text-theme-secondary"
                   }`}
                 >
                   <History className="w-4 h-4" />
@@ -1676,22 +1676,22 @@ export default function ManagerCalendarPage() {
 
               {showMessageHistory && sentMessages.length > 0 && (
                 <div className="mb-6">
-                  <h4 className="text-sm font-semibold text-slate-300 mb-3">Sent Messages</h4>
+                  <h4 className="text-sm font-semibold text-theme-secondary mb-3">Sent Messages</h4>
                   <div className="space-y-3 max-h-64 overflow-y-auto">
                     {sentMessages.map((message) => (
                       <div key={message.id} className={`bg-black/20 border rounded-lg p-3 ${message.urgent ? "border-red-500/20" : "border-white/5"}`}>
                         <div className="flex items-start justify-between mb-1">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <h5 className="font-medium text-white text-sm">{message.subject}</h5>
+                              <h5 className="font-medium text-theme-primary text-sm">{message.subject}</h5>
                               {message.urgent && (
                                 <span className="px-1.5 py-0.5 rounded text-xs bg-red-500/10 border border-red-500/30 text-red-400">
                                   Urgent
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-slate-400 mb-1 line-clamp-2">{message.message}</p>
-                            <div className="flex items-center gap-3 text-xs text-slate-500">
+                            <p className="text-xs text-theme-tertiary mb-1 line-clamp-2">{message.message}</p>
+                            <div className="flex items-center gap-3 text-xs text-theme-tertiary">
                               <span className="capitalize">{message.recipient.replace("_", " ")}</span>
                               {message.sentAt && (
                                 <span>• {new Date(message.sentAt).toLocaleString()}</span>
@@ -1709,9 +1709,9 @@ export default function ManagerCalendarPage() {
               )}
 
               <div>
-                <h4 className="text-sm font-semibold text-slate-300 mb-3">Draft Messages</h4>
+                <h4 className="text-sm font-semibold text-theme-secondary mb-3">Draft Messages</h4>
                 {messages.length === 0 && !showMessageForm && (
-                  <div className="text-center py-12 text-slate-400">
+                  <div className="text-center py-12 text-theme-tertiary">
                     <MessageSquare className="w-12 h-12 mx-auto mb-2 opacity-50" />
                     <p>No messages prepared</p>
                   </div>
@@ -1722,15 +1722,15 @@ export default function ManagerCalendarPage() {
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium text-white">{message.subject}</h4>
+                          <h4 className="font-medium text-theme-primary">{message.subject}</h4>
                           {message.urgent && (
                             <span className="px-2 py-0.5 rounded text-xs bg-red-500/10 border border-red-500/30 text-red-400">
                               Urgent
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-slate-300 mb-2">{message.message}</p>
-                        <div className="flex items-center gap-2 text-xs text-slate-400">
+                        <p className="text-sm text-theme-secondary mb-2">{message.message}</p>
+                        <div className="flex items-center gap-2 text-xs text-theme-tertiary">
                           <Users className="w-3 h-3" />
                           <span className="capitalize">{message.recipient.replace("_", " ")}</span>
                         </div>
@@ -1738,14 +1738,14 @@ export default function ManagerCalendarPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => sendMessage(message)}
-                          className="px-3 py-1 text-xs rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-green-500/20 transition-colors flex items-center gap-1"
+                          className="px-3 py-1 text-xs rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-module-fg/10 transition-colors flex items-center gap-1"
                         >
                           <Send className="w-3 h-3" />
                           Send
                         </button>
                         <button
                           onClick={() => removeMessage(message.id)}
-                          className="p-1 text-slate-400 hover:text-red-400 transition-colors"
+                          className="p-1 text-theme-tertiary hover:text-red-400 transition-colors"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -1759,7 +1759,7 @@ export default function ManagerCalendarPage() {
                     <select
                       value={newMessage.recipient}
                       onChange={(e) => setNewMessage({ ...newMessage, recipient: e.target.value as any })}
-                      className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                      className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
                     >
                       <option value="manager">Manager</option>
                       <option value="owner">Owner/Admin</option>
@@ -1770,34 +1770,34 @@ export default function ManagerCalendarPage() {
                       placeholder="Subject"
                       value={newMessage.subject}
                       onChange={(e) => setNewMessage({ ...newMessage, subject: e.target.value })}
-                      className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                      className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
                     />
                     <textarea
                       placeholder="Message"
                       value={newMessage.message}
                       onChange={(e) => setNewMessage({ ...newMessage, message: e.target.value })}
                       rows={4}
-                      className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 resize-none"
+                      className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40] resize-none"
                     />
-                    <label className="flex items-center gap-2 text-sm text-slate-300">
+                    <label className="flex items-center gap-2 text-sm text-theme-secondary">
                       <input
                         type="checkbox"
                         checked={newMessage.urgent}
                         onChange={(e) => setNewMessage({ ...newMessage, urgent: e.target.checked })}
-                        className="w-4 h-4 rounded border-white/20 bg-black/50 text-[#D37E91] focus:ring-[#D37E91]/40"
+                        className="w-4 h-4 rounded border-white/20 bg-black/50 text-module-fg focus:ring-module-fg/[0.40]"
                       />
                       Mark as urgent
                     </label>
                     <div className="flex gap-2">
                       <button
                         onClick={addMessage}
-                        className="flex-1 px-4 py-2 rounded-lg bg-[#D37E91]/15 border border-[#D37E91]/30 text-[#D37E91] hover:bg-[#D37E91]/25 transition-colors"
+                        className="flex-1 px-4 py-2 rounded-lg bg-module-fg/[0.15] border border-module-fg/30 text-module-fg hover:bg-module-fg/[0.25] transition-colors"
                       >
                         Add Message
                       </button>
                       <button
                         onClick={() => setShowMessageForm(false)}
-                        className="px-4 py-2 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 transition-colors"
+                        className="px-4 py-2 rounded-lg border border-white/10 text-theme-tertiary hover:bg-white/5 transition-colors"
                       >
                         Cancel
                       </button>
@@ -1806,7 +1806,7 @@ export default function ManagerCalendarPage() {
                 ) : (
                   <button
                     onClick={() => setShowMessageForm(true)}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-slate-400 hover:border-[#D37E91]/30 hover:text-[#D37E91] transition-colors"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-theme-tertiary hover:border-module-fg/30 hover:text-module-fg transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     Add Message
@@ -1851,7 +1851,7 @@ export default function ManagerCalendarPage() {
           bg-[#FF6B9D] hover:bg-[#FF6B9D]/80
           shadow-lg hover:shadow-xl
           flex items-center justify-center
-          text-white
+          text-theme-primary
           transition-all duration-200
           active:scale-95 touch-manipulation
           right-5 lg:right-8

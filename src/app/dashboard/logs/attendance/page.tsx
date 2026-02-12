@@ -54,7 +54,7 @@ export default function AttendanceLogsPage() {
   // Safety check - ensure we have required context (after hooks)
   if (!companyId) {
     return (
-      <div className="flex-1 flex items-center justify-center p-6 text-white h-full">
+      <div className="flex-1 flex items-center justify-center p-6 text-theme-primary h-full">
         <div>Loading...</div>
       </div>
     );
@@ -225,15 +225,15 @@ export default function AttendanceLogsPage() {
   const isManager = profile?.app_role && ['manager', 'general_manager', 'admin', 'owner'].includes(profile.app_role.toLowerCase());
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] p-3 sm:p-4 md:p-6">
+    <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-3 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-4 sm:mb-6">
           <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-            {/* <Clock className="w-8 h-8 text-[#D37E91]" /> */}
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Attendance Register</h1>
+            {/* <Clock className="w-8 h-8 text-module-fg" /> */}
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-theme-primary">Attendance Register</h1>
           </div>
-          <p className="text-white/60 text-sm sm:text-base">View clock-in and clock-out records</p>
+          <p className="text-theme-tertiary text-sm sm:text-base">View clock-in and clock-out records</p>
         </div>
 
         {/* Filters */}
@@ -241,7 +241,7 @@ export default function AttendanceLogsPage() {
           <div className="flex flex-wrap gap-4">
             {/* Time Filter */}
             <div>
-              <label className="block text-sm text-white/80 mb-2">Time Period</label>
+              <label className="block text-sm text-theme-secondary mb-2">Time Period</label>
               <div className="flex gap-2 flex-wrap">
                 {(['all', 'today', 'week', 'month', 'custom'] as const).map((f) => (
                   <button
@@ -255,8 +255,8 @@ export default function AttendanceLogsPage() {
                     }}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       filter === f
-                        ? 'bg-transparent text-[#D37E91] border border-[#D37E91] shadow-[0_0_12px_rgba(211, 126, 145,0.7)]'
-                        : 'bg-transparent border border-white/[0.1] text-white/80 hover:border-white/[0.2] hover:text-white'
+                        ? 'bg-transparent text-module-fg border border-module-fg shadow-[0_0_12px_rgba(var(--module-fg),0.7)]'
+                        : 'bg-transparent border border-white/[0.1] text-theme-secondary hover:border-white/[0.2] hover:text-white'
                     }`}
                   >
                     {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -268,21 +268,21 @@ export default function AttendanceLogsPage() {
               {filter === 'custom' && (
                 <div className="flex gap-4 mt-3 flex-wrap">
                   <div>
-                    <label className="block text-xs text-white/60 mb-1">Start Date</label>
+                    <label className="block text-xs text-theme-tertiary mb-1">Start Date</label>
                     <input
                       type="date"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
-                      className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-white/[0.2]"
+                      className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] focus:border-module-fg/[0.50] transition-all hover:border-white/[0.2]"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-white/60 mb-1">End Date</label>
+                    <label className="block text-xs text-theme-tertiary mb-1">End Date</label>
                     <input
                       type="date"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
-                      className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-white/[0.2]"
+                      className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] focus:border-module-fg/[0.50] transition-all hover:border-white/[0.2]"
                     />
                   </div>
                 </div>
@@ -292,15 +292,15 @@ export default function AttendanceLogsPage() {
             {/* Site Filter */}
             {isManager && (
               <div className="flex-1 min-w-[200px]">
-                <label className="block text-sm text-white/80 mb-2">Site</label>
+                <label className="block text-sm text-theme-secondary mb-2">Site</label>
                 <select
                   value={selectedSiteId || ''}
                   onChange={(e) => setSelectedSiteId(e.target.value || null)}
-                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-white/[0.2]"
+                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] focus:border-module-fg/[0.50] transition-all hover:border-white/[0.2]"
                 >
-                  <option value="" className="bg-[#0B0D13]">All Sites</option>
+                  <option value="" className="bg-[rgb(var(--surface-elevated))]">All Sites</option>
                   {sites.map((site) => (
-                    <option key={site.id} value={site.id} className="bg-[#0B0D13]">
+                    <option key={site.id} value={site.id} className="bg-[rgb(var(--surface-elevated))]">
                       {site.name}
                     </option>
                   ))}
@@ -311,15 +311,15 @@ export default function AttendanceLogsPage() {
             {/* User Filter */}
             {isManager && (
               <div className="flex-1 min-w-[200px]">
-                <label className="block text-sm text-white/80 mb-2">Staff Member</label>
+                <label className="block text-sm text-theme-secondary mb-2">Staff Member</label>
                 <select
                   value={selectedUserId || ''}
                   onChange={(e) => setSelectedUserId(e.target.value || null)}
-                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-white/[0.2]"
+                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] focus:border-module-fg/[0.50] transition-all hover:border-white/[0.2]"
                 >
-                  <option value="" className="bg-[#0B0D13]">All Staff</option>
+                  <option value="" className="bg-[rgb(var(--surface-elevated))]">All Staff</option>
                   {users.map((user) => (
-                    <option key={user.id} value={user.id} className="bg-[#0B0D13]">
+                    <option key={user.id} value={user.id} className="bg-[rgb(var(--surface-elevated))]">
                       {user.full_name}
                     </option>
                   ))}
@@ -331,7 +331,7 @@ export default function AttendanceLogsPage() {
             <div className="flex items-end">
               <button
                 onClick={loadAttendance}
-                className="px-4 py-2 bg-transparent text-[#D37E91] border border-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all whitespace-nowrap"
+                className="px-4 py-2 bg-transparent text-module-fg border border-module-fg rounded-lg hover:shadow-[0_0_12px_rgba(var(--module-fg),0.7)] transition-all whitespace-nowrap"
               >
                 Refresh
               </button>
@@ -343,11 +343,11 @@ export default function AttendanceLogsPage() {
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
-              <div className="inline-block w-8 h-8 border-4 border-[#D37E91] border-t-transparent rounded-full animate-spin" />
-              <p className="mt-4 text-white/60">Loading attendance records...</p>
+              <div className="inline-block w-8 h-8 border-4 border-module-fg border-t-transparent rounded-full animate-spin" />
+              <p className="mt-4 text-theme-tertiary">Loading attendance records...</p>
             </div>
           ) : attendance.length === 0 ? (
-            <div className="p-12 text-center text-white/60">
+            <div className="p-12 text-center text-theme-tertiary">
               {/* <Clock className="w-12 h-12 mx-auto mb-4 opacity-50" /> */}
               <p>No attendance records found</p>
             </div>
@@ -356,15 +356,15 @@ export default function AttendanceLogsPage() {
               <table className="w-full">
                 <thead className="bg-white/[0.05] border-b border-white/[0.06]">
                   <tr>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Date</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Date</th>
                     {isManager && (
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Staff</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Staff</th>
                     )}
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Site</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Clock In</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Clock Out</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Duration</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-white/80">Status</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Site</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Clock In</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Clock Out</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Duration</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -375,34 +375,34 @@ export default function AttendanceLogsPage() {
                         key={record.id}
                         className="border-b border-white/[0.05] hover:bg-white/[0.05] transition-colors"
                       >
-                        <td className="py-3 px-4 text-white/80 text-sm">
+                        <td className="py-3 px-4 text-theme-secondary text-sm">
                           {record.clock_in_time ? formatDate(new Date(record.clock_in_time), 'd MMM yyyy') : '—'}
                         </td>
                         {isManager && (
-                          <td className="py-3 px-4 text-white/80 text-sm">
+                          <td className="py-3 px-4 text-theme-secondary text-sm">
                             <div className="flex items-center gap-2">
                               {record.profiles?.full_name || 'Unknown'}
                             </div>
                           </td>
                         )}
-                        <td className="py-3 px-4 text-white/80 text-sm">
+                        <td className="py-3 px-4 text-theme-secondary text-sm">
                           <div className="flex items-center gap-2">
                             {record.sites?.name || 'Unknown Site'}
                           </div>
                         </td>
-                        <td className="py-3 px-4 text-white/80 text-sm">
+                        <td className="py-3 px-4 text-theme-secondary text-sm">
                           <div className="flex items-center gap-2">
                             <span className="text-green-500">●</span>
                             {formatDateTime(record.clock_in_time)}
                           </div>
                         </td>
-                        <td className="py-3 px-4 text-white/80 text-sm">
+                        <td className="py-3 px-4 text-theme-secondary text-sm">
                           <div className="flex items-center gap-2">
                             <span className="text-orange-500">●</span>
                             {formatDateTime(record.clock_out_time)}
                           </div>
                         </td>
-                        <td className="py-3 px-4 text-white/80 text-sm font-mono">
+                        <td className="py-3 px-4 text-theme-secondary text-sm font-mono">
                           {formatDuration(record.total_hours)}
                         </td>
                         <td className="py-3 px-4">
@@ -410,7 +410,7 @@ export default function AttendanceLogsPage() {
                             className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                               record.shift_status === 'on_shift'
                                 ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                                : 'bg-white/10 text-white/60 border border-white/20'
+                                : 'bg-white/10 text-theme-tertiary border border-white/20'
                             }`}
                           >
                             {record.shift_status === 'on_shift' ? 'On Shift' : 'Completed'}
@@ -429,18 +429,18 @@ export default function AttendanceLogsPage() {
         {!loading && attendance.length > 0 && (
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white/[0.03] border border-white/[0.1] rounded-xl p-4">
-              <div className="text-white/60 text-sm mb-1">Total Records</div>
-              <div className="text-2xl font-bold text-white">{attendance.length}</div>
+              <div className="text-theme-tertiary text-sm mb-1">Total Records</div>
+              <div className="text-2xl font-bold text-theme-primary">{attendance.length}</div>
             </div>
             <div className="bg-white/[0.03] border border-white/[0.1] rounded-xl p-4">
-              <div className="text-white/60 text-sm mb-1">Active Shifts</div>
+              <div className="text-theme-tertiary text-sm mb-1">Active Shifts</div>
               <div className="text-2xl font-bold text-green-400">
                 {attendance.filter((r) => r.shift_status === 'on_shift').length}
               </div>
             </div>
             <div className="bg-white/[0.03] border border-white/[0.1] rounded-xl p-4">
-              <div className="text-white/60 text-sm mb-1">Total Hours</div>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-theme-tertiary text-sm mb-1">Total Hours</div>
+              <div className="text-2xl font-bold text-theme-primary">
                 {formatDuration(
                   attendance
                     .filter((r) => r.total_hours !== null)

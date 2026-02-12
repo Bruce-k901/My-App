@@ -115,7 +115,7 @@ export default function TodaysChecksWidget({ companyId, siteId }: WidgetProps) {
         </div>
       }
       badge={
-        <span className="text-xs font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">
+        <span className="text-xs font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
           {stats.completed}/{stats.total}
         </span>
       }
@@ -133,7 +133,7 @@ export default function TodaysChecksWidget({ companyId, siteId }: WidgetProps) {
           {/* Progress bar */}
           <div>
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className="text-[rgb(var(--text-tertiary))] dark:text-white/40">
+              <span className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
                 {stats.completed} completed
               </span>
               <span className={cn('font-medium', colors.text)}>{completionRate}%</span>
@@ -157,20 +157,20 @@ export default function TodaysChecksWidget({ companyId, siteId }: WidgetProps) {
                 {task.status === 'completed' ? (
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                 ) : (
-                  <Circle className="w-4 h-4 text-gray-400 dark:text-white/30 flex-shrink-0" />
+                  <Circle className="w-4 h-4 text-theme-tertiary/30 flex-shrink-0" />
                 )}
                 <span
                   className={cn(
                     'text-sm truncate flex-1',
                     task.status === 'completed'
-                      ? 'text-[rgb(var(--text-tertiary))] dark:text-white/40 line-through'
+                      ? 'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary line-through'
                       : 'text-[rgb(var(--text-primary))] dark:text-white'
                   )}
                 >
                   {task.template_name}
                 </span>
                 {task.due_time && (
-                  <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 flex-shrink-0">
+                  <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary flex-shrink-0">
                     {task.due_time.slice(0, 5)}
                   </span>
                 )}

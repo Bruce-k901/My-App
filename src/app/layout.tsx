@@ -279,7 +279,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="shortcut icon" href="/favicon.ico" />
       </head>
-      <body className={`bg-[#F5F5F2] dark:bg-neutral-950 text-gray-900 dark:text-white font-sans ${poppins.variable}`} suppressHydrationWarning>
+      <body className={`bg-[#F5F5F2] dark:bg-neutral-950 text-theme-primary font-sans ${poppins.variable}`} suppressHydrationWarning>
         <ErrorBoundaryWrapper>
           <ReactQueryProvider>
             <QueryProvider>

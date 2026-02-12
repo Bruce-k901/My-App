@@ -138,7 +138,7 @@ export default function CustomerLayout({
   if (!mounted || loading) {
     return (
       <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center">
-        <div className="text-white/60">Loading...</div>
+        <div className="text-theme-tertiary">Loading...</div>
       </div>
     );
   }
@@ -158,7 +158,7 @@ export default function CustomerLayout({
               <select
                 value={selectedCustomerId}
                 onChange={(e) => handleCustomerChange(e.target.value)}
-                className="bg-white/[0.05] border border-orange-500/30 rounded-lg px-3 py-1.5 text-sm text-white min-w-0 max-w-[280px] focus:outline-none focus:border-orange-500/60"
+                className="bg-white/[0.05] border border-orange-500/30 rounded-lg px-3 py-1.5 text-sm text-theme-primary min-w-0 max-w-[280px] focus:outline-none focus:border-orange-500/60"
               >
                 {customers.map((c) => (
                   <option key={c.id} value={c.id} className="bg-[#1a1a2e] text-white">
@@ -184,7 +184,7 @@ export default function CustomerLayout({
           <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo/Brand */}
             <Link href="/customer/dashboard" className="flex items-center gap-2">
-              <span className="text-lg sm:text-xl font-bold text-white">Order Book</span>
+              <span className="text-lg sm:text-xl font-bold text-theme-primary">Order Book</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -194,7 +194,7 @@ export default function CustomerLayout({
                 className={`text-sm transition-colors ${
                   pathname === '/customer/dashboard'
                     ? 'text-[#D37E91]'
-                    : 'text-white/60 hover:text-white'
+                    : 'text-theme-tertiary hover:text-white'
                 }`}
               >
                 Dashboard
@@ -204,7 +204,7 @@ export default function CustomerLayout({
                 className={`text-sm transition-colors ${
                   pathname?.startsWith('/customer/orders')
                     ? 'text-[#D37E91]'
-                    : 'text-white/60 hover:text-white'
+                    : 'text-theme-tertiary hover:text-white'
                 }`}
               >
                 Orders
@@ -214,7 +214,7 @@ export default function CustomerLayout({
                 className={`text-sm transition-colors ${
                   pathname?.startsWith('/customer/waste')
                     ? 'text-[#D37E91]'
-                    : 'text-white/60 hover:text-white'
+                    : 'text-theme-tertiary hover:text-white'
                 }`}
               >
                 Waste Tracking
@@ -224,7 +224,7 @@ export default function CustomerLayout({
                 className={`text-sm transition-colors ${
                   pathname?.startsWith('/customer/messages')
                     ? 'text-[#D37E91]'
-                    : 'text-white/60 hover:text-white'
+                    : 'text-theme-tertiary hover:text-white'
                 }`}
               >
                 Messages
@@ -234,7 +234,7 @@ export default function CustomerLayout({
                 className={`text-sm transition-colors ${
                   pathname?.startsWith('/customer/feedback')
                     ? 'text-[#D37E91]'
-                    : 'text-white/60 hover:text-white'
+                    : 'text-theme-tertiary hover:text-white'
                 }`}
               >
                 Feedback
@@ -242,7 +242,7 @@ export default function CustomerLayout({
               {!isAdminPreview && (
                 <button
                   onClick={handleSignOut}
-                  className="flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-sm text-theme-tertiary hover:text-white transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   Sign Out
@@ -253,7 +253,7 @@ export default function CustomerLayout({
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-white/60 hover:text-white"
+              className="md:hidden p-2 text-theme-tertiary hover:text-white"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -271,7 +271,7 @@ export default function CustomerLayout({
                 className={`block py-2 text-sm transition-colors ${
                   pathname === '/customer/dashboard'
                     ? 'text-[#D37E91]'
-                    : 'text-white/60 hover:text-white'
+                    : 'text-theme-tertiary hover:text-white'
                 }`}
               >
                 Dashboard
@@ -282,7 +282,7 @@ export default function CustomerLayout({
                 className={`block py-2 text-sm transition-colors ${
                   pathname?.startsWith('/customer/orders')
                     ? 'text-[#D37E91]'
-                    : 'text-white/60 hover:text-white'
+                    : 'text-theme-tertiary hover:text-white'
                 }`}
               >
                 Orders
@@ -293,7 +293,7 @@ export default function CustomerLayout({
                 className={`block py-2 text-sm transition-colors ${
                   pathname?.startsWith('/customer/waste')
                     ? 'text-[#D37E91]'
-                    : 'text-white/60 hover:text-white'
+                    : 'text-theme-tertiary hover:text-white'
                 }`}
               >
                 Waste Tracking
@@ -304,7 +304,7 @@ export default function CustomerLayout({
                 className={`block py-2 text-sm transition-colors ${
                   pathname?.startsWith('/customer/messages')
                     ? 'text-[#D37E91]'
-                    : 'text-white/60 hover:text-white'
+                    : 'text-theme-tertiary hover:text-white'
                 }`}
               >
                 Messages
@@ -315,7 +315,7 @@ export default function CustomerLayout({
                 className={`block py-2 text-sm transition-colors ${
                   pathname?.startsWith('/customer/feedback')
                     ? 'text-[#D37E91]'
-                    : 'text-white/60 hover:text-white'
+                    : 'text-theme-tertiary hover:text-white'
                 }`}
               >
                 Feedback
@@ -326,7 +326,7 @@ export default function CustomerLayout({
                     handleSignOut();
                     setMobileMenuOpen(false);
                   }}
-                  className="flex items-center gap-2 w-full py-2 text-sm text-white/60 hover:text-white transition-colors"
+                  className="flex items-center gap-2 w-full py-2 text-sm text-theme-tertiary hover:text-white transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   Sign Out

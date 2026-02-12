@@ -47,7 +47,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   // Determine which module sidebar to show
   const isCheckly = pathname?.startsWith('/dashboard/todays_tasks') || pathname?.startsWith('/dashboard/tasks') || pathname?.startsWith('/dashboard/checklists') || pathname?.startsWith('/dashboard/incidents') || pathname?.startsWith('/dashboard/sops') || pathname?.startsWith('/dashboard/risk-assessments') || pathname?.startsWith('/dashboard/logs');
-  const isStockly = pathname?.startsWith('/dashboard/stockly');
+  const isStockly = pathname?.startsWith('/dashboard/stockly') || pathname?.startsWith('/dashboard/reports/stockly');
   const isTeamly = pathname?.startsWith('/dashboard/people') || pathname?.startsWith('/dashboard/courses');
   const isPlanly = pathname?.startsWith('/dashboard/planly');
   const isAssetly = pathname?.startsWith('/dashboard/assets') || pathname?.startsWith('/dashboard/ppm');
@@ -65,7 +65,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   if (isMobile) {
     return (
       <MobileNavProvider>
-        <div className={`dashboard-page ${moduleClass} bg-[rgb(var(--module-bg-tint))] text-white pb-20`}>
+        <div className={`dashboard-page ${moduleClass} bg-[rgb(var(--module-bg-tint))] text-theme-primary pb-20`}>
           {/* No desktop header on mobile - pages handle their own headers */}
           <main>
             {children}
@@ -85,7 +85,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   // ============================================
   return (
     <MobileNavProvider>
-      <div className={`min-h-screen ${moduleClass} bg-[rgb(var(--module-bg-tint))] text-gray-900 dark:text-white`}>
+      <div className={`min-h-screen ${moduleClass} bg-[rgb(var(--module-bg-tint))] text-theme-primary`}>
         {/* Header - Fixed at top (includes ModuleBar) */}
         <Header />
 
@@ -94,27 +94,27 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           {showModuleSidebar && (
             <>
               {isCheckly && (
-                <div className="hidden lg:block fixed left-0 top-[112px] h-[calc(100vh-112px)] z-30">
+                <div className="hidden lg:block fixed left-0 top-16 h-[calc(100vh-64px)] z-[35]">
                   <ChecklySidebar />
                 </div>
               )}
               {isStockly && (
-                <div className="hidden lg:block fixed left-0 top-[112px] h-[calc(100vh-112px)] z-30">
+                <div className="hidden lg:block fixed left-0 top-16 h-[calc(100vh-64px)] z-[35]">
                   <StocklySidebar />
                 </div>
               )}
               {isTeamly && (
-                <div className="hidden lg:block fixed left-0 top-[112px] h-[calc(100vh-112px)] z-30">
+                <div className="hidden lg:block fixed left-0 top-16 h-[calc(100vh-64px)] z-[35]">
                   <TeamlySidebar />
                 </div>
               )}
               {isPlanly && (
-                <div className="hidden lg:block fixed left-0 top-[112px] h-[calc(100vh-112px)] z-30">
+                <div className="hidden lg:block fixed left-0 top-16 h-[calc(100vh-64px)] z-[35]">
                   <PlanlySidebar />
                 </div>
               )}
               {isAssetly && (
-                <div className="hidden lg:block fixed left-0 top-[112px] h-[calc(100vh-112px)] z-30">
+                <div className="hidden lg:block fixed left-0 top-16 h-[calc(100vh-64px)] z-[35]">
                   <AssetlySidebar />
                 </div>
               )}

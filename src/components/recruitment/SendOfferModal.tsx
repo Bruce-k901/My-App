@@ -165,14 +165,14 @@ export default function SendOfferModal({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
           <div>
-            <h2 className="text-xl font-semibold text-white">Send Offer Letter</h2>
-            <p className="text-sm text-white/60 mt-1">
+            <h2 className="text-xl font-semibold text-theme-primary">Send Offer Letter</h2>
+            <p className="text-sm text-theme-tertiary mt-1">
               To {candidate.full_name} for {application.job_title}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-white/5 text-white/60 hover:text-white"
+            className="p-2 rounded-lg hover:bg-white/5 text-theme-tertiary hover:text-white"
           >
             <X className="w-5 h-5" />
           </button>
@@ -182,8 +182,8 @@ export default function SendOfferModal({
         <div className="p-6 space-y-6">
           {/* Position Summary */}
           <div className="bg-white/[0.02] border border-white/[0.05] rounded-lg p-4">
-            <div className="text-xs text-white/50 mb-2">Position Details</div>
-            <div className="text-white font-medium">{application.job_title}</div>
+            <div className="text-xs text-theme-tertiary mb-2">Position Details</div>
+            <div className="text-theme-primary font-medium">{application.job_title}</div>
             <div className="flex items-center gap-2 mt-2">
               <span className="px-2 py-0.5 text-xs rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30">
                 {application.boh_foh}
@@ -196,19 +196,19 @@ export default function SendOfferModal({
 
           {/* Start Date */}
           <div>
-            <label className="text-xs text-white/50 block mb-1">Start Date *</label>
+            <label className="text-xs text-theme-tertiary block mb-1">Start Date *</label>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               min={new Date().toISOString().split('T')[0]}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary text-sm"
             />
           </div>
 
           {/* Pay Rate */}
           <div>
-            <label className="text-xs text-white/50 block mb-1">
+            <label className="text-xs text-theme-tertiary block mb-1">
               Pay Rate * (£{application.pay_type === 'hourly' ? '/hour' : '/year'})
             </label>
             <input
@@ -217,14 +217,14 @@ export default function SendOfferModal({
               value={payRate}
               onChange={(e) => setPayRate(e.target.value)}
               placeholder={application.pay_type === 'hourly' ? '12.50' : '28000'}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary text-sm"
             />
           </div>
 
           {/* Contract Details */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-white/50 block mb-1">Contract Type</label>
+              <label className="text-xs text-theme-tertiary block mb-1">Contract Type</label>
               <Select
                 value={contractType}
                 onValueChange={(v) => setContractType(v as any)}
@@ -239,7 +239,7 @@ export default function SendOfferModal({
             </div>
 
             <div>
-              <label className="text-xs text-white/50 block mb-1">
+              <label className="text-xs text-theme-tertiary block mb-1">
                 Contract Hours (per week)
               </label>
               <input
@@ -248,7 +248,7 @@ export default function SendOfferModal({
                 value={contractHours}
                 onChange={(e) => setContractHours(e.target.value)}
                 placeholder="40"
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary text-sm"
               />
             </div>
           </div>
@@ -256,7 +256,7 @@ export default function SendOfferModal({
           {/* Preview */}
           <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-4">
             <div className="text-xs text-blue-300 font-medium mb-2">📋 Offer Summary</div>
-            <div className="text-sm text-white/70 space-y-1">
+            <div className="text-sm text-theme-secondary space-y-1">
               <div>Position: <strong>{application.job_title}</strong></div>
               <div>Start Date: <strong>{startDate || 'Not set'}</strong></div>
               <div>
@@ -276,7 +276,7 @@ export default function SendOfferModal({
         <div className="flex items-center justify-end gap-3 p-6 border-t border-white/[0.06]">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-white/80"
+            className="px-4 py-2 rounded-lg text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-theme-secondary"
           >
             Cancel
           </button>

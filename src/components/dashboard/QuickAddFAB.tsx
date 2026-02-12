@@ -13,19 +13,19 @@ export default function QuickAddFAB() {
       <div className="flex flex-col gap-2">
         <button
           onClick={() => router.push("/tasks/new")}
-          className="text-xs px-3 py-2 rounded-full bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12] backdrop-blur-md flex items-center gap-2"
+          className="text-xs px-3 py-2 rounded-full bg-white/[0.06] border border-white/[0.1] text-theme-primary hover:bg-white/[0.12] backdrop-blur-md flex items-center gap-2"
         >
           <ClipboardList className="w-4 h-4 text-[#D37E91]" /> Add Task
         </button>
         <button
           onClick={() => router.push("/incidents/new")}
-          className="text-xs px-3 py-2 rounded-full bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12] backdrop-blur-md flex items-center gap-2"
+          className="text-xs px-3 py-2 rounded-full bg-white/[0.06] border border-white/[0.1] text-theme-primary hover:bg-white/[0.12] backdrop-blur-md flex items-center gap-2"
         >
           <AlertOctagon className="w-4 h-4 text-[#D37E91]" /> Log Incident
         </button>
         <button
           onClick={() => router.push("/reports/certificates/new")}
-          className="text-xs px-3 py-2 rounded-full bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12] backdrop-blur-md flex items-center gap-2"
+          className="text-xs px-3 py-2 rounded-full bg-white/[0.06] border border-white/[0.1] text-theme-primary hover:bg-white/[0.12] backdrop-blur-md flex items-center gap-2"
         >
           <FilePlus2 className="w-4 h-4 text-[#D37E91]" /> Upload Cert
         </button>

@@ -133,7 +133,7 @@ export default function AssetsPage() {
   });
   
   // Wait for auth to load before proceeding
-  if (authLoading) return <div className="p-8 text-gray-900 dark:text-white">Loading...</div>;
+  if (authLoading) return <div className="p-8 text-theme-primary">Loading...</div>;
 
   if (!companyId) {
     return (
@@ -142,12 +142,12 @@ export default function AssetsPage() {
           <h2 className="text-xl font-semibold text-yellow-600 dark:text-yellow-400 mb-2">
             Company Setup Required
           </h2>
-          <p className="text-gray-700 dark:text-white/80 mb-4">
+          <p className="text-theme-secondary mb-4">
             Please complete your company setup to access this page.
           </p>
           <a
             href="/dashboard/business"
-            className="inline-block px-4 py-2 bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-600 text-white rounded-lg transition-all duration-200"
+            className="inline-block px-4 py-2 bg-module-fg hover:bg-module-fg/90 text-white rounded-lg transition-all duration-200"
           >
             Complete Setup
           </a>
@@ -361,44 +361,44 @@ export default function AssetsPage() {
       {/* Header with Controls */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Assets</h1>
+          <h1 className="text-3xl font-bold text-theme-primary">Assets</h1>
           {/* Site filtering is handled by SiteContext - see header SiteFilter component */}
           {isAllSites && (
-            <span className="text-sm text-gray-500 dark:text-gray-400">(Viewing all sites)</span>
+            <span className="text-sm text-theme-tertiary">(Viewing all sites)</span>
           )}
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search assets..."
-            className="h-11 w-64 px-4 rounded-lg border border-gray-300 dark:border-white/[0.12] bg-white dark:bg-white/[0.06] text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500"
+ className="h-11 w-64 px-4 rounded-lg border border-theme bg-theme-surface text-theme-primary placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-module-fg/[0.25] focus:border-module-fg/[0.50]"
           />
         </div>
         <div className="flex items-center gap-2">
           {/* Action Buttons with unified height and 2mm spacing */}
           <button
             onClick={handleAdd}
-            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-cyan-600 dark:border-cyan-500 text-cyan-600 dark:text-cyan-400 bg-transparent hover:bg-gray-100 dark:hover:bg-white/[0.04] transition-all duration-150 ease-in-out"
+            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-module-fg/[0.50] text-module-fg bg-transparent hover:bg-module-fg/[0.06] dark:hover:bg-white/[0.04] transition-all duration-150 ease-in-out"
             aria-label="Add Asset"
           >
             <Plus className="h-5 w-5" />
           </button>
           <Link
             href="/dashboard/archived-assets"
-            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-orange-500 text-orange-600 dark:text-orange-400 bg-transparent hover:bg-orange-100 dark:hover:bg-orange-500/10 transition-all duration-150 ease-in-out"
+            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-module-fg/[0.30] text-module-fg/70 bg-transparent hover:bg-module-fg/[0.06] dark:hover:bg-white/[0.04] transition-all duration-150 ease-in-out"
             title="View archived assets"
           >
             <Archive className="h-5 w-5" />
           </Link>
           <button
             onClick={handleDownload}
-            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-gray-300 dark:border-white/[0.12] bg-gray-100 dark:bg-white/[0.06] text-gray-600 dark:text-white hover:bg-gray-200 dark:hover:bg-white/[0.12] transition-all duration-150 ease-in-out"
+            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-gray-300 dark:border-white/[0.12] bg-gray-100 dark:bg-white/[0.06] text-theme-secondary hover:bg-gray-200 dark:hover:bg-white/[0.12] transition-all duration-150 ease-in-out"
             aria-label="Download Assets"
           >
             <Download className="h-5 w-5" />
           </button>
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-gray-300 dark:border-white/[0.12] bg-gray-100 dark:bg-white/[0.06] text-gray-600 dark:text-white hover:bg-gray-200 dark:hover:bg-white/[0.12] transition-all duration-150 ease-in-out"
+            className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-gray-300 dark:border-white/[0.12] bg-gray-100 dark:bg-white/[0.06] text-theme-secondary hover:bg-gray-200 dark:hover:bg-white/[0.12] transition-all duration-150 ease-in-out"
             aria-label="Upload Assets"
           >
             <Upload className="h-5 w-5" />
@@ -421,9 +421,9 @@ export default function AssetsPage() {
       )}
 
       {isLoading ? (
-        <div className="text-gray-500 dark:text-slate-400">Loading assets…</div>
+        <div className="text-theme-tertiary">Loading assets…</div>
       ) : filteredAssets.length === 0 ? (
-        <p className="text-gray-500 dark:text-gray-400 p-6">No assets yet. Add one to get started.</p>
+        <p className="text-theme-tertiary p-6">No assets yet. Add one to get started.</p>
       ) : (
         <div className="space-y-4">
           {filteredAssets.map((asset) => (

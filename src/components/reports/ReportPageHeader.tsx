@@ -23,13 +23,13 @@ export default function ReportPageHeader({
       <div className="flex items-center gap-3">
         <Link
           href={backHref}
-          className="p-2 rounded-lg bg-gray-100 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.08] hover:bg-gray-200 dark:hover:bg-white/[0.08] transition-colors"
+          className="p-2 rounded-lg bg-gray-100 dark:bg-white/[0.05] border border-theme hover:bg-gray-200 dark:hover:bg-white/[0.08] transition-colors"
         >
-          <ArrowLeft className="w-4 h-4 text-gray-500 dark:text-white/60" />
+          <ArrowLeft className="w-4 h-4 text-theme-tertiary" />
         </Link>
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{title}</h1>
-          {subtitle && <p className="text-sm text-gray-500 dark:text-white/50 mt-0.5">{subtitle}</p>}
+          <h1 className="text-xl sm:text-2xl font-bold text-theme-primary">{title}</h1>
+          {subtitle && <p className="text-sm text-theme-tertiary mt-0.5">{subtitle}</p>}
         </div>
       </div>
       {onExportPdf && (

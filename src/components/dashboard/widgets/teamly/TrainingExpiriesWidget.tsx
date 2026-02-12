@@ -135,7 +135,7 @@ export default function TrainingExpiriesWidget({ companyId, siteId }: WidgetProp
                 <p className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white truncate">
                   {training.staff_name}
                 </p>
-                <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 truncate">
+                <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary truncate">
                   {training.training_name}
                 </p>
               </div>

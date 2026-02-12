@@ -31,7 +31,7 @@ function ChannelCheckbox({
         onChange={(e) => onChange(e.target.checked)}
         className="w-4 h-4 rounded border-gray-300 dark:border-white/20 text-[#D37E91] focus:ring-[#D37E91] bg-transparent"
       />
-      <span className="text-sm text-neutral-700 dark:text-white/70">{label}</span>
+      <span className="text-sm text-theme-secondary/70">{label}</span>
     </label>
   );
 }
@@ -70,13 +70,13 @@ export function NotificationsTab() {
     <div className="space-y-8">
       {/* Notification Channel Matrix */}
       <div>
-        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-1">Notification Channels</h3>
-        <p className="text-sm text-neutral-500 dark:text-white/50 mb-4">
+        <h3 className="text-lg font-semibold text-theme-primary mb-1">Notification Channels</h3>
+        <p className="text-sm text-theme-tertiary/50 mb-4">
           Choose how you want to be notified for each event type.
         </p>
 
         {/* Header row */}
-        <div className="hidden sm:grid grid-cols-[1fr_80px_80px_80px] gap-2 px-4 pb-2 text-xs font-medium text-neutral-500 dark:text-white/40 uppercase tracking-wider">
+        <div className="hidden sm:grid grid-cols-[1fr_80px_80px_80px] gap-2 px-4 pb-2 text-xs font-medium text-theme-tertiary/40 uppercase tracking-wider">
           <span>Event</span>
           <span className="text-center flex items-center justify-center gap-1">
             <Monitor className="w-3.5 h-3.5" /> In-App
@@ -100,11 +100,11 @@ export function NotificationsTab() {
             return (
               <div
                 key={type}
-                className="grid grid-cols-1 sm:grid-cols-[1fr_80px_80px_80px] gap-2 sm:gap-2 items-center p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]"
+                className="grid grid-cols-1 sm:grid-cols-[1fr_80px_80px_80px] gap-2 sm:gap-2 items-center p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-theme"
               >
                 <div>
-                  <p className="font-medium text-sm text-neutral-900 dark:text-white">{meta.label}</p>
-                  <p className="text-xs text-neutral-500 dark:text-white/40">{meta.description}</p>
+                  <p className="font-medium text-sm text-theme-primary">{meta.label}</p>
+                  <p className="text-xs text-theme-tertiary/40">{meta.description}</p>
                 </div>
 
                 {/* Mobile: horizontal row of labelled checkboxes */}
@@ -159,19 +159,19 @@ export function NotificationsTab() {
 
       {/* Quiet Hours */}
       <div>
-        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-1 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-theme-primary mb-1 flex items-center gap-2">
           <BellOff className="w-5 h-5 text-[#D37E91]" />
           Quiet Hours
         </h3>
-        <p className="text-sm text-neutral-500 dark:text-white/50 mb-4">
+        <p className="text-sm text-theme-tertiary/50 mb-4">
           Suppress all sounds and pop-up notifications during these hours.
         </p>
 
         <div className="space-y-3">
-          <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+          <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-theme">
             <div>
-              <p className="font-medium text-neutral-900 dark:text-white">Enable Quiet Hours</p>
-              <p className="text-sm text-neutral-500 dark:text-white/50">No alerts between the set times</p>
+              <p className="font-medium text-theme-primary">Enable Quiet Hours</p>
+              <p className="text-sm text-theme-tertiary/50">No alerts between the set times</p>
             </div>
             <ToggleSwitch
               checked={quietHours.enabled}
@@ -180,24 +180,24 @@ export function NotificationsTab() {
           </div>
 
           {quietHours.enabled && (
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
-              <Clock className="w-5 h-5 text-neutral-400 dark:text-white/40 flex-shrink-0" />
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-theme">
+              <Clock className="w-5 h-5 text-theme-tertiary flex-shrink-0" />
               <div className="flex items-center gap-2">
-                <label className="text-sm text-neutral-600 dark:text-white/60">From</label>
+                <label className="text-sm text-theme-secondary/60">From</label>
                 <input
                   type="time"
                   value={quietHours.start}
                   onChange={(e) => updateQuietHours({ start: e.target.value })}
-                  className="text-sm rounded-lg px-3 py-2 bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] text-neutral-900 dark:text-white"
+                  className="text-sm rounded-lg px-3 py-2 bg-white dark:bg-white/[0.06] border border-theme text-theme-primary"
                 />
               </div>
               <div className="flex items-center gap-2">
-                <label className="text-sm text-neutral-600 dark:text-white/60">To</label>
+                <label className="text-sm text-theme-secondary/60">To</label>
                 <input
                   type="time"
                   value={quietHours.end}
                   onChange={(e) => updateQuietHours({ end: e.target.value })}
-                  className="text-sm rounded-lg px-3 py-2 bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] text-neutral-900 dark:text-white"
+                  className="text-sm rounded-lg px-3 py-2 bg-white dark:bg-white/[0.06] border border-theme text-theme-primary"
                 />
               </div>
             </div>
@@ -207,8 +207,8 @@ export function NotificationsTab() {
 
       {/* Digest Mode */}
       <div>
-        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-1">Digest Preference</h3>
-        <p className="text-sm text-neutral-500 dark:text-white/50 mb-4">
+        <h3 className="text-lg font-semibold text-theme-primary mb-1">Digest Preference</h3>
+        <p className="text-sm text-theme-tertiary/50 mb-4">
           How you want to receive notification summaries.
         </p>
         <div className="grid grid-cols-2 gap-3">
@@ -217,49 +217,49 @@ export function NotificationsTab() {
             className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all text-center
               ${preferences.digest_mode === 'realtime'
                 ? 'border-[#D37E91] bg-[#D37E91]/15 ring-1 ring-[#D37E91]/30'
-                : 'border-gray-200 dark:border-white/[0.08] bg-gray-50 dark:bg-white/[0.03] hover:border-gray-300 dark:hover:border-white/[0.15]'
+                : 'border-theme bg-gray-50 dark:bg-white/[0.03] hover:border-gray-300 dark:hover:border-white/[0.15]'
               }`}
           >
-            <Bell className={`w-6 h-6 ${preferences.digest_mode === 'realtime' ? 'text-[#D37E91]' : 'text-neutral-400 dark:text-white/50'}`} />
-            <span className={`text-sm font-medium ${preferences.digest_mode === 'realtime' ? 'text-[#D37E91]' : 'text-neutral-700 dark:text-white/80'}`}>Real-time</span>
-            <span className="text-xs text-neutral-500 dark:text-white/40">Get alerts as they happen</span>
+            <Bell className={`w-6 h-6 ${preferences.digest_mode === 'realtime' ? 'text-[#D37E91]' : 'text-theme-tertiary/50'}`} />
+            <span className={`text-sm font-medium ${preferences.digest_mode === 'realtime' ? 'text-[#D37E91]' : 'text-theme-secondary'}`}>Real-time</span>
+            <span className="text-xs text-theme-tertiary/40">Get alerts as they happen</span>
           </button>
           <button
             onClick={() => updatePreference('digest_mode', 'daily')}
             className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all text-center
               ${preferences.digest_mode === 'daily'
                 ? 'border-[#D37E91] bg-[#D37E91]/15 ring-1 ring-[#D37E91]/30'
-                : 'border-gray-200 dark:border-white/[0.08] bg-gray-50 dark:bg-white/[0.03] hover:border-gray-300 dark:hover:border-white/[0.15]'
+                : 'border-theme bg-gray-50 dark:bg-white/[0.03] hover:border-gray-300 dark:hover:border-white/[0.15]'
               }`}
           >
-            <Mail className={`w-6 h-6 ${preferences.digest_mode === 'daily' ? 'text-[#D37E91]' : 'text-neutral-400 dark:text-white/50'}`} />
-            <span className={`text-sm font-medium ${preferences.digest_mode === 'daily' ? 'text-[#D37E91]' : 'text-neutral-700 dark:text-white/80'}`}>Daily Digest</span>
-            <span className="text-xs text-neutral-500 dark:text-white/40">Summary email each morning</span>
+            <Mail className={`w-6 h-6 ${preferences.digest_mode === 'daily' ? 'text-[#D37E91]' : 'text-theme-tertiary/50'}`} />
+            <span className={`text-sm font-medium ${preferences.digest_mode === 'daily' ? 'text-[#D37E91]' : 'text-theme-secondary'}`}>Daily Digest</span>
+            <span className="text-xs text-theme-tertiary/40">Summary email each morning</span>
           </button>
         </div>
       </div>
 
       {/* Sound & Vibration */}
       <div>
-        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-1">Sound & Vibration</h3>
-        <p className="text-sm text-neutral-500 dark:text-white/50 mb-4">
+        <h3 className="text-lg font-semibold text-theme-primary mb-1">Sound & Vibration</h3>
+        <p className="text-sm text-theme-tertiary/50 mb-4">
           Control in-app alert sounds and haptic feedback.
         </p>
         <div className="space-y-3">
-          <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+          <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-theme">
             <div>
-              <p className="font-medium text-neutral-900 dark:text-white">Sound Alerts</p>
-              <p className="text-sm text-neutral-500 dark:text-white/50">Play sounds for tasks and messages</p>
+              <p className="font-medium text-theme-primary">Sound Alerts</p>
+              <p className="text-sm text-theme-tertiary/50">Play sounds for tasks and messages</p>
             </div>
             <ToggleSwitch
               checked={preferences.sound_enabled ?? true}
               onChange={() => updatePreference('sound_enabled', !(preferences.sound_enabled ?? true))}
             />
           </div>
-          <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+          <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-theme">
             <div>
-              <p className="font-medium text-neutral-900 dark:text-white">Vibration</p>
-              <p className="text-sm text-neutral-500 dark:text-white/50">Vibrate on alerts (Android only)</p>
+              <p className="font-medium text-theme-primary">Vibration</p>
+              <p className="text-sm text-theme-tertiary/50">Vibrate on alerts (Android only)</p>
             </div>
             <ToggleSwitch
               checked={preferences.vibration_enabled ?? true}

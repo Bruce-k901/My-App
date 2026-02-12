@@ -14,7 +14,7 @@ export default function DirectoryRedirectPage() {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="text-center">
-        <p className="text-gray-500 dark:text-white/60">Redirecting to employees page...</p>
+        <p className="text-theme-tertiary">Redirecting to employees page...</p>
       </div>
     </div>
   );

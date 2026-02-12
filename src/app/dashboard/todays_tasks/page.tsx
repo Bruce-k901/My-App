@@ -1653,7 +1653,7 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
     if (timing.status === 'due') return 'bg-green-500/10 text-green-400 border-green-500/20'
     if (timing.status === 'pending') return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
     
-    return 'bg-gray-500/10 text-gray-400 border-gray-500/20'
+    return 'bg-theme-surface-elevated0/10 text-theme-tertiary border-gray-500/20'
   }
 
   const getStatusIcon = (task: ChecklistTaskWithTemplate) => {
@@ -1697,7 +1697,7 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
       'cleaning': 'bg-purple-500/10 text-purple-400',
       'compliance': 'bg-yellow-500/10 text-yellow-400'
     }
-    return colors[category] || 'bg-gray-500/10 text-gray-400'
+    return colors[category] || 'bg-theme-surface-elevated0/10 text-theme-tertiary'
   }
 
   return (
@@ -1708,7 +1708,7 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
         <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">
           Today's Tasks
         </h1>
-        <p className="text-[rgb(var(--text-secondary))] dark:text-neutral-400 text-sm sm:text-base" suppressHydrationWarning>
+ <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm sm:text-base"suppressHydrationWarning>
           {currentDate}
         </p>
         </div>
@@ -1735,8 +1735,8 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
           disabled={refreshing}
           className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium flex items-center gap-2 ${
             refreshing
-              ? 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-tertiary))] dark:text-white/40 cursor-not-allowed'
-              : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.12]'
+              ? 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary cursor-not-allowed'
+              : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-theme-secondary hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.12]'
           }`}
         >
           {refreshing
@@ -1757,15 +1757,15 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
               className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium flex items-center gap-2 ${
                 showUpcoming
                   ? 'bg-orange-500/10 border-orange-500/50 text-orange-600 dark:text-orange-400'
-                  : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.12]'
+                  : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-theme-secondary hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.12]'
               }`}
             >
-              <Calendar className={`h-4 w-4 ${showUpcoming ? 'text-orange-600 dark:text-orange-400' : 'text-[rgb(var(--text-tertiary))] dark:text-white/60'}`} />
+              <Calendar className={`h-4 w-4 ${showUpcoming ? 'text-orange-600 dark:text-orange-400' : 'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'}`} />
               {showUpcoming ? 'Hide' : 'Show'} Upcoming
               <span className={`px-2 py-0.5 rounded-full text-xs ${
                 showUpcoming 
                   ? 'bg-orange-500/20 text-orange-700 dark:text-orange-300' 
-                  : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/80'
+                  : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-theme-secondary'
               }`}>
                 {upcomingTasks.length}
               </span>
@@ -1776,17 +1776,17 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
             className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium flex items-center gap-2 ${
               showCompleted
                 ? 'bg-green-500/10 border-green-500/50 text-green-600 dark:text-green-400'
-                : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.12]'
+                : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-theme-secondary hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.12]'
             } ${completedTasks.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={completedTasks.length === 0}
           >
-            <CheckCircle2 className={`h-4 w-4 ${showCompleted ? 'text-green-600 dark:text-green-400' : 'text-[rgb(var(--text-tertiary))] dark:text-white/60'}`} />
+            <CheckCircle2 className={`h-4 w-4 ${showCompleted ? 'text-green-600 dark:text-green-400' : 'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'}`} />
             {showCompleted ? 'Hide' : 'Show'} Completed
             {completedTasks.length > 0 && (
               <span className={`px-2 py-0.5 rounded-full text-xs ${
                 showCompleted 
                   ? 'bg-green-500/20 text-green-700 dark:text-green-300' 
-                  : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/80'
+                  : 'bg-[rgb(var(--surface-elevated))] dark:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-theme-secondary'
               }`}>
                 {completedTasks.length}
               </span>
@@ -1798,8 +1798,8 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
       {/* Tasks List */}
       {loading ? (
         <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/15 mb-4">
-            <Clock className="w-8 h-8 text-[#D37E91] dark:text-[#D37E91] animate-spin" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-module-fg/[0.10] dark:bg-module-fg/[0.15] mb-4">
+            <Clock className="w-8 h-8 text-module-fg dark:text-module-fg animate-spin" />
           </div>
           <h3 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-2">Loading tasks...</h3>
         </div>
@@ -1810,10 +1810,10 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
               <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
             </div>
             <h2 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-3">All done for now! 🎉</h2>
-            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-lg mb-4">
+            <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-lg mb-4">
               You've completed all your tasks for today.
             </p>
-            <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">
+            <p className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm">
               Check back later for new tasks or create a template to add more.
             </p>
           </div>
@@ -1825,10 +1825,10 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
               <Calendar className="w-10 h-10 text-blue-600 dark:text-blue-400" />
             </div>
             <h2 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-3">No tasks for today</h2>
-            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-lg mb-4">
+            <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-lg mb-4">
               There are no tasks scheduled for today.
             </p>
-            <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">
+            <p className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm">
               Check back later or create a template to add tasks.
             </p>
           </div>
@@ -1912,29 +1912,29 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
               const log = action.temperature_log
               const evaluation = log?.meta?.evaluation
               return (
-                <div key={action.id} className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/10 rounded-lg p-3 text-sm text-[rgb(var(--text-secondary))] dark:text-white/70">
+                <div key={action.id} className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/10 rounded-lg p-3 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-secondary">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="font-semibold text-[rgb(var(--text-primary))] dark:text-white">
                       {action.action_type === 'monitor' ? 'Monitor temperature' : 'Callout contractor'}
                     </div>
-                    <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/50">
+                    <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
                       Created {new Date(action.created_at).toLocaleString()}
                     </div>
                   </div>
-                  <div className="mt-2 text-xs text-[rgb(var(--text-secondary))] dark:text-white/60 space-x-3">
-                    <span>Status: <span className="text-[rgb(var(--text-primary))] dark:text-white/80">{action.status}</span></span>
+                  <div className="mt-2 text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary space-x-3">
+                    <span>Status: <span className="text-[rgb(var(--text-primary))] dark:text-theme-secondary">{action.status}</span></span>
                     {action.due_at && (
-                      <span>Due: <span className="text-[rgb(var(--text-primary))] dark:text-white/80">{new Date(action.due_at).toLocaleString()}</span></span>
+                      <span>Due: <span className="text-[rgb(var(--text-primary))] dark:text-theme-secondary">{new Date(action.due_at).toLocaleString()}</span></span>
                     )}
                     {log?.recorded_at && (
-                      <span>Reading taken: <span className="text-[rgb(var(--text-primary))] dark:text-white/80">{new Date(log.recorded_at).toLocaleString()}</span></span>
+                      <span>Reading taken: <span className="text-[rgb(var(--text-primary))] dark:text-theme-secondary">{new Date(log.recorded_at).toLocaleString()}</span></span>
                     )}
                   </div>
                   {evaluation?.reason && (
-                    <p className="mt-2 text-xs text-[rgb(var(--text-secondary))] dark:text-white/60">Reason: {evaluation.reason}</p>
+                    <p className="mt-2 text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Reason: {evaluation.reason}</p>
                   )}
                   {action.notes && (
-                    <p className="mt-2 text-xs text-[rgb(var(--text-secondary))] dark:text-white/60">Notes: {action.notes}</p>
+                    <p className="mt-2 text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Notes: {action.notes}</p>
                   )}
                 </div>
               )

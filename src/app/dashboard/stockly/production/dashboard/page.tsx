@@ -290,7 +290,7 @@ export default function ProductionDashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-module-fg animate-spin" />
       </div>
     );
   }
@@ -300,21 +300,21 @@ export default function ProductionDashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Production Planning</h1>
-          <p className="text-white/50 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-theme-primary">Production Planning</h1>
+          <p className="text-theme-tertiary text-sm mt-1">
             Transform orders into actionable production plans
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={loadDashboardData}
-            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
+            className="px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgb(var(--module-fg)/0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
           >
             <RefreshCw className="w-4 h-4" />
             Refresh Plan
           </button>
           <button
-            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
+            className="px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgb(var(--module-fg)/0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
           >
             <Printer className="w-4 h-4" />
             Print Week
@@ -327,22 +327,22 @@ export default function ProductionDashboardPage() {
         <div className="flex items-center justify-between">
           <button
             onClick={handlePrevWeek}
-            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
+            className="px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgb(var(--module-fg)/0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
           >
             <ChevronLeft className="w-4 h-4" />
             Prev Week
           </button>
           
           <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-[#D37E91]" />
-            <span className="text-white font-medium">
+            <Calendar className="w-5 h-5 text-module-fg" />
+            <span className="text-theme-primary font-medium">
               Week of {formatWeekRange(start, end)}
             </span>
           </div>
           
           <button
             onClick={handleNextWeek}
-            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
+            className="px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgb(var(--module-fg)/0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2"
           >
             Next Week
             <ChevronRight className="w-4 h-4" />
@@ -356,28 +356,28 @@ export default function ProductionDashboardPage() {
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center gap-3 mb-2">
               <Package className="w-5 h-5 text-blue-400" />
-              <span className="text-white/60 text-sm">Orders This Week</span>
+              <span className="text-theme-tertiary text-sm">Orders This Week</span>
             </div>
-            <p className="text-2xl font-bold text-white">{data.weekSummary.orderCount}</p>
-            <p className="text-white/40 text-xs mt-1">Across all days</p>
+            <p className="text-2xl font-bold text-theme-primary">{data.weekSummary.orderCount}</p>
+            <p className="text-theme-tertiary text-xs mt-1">Across all days</p>
           </div>
 
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center gap-3 mb-2">
               <Package className="w-5 h-5 text-purple-400" />
-              <span className="text-white/60 text-sm">Items to Produce</span>
+              <span className="text-theme-tertiary text-sm">Items to Produce</span>
             </div>
-            <p className="text-2xl font-bold text-white">{data.weekSummary.itemCount}</p>
-            <p className="text-white/40 text-xs mt-1">Total items</p>
+            <p className="text-2xl font-bold text-theme-primary">{data.weekSummary.itemCount}</p>
+            <p className="text-theme-tertiary text-xs mt-1">Total items</p>
           </div>
 
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center gap-3 mb-2">
               <DollarSign className="w-5 h-5 text-green-400" />
-              <span className="text-white/60 text-sm">Weekly Revenue</span>
+              <span className="text-theme-tertiary text-sm">Weekly Revenue</span>
             </div>
-            <p className="text-2xl font-bold text-white">{formatCurrency(data.weekSummary.revenue)}</p>
-            <p className="text-white/40 text-xs mt-1">Total value</p>
+            <p className="text-2xl font-bold text-theme-primary">{formatCurrency(data.weekSummary.revenue)}</p>
+            <p className="text-theme-tertiary text-xs mt-1">Total value</p>
           </div>
 
           <div className={`bg-white/[0.03] border rounded-xl p-5 ${
@@ -387,12 +387,12 @@ export default function ProductionDashboardPage() {
           }`}>
             <div className="flex items-center gap-3 mb-2">
               <AlertTriangle className={`w-5 h-5 ${
-                data.weekSummary.alertCount > 0 ? 'text-amber-400' : 'text-white/40'
+                data.weekSummary.alertCount > 0 ? 'text-amber-400' : 'text-theme-tertiary'
               }`} />
-              <span className="text-white/60 text-sm">Capacity Alerts</span>
+              <span className="text-theme-tertiary text-sm">Capacity Alerts</span>
             </div>
             <p className={`text-2xl font-bold ${
-              data.weekSummary.alertCount > 0 ? 'text-amber-400' : 'text-white'
+              data.weekSummary.alertCount > 0 ? 'text-amber-400' : 'text-theme-primary'
             }`}>
               {data.weekSummary.alertCount}
             </p>
@@ -415,8 +415,8 @@ export default function ProductionDashboardPage() {
                 onClick={() => setSelectedDay(day.date)}
                 className={`flex-1 min-w-[120px] px-4 py-3 rounded-lg transition-all duration-200 ${
                   selectedDay === day.date
-                    ? 'bg-[#D37E91]/20 border border-[#D37E91] text-white'
-                    : 'bg-white/[0.02] border border-white/[0.06] text-white/60 hover:bg-white/[0.05]'
+                    ? 'bg-module-fg/[0.20] border border-module-fg text-white'
+                    : 'bg-white/[0.02] border border-white/[0.06] text-theme-tertiary hover:bg-white/[0.05]'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
@@ -425,7 +425,7 @@ export default function ProductionDashboardPage() {
                     <span className="w-2 h-2 rounded-full bg-amber-400"></span>
                   )}
                 </div>
-                <div className="text-xs text-white/40">
+                <div className="text-xs text-theme-tertiary">
                   {day.orderCount} {day.orderCount === 1 ? 'order' : 'orders'}
                 </div>
               </button>
@@ -437,7 +437,7 @@ export default function ProductionDashboardPage() {
       {/* Day Detail View Placeholder */}
       {selectedDayData && (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">
+          <h2 className="text-lg font-semibold text-theme-primary mb-4">
             {selectedDayData.dayName} {new Date(selectedDayData.date).toLocaleDateString('en-GB', { 
               day: 'numeric', 
               month: 'long' 
@@ -447,22 +447,22 @@ export default function ProductionDashboardPage() {
           {selectedDayData.orderCount === 0 ? (
             <div className="text-center py-12">
               <Package className="w-12 h-12 text-white/20 mx-auto mb-4" />
-              <p className="text-white/60">No orders scheduled for this day</p>
+              <p className="text-theme-tertiary">No orders scheduled for this day</p>
             </div>
           ) : (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <p className="text-white/60 text-sm mb-1">Orders</p>
-                  <p className="text-xl font-bold text-white">{selectedDayData.orderCount}</p>
+                  <p className="text-theme-tertiary text-sm mb-1">Orders</p>
+                  <p className="text-xl font-bold text-theme-primary">{selectedDayData.orderCount}</p>
                 </div>
                 <div>
-                  <p className="text-white/60 text-sm mb-1">Items</p>
-                  <p className="text-xl font-bold text-white">{selectedDayData.itemCount}</p>
+                  <p className="text-theme-tertiary text-sm mb-1">Items</p>
+                  <p className="text-xl font-bold text-theme-primary">{selectedDayData.itemCount}</p>
                 </div>
                 <div>
-                  <p className="text-white/60 text-sm mb-1">Revenue</p>
-                  <p className="text-xl font-bold text-white">{formatCurrency(selectedDayData.revenue)}</p>
+                  <p className="text-theme-tertiary text-sm mb-1">Revenue</p>
+                  <p className="text-xl font-bold text-theme-primary">{formatCurrency(selectedDayData.revenue)}</p>
                 </div>
               </div>
               
@@ -522,8 +522,8 @@ export default function ProductionDashboardPage() {
       {!data && (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
           <Package className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <h3 className="text-white font-medium mb-2">No production data available</h3>
-          <p className="text-white/60 text-sm">
+          <h3 className="text-theme-primary font-medium mb-2">No production data available</h3>
+          <p className="text-theme-tertiary text-sm">
             Production plans will appear here once orders are confirmed.
           </p>
         </div>

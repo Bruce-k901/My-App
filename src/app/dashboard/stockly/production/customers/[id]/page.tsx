@@ -156,24 +156,24 @@ export default function CustomerDetailPage() {
     const baseClasses = "px-3 py-1 rounded-md text-sm font-medium border";
     switch (status) {
       case 'active':
-        return `${baseClasses} bg-emerald-500/10 text-emerald-500 border-emerald-500/20`;
+        return `${baseClasses} bg-module-fg/10 text-emerald-500 border-module-fg/30`;
       case 'paused':
         return `${baseClasses} bg-amber-500/10 text-amber-500 border-amber-500/20`;
       case 'pending':
         return `${baseClasses} bg-blue-500/10 text-blue-500 border-blue-500/20`;
       case 'archived':
-        return `${baseClasses} bg-gray-500/10 text-gray-400 border-gray-500/20`;
+        return `${baseClasses} bg-theme-surface-elevated0/10 text-theme-tertiary border-gray-500/20`;
       default:
-        return `${baseClasses} bg-white/10 text-white/60 border-white/20`;
+        return `${baseClasses} bg-white/10 text-theme-tertiary border-white/20`;
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0B0D13] p-6">
+      <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-12">
-            <p className="text-white/60">Loading customer details...</p>
+            <p className="text-theme-tertiary">Loading customer details...</p>
           </div>
         </div>
       </div>
@@ -182,13 +182,13 @@ export default function CustomerDetailPage() {
 
   if (!customer) {
     return (
-      <div className="min-h-screen bg-[#0B0D13] p-6">
+      <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-12">
-            <p className="text-white/60">Customer not found</p>
+            <p className="text-theme-tertiary">Customer not found</p>
             <Button
               onClick={() => router.push('/dashboard/stockly/production/customers')}
-              className="mt-4 bg-transparent text-emerald-400 border border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)]"
+              className="mt-4 bg-transparent text-module-fg border border-emerald-500 hover:shadow-module-glow"
             >
               Back to Customers
             </Button>
@@ -199,7 +199,7 @@ export default function CustomerDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] p-6">
+    <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -207,13 +207,13 @@ export default function CustomerDetailPage() {
             <Button
               variant="ghost"
               onClick={() => router.push('/dashboard/stockly/production/customers')}
-              className="text-white/60 hover:text-white"
+              className="text-theme-tertiary hover:text-white"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Customers
             </Button>
             <div>
-              <h1 className="text-2xl font-bold text-white">{customer.business_name}</h1>
+              <h1 className="text-2xl font-bold text-theme-primary">{customer.business_name}</h1>
               <span className={getStatusBadge(customer.status)}>
                 {customer.status.charAt(0).toUpperCase() + customer.status.slice(1)}
               </span>
@@ -225,7 +225,7 @@ export default function CustomerDetailPage() {
               onClick={() => {
                 router.push(`/dashboard/stockly/production/customers?edit=${customer.id}`);
               }}
-              className="bg-transparent text-emerald-400 border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)]"
+              className="bg-transparent text-module-fg border-emerald-500 hover:shadow-module-glow"
             >
               <Edit className="w-4 h-4 mr-2" />
               Edit Details
@@ -234,7 +234,7 @@ export default function CustomerDetailPage() {
               <Button
                 variant="secondary"
                 onClick={handleResendInvite}
-                className="bg-transparent text-emerald-400 border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)]"
+                className="bg-transparent text-module-fg border-emerald-500 hover:shadow-module-glow"
               >
                 <Mail className="w-4 h-4 mr-2" />
                 Resend Invite
@@ -306,7 +306,7 @@ export default function CustomerDetailPage() {
                     });
                   }
                 }}
-                className="bg-transparent text-emerald-400 border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)]"
+                className="bg-transparent text-module-fg border-emerald-500 hover:shadow-module-glow"
               >
                 <Play className="w-4 h-4 mr-2" />
                 Unarchive
@@ -321,32 +321,32 @@ export default function CustomerDetailPage() {
           <div className="space-y-6">
             {/* Business Information */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-emerald-400 mb-4">Business Information</h2>
+              <h2 className="text-lg font-semibold text-module-fg mb-4">Business Information</h2>
               <div className="space-y-3">
                 <div>
-                  <div className="text-xs text-white/60 mb-1">Business Name</div>
-                  <div className="text-white">{customer.business_name}</div>
+                  <div className="text-xs text-theme-tertiary mb-1">Business Name</div>
+                  <div className="text-theme-primary">{customer.business_name}</div>
                 </div>
                 {customer.trading_name && (
                   <div>
-                    <div className="text-xs text-white/60 mb-1">Trading Name</div>
-                    <div className="text-white">{customer.trading_name}</div>
+                    <div className="text-xs text-theme-tertiary mb-1">Trading Name</div>
+                    <div className="text-theme-primary">{customer.trading_name}</div>
                   </div>
                 )}
                 {customer.contact_name && (
                   <div>
-                    <div className="text-xs text-white/60 mb-1">Contact Name</div>
-                    <div className="text-white">{customer.contact_name}</div>
+                    <div className="text-xs text-theme-tertiary mb-1">Contact Name</div>
+                    <div className="text-theme-primary">{customer.contact_name}</div>
                   </div>
                 )}
                 <div>
-                  <div className="text-xs text-white/60 mb-1">Email</div>
-                  <div className="text-white">{customer.email}</div>
+                  <div className="text-xs text-theme-tertiary mb-1">Email</div>
+                  <div className="text-theme-primary">{customer.email}</div>
                 </div>
                 {customer.phone && (
                   <div>
-                    <div className="text-xs text-white/60 mb-1">Phone</div>
-                    <div className="text-white">{customer.phone}</div>
+                    <div className="text-xs text-theme-tertiary mb-1">Phone</div>
+                    <div className="text-theme-primary">{customer.phone}</div>
                   </div>
                 )}
               </div>
@@ -354,15 +354,15 @@ export default function CustomerDetailPage() {
 
             {/* Delivery Address */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-emerald-400 mb-4">Delivery Address</h2>
+              <h2 className="text-lg font-semibold text-module-fg mb-4">Delivery Address</h2>
               <div className="space-y-3">
-                <div className="text-white whitespace-pre-line">
+                <div className="text-theme-primary whitespace-pre-line">
                   {formatCustomerAddress(customer)}
                 </div>
                 {customer.delivery_notes && (
                   <div className="pt-3 border-t border-white/[0.06]">
-                    <div className="text-xs text-white/60 mb-1">Delivery Notes:</div>
-                    <div className="text-white text-sm">{customer.delivery_notes}</div>
+                    <div className="text-xs text-theme-tertiary mb-1">Delivery Notes:</div>
+                    <div className="text-theme-primary text-sm">{customer.delivery_notes}</div>
                   </div>
                 )}
               </div>
@@ -370,11 +370,11 @@ export default function CustomerDetailPage() {
 
             {/* Payment Terms */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-emerald-400 mb-4">Payment Terms</h2>
+              <h2 className="text-lg font-semibold text-module-fg mb-4">Payment Terms</h2>
               <div className="space-y-3">
                 <div>
-                  <div className="text-xs text-white/60 mb-1">Payment Terms</div>
-                  <div className="text-white">
+                  <div className="text-xs text-theme-tertiary mb-1">Payment Terms</div>
+                  <div className="text-theme-primary">
                     {customer.payment_terms_days === 0
                       ? 'Prepaid'
                       : `Net ${customer.payment_terms_days} days`}
@@ -382,14 +382,14 @@ export default function CustomerDetailPage() {
                 </div>
                 {customer.credit_limit && (
                   <div>
-                    <div className="text-xs text-white/60 mb-1">Credit Limit</div>
-                    <div className="text-white">{formatCurrency(customer.credit_limit)}</div>
+                    <div className="text-xs text-theme-tertiary mb-1">Credit Limit</div>
+                    <div className="text-theme-primary">{formatCurrency(customer.credit_limit)}</div>
                   </div>
                 )}
                 {customer.minimum_order_value && (
                   <div>
-                    <div className="text-xs text-white/60 mb-1">Minimum Order Value</div>
-                    <div className="text-white">{formatCurrency(customer.minimum_order_value)}</div>
+                    <div className="text-xs text-theme-tertiary mb-1">Minimum Order Value</div>
+                    <div className="text-theme-primary">{formatCurrency(customer.minimum_order_value)}</div>
                   </div>
                 )}
               </div>
@@ -398,8 +398,8 @@ export default function CustomerDetailPage() {
             {/* Internal Notes */}
             {customer.internal_notes && (
               <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-                <h2 className="text-lg font-semibold text-emerald-400 mb-4">Internal Notes</h2>
-                <div className="text-white text-sm whitespace-pre-line">{customer.internal_notes}</div>
+                <h2 className="text-lg font-semibold text-module-fg mb-4">Internal Notes</h2>
+                <div className="text-theme-primary text-sm whitespace-pre-line">{customer.internal_notes}</div>
               </div>
             )}
           </div>
@@ -408,27 +408,27 @@ export default function CustomerDetailPage() {
           <div className="space-y-6">
             {/* Portal Access */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-emerald-400 mb-4">Portal Access</h2>
+              <h2 className="text-lg font-semibold text-module-fg mb-4">Portal Access</h2>
               <div className="space-y-3">
                 <div>
-                  <div className="text-xs text-white/60 mb-1">Portal Access</div>
+                  <div className="text-xs text-theme-tertiary mb-1">Portal Access</div>
                   <div>
                     {customer.portal_access_enabled ? (
-                      <span className="px-2 py-1 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                      <span className="px-2 py-1 rounded-md text-xs font-medium bg-module-fg/10 text-emerald-500 border border-module-fg/30">
                         Enabled
                       </span>
                     ) : (
-                      <span className="px-2 py-1 rounded-md text-xs font-medium bg-gray-500/10 text-gray-400 border border-gray-500/20">
+                      <span className="px-2 py-1 rounded-md text-xs font-medium bg-theme-surface-elevated0/10 text-theme-tertiary border border-gray-500/20">
                         Disabled
                       </span>
                     )}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-white/60 mb-1">Account Status</div>
+                  <div className="text-xs text-theme-tertiary mb-1">Account Status</div>
                   <div>
                     {customer.auth_user_id ? (
-                      <span className="px-2 py-1 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                      <span className="px-2 py-1 rounded-md text-xs font-medium bg-module-fg/10 text-emerald-500 border border-module-fg/30">
                         Activated
                       </span>
                     ) : (
@@ -440,14 +440,14 @@ export default function CustomerDetailPage() {
                 </div>
                 {!customer.auth_user_id && customer.portal_invite_sent_at && (
                   <div>
-                    <div className="text-xs text-white/60 mb-1">Invitation Sent</div>
-                    <div className="text-white text-sm mb-2">
+                    <div className="text-xs text-theme-tertiary mb-1">Invitation Sent</div>
+                    <div className="text-theme-primary text-sm mb-2">
                       {formatRelativeTime(customer.portal_invite_sent_at)}
                     </div>
                     <Button
                       size="sm"
                       onClick={handleResendInvite}
-                      className="bg-transparent text-emerald-400 border border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] text-xs"
+                      className="bg-transparent text-module-fg border border-emerald-500 hover:shadow-module-glow text-xs"
                     >
                       Resend Invitation
                     </Button>
@@ -458,41 +458,41 @@ export default function CustomerDetailPage() {
 
             {/* Order Statistics */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-emerald-400 mb-4">Order Statistics</h2>
+              <h2 className="text-lg font-semibold text-module-fg mb-4">Order Statistics</h2>
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <div className="text-xs text-white/60 mb-1">Total Orders</div>
-                  <div className="text-2xl font-bold text-emerald-400">{customer.total_orders}</div>
+                  <div className="text-xs text-theme-tertiary mb-1">Total Orders</div>
+                  <div className="text-2xl font-bold text-module-fg">{customer.total_orders}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-white/60 mb-1">Last 30 Days</div>
-                  <div className="text-2xl font-bold text-emerald-400">{customer.orders_last_30_days}</div>
+                  <div className="text-xs text-theme-tertiary mb-1">Last 30 Days</div>
+                  <div className="text-2xl font-bold text-module-fg">{customer.orders_last_30_days}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-white/60 mb-1">Total Value</div>
-                  <div className="text-xl font-bold text-white">{formatCurrency(customer.total_order_value)}</div>
+                  <div className="text-xs text-theme-tertiary mb-1">Total Value</div>
+                  <div className="text-xl font-bold text-theme-primary">{formatCurrency(customer.total_order_value)}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-white/60 mb-1">Average Order</div>
-                  <div className="text-xl font-bold text-white">{formatCurrency(customer.avg_order_value)}</div>
+                  <div className="text-xs text-theme-tertiary mb-1">Average Order</div>
+                  <div className="text-xl font-bold text-theme-primary">{formatCurrency(customer.avg_order_value)}</div>
                 </div>
               </div>
               <div className="space-y-2 pt-4 border-t border-white/[0.06]">
                 <div>
-                  <div className="text-xs text-white/60 mb-1">Last Order</div>
-                  <div className="text-white">
+                  <div className="text-xs text-theme-tertiary mb-1">Last Order</div>
+                  <div className="text-theme-primary">
                     {customer.last_order_date ? formatDate(customer.last_order_date) : 'No orders yet'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-white/60 mb-1">Standing Order</div>
+                  <div className="text-xs text-theme-tertiary mb-1">Standing Order</div>
                   <div>
                     {customer.has_standing_order ? (
-                      <span className="px-2 py-1 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                      <span className="px-2 py-1 rounded-md text-xs font-medium bg-module-fg/10 text-emerald-500 border border-module-fg/30">
                         Yes
                       </span>
                     ) : (
-                      <span className="px-2 py-1 rounded-md text-xs font-medium bg-white/10 text-white/60 border border-white/20">
+                      <span className="px-2 py-1 rounded-md text-xs font-medium bg-white/10 text-theme-tertiary border border-white/20">
                         No
                       </span>
                     )}
@@ -507,7 +507,7 @@ export default function CustomerDetailPage() {
                     // TODO: Navigate to orders page filtered by customer
                     router.push(`/dashboard/stockly/orders?customer=${customer.id}`);
                   }}
-                  className="bg-transparent text-emerald-400 border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)]"
+                  className="bg-transparent text-module-fg border-emerald-500 hover:shadow-module-glow"
                 >
                   <Package className="w-4 h-4 mr-2" />
                   View All Orders
@@ -518,10 +518,10 @@ export default function CustomerDetailPage() {
             {/* Recent Orders */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-emerald-400">Recent Orders</h2>
+                <h2 className="text-lg font-semibold text-module-fg">Recent Orders</h2>
                 <Link
                   href={`/dashboard/stockly/orders?customer=${customer.id}`}
-                  className="text-sm text-emerald-400 hover:text-emerald-300"
+                  className="text-sm text-module-fg hover:text-module-fg"
                 >
                   View All
                 </Link>
@@ -534,13 +534,13 @@ export default function CustomerDetailPage() {
                       className="flex items-center justify-between py-2 border-b border-white/[0.06] last:border-0"
                     >
                       <div>
-                        <div className="text-white font-medium">{order.order_number}</div>
-                        <div className="text-xs text-white/60">{formatDate(order.delivery_date)}</div>
+                        <div className="text-theme-primary font-medium">{order.order_number}</div>
+                        <div className="text-xs text-theme-tertiary">{formatDate(order.delivery_date)}</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-white font-medium">{formatCurrency(order.total)}</div>
+                        <div className="text-theme-primary font-medium">{formatCurrency(order.total)}</div>
                         <span className={`text-xs px-2 py-0.5 rounded ${
-                          order.status === 'delivered' ? 'bg-emerald-500/10 text-emerald-500' :
+                          order.status === 'delivered' ? 'bg-module-fg/10 text-emerald-500' :
                           order.status === 'confirmed' ? 'bg-blue-500/10 text-blue-500' :
                           'bg-amber-500/10 text-amber-500'
                         }`}>
@@ -551,28 +551,28 @@ export default function CustomerDetailPage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-white/60">No orders yet</div>
+                <div className="text-center py-8 text-theme-tertiary">No orders yet</div>
               )}
             </div>
 
             {/* Custom Pricing */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-emerald-400">Custom Pricing</h2>
+                <h2 className="text-lg font-semibold text-module-fg">Custom Pricing</h2>
                 <Link
                   href={`/dashboard/stockly/production/customers/${customer.id}/pricing`}
-                  className="text-sm text-emerald-400 hover:text-emerald-300"
+                  className="text-sm text-module-fg hover:text-module-fg"
                 >
                   Manage →
                 </Link>
               </div>
               {customer.has_custom_pricing ? (
                 <div>
-                  <div className="text-xs text-white/60 mb-1">Custom prices set</div>
-                  <div className="text-white font-medium">{customer.custom_pricing_count} products</div>
+                  <div className="text-xs text-theme-tertiary mb-1">Custom prices set</div>
+                  <div className="text-theme-primary font-medium">{customer.custom_pricing_count} products</div>
                 </div>
               ) : (
-                <div className="text-center py-4 text-white/60">Using standard pricing</div>
+                <div className="text-center py-4 text-theme-tertiary">Using standard pricing</div>
               )}
             </div>
           </div>

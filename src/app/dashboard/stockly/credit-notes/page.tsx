@@ -65,13 +65,13 @@ const STATUS_OPTIONS = [
 ];
 
 const CN_STATUS_CONFIG = {
-  draft: { label: 'Draft', color: 'bg-gray-500/20 text-gray-400 border-gray-500/30' },
+  draft: { label: 'Draft', color: 'bg-theme-surface-elevated0/20 text-theme-tertiary border-gray-500/30' },
   submitted: { label: 'Submitted', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
   acknowledged: { label: 'Acknowledged', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
   approved: { label: 'Approved', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
   disputed: { label: 'Disputed', color: 'bg-red-500/20 text-red-400 border-red-500/30' },
   received: { label: 'CN Received', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
-  closed: { label: 'Closed', color: 'bg-gray-500/20 text-gray-400 border-gray-500/30' },
+  closed: { label: 'Closed', color: 'bg-theme-surface-elevated0/20 text-theme-tertiary border-gray-500/30' },
 } as const;
 
 export default function CreditNotesPage() {
@@ -277,7 +277,7 @@ export default function CreditNotesPage() {
   if (loading && creditNotes.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-white">Loading credit notes...</div>
+        <div className="text-theme-primary">Loading credit notes...</div>
       </div>
     );
   }
@@ -289,18 +289,18 @@ export default function CreditNotesPage() {
         <div className="flex items-center gap-4">
           <Link 
               href="/dashboard/stockly"
-              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-theme-tertiary hover:text-white transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white">Credit Note Requests</h1>
-            <p className="text-white/60 text-sm mt-1">Manage credit note requests and track supplier responses</p>
+            <h1 className="text-2xl font-bold text-theme-primary">Credit Note Requests</h1>
+            <p className="text-theme-tertiary text-sm mt-1">Manage credit note requests and track supplier responses</p>
           </div>
         </div>
         <button
           onClick={() => setIsNewModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#10B981] text-[#10B981] hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#10B981] text-[#10B981] hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out"
         >
           <Plus className="w-5 h-5" />
           New CN Request
@@ -310,20 +310,20 @@ export default function CreditNotesPage() {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-          <div className="text-sm text-white/60 mb-1">Draft</div>
-          <div className="text-2xl font-bold text-white">{summary.draft}</div>
+          <div className="text-sm text-theme-tertiary mb-1">Draft</div>
+          <div className="text-2xl font-bold text-theme-primary">{summary.draft}</div>
         </div>
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-          <div className="text-sm text-white/60 mb-1">Submitted</div>
-          <div className="text-2xl font-bold text-white">{summary.submitted}</div>
+          <div className="text-sm text-theme-tertiary mb-1">Submitted</div>
+          <div className="text-2xl font-bold text-theme-primary">{summary.submitted}</div>
         </div>
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-          <div className="text-sm text-white/60 mb-1">Awaiting</div>
-          <div className="text-2xl font-bold text-white">{formatCurrency(summary.awaiting)}</div>
+          <div className="text-sm text-theme-tertiary mb-1">Awaiting</div>
+          <div className="text-2xl font-bold text-theme-primary">{formatCurrency(summary.awaiting)}</div>
         </div>
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-          <div className="text-sm text-white/60 mb-1">This Month</div>
-            <div className="text-2xl font-bold text-white">{formatCurrency(summary.thisMonthTotal)}</div>
+          <div className="text-sm text-theme-tertiary mb-1">This Month</div>
+            <div className="text-2xl font-bold text-theme-primary">{formatCurrency(summary.thisMonthTotal)}</div>
           </div>
         </div>
 
@@ -331,7 +331,7 @@ export default function CreditNotesPage() {
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-tertiary" size={18} />
             <Input
               type="text"
               placeholder="Search CN requests..."
@@ -374,12 +374,12 @@ export default function CreditNotesPage() {
         {filteredCreditNotes.length === 0 ? (
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
           <FileX className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <h3 className="text-white font-medium mb-2">
+          <h3 className="text-theme-primary font-medium mb-2">
             {searchTerm || statusFilter !== 'all' || supplierFilter !== 'all' || startDate || endDate
               ? 'No credit notes found'
               : 'No credit notes yet'}
           </h3>
-          <p className="text-white/60 text-sm mb-4">
+          <p className="text-theme-tertiary text-sm mb-4">
             {searchTerm || statusFilter !== 'all' || supplierFilter !== 'all' || startDate || endDate
               ? 'Try adjusting your filters'
               : 'Get started by creating your first credit note request'}
@@ -387,7 +387,7 @@ export default function CreditNotesPage() {
           {!searchTerm && statusFilter === 'all' && supplierFilter === 'all' && !startDate && !endDate && (
             <button
               onClick={() => setIsNewModalOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-[#10B981] text-[#10B981] hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-[#10B981] text-[#10B981] hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out"
             >
               <Plus className="w-4 h-4" />
               New CN Request
@@ -400,25 +400,25 @@ export default function CreditNotesPage() {
               <table className="w-full">
                 <thead className="bg-white/[0.05] border-b border-white/[0.06]">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                       CN#
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                       Supplier
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                       Delivery
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                       Amount
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -430,19 +430,19 @@ export default function CreditNotesPage() {
                       className="hover:bg-white/[0.05] transition-colors cursor-pointer"
                       onClick={() => router.push(`/dashboard/stockly/credit-notes/${cn.id}`)}
                     >
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-white font-medium">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-primary font-medium">
                         {cn.request_number}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-white">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-primary">
                         {formatDate(cn.request_date)}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-white">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-primary">
                         {cn.supplier?.name || '—'}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-300">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-secondary">
                         {cn.delivery?.invoice_number || '—'}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-white font-medium text-right">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-primary font-medium text-right">
                         {formatCurrency(cn.total)}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
@@ -454,7 +454,7 @@ export default function CreditNotesPage() {
                             e.stopPropagation();
                             router.push(`/dashboard/stockly/credit-notes/${cn.id}`);
                           }}
-                          className="text-[#D37E91] hover:text-[#D37E91]/80 transition-colors"
+                          className="text-module-fg hover:text-module-fg/80 transition-colors"
                         >
                           View
                         </button>

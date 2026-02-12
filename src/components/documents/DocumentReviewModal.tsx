@@ -255,7 +255,7 @@ export default function DocumentReviewModal({
         <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-xl shadow-2xl p-8 border border-white/[0.08]">
           <div className="flex flex-col items-center gap-4">
             <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-            <div className="text-neutral-400 text-sm">Loading document details...</div>
+            <div className="text-theme-tertiary text-sm">Loading document details...</div>
           </div>
         </div>
       </div>
@@ -267,11 +267,11 @@ export default function DocumentReviewModal({
     return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-xl shadow-2xl max-w-md w-full p-6 border border-white/[0.08]">
-          <h3 className="text-lg font-semibold text-white mb-4">Error Loading Document</h3>
-          <p className="text-neutral-400 mb-6">{error}</p>
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">Error Loading Document</h3>
+          <p className="text-theme-tertiary mb-6">{error}</p>
           <button
             onClick={onClose}
-            className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            className="w-full px-4 py-2 bg-module-fg hover:bg-module-fg/90 text-white rounded-lg transition-colors"
           >
             Close
           </button>
@@ -291,15 +291,15 @@ export default function DocumentReviewModal({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/[0.08]">
           <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-white truncate">Document Review Required</h2>
-            <p className="text-sm text-neutral-400 mt-1">{document?.name}</p>
+            <h2 className="text-xl font-bold text-theme-primary truncate">Document Review Required</h2>
+            <p className="text-sm text-theme-tertiary mt-1">{document?.name}</p>
           </div>
           <button
             onClick={onClose}
             disabled={submitting}
             className="p-2 hover:bg-white/[0.06] rounded-lg transition-colors disabled:opacity-50 ml-4"
           >
-            <X className="w-5 h-5 text-neutral-400" />
+            <X className="w-5 h-5 text-theme-tertiary" />
           </button>
         </div>
 
@@ -316,27 +316,27 @@ export default function DocumentReviewModal({
           <div className="bg-white/[0.03] rounded-lg p-4 mb-6 border border-white/[0.06]">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-xs text-neutral-500 mb-1">Category</div>
-                <div className="text-white font-medium">{document?.category}</div>
+                <div className="text-xs text-theme-tertiary mb-1">Category</div>
+                <div className="text-theme-primary font-medium">{document?.category}</div>
               </div>
               <div>
-                <div className="text-xs text-neutral-500 mb-1">Current Version</div>
-                <div className="text-white font-medium">{document?.version || 'v1.0'}</div>
+                <div className="text-xs text-theme-tertiary mb-1">Current Version</div>
+                <div className="text-theme-primary font-medium">{document?.version || 'v1.0'}</div>
               </div>
               <div>
-                <div className="text-xs text-neutral-500 mb-1">Current Expiry</div>
-                <div className="text-white font-medium">
+                <div className="text-xs text-theme-tertiary mb-1">Current Expiry</div>
+                <div className="text-theme-primary font-medium">
                   {document?.expiry_date ? new Date(document.expiry_date).toLocaleDateString() : 'Not set'}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-neutral-500 mb-1">Days Remaining</div>
+                <div className="text-xs text-theme-tertiary mb-1">Days Remaining</div>
                 <div className={`font-medium ${
                   daysUntilExpiry !== null && daysUntilExpiry <= 7
                     ? 'text-red-400'
                     : daysUntilExpiry !== null && daysUntilExpiry <= 14
                     ? 'text-amber-400'
-                    : 'text-white'
+                    : 'text-theme-primary'
                 }`}>
                   {daysUntilExpiry !== null ? `${daysUntilExpiry} days` : 'N/A'}
                   {daysUntilExpiry !== null && daysUntilExpiry <= 7 && ' ⚠️'}
@@ -347,7 +347,7 @@ export default function DocumentReviewModal({
             {document?.file_path && (
               <button
                 onClick={handleViewDocument}
-                className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-white rounded-lg transition-colors"
+                className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-theme-primary rounded-lg transition-colors"
               >
                 <FileText className="w-4 h-4" />
                 View Current Document
@@ -357,20 +357,20 @@ export default function DocumentReviewModal({
 
           {/* Option 1: Upload New Version */}
           <div className="bg-white/[0.03] rounded-lg p-4 mb-4 border border-white/[0.06]">
-            <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+            <h3 className="text-theme-primary font-semibold mb-3 flex items-center gap-2">
               <Upload className="w-4 h-4" />
               Option 1: Upload New Version
             </h3>
 
             <div className="space-y-3">
               <div>
-                <label className="block text-sm text-neutral-400 mb-2">Select File</label>
+                <label className="block text-sm text-theme-tertiary mb-2">Select File</label>
                 <input
                   type="file"
                   onChange={handleFileSelect}
                   accept=".pdf,.doc,.docx"
                   disabled={submitting}
-                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {selectedFile && (
                   <div className="mt-2 text-sm text-green-400">
@@ -381,25 +381,25 @@ export default function DocumentReviewModal({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm text-neutral-400 mb-2">New Version</label>
+                  <label className="block text-sm text-theme-tertiary mb-2">New Version</label>
                   <input
                     type="text"
                     value={newVersion}
                     onChange={(e) => setNewVersion(e.target.value)}
                     placeholder="v2.0"
                     disabled={submitting}
-                    className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-neutral-400 mb-2">New Expiry Date</label>
+                  <label className="block text-sm text-theme-tertiary mb-2">New Expiry Date</label>
                   <input
                     type="date"
                     value={newExpiryDate}
                     onChange={(e) => setNewExpiryDate(e.target.value)}
                     disabled={submitting}
-                    className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -426,23 +426,23 @@ export default function DocumentReviewModal({
 
           {/* Option 2: Update Expiry Only */}
           <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06]">
-            <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+            <h3 className="text-theme-primary font-semibold mb-3 flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               Option 2: Update Expiry Date Only
             </h3>
-            <p className="text-sm text-neutral-400 mb-3">
+            <p className="text-sm text-theme-tertiary mb-3">
               Use this if the document is the same but the policy has been renewed
             </p>
 
             <div className="space-y-3">
               <div>
-                <label className="block text-sm text-neutral-400 mb-2">New Expiry Date</label>
+                <label className="block text-sm text-theme-tertiary mb-2">New Expiry Date</label>
                 <input
                   type="date"
                   value={newExpiryDate}
                   onChange={(e) => setNewExpiryDate(e.target.value)}
                   disabled={submitting}
-                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -472,7 +472,7 @@ export default function DocumentReviewModal({
           <button
             onClick={onClose}
             disabled={submitting}
-            className="px-4 py-2 text-sm font-medium text-neutral-400 hover:text-white hover:bg-white/[0.06] rounded-lg transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-theme-tertiary hover:text-white hover:bg-white/[0.06] rounded-lg transition-colors disabled:opacity-50"
           >
             Cancel
           </button>

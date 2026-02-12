@@ -77,7 +77,7 @@ const recipeTypeConfig = {
   dish: { label: 'Dish', icon: UtensilsCrossed, color: 'text-green-400', bg: 'bg-green-500/10' },
   composite: { label: 'Composite', icon: Layers, color: 'text-purple-400', bg: 'bg-purple-500/10' },
   modifier: { label: 'Modifier', icon: PlusCircle, color: 'text-orange-400', bg: 'bg-orange-500/10' },
-  sub_recipe: { label: 'Sub Recipe', icon: Layers, color: 'text-emerald-400', bg: 'bg-emerald-500/10' }
+  sub_recipe: { label: 'Sub Recipe', icon: Layers, color: 'text-module-fg', bg: 'bg-module-fg/10' }
 };
 
 export function ExpandableRecipeCard({
@@ -301,7 +301,7 @@ export function ExpandableRecipeCard({
     switch (status) {
       case 'active':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-module-fg/10 text-module-fg border border-module-fg/30">
             <CheckCircle2 className="w-3 h-3" />
             Active
           </span>
@@ -315,7 +315,7 @@ export function ExpandableRecipeCard({
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-500/10 text-gray-400 border border-gray-500/20 italic">
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-theme-surface-elevated0/10 text-theme-tertiary border border-gray-500/20 italic">
             <Clock className="w-3 h-3" />
             Draft
           </span>
@@ -325,16 +325,16 @@ export function ExpandableRecipeCard({
 
   const TypeIcon = recipe.recipe_type ? recipeTypeConfig[recipe.recipe_type]?.icon || UtensilsCrossed : UtensilsCrossed;
   const typeLabel = recipe.recipe_type ? recipeTypeConfig[recipe.recipe_type]?.label || 'Recipe' : 'Recipe';
-  const typeColor = recipe.recipe_type ? recipeTypeConfig[recipe.recipe_type]?.color || 'text-white/60' : 'text-white/60';
+  const typeColor = recipe.recipe_type ? recipeTypeConfig[recipe.recipe_type]?.color || 'text-theme-tertiary' : 'text-theme-tertiary';
   const typeBg = recipe.recipe_type ? recipeTypeConfig[recipe.recipe_type]?.bg || 'bg-white/5' : 'bg-white/5';
 
   return (
-    <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-lg overflow-hidden">
+    <div className="bg-theme-surface border border-theme rounded-lg overflow-hidden">
       {/* Compact Row View */}
-      <div className="flex items-center gap-3 p-4 hover:bg-theme-button dark:hover:bg-white/[0.02] transition-colors">
+ <div className="flex items-center gap-3 p-4 hover:bg-theme-button transition-colors">
         <button
           onClick={onToggleExpand}
-          className="p-1 rounded hover:bg-theme-button dark:hover:bg-white/5 text-[rgb(var(--text-tertiary))] dark:text-white/40 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+ className="p-1 rounded hover:bg-theme-button text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors"
           aria-label={isExpanded ? 'Collapse' : 'Expand'}
         >
           {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
@@ -347,7 +347,7 @@ export function ExpandableRecipeCard({
                 type="text"
                 value={draft.name || ''}
                 onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-                className="flex-1 min-w-[200px] px-3 py-1.5 bg-theme-button dark:bg-white/[0.05] border border-theme dark:border-white/[0.1] rounded-md text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+ className="flex-1 min-w-[200px] px-3 py-1.5 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                 placeholder="Recipe name"
               />
             ) : (
@@ -355,13 +355,13 @@ export function ExpandableRecipeCard({
                 <div className="flex items-center gap-2">
                   <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium">{recipe.name}</span>
                   {recipe.version_number && recipe.version_number > 1.0 && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-neutral-700/50 text-neutral-300 border border-neutral-600">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-neutral-700/50 text-theme-tertiary border border-neutral-600">
                       v{recipe.version_number.toFixed(1)}
                     </span>
                   )}
                 </div>
                 {recipe.code && (
-                  <span className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">({recipe.code})</span>
+                  <span className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm">({recipe.code})</span>
                 )}
               </>
             )}
@@ -377,7 +377,7 @@ export function ExpandableRecipeCard({
             )}
           </div>
           {!isEditing && recipe.description && (
-            <p className="text-[rgb(var(--text-secondary))] dark:text-white/50 text-sm mt-1 truncate">{recipe.description}</p>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm mt-1 truncate">{recipe.description}</p>
           )}
         </div>
 
@@ -391,7 +391,7 @@ export function ExpandableRecipeCard({
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="p-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition-colors disabled:opacity-50"
+                className="p-2 rounded-lg bg-module-fg/10 hover:bg-module-fg/10 text-module-fg border border-module-fg/30 transition-colors disabled:opacity-50"
                 aria-label="Save"
               >
                 <Save className="w-4 h-4" />
@@ -421,7 +421,7 @@ export function ExpandableRecipeCard({
                       }
                     }}
                     disabled={finalising || saving}
-                    className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors disabled:opacity-50 text-sm"
+                    className="px-3 py-1.5 rounded-lg bg-module-fg hover:bg-module-fg/90 text-white transition-colors disabled:opacity-50 text-sm"
                     aria-label="Complete & Save"
                   >
                     Complete & Save
@@ -429,7 +429,7 @@ export function ExpandableRecipeCard({
                   <button
                     onClick={() => setShowFinaliseDialog(true)}
                     disabled={finalising || saving}
-                    className="p-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition-colors disabled:opacity-50"
+                    className="p-2 rounded-lg bg-module-fg/10 hover:bg-module-fg/10 text-module-fg border border-module-fg/30 transition-colors disabled:opacity-50"
                     aria-label="Finalise Recipe"
                     title="Finalise Recipe"
                   >
@@ -442,7 +442,7 @@ export function ExpandableRecipeCard({
                 <button
                   onClick={handleUpdateSOP}
                   disabled={updatingSOP}
-                  className="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center gap-2"
+                  className="px-3 py-1.5 rounded-lg bg-module-fg/10 hover:bg-module-fg/10 text-module-fg border border-module-fg/30 hover:border-module-fg/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center gap-2"
                   aria-label="Update Linked SOP"
                 >
                   {updatingSOP ? (
@@ -460,7 +460,7 @@ export function ExpandableRecipeCard({
               ) : (
                 <button
                   onClick={() => setShowSopDialog(true)}
-                  className="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/50 transition-colors text-sm flex items-center gap-2"
+                  className="px-3 py-1.5 rounded-lg bg-module-fg/10 hover:bg-module-fg/10 text-module-fg border border-module-fg/30 hover:border-module-fg/30 transition-colors text-sm flex items-center gap-2"
                   aria-label="Create SOP"
                 >
                   <Plus className="w-4 h-4" />
@@ -469,7 +469,7 @@ export function ExpandableRecipeCard({
               )}
               <button
                 onClick={onCancel}
-                className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+ className="p-2 rounded-lg bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors"
                 aria-label="Cancel"
               >
                 <X className="w-4 h-4" />
@@ -481,7 +481,7 @@ export function ExpandableRecipeCard({
               {linkedSOPId && (
                 <Link
                   href={`/dashboard/sops/view/${linkedSOPId}`}
-                  className="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/50 transition-colors text-sm flex items-center gap-2"
+                  className="px-3 py-1.5 rounded-lg bg-module-fg/10 hover:bg-module-fg/10 text-module-fg border border-module-fg/30 hover:border-module-fg/30 transition-colors text-sm flex items-center gap-2"
                 >
                   <FileText className="w-4 h-4" />
                   View SOP
@@ -489,7 +489,7 @@ export function ExpandableRecipeCard({
               )}
               <button
                 onClick={onEdit}
-                className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+ className="p-2 rounded-lg bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors"
                 aria-label="Edit"
               >
                 <Edit className="w-4 h-4" />
@@ -510,7 +510,7 @@ export function ExpandableRecipeCard({
 
       {/* EXPANDED VIEW - New Layout */}
       {isExpanded && (
-        <div className="border-t border-theme dark:border-neutral-700 bg-theme-surface-elevated dark:bg-[#0B0D13]">
+        <div className="border-t border-theme dark:border-theme bg-theme-surface-elevated dark:bg-[#0B0D13]">
           <div className="p-6 space-y-6">
             
             {/* Editing Form */}
@@ -518,38 +518,38 @@ export function ExpandableRecipeCard({
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">Recipe Name</label>
+                    <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">Recipe Name</label>
                     <input
                       type="text"
                       value={draft.name || ''}
                       onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-                      className="w-full px-3 py-2 bg-theme-button dark:bg-white/[0.05] border border-theme dark:border-white/[0.1] rounded-md text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+ className="w-full px-3 py-2 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">Recipe Code</label>
+                    <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">Recipe Code</label>
                     <input
                       type="text"
                       value={draft.code || ''}
                       onChange={(e) => setDraft({ ...draft, code: e.target.value })}
-                      className="w-full px-3 py-2 bg-theme-button dark:bg-white/[0.05] border border-theme dark:border-white/[0.1] rounded-md text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+ className="w-full px-3 py-2 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                       placeholder="REC-XXX-001"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">Description</label>
+                  <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">Description</label>
                   <textarea
                     value={draft.description || ''}
                     onChange={(e) => setDraft({ ...draft, description: e.target.value })}
                     rows={3}
-                    className="w-full px-3 py-2 bg-theme-button dark:bg-white/[0.05] border border-theme dark:border-white/[0.1] rounded-md text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+ className="w-full px-3 py-2 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                     placeholder="Recipe description..."
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">Yield Quantity</label>
+                    <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">Yield Quantity</label>
                     <input
                       type="number"
                       step="0.01"
@@ -559,14 +559,14 @@ export function ExpandableRecipeCard({
                         setDraft({ ...draft, yield_qty: value });
                         setCalculatedYield(value);
                       }}
-                      className="w-full px-3 py-2 bg-theme-button dark:bg-white/[0.05] border border-theme dark:border-white/[0.1] rounded-md text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+ className="w-full px-3 py-2 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                     />
                     {calculatedYield !== null && isEditing && (
-                      <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 mt-1">Auto-calculated from ingredients</p>
+                      <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mt-1">Auto-calculated from ingredients</p>
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">Yield Unit</label>
+                    <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">Yield Unit</label>
                     <select
                       value={draft.yield_unit_id || ''}
                       onChange={(e) => {
@@ -574,7 +574,7 @@ export function ExpandableRecipeCard({
                         setDraft({ ...draft, yield_unit_id: newUnitId });
                         setCalculatedYield(null);
                       }}
-                      className="w-full px-3 py-2 bg-theme-button dark:bg-white/[0.05] border border-theme dark:border-white/[0.1] rounded-md text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+ className="w-full px-3 py-2 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                     >
                       <option value="">Select unit...</option>
                       {(uomList || []).filter((uom: any) => {
@@ -588,22 +588,22 @@ export function ExpandableRecipeCard({
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">Shelf Life (days)</label>
+                    <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">Shelf Life (days)</label>
                     <input
                       type="number"
                       value={draft.shelf_life_days || ''}
                       onChange={(e) => setDraft({ ...draft, shelf_life_days: parseInt(e.target.value) || null })}
-                      className="w-full px-3 py-2 bg-theme-button dark:bg-white/[0.05] border border-theme dark:border-white/[0.1] rounded-md text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+ className="w-full px-3 py-2 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">Storage Requirements</label>
+                  <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">Storage Requirements</label>
                   <textarea
                     value={draft.storage_requirements || ''}
                     onChange={(e) => setDraft({ ...draft, storage_requirements: e.target.value })}
                     rows={2}
-                    className="w-full px-3 py-2 bg-theme-button dark:bg-white/[0.05] border border-theme dark:border-white/[0.1] rounded-md text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+ className="w-full px-3 py-2 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                     placeholder="Storage instructions..."
                   />
                 </div>
@@ -613,26 +613,26 @@ export function ExpandableRecipeCard({
                 {/* 1. METADATA LINE - All on one row */}
                 <div className="flex items-center gap-4 text-sm flex-wrap">
                   <div>
-                    <span className="text-[rgb(var(--text-secondary))] dark:text-neutral-400">Code:</span>
+ <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Code:</span>
                     <span className="ml-2 text-[rgb(var(--text-primary))] dark:text-white font-mono">{recipe.code || '-'}</span>
                   </div>
                   <div className="h-4 w-px bg-theme dark:bg-neutral-700" />
                   <div>
-                    <span className="text-[rgb(var(--text-secondary))] dark:text-neutral-400">Shelf Life:</span>
+ <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Shelf Life:</span>
                     <span className="ml-2 text-[rgb(var(--text-primary))] dark:text-white">
                       {recipe.shelf_life_days ? `${recipe.shelf_life_days} days` : 'Not set'}
                     </span>
                   </div>
                   <div className="h-4 w-px bg-theme dark:bg-neutral-700" />
                   <div>
-                    <span className="text-[rgb(var(--text-secondary))] dark:text-neutral-400">Version:</span>
-                    <span className="ml-2 text-emerald-400 font-mono">
+ <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Version:</span>
+                    <span className="ml-2 text-module-fg font-mono">
                       v{(recipe.version_number || recipe.version || 1.0).toFixed(1)}
                     </span>
                   </div>
                   <div className="h-4 w-px bg-theme dark:bg-neutral-700" />
                   <div>
-                    <span className="text-[rgb(var(--text-secondary))] dark:text-neutral-400">Storage:</span>
+ <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Storage:</span>
                     <span className="ml-2 text-[rgb(var(--text-primary))] dark:text-white">
                       {recipe.storage_requirements || 'Not specified'}
                     </span>
@@ -643,7 +643,7 @@ export function ExpandableRecipeCard({
                       <div>
                         <Link
                           href={`/dashboard/sops/view/${linkedSOPId}`}
-                          className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition-colors"
+                          className="inline-flex items-center gap-1 text-module-fg hover:text-emerald-300 transition-colors"
                         >
                           <FileText size={14} />
                           <span>View SOP</span>
@@ -660,18 +660,18 @@ export function ExpandableRecipeCard({
             <div className={`rounded-lg p-4 border ${
               recipe.allergens && recipe.allergens.length > 0
                 ? 'bg-red-500/10 border-red-500/20'
-                : 'bg-theme-button dark:bg-neutral-800 border-theme dark:border-neutral-700'
+ : 'bg-theme-button border-theme dark:border-theme'
             }`}>
               <div className="flex items-center gap-2 mb-2">
                 {recipe.allergens && recipe.allergens.length > 0 ? (
                   <AlertTriangle className="h-4 w-4 text-red-400" />
                 ) : (
-                  <AlertCircle className="h-4 w-4 text-[rgb(var(--text-tertiary))] dark:text-neutral-500" />
+ <AlertCircle className="h-4 w-4 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"/>
                 )}
                 <span className={`text-sm font-medium ${
                   recipe.allergens && recipe.allergens.length > 0
                     ? 'text-red-400'
-                    : 'text-[rgb(var(--text-secondary))] dark:text-neutral-400'
+ :'text-[rgb(var(--text-secondary))] dark:text-theme-tertiary'
                 }`}>
                   Allergens
                 </span>
@@ -688,14 +688,14 @@ export function ExpandableRecipeCard({
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-[rgb(var(--text-tertiary))] dark:text-neutral-500">No allergens detected</p>
+ <p className="text-sm text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">No allergens detected</p>
               )}
             </div>
 
             {/* 3. INGREDIENTS TABLE */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-neutral-400">Recipe Ingredients</h4>
+ <h4 className="text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Recipe Ingredients</h4>
                 {isEditing && (
                   <Button
                     size="sm"
@@ -735,17 +735,17 @@ export function ExpandableRecipeCard({
 
             {/* 4. RECIPE HISTORY */}
             <div>
-              <h4 className="text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-neutral-400 mb-3">Recipe History</h4>
+ <h4 className="text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-3">Recipe History</h4>
               
               {loadingHistory ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-6 w-6 animate-spin text-emerald-500" />
                 </div>
               ) : auditTrail.length > 0 ? (
-                <div className="border border-theme dark:border-neutral-700 rounded-lg overflow-hidden">
+                <div className="border border-theme dark:border-theme rounded-lg overflow-hidden">
                   <table className="w-full">
-                    <thead className="bg-theme-button dark:bg-neutral-900">
-                      <tr className="text-left text-xs text-[rgb(var(--text-secondary))] dark:text-neutral-400">
+ <thead className="bg-theme-button">
+ <tr className="text-left text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
                         <th className="p-3 font-medium w-[180px]">Date & Time</th>
                         <th className="p-3 font-medium w-[150px]">Changed By</th>
                         <th className="p-3 font-medium">Event</th>
@@ -755,8 +755,8 @@ export function ExpandableRecipeCard({
                       {auditTrail.slice(0, showAllHistory ? undefined : 5).map((event, idx) => (
                         <tr 
                           key={event.id} 
-                          className={`border-t border-theme dark:border-neutral-700 ${
-                            idx % 2 === 0 ? 'bg-theme-surface dark:bg-neutral-800/50' : 'bg-theme-surface-elevated dark:bg-neutral-800'
+                          className={`border-t border-theme dark:border-theme ${
+ idx % 2 === 0 ? 'bg-theme-surface' : 'bg-theme-surface-elevated'
                           }`}
                         >
                           <td className="p-3 text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300">
@@ -785,14 +785,14 @@ export function ExpandableRecipeCard({
                         setShowAllHistory(true);
                         loadAuditTrail(50); // Load more events
                       }}
-                      className="w-full p-3 text-sm text-emerald-400 hover:bg-theme-button dark:hover:bg-neutral-800 transition-colors border-t border-theme dark:border-neutral-700"
+                      className="w-full p-3 text-sm text-module-fg hover:bg-theme-button dark:hover:bg-neutral-800 transition-colors border-t border-theme dark:border-theme"
                     >
                       Show {auditTrail.length - 5} more events...
                     </button>
                   )}
                 </div>
               ) : (
-                <div className="text-sm text-[rgb(var(--text-tertiary))] dark:text-neutral-500 text-center py-8 border border-theme dark:border-neutral-700 rounded-lg">
+ <div className="text-sm text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-center py-8 border border-theme dark:border-theme rounded-lg">
                   No history available yet
                 </div>
               )}
@@ -800,7 +800,7 @@ export function ExpandableRecipeCard({
 
             {/* Action Buttons */}
             {isEditing ? (
-              <div className="flex justify-between items-center pt-4 border-t border-theme dark:border-neutral-700">
+              <div className="flex justify-between items-center pt-4 border-t border-theme dark:border-theme">
                 <div className="flex gap-2">
                   {/* SOP Management Button - Always visible */}
                   {linkedSOPId ? (
@@ -899,13 +899,13 @@ export function ExpandableRecipeCard({
                 </div>
               </div>
             ) : (
-              <div className="flex justify-between items-center gap-2 pt-4 border-t border-theme dark:border-neutral-700">
+              <div className="flex justify-between items-center gap-2 pt-4 border-t border-theme dark:border-theme">
                 {/* View SOP link - visible when SOP exists */}
                 <div>
                   {linkedSOPId && (
                     <Link
                       href={`/dashboard/sops/view/${linkedSOPId}`}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/50 transition-colors text-sm"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-module-fg/10 hover:bg-module-fg/10 text-module-fg border border-module-fg/30 hover:border-module-fg/30 transition-colors text-sm"
                     >
                       <FileText className="w-4 h-4" />
                       View SOP
@@ -942,7 +942,7 @@ export function ExpandableRecipeCard({
                 type="checkbox"
                 checked={createSOP}
                 onChange={(e) => setCreateSOP(e.target.checked)}
-                className="w-4 h-4 rounded border-theme dark:border-white/20 bg-theme-button dark:bg-white/[0.05] text-emerald-500 focus:ring-emerald-500/50"
+ className="w-4 h-4 rounded border-theme bg-theme-button text-emerald-500 focus:ring-emerald-500/50"
               />
               <span className="text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300">Create Food Prep SOP from this recipe</span>
             </label>
@@ -955,12 +955,12 @@ export function ExpandableRecipeCard({
 
       {/* Enhanced SOP Creation/Update Dialog */}
       <Dialog open={showSopDialog} onOpenChange={setShowSopDialog}>
-        <DialogContent className="bg-theme-surface-elevated dark:bg-[#0B0D13] border border-theme dark:border-white/[0.06]">
+        <DialogContent className="bg-theme-surface-elevated dark:bg-[#0B0D13] border border-theme">
           <DialogHeader>
             <DialogTitle className="text-[rgb(var(--text-primary))] dark:text-white">
               {linkedSOPId ? 'Update SOP' : 'Create SOP'} for {recipe.name}
             </DialogTitle>
-            <DialogDescription className="text-[rgb(var(--text-secondary))] dark:text-white/60">
+            <DialogDescription className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
               {linkedSOPId ? (
                 <>
                   Update the linked Standard Operating Procedure with the latest 
@@ -978,12 +978,12 @@ export function ExpandableRecipeCard({
 
           {/* Show Current SOP Status if Linked */}
           {linkedSOPId && (
-            <div className="bg-theme-button dark:bg-white/[0.03] p-3 rounded-lg border border-theme dark:border-white/[0.06]">
-              <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60">Linked SOP:</div>
+ <div className="bg-theme-button p-3 rounded-lg border border-theme">
+              <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Linked SOP:</div>
               <div className="text-[rgb(var(--text-primary))] dark:text-white font-medium">
                 {recipe.code || recipe.name} - Food Preparation SOP
               </div>
-              <div className="text-xs text-emerald-400 mt-1">
+              <div className="text-xs text-module-fg mt-1">
                 Click Update to sync with latest recipe changes
               </div>
             </div>
@@ -993,7 +993,7 @@ export function ExpandableRecipeCard({
             <Button 
               variant="outline" 
               onClick={() => setShowSopDialog(false)}
-              className="bg-transparent text-[rgb(var(--text-primary))] dark:text-white border-theme dark:border-white/[0.06] hover:bg-theme-button dark:hover:bg-white/[0.05]"
+ className="bg-transparent text-[rgb(var(--text-primary))] dark:text-white border-theme hover:bg-theme-button"
             >
               Cancel
             </Button>
@@ -1031,7 +1031,7 @@ export function ExpandableRecipeCard({
                   toast.error(`Failed to ${linkedSOPId ? 'update' : 'create'} SOP: ${error?.message || 'Unknown error'}`);
                 }
               }}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-module-fg hover:bg-module-fg/90 text-white"
             >
               {linkedSOPId ? 'Update SOP' : 'Create SOP'}
             </Button>

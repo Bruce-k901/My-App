@@ -76,7 +76,7 @@ export default function CutoffRulesPage() {
   if (!siteId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
+        <div className="text-theme-tertiary">Please select a site</div>
       </div>
     );
   }
@@ -84,7 +84,7 @@ export default function CutoffRulesPage() {
   if (initialLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#14B8A6]" />
+        <Loader2 className="h-8 w-8 animate-spin text-module-fg" />
       </div>
     );
   }
@@ -92,16 +92,16 @@ export default function CutoffRulesPage() {
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Cutoff Rules</h1>
-        <p className="text-gray-500 dark:text-white/50 text-sm mt-1">
+        <h1 className="text-2xl font-bold text-theme-primary">Cutoff Rules</h1>
+        <p className="text-theme-tertiary text-sm mt-1">
           Configure default order cutoff settings for this site
         </p>
       </div>
 
-      <Card className="p-6 max-w-2xl bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
+      <Card className="p-6 max-w-2xl bg-theme-surface border-theme">
         <div className="space-y-6">
           <div>
-            <Label htmlFor="bufferDays" className="text-gray-700 dark:text-white mb-2 block">
+            <Label htmlFor="bufferDays" className="text-theme-secondary mb-2 block">
               Default Buffer Days
             </Label>
             <Input
@@ -110,15 +110,15 @@ export default function CutoffRulesPage() {
               min="0"
               value={bufferDays}
               onChange={(e) => setBufferDays(parseInt(e.target.value) || 0)}
-              className="w-32 bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+              className="w-32 bg-theme-button border-theme text-theme-primary"
             />
-            <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
+            <p className="text-sm text-theme-tertiary mt-1">
               Additional days before the first production stage
             </p>
           </div>
 
           <div>
-            <Label htmlFor="cutoffTime" className="text-gray-700 dark:text-white mb-2 block">
+            <Label htmlFor="cutoffTime" className="text-theme-secondary mb-2 block">
               Default Cutoff Time
             </Label>
             <Input
@@ -126,9 +126,9 @@ export default function CutoffRulesPage() {
               type="time"
               value={cutoffTime}
               onChange={(e) => setCutoffTime(e.target.value)}
-              className="w-40 bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+              className="w-40 bg-theme-button border-theme text-theme-primary"
             />
-            <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
+            <p className="text-sm text-theme-tertiary mt-1">
               Time of day when orders lock (24-hour format)
             </p>
           </div>
@@ -136,7 +136,7 @@ export default function CutoffRulesPage() {
           <Button
             onClick={handleSave}
             disabled={loading}
-            className="bg-[#14B8A6] hover:bg-[#0D9488] text-white"
+            className="bg-module-fg hover:bg-module-fg/90 text-white"
           >
             {loading ? (
               <>

@@ -206,7 +206,7 @@ export default function StaffSicknessPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-600 dark:text-white/60">Loading staff sickness records...</div>
+        <div className="text-theme-secondary">Loading staff sickness records...</div>
       </div>
     );
   }
@@ -216,8 +216,8 @@ export default function StaffSicknessPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Staff Sickness & Exclusion Log</h1>
-          <p className="text-gray-600 dark:text-white/60 mt-1 text-sm sm:text-base">Record and track staff illness, exclusions, and return-to-work clearance</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-theme-primary">Staff Sickness & Exclusion Log</h1>
+          <p className="text-theme-secondary mt-1 text-sm sm:text-base">Record and track staff illness, exclusions, and return-to-work clearance</p>
         </div>
         <Button onClick={handleNew} className="flex items-center gap-2 text-sm sm:text-base px-3 sm:px-4 py-2 whitespace-nowrap w-full sm:w-auto justify-center">
           <Plus className="w-4 h-4" />
@@ -228,19 +228,19 @@ export default function StaffSicknessPage() {
       {/* Filters */}
       <div className="flex gap-4 items-center">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-theme-tertiary" />
           <input
             type="text"
             placeholder="Search by staff name or symptoms..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:border-[#D37E91]/50 dark:focus:border-[#D37E91]/50"
+            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:border-module-fg/[0.50] dark:focus:border-module-fg/[0.50]"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91]/50 dark:focus:border-[#D37E91]/50"
+          className="px-4 py-2 bg-white dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-module-fg/[0.50] dark:focus:border-module-fg/[0.50]"
         >
           <option value="all">All Status</option>
           <option value="active">Active Exclusions</option>
@@ -252,7 +252,7 @@ export default function StaffSicknessPage() {
       {/* Records List */}
       <div className="space-y-4">
         {filteredRecords.length === 0 ? (
-          <div className="text-center py-12 text-gray-600 dark:text-white/60">
+          <div className="text-center py-12 text-theme-secondary">
             {searchTerm || statusFilter !== 'all' 
               ? 'No records match your search' 
               : 'No staff sickness records yet. Click "Log Sickness" to get started.'}
@@ -261,7 +261,7 @@ export default function StaffSicknessPage() {
           filteredRecords.map((record) => (
             <div
               key={record.id}
-              className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
+              className="bg-theme-surface border border-theme rounded-lg p-4 hover:bg-theme-hover transition-colors"
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -270,12 +270,12 @@ export default function StaffSicknessPage() {
                       <UserX className="w-5 h-5 text-red-600 dark:text-red-400" />
                     </div>
                     <div>
-                      <h3 className="text-gray-900 dark:text-white font-semibold">{record.staff_member_name}</h3>
+                      <h3 className="text-theme-primary font-semibold">{record.staff_member_name}</h3>
                       <div className="flex items-center gap-2 mt-1">
                         <span className={`text-xs px-2 py-0.5 rounded ${
                           record.status === 'active' ? 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400' :
                           record.status === 'cleared' ? 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400' :
-                          'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400'
+'bg-gray-50 dark:bg-theme-surface-elevated0/20 text-theme-secondary'
                         }`}>
                           {record.status === 'active' ? 'Active Exclusion' : 
                            record.status === 'cleared' ? 'Cleared' : 'Closed'}
@@ -291,30 +291,30 @@ export default function StaffSicknessPage() {
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
                     <div>
-                      <span className="text-gray-600 dark:text-white/60">Illness Onset:</span>
-                      <p className="text-gray-900 dark:text-white">{new Date(record.illness_onset_date).toLocaleDateString()}</p>
+                      <span className="text-theme-secondary">Illness Onset:</span>
+                      <p className="text-theme-primary">{new Date(record.illness_onset_date).toLocaleDateString()}</p>
                     </div>
                     <div>
-                      <span className="text-gray-600 dark:text-white/60">Exclusion Start:</span>
-                      <p className="text-gray-900 dark:text-white">{new Date(record.exclusion_period_start).toLocaleDateString()}</p>
+                      <span className="text-theme-secondary">Exclusion Start:</span>
+                      <p className="text-theme-primary">{new Date(record.exclusion_period_start).toLocaleDateString()}</p>
                     </div>
                     {record.exclusion_period_end && (
                       <div>
-                        <span className="text-gray-600 dark:text-white/60">Exclusion End:</span>
-                        <p className="text-gray-900 dark:text-white">{new Date(record.exclusion_period_end).toLocaleDateString()}</p>
+                        <span className="text-theme-secondary">Exclusion End:</span>
+                        <p className="text-theme-primary">{new Date(record.exclusion_period_end).toLocaleDateString()}</p>
                       </div>
                     )}
                     {record.return_to_work_date && (
                       <div>
-                        <span className="text-gray-600 dark:text-white/60">Return to Work:</span>
+                        <span className="text-theme-secondary">Return to Work:</span>
                         <p className="text-green-600 dark:text-green-400">{new Date(record.return_to_work_date).toLocaleDateString()}</p>
                       </div>
                     )}
                   </div>
 
                   <div className="mt-3">
-                    <span className="text-gray-600 dark:text-white/60 text-sm">Symptoms: </span>
-                    <span className="text-gray-900 dark:text-white text-sm">{record.symptoms}</span>
+                    <span className="text-theme-secondary text-sm">Symptoms: </span>
+                    <span className="text-theme-primary text-sm">{record.symptoms}</span>
                   </div>
 
                   {record.symptomatic_in_food_areas && (
@@ -326,10 +326,10 @@ export default function StaffSicknessPage() {
 
                 <button
                   onClick={() => handleEdit(record)}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.1] rounded-lg transition-colors"
+                  className="p-2 hover:bg-theme-muted rounded-lg transition-colors"
                   title="Edit record"
                 >
-                  <Eye className="w-4 h-4 text-gray-600 dark:text-white/60" />
+                  <Eye className="w-4 h-4 text-theme-secondary" />
                 </button>
               </div>
             </div>
@@ -340,43 +340,43 @@ export default function StaffSicknessPage() {
       {/* Add/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0B0D13] border border-white/[0.1] rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold text-white mb-4">
+          <div className="bg-[rgb(var(--surface-elevated))] border border-white/[0.1] rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold text-theme-primary mb-4">
               {selectedRecord ? 'Edit Staff Sickness Record' : 'Log Staff Sickness'}
             </h2>
             
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-white/80 mb-2">Staff Member Name *</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">Staff Member Name *</label>
                   <input
                     type="text"
                     value={formData.staff_member_name}
                     onChange={(e) => setFormData({ ...formData, staff_member_name: e.target.value })}
-                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#D37E91]/50"
+                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:border-module-fg/[0.50]"
                     placeholder="John Smith"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-white/80 mb-2">Illness Onset Date *</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">Illness Onset Date *</label>
                   <input
                     type="date"
                     value={formData.illness_onset_date}
                     onChange={(e) => setFormData({ ...formData, illness_onset_date: e.target.value })}
-                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-[#D37E91]/50"
+                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary focus:outline-none focus:border-module-fg/[0.50]"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Symptoms *</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">Symptoms *</label>
                 <textarea
                   value={formData.symptoms}
                   onChange={(e) => setFormData({ ...formData, symptoms: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#D37E91]/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:border-module-fg/[0.50]"
                   placeholder="e.g., Vomiting, diarrhoea, fever, nausea"
                   rows={3}
                   required
@@ -385,34 +385,34 @@ export default function StaffSicknessPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-white/80 mb-2">Exclusion Period Start *</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">Exclusion Period Start *</label>
                   <input
                     type="date"
                     value={formData.exclusion_period_start}
                     onChange={(e) => setFormData({ ...formData, exclusion_period_start: e.target.value })}
-                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-[#D37E91]/50"
+                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary focus:outline-none focus:border-module-fg/[0.50]"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-white/80 mb-2">Exclusion Period End</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">Exclusion Period End</label>
                   <input
                     type="date"
                     value={formData.exclusion_period_end || ''}
                     onChange={(e) => setFormData({ ...formData, exclusion_period_end: e.target.value || null })}
-                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-[#D37E91]/50"
+                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary focus:outline-none focus:border-module-fg/[0.50]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Return to Work Date</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">Return to Work Date</label>
                 <input
                   type="date"
                   value={formData.return_to_work_date || ''}
                   onChange={(e) => setFormData({ ...formData, return_to_work_date: e.target.value || null })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-[#D37E91]/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary focus:outline-none focus:border-module-fg/[0.50]"
                 />
               </div>
 
@@ -425,7 +425,7 @@ export default function StaffSicknessPage() {
                     onChange={(e) => setFormData({ ...formData, medical_clearance_required: e.target.checked })}
                     className="w-4 h-4 rounded border-white/[0.2] bg-white/[0.06]"
                   />
-                  <label htmlFor="medical_clearance_required" className="text-sm text-white/80">Medical Clearance Required</label>
+                  <label htmlFor="medical_clearance_required" className="text-sm text-theme-secondary">Medical Clearance Required</label>
                 </div>
 
                 {formData.medical_clearance_required && (
@@ -437,7 +437,7 @@ export default function StaffSicknessPage() {
                       onChange={(e) => setFormData({ ...formData, medical_clearance_received: e.target.checked })}
                       className="w-4 h-4 rounded border-white/[0.2] bg-white/[0.06]"
                     />
-                    <label htmlFor="medical_clearance_received" className="text-sm text-white/80">Medical Clearance Received</label>
+                    <label htmlFor="medical_clearance_received" className="text-sm text-theme-secondary">Medical Clearance Received</label>
                   </div>
                 )}
 
@@ -449,7 +449,7 @@ export default function StaffSicknessPage() {
                     onChange={(e) => setFormData({ ...formData, manager_notified: e.target.checked })}
                     className="w-4 h-4 rounded border-white/[0.2] bg-white/[0.06]"
                   />
-                  <label htmlFor="manager_notified" className="text-sm text-white/80">Manager Notified Immediately</label>
+                  <label htmlFor="manager_notified" className="text-sm text-theme-secondary">Manager Notified Immediately</label>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -460,7 +460,7 @@ export default function StaffSicknessPage() {
                     onChange={(e) => setFormData({ ...formData, food_handling_restricted: e.target.checked })}
                     className="w-4 h-4 rounded border-white/[0.2] bg-white/[0.06]"
                   />
-                  <label htmlFor="food_handling_restricted" className="text-sm text-white/80">Food Handling Restrictions Applied</label>
+                  <label htmlFor="food_handling_restricted" className="text-sm text-theme-secondary">Food Handling Restrictions Applied</label>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -476,11 +476,11 @@ export default function StaffSicknessPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Additional Notes</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">Additional Notes</label>
                 <textarea
                   value={formData.notes || ''}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#D37E91]/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:border-module-fg/[0.50]"
                   placeholder="Additional information, actions taken, etc."
                   rows={3}
                 />
@@ -490,7 +490,7 @@ export default function StaffSicknessPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={handleSave}
-                className="flex-1 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200"
+                className="flex-1 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg),0.7)] rounded-lg transition-all duration-200"
               >
                 {selectedRecord ? 'Update' : 'Log'} Record
               </button>
@@ -499,7 +499,7 @@ export default function StaffSicknessPage() {
                   setIsModalOpen(false);
                   setSelectedRecord(null);
                 }}
-                className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-theme-primary rounded-lg transition-colors"
               >
                 Cancel
               </button>

@@ -227,21 +227,21 @@ export default function VarianceReport({ count, items, onUpdate }: VarianceRepor
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-          <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">Total Items</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">{count.total_items}</p>
+        <div className="bg-theme-surface border border-theme rounded-lg p-4">
+          <p className="text-theme-secondary text-sm mb-1">Total Items</p>
+          <p className="text-2xl font-bold text-theme-primary">{count.total_items}</p>
         </div>
 
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-          <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">Items Counted</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">{count.items_counted}</p>
+        <div className="bg-theme-surface border border-theme rounded-lg p-4">
+          <p className="text-theme-secondary text-sm mb-1">Items Counted</p>
+          <p className="text-2xl font-bold text-theme-primary">{count.items_counted}</p>
         </div>
 
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-          <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">Items with Variance</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="bg-theme-surface border border-theme rounded-lg p-4">
+          <p className="text-theme-secondary text-sm mb-1">Items with Variance</p>
+          <p className="text-2xl font-bold text-theme-primary">
             {itemsWithVariance.length}
-            <span className="text-sm text-gray-500 dark:text-gray-500 ml-2">
+ <span className="text-sm text-theme-tertiary ml-2">
               ({countedItems.length > 0 
                 ? Math.round((itemsWithVariance.length / countedItems.length) * 100)
                 : 0}%)
@@ -249,11 +249,11 @@ export default function VarianceReport({ count, items, onUpdate }: VarianceRepor
           </p>
         </div>
 
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-          <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">Total Variance Value</p>
+        <div className="bg-theme-surface border border-theme rounded-lg p-4">
+          <p className="text-theme-secondary text-sm mb-1">Total Variance Value</p>
           <p className={`text-2xl font-bold ${
             count.total_variance_value < 0 ? 'text-red-600 dark:text-red-400' : 
-            count.total_variance_value > 0 ? 'text-emerald-600 dark:text-green-400' : 'text-gray-900 dark:text-white'
+            count.total_variance_value > 0 ? 'text-module-fg dark:text-green-400' : 'text-theme-primary'
           }`}>
             {count.total_variance_value < 0 ? '-' : count.total_variance_value > 0 ? '+' : ''}
             £{Math.abs(count.total_variance_value).toFixed(2)}
@@ -262,23 +262,23 @@ export default function VarianceReport({ count, items, onUpdate }: VarianceRepor
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+      <div className="bg-theme-surface border border-theme rounded-lg p-4">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
-            <label className="text-sm text-gray-600 dark:text-gray-400 mb-2 block">Search</label>
+            <label className="text-sm text-theme-secondary mb-2 block">Search</label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-theme-tertiary" />
               <Input
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search items..."
-                className="pl-10 bg-white dark:bg-white/[0.05] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+ className="pl-10 bg-theme-surface ] border-theme text-theme-primary"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-sm text-gray-600 dark:text-gray-400 mb-2 block">Library</label>
+            <label className="text-sm text-theme-secondary mb-2 block">Library</label>
             <Select 
               value={selectedLibrary} 
               onValueChange={(v) => setSelectedLibrary(v as LibraryType | 'all')}
@@ -288,7 +288,7 @@ export default function VarianceReport({ count, items, onUpdate }: VarianceRepor
           </div>
 
           <div>
-            <label className="text-sm text-gray-600 dark:text-gray-400 mb-2 block">Found In</label>
+            <label className="text-sm text-theme-secondary mb-2 block">Found In</label>
             <Select 
               value={selectedStorageArea} 
               onValueChange={setSelectedStorageArea}
@@ -298,7 +298,7 @@ export default function VarianceReport({ count, items, onUpdate }: VarianceRepor
           </div>
 
           <div>
-            <label className="text-sm text-gray-600 dark:text-gray-400 mb-2 block">Show Variance</label>
+            <label className="text-sm text-theme-secondary mb-2 block">Show Variance</label>
             <Select 
               value={varianceFilter} 
               onValueChange={(v) => setVarianceFilter(v as VarianceFilter)}
@@ -313,11 +313,11 @@ export default function VarianceReport({ count, items, onUpdate }: VarianceRepor
           </div>
 
           <div>
-            <label className="text-sm text-gray-600 dark:text-gray-400 mb-2 block">Export</label>
+            <label className="text-sm text-theme-secondary mb-2 block">Export</label>
             <Button
               onClick={exportToCSV}
               variant="outline"
-              className="w-full border-gray-300 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10"
+              className="w-full border-gray-300 dark:border-white/[0.06] text-theme-secondary hover:bg-theme-muted"
             >
               <Download className="mr-2 h-4 w-4" />
               Export CSV
@@ -327,43 +327,43 @@ export default function VarianceReport({ count, items, onUpdate }: VarianceRepor
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg overflow-hidden">
+      <div className="bg-theme-surface border border-theme rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-white/[0.05] border-b border-gray-200 dark:border-white/[0.06]">
+            <thead className="bg-theme-button border-b border-theme">
               <tr>
                 <th 
-                  className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-400 cursor-pointer hover:text-gray-900 dark:hover:text-white"
+ className="px-4 py-3 text-left text-sm font-medium text-theme-secondary cursor-pointer hover:text-theme-primary"
                   onClick={() => handleSort('name')}
                 >
                   Item {getSortIcon('name')}
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-400">
+ <th className="px-4 py-3 text-left text-sm font-medium text-theme-secondary">
                   Library
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-400">
+ <th className="px-4 py-3 text-left text-sm font-medium text-theme-secondary">
                   Found In
                 </th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-gray-700 dark:text-gray-400">
+ <th className="px-4 py-3 text-right text-sm font-medium text-theme-secondary">
                   Expected
                 </th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-gray-700 dark:text-gray-400">
+ <th className="px-4 py-3 text-right text-sm font-medium text-theme-secondary">
                   Counted
                 </th>
                 <th 
-                  className="px-4 py-3 text-right text-sm font-medium text-gray-700 dark:text-gray-400 cursor-pointer hover:text-gray-900 dark:hover:text-white"
+ className="px-4 py-3 text-right text-sm font-medium text-theme-secondary cursor-pointer hover:text-theme-primary"
                   onClick={() => handleSort('variance_qty')}
                 >
                   Var Qty {getSortIcon('variance_qty')}
                 </th>
                 <th 
-                  className="px-4 py-3 text-right text-sm font-medium text-gray-700 dark:text-gray-400 cursor-pointer hover:text-gray-900 dark:hover:text-white"
+ className="px-4 py-3 text-right text-sm font-medium text-theme-secondary cursor-pointer hover:text-theme-primary"
                   onClick={() => handleSort('variance_pct')}
                 >
                   Var % {getSortIcon('variance_pct')}
                 </th>
                 <th 
-                  className="px-4 py-3 text-right text-sm font-medium text-gray-700 dark:text-gray-400 cursor-pointer hover:text-gray-900 dark:hover:text-white"
+ className="px-4 py-3 text-right text-sm font-medium text-theme-secondary cursor-pointer hover:text-theme-primary"
                   onClick={() => handleSort('variance_value')}
                 >
                   Var £ {getSortIcon('variance_value')}
@@ -373,7 +373,7 @@ export default function VarianceReport({ count, items, onUpdate }: VarianceRepor
             <tbody className="divide-y divide-gray-200 dark:divide-white/[0.06]">
               {filteredAndSortedItems.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <td colSpan={8} className="px-4 py-8 text-center text-theme-tertiary">
                     No items found
                   </td>
                 </tr>
@@ -388,11 +388,11 @@ export default function VarianceReport({ count, items, onUpdate }: VarianceRepor
                   return (
                     <tr 
                       key={item.id}
-                      className={`hover:bg-gray-50 dark:hover:bg-white/[0.02] ${
+                      className={`hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02] ${
                         hasLargeVariance ? 'bg-amber-50 dark:bg-amber-900/10' : ''
                       }`}
                     >
-                      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                      <td className="px-4 py-3 text-sm text-theme-primary">
                         <div className="flex items-center gap-2">
                           {hasLargeVariance && (
                             <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
@@ -400,10 +400,10 @@ export default function VarianceReport({ count, items, onUpdate }: VarianceRepor
                           {ingredientName}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                      <td className="px-4 py-3 text-sm text-theme-secondary">
                         {item.library_type ? getLibraryName(item.library_type) : 'Unknown'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                      <td className="px-4 py-3 text-sm text-theme-secondary">
                         <div className="flex items-center gap-1">
                           {item.counted_storage_area ? (
                             <>
@@ -415,18 +415,18 @@ export default function VarianceReport({ count, items, onUpdate }: VarianceRepor
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm text-right text-gray-600 dark:text-gray-400">
+                      <td className="px-4 py-3 text-sm text-right text-theme-secondary">
                         {item.theoretical_closing?.toFixed(2) || '0.00'}
                         <span className="text-gray-500 dark:text-gray-600 ml-1">{item.unit_of_measurement}</span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-white">
+                      <td className="px-4 py-3 text-sm text-right text-theme-primary">
                         {item.counted_quantity?.toFixed(2) || '-'}
                         <span className="text-gray-500 dark:text-gray-600 ml-1">{item.unit_of_measurement}</span>
                       </td>
                       <td className={`px-4 py-3 text-sm text-right font-medium ${
-                        item.variance_quantity === null ? 'text-gray-500 dark:text-gray-400' :
+                        item.variance_quantity === null ? 'text-theme-tertiary' :
                         item.variance_quantity < 0 ? 'text-red-600 dark:text-red-400' :
-                        item.variance_quantity > 0 ? 'text-emerald-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
+                        item.variance_quantity > 0 ? 'text-module-fg dark:text-green-400' : 'text-theme-tertiary'
                       }`}>
                         {item.variance_quantity !== null ? (
                           <>
@@ -436,9 +436,9 @@ export default function VarianceReport({ count, items, onUpdate }: VarianceRepor
                         ) : '-'}
                       </td>
                       <td className={`px-4 py-3 text-sm text-right font-medium ${
-                        item.variance_percentage === null ? 'text-gray-500 dark:text-gray-400' :
+                        item.variance_percentage === null ? 'text-theme-tertiary' :
                         item.variance_percentage < 0 ? 'text-red-600 dark:text-red-400' :
-                        item.variance_percentage > 0 ? 'text-emerald-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
+                        item.variance_percentage > 0 ? 'text-module-fg dark:text-green-400' : 'text-theme-tertiary'
                       }`}>
                         {item.variance_percentage !== null ? (
                           <div className="flex items-center justify-end gap-1">
@@ -453,9 +453,9 @@ export default function VarianceReport({ count, items, onUpdate }: VarianceRepor
                         ) : '-'}
                       </td>
                       <td className={`px-4 py-3 text-sm text-right font-medium ${
-                        item.variance_value === null ? 'text-gray-500 dark:text-gray-400' :
+                        item.variance_value === null ? 'text-theme-tertiary' :
                         item.variance_value < 0 ? 'text-red-600 dark:text-red-400' :
-                        item.variance_value > 0 ? 'text-emerald-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
+                        item.variance_value > 0 ? 'text-module-fg dark:text-green-400' : 'text-theme-tertiary'
                       }`}>
                         {item.variance_value !== null ? (
                           <>
@@ -474,7 +474,7 @@ export default function VarianceReport({ count, items, onUpdate }: VarianceRepor
       </div>
 
       {/* Results Summary */}
-      <div className="text-sm text-gray-600 dark:text-gray-400 text-center">
+      <div className="text-sm text-theme-secondary text-center">
         Showing {filteredAndSortedItems.length} of {items.length} items
       </div>
     </div>

@@ -177,13 +177,13 @@ export function InvoiceUploadModal({ isOpen, onClose, onSuccess }: InvoiceUpload
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-white">Upload Invoice</DialogTitle>
+          <DialogTitle className="text-xl font-semibold text-theme-primary">Upload Invoice</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 mt-4">
           {/* Supplier Selection */}
           <div>
-            <label className="block text-sm text-slate-300 mb-2">
+            <label className="block text-sm text-theme-secondary mb-2">
               Supplier <span className="text-red-400">*</span>
             </label>
             <SearchableSelect
@@ -193,19 +193,19 @@ export function InvoiceUploadModal({ isOpen, onClose, onSuccess }: InvoiceUpload
               placeholder="Select supplier"
               disabled={uploading || processing}
             />
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-theme-tertiary mt-1">
               Selecting the supplier helps AI match line items to existing products
             </p>
           </div>
 
           {/* File Upload */}
           <div>
-            <label className="block text-sm text-slate-300 mb-2">
+            <label className="block text-sm text-theme-secondary mb-2">
               Invoice File <span className="text-red-400">*</span>
             </label>
 
             {!file ? (
-              <div className="border-2 border-dashed border-neutral-700 rounded-lg p-8 text-center hover:border-[#D37E91]/50 transition-colors">
+              <div className="border-2 border-dashed border-theme rounded-lg p-8 text-center hover:border-[#D37E91]/50 transition-colors">
                 <input
                   type="file"
                   id="file-upload"
@@ -218,23 +218,23 @@ export function InvoiceUploadModal({ isOpen, onClose, onSuccess }: InvoiceUpload
                   htmlFor="file-upload"
                   className="cursor-pointer flex flex-col items-center gap-3"
                 >
-                  <Upload className="text-slate-400" size={32} />
+                  <Upload className="text-theme-tertiary" size={32} />
                   <div>
                     <span className="text-[#D37E91] font-medium">Click to upload</span>
-                    <span className="text-slate-400"> or drag and drop</span>
+                    <span className="text-theme-tertiary"> or drag and drop</span>
                   </div>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-theme-tertiary">
                     JPEG, PNG, WebP or PDF (max 10MB)
                   </p>
                 </label>
               </div>
             ) : (
-              <div className="border border-neutral-700 rounded-lg p-4 flex items-center justify-between bg-white/[0.03]">
+              <div className="border border-theme rounded-lg p-4 flex items-center justify-between bg-white/[0.03]">
                 <div className="flex items-center gap-3">
                   <FileText className="text-[#D37E91]" size={24} />
                   <div>
-                    <p className="text-sm text-white font-medium">{file.name}</p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-sm text-theme-primary font-medium">{file.name}</p>
+                    <p className="text-xs text-theme-tertiary">
                       {(file.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                   </div>
@@ -242,7 +242,7 @@ export function InvoiceUploadModal({ isOpen, onClose, onSuccess }: InvoiceUpload
                 <button
                   onClick={handleRemoveFile}
                   disabled={uploading || processing}
-                  className="text-slate-400 hover:text-red-400 transition-colors disabled:opacity-50"
+                  className="text-theme-tertiary hover:text-red-400 transition-colors disabled:opacity-50"
                 >
                   <X size={20} />
                 </button>

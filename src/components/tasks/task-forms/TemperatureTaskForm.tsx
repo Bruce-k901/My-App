@@ -220,7 +220,7 @@ export function TemperatureTaskForm({
     <div className="space-y-6">
       {/* Temperature Inputs */}
       <div>
-        <h3 className="text-sm font-medium text-white mb-3">Temperature Readings</h3>
+        <h3 className="text-sm font-medium text-theme-primary mb-3">Temperature Readings</h3>
         <div className="space-y-2">
           {assetIds.map(assetId => {
             const asset = assets.get(assetId)
@@ -261,7 +261,7 @@ export function TemperatureTaskForm({
 
       {/* Photo Evidence */}
       <div>
-        <label className="block text-sm font-medium text-white mb-2">
+        <label className="block text-sm font-medium text-theme-primary mb-2">
           Photo Evidence (Optional)
         </label>
 
@@ -286,8 +286,8 @@ export function TemperatureTaskForm({
         )}
 
         <label className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-white/[0.1] rounded-lg hover:border-white/[0.2] cursor-pointer transition-colors">
-          <Camera className="w-5 h-5 text-neutral-400" />
-          <span className="text-sm text-neutral-400">
+          <Camera className="w-5 h-5 text-theme-tertiary" />
+          <span className="text-sm text-theme-tertiary">
             {photos.length > 0 ? 'Add more photos' : 'Tap to add photo'}
           </span>
           <input
@@ -304,7 +304,7 @@ export function TemperatureTaskForm({
 
       {/* Notes */}
       <div>
-        <label className="block text-sm font-medium text-white mb-2">
+        <label className="block text-sm font-medium text-theme-primary mb-2">
           Notes (Optional)
         </label>
         <textarea
@@ -312,7 +312,7 @@ export function TemperatureTaskForm({
           onChange={(e) => setNotes(e.target.value)}
           disabled={submitting}
           rows={3}
-          className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 transition-colors text-sm"
+          className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary placeholder-neutral-500 focus:outline-none focus:border-blue-500 transition-colors text-sm"
           placeholder="Add any notes..."
         />
       </div>
@@ -322,7 +322,7 @@ export function TemperatureTaskForm({
         <button
           onClick={onCancel}
           disabled={submitting}
-          className="flex-1 px-4 py-2.5 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06] rounded-lg text-white text-sm font-medium transition-colors disabled:opacity-50"
+          className="flex-1 px-4 py-2.5 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06] rounded-lg text-theme-primary text-sm font-medium transition-colors disabled:opacity-50"
         >
           Cancel
         </button>
@@ -336,7 +336,7 @@ export function TemperatureTaskForm({
       </div>
 
       {!canSubmit && !submitting && (
-        <div className="text-xs text-center text-neutral-400">
+        <div className="text-xs text-center text-theme-tertiary">
           {!hasAllTemperatures && 'Please enter all temperatures'}
           {hasAllTemperatures && !allOutOfRangeHandled && 'Please handle all out-of-range temperatures'}
         </div>

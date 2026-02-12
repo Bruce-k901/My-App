@@ -105,14 +105,14 @@ export function DelegationDialog({ open, onClose, item, companyId, siteId, onDel
 
         <div className="space-y-4 py-2">
           {item && (
-            <div className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
-              <p className="text-sm font-medium text-gray-900 dark:text-white">{item.title}</p>
-              <p className="text-xs text-gray-500 dark:text-white/40 mt-1">{item.record_name}</p>
+            <div className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
+              <p className="text-sm font-medium text-theme-primary">{item.title}</p>
+              <p className="text-xs text-theme-tertiary mt-1">{item.record_name}</p>
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-white/60 mb-1">Assign to</label>
+            <label className="block text-xs font-medium text-theme-secondary/60 mb-1">Assign to</label>
             <Select
               value={selectedStaff}
               onValueChange={setSelectedStaff}
@@ -123,7 +123,7 @@ export function DelegationDialog({ open, onClose, item, companyId, siteId, onDel
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-white/60 mb-1">Message</label>
+            <label className="block text-xs font-medium text-theme-secondary/60 mb-1">Message</label>
             <Textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -133,7 +133,7 @@ export function DelegationDialog({ open, onClose, item, companyId, siteId, onDel
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-white/60 mb-1">Due date (optional)</label>
+            <label className="block text-xs font-medium text-theme-secondary/60 mb-1">Due date (optional)</label>
             <Input
               type="date"
               value={dueDate}

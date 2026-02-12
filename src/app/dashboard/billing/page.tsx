@@ -261,7 +261,7 @@ export default function BillingPage() {
       },
       cancelled: {
         label: "Cancelled",
-        color: "bg-gray-500/20 text-gray-400 border-gray-500/40",
+        color: "bg-theme-surface-elevated0/20 text-theme-tertiary border-gray-500/40",
         icon: FileText,
       },
       past_due: {
@@ -295,8 +295,8 @@ export default function BillingPage() {
   if (!companyId) {
     return (
       <div className="p-8">
-        <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-          <p className="text-gray-600 dark:text-white/60 text-center">
+        <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-xl p-6">
+          <p className="text-theme-secondary text-center">
             Please complete company setup to view billing information.
           </p>
         </div>
@@ -314,10 +314,10 @@ export default function BillingPage() {
     <div className="p-3 sm:p-4 md:p-6 max-w-5xl mx-auto space-y-4 sm:space-y-5 md:space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-theme-primary mb-1 sm:mb-2">
           Billing & Subscription
         </h1>
-        <p className="text-gray-600 dark:text-white/60 text-sm sm:text-base">
+        <p className="text-theme-secondary text-sm sm:text-base">
           Manage your subscription, invoices, and data exports
         </p>
       </div>
@@ -334,12 +334,12 @@ export default function BillingPage() {
           <div className="flex items-center gap-4">
             <Clock className="w-8 h-8 text-blue-600 dark:text-blue-400 flex-shrink-0" />
             <div>
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">
+              <p className="text-lg font-semibold text-theme-primary">
                 {trialDaysRemaining}{" "}
                 {trialDaysRemaining === 1 ? "day" : "days"} remaining in your
                 free trial
               </p>
-              <p className="text-sm text-gray-600 dark:text-white/60 mt-1">
+              <p className="text-sm text-theme-secondary mt-1">
                 Your 60-day free trial ends on{" "}
                 {format(new Date(subscription!.trial_ends_at), "PPP")}. No
                 payment required until then.
@@ -350,28 +350,28 @@ export default function BillingPage() {
       )}
 
       {/* Subscription Status Card */}
-      <div className="bg-gradient-to-br from-gray-50 dark:from-white/[0.05] to-white dark:to-white/[0.02] border border-gray-200 dark:border-white/[0.08] rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg">
+      <div className="bg-gradient-to-br from-gray-50 dark:from-white/[0.05] to-white dark:to-white/[0.02] border border-theme rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg">
         <div className="flex flex-col sm:flex-row items-start justify-between gap-4 sm:gap-0 mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+            <h2 className="text-2xl font-bold text-theme-primary mb-3">
               Current Subscription
             </h2>
             {subscription ? (
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   {getStatusBadge()}
-                  <span className="text-gray-600 dark:text-white/60">
+                  <span className="text-theme-secondary">
                     {subscription.plan?.display_name || "Opsly"}
                   </span>
                 </div>
                 {subscription.billing_email && (
-                  <p className="text-sm text-gray-600 dark:text-white/60">
+                  <p className="text-sm text-theme-secondary">
                     Billing email: {subscription.billing_email}
                   </p>
                 )}
               </div>
             ) : (
-              <p className="text-gray-600 dark:text-white/60">
+              <p className="text-theme-secondary">
                 No active subscription
               </p>
             )}
@@ -382,35 +382,35 @@ export default function BillingPage() {
         {subscription && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-gradient-to-br from-gray-100 dark:from-white/[0.08] to-gray-50 dark:to-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl p-6 shadow-md">
-              <p className="text-sm font-medium text-gray-500 dark:text-white/70 uppercase tracking-wide mb-2">
+              <p className="text-sm font-medium text-theme-tertiary/70 uppercase tracking-wide mb-2">
                 Sites
               </p>
-              <p className="text-4xl font-bold text-gray-900 dark:text-white">
+              <p className="text-4xl font-bold text-theme-primary">
                 {siteCount || subscription.site_count || 0}
               </p>
             </div>
             <div className="bg-gradient-to-br from-blue-50 dark:from-blue-700/20 to-gray-50 dark:to-white/[0.04] border border-blue-200 dark:border-blue-600/30 rounded-xl p-6 shadow-md">
-              <p className="text-sm font-medium text-gray-500 dark:text-white/70 uppercase tracking-wide mb-2">
+              <p className="text-sm font-medium text-theme-tertiary/70 uppercase tracking-wide mb-2">
                 Monthly Amount
               </p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+              <p className="text-3xl font-bold text-theme-primary">
                 £{calculateMonthlyAmount(subscription, siteCount)}
               </p>
               {subscription.plan && siteCount > 0 && (
-                <p className="text-xs text-gray-400 dark:text-white/50 mt-2">
+                <p className="text-xs text-theme-tertiary mt-2">
                   {siteCount} site{siteCount !== 1 ? "s" : ""} × £
                   {subscription.plan.price_per_site_monthly?.toFixed(2)}/site
                 </p>
               )}
             </div>
             <div className="bg-gradient-to-br from-gray-100 dark:from-white/[0.08] to-gray-50 dark:to-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl p-6 shadow-md">
-              <p className="text-sm font-medium text-gray-500 dark:text-white/70 uppercase tracking-wide mb-2">
+              <p className="text-sm font-medium text-theme-tertiary/70 uppercase tracking-wide mb-2">
                 Price per Site
               </p>
-              <p className="text-4xl font-bold text-gray-900 dark:text-white">
+              <p className="text-4xl font-bold text-theme-primary">
                 £{subscription.plan?.price_per_site_monthly?.toFixed(2) || "300.00"}
               </p>
-              <p className="text-xs text-gray-400 dark:text-white/50 mt-2">
+              <p className="text-xs text-theme-tertiary mt-2">
                 Everything included
               </p>
             </div>
@@ -418,14 +418,14 @@ export default function BillingPage() {
         )}
 
         {/* Manual Invoice Notice */}
-        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-white/10">
+        <div className="mt-6 pt-6 border-t border-theme">
           <div className="flex items-start gap-3">
             <CreditCard className="w-5 h-5 text-yellow-500 dark:text-yellow-400 mt-0.5" />
             <div>
-              <p className="text-gray-900 dark:text-white font-medium mb-1">
+              <p className="text-theme-primary font-medium mb-1">
                 Manual Invoicing
               </p>
-              <p className="text-sm text-gray-600 dark:text-white/60">
+              <p className="text-sm text-theme-secondary">
                 We invoice monthly via email. No automatic payments are set up.
                 You'll receive invoices at the end of each billing period.
               </p>
@@ -435,17 +435,17 @@ export default function BillingPage() {
       </div>
 
       {/* Invoices Section */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-theme-primary mb-4">
           Invoice History
         </h2>
 
         {invoices.length === 0 ? (
           <div className="text-center py-8">
-            <FileText className="w-12 h-12 text-gray-300 dark:text-white/30 mx-auto mb-3" />
-            <p className="text-gray-600 dark:text-white/60">No invoices yet</p>
+            <FileText className="w-12 h-12 text-gray-300 dark:text-theme-disabled mx-auto mb-3" />
+            <p className="text-theme-secondary">No invoices yet</p>
             {isTrialActive && (
-              <p className="text-sm text-gray-400 dark:text-white/40 mt-2">
+              <p className="text-sm text-theme-tertiary mt-2">
                 Invoices will appear here after your trial ends
               </p>
             )}
@@ -455,12 +455,12 @@ export default function BillingPage() {
             {invoices.map((invoice) => (
               <div
                 key={invoice.id}
-                className="bg-gray-50 dark:bg-white/[0.05] border border-gray-200 dark:border-white/10 rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors"
+                className="bg-theme-button border border-theme rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="font-semibold text-gray-900 dark:text-white">
+                      <span className="font-semibold text-theme-primary">
                         {invoice.invoice_number}
                       </span>
                       <span
@@ -471,14 +471,14 @@ export default function BillingPage() {
                               ? "bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400"
                               : invoice.status === "sent"
                                 ? "bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400"
-                                : "bg-gray-100 dark:bg-gray-500/20 text-gray-600 dark:text-gray-400"
+                                : "bg-gray-100 dark:bg-theme-surface-elevated0/20 text-theme-secondary"
                         }`}
                       >
                         {invoice.status.charAt(0).toUpperCase() +
                           invoice.status.slice(1)}
                       </span>
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-white/60 space-y-1">
+                    <div className="text-sm text-theme-secondary space-y-1">
                       <p>
                         Period:{" "}
                         {format(new Date(invoice.billing_period_start), "MMM dd")}{" "}
@@ -500,7 +500,7 @@ export default function BillingPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-xl font-bold text-gray-900 dark:text-white">
+                    <p className="text-xl font-bold text-theme-primary">
                       £{invoice.total_amount.toFixed(2)}
                     </p>
                     {invoice.status === "sent" && (
@@ -517,11 +517,11 @@ export default function BillingPage() {
       </div>
 
       {/* Data Export Section */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-theme-primary mb-2">
           Data Export
         </h2>
-        <p className="text-gray-600 dark:text-white/60 mb-4">
+        <p className="text-theme-secondary mb-4">
           Request a copy of your data. This is useful if you're leaving Opsly or
           need a backup. Exports are provided in JSON format and typically ready
           within 24 hours.
@@ -547,7 +547,7 @@ export default function BillingPage() {
             )}
           </Button>
 
-          <div className="text-sm text-gray-600 dark:text-white/60 mt-4">
+          <div className="text-sm text-theme-secondary mt-4">
             <p className="mb-2">Your export will include:</p>
             <ul className="list-disc list-inside space-y-1 ml-2">
               <li>All tasks and checklists</li>
@@ -562,21 +562,21 @@ export default function BillingPage() {
       </div>
 
       {/* Terms & Cancellation */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-theme-primary mb-2">
           Terms & Cancellation
         </h2>
-        <div className="space-y-3 text-gray-600 dark:text-white/60 text-sm">
+        <div className="space-y-3 text-theme-secondary text-sm">
           <p>
             •{" "}
-            <strong className="text-gray-900 dark:text-white">
+            <strong className="text-theme-primary">
               60-Day Free Trial:
             </strong>{" "}
             New accounts get 60 days free. No payment required during trial.
           </p>
           <p>
             •{" "}
-            <strong className="text-gray-900 dark:text-white">
+            <strong className="text-theme-primary">
               Monthly Billing:
             </strong>{" "}
             After trial, you'll be invoiced monthly at £300 per site. No
@@ -584,19 +584,19 @@ export default function BillingPage() {
           </p>
           <p>
             •{" "}
-            <strong className="text-gray-900 dark:text-white">
+            <strong className="text-theme-primary">
               60-Day Notice:
             </strong>{" "}
             To cancel, please provide 60 days written notice via email.
           </p>
           <p>
             •{" "}
-            <strong className="text-gray-900 dark:text-white">
+            <strong className="text-theme-primary">
               Data Export:
             </strong>{" "}
             You can request your data at any time, including after cancellation.
           </p>
-          <div className="pt-3 border-t border-gray-200 dark:border-white/10">
+          <div className="pt-3 border-t border-theme">
             <Link
               href="/terms"
               className="text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 inline-flex items-center gap-1"

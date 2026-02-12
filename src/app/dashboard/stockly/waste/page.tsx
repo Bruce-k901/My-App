@@ -1347,13 +1347,13 @@ export default function WasteLogPage() {
           <div className="flex items-center gap-4">
             <Link 
               href="/dashboard/stockly/waste"
-              className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+ className="p-2 rounded-lg bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
               <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Waste Log Details</h1>
-              <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mt-1">
+              <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm mt-1">
                 Waste Record #{wasteId.slice(0, 8)}
               </p>
             </div>
@@ -1364,16 +1364,16 @@ export default function WasteLogPage() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Waste Details */}
-            <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+            <div className="bg-theme-surface border border-theme rounded-xl p-6">
               <button
                 onClick={() => toggleSection('details')}
                 className="w-full flex items-center justify-between mb-4"
               >
                 <h2 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white">Waste Details</h2>
                 {expandedSections.has('details') ? (
-                  <ChevronUp className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-white/60" />
+                  <ChevronUp className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-white/60" />
+                  <ChevronDown className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
                 )}
               </button>
 
@@ -1381,18 +1381,18 @@ export default function WasteLogPage() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">Date</div>
+                      <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">Date</div>
                       <div className="text-[rgb(var(--text-primary))] dark:text-white">
                         {wasteLog.waste_date ? format(new Date(wasteLog.waste_date), 'dd MMM yyyy') : 'N/A'}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">Reason</div>
+                      <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">Reason</div>
                       <div className="text-[rgb(var(--text-primary))] dark:text-white capitalize">{wasteLog.waste_reason || 'N/A'}</div>
                     </div>
                     {wasteLog.total_cost !== null && (
                       <div>
-                        <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">Total Cost</div>
+                        <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">Total Cost</div>
                         <div className="text-[rgb(var(--text-primary))] dark:text-white font-semibold">£{parseFloat(wasteLog.total_cost).toFixed(2)}</div>
                       </div>
                     )}
@@ -1400,8 +1400,8 @@ export default function WasteLogPage() {
 
                   {wasteLog.notes && (
                     <div>
-                      <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2">Notes</div>
-                      <div className="text-[rgb(var(--text-primary))] dark:text-white bg-theme-button dark:bg-white/[0.05] rounded-lg p-3">
+                      <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-2">Notes</div>
+                      <div className="text-[rgb(var(--text-primary))] dark:text-white bg-theme-button rounded-lg p-3">
                         {wasteLog.notes}
                       </div>
                     </div>
@@ -1409,20 +1409,20 @@ export default function WasteLogPage() {
 
                   {wasteLog.waste_log_lines && wasteLog.waste_log_lines.length > 0 && (
                     <div>
-                      <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2">Items</div>
+                      <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-2">Items</div>
                       <div className="space-y-2">
                         {wasteLog.waste_log_lines.map((line: any) => (
-                          <div key={line.id} className="bg-theme-button dark:bg-white/[0.05] rounded-lg p-3 text-sm">
+                          <div key={line.id} className="bg-theme-button rounded-lg p-3 text-sm">
                             <div className="flex items-center justify-between">
                               <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium">
                                 {line.stock_items?.name || 'Unknown Item'}
                               </span>
-                              <span className="text-[rgb(var(--text-primary))] dark:text-white/80">
+                              <span className="text-[rgb(var(--text-primary))] dark:text-theme-secondary">
                                 {line.quantity} {line.stock_items?.stock_unit || ''}
                               </span>
                             </div>
                             {line.line_cost && (
-                              <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-white/60 mt-1">
+                              <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mt-1">
                                 Cost: £{parseFloat(line.line_cost).toFixed(2)}
                               </div>
                             )}
@@ -1436,7 +1436,7 @@ export default function WasteLogPage() {
             </div>
 
             {/* Related Tasks Section */}
-            <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+            <div className="bg-theme-surface border border-theme rounded-xl p-6">
               <button
                 onClick={() => toggleSection('tasks')}
                 className="w-full flex items-center justify-between mb-4"
@@ -1445,43 +1445,43 @@ export default function WasteLogPage() {
                   Related Tasks {linkedTasks && linkedTasks.length > 0 && `(${linkedTasks.length})`}
                 </h2>
                 {expandedSections.has('tasks') ? (
-                  <ChevronUp className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-white/60" />
+                  <ChevronUp className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-white/60" />
+                  <ChevronDown className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
                 )}
               </button>
 
               {expandedSections.has('tasks') && (
                 <div>
                   {loadingTasks ? (
-                    <div className="text-[rgb(var(--text-tertiary))] dark:text-gray-400">Loading...</div>
+ <div className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">Loading...</div>
                   ) : linkedTasks && linkedTasks.length > 0 ? (
                     <div className="space-y-2">
                       {linkedTasks.map(link => (
                         <Link
                           key={link.link_id}
                           href={`/dashboard/tasks/view/${link.source_id}`}
-                          className="block p-3 border border-theme dark:border-white/[0.06] rounded-lg bg-theme-button dark:bg-white/[0.03] hover:bg-theme-button-hover dark:hover:bg-white/[0.05] transition-colors"
+ className="block p-3 border border-theme rounded-lg bg-theme-button hover:bg-theme-button-hover transition-colors"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <p className="text-[rgb(var(--text-primary))] dark:text-white font-medium">Task: {link.source_id.slice(0, 8)}</p>
-                              <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-gray-400">
+ <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
                                 Linked: {format(new Date(link.created_at), 'dd MMM yyyy HH:mm')}
                               </p>
                               {link.link_type && (
-                                <span className="inline-block mt-2 text-xs bg-[#D37E91]/10 text-[#D37E91] border border-[#D37E91]/20 px-2 py-1 rounded">
+                                <span className="inline-block mt-2 text-xs bg-module-fg/[0.10] text-module-fg border border-module-fg/[0.20] px-2 py-1 rounded">
                                   {link.link_type.replace(/_/g, ' ')}
                                 </span>
                               )}
                             </div>
-                            <ExternalLink className="w-4 h-4 text-[rgb(var(--text-tertiary))] dark:text-white/40" />
+                            <ExternalLink className="w-4 h-4 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary" />
                           </div>
                         </Link>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-[rgb(var(--text-tertiary))] dark:text-gray-400">No tasks linked to this waste record</p>
+ <p className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">No tasks linked to this waste record</p>
                   )}
                 </div>
               )}
@@ -1499,13 +1499,13 @@ export default function WasteLogPage() {
         <div className="flex items-center gap-4">
           <Link 
             href="/dashboard/stockly"
-            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+ className="p-2 rounded-lg bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Waste Log</h1>
-            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mt-1">
+            <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm mt-1">
               Record daily waste and losses
             </p>
           </div>
@@ -1515,14 +1515,14 @@ export default function WasteLogPage() {
       {/* Two Column Layout: Create Waste | Daily Templates */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Side: Regular Create Waste Form */}
-        <form onSubmit={handleSubmit} className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-theme-surface border border-theme rounded-xl p-6 space-y-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Create Waste Log</h2>
+            <h2 className="text-lg font-semibold text-theme-primary">Create Waste Log</h2>
             {wasteLines.length > 0 && (
               <button
                 type="button"
                 onClick={() => setShowSaveTemplateModal(true)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30 rounded-lg transition-colors"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-emerald-50 dark:bg-module-fg/10 hover:bg-emerald-100 dark:hover:bg-module-fg/10 text-module-fg border border-emerald-200 dark:border-module-fg/30 rounded-lg transition-colors"
               >
                 <Save className="w-3.5 h-3.5" />
                 Save as Template
@@ -1533,26 +1533,26 @@ export default function WasteLogPage() {
           {/* Date and Global Notes */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white/80 mb-2">
+              <label className="block text-sm font-medium text-[rgb(var(--text-primary))] dark:text-theme-secondary mb-2">
                 Date <span className="text-red-400">*</span>
               </label>
               <Input
                 type="date"
                 value={wasteDate}
                 onChange={(e) => setWasteDate(e.target.value)}
-                className="w-full bg-theme-button dark:bg-white/5 border-theme dark:border-white/10 text-[rgb(var(--text-primary))] dark:text-white focus:border-[#10B981]"
+ className="w-full bg-theme-button border-theme text-[rgb(var(--text-primary))] dark:text-white focus:border-[#10B981]"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white/80 mb-2">
+              <label className="block text-sm font-medium text-[rgb(var(--text-primary))] dark:text-theme-secondary mb-2">
                 General Notes (Optional)
               </label>
               <Input
                 type="text"
                 value={globalNotes}
                 onChange={(e) => setGlobalNotes(e.target.value)}
-                className="w-full bg-theme-button dark:bg-white/5 border-theme dark:border-white/10 text-[rgb(var(--text-primary))] dark:text-white focus:border-[#10B981]"
+ className="w-full bg-theme-button border-theme text-[rgb(var(--text-primary))] dark:text-white focus:border-[#10B981]"
                 placeholder="Notes for all items..."
               />
             </div>
@@ -1561,13 +1561,13 @@ export default function WasteLogPage() {
         {/* Waste Items Table */}
         <div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-primary/80 mb-2">
               Wasted Items <span className="text-red-400">*</span>
             </label>
             
             {/* Inline Search */}
             <div className="relative" ref={searchRef}>
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-neutral-400" size={18} />
+ <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-theme-tertiary"size={18} />
               <input
                 type="text"
                 value={itemSearchTerm}
@@ -1585,14 +1585,14 @@ export default function WasteLogPage() {
                   }
                 }}
                 placeholder="Search stock items to add..."
-                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-[#10B981]/50 focus:border-emerald-500 dark:focus:border-[#10B981] transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-[#10B981]/50 focus:border-emerald-500 dark:focus:border-[#10B981] transition-colors"
               />
               
               {/* Search Results Dropdown */}
               {showSearchResults && (loadingSearch || searchResults.length > 0 || itemSearchTerm.trim()) && (
-                <div className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/10 rounded-lg shadow-xl max-h-96 overflow-y-auto">
+                <div className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1a1a2e] border border-theme rounded-lg shadow-xl max-h-96 overflow-y-auto">
                   {loadingSearch ? (
-                    <div className="px-4 py-3 text-sm text-gray-500 dark:text-neutral-400 text-center">
+ <div className="px-4 py-3 text-sm text-gray-500 dark:text-theme-tertiary text-center">
                       Searching...
                     </div>
                   ) : searchResults.length > 0 ? (
@@ -1602,15 +1602,15 @@ export default function WasteLogPage() {
                           key={item.id}
                           type="button"
                           onClick={() => handleItemSelect(item.id, item)}
-                          className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left first:rounded-t-lg last:rounded-b-lg border-b border-gray-100 dark:border-white/5 last:border-0"
+                          className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-theme-hover transition-colors text-left first:rounded-t-lg last:rounded-b-lg border-b border-theme last:border-0"
                         >
                           <div className="flex-1 min-w-0">
-                            <div className="font-medium text-gray-900 dark:text-white truncate">{item.name}</div>
+                            <div className="font-medium text-theme-primary truncate">{item.name}</div>
                             {item.description && (
-                              <div className="text-xs text-gray-500 dark:text-neutral-400 mt-0.5 truncate">{item.description}</div>
+ <div className="text-xs text-gray-500 dark:text-theme-tertiary mt-0.5 truncate">{item.description}</div>
                             )}
                             {item.library_type && (
-                              <div className="text-xs text-emerald-600 dark:text-[#D37E91] mt-1">
+                              <div className="text-xs text-module-fg dark:text-module-fg mt-1">
                                 {item.source === 'library' ? 'From ' : 'Linked to '}
                                 {item.library_type.replace('_library', '').replace(/_/g, ' ')}
                               </div>
@@ -1621,19 +1621,19 @@ export default function WasteLogPage() {
                               </div>
                             )}
                           </div>
-                          <Plus className="text-emerald-600 dark:text-[#10B981] flex-shrink-0 ml-2" size={18} />
+                          <Plus className="text-module-fg dark:text-[#10B981] flex-shrink-0 ml-2" size={18} />
                         </button>
                       ))}
                       {searchResults.length > 50 && (
-                        <div className="px-4 py-2 text-xs text-gray-500 dark:text-neutral-400 text-center border-t border-gray-100 dark:border-white/5">
+ <div className="px-4 py-2 text-xs text-gray-500 dark:text-theme-tertiary text-center border-t border-theme">
                           Showing first 50 of {searchResults.length} results. Try a more specific search.
                         </div>
                       )}
                     </>
                   ) : itemSearchTerm.trim() ? (
-                    <div className="px-4 py-3 text-sm text-gray-500 dark:text-neutral-400 text-center">
+ <div className="px-4 py-3 text-sm text-gray-500 dark:text-theme-tertiary text-center">
                       <p>No items found matching "{itemSearchTerm}"</p>
-                      <p className="text-xs text-gray-400 dark:text-white/40 mt-1">
+                      <p className="text-xs text-theme-tertiary mt-1">
                         Try a different search term or check if the item exists in your stock items
                       </p>
                     </div>
@@ -1644,38 +1644,38 @@ export default function WasteLogPage() {
           </div>
 
           {wasteLines.length === 0 ? (
-            <div className="border-2 border-dashed border-gray-300 dark:border-white/10 rounded-lg p-8 text-center bg-gray-50/50 dark:bg-transparent">
-              <Trash2 className="w-12 h-12 text-gray-400 dark:text-white/20 mx-auto mb-3" />
-              <p className="text-gray-600 dark:text-white/60 text-sm mb-2">No items added yet</p>
-              <p className="text-gray-500 dark:text-white/40 text-xs">Search above to add items to the waste log</p>
+            <div className="border-2 border-dashed border-theme rounded-lg p-8 text-center bg-gray-50/50 dark:bg-transparent">
+              <Trash2 className="w-12 h-12 text-theme-tertiary/20 mx-auto mb-3" />
+              <p className="text-theme-secondary text-sm mb-2">No items added yet</p>
+              <p className="text-theme-tertiary text-xs">Search above to add items to the waste log</p>
             </div>
           ) : (
-            <div className="border border-gray-200 dark:border-white/10 rounded-lg overflow-hidden bg-white dark:bg-transparent">
+            <div className="border border-theme rounded-lg overflow-hidden bg-white dark:bg-transparent">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50 dark:bg-white/[0.03]">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-white/60 uppercase tracking-wider">Item</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 dark:text-white/60 uppercase tracking-wider">Available</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 dark:text-white/60 uppercase tracking-wider">Quantity</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-white/60 uppercase tracking-wider">Reason</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 dark:text-white/60 uppercase tracking-wider">Cost</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 dark:text-white/60 w-12"></th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary uppercase tracking-wider">Item</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-secondary uppercase tracking-wider">Available</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-secondary uppercase tracking-wider">Quantity</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary uppercase tracking-wider">Reason</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-theme-secondary uppercase tracking-wider">Cost</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-theme-secondary w-12"></th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-white/10 bg-white dark:bg-transparent">
                     {wasteLines.map((line) => (
                       <tr key={line.id} className={`hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors ${line.stock_warning ? 'bg-red-50 dark:bg-red-500/5' : ''}`}>
                         <td className="px-4 py-3">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">{line.name}</p>
+                          <p className="text-sm font-medium text-theme-primary">{line.name}</p>
                         </td>
                         <td className="px-4 py-3 text-right">
                           {line.current_stock !== undefined ? (
-                            <span className="text-xs text-gray-600 dark:text-white/60">
+                            <span className="text-xs text-theme-secondary">
                               {line.current_stock.toFixed(2)}
                             </span>
                           ) : (
-                            <span className="text-xs text-gray-400 dark:text-white/40">-</span>
+                            <span className="text-xs text-theme-tertiary">-</span>
                           )}
                         </td>
                         <td className="px-4 py-3">
@@ -1704,14 +1704,14 @@ export default function WasteLogPage() {
                                   updateLine(line.id, { quantity: 0 });
                                 }
                               }}
-                              className={`w-24 px-2 py-1.5 bg-white dark:bg-white/5 border rounded text-sm text-right text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 dark:focus:ring-[#10B981]/50 ${
+                              className={`w-24 px-2 py-1.5 bg-theme-surface border rounded text-sm text-right text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 dark:focus:ring-[#10B981]/50 ${
                                 line.stock_warning 
                                   ? 'border-red-300 dark:border-red-500/50 bg-red-50 dark:bg-red-500/5' 
-                                  : 'border-gray-300 dark:border-white/10'
+                                  : 'border-theme'
                               }`}
                               onFocus={(e) => e.target.select()}
                             />
-                            <span className="text-xs text-gray-600 dark:text-white/60 font-medium whitespace-nowrap min-w-[2rem]">
+                            <span className="text-xs text-theme-secondary font-medium whitespace-nowrap min-w-[2rem]">
                               {line.unit}
                             </span>
                           </div>
@@ -1726,7 +1726,7 @@ export default function WasteLogPage() {
                                 className={`px-2 py-1 rounded text-xs transition-colors border ${
                                   line.reason === reason.value
                                     ? 'bg-emerald-100 dark:bg-[#10B981]/20 text-emerald-700 dark:text-[#10B981] border-emerald-300 dark:border-[#10B981]/50'
-                                    : 'bg-white dark:bg-white/5 text-gray-600 dark:text-white/60 border-gray-300 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/10'
+                                    : 'bg-theme-surface text-theme-secondary border-theme hover:bg-theme-surface-elevated dark:hover:bg-white/10'
                                 }`}
                                 title={reason.label}
                               >
@@ -1736,7 +1736,7 @@ export default function WasteLogPage() {
                             <select
                               value={line.reason}
                               onChange={(e) => updateLine(line.id, { reason: e.target.value })}
-                              className="px-2 py-1 rounded text-xs bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-[#10B981]/50"
+                              className="px-2 py-1 rounded text-xs bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-[#10B981]/50"
                             >
                               {WASTE_REASONS.map((r) => (
                                 <option key={r.value} value={r.value}>
@@ -1755,7 +1755,7 @@ export default function WasteLogPage() {
                           <button
                             type="button"
                             onClick={() => removeLine(line.id)}
-                            className="p-1.5 text-gray-400 dark:text-white/40 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded hover:bg-red-50 dark:hover:bg-red-500/10"
+                            className="p-1.5 text-theme-tertiary hover:text-red-600 dark:hover:text-red-400 transition-colors rounded hover:bg-red-50 dark:hover:bg-red-500/10"
                             aria-label="Remove item"
                           >
                             <X className="w-4 h-4" />
@@ -1764,9 +1764,9 @@ export default function WasteLogPage() {
                       </tr>
                     ))}
                   </tbody>
-                  <tfoot className="bg-gray-50 dark:bg-white/[0.03] border-t border-gray-200 dark:border-white/10">
+                  <tfoot className="bg-gray-50 dark:bg-white/[0.03] border-t border-theme">
                     <tr>
-                      <td colSpan={4} className="px-4 py-3 text-right text-sm font-medium text-gray-700 dark:text-white/60">
+                      <td colSpan={4} className="px-4 py-3 text-right text-sm font-medium text-theme-secondary/60">
                         Total Waste Value:
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -1784,11 +1784,11 @@ export default function WasteLogPage() {
         </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-4 pt-4 border-t border-theme dark:border-white/[0.06]">
+          <div className="flex items-center gap-4 pt-4 border-t border-theme">
             <Button
               type="submit"
               disabled={saving || wasteLines.length === 0}
-              className="bg-transparent border border-[#10B981] text-[#10B981] hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] transition-all duration-200 ease-in-out disabled:opacity-50"
+              className="bg-transparent border border-[#10B981] text-[#10B981] hover:shadow-module-glow transition-all duration-200 ease-in-out disabled:opacity-50"
             >
               {saving ? (
                 <>
@@ -1803,7 +1803,7 @@ export default function WasteLogPage() {
               <Button
                 type="button"
                 variant="ghost"
-                className="text-[rgb(var(--text-secondary))] dark:text-neutral-400 hover:text-[rgb(var(--text-primary))] dark:hover:text-white"
+ className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))]"
               >
                 Cancel
               </Button>
@@ -1812,20 +1812,20 @@ export default function WasteLogPage() {
         </form>
 
         {/* Right Side: Daily Waste Templates */}
-        <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6 space-y-4">
+        <div className="bg-theme-surface border border-theme rounded-xl p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Daily Waste Templates</h2>
+            <h2 className="text-lg font-semibold text-theme-primary">Daily Waste Templates</h2>
             <div className="flex items-center gap-2">
               <button
                 onClick={loadTemplates}
                 disabled={loadingTemplates}
-                className="text-xs text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white/80 disabled:opacity-50"
+                className="text-xs text-theme-tertiary hover:text-theme-secondary dark:hover:text-theme-secondary disabled:opacity-50"
               >
                 {loadingTemplates ? 'Loading...' : 'Refresh'}
               </button>
               <button
                 onClick={startCreateTemplate}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30 rounded-lg transition-colors"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium bg-emerald-50 dark:bg-module-fg/10 hover:bg-emerald-100 dark:hover:bg-module-fg/10 text-module-fg border border-emerald-200 dark:border-module-fg/30 rounded-lg transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Create Template
@@ -1833,19 +1833,19 @@ export default function WasteLogPage() {
             </div>
           </div>
           
-          <p className="text-sm text-gray-600 dark:text-white/60">
+          <p className="text-sm text-theme-secondary">
             Use saved templates to quickly add common waste items
           </p>
 
           {loadingTemplates ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 text-emerald-600 dark:text-[#10B981] animate-spin" />
+              <Loader2 className="w-6 h-6 text-module-fg dark:text-[#10B981] animate-spin" />
             </div>
           ) : templates.length === 0 ? (
-            <div className="text-center py-8 border-2 border-dashed border-gray-300 dark:border-white/10 rounded-lg">
-              <FileText className="w-12 h-12 text-gray-400 dark:text-white/20 mx-auto mb-3" />
-              <p className="text-gray-500 dark:text-white/60 text-sm mb-2">No templates yet</p>
-              <p className="text-xs text-gray-400 dark:text-white/40">
+            <div className="text-center py-8 border-2 border-dashed border-theme rounded-lg">
+              <FileText className="w-12 h-12 text-theme-tertiary/20 mx-auto mb-3" />
+              <p className="text-theme-tertiary text-sm mb-2">No templates yet</p>
+              <p className="text-xs text-theme-tertiary">
                 Add items to the waste log and click "Save as Template" to create one
               </p>
             </div>
@@ -1854,19 +1854,19 @@ export default function WasteLogPage() {
               {templates.map((template) => (
                 <div
                   key={template.id}
-                  className="group p-4 border border-gray-200 dark:border-white/10 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors bg-white dark:bg-transparent"
+                  className="group p-4 border border-theme rounded-lg hover:bg-theme-hover transition-colors bg-white dark:bg-transparent"
                 >
                   <div className="flex items-start justify-between">
                     <button
                       onClick={() => applyTemplate(template.id)}
                       className="flex-1 min-w-0 text-left"
                     >
-                      <h4 className="font-medium text-gray-900 dark:text-white truncate">{template.name}</h4>
+                      <h4 className="font-medium text-theme-primary truncate">{template.name}</h4>
                       {template.description && (
-                        <p className="text-sm text-gray-500 dark:text-white/60 mt-1 line-clamp-2">{template.description}</p>
+                        <p className="text-sm text-theme-tertiary mt-1 line-clamp-2">{template.description}</p>
                       )}
                       <div className="flex items-center gap-3 mt-2">
-                        <span className="text-xs text-gray-400 dark:text-white/40">
+                        <span className="text-xs text-theme-tertiary">
                           {template.waste_template_lines?.length || 0} item{template.waste_template_lines?.length !== 1 ? 's' : ''}
                         </span>
                       </div>
@@ -1877,7 +1877,7 @@ export default function WasteLogPage() {
                           e.stopPropagation();
                           startEditTemplate(template);
                         }}
-                        className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded transition-colors"
+                        className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-module-fg/10 rounded transition-colors"
                         aria-label="Edit template"
                       >
                         <Pencil className="w-4 h-4" />
@@ -1894,7 +1894,7 @@ export default function WasteLogPage() {
                       </button>
                       <button
                         onClick={() => applyTemplate(template.id)}
-                        className="p-1.5 text-emerald-600 dark:text-[#10B981] hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded transition-colors"
+                        className="p-1.5 text-module-fg dark:text-[#10B981] hover:bg-module-fg/10 rounded transition-colors"
                         aria-label="Apply template"
                       >
                         <Plus className="w-4 h-4" />
@@ -1909,13 +1909,13 @@ export default function WasteLogPage() {
       </div>
 
       {/* Waste Logs History */}
-      <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Recent Waste Logs</h2>
+          <h2 className="text-xl font-semibold text-theme-primary">Recent Waste Logs</h2>
           <button
             onClick={loadWasteLogsHistory}
             disabled={loadingHistory}
-            className="text-sm text-emerald-600 dark:text-[#10B981] hover:underline disabled:opacity-50"
+            className="text-sm text-module-fg dark:text-[#10B981] hover:underline disabled:opacity-50"
           >
             {loadingHistory ? 'Loading...' : 'Refresh'}
           </button>
@@ -1923,50 +1923,50 @@ export default function WasteLogPage() {
 
         {loadingHistory ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 text-emerald-600 dark:text-[#10B981] animate-spin" />
+            <Loader2 className="w-6 h-6 text-module-fg dark:text-[#10B981] animate-spin" />
           </div>
         ) : wasteLogsHistory.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-gray-500 dark:text-white/60">No waste logs found</p>
+            <p className="text-theme-tertiary">No waste logs found</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-white/[0.03]">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-white/60 uppercase tracking-wider">Date</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-white/60 uppercase tracking-wider">Reason</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-white/60 uppercase tracking-wider">Items</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 dark:text-white/60 uppercase tracking-wider">Total Cost</th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 dark:text-white/60 w-12"></th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary uppercase tracking-wider">Date</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary uppercase tracking-wider">Reason</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary uppercase tracking-wider">Items</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-theme-secondary uppercase tracking-wider">Total Cost</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-theme-secondary w-12"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-white/10 bg-white dark:bg-transparent">
                 {wasteLogsHistory.map((log) => (
-                  <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
+                  <tr key={log.id} className="hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02] transition-colors">
                     <td className="px-4 py-3">
-                      <div className="text-sm text-gray-900 dark:text-white">
+                      <div className="text-sm text-theme-primary">
                         {log.waste_date ? format(new Date(log.waste_date), 'dd MMM yyyy') : 'N/A'}
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-sm text-gray-700 dark:text-white/80 capitalize">
+                      <span className="text-sm text-theme-secondary capitalize">
                         {log.waste_reason || 'N/A'}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="text-sm text-gray-600 dark:text-white/60">
+                      <div className="text-sm text-theme-secondary">
                         {log.waste_log_lines?.length || 0} item{log.waste_log_lines?.length !== 1 ? 's' : ''}
                       </div>
                       {log.waste_log_lines && log.waste_log_lines.length > 0 && (
-                        <div className="text-xs text-gray-500 dark:text-white/40 mt-1">
+                        <div className="text-xs text-theme-tertiary mt-1">
                           {log.waste_log_lines.slice(0, 2).map((line: any) => (
                             <div key={line.id}>
                               {line.stock_items?.name || 'Unknown'} ({line.quantity} {line.stock_items?.stock_unit || ''})
                             </div>
                           ))}
                           {log.waste_log_lines.length > 2 && (
-                            <div className="text-gray-400 dark:text-white/30">
+                            <div className="text-theme-tertiary/30">
                               +{log.waste_log_lines.length - 2} more
                             </div>
                           )}
@@ -1981,7 +1981,7 @@ export default function WasteLogPage() {
                     <td className="px-4 py-3 text-center">
                       <Link
                         href={`/dashboard/stockly/waste?id=${log.id}`}
-                        className="text-emerald-600 dark:text-[#10B981] hover:underline text-sm"
+                        className="text-module-fg dark:text-[#10B981] hover:underline text-sm"
                       >
                         View
                       </Link>
@@ -2009,14 +2009,14 @@ export default function WasteLogPage() {
             className="bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/20 rounded-xl w-full max-w-md flex flex-col shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-4 border-b border-gray-200 dark:border-white/10 flex items-center justify-between bg-gray-50 dark:bg-white/[0.02]">
+            <div className="p-4 border-b border-theme flex items-center justify-between bg-gray-50 dark:bg-white/[0.02]">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Save as Template</h3>
-                <p className="text-sm text-gray-600 dark:text-white/60 mt-1">Save current items for quick reuse</p>
+                <h3 className="text-lg font-semibold text-theme-primary">Save as Template</h3>
+                <p className="text-sm text-theme-secondary mt-1">Save current items for quick reuse</p>
               </div>
               <button 
                 onClick={() => setShowSaveTemplateModal(false)} 
-                className="text-gray-400 dark:text-white/40 hover:text-gray-600 dark:hover:text-white transition-colors p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg"
+                className="text-theme-tertiary hover:text-theme-secondary transition-colors p-2 hover:bg-theme-muted rounded-lg"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
@@ -2024,7 +2024,7 @@ export default function WasteLogPage() {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                <label className="block text-sm font-medium text-theme-primary mb-2">
                   Template Name <span className="text-red-400">*</span>
                 </label>
                 <Input
@@ -2032,34 +2032,34 @@ export default function WasteLogPage() {
                   value={templateName}
                   onChange={(e) => setTemplateName(e.target.value)}
                   placeholder="e.g., Daily Bakery Waste"
-                  className="w-full bg-white dark:bg-white/5 border-gray-300 dark:border-white/10 text-gray-900 dark:text-white focus:border-emerald-500"
+                  className="w-full bg-theme-surface border-theme text-theme-primary focus:border-emerald-500"
                   autoFocus
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                <label className="block text-sm font-medium text-theme-primary mb-2">
                   Description (Optional)
                 </label>
                 <textarea
                   value={templateDescription}
                   onChange={(e) => setTemplateDescription(e.target.value)}
                   placeholder="Brief description of this template..."
-                  className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 resize-none"
+                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 resize-none"
                   rows={3}
                 />
               </div>
-              <div className="bg-gray-50 dark:bg-white/5 rounded-lg p-3">
-                <p className="text-xs text-gray-600 dark:text-white/60">
+              <div className="bg-theme-button rounded-lg p-3">
+                <p className="text-xs text-theme-secondary">
                   This will save <strong>{wasteLines.length} item{wasteLines.length !== 1 ? 's' : ''}</strong> with their quantities and default reasons.
                 </p>
               </div>
             </div>
-            <div className="p-4 border-t border-gray-200 dark:border-white/10 flex items-center gap-3">
+            <div className="p-4 border-t border-theme flex items-center gap-3">
               <Button
                 type="button"
                 onClick={() => setShowSaveTemplateModal(false)}
                 variant="ghost"
-                className="flex-1 text-gray-600 dark:text-white/60"
+                className="flex-1 text-theme-secondary"
               >
                 Cancel
               </Button>
@@ -2090,12 +2090,12 @@ export default function WasteLogPage() {
             className="bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/20 rounded-xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-4 border-b border-gray-200 dark:border-white/10 flex items-center justify-between bg-gray-50 dark:bg-white/[0.02]">
+            <div className="p-4 border-b border-theme flex items-center justify-between bg-gray-50 dark:bg-white/[0.02]">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-theme-primary">
                   {editingTemplate ? 'Edit Template' : 'Create Template'}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-white/60 mt-1">
+                <p className="text-sm text-theme-secondary mt-1">
                   {editingTemplate ? 'Update your waste template' : 'Create a new daily waste template'}
                 </p>
               </div>
@@ -2107,7 +2107,7 @@ export default function WasteLogPage() {
                   setTemplateDescription('');
                   setTemplateLines([]);
                 }} 
-                className="text-gray-400 dark:text-white/40 hover:text-gray-600 dark:hover:text-white transition-colors p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg"
+                className="text-theme-tertiary hover:text-theme-secondary transition-colors p-2 hover:bg-theme-muted rounded-lg"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
@@ -2118,7 +2118,7 @@ export default function WasteLogPage() {
               {/* Template Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  <label className="block text-sm font-medium text-theme-primary mb-2">
                     Template Name <span className="text-red-400">*</span>
                   </label>
                   <Input
@@ -2126,12 +2126,12 @@ export default function WasteLogPage() {
                     value={templateName}
                     onChange={(e) => setTemplateName(e.target.value)}
                     placeholder="e.g., Daily Bakery Waste"
-                    className="w-full bg-white dark:bg-white/5 border-gray-300 dark:border-white/10 text-gray-900 dark:text-white focus:border-emerald-500"
+                    className="w-full bg-theme-surface border-theme text-theme-primary focus:border-emerald-500"
                     autoFocus
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  <label className="block text-sm font-medium text-theme-primary mb-2">
                     Description (Optional)
                   </label>
                   <Input
@@ -2139,20 +2139,20 @@ export default function WasteLogPage() {
                     value={templateDescription}
                     onChange={(e) => setTemplateDescription(e.target.value)}
                     placeholder="Brief description..."
-                    className="w-full bg-white dark:bg-white/5 border-gray-300 dark:border-white/10 text-gray-900 dark:text-white focus:border-emerald-500"
+                    className="w-full bg-theme-surface border-theme text-theme-primary focus:border-emerald-500"
                   />
                 </div>
               </div>
 
               {/* Add Items Section */}
               <div>
-                <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                <label className="block text-sm font-medium text-theme-primary mb-2">
                   Template Items <span className="text-red-400">*</span>
                 </label>
                 
                 {/* Search Input */}
                 <div className="relative mb-4" ref={templateSearchRef}>
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-neutral-400" size={18} />
+ <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-theme-tertiary"size={18} />
                   <input
                     type="text"
                     value={templateItemSearch}
@@ -2170,14 +2170,14 @@ export default function WasteLogPage() {
                       }
                     }}
                     placeholder="Search stock items to add... (searches name and description)"
-                    className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-[#10B981]/50 focus:border-emerald-500 dark:focus:border-[#10B981] transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-[#10B981]/50 focus:border-emerald-500 dark:focus:border-[#10B981] transition-colors"
                   />
                   
                   {/* Search Results Dropdown */}
                   {showTemplateSearchResults && (loadingTemplateSearch || templateSearchResults.length > 0 || templateItemSearch.trim()) && (
-                    <div className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/10 rounded-lg shadow-xl max-h-96 overflow-y-auto">
+                    <div className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1a1a2e] border border-theme rounded-lg shadow-xl max-h-96 overflow-y-auto">
                       {loadingTemplateSearch ? (
-                        <div className="px-4 py-3 text-sm text-gray-500 dark:text-neutral-400 text-center">
+ <div className="px-4 py-3 text-sm text-gray-500 dark:text-theme-tertiary text-center">
                           Searching...
                         </div>
                       ) : templateSearchResults.length > 0 ? (
@@ -2187,32 +2187,32 @@ export default function WasteLogPage() {
                               key={item.id}
                               type="button"
                               onClick={() => handleTemplateItemSelect(item.id, item)}
-                              className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left first:rounded-t-lg last:rounded-b-lg border-b border-gray-100 dark:border-white/5 last:border-0"
+                              className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-theme-hover transition-colors text-left first:rounded-t-lg last:rounded-b-lg border-b border-theme last:border-0"
                             >
                               <div className="flex-1 min-w-0">
-                                <div className="font-medium text-gray-900 dark:text-white truncate">{item.name}</div>
+                                <div className="font-medium text-theme-primary truncate">{item.name}</div>
                                 {item.description && (
-                                  <div className="text-xs text-gray-500 dark:text-neutral-400 mt-0.5 truncate">{item.description}</div>
+ <div className="text-xs text-gray-500 dark:text-theme-tertiary mt-0.5 truncate">{item.description}</div>
                                 )}
                                 {item.library_type && (
-                                  <div className="text-xs text-emerald-600 dark:text-[#D37E91] mt-1">
+                                  <div className="text-xs text-module-fg dark:text-module-fg mt-1">
                                     Linked to {item.library_type.replace('_library', '').replace('_', ' ')}
                                   </div>
                                 )}
                               </div>
-                              <Plus className="text-emerald-600 dark:text-[#10B981] flex-shrink-0 ml-2" size={18} />
+                              <Plus className="text-module-fg dark:text-[#10B981] flex-shrink-0 ml-2" size={18} />
                             </button>
                           ))}
                           {templateSearchResults.length > 50 && (
-                            <div className="px-4 py-2 text-xs text-gray-500 dark:text-neutral-400 text-center border-t border-gray-100 dark:border-white/5">
+ <div className="px-4 py-2 text-xs text-gray-500 dark:text-theme-tertiary text-center border-t border-theme">
                               Showing first 50 of {templateSearchResults.length} results. Try a more specific search.
                             </div>
                           )}
                         </>
                       ) : templateItemSearch.trim() ? (
-                        <div className="px-4 py-3 text-sm text-gray-500 dark:text-neutral-400 text-center">
+ <div className="px-4 py-3 text-sm text-gray-500 dark:text-theme-tertiary text-center">
                           <p>No items found matching "{templateItemSearch}"</p>
-                          <p className="text-xs text-gray-400 dark:text-white/40 mt-1">
+                          <p className="text-xs text-theme-tertiary mt-1">
                             Try a different search term or check if the item exists in your stock items
                           </p>
                         </div>
@@ -2223,29 +2223,29 @@ export default function WasteLogPage() {
 
                 {/* Template Items List */}
                 {templateLines.length === 0 ? (
-                  <div className="border-2 border-dashed border-gray-300 dark:border-white/10 rounded-lg p-8 text-center bg-gray-50/50 dark:bg-transparent">
-                    <Package className="w-12 h-12 text-gray-400 dark:text-white/20 mx-auto mb-3" />
-                    <p className="text-gray-600 dark:text-white/60 text-sm mb-2">No items added yet</p>
-                    <p className="text-gray-500 dark:text-white/40 text-xs">Search above to add items to the template</p>
+                  <div className="border-2 border-dashed border-theme rounded-lg p-8 text-center bg-gray-50/50 dark:bg-transparent">
+                    <Package className="w-12 h-12 text-theme-tertiary/20 mx-auto mb-3" />
+                    <p className="text-theme-secondary text-sm mb-2">No items added yet</p>
+                    <p className="text-theme-tertiary text-xs">Search above to add items to the template</p>
                   </div>
                 ) : (
-                  <div className="border border-gray-200 dark:border-white/10 rounded-lg overflow-hidden bg-white dark:bg-transparent">
+                  <div className="border border-theme rounded-lg overflow-hidden bg-white dark:bg-transparent">
                     <div className="overflow-x-auto">
                       <table className="w-full">
                         <thead className="bg-gray-50 dark:bg-white/[0.03]">
                           <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-white/60 uppercase tracking-wider">Item</th>
-                            <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 dark:text-white/60 uppercase tracking-wider">Quantity</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-white/60 uppercase tracking-wider">Default Reason</th>
-                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 dark:text-white/60 w-12"></th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary uppercase tracking-wider">Item</th>
+                            <th className="px-4 py-3 text-right text-xs font-medium text-theme-secondary uppercase tracking-wider">Quantity</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary uppercase tracking-wider">Default Reason</th>
+                            <th className="px-4 py-3 text-center text-xs font-medium text-theme-secondary w-12"></th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200 dark:divide-white/10">
                           {templateLines.map((line) => (
-                            <tr key={line.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
+                            <tr key={line.id} className="hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02] transition-colors">
                               <td className="px-4 py-3">
-                                <p className="text-sm font-medium text-gray-900 dark:text-white">{line.name}</p>
-                                <p className="text-xs text-gray-500 dark:text-white/40">{line.unit}</p>
+                                <p className="text-sm font-medium text-theme-primary">{line.name}</p>
+                                <p className="text-xs text-theme-tertiary">{line.unit}</p>
                               </td>
                               <td className="px-4 py-3">
                                 <div className="flex items-center gap-2 justify-end">
@@ -2258,9 +2258,9 @@ export default function WasteLogPage() {
                                       const value = parseFloat(e.target.value) || 0;
                                       updateTemplateLine(line.id, { quantity: value });
                                     }}
-                                    className="w-24 px-2 py-1.5 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded text-sm text-right text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                                    className="w-24 px-2 py-1.5 bg-theme-surface border border-theme rounded text-sm text-right text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
                                   />
-                                  <span className="text-xs text-gray-600 dark:text-white/60 font-medium whitespace-nowrap min-w-[2rem]">
+                                  <span className="text-xs text-theme-secondary font-medium whitespace-nowrap min-w-[2rem]">
                                     {line.unit}
                                   </span>
                                 </div>
@@ -2269,7 +2269,7 @@ export default function WasteLogPage() {
                                 <select
                                   value={line.default_reason}
                                   onChange={(e) => updateTemplateLine(line.id, { default_reason: e.target.value })}
-                                  className="px-2 py-1 rounded text-xs bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                                  className="px-2 py-1 rounded text-xs bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                                 >
                                   {WASTE_REASONS.map((r) => (
                                     <option key={r.value} value={r.value}>
@@ -2282,7 +2282,7 @@ export default function WasteLogPage() {
                                 <button
                                   type="button"
                                   onClick={() => removeTemplateLine(line.id)}
-                                  className="p-1.5 text-gray-400 dark:text-white/40 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded hover:bg-red-50 dark:hover:bg-red-500/10"
+                                  className="p-1.5 text-theme-tertiary hover:text-red-600 dark:hover:text-red-400 transition-colors rounded hover:bg-red-50 dark:hover:bg-red-500/10"
                                   aria-label="Remove item"
                                 >
                                   <X className="w-4 h-4" />
@@ -2298,7 +2298,7 @@ export default function WasteLogPage() {
               </div>
             </div>
 
-            <div className="p-4 border-t border-gray-200 dark:border-white/10 flex items-center gap-3">
+            <div className="p-4 border-t border-theme flex items-center gap-3">
               <Button
                 type="button"
                 onClick={() => {
@@ -2309,7 +2309,7 @@ export default function WasteLogPage() {
                   setTemplateLines([]);
                 }}
                 variant="ghost"
-                className="flex-1 text-gray-600 dark:text-white/60"
+                className="flex-1 text-theme-secondary"
               >
                 Cancel
               </Button>

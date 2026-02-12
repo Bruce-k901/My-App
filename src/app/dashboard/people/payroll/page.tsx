@@ -616,20 +616,20 @@ export default function PayrollPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-900 dark:text-white">Loading payroll data...</div>
+        <div className="text-theme-primary">Loading payroll data...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0B0D13] p-6">
+    <div className="min-h-screen bg-white dark:bg-[rgb(var(--surface-elevated))] p-6">
       <div className="max-w-7xl mx-auto">
         
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Payroll</h1>
-            <p className="text-gray-600 dark:text-white/60 text-sm">
+            <h1 className="text-2xl font-bold text-theme-primary">Payroll</h1>
+            <p className="text-theme-secondary text-sm">
               Review and process employee pay
             </p>
           </div>
@@ -648,7 +648,7 @@ export default function PayrollPage() {
             />
             
             <Link href="/dashboard/people/payroll/settings">
-              <Button className="bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)]">
+              <Button className="bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow dark:hover:shadow-module-glow">
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
               </Button>
@@ -663,7 +663,7 @@ export default function PayrollPage() {
               <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-blue-600 dark:text-blue-400 font-medium">Payroll Schedule Not Configured</p>
-                <p className="text-sm text-gray-600 dark:text-white/60 mt-1">
+                <p className="text-sm text-theme-secondary mt-1">
                   Set up your pay frequency and period settings to get accurate payroll calculations.
                   The current view defaults to the calendar month.
                 </p>
@@ -684,7 +684,7 @@ export default function PayrollPage() {
           }`}>
             {payrunStatus === 'approved' ? 'Approved' : 'Pending Review'}
           </span>
-          <span className="text-gray-600 dark:text-white/60">
+          <span className="text-theme-secondary">
             Pay Date: {payDate.toLocaleDateString('en-GB', {
               day: 'numeric',
               month: 'short',
@@ -709,7 +709,7 @@ export default function PayrollPage() {
             className={`${
               payrunStatus === 'approved'
                 ? 'bg-green-600 dark:bg-green-500 text-white cursor-default'
-                : 'bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)]'
+                : 'bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow dark:hover:shadow-module-glow'
             } disabled:opacity-50`}
           >
             {approving ? (
@@ -728,13 +728,13 @@ export default function PayrollPage() {
             placeholder="Search employees..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg px-4 py-2 text-sm w-64 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40"
+            className="bg-theme-surface border border-gray-300 dark:border-white/[0.06] rounded-lg px-4 py-2 text-sm w-64 text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary"
           />
 
           <select
             value={selectedSite}
             onChange={(e) => setSelectedSite(e.target.value)}
-            className="bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg px-4 py-2 text-sm text-gray-900 dark:text-white"
+            className="bg-theme-surface border border-gray-300 dark:border-white/[0.06] rounded-lg px-4 py-2 text-sm text-theme-primary"
           >
             <option value="all">All Sites</option>
             {sites.map(site => (
@@ -745,7 +745,7 @@ export default function PayrollPage() {
           <select
             value={selectedPayType}
             onChange={(e) => setSelectedPayType(e.target.value)}
-            className="bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg px-4 py-2 text-sm text-gray-900 dark:text-white"
+            className="bg-theme-surface border border-gray-300 dark:border-white/[0.06] rounded-lg px-4 py-2 text-sm text-theme-primary"
           >
             <option value="all">All Pay Types</option>
             <option value="hourly">Hourly</option>
@@ -763,14 +763,14 @@ export default function PayrollPage() {
 
         {/* No results */}
         {sitePayrolls.length === 0 && (
-          <div className="text-center py-12 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl mb-6">
-            <p className="text-gray-600 dark:text-white/60 mb-2">
+          <div className="text-center py-12 bg-theme-surface border border-theme rounded-xl mb-6">
+            <p className="text-theme-secondary mb-2">
               {searchTerm || selectedSite !== 'all' || selectedPayType !== 'all'
                 ? 'No employees found matching your filters'
                 : 'No payroll data for this period'}
             </p>
             {!searchTerm && selectedSite === 'all' && selectedPayType === 'all' && (
-              <p className="text-sm text-gray-500 dark:text-white/40">
+              <p className="text-sm text-theme-tertiary">
                 Ensure employees have pay rates configured and attendance records exist for this period.{' '}
                 <Link href="/dashboard/people/payroll/rates" className="text-blue-600 dark:text-blue-400 hover:underline">
                   Manage Pay Rates
@@ -795,7 +795,7 @@ export default function PayrollPage() {
             <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
             <div>
               <p className="text-yellow-600 dark:text-yellow-400 font-medium">Estimated Costs</p>
-              <p className="text-sm text-gray-600 dark:text-white/60 mt-1">
+              <p className="text-sm text-theme-secondary mt-1">
                 The costs shown are estimates for manager review. Your accounting software 
                 will calculate the actual tax deductions and National Insurance. Please review 
                 the hours and rates before approving.

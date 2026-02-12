@@ -288,7 +288,7 @@ export default function DrinksSOPTemplatePage() {
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
-        <div className="text-neutral-400 text-center py-8">Loading libraries...</div>
+        <div className="text-theme-tertiary text-center py-8">Loading libraries...</div>
       </div>
     );
   }
@@ -304,55 +304,55 @@ export default function DrinksSOPTemplatePage() {
       <BackButton href="/dashboard/sops" label="Back to SOPs" />
       
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600/20 to-[#D37E91]/25 rounded-2xl p-6 border border-purple-500/30">
+      <div className="bg-gradient-to-r from-purple-600/20 to-module-fg/25 rounded-2xl p-6 border border-purple-500/30">
         <h1 className="text-2xl font-semibold mb-2">Drinks SOP Template</h1>
-        <p className="text-neutral-300 text-sm">
+        <p className="text-theme-tertiary text-sm">
           Bar recipes and drink preparation procedures
         </p>
       </div>
 
       {/* SOP DETAILS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">SOP Details</h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">Drink Name *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Drink Name *</label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., Classic Mojito"
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Reference Code (Auto)</label>
-            <input value={refCode} readOnly className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-neutral-400" />
+            <label className="block text-sm text-theme-tertiary mb-1">Reference Code (Auto)</label>
+            <input value={refCode} readOnly className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-theme-tertiary" />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Version *</label>
-            <input value={version} onChange={(e) => setVersion(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+            <label className="block text-sm text-theme-tertiary mb-1">Version *</label>
+            <input value={version} onChange={(e) => setVersion(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Status *</label>
-            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white">
+            <label className="block text-sm text-theme-tertiary mb-1">Status *</label>
+            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary">
               <option value="Draft">Draft</option>
               <option value="Published">Published</option>
               <option value="Archived">Archived</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Author *</label>
-            <input value={author} onChange={(e) => setAuthor(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+            <label className="block text-sm text-theme-tertiary mb-1">Author *</label>
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Estimated Time</label>
-            <input value={estimatedTime} onChange={(e) => setEstimatedTime(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" placeholder="e.g., 2 minutes" />
+            <label className="block text-sm text-theme-tertiary mb-1">Estimated Time</label>
+            <input value={estimatedTime} onChange={(e) => setEstimatedTime(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" placeholder="e.g., 2 minutes" />
           </div>
         </div>
       </section>
 
       {/* SPIRITS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Spirits & Liqueurs</h2>
         <div className="space-y-2">
           {spirits.map((spirit, index) => {
@@ -368,7 +368,7 @@ export default function DrinksSOPTemplatePage() {
                 )}
                 <div className="grid grid-cols-12 gap-2 items-end">
                   <div className="col-span-5">
-                    {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Spirit/Liqueur</label>}
+                    {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Spirit/Liqueur</label>}
                     <SmartSearch
                       libraryTable="drinks_library"
                       placeholder={spirit.drink_id ? drinksLibrary.find(d => d.id === spirit.drink_id)?.item_name : "Search spirits..."}
@@ -379,20 +379,20 @@ export default function DrinksSOPTemplatePage() {
                     />
                   </div>
                   <div className="col-span-2">
-                    {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Quantity</label>}
+                    {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Quantity</label>}
                     <input
                       value={spirit.quantity}
                       onChange={(e) => setSpirits(spirits.map(s => s.id === spirit.id ? { ...s, quantity: e.target.value } : s))}
-                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                       placeholder="e.g., 50ml"
                     />
                   </div>
                   <div className="col-span-2">
-                    {index === 0 && <label className="block text-xs text-neutral-400 mb-1">ABV</label>}
+                    {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">ABV</label>}
                     <input
                       value={spirit.abv}
                       readOnly
-                      className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-neutral-400 text-sm"
+                      className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-theme-tertiary text-sm"
                     />
                   </div>
                   <div className="col-span-1">
@@ -415,7 +415,7 @@ export default function DrinksSOPTemplatePage() {
       </section>
 
       {/* MIXERS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Mixers</h2>
         <div className="space-y-2">
           {mixers.map((mixer, index) => {
@@ -431,7 +431,7 @@ export default function DrinksSOPTemplatePage() {
                 )}
                 <div className="grid grid-cols-12 gap-2 items-end">
                   <div className="col-span-6">
-                    {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Mixer</label>}
+                    {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Mixer</label>}
                     <SmartSearch
                       libraryTable="drinks_library"
                       placeholder={mixer.drink_id ? drinksLibrary.find(d => d.id === mixer.drink_id)?.item_name : "Search mixers..."}
@@ -442,11 +442,11 @@ export default function DrinksSOPTemplatePage() {
                     />
                   </div>
                   <div className="col-span-3">
-                    {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Quantity</label>}
+                    {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Quantity</label>}
                     <input
                       value={mixer.quantity}
                       onChange={(e) => setMixers(mixers.map(m => m.id === mixer.id ? { ...m, quantity: e.target.value } : m))}
-                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                       placeholder="e.g., 100ml"
                     />
                   </div>
@@ -470,7 +470,7 @@ export default function DrinksSOPTemplatePage() {
       </section>
 
       {/* GARNISHES SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Garnishes</h2>
         <div className="space-y-2">
           {garnishes.map((garnish, index) => {
@@ -478,7 +478,7 @@ export default function DrinksSOPTemplatePage() {
             return (
               <div key={garnish.id} className="grid grid-cols-12 gap-2 items-end">
                 <div className="col-span-5">
-                  {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Garnish</label>}
+                  {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Garnish</label>}
                   <SmartSearch
                     libraryTable="drinks_library"
                     placeholder={garnish.drink_id ? drinksLibrary.find(d => d.id === garnish.drink_id)?.item_name : "Search garnishes..."}
@@ -489,11 +489,11 @@ export default function DrinksSOPTemplatePage() {
                   />
                 </div>
                 <div className="col-span-3">
-                  {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Quantity</label>}
+                  {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Quantity</label>}
                   <input
                     value={garnish.quantity}
                     onChange={(e) => setGarnishes(garnishes.map(g => g.id === garnish.id ? { ...g, quantity: e.target.value } : g))}
-                    className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                    className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                     placeholder="e.g., 3 leaves"
                   />
                 </div>
@@ -516,13 +516,13 @@ export default function DrinksSOPTemplatePage() {
       </section>
 
       {/* DISPOSABLES SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Disposables Required</h2>
         <div className="space-y-2">
           {disposables.map((item, index) => (
             <div key={item.id} className="grid grid-cols-12 gap-2 items-end">
               <div className="col-span-5">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Disposable Item</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Disposable Item</label>}
                 <SmartSearch
                   libraryTable="disposables_library"
                   placeholder={item.disposable_id ? disposablesLibrary.find(d => d.id === item.disposable_id)?.item_name : "Search disposables..."}
@@ -533,11 +533,11 @@ export default function DrinksSOPTemplatePage() {
                 />
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Quantity</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Quantity</label>}
                 <input
                   value={item.quantity}
                   onChange={(e) => setDisposables(disposables.map(d => d.id === item.id ? { ...d, quantity: e.target.value } : d))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                 />
               </div>
               <div className="col-span-1">
@@ -558,7 +558,7 @@ export default function DrinksSOPTemplatePage() {
       </section>
 
       {/* PROCESS STEPS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Preparation Steps</h2>
         <div className="space-y-3">
           {processSteps.map((step, index) => (
@@ -576,7 +576,7 @@ export default function DrinksSOPTemplatePage() {
               <textarea
                 value={step.step}
                 onChange={(e) => setProcessSteps(processSteps.map(s => s.id === step.id ? { ...s, step: e.target.value } : s))}
-                className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm mb-2"
+                className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm mb-2"
                 placeholder="Describe this step..."
                 rows={2}
               />
@@ -584,7 +584,7 @@ export default function DrinksSOPTemplatePage() {
                 <input
                   value={step.timing}
                   onChange={(e) => setProcessSteps(processSteps.map(s => s.id === step.id ? { ...s, timing: e.target.value } : s))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="Timing (e.g., Muddle 10 seconds)"
                 />
               </div>
@@ -615,7 +615,7 @@ export default function DrinksSOPTemplatePage() {
                     <button
                       onClick={() => photoInputRefs.current[step.id]?.click()}
                       disabled={uploadingPhotos[step.id]}
-                      className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-white text-sm disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary text-sm disabled:opacity-50"
                     >
                       {uploadingPhotos[step.id] ? (
                         <> <Loader2 size={16} className="animate-spin" /> Uploading... </>
@@ -644,7 +644,7 @@ export default function DrinksSOPTemplatePage() {
           <Save size={20} />
           {saving ? 'Saving...' : 'Save SOP'}
         </button>
-        <button className="px-6 py-3 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-white font-medium flex items-center gap-2">
+        <button className="px-6 py-3 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-theme-primary font-medium flex items-center gap-2">
           <Download size={20} />
           Export PDF
         </button>

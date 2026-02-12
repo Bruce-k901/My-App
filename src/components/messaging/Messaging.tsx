@@ -122,7 +122,7 @@ export function Messaging() {
             setIsSidebarOpen(true);
             router.replace(pathname, { scroll: false });
           }}
-          className="md:hidden fixed top-[80px] left-4 z-50 p-2 bg-white dark:bg-white/[0.1] hover:bg-gray-100 dark:hover:bg-white/[0.15] backdrop-blur-sm border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white transition-colors shadow-lg"
+          className="md:hidden fixed top-[80px] left-4 z-50 p-2 bg-white dark:bg-white/[0.1] hover:bg-gray-100 dark:hover:bg-white/[0.15] backdrop-blur-sm border border-theme rounded-lg text-theme-primary transition-colors shadow-lg"
           aria-label="Back to conversations"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -137,7 +137,7 @@ export function Messaging() {
           w-full md:w-80
           h-full
           flex-shrink-0
-          bg-white dark:bg-[#0B0D13] border-r border-gray-200 dark:border-white/[0.1]
+          bg-white dark:bg-[#0B0D13] border-r border-theme
           overflow-hidden
           flex flex-col
           ${
@@ -184,7 +184,7 @@ export function Messaging() {
               />
             </div>
             {/* Message Input - Fixed at bottom */}
-            <div className="flex-shrink-0 bg-white dark:bg-[#0B0D13] border-t border-gray-200 dark:border-white/[0.06]">
+            <div className="flex-shrink-0 bg-white dark:bg-[#0B0D13] border-t border-theme">
               <MessageInput
                 conversationId={selectedConversationId}
                 sendMessage={messagesHook.sendMessage}
@@ -197,10 +197,10 @@ export function Messaging() {
           <div className="flex items-center justify-center h-full">
             <div className="text-center px-4">
               <MessageSquare className="w-16 h-16 text-gray-300 dark:text-white/20 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-xl font-semibold text-theme-primary mb-2">
                 Select a conversation
               </h2>
-              <p className="text-gray-600 dark:text-white/60 text-sm">
+              <p className="text-theme-secondary text-sm">
                 {isMobile 
                   ? 'Tap the menu button to view conversations'
                   : 'Choose a conversation from the sidebar to start messaging'}

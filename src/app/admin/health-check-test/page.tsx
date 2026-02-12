@@ -40,18 +40,18 @@ import type { HealthCheckItem, HealthCheckModule } from '@/types/health-check'
 // ---------- Admin button styles (always dark context on #0B0D13) ----------
 
 const btnBase = 'inline-flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-150 active:scale-95 disabled:opacity-40 disabled:pointer-events-none'
-const btnPrimary = `${btnBase} h-10 px-5 bg-transparent border border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/10 hover:shadow-[0_0_12px_rgba(211,126,145,0.7)]`
-const btnGhost = `${btnBase} h-10 px-5 bg-transparent border border-white/20 text-white/60 hover:bg-white/[0.06] hover:text-white hover:border-white/30`
+const btnPrimary = `${btnBase} h-10 px-5 bg-transparent border border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/10 hover:shadow-module-glow`
+const btnGhost = `${btnBase} h-10 px-5 bg-transparent border border-white/20 text-theme-tertiary hover:bg-white/[0.06] hover:text-white hover:border-white/30`
 const btnDestructive = `${btnBase} h-10 px-5 bg-red-500/90 text-white hover:bg-red-500 border border-red-500/50`
-const btnOutline = `${btnBase} h-9 px-3 bg-transparent border border-white/15 text-white/60 hover:border-[#D37E91]/50 hover:text-[#D37E91] hover:shadow-[0_0_8px_rgba(211,126,145,0.3)]`
+const btnOutline = `${btnBase} h-9 px-3 bg-transparent border border-white/15 text-theme-tertiary hover:border-[#D37E91]/50 hover:text-[#D37E91] hover:shadow-module-glow`
 
 // Admin Select overrides — targets the Radix trigger <button> inside the Select wrapper
 const adminSelectCls = [
   '[&_button]:!bg-white/5',
   '[&_button]:!border-[rgba(211,126,145,0.4)]',
-  '[&_button]:!text-white',
+  '[&_button]:!text-theme-primary',
   '[&_button]:!shadow-none',
-  '[&_button_svg]:!text-white/60',
+  '[&_button_svg]:!text-theme-tertiary',
   '[&_button]:hover:!border-[rgba(211,126,145,0.7)]',
   '[&_button]:hover:!shadow-[0_0_10px_rgba(211,126,145,0.2)]',
   '[&_button]:focus:!border-[#D37E91]',
@@ -544,10 +544,10 @@ export default function HealthCheckTestPage() {
 
   const statusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+      case 'completed': return <CheckCircle2 className="w-3.5 h-3.5 text-module-fg" />
       case 'in_progress': return <Clock className="w-3.5 h-3.5 text-blue-400" />
       case 'overdue': return <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
-      default: return <Clock className="w-3.5 h-3.5 text-white/30" />
+      default: return <Clock className="w-3.5 h-3.5 text-theme-disabled" />
     }
   }
 
@@ -561,15 +561,15 @@ export default function HealthCheckTestPage() {
           <Shield className="w-6 h-6 text-teamly" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white">Health Check Testing</h1>
-          <p className="text-white/40 text-sm">Live scans on real data — reports, calendar tasks, delegation, fix &amp; management views</p>
+          <h1 className="text-2xl font-bold text-theme-primary">Health Check Testing</h1>
+          <p className="text-theme-tertiary text-sm">Live scans on real data — reports, calendar tasks, delegation, fix &amp; management views</p>
         </div>
       </div>
 
       {/* Controls row */}
       <div className="flex items-end gap-3 flex-wrap">
         <div className="min-w-[220px]">
-          <label className="block text-xs font-medium text-white/60 mb-1">Company</label>
+          <label className="block text-xs font-medium text-theme-tertiary mb-1">Company</label>
           <Select
             value={selectedCompany}
             onValueChange={setSelectedCompany}
@@ -581,7 +581,7 @@ export default function HealthCheckTestPage() {
 
         {selectedCompany && sites.length > 0 && (
           <div className="min-w-[220px]">
-            <label className="block text-xs font-medium text-white/60 mb-1">Site</label>
+            <label className="block text-xs font-medium text-theme-tertiary mb-1">Site</label>
             <Select
               value={selectedSite}
               onValueChange={setSelectedSite}
@@ -613,11 +613,11 @@ export default function HealthCheckTestPage() {
       {/* Scan diagnostics */}
       {lastScanDiag && (
         <div className="p-4 rounded-lg border border-white/[0.06] bg-white/[0.02] space-y-3">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-white/50">Last Scan Diagnostics</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-theme-tertiary">Last Scan Diagnostics</h3>
           <div className="flex gap-4 text-sm">
-            <span className="text-white/80">Reports: <span className="text-white font-bold">{lastScanDiag.reports_created}</span></span>
-            <span className="text-white/80">Items: <span className="text-white font-bold">{lastScanDiag.items_created}</span></span>
-            <span className="text-white/80">Calendar tasks: <span className="text-white font-bold">{lastScanDiag.calendar_tasks_created}</span></span>
+            <span className="text-theme-secondary">Reports: <span className="text-theme-primary font-bold">{lastScanDiag.reports_created}</span></span>
+            <span className="text-theme-secondary">Items: <span className="text-theme-primary font-bold">{lastScanDiag.items_created}</span></span>
+            <span className="text-theme-secondary">Calendar tasks: <span className="text-theme-primary font-bold">{lastScanDiag.calendar_tasks_created}</span></span>
           </div>
           {lastScanDiag.scan_errors.length > 0 && (
             <div className="space-y-1">
@@ -636,7 +636,7 @@ export default function HealthCheckTestPage() {
             </div>
           )}
           {lastScanDiag.scan_errors.length === 0 && lastScanDiag.errors.length === 0 && lastScanDiag.items_created === 0 && (
-            <p className="text-xs text-white/40">No errors, but also no issues found. The scanned data may be complete, or columns/tables may not exist yet.</p>
+            <p className="text-xs text-theme-tertiary">No errors, but also no issues found. The scanned data may be complete, or columns/tables may not exist yet.</p>
           )}
         </div>
       )}
@@ -646,7 +646,7 @@ export default function HealthCheckTestPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Generate test data */}
           <div className="p-4 rounded-lg border border-white/[0.06] bg-white/[0.02] space-y-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-white/50">Generate Test Data</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-theme-tertiary">Generate Test Data</h3>
             <div className="flex items-end gap-3">
               <div className="flex-1 min-w-[140px]">
                 <Select
@@ -665,12 +665,12 @@ export default function HealthCheckTestPage() {
                 {generating ? <><Spinner /><span className="ml-2">Generating...</span></> : <><Database className="w-4 h-4 mr-2" />Generate</>}
               </button>
             </div>
-            <p className="text-[10px] text-white/30">Creates synthetic reports &amp; items (marked as test data)</p>
+            <p className="text-[10px] text-theme-disabled">Creates synthetic reports &amp; items (marked as test data)</p>
           </div>
 
           {/* Management views */}
           <div className="p-4 rounded-lg border border-white/[0.06] bg-white/[0.02] space-y-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-white/50">Management Views</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-theme-tertiary">Management Views</h3>
             <div className="flex gap-2 flex-wrap">
               <button onClick={() => setOwnerModalOpen(true)} className={`${btnOutline} text-xs`}>
                 <Building2 className="w-4 h-4 mr-1.5" />
@@ -683,7 +683,7 @@ export default function HealthCheckTestPage() {
                 </button>
               ))}
               {areas.length === 0 && (
-                <span className="text-[10px] text-white/30 self-center">No areas configured</span>
+                <span className="text-[10px] text-theme-disabled self-center">No areas configured</span>
               )}
             </div>
           </div>
@@ -702,7 +702,7 @@ export default function HealthCheckTestPage() {
           {/* ======== REPORTS TAB ======== */}
           <TabsContent value="reports" className="mt-4 space-y-3">
             {reports.length === 0 && !running && (
-              <div className="text-center py-16 text-white/30">
+              <div className="text-center py-16 text-theme-disabled">
                 No reports yet. Run a scan or generate test data.
               </div>
             )}
@@ -721,24 +721,24 @@ export default function HealthCheckTestPage() {
                   <div className="p-4">
                     <div className="flex items-center gap-3">
                       {/* Expand toggle */}
-                      <button onClick={() => loadReportItems(report.id)} className="text-white/30 hover:text-white/60 transition-colors shrink-0">
+                      <button onClick={() => loadReportItems(report.id)} className="text-theme-disabled hover:text-theme-tertiary transition-colors shrink-0">
                         {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
                       </button>
 
                       {/* Site + meta */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <h3 className="text-sm font-medium text-white truncate">{report.site_name}</h3>
+                          <h3 className="text-sm font-medium text-theme-primary truncate">{report.site_name}</h3>
                           {statusIcon(report.status)}
                           {report.is_test_data && (
                             <span className="text-[9px] px-1 py-0.5 rounded bg-purple-500/20 text-purple-400 font-medium">TEST</span>
                           )}
                         </div>
-                        <div className="text-[10px] text-white/30 mt-0.5 flex gap-3 flex-wrap">
+                        <div className="text-[10px] text-theme-disabled mt-0.5 flex gap-3 flex-wrap">
                           <span>{new Date(report.created_at).toLocaleString()}</span>
                           <span>Assigned: {report.assigned_name ?? 'Unknown'} ({report.assigned_role})</span>
                           {report.calendar_task_id && (
-                            <span className="text-cyan-400 flex items-center gap-1">
+                            <span className="text-module-fg flex items-center gap-1">
                               <Calendar className="w-3 h-3" /> Calendar linked
                             </span>
                           )}
@@ -748,14 +748,14 @@ export default function HealthCheckTestPage() {
                       {/* Score */}
                       <div className="text-right shrink-0">
                         <span className={`text-lg font-bold ${
-                          report.health_score != null && report.health_score >= 80 ? 'text-emerald-400'
+                          report.health_score != null && report.health_score >= 80 ? 'text-module-fg'
                           : report.health_score != null && report.health_score >= 50 ? 'text-amber-400'
                           : 'text-red-400'
                         }`}>
                           {report.health_score != null ? `${Math.round(report.health_score)}%` : '—'}
                         </span>
                         {scoreDelta != null && scoreDelta !== 0 && (
-                          <div className={`text-[10px] ${scoreDelta > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                          <div className={`text-[10px] ${scoreDelta > 0 ? 'text-module-fg' : 'text-red-400'}`}>
                             {scoreDelta > 0 ? '+' : ''}{scoreDelta.toFixed(1)}%
                           </div>
                         )}
@@ -765,14 +765,14 @@ export default function HealthCheckTestPage() {
                       <div className="flex gap-1.5 text-[10px] shrink-0">
                         {report.critical_count > 0 && <span className="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-medium">{report.critical_count} crit</span>}
                         {report.medium_count > 0 && <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-medium">{report.medium_count} med</span>}
-                        {report.low_count > 0 && <span className="px-1.5 py-0.5 rounded bg-white/[0.05] text-white/40">{report.low_count} low</span>}
+                        {report.low_count > 0 && <span className="px-1.5 py-0.5 rounded bg-white/[0.05] text-theme-tertiary">{report.low_count} low</span>}
                       </div>
 
                       {/* Status breakdown */}
                       <div className="hidden xl:flex gap-1.5 text-[10px] shrink-0 border-l border-white/[0.06] pl-3">
-                        {report.completed_items > 0 && <span className="text-emerald-400">{report.completed_items} fixed</span>}
+                        {report.completed_items > 0 && <span className="text-module-fg">{report.completed_items} fixed</span>}
                         {report.delegated_items > 0 && <span className="text-purple-400">{report.delegated_items} delegated</span>}
-                        {report.ignored_items > 0 && <span className="text-white/30">{report.ignored_items} ignored</span>}
+                        {report.ignored_items > 0 && <span className="text-theme-disabled">{report.ignored_items} ignored</span>}
                         {report.escalated_items > 0 && <span className="text-red-400">{report.escalated_items} escalated</span>}
                       </div>
 
@@ -781,14 +781,14 @@ export default function HealthCheckTestPage() {
                         <button
                           onClick={(e) => { e.stopPropagation(); runAISuggestions(report.id) }}
                           disabled={aiRunning}
-                          className="p-1.5 rounded-md hover:bg-purple-500/10 text-purple-400 transition-colors disabled:opacity-50"
+                          className="p-1.5 rounded-md hover:bg-module-fg/10 text-purple-400 transition-colors disabled:opacity-50"
                           title="Generate AI suggestions"
                         >
                           <Wand2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => { setSiteModalReportId(report.id); setSiteModalSiteId(report.site_id) }}
-                          className="p-1.5 rounded-md hover:bg-white/[0.05] text-white/30 hover:text-white/60 transition-colors"
+                          className="p-1.5 rounded-md hover:bg-white/[0.05] text-theme-disabled hover:text-theme-tertiary transition-colors"
                           title="Open in Site Manager modal"
                         >
                           <ExternalLink className="w-4 h-4" />
@@ -799,7 +799,7 @@ export default function HealthCheckTestPage() {
                     {/* Progress */}
                     {report.total_items > 0 && (
                       <div className="mt-3 ml-8">
-                        <div className="flex justify-between text-[10px] text-white/30 mb-1">
+                        <div className="flex justify-between text-[10px] text-theme-disabled mb-1">
                           <span>{pct}% resolved ({resolved}/{report.total_items})</span>
                         </div>
                         <Progress value={pct} className="h-1" barClassName={pct === 100 ? 'bg-emerald-500' : pct >= 50 ? 'bg-blue-500' : 'bg-amber-500'} />
@@ -815,10 +815,10 @@ export default function HealthCheckTestPage() {
                           <div className="animate-spin h-6 w-6 border-2 border-white/20 border-t-blue-500 rounded-full" />
                         </div>
                       ) : expandedItems.length === 0 ? (
-                        <div className="text-center py-6 text-white/30 text-sm">No items in this report</div>
+                        <div className="text-center py-6 text-theme-disabled text-sm">No items in this report</div>
                       ) : (
                         <>
-                          <div className="text-xs text-white/40 mb-2">
+                          <div className="text-xs text-theme-tertiary mb-2">
                             {expandedItems.length} items — Fix to edit inline, Delegate to assign, Ignore to dismiss
                           </div>
                           {expandedItems.map(item => (
@@ -842,7 +842,7 @@ export default function HealthCheckTestPage() {
           {/* ======== CALENDAR TASKS TAB ======== */}
           <TabsContent value="calendar" className="mt-4 space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-medium text-white/60">Calendar Tasks Created by Health Check</h2>
+              <h2 className="text-sm font-medium text-theme-tertiary">Calendar Tasks Created by Health Check</h2>
               <button onClick={loadCalendarTasks} className={`${btnGhost} h-8 px-3 text-xs`}>
                 <RefreshCw className="w-3.5 h-3.5 mr-1" /> Reload
               </button>
@@ -853,7 +853,7 @@ export default function HealthCheckTestPage() {
                 <div className="animate-spin h-6 w-6 border-2 border-white/20 border-t-blue-500 rounded-full" />
               </div>
             ) : calendarTasks.length === 0 ? (
-              <div className="text-center py-12 text-white/30">
+              <div className="text-center py-12 text-theme-disabled">
                 No calendar tasks yet. Run a real scan (not test data) to create calendar tasks.
               </div>
             ) : (
@@ -866,10 +866,10 @@ export default function HealthCheckTestPage() {
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-cyan-400" />
-                            <h4 className="text-sm font-medium text-white">{task.custom_name}</h4>
+                            <Calendar className="w-4 h-4 text-module-fg" />
+                            <h4 className="text-sm font-medium text-theme-primary">{task.custom_name}</h4>
                           </div>
-                          <div className="text-[10px] text-white/30 mt-1 flex gap-3 flex-wrap">
+                          <div className="text-[10px] text-theme-disabled mt-1 flex gap-3 flex-wrap">
                             <span>Due: {task.due_date} {task.due_time ?? ''}</span>
                             <span>Priority: <span className={task.priority === 'high' ? 'text-red-400' : 'text-amber-400'}>{task.priority}</span></span>
                             <span>Status: {task.status}</span>
@@ -879,22 +879,22 @@ export default function HealthCheckTestPage() {
                             <div className="flex gap-2 mt-2 text-[10px]">
                               {breakdown.critical > 0 && <span className="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400">{breakdown.critical} critical</span>}
                               {breakdown.medium > 0 && <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">{breakdown.medium} medium</span>}
-                              {breakdown.low > 0 && <span className="px-1.5 py-0.5 rounded bg-white/[0.05] text-white/40">{breakdown.low} low</span>}
+                              {breakdown.low > 0 && <span className="px-1.5 py-0.5 rounded bg-white/[0.05] text-theme-tertiary">{breakdown.low} low</span>}
                             </div>
                           )}
                         </div>
                         {linkedReportId && (
                           <button
                             onClick={() => { setSiteModalReportId(linkedReportId); setSiteModalSiteId(null) }}
-                            className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors"
+                            className="text-xs text-module-fg hover:text-cyan-300 flex items-center gap-1 transition-colors"
                           >
                             <Eye className="w-3.5 h-3.5" /> View Report
                           </button>
                         )}
                       </div>
                       <details className="mt-2">
-                        <summary className="text-[10px] text-white/20 cursor-pointer hover:text-white/40">Raw task_data</summary>
-                        <pre className="mt-1 text-[10px] text-white/30 bg-black/20 rounded p-2 overflow-x-auto">
+                        <summary className="text-[10px] text-white/20 cursor-pointer hover:text-theme-tertiary">Raw task_data</summary>
+                        <pre className="mt-1 text-[10px] text-theme-disabled bg-black/20 rounded p-2 overflow-x-auto">
                           {JSON.stringify(task.task_data, null, 2)}
                         </pre>
                       </details>
@@ -908,7 +908,7 @@ export default function HealthCheckTestPage() {
           {/* ======== DELEGATIONS & REMINDERS TAB ======== */}
           <TabsContent value="delegations" className="mt-4 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-medium text-white/60">Delegated &amp; Escalated Items</h2>
+              <h2 className="text-sm font-medium text-theme-tertiary">Delegated &amp; Escalated Items</h2>
               <button onClick={loadDelegations} className={`${btnGhost} h-8 px-3 text-xs`}>
                 <RefreshCw className="w-3.5 h-3.5 mr-1" /> Reload
               </button>
@@ -921,7 +921,7 @@ export default function HealthCheckTestPage() {
             ) : (
               <>
                 {delegatedItems.length === 0 ? (
-                  <div className="text-center py-8 text-white/30 text-sm">
+                  <div className="text-center py-8 text-theme-disabled text-sm">
                     No delegated items. Expand a report, then click Delegate on an item to test.
                   </div>
                 ) : (
@@ -937,28 +937,28 @@ export default function HealthCheckTestPage() {
                                   ? <ArrowUpRight className="w-4 h-4 text-red-400" />
                                   : <MessageSquare className="w-4 h-4 text-purple-400" />
                                 }
-                                <h4 className="text-sm font-medium text-white">{item.title}</h4>
+                                <h4 className="text-sm font-medium text-theme-primary">{item.title}</h4>
                                 {modColors && (
                                   <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${modColors.bg} ${modColors.text}`}>{item.module}</span>
                                 )}
                                 <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
                                   item.severity === 'critical' ? 'bg-red-500/20 text-red-400'
                                   : item.severity === 'medium' ? 'bg-amber-500/20 text-amber-400'
-                                  : 'bg-white/[0.05] text-white/40'
+                                  : 'bg-white/[0.05] text-theme-tertiary'
                                 }`}>{item.severity}</span>
                                 <span className={`text-[10px] font-medium ${item.status === 'escalated' ? 'text-red-400' : 'text-purple-400'}`}>
                                   {item.status}
                                 </span>
                               </div>
-                              {item.record_name && <p className="text-xs text-white/40">{item.record_name}</p>}
+                              {item.record_name && <p className="text-xs text-theme-tertiary">{item.record_name}</p>}
 
-                              <div className="text-[10px] text-white/30 mt-2 space-y-1">
+                              <div className="text-[10px] text-theme-disabled mt-2 space-y-1">
                                 {item.delegated_to_name && (
-                                  <div>Delegated to: <span className="text-white/50">{item.delegated_to_name}</span> by {item.delegated_by_name ?? 'Unknown'}</div>
+                                  <div>Delegated to: <span className="text-theme-tertiary">{item.delegated_to_name}</span> by {item.delegated_by_name ?? 'Unknown'}</div>
                                 )}
                                 {item.delegated_at && <div>Delegated: {new Date(item.delegated_at).toLocaleString()}</div>}
                                 {item.due_date && (
-                                  <div>Due: <span className={new Date(item.due_date) < new Date() ? 'text-red-400' : 'text-white/50'}>{new Date(item.due_date).toLocaleDateString()}</span></div>
+                                  <div>Due: <span className={new Date(item.due_date) < new Date() ? 'text-red-400' : 'text-theme-tertiary'}>{new Date(item.due_date).toLocaleDateString()}</span></div>
                                 )}
                                 {item.delegation_message && (
                                   <div className="p-2 mt-1 rounded bg-purple-500/10 border border-purple-500/20 text-purple-300">
@@ -966,12 +966,12 @@ export default function HealthCheckTestPage() {
                                   </div>
                                 )}
                                 {item.conversation_id && (
-                                  <div className="flex items-center gap-1 text-teal-400">
+                                  <div className="flex items-center gap-1 text-module-fg">
                                     <MessageSquare className="w-3 h-3" /> Conversation: {item.conversation_id.slice(0, 8)}...
                                   </div>
                                 )}
                                 <div className="flex gap-3 mt-1 pt-1 border-t border-white/[0.04]">
-                                  <span>Reminders sent: <span className="text-white/50">{item.reminder_count}</span></span>
+                                  <span>Reminders sent: <span className="text-theme-tertiary">{item.reminder_count}</span></span>
                                   {item.last_reminder_sent && <span>Last: {new Date(item.last_reminder_sent).toLocaleString()}</span>}
                                   {item.next_reminder_at && <span>Next: {new Date(item.next_reminder_at).toLocaleString()}</span>}
                                 </div>
@@ -992,12 +992,12 @@ export default function HealthCheckTestPage() {
 
                 {/* Reminders */}
                 <div className="space-y-3 pt-4 border-t border-white/[0.06]">
-                  <h2 className="text-sm font-medium text-white/60 flex items-center gap-2">
+                  <h2 className="text-sm font-medium text-theme-tertiary flex items-center gap-2">
                     <Bell className="w-4 h-4 text-amber-400" />
                     Scheduled Reminders ({reminders.length})
                   </h2>
                   {reminders.length === 0 ? (
-                    <div className="text-center py-6 text-white/30 text-sm">
+                    <div className="text-center py-6 text-theme-disabled text-sm">
                       No reminders. Delegate an item with a due date to create reminders.
                     </div>
                   ) : (
@@ -1006,16 +1006,16 @@ export default function HealthCheckTestPage() {
                         <div key={r.id} className="p-3 rounded-lg border border-white/[0.06] bg-white/[0.02] flex items-center gap-4">
                           <div className={`w-2 h-2 rounded-full shrink-0 ${r.sent_at ? 'bg-emerald-400' : 'bg-amber-400'}`} />
                           <div className="flex-1 min-w-0">
-                            <div className="text-xs text-white/60">
+                            <div className="text-xs text-theme-tertiary">
                               <span className="font-medium capitalize">{r.reminder_type.replace('_', ' ')}</span>
-                              {r.item_title && <span className="text-white/30"> — {r.item_title}</span>}
+                              {r.item_title && <span className="text-theme-disabled"> — {r.item_title}</span>}
                             </div>
-                            {r.message_content && <p className="text-[10px] text-white/30 mt-0.5 truncate">{r.message_content}</p>}
+                            {r.message_content && <p className="text-[10px] text-theme-disabled mt-0.5 truncate">{r.message_content}</p>}
                           </div>
-                          <div className="text-[10px] text-white/30 text-right shrink-0">
+                          <div className="text-[10px] text-theme-disabled text-right shrink-0">
                             <div>Scheduled: {new Date(r.scheduled_for).toLocaleString()}</div>
                             {r.sent_at ? (
-                              <div className="text-emerald-400">Sent: {new Date(r.sent_at).toLocaleString()}</div>
+                              <div className="text-module-fg">Sent: {new Date(r.sent_at).toLocaleString()}</div>
                             ) : (
                               <div className="text-amber-400">Pending</div>
                             )}
@@ -1034,7 +1034,7 @@ export default function HealthCheckTestPage() {
 
       {/* Empty state */}
       {!selectedCompany && (
-        <div className="text-center py-20 text-white/30">Select a company above to start testing</div>
+        <div className="text-center py-20 text-theme-disabled">Select a company above to start testing</div>
       )}
 
       {/* ======== MODALS ======== */}

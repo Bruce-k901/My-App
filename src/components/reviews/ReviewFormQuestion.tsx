@@ -39,14 +39,14 @@ export function ReviewFormQuestion({
   return (
     <div className="space-y-3">
       <div className="flex items-start gap-2">
-        <span className="text-neutral-500 text-sm font-medium">{questionNumber}.</span>
+        <span className="text-theme-tertiary text-sm font-medium">{questionNumber}.</span>
         <div className="flex-1">
-          <Label className="text-white font-medium">
+          <Label className="text-theme-primary font-medium">
             {question.question_text}
-            {question.is_required && <span className="text-[#D37E91] ml-1">*</span>}
+            {question.is_required && <span className="text-module-fg ml-1">*</span>}
           </Label>
           {question.helper_text && (
-            <p className="text-sm text-gray-500 dark:text-white/60 mt-1 flex items-center gap-1">
+            <p className="text-sm text-theme-tertiary mt-1 flex items-center gap-1">
               <HelpCircle className="h-3 w-3" />{question.helper_text}
             </p>
           )}
@@ -90,7 +90,7 @@ function QuestionInput({ question, value, onChange, disabled }: {
           value={value.response_text || ''}
           onChange={(e) => onChange({ response_text: e.target.value })}
           disabled={disabled}
-          className="flex min-h-[120px] w-full rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm px-3 py-2 placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D37E91]/50 focus-visible:border-[#D37E91]/50 hover:bg-white/[0.08] hover:border-white/20 transition-colors"
+          className="flex min-h-[120px] w-full rounded-lg bg-theme-surface border border-theme text-theme-primary text-sm px-3 py-2 placeholder:text-theme-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-module-fg/50 focus-visible:border-module-fg/50 hover:bg-theme-hover hover:border-theme-hover transition-colors"
           maxLength={question.max_length || undefined}
         />
       );
@@ -120,7 +120,7 @@ function QuestionInput({ question, value, onChange, disabled }: {
       return <SignatureInput value={value.response_text} onChange={(sig) => onChange({ response_text: sig })} disabled={disabled} />;
 
     default:
-      return <div className="text-neutral-500 text-sm">Unsupported question type: {question.question_type}</div>;
+      return <div className="text-theme-tertiary text-sm">Unsupported question type: {question.question_type}</div>;
   }
 }
 
@@ -146,10 +146,10 @@ function RatingNumericInput({ question, value, onChange, disabled }: {
           disabled={disabled}
           className="flex-1"
         />
-        <span className="text-2xl font-bold text-[#D37E91] w-12 text-center">{currentValue}</span>
+        <span className="text-2xl font-bold text-module-fg w-12 text-center tabular-nums">{currentValue}</span>
       </div>
       {(question.min_label || question.max_label) && (
-        <div className="flex justify-between text-sm text-gray-500 dark:text-white/60">
+        <div className="flex justify-between text-sm text-theme-tertiary">
           <span>{question.min_label || min}</span>
           <span>{question.max_label || max}</span>
         </div>
@@ -179,8 +179,8 @@ function RatingScaleInput({ question, value, onChange, disabled }: {
             disabled={disabled}
             className={`w-12 h-12 rounded-lg border transition-colors ${
               value === num
-                ? 'bg-[#D37E91]/20 text-[#D37E91] border-[#D37E91]'
-                : 'bg-white/[0.05] text-gray-500 dark:text-white/60 border-white/[0.06] hover:border-white/[0.1]'
+                ? 'bg-module-fg/20 text-module-fg border-module-fg'
+                : 'bg-theme-button text-theme-tertiary border-theme hover:border-theme-hover'
             }`}
           >
             {num}
@@ -197,8 +197,8 @@ function RatingScaleInput({ question, value, onChange, disabled }: {
           key={option.value}
           className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
             value === option.value
-              ? 'border-[#D37E91] bg-[#D37E91]/10'
-              : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.1]'
+              ? 'border-module-fg bg-module-fg/10'
+              : 'border-theme bg-theme-surface hover:border-theme-hover'
           }`}
         >
           <input
@@ -207,11 +207,11 @@ function RatingScaleInput({ question, value, onChange, disabled }: {
             checked={value === option.value}
             onChange={() => onChange(option.value)}
             disabled={disabled}
-            className="w-4 h-4 text-[#D37E91]"
+            className="w-4 h-4 accent-module-fg"
           />
           <div className="flex-1">
-            <span className="font-medium text-white">{option.label}</span>
-            {option.description && <p className="text-sm text-gray-500 dark:text-white/60">{option.description}</p>}
+            <span className="font-medium text-theme-primary">{option.label}</span>
+            {option.description && <p className="text-sm text-theme-tertiary">{option.description}</p>}
           </div>
         </label>
       ))}
@@ -246,9 +246,9 @@ function SingleChoiceInput({ question, value, onChange, disabled }: {
               checked={value === optValue}
               onChange={() => onChange(optValue)}
               disabled={disabled}
-              className="w-4 h-4 text-[#D37E91]"
+              className="w-4 h-4 accent-module-fg"
             />
-            <span className="flex-1 text-white">{optLabel}</span>
+            <span className="flex-1 text-theme-primary">{optLabel}</span>
           </label>
         );
       })}
@@ -293,14 +293,14 @@ function MultipleChoiceInput({ question, value, onChange, disabled }: {
               checked={isSelected}
               onChange={() => toggleOption(optValue)}
               disabled={disabled}
-              className="w-4 h-4 text-[#D37E91]"
+              className="w-4 h-4 accent-module-fg"
             />
-            <span className="flex-1 text-white">{optLabel}</span>
+            <span className="flex-1 text-theme-primary">{optLabel}</span>
           </label>
         );
       })}
       {question.min_selections && (
-        <p className="text-xs text-gray-500 dark:text-white/60">Select at least {question.min_selections} option{question.min_selections > 1 ? 's' : ''}</p>
+        <p className="text-xs text-theme-tertiary">Select at least {question.min_selections} option{question.min_selections > 1 ? 's' : ''}</p>
       )}
     </div>
   );
@@ -318,8 +318,8 @@ function YesNoInput({ question, value, onChange, disabled }: {
         disabled={disabled}
         className={`flex-1 h-12 rounded-lg border transition-colors ${
           value === true
-            ? 'bg-green-500/20 text-green-400 border-green-500/30'
-            : 'bg-white/[0.05] text-gray-500 dark:text-white/60 border-white/[0.06] hover:border-white/[0.1]'
+            ? 'bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/30'
+            : 'bg-theme-button text-theme-tertiary border-theme hover:border-theme-hover'
         }`}
       >
         Yes
@@ -330,8 +330,8 @@ function YesNoInput({ question, value, onChange, disabled }: {
         disabled={disabled}
         className={`flex-1 h-12 rounded-lg border transition-colors ${
           value === false
-            ? 'bg-red-500/20 text-red-400 border-red-500/30'
-            : 'bg-white/[0.05] text-gray-500 dark:text-white/60 border-white/[0.06] hover:border-white/[0.1]'
+            ? 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/30'
+            : 'bg-theme-button text-theme-tertiary border-theme hover:border-theme-hover'
         }`}
       >
         No
@@ -365,7 +365,7 @@ function ValueBehaviorInput({ question, tierSelected, example, onChange, disable
   const behavior = question.linked_behavior;
   const [localExample, setLocalExample] = useState(example || '');
   
-  if (!behavior) return <div className="text-neutral-500 text-sm">No behavior linked to this question</div>;
+  if (!behavior) return <div className="text-theme-tertiary text-sm">No behavior linked to this question</div>;
 
   const tiers = [
     { value: 1, label: behavior.tier_1_label, description: behavior.tier_1_description },
@@ -374,9 +374,9 @@ function ValueBehaviorInput({ question, tierSelected, example, onChange, disable
   ];
 
   const tierColors: Record<number, string> = {
-    1: 'border-red-500/30 bg-red-500/10',
-    2: 'border-amber-500/30 bg-amber-500/10',
-    3: 'border-green-500/30 bg-green-500/10',
+    1: 'border-red-200 dark:border-red-500/30 bg-red-100 dark:bg-red-500/10',
+    2: 'border-amber-200 dark:border-amber-500/30 bg-amber-100 dark:bg-amber-500/10',
+    3: 'border-green-200 dark:border-green-500/30 bg-green-100 dark:bg-green-500/10',
   };
 
   return (
@@ -388,7 +388,7 @@ function ValueBehaviorInput({ question, tierSelected, example, onChange, disable
             className={`flex items-start gap-3 p-4 rounded-lg border-2 transition-colors cursor-pointer ${
               tierSelected === tier.value
                 ? tierColors[tier.value]
-                : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.1]'
+                : 'border-theme bg-theme-surface hover:border-theme-hover'
             }`}
           >
             <input
@@ -397,18 +397,18 @@ function ValueBehaviorInput({ question, tierSelected, example, onChange, disable
               checked={tierSelected === tier.value}
               onChange={() => onChange(tier.value, localExample)}
               disabled={disabled}
-              className="w-4 h-4 text-[#D37E91] mt-1"
+              className="w-4 h-4 text-module-fg mt-1"
             />
             <div className="flex-1">
-              <span className="font-medium text-white">{tier.label}</span>
-              <p className="text-sm text-gray-500 dark:text-white/60 mt-1">{tier.description}</p>
+              <span className="font-medium text-theme-primary">{tier.label}</span>
+              <p className="text-sm text-theme-tertiary mt-1">{tier.description}</p>
             </div>
           </label>
         ))}
       </div>
 
       <div className="space-y-2">
-        <Label className="text-white">Provide an example <span className="text-[#D37E91]">*</span></Label>
+        <Label className="text-theme-primary">Provide an example <span className="text-module-fg">*</span></Label>
         <textarea
           placeholder="Describe a specific example that demonstrates this behavior..."
           value={localExample}
@@ -417,7 +417,7 @@ function ValueBehaviorInput({ question, tierSelected, example, onChange, disable
             if (tierSelected) onChange(tierSelected, e.target.value);
           }}
           disabled={disabled}
-          className="flex min-h-[100px] w-full rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm px-3 py-2 placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D37E91]/50 focus-visible:border-[#D37E91]/50 hover:bg-white/[0.08] hover:border-white/20 transition-colors"
+          className="flex min-h-[100px] w-full rounded-lg bg-theme-surface border border-theme text-theme-primary text-sm px-3 py-2 placeholder:text-theme-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-module-fg/50 focus-visible:border-module-fg/50 hover:bg-theme-hover hover:border-theme-hover transition-colors"
         />
       </div>
     </div>
@@ -432,8 +432,8 @@ function SignatureInput({ value, onChange, disabled }: {
 
   return (
     <div className="space-y-4">
-      <div className="p-4 bg-white/[0.03] rounded-lg border border-white/[0.06]">
-        <p className="text-sm text-gray-500 dark:text-white/60 mb-3">
+      <div className="p-4 bg-theme-surface rounded-lg border border-theme">
+        <p className="text-sm text-theme-tertiary mb-3">
           By typing your name below, you confirm that you have reviewed and agree with the contents of this review.
         </p>
         <Input
@@ -445,9 +445,9 @@ function SignatureInput({ value, onChange, disabled }: {
         />
       </div>
       {signatureText && (
-        <div className="p-4 bg-white/[0.03] rounded-lg border border-dashed border-white/[0.06] text-center">
-          <p className="text-2xl font-script text-white italic">{signatureText}</p>
-          <p className="text-xs text-neutral-500 mt-2">Signed on {new Date().toLocaleDateString()}</p>
+        <div className="p-4 bg-theme-surface rounded-lg border border-dashed border-theme text-center">
+          <p className="text-2xl font-script text-theme-primary italic">{signatureText}</p>
+          <p className="text-xs text-theme-tertiary mt-2">Signed on {new Date().toLocaleDateString()}</p>
         </div>
       )}
     </div>

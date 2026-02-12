@@ -107,7 +107,7 @@ export default function ProductionTimeline({ date, schedule = [], loading, hasCo
       case 'in_progress':
         return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
       default:
-        return 'text-white/40 bg-white/5 border-white/10';
+        return 'text-theme-tertiary bg-white/5 border-white/10';
     }
   }
 
@@ -159,13 +159,13 @@ export default function ProductionTimeline({ date, schedule = [], loading, hasCo
   if (schedule.length === 0) {
     return (
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">
+        <h2 className="text-lg font-semibold text-theme-primary mb-4">
           Production Timeline - {formatDate(date)}
         </h2>
         <div className="text-center py-12">
           <Clock className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <p className="text-white/60">No production schedule available for this date</p>
-          <p className="text-white/40 text-sm mt-2">
+          <p className="text-theme-tertiary">No production schedule available for this date</p>
+          <p className="text-theme-tertiary text-sm mt-2">
             Production timeline will appear here once orders are confirmed
           </p>
         </div>
@@ -176,7 +176,7 @@ export default function ProductionTimeline({ date, schedule = [], loading, hasCo
   return (
     <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-white">
+        <h2 className="text-lg font-semibold text-theme-primary">
           Production Timeline - {formatDate(date)}
         </h2>
         {hasConflicts ? (
@@ -206,7 +206,7 @@ export default function ProductionTimeline({ date, schedule = [], loading, hasCo
                     ? 'bg-green-400/20 border-green-400 text-green-400'
                     : step.status === 'in_progress'
                     ? 'bg-blue-400/20 border-blue-400 text-blue-400'
-                    : 'bg-white/5 border-white/20 text-white/40'
+                    : 'bg-white/5 border-white/20 text-theme-tertiary'
                 }`}>
                   {step.status === 'complete' ? (
                     <CheckCircle2 className="w-5 h-5" />
@@ -231,20 +231,20 @@ export default function ProductionTimeline({ date, schedule = [], loading, hasCo
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="text-white/60 text-sm font-medium">
+                        <span className="text-theme-tertiary text-sm font-medium">
                           {formatTime(step.startTime)}
                         </span>
                         <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(step.status)}`}>
                           {getActivityLabel(step.activity)}
                         </span>
-                        <span className="text-white/40 text-xs">
+                        <span className="text-theme-tertiary text-xs">
                           {step.duration}
                         </span>
                       </div>
                       
                       {step.equipmentName && (
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-white/60 text-sm">Equipment:</span>
+                          <span className="text-theme-tertiary text-sm">Equipment:</span>
                           <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getCapacityColor(step.capacityStatus)}`}>
                             {step.equipmentName} {step.capacityPercent !== undefined && `${step.capacityPercent}%`}
                           </span>
@@ -263,7 +263,7 @@ export default function ProductionTimeline({ date, schedule = [], loading, hasCo
                   </div>
 
                   {step.notes && (
-                    <p className="text-white/60 text-sm mb-3">{step.notes}</p>
+                    <p className="text-theme-tertiary text-sm mb-3">{step.notes}</p>
                   )}
 
                   {isExpanded && step.tasks.length > 0 && (
@@ -285,7 +285,7 @@ export default function ProductionTimeline({ date, schedule = [], loading, hasCo
                                 {isCompleted && <CheckCircle2 className="w-3 h-3 text-green-400" />}
                               </button>
                               <span className="text-lg">{task.icon}</span>
-                              <span className={`text-sm ${isCompleted ? 'text-white/40 line-through' : 'text-white'}`}>
+                              <span className={`text-sm ${isCompleted ? 'text-theme-tertiary line-through' : 'text-theme-primary'}`}>
                                 {task.description}
                               </span>
                             </div>
@@ -295,7 +295,7 @@ export default function ProductionTimeline({ date, schedule = [], loading, hasCo
                                 {task.ingredients.map((ing) => (
                                   <span
                                     key={ing.id}
-                                    className="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-white/60"
+                                    className="px-2 py-1 bg-white/5 border border-white/10 rounded text-xs text-theme-tertiary"
                                   >
                                     {ing.quantity} {ing.name}
                                   </span>

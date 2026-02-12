@@ -30,7 +30,7 @@ export default function ReportsPage() {
     if (!date && typeof window !== 'undefined') {
       setDate(new Date().toISOString().split("T")[0]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []); // Only run once after mount
   const [siteFilter, setSiteFilter] = useState<string>("");
 
@@ -85,46 +85,46 @@ export default function ReportsPage() {
       <section className="px-6 py-4 max-w-6xl mx-auto">
         <h2 className="text-lg font-semibold mb-4">Task Audit Events</h2>
         <div className="flex items-center gap-4 mb-4">
-          <label className="text-sm text-slate-300">
+          <label className="text-sm text-theme-secondary">
             Date
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="ml-2 text-sm rounded bg-[#0f1220] border border-neutral-800 p-2 text-slate-200"
+              className="ml-2 text-sm rounded bg-[#0f1220] border border-neutral-800 p-2 text-theme-primary"
             />
           </label>
-          <label className="text-sm text-slate-300">
+          <label className="text-sm text-theme-secondary">
             Site ID
             <input
               type="text"
               value={siteFilter}
               placeholder="Optional: filter by site_id"
               onChange={(e) => setSiteFilter(e.target.value)}
-              className="ml-2 text-sm rounded bg-[#0f1220] border border-neutral-800 p-2 text-slate-200 w-64"
+              className="ml-2 text-sm rounded bg-[#0f1220] border border-neutral-800 p-2 text-theme-primary w-64"
             />
           </label>
         </div>
 
         {loading ? (
-          <p className="text-slate-400">Loading…</p>
+          <p className="text-theme-tertiary">Loading…</p>
         ) : error ? (
           <div className="bg-red-500/10 border border-red-500/40 rounded-lg p-4">
             <p className="text-red-400 text-sm">Error: {error}</p>
           </div>
         ) : events.length === 0 ? (
-          <p className="text-slate-500 text-sm">No events found for the selected date.</p>
+          <p className="text-theme-tertiary text-sm">No events found for the selected date.</p>
         ) : (
           <div className="rounded-xl border border-neutral-800 bg-[#141823] p-4">
             <ul className="divide-y divide-neutral-800">
               {events.map((e) => (
                 <li key={e.id} className="py-3 grid grid-cols-1 md:grid-cols-6 gap-2 text-sm">
-                  <span className="text-slate-400">{new Date(e.created_at).toLocaleString()}</span>
-                  <span className="text-slate-300">Action: {e.action}</span>
-                  <span className="text-slate-300">Task: {e.task_id.slice(0, 8)}…</span>
-                  <span className="text-slate-300">Site: {e.site_id.slice(0, 8)}…</span>
-                  <span className="text-slate-300">User: {e.user_id.slice(0, 8)}…</span>
-                  <span className="text-slate-500 break-words">Details: {safeStringify(e.details)}</span>
+                  <span className="text-theme-tertiary">{new Date(e.created_at).toLocaleString()}</span>
+                  <span className="text-theme-secondary">Action: {e.action}</span>
+                  <span className="text-theme-secondary">Task: {e.task_id.slice(0, 8)}…</span>
+                  <span className="text-theme-secondary">Site: {e.site_id.slice(0, 8)}…</span>
+                  <span className="text-theme-secondary">User: {e.user_id.slice(0, 8)}…</span>
+                  <span className="text-theme-tertiary break-words">Details: {safeStringify(e.details)}</span>
                 </li>
               ))}
             </ul>

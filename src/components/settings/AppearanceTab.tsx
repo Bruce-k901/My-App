@@ -24,17 +24,17 @@ function OptionCard({
       className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all text-center
         ${selected
           ? 'border-[#D37E91] bg-[#D37E91]/15 ring-1 ring-[#D37E91]/30'
-          : 'border-gray-200 dark:border-white/[0.08] bg-gray-50 dark:bg-white/[0.03] hover:border-gray-300 dark:hover:border-white/[0.15]'
+          : 'border-theme bg-gray-50 dark:bg-white/[0.03] hover:border-gray-300 dark:hover:border-white/[0.15]'
         }`}
     >
-      <div className={`${selected ? 'text-[#D37E91]' : 'text-neutral-400 dark:text-white/50'}`}>
+      <div className={`${selected ? 'text-[#D37E91]' : 'text-theme-tertiary/50'}`}>
         {icon}
       </div>
-      <span className={`text-sm font-medium ${selected ? 'text-[#D37E91]' : 'text-neutral-700 dark:text-white/80'}`}>
+      <span className={`text-sm font-medium ${selected ? 'text-[#D37E91]' : 'text-theme-secondary'}`}>
         {label}
       </span>
       {description && (
-        <span className="text-xs text-neutral-500 dark:text-white/40">{description}</span>
+        <span className="text-xs text-theme-tertiary/40">{description}</span>
       )}
     </button>
   );
@@ -50,11 +50,11 @@ function SettingsRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+    <div className="flex items-center justify-between gap-4 p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-theme">
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-neutral-900 dark:text-white">{label}</p>
+        <p className="font-medium text-theme-primary">{label}</p>
         {description && (
-          <p className="text-sm text-neutral-500 dark:text-white/50 mt-0.5">{description}</p>
+          <p className="text-sm text-theme-tertiary/50 mt-0.5">{description}</p>
         )}
       </div>
       <div className="flex-shrink-0">{children}</div>
@@ -69,8 +69,8 @@ export function AppearanceTab() {
     <div className="space-y-8">
       {/* Theme */}
       <div>
-        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-1">Theme</h3>
-        <p className="text-sm text-neutral-500 dark:text-white/50 mb-4">Choose your preferred colour scheme.</p>
+        <h3 className="text-lg font-semibold text-theme-primary mb-1">Theme</h3>
+        <p className="text-sm text-theme-tertiary/50 mb-4">Choose your preferred colour scheme.</p>
         <div className="grid grid-cols-3 gap-3">
           <OptionCard
             selected={preferences.theme === 'light'}
@@ -96,8 +96,8 @@ export function AppearanceTab() {
 
       {/* Density */}
       <div>
-        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-1">Display Density</h3>
-        <p className="text-sm text-neutral-500 dark:text-white/50 mb-4">Adjust spacing and padding across the app.</p>
+        <h3 className="text-lg font-semibold text-theme-primary mb-1">Display Density</h3>
+        <p className="text-sm text-theme-tertiary/50 mb-4">Adjust spacing and padding across the app.</p>
         <div className="grid grid-cols-2 gap-3">
           <OptionCard
             selected={preferences.density === 'comfortable'}
@@ -118,8 +118,8 @@ export function AppearanceTab() {
 
       {/* Sidebar */}
       <div>
-        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-1">Sidebar</h3>
-        <p className="text-sm text-neutral-500 dark:text-white/50 mb-4">How the main sidebar appears on desktop.</p>
+        <h3 className="text-lg font-semibold text-theme-primary mb-1">Sidebar</h3>
+        <p className="text-sm text-theme-tertiary/50 mb-4">How the main sidebar appears on desktop.</p>
         <div className="grid grid-cols-2 gap-3">
           <OptionCard
             selected={preferences.sidebar_mode === 'collapsed'}
@@ -156,8 +156,8 @@ export function AppearanceTab() {
 
       {/* Date/Time Format */}
       <div>
-        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-1">Date & Time Format</h3>
-        <p className="text-sm text-neutral-500 dark:text-white/50 mb-4">Override company defaults for your account.</p>
+        <h3 className="text-lg font-semibold text-theme-primary mb-1">Date & Time Format</h3>
+        <p className="text-sm text-theme-tertiary/50 mb-4">Override company defaults for your account.</p>
         <div className="space-y-3">
           <SettingsRow label="Date Format">
             <select

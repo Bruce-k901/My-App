@@ -85,7 +85,7 @@ export function AssignCourseModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-white">
+          <DialogTitle className="text-theme-primary">
             Assign Course
           </DialogTitle>
         </DialogHeader>
@@ -93,24 +93,24 @@ export function AssignCourseModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-3">
             <div>
-              <label className="text-sm font-medium text-neutral-300">Employee</label>
-              <p className="text-white mt-1">{profileName}</p>
+              <label className="text-sm font-medium text-theme-tertiary">Employee</label>
+              <p className="text-theme-primary mt-1">{profileName}</p>
             </div>
 
             <div>
-              <label className="text-sm font-medium text-neutral-300">Course</label>
-              <p className="text-white mt-1">{courseName}</p>
+              <label className="text-sm font-medium text-theme-tertiary">Course</label>
+              <p className="text-theme-primary mt-1">{courseName}</p>
             </div>
 
             {siteName && (
               <div>
-                <label className="text-sm font-medium text-neutral-300">Site</label>
-                <p className="text-white mt-1">{siteName}</p>
+                <label className="text-sm font-medium text-theme-tertiary">Site</label>
+                <p className="text-theme-primary mt-1">{siteName}</p>
               </div>
             )}
 
             <div>
-              <label htmlFor="deadline" className="text-sm font-medium text-neutral-300 block mb-2">
+              <label htmlFor="deadline" className="text-sm font-medium text-theme-tertiary block mb-2">
                 Deadline (optional)
               </label>
               <input
@@ -140,7 +140,7 @@ export function AssignCourseModal({
               onClick={onClose}
               variant="outline"
               disabled={isSubmitting}
-              className="border-neutral-600 text-neutral-300 hover:bg-neutral-800"
+              className="border-neutral-600 text-theme-tertiary hover:bg-neutral-800"
             >
               Cancel
             </Button>

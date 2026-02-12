@@ -89,14 +89,14 @@ export default function AdminTasksPage() {
     <div className="p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Task Analytics</h1>
-        <p className="text-white/60">Platform-wide task performance metrics</p>
+        <h1 className="text-3xl font-bold text-theme-primary mb-2">Task Analytics</h1>
+        <p className="text-theme-tertiary">Platform-wide task performance metrics</p>
       </div>
 
       {/* Today's Stats */}
       <div className="mb-8">
-        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-white/60" />
+        <h2 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+          <Calendar className="w-5 h-5 text-theme-tertiary" />
           Today
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -105,7 +105,7 @@ export default function AdminTasksPage() {
               <ClipboardList className="w-6 h-6 text-blue-400" />
               <span className="text-blue-400">Created Today</span>
             </div>
-            <div className="text-3xl font-bold text-white">{metrics?.created_today || 0}</div>
+            <div className="text-3xl font-bold text-theme-primary">{metrics?.created_today || 0}</div>
           </div>
 
           <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-6">
@@ -113,7 +113,7 @@ export default function AdminTasksPage() {
               <CheckCircle2 className="w-6 h-6 text-green-400" />
               <span className="text-green-400">Completed Today</span>
             </div>
-            <div className="text-3xl font-bold text-white">{metrics?.completed_today || 0}</div>
+            <div className="text-3xl font-bold text-theme-primary">{metrics?.completed_today || 0}</div>
           </div>
 
           <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6">
@@ -121,35 +121,35 @@ export default function AdminTasksPage() {
               <Clock className="w-6 h-6 text-yellow-400" />
               <span className="text-yellow-400">Pending Today</span>
             </div>
-            <div className="text-3xl font-bold text-white">{metrics?.pending_today || 0}</div>
+            <div className="text-3xl font-bold text-theme-primary">{metrics?.pending_today || 0}</div>
           </div>
         </div>
       </div>
 
       {/* All-Time Stats */}
       <div>
-        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-white/60" />
+        <h2 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-theme-tertiary" />
           All Time
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <div className="text-white/60 text-sm mb-2">Total Tasks</div>
-            <div className="text-3xl font-bold text-white">{metrics?.total_all_time?.toLocaleString() || 0}</div>
+            <div className="text-theme-tertiary text-sm mb-2">Total Tasks</div>
+            <div className="text-3xl font-bold text-theme-primary">{metrics?.total_all_time?.toLocaleString() || 0}</div>
           </div>
 
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <div className="text-white/60 text-sm mb-2">Completed</div>
+            <div className="text-theme-tertiary text-sm mb-2">Completed</div>
             <div className="text-3xl font-bold text-green-400">{metrics?.completed_all_time?.toLocaleString() || 0}</div>
           </div>
 
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <div className="text-white/60 text-sm mb-2">Missed</div>
+            <div className="text-theme-tertiary text-sm mb-2">Missed</div>
             <div className="text-3xl font-bold text-red-400">{metrics?.missed_all_time?.toLocaleString() || 0}</div>
           </div>
 
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <div className="text-white/60 text-sm mb-2">Completion Rate</div>
+            <div className="text-theme-tertiary text-sm mb-2">Completion Rate</div>
             <div className="text-3xl font-bold text-[#D37E91]">{metrics?.completion_rate || 0}%</div>
           </div>
         </div>

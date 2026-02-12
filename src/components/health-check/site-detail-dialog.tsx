@@ -136,7 +136,7 @@ export function SiteDetailDialog({ open, onClose, siteId, siteName, companyId }:
                     ? 'bg-red-500/10 text-red-400'
                     : report.medium_count > 0
                     ? 'bg-amber-500/10 text-amber-400'
-                    : 'bg-emerald-500/10 text-emerald-400'
+                    : 'bg-module-fg/10 text-module-fg'
                 }`}>
                   {report.health_score != null ? `${Math.round(report.health_score)}%` : '—'}
                 </span>
@@ -149,23 +149,23 @@ export function SiteDetailDialog({ open, onClose, siteId, siteName, companyId }:
               <div className="animate-spin h-8 w-8 border-2 border-gray-300 dark:border-white/20 border-t-blue-500 rounded-full" />
             </div>
           ) : !report ? (
-            <div className="text-center py-16 text-gray-400 dark:text-white/30">
+            <div className="text-center py-16 text-theme-tertiary/30">
               No health check data for this site yet.
             </div>
           ) : (
             <div className="flex-1 overflow-y-auto space-y-4 pr-1">
               {/* Summary bar */}
-              <div className="flex items-center gap-6 p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+              <div className="flex items-center gap-6 p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
                 {manager && (
                   <div className="text-xs">
-                    <span className="text-gray-500 dark:text-white/40">Manager: </span>
-                    <span className="font-medium text-gray-900 dark:text-white">{manager.name}</span>
+                    <span className="text-theme-tertiary">Manager: </span>
+                    <span className="font-medium text-theme-primary">{manager.name}</span>
                   </div>
                 )}
                 <div className="flex-1">
                   <Progress value={pct} barClassName={pct >= 80 ? 'bg-emerald-500' : pct >= 40 ? 'bg-blue-500' : 'bg-amber-500'} />
                 </div>
-                <span className="text-xs text-gray-500 dark:text-white/40">{pct}% resolved</span>
+                <span className="text-xs text-theme-tertiary">{pct}% resolved</span>
               </div>
 
               {/* Severity filter */}
@@ -189,7 +189,7 @@ export function SiteDetailDialog({ open, onClose, siteId, siteName, companyId }:
                           <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold uppercase ${colors?.bg ?? ''} ${colors?.text ?? ''}`}>
                             {mod}
                           </span>
-                          <span className="text-xs text-gray-400 dark:text-white/30">{modItems.length} items</span>
+                          <span className="text-xs text-theme-tertiary/30">{modItems.length} items</span>
                         </div>
                         {modItems.map(item => (
                           <HealthCheckItemCard
@@ -205,7 +205,7 @@ export function SiteDetailDialog({ open, onClose, siteId, siteName, companyId }:
                   })}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-400 dark:text-white/30">
+                <div className="text-center py-8 text-theme-tertiary/30">
                   No items match the current filter
                 </div>
               )}

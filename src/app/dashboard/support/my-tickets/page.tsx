@@ -61,15 +61,15 @@ export default function MyTicketsPage() {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Support Tickets</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
+        <h1 className="text-3xl font-bold text-theme-primary">My Support Tickets</h1>
+        <p className="text-theme-secondary mt-1">
           View and track your support requests
         </p>
       </div>
 
       {/* Status Filters */}
       <div className="flex flex-wrap gap-2">
-        <span className="text-sm text-gray-600 dark:text-gray-400">Filter by status:</span>
+        <span className="text-sm text-theme-secondary">Filter by status:</span>
         {['open', 'in_progress', 'resolved', 'closed'].map((status) => (
           <button
             key={status}
@@ -77,7 +77,7 @@ export default function MyTicketsPage() {
             className={`px-3 py-1 rounded-lg text-sm border transition-colors ${
               statusFilter.includes(status)
                 ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-blue-500'
+                : 'bg-white dark:bg-gray-700 text-theme-secondary border-gray-300 dark:border-gray-600 hover:border-blue-500'
             }`}
           >
             {status === 'in_progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}
@@ -94,13 +94,13 @@ export default function MyTicketsPage() {
       </div>
 
       {/* Tickets List */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-theme">
         {isLoading ? (
-          <div className="p-8 text-center text-gray-500 dark:text-gray-400">Loading tickets...</div>
+          <div className="p-8 text-center text-theme-tertiary">Loading tickets...</div>
         ) : error ? (
           <div className="p-8 text-center text-red-600 dark:text-red-400">{error}</div>
         ) : tickets.length === 0 ? (
-          <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+          <div className="p-8 text-center text-theme-tertiary">
             <svg
               className="w-16 h-16 mx-auto mb-4 opacity-50"
               fill="none"
@@ -127,12 +127,12 @@ export default function MyTicketsPage() {
               <Link
                 key={ticket.id}
                 href={`/dashboard/support/my-tickets/${ticket.id}`}
-                className="block p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                className="block p-4 hover:bg-theme-surface-elevated dark:hover:bg-gray-700/50 transition-colors"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                      <h3 className="text-lg font-semibold text-theme-primary truncate">
                         {ticket.title}
                       </h3>
                       {ticket.unread_count > 0 && (
@@ -141,7 +141,7 @@ export default function MyTicketsPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
+                    <p className="text-sm text-theme-secondary line-clamp-2 mb-3">
                       {ticket.description}
                     </p>
                     <div className="flex flex-wrap items-center gap-2">
@@ -151,7 +151,7 @@ export default function MyTicketsPage() {
                       <TicketModuleBadge module={ticket.module} />
                     </div>
                   </div>
-                  <div className="text-right flex-shrink-0 text-sm text-gray-500 dark:text-gray-400">
+                  <div className="text-right flex-shrink-0 text-sm text-theme-tertiary">
                     <div className="mb-1">Assigned to: {ticket.assigned_to_name}</div>
                     <div className="mb-1">
                       {ticket.comment_count} {ticket.comment_count === 1 ? 'reply' : 'replies'}

@@ -23,8 +23,8 @@ const CATEGORY_GROUPS = {
   'Cleaning': {
     label: 'Cleaning & Maintenance',
     categories: ['Cleaning'],
-    bgColor: 'bg-teal-500/20',
-    iconColor: 'text-teal-400'
+    bgColor: 'bg-module-fg/20',
+    iconColor: 'text-module-fg'
   },
   'Opening': {
     label: 'Opening/Closing Procedures',
@@ -277,7 +277,7 @@ function SOPsListContent() {
     const badges = {
       'Published': { icon: CheckCircle, color: 'green', bg: 'bg-green-500/20 dark:bg-green-500/20', text: 'text-green-600 dark:text-green-400' },
       'Draft': { icon: AlertCircle, color: 'yellow', bg: 'bg-yellow-500/20 dark:bg-yellow-500/20', text: 'text-yellow-600 dark:text-yellow-400' },
-      'Archived': { icon: Archive, color: 'gray', bg: 'bg-[rgb(var(--surface-elevated))] dark:bg-neutral-700', text: 'text-[rgb(var(--text-tertiary))] dark:text-neutral-400' }
+'Archived': { icon: Archive, color:'gray', bg:'bg-[rgb(var(--surface-elevated))] dark:bg-neutral-700', text:'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'}
     };
     return badges[status] || badges['Draft'];
   };
@@ -287,7 +287,7 @@ function SOPsListContent() {
       {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 md:gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-neutral-400" size={18} />
+ <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"size={18} />
           <input
             type="text"
             value={searchQuery}
@@ -307,7 +307,7 @@ function SOPsListContent() {
         </select>
         <button
           onClick={() => router.push('/dashboard/sops/archive')}
-          className="px-3 sm:px-4 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-600 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg text-[rgb(var(--text-secondary))] dark:text-neutral-300 flex items-center justify-center gap-2 transition-colors text-sm sm:text-base"
+          className="px-3 sm:px-4 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-700 hover:bg-theme-surface-elevated dark:hover:bg-neutral-600 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg text-[rgb(var(--text-secondary))] dark:text-neutral-300 flex items-center justify-center gap-2 transition-colors text-sm sm:text-base"
         >
           <Archive size={16} />
           <span className="hidden sm:inline">Archived SOPs</span>
@@ -317,11 +317,11 @@ function SOPsListContent() {
 
       {/* SOPs List */}
       {loading ? (
-        <div className="text-[rgb(var(--text-secondary))] dark:text-neutral-400 text-center py-8">Loading SOPs...</div>
+ <div className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-center py-8">Loading SOPs...</div>
       ) : filteredSOPs.length === 0 ? (
-        <div className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl p-8 text-center border border-[rgb(var(--border))] dark:border-neutral-700">
+        <div className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl p-8 text-center border border-[rgb(var(--border))] dark:border-theme">
           <FileText size={48} className="text-[rgb(var(--text-tertiary))] dark:text-neutral-600 mx-auto mb-3" />
-          <p className="text-[rgb(var(--text-secondary))] dark:text-neutral-400">No SOPs found.</p>
+ <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">No SOPs found.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -332,7 +332,7 @@ function SOPsListContent() {
             const Icon = isExpanded ? ChevronUp : ChevronDown;
             
             return (
-              <div key={key} className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl border border-[rgb(var(--border))] dark:border-neutral-700 overflow-hidden">
+              <div key={key} className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl border border-[rgb(var(--border))] dark:border-theme overflow-hidden">
                 {/* Category Header */}
                 <button
                   onClick={() => toggleCategory(key)}
@@ -344,10 +344,10 @@ function SOPsListContent() {
                     </div>
                     <div className="text-left">
                       <h3 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">{group.label}</h3>
-                      <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-400">{groupSOPs.length} SOP{groupSOPs.length !== 1 ? 's' : ''}</p>
+ <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">{groupSOPs.length} SOP{groupSOPs.length !== 1 ?'s':''}</p>
                     </div>
                   </div>
-                  <Icon size={20} className="text-[rgb(var(--text-tertiary))] dark:text-neutral-400" />
+ <Icon size={20} className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"/>
                 </button>
 
                 {/* SOPs List */}
@@ -367,7 +367,7 @@ function SOPsListContent() {
                           className={`rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 group transition-colors cursor-pointer ${
                             isHighlighted
                               ? 'bg-blue-500/20 dark:bg-blue-500/20 border-2 border-blue-500/60 dark:border-blue-500/60 shadow-lg shadow-blue-500/20 dark:shadow-blue-500/20 animate-pulse'
-                              : 'bg-white dark:bg-neutral-900/50 hover:bg-gray-50 dark:hover:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-700'
+                              : 'bg-theme-surface/50 hover:bg-theme-surface-elevated dark:hover:bg-neutral-900 border border-[rgb(var(--border))] dark:border-theme'
                           }`}
                         >
                           <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
@@ -375,10 +375,10 @@ function SOPsListContent() {
                               <StatusIcon size={20} className={statusBadge.text} />
                             </div>
                             <div className="text-left flex-1 min-w-0">
-                              <h4 className="text-[rgb(var(--text-primary))] dark:text-white font-medium group-hover:text-[#D37E91] dark:group-hover:text-magenta-400 transition-colors break-words">
+                              <h4 className="text-[rgb(var(--text-primary))] font-medium group-hover:text-module-fg dark:group-hover:text-magenta-400 transition-colors break-words">
                                 {sop.title}
                               </h4>
-                              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-400 mt-1">
+ <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mt-1">
                                 <span className="whitespace-nowrap">{sop.ref_code}</span>
                                 <span className="hidden sm:inline">•</span>
                                 <span className="break-words">{sop.category}</span>
@@ -387,20 +387,20 @@ function SOPsListContent() {
                                   {sop.status}
                                 </span>
                               </div>
-                              <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-500 mt-1 sm:hidden">
+ <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mt-1 sm:hidden">
                                 Created {new Date(sop.created_at).toLocaleDateString()} by {sop.author}
                               </div>
                             </div>
                           </div>
                           <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 flex-shrink-0">
-                            <div className="text-right text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-400 hidden sm:block">
+ <div className="text-right text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hidden sm:block">
                               <div>Created {new Date(sop.created_at).toLocaleDateString()}</div>
                               <div className="text-xs">by {sop.author}</div>
                             </div>
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={(e) => handleEditSOP(sop, e)}
-                                className="px-2 sm:px-3 py-2 bg-[#D37E91]/20 dark:bg-magenta-500/20 hover:bg-[#D37E91]/30 dark:hover:bg-magenta-500/30 border border-[#D37E91]/40 dark:border-magenta-500/40 rounded-lg text-[#D37E91] dark:text-magenta-400 flex items-center gap-1 sm:gap-2 transition-colors text-sm"
+                                className="px-2 sm:px-3 py-2 bg-module-fg/20 dark:bg-magenta-500/20 hover:bg-module-fg/30 dark:hover:bg-magenta-500/30 border border-module-fg/40 dark:border-magenta-500/40 rounded-lg text-module-fg dark:text-magenta-400 flex items-center gap-1 sm:gap-2 transition-colors text-sm"
                               >
                                 <Edit size={16} />
                                 <span className="hidden sm:inline">Edit</span>
@@ -411,7 +411,7 @@ function SOPsListContent() {
                                   handleArchiveSOP(sop.id);
                                 }}
                                 disabled={archivingId === sop.id}
-                                className="flex items-center justify-center h-9 w-9 rounded-lg border border-orange-500 dark:border-orange-500 text-orange-600 dark:text-orange-500 bg-transparent hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] dark:hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                                className="flex items-center justify-center h-9 w-9 rounded-lg border border-orange-500 dark:border-orange-500 text-orange-600 dark:text-orange-500 bg-transparent hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:shadow-module-glow dark:hover:shadow-module-glow transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                                 title="Archive SOP"
                               >
                                 {archivingId === sop.id ? (
@@ -438,7 +438,7 @@ function SOPsListContent() {
 
 export default function SOPsListPage() {
   return (
-    <Suspense fallback={<div className="text-neutral-400 text-center py-8">Loading...</div>}>
+    <Suspense fallback={<div className="text-theme-tertiary text-center py-8">Loading...</div>}>
       <SOPsListContent />
     </Suspense>
   );

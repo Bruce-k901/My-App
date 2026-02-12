@@ -724,7 +724,7 @@ function RecipesPage() {
   };
 
   const getGpColor = (gp: number | null, target: number) => {
-    if (gp === null) return 'text-[rgb(var(--text-tertiary))] dark:text-white/40';
+    if (gp === null) return 'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary';
     if (gp >= target) return 'text-green-400';
     if (gp >= target - 10) return 'text-yellow-400';
     return 'text-red-400';
@@ -741,7 +741,7 @@ function RecipesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-module-fg animate-spin" />
       </div>
     );
   }
@@ -753,13 +753,13 @@ function RecipesPage() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => window.history.back()}
-            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+ className="p-2 rounded-lg bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
             <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Recipes</h1>
-            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mt-1">Manage prep items, dishes, and menu costing</p>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm mt-1">Manage prep items, dishes, and menu costing</p>
           </div>
         </div>
         
@@ -767,14 +767,14 @@ function RecipesPage() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors disabled:opacity-50"
+ className="p-2 rounded-lg bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
           <button
             onClick={handleRecalculateAll}
             disabled={recalculating}
-            className="flex items-center gap-2 px-3 py-2 bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-primary))] dark:text-white/80 rounded-lg transition-colors disabled:opacity-50"
+ className="flex items-center gap-2 px-3 py-2 bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-primary))] dark:text-theme-secondary rounded-lg transition-colors disabled:opacity-50"
           >
             <Calculator className={`w-4 h-4 ${recalculating ? 'animate-spin' : ''}`} />
             Recost All
@@ -785,42 +785,42 @@ function RecipesPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-        <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-4">
+        <div className="bg-theme-surface border border-theme rounded-xl p-4">
           <div className="flex items-center gap-2 mb-1">
-            <ChefHat className="w-4 h-4 text-[rgb(var(--text-tertiary))] dark:text-white/40" />
-            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-xs">Total</span>
+            <ChefHat className="w-4 h-4 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary" />
+            <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-xs">Total</span>
           </div>
           <p className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{stats.total}</p>
         </div>
         
-        <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-4">
+        <div className="bg-theme-surface border border-theme rounded-xl p-4">
           <div className="flex items-center gap-2 mb-1">
             <Beaker className="w-4 h-4 text-blue-400" />
-            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-xs">Prep Items</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-xs">Prep Items</span>
           </div>
           <p className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{stats.prep}</p>
         </div>
         
-        <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-4">
+        <div className="bg-theme-surface border border-theme rounded-xl p-4">
           <div className="flex items-center gap-2 mb-1">
             <UtensilsCrossed className="w-4 h-4 text-green-400" />
-            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-xs">Dishes</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-xs">Dishes</span>
           </div>
           <p className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{stats.dish}</p>
         </div>
         
-        <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-4">
+        <div className="bg-theme-surface border border-theme rounded-xl p-4">
           <div className="flex items-center gap-2 mb-1">
             <Layers className="w-4 h-4 text-purple-400" />
-            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-xs">Composites</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-xs">Composites</span>
           </div>
           <p className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{stats.composite}</p>
         </div>
         
-        <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-4">
+        <div className="bg-theme-surface border border-theme rounded-xl p-4">
           <div className="flex items-center gap-2 mb-1">
             <AlertTriangle className="w-4 h-4 text-red-400" />
-            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-xs">Below Target</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-xs">Below Target</span>
           </div>
           <p className="text-2xl font-bold text-red-400">{stats.belowTarget}</p>
         </div>
@@ -830,13 +830,13 @@ function RecipesPage() {
       <div className="flex flex-col sm:flex-row gap-4">
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-white/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary" />
           <input
             type="text"
             placeholder="Search recipes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:border-[#D37E91]"
+ className="w-full pl-10 pr-4 py-2 bg-theme-button border border-theme rounded-lg text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:border-module-fg"
           />
         </div>
         
@@ -844,7 +844,7 @@ function RecipesPage() {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="px-4 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-[#D37E91]"
+ className="px-4 py-2 bg-theme-button border border-theme rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-module-fg"
         >
           <option value="all">All Types</option>
           <option value="prep">Prep Items</option>
@@ -858,7 +858,7 @@ function RecipesPage() {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="px-4 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-[#D37E91]"
+ className="px-4 py-2 bg-theme-button border border-theme rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-module-fg"
           >
             <option value="all">All Categories</option>
             {categories.map(cat => (
@@ -870,19 +870,19 @@ function RecipesPage() {
 
       {/* Recipe List */}
       {filteredRecipes.length === 0 ? (
-        <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-12 text-center">
+        <div className="bg-theme-surface border border-theme rounded-xl p-12 text-center">
           <ChefHat className="w-16 h-16 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-2">
             {recipes.length === 0 ? 'No recipes yet' : 'No matching recipes'}
           </h3>
-          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mb-6">
+          <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-6">
             {recipes.length === 0 
               ? 'Create your first recipe to start tracking costs and GP'
               : 'Try adjusting your search or filters'
             }
           </p>
           {recipes.length === 0 && (
-            <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">
+            <p className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm">
               Recipes are automatically created when you mark ingredients as prep items in the Ingredients Library.
             </p>
           )}

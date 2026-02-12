@@ -31,7 +31,7 @@ export default function AddEmployeeChoicePage() {
           {/* Option 1: Head Office / Executive */}
           <button
             onClick={() => setShowExecutiveModal(true)}
-            className="group relative bg-theme-button border-2 border-blue-300 dark:border-blue-500/50 rounded-2xl p-8 text-left hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] dark:hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] transition-all duration-300"
+            className="group relative bg-theme-button border-2 border-blue-300 dark:border-blue-500/50 rounded-2xl p-8 text-left hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-module-glow dark:hover:shadow-module-glow transition-all duration-300"
           >
             {/* Icon */}
             <div className="w-16 h-16 rounded-2xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
@@ -87,7 +87,7 @@ export default function AddEmployeeChoicePage() {
           {/* Option 2: Site Employee */}
           <button
             onClick={() => router.push('/dashboard/people/directory/new-site')}
-            className="group relative bg-theme-button border-2 border-blue-300 dark:border-blue-500/50 rounded-2xl p-8 text-left hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] dark:hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] transition-all duration-300"
+            className="group relative bg-theme-button border-2 border-blue-300 dark:border-blue-500/50 rounded-2xl p-8 text-left hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-module-glow dark:hover:shadow-module-glow transition-all duration-300"
           >
             {/* Icon */}
             <div className="w-16 h-16 rounded-2xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">

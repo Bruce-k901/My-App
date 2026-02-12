@@ -282,30 +282,30 @@ export function TaskCompletionModalNew({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-white/[0.08]">
+      <div className="bg-theme-surface rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-theme">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/[0.08]">
+        <div className="flex items-center justify-between p-6 border-b border-theme">
           <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-white truncate">
+            <h2 className="text-xl font-bold text-theme-primary truncate">
               {task.custom_name || template?.name || 'Complete Task'}
             </h2>
             {template?.slug && (
-              <p className="text-sm text-neutral-400 mt-1 truncate">{template.slug}</p>
+              <p className="text-sm text-theme-tertiary mt-1 truncate">{template.slug}</p>
             )}
           </div>
           <button
             onClick={onClose}
             disabled={submitting}
-            className="p-2 hover:bg-white/[0.06] rounded-lg transition-colors disabled:opacity-50 ml-4"
+            className="p-2 hover:bg-theme-hover rounded-lg transition-colors disabled:opacity-50 ml-4"
           >
-            <X className="w-5 h-5 text-neutral-400" />
+            <X className="w-5 h-5 text-theme-tertiary" />
           </button>
         </div>
 
         {/* Content */}
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-12rem)]">
           {(error || submitError) && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+            <div className="mb-4 p-3 bg-red-100 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg text-red-600 dark:text-red-400 text-sm">
               {error || submitError}
             </div>
           )}
@@ -313,8 +313,8 @@ export function TaskCompletionModalNew({
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="flex flex-col items-center gap-3">
-                <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                <div className="text-neutral-400 text-sm">Loading task data...</div>
+                <div className="w-8 h-8 border-2 border-module-fg border-t-transparent rounded-full animate-spin" />
+                <div className="text-theme-tertiary text-sm">Loading task data...</div>
               </div>
             </div>
           ) : (
@@ -345,18 +345,18 @@ export function TaskCompletionModalNew({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-white/[0.08]">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-theme">
           <button
             onClick={onClose}
             disabled={submitting}
-            className="px-4 py-2 text-sm font-medium text-neutral-400 hover:text-white hover:bg-white/[0.06] rounded-lg transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-theme-tertiary hover:text-theme-primary hover:bg-theme-hover rounded-lg transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmitClick}
             disabled={submitting || loading || !isFormValid}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-4 py-2 text-sm font-medium text-white bg-module-fg hover:bg-module-fg/90 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {submitting ? (
               <>

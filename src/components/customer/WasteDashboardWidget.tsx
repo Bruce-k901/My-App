@@ -130,7 +130,7 @@ export function WasteDashboardWidget() {
     return (
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-white">Waste Tracking</h2>
+          <h2 className="text-lg font-semibold text-theme-primary">Waste Tracking</h2>
           <Link
             href="/customer/waste/insights"
             className="text-sm text-[#D37E91] hover:text-[#D37E91]/80 transition-colors"
@@ -139,8 +139,8 @@ export function WasteDashboardWidget() {
           </Link>
         </div>
         <div className="text-center py-4">
-          <Calendar className="w-8 h-8 text-white/40 mx-auto mb-2" />
-          <p className="text-sm text-white/60 mb-4">
+          <Calendar className="w-8 h-8 text-theme-tertiary mx-auto mb-2" />
+          <p className="text-sm text-theme-tertiary mb-4">
             Start logging your sales to track waste patterns
           </p>
           <Link href="/customer/waste/log">
@@ -159,7 +159,7 @@ export function WasteDashboardWidget() {
   return (
     <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-white">Waste Tracking</h2>
+        <h2 className="text-lg font-semibold text-theme-primary">Waste Tracking</h2>
         <Link
           href="/customer/waste/insights"
           className="text-sm text-[#D37E91] hover:text-[#D37E91]/80 transition-colors"
@@ -173,10 +173,10 @@ export function WasteDashboardWidget() {
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 flex-shrink-0" />
             <div className="flex-1">
-              <div className="text-sm font-medium text-white mb-1">
+              <div className="text-sm font-medium text-theme-primary mb-1">
                 Log today's sales
               </div>
-              <div className="text-xs text-white/60 mb-3">
+              <div className="text-xs text-theme-tertiary mb-3">
                 Order #{pendingLog.order_number} from {new Date(pendingLog.delivery_date).toLocaleDateString('en-GB', {
                   weekday: 'long',
                   day: 'numeric',
@@ -199,7 +199,7 @@ export function WasteDashboardWidget() {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="text-xs text-white/60 mb-1">This Week</div>
+              <div className="text-xs text-theme-tertiary mb-1">This Week</div>
               <div className={`text-lg font-semibold ${
                 summary.avg_waste_percent < 15 ? 'text-green-400' :
                 summary.avg_waste_percent < 25 ? 'text-amber-400' :
@@ -209,7 +209,7 @@ export function WasteDashboardWidget() {
               </div>
             </div>
             <div>
-              <div className="text-xs text-white/60 mb-1">Potential Savings</div>
+              <div className="text-xs text-theme-tertiary mb-1">Potential Savings</div>
               <div className="text-lg font-semibold text-[#D37E91]">
                 {formatCurrency(summary.total_waste_cost * 0.1)}
               </div>
@@ -219,7 +219,7 @@ export function WasteDashboardWidget() {
             <Link href="/customer/waste/insights">
               <Button
                 variant="ghost"
-                className="w-full text-sm bg-transparent text-white/60 hover:text-white border border-white/[0.06] hover:border-white/[0.1]"
+                className="w-full text-sm bg-transparent text-theme-tertiary hover:text-white border border-white/[0.06] hover:border-white/[0.1]"
               >
                 View Full Insights
               </Button>
@@ -228,8 +228,8 @@ export function WasteDashboardWidget() {
         </div>
       ) : (
         <div className="text-center py-4">
-          <Calendar className="w-8 h-8 text-white/40 mx-auto mb-2" />
-          <p className="text-sm text-white/60 mb-4">
+          <Calendar className="w-8 h-8 text-theme-tertiary mx-auto mb-2" />
+          <p className="text-sm text-theme-tertiary mb-4">
             Start logging your sales to track waste patterns
           </p>
           <Link href="/customer/waste/log">

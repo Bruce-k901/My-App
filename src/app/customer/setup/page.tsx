@@ -149,8 +149,8 @@ function SetupContent() {
     return (
       <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center p-4">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-emerald-400 mx-auto mb-4" />
-          <p className="text-white/60">Validating invitation...</p>
+          <Loader2 className="w-8 h-8 animate-spin text-module-fg mx-auto mb-4" />
+          <p className="text-theme-tertiary">Validating invitation...</p>
         </div>
       </div>
     );
@@ -161,13 +161,13 @@ function SetupContent() {
       <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-white mb-2">Invalid Invitation</h1>
-          <p className="text-white/60 mb-6">
+          <h1 className="text-2xl font-bold text-theme-primary mb-2">Invalid Invitation</h1>
+          <p className="text-theme-tertiary mb-6">
             This invitation link is invalid or has expired. Please contact your supplier for a new invitation.
           </p>
           <Button
             onClick={() => router.push('/login')}
-            className="bg-transparent text-emerald-400 border border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)]"
+            className="bg-transparent text-module-fg border border-emerald-500 hover:shadow-module-glow"
           >
             Go to Login
           </Button>
@@ -180,9 +180,9 @@ function SetupContent() {
     return (
       <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
-          <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-white mb-2">Account Created!</h1>
-          <p className="text-white/60 mb-6">
+          <CheckCircle2 className="w-12 h-12 text-module-fg mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-theme-primary mb-2">Account Created!</h1>
+          <p className="text-theme-tertiary mb-6">
             Your account has been set up successfully. Redirecting to your portal...
           </p>
         </div>
@@ -194,26 +194,26 @@ function SetupContent() {
     <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white/[0.03] border border-white/[0.06] rounded-xl p-8">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-white mb-2">Welcome to Okja Bakery</h1>
-          <p className="text-white/60">Set up your customer portal account</p>
+          <h1 className="text-2xl font-bold text-theme-primary mb-2">Welcome to Okja Bakery</h1>
+          <p className="text-theme-tertiary">Set up your customer portal account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Email (read-only) */}
           <div>
-            <label className="block text-sm text-white/80 mb-1.5">Email</label>
+            <label className="block text-sm text-theme-secondary mb-1.5">Email</label>
             <Input
               type="email"
               value={customerEmail}
               disabled
-              className="bg-white/[0.03] text-white/60 cursor-not-allowed focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50"
+              className="bg-white/[0.03] text-theme-tertiary cursor-not-allowed focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
             />
-            <p className="text-xs text-white/40 mt-1">This email will be used to log in</p>
+            <p className="text-xs text-theme-tertiary mt-1">This email will be used to log in</p>
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-sm text-white/80 mb-1.5">
+            <label className="block text-sm text-theme-secondary mb-1.5">
               Create Password <span className="text-red-400">*</span>
             </label>
             <Input
@@ -222,17 +222,17 @@ function SetupContent() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter password (min 8 characters)"
               required
-              className="focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50"
+              className="focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
             />
             {errors.password && (
               <p className="text-xs text-red-400 mt-1">{errors.password}</p>
             )}
-            <p className="text-xs text-white/40 mt-1">Password must be at least 8 characters</p>
+            <p className="text-xs text-theme-tertiary mt-1">Password must be at least 8 characters</p>
           </div>
 
           {/* Confirm Password */}
           <div>
-            <label className="block text-sm text-white/80 mb-1.5">
+            <label className="block text-sm text-theme-secondary mb-1.5">
               Confirm Password <span className="text-red-400">*</span>
             </label>
             <Input
@@ -241,7 +241,7 @@ function SetupContent() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm your password"
               required
-              className="focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50"
+              className="focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
             />
             {errors.confirmPassword && (
               <p className="text-xs text-red-400 mt-1">{errors.confirmPassword}</p>
@@ -257,7 +257,7 @@ function SetupContent() {
           <Button
             type="submit"
             loading={loading}
-            className="w-full bg-transparent text-emerald-400 border border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)]"
+            className="w-full bg-transparent text-module-fg border border-emerald-500 hover:shadow-module-glow"
           >
             Create Account
           </Button>
@@ -272,7 +272,7 @@ export default function CustomerSetupPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
+          <Loader2 className="w-8 h-8 animate-spin text-module-fg" />
         </div>
       }
     >

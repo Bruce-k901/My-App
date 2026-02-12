@@ -20,16 +20,12 @@ export const OpslyLogo: React.FC<OpslyLogoProps> = ({
   delay = 0,
 }) => {
   const [isVisible, setIsVisible] = useState(!animated);
-  const [isGlowing, setIsGlowing] = useState(false);
 
   useEffect(() => {
     if (!animated) return;
 
-    // Start animation after delay
     const timer = setTimeout(() => {
       setIsVisible(true);
-      // Add glow effect after logo appears
-      setTimeout(() => setIsGlowing(true), 600);
     }, delay);
 
     return () => clearTimeout(timer);
@@ -92,9 +88,9 @@ export const OpslyLogo: React.FC<OpslyLogoProps> = ({
     return logoElement;
   }
 
-  // Animated version with entrance effect
+  // Animated version with entrance effect (no halo)
   return (
-    <div 
+    <div
       className={`relative inline-block ${className}`}
       style={{
         opacity: isVisible ? 1 : 0,
@@ -102,29 +98,7 @@ export const OpslyLogo: React.FC<OpslyLogoProps> = ({
         transition: 'opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
       }}
     >
-      {/* Glow effect */}
-      <div
-        className={`absolute inset-0 -z-10 rounded-lg blur-2xl transition-opacity duration-1000 ${
-          isGlowing ? 'opacity-60' : 'opacity-0'
-        }`}
-        style={{
-          background: 'radial-gradient(circle, rgba(211, 126, 145, 0.4) 0%, rgba(59, 130, 246, 0.4) 100%)',
-          transform: 'scale(1.5)',
-          left: '-50%',
-          right: '-50%',
-          top: '-50%',
-          bottom: '-50%',
-        }}
-      />
-      
-      {/* Logo with pulse effect */}
-      <div
-        className={`transition-all duration-300 ${
-          isGlowing ? 'drop-shadow-[0_0_20px_rgba(211,126,145,0.6)]' : ''
-        }`}
-      >
-        {logoElement}
-      </div>
+      {logoElement}
     </div>
   );
 };

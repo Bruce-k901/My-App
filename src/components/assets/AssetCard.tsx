@@ -179,7 +179,7 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
   };
 
   return (
-    <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out shadow-sm dark:shadow-none hover:shadow-md dark:hover:shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+ <div className="bg-theme-surface ] border border-theme rounded-xl p-3 transition-all duration-150 ease-in-out shadow-sm dark:shadow-none hover:shadow-md dark:hover:shadow-module-glow">
       {/* Compact View - Mobile optimized */}
       {!isExpanded && (
         <div className="space-y-2">
@@ -199,11 +199,11 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
             {/* Asset Info */}
             <div className={`flex ${isMobile ? 'flex-col' : 'items-center justify-between'} flex-1 min-w-0 ${!isMobile && 'mr-4'}`}>
               <div className={`flex ${isMobile ? 'flex-col gap-1' : 'items-center space-x-4'}`}>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                <h3 className="text-lg font-semibold text-theme-primary truncate">
                   {asset.name || "Unnamed Asset"}
                 </h3>
                 {asset.site_name && (
-                  <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                  <span className="text-sm text-theme-tertiary truncate">
                     @ {asset.site_name}
                   </span>
                 )}
@@ -212,13 +212,13 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
               {/* Service info - hidden on mobile to save space */}
               {!isMobile && (
                 <div className="flex items-center space-x-8">
-                  <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                  <span className="text-sm text-theme-tertiary truncate">
                     Next Service: {(() => {
                       const nextService = getNextServiceDate();
                       return nextService ? nextService.toLocaleDateString() : "Not scheduled";
                     })()}
                   </span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                  <span className="text-sm text-theme-tertiary truncate">
                     Age: {calculateAssetAge(asset.install_date)}
                   </span>
                 </div>
@@ -243,7 +243,7 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
                     e.stopPropagation();
                     setIsExpanded(true);
                   }}
-                  className="px-4 py-2.5 bg-white/5 border border-white/10 text-gray-400 rounded-xl transition-colors active:scale-95"
+                  className="px-4 py-2.5 bg-white/5 border border-white/10 text-theme-tertiary rounded-xl transition-colors active:scale-95"
                 >
                   Details
                 </button>
@@ -255,7 +255,7 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
                     e.stopPropagation();
                     setCalloutModalOpen(true);
                   }}
-                  className="p-1.5 text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 border border-cyan-600 dark:border-cyan-500 rounded transition-colors"
+                  className="p-1.5 text-module-fg hover:text-cyan-700 dark:hover:text-cyan-300 border border-cyan-600 dark:border-cyan-500 rounded transition-colors"
                   title="Log a callout"
                 >
                   <Wrench size={16} />
@@ -286,13 +286,13 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
               }
             }}
           >
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{asset.name || "Unnamed Asset"}</h2>
+            <h2 className="text-lg font-semibold text-theme-primary">{asset.name || "Unnamed Asset"}</h2>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setIsExpanded(false);
               }}
-              className="p-1.5 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors"
+ className="p-1.5 text-theme-tertiary hover:text-theme-secondary transition-colors"
               title="Minimize"
             >
               <ChevronUp size={16} />
@@ -300,13 +300,13 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
           </div>
 
           {/* Divider line */}
-          <div className="border-t border-gray-200 dark:border-neutral-700 mb-6"></div>
+          <div className="border-t border-theme mb-6"></div>
           
           {/* All Asset Fields with Inline Editing - 2 Column Grid */}
           <div className="space-y-6">
             {/* Section A: Assignment */}
             <div>
-              <h3 className="text-base font-semibold tracking-wide text-cyan-600 dark:text-cyan-400 border-t border-gray-200 dark:border-neutral-700 mt-4 pt-3 bg-gradient-to-r from-cyan-100 dark:from-cyan-600/20 to-transparent px-2 py-1 rounded">
+              <h3 className="text-base font-semibold tracking-wide text-module-fg border-t border-theme mt-4 pt-3 bg-gradient-to-r from-cyan-100 dark:from-cyan-600/20 to-transparent px-2 py-1 rounded">
                 Assignment
               </h3>
               <div className="grid grid-cols-2 gap-x-12 gap-y-4 items-center text-sm mt-4 py-2 relative">
@@ -319,9 +319,9 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
                   onSave={handleSiteChange}
                 />
                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
-                  <span className="text-gray-500 dark:text-neutral-400">Category</span>
+ <span className="text-gray-500 dark:text-theme-tertiary">Category</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-900 dark:text-white font-medium">{asset.category}</span>
+                    <span className="text-theme-primary font-medium">{asset.category}</span>
                   </div>
                 </div>
               </div>
@@ -329,33 +329,33 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
 
             {/* Section B: Identification */}
             <div>
-              <h3 className="text-base font-semibold tracking-wide text-cyan-600 dark:text-cyan-400 border-t border-gray-200 dark:border-neutral-700 mt-6 pt-3 bg-gradient-to-r from-cyan-50 dark:from-cyan-500/10 to-transparent px-2 py-1 rounded">
+              <h3 className="text-base font-semibold tracking-wide text-module-fg border-t border-theme mt-6 pt-3 bg-gradient-to-r from-cyan-50 dark:from-cyan-500/10 to-transparent px-2 py-1 rounded">
                 Identification
               </h3>
               <div className="grid grid-cols-2 gap-x-12 gap-y-4 items-center text-sm mt-4 py-2 relative">
                 <div className="absolute left-1/2 top-0 bottom-0 w-px bg-cyan-300 dark:bg-cyan-500/40"></div>
                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
-                  <span className="text-gray-500 dark:text-neutral-400">Asset Name</span>
+ <span className="text-gray-500 dark:text-theme-tertiary">Asset Name</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-900 dark:text-white font-medium">{asset.name}</span>
+                    <span className="text-theme-primary font-medium">{asset.name}</span>
                   </div>
                 </div>
                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
-                  <span className="text-gray-500 dark:text-neutral-400">Brand</span>
+ <span className="text-gray-500 dark:text-theme-tertiary">Brand</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-900 dark:text-white font-medium">{asset.brand || '—'}</span>
+                    <span className="text-theme-primary font-medium">{asset.brand || '—'}</span>
                   </div>
                 </div>
                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
-                  <span className="text-gray-500 dark:text-neutral-400">Model</span>
+ <span className="text-gray-500 dark:text-theme-tertiary">Model</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-900 dark:text-white font-medium">{asset.model || '—'}</span>
+                    <span className="text-theme-primary font-medium">{asset.model || '—'}</span>
                   </div>
                 </div>
                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
-                  <span className="text-gray-500 dark:text-neutral-400">Serial Number</span>
+ <span className="text-gray-500 dark:text-theme-tertiary">Serial Number</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-900 dark:text-white font-medium">{asset.serial_number || '—'}</span>
+                    <span className="text-theme-primary font-medium">{asset.serial_number || '—'}</span>
                   </div>
                 </div>
               </div>
@@ -363,31 +363,31 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
 
             {/* Section C: Important Dates */}
             <div>
-              <h3 className="text-base font-semibold tracking-wide text-cyan-600 dark:text-cyan-400 border-t border-gray-200 dark:border-neutral-700 mt-6 pt-3 bg-gradient-to-r from-cyan-50 dark:from-cyan-500/10 to-transparent px-2 py-1 rounded">
+              <h3 className="text-base font-semibold tracking-wide text-module-fg border-t border-theme mt-6 pt-3 bg-gradient-to-r from-cyan-50 dark:from-cyan-500/10 to-transparent px-2 py-1 rounded">
                 Important Dates
               </h3>
               <div className="grid grid-cols-2 gap-x-12 gap-y-4 items-center text-sm mt-4 py-2 relative">
                 <div className="absolute left-1/2 top-0 bottom-0 w-px bg-cyan-300 dark:bg-cyan-500/40"></div>
                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
-                  <span className="text-gray-500 dark:text-neutral-400">Install Date</span>
+ <span className="text-gray-500 dark:text-theme-tertiary">Install Date</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-900 dark:text-white font-medium">
+                    <span className="text-theme-primary font-medium">
                       {asset.install_date ? new Date(asset.install_date).toLocaleDateString() : '—'}
                     </span>
                   </div>
                 </div>
                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
-                  <span className="text-gray-500 dark:text-neutral-400">Warranty End</span>
+ <span className="text-gray-500 dark:text-theme-tertiary">Warranty End</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-900 dark:text-white font-medium">
+                    <span className="text-theme-primary font-medium">
                       {asset.warranty_end ? new Date(asset.warranty_end).toLocaleDateString() : '—'}
                     </span>
                   </div>
                 </div>
                 {asset.ppm_group_id ? (
-                  <div className="col-span-2 flex items-center gap-2 px-2 py-2 rounded-lg bg-cyan-50 dark:bg-cyan-500/10 border border-cyan-200 dark:border-cyan-500/20 text-sm">
-                    <Layers className="w-4 h-4 text-cyan-600 dark:text-cyan-400 flex-shrink-0" />
-                    <span className="text-cyan-700 dark:text-cyan-300">
+                  <div className="col-span-2 flex items-center gap-2 px-2 py-2 rounded-lg bg-cyan-50 dark:bg-module-fg/10 border border-cyan-200 dark:border-module-fg/30 text-sm">
+                    <Layers className="w-4 h-4 text-module-fg flex-shrink-0" />
+                    <span className="text-cyan-700 dark:text-module-fg">
                       PPM managed by group: <strong>{asset.ppm_group_name || 'Unknown'}</strong>
                     </span>
                   </div>
@@ -420,15 +420,15 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
 
             {/* Section D: Contractor Assignments */}
             <div>
-              <h3 className="text-base font-semibold tracking-wide text-cyan-600 dark:text-cyan-400 border-t border-gray-200 dark:border-neutral-700 mt-6 pt-3 bg-gradient-to-r from-cyan-50 dark:from-cyan-500/10 to-transparent px-2 py-1 rounded">
+              <h3 className="text-base font-semibold tracking-wide text-module-fg border-t border-theme mt-6 pt-3 bg-gradient-to-r from-cyan-50 dark:from-cyan-500/10 to-transparent px-2 py-1 rounded">
                 Contractor Assignments
               </h3>
               <div className="grid grid-cols-2 gap-x-12 gap-y-4 items-center text-sm mt-4 py-2 relative">
                 <div className="absolute left-1/2 top-0 bottom-0 w-px bg-cyan-300 dark:bg-cyan-500/40"></div>
                 {asset.ppm_group_id ? (
                   <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
-                    <span className="text-gray-500 dark:text-neutral-400">PPM Contractor</span>
-                    <span className="text-gray-400 dark:text-gray-500 text-xs italic">via group</span>
+ <span className="text-gray-500 dark:text-theme-tertiary">PPM Contractor</span>
+                    <span className="text-theme-tertiary text-xs italic">via group</span>
                   </div>
                 ) : (
                   <EditableField
@@ -459,19 +459,19 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
 
             {/* Section E: Additional Information */}
             <div>
-              <h3 className="text-base font-semibold tracking-wide text-cyan-600 dark:text-cyan-400 border-t border-gray-200 dark:border-neutral-700 mt-6 pt-3 bg-gradient-to-r from-cyan-50 dark:from-cyan-500/10 to-transparent px-2 py-1 rounded">
+              <h3 className="text-base font-semibold tracking-wide text-module-fg border-t border-theme mt-6 pt-3 bg-gradient-to-r from-cyan-50 dark:from-cyan-500/10 to-transparent px-2 py-1 rounded">
                 Additional Information
               </h3>
               <div className="grid grid-cols-2 gap-x-12 gap-y-4 items-center text-sm mt-4 py-2 relative">
                 <div className="absolute left-1/2 top-0 bottom-0 w-px bg-cyan-300 dark:bg-cyan-500/40"></div>
                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
-                  <span className="text-gray-500 dark:text-neutral-400">Status</span>
+ <span className="text-gray-500 dark:text-theme-tertiary">Status</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-900 dark:text-white font-medium">{asset.status}</span>
+                    <span className="text-theme-primary font-medium">{asset.status}</span>
                   </div>
                 </div>
                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
-                  <span className="text-gray-500 dark:text-neutral-400">Warranty Status</span>
+ <span className="text-gray-500 dark:text-theme-tertiary">Warranty Status</span>
                   <div className="flex items-center gap-2">
                     <span
                       className={`
@@ -508,19 +508,19 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
                   placeholder="Enter any additional notes..."
                 />
                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
-                  <span className="text-gray-500 dark:text-neutral-400">Document URL</span>
+ <span className="text-gray-500 dark:text-theme-tertiary">Document URL</span>
                   <div className="flex items-center gap-2">
                     {asset.document_url ? (
                       <a
                         href={asset.document_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 text-sm underline"
+                        className="text-module-fg hover:text-cyan-700 dark:hover:text-cyan-300 text-sm underline"
                       >
                         View Document
                       </a>
                     ) : (
-                      <span className="text-gray-900 dark:text-white font-medium">—</span>
+                      <span className="text-theme-primary font-medium">—</span>
                     )}
                   </div>
                 </div>
@@ -529,7 +529,7 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end pt-6 border-t border-gray-200 dark:border-neutral-700 mt-6">
+          <div className="flex items-center justify-end pt-6 border-t border-theme mt-6">
             <div className="flex items-center space-x-2">
               {onArchive && (
                 <button
@@ -547,8 +547,8 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
 
           {/* Archived Date Display */}
           {asset.archived && asset.archived_at && (
-            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-neutral-700">
-              <p className="text-xs text-gray-500 dark:text-neutral-400 text-center">
+            <div className="mt-4 pt-4 border-t border-theme">
+ <p className="text-xs text-gray-500 dark:text-theme-tertiary text-center">
                 Archived on {new Date(asset.archived_at).toLocaleDateString()}
               </p>
             </div>

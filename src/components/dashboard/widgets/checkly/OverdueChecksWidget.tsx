@@ -142,7 +142,7 @@ export default function OverdueChecksWidget({ companyId, siteId }: WidgetProps) 
                   {task.template_name}
                 </p>
                 {siteId === 'all' && task.site_name && (
-                  <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 truncate">
+                  <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary truncate">
                     {task.site_name}
                   </p>
                 )}

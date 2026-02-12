@@ -75,9 +75,9 @@ export function TemplateRenderer({
     <div className="space-y-6">
       {/* Task Instructions */}
       {(task.custom_instructions || template?.instructions) && (
-        <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-          <h4 className="text-sm font-medium text-blue-400 mb-2">Instructions</h4>
-          <p className="text-sm text-neutral-300 whitespace-pre-wrap">
+        <div className="bg-module-fg/10 border border-module-fg/30 rounded-lg p-4">
+          <h4 className="text-sm font-medium text-module-fg mb-2">Instructions</h4>
+          <p className="text-sm text-theme-tertiary whitespace-pre-wrap">
             {task.custom_instructions || template?.instructions}
           </p>
         </div>
@@ -126,7 +126,7 @@ export function TemplateRenderer({
 
       {/* Notes */}
       <div>
-        <label className="block text-sm font-medium text-white mb-2">
+        <label className="block text-sm font-medium text-theme-primary mb-2">
           Notes (Optional)
         </label>
         <textarea
@@ -134,7 +134,7 @@ export function TemplateRenderer({
           onChange={(e) => onNotesChange(e.target.value)}
           disabled={disabled}
           rows={3}
-          className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 transition-colors text-sm disabled:opacity-50 resize-none"
+          className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-theme-tertiary focus:outline-none focus:border-module-fg transition-colors text-sm disabled:opacity-50 resize-none"
           placeholder="Add any notes..."
         />
       </div>

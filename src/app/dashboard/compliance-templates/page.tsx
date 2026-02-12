@@ -358,32 +358,32 @@ export default function ComplianceTemplatesPage() {
   return (
     <div className="p-4 sm:p-6 md:p-8">
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Compliance Templates</h1>
-        <p className="text-white/60 text-sm sm:text-base">Pre-built EHO compliance task templates for food safety, health & safety, and regulatory requirements</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary mb-2">Compliance Templates</h1>
+        <p className="text-theme-tertiary text-sm sm:text-base">Pre-built EHO compliance task templates for food safety, health & safety, and regulatory requirements</p>
       </div>
 
       {/* Search */}
       <div className="mb-4 sm:mb-6">
         <div className="relative max-w-md w-full">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-neutral-500" />
+          <Search className="absolute left-3 top-3 h-4 w-4 text-theme-tertiary" />
           <input
             type="text"
             placeholder="Search compliance templates..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 text-sm sm:text-base"
+            className="w-full pl-10 pr-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] text-sm sm:text-base"
           />
         </div>
       </div>
 
       {/* Templates List */}
       {loading ? (
-        <div className="text-white text-center py-8">Loading compliance templates...</div>
+        <div className="text-theme-primary text-center py-8">Loading compliance templates...</div>
       ) : filteredTemplates.length > 0 ? (
         <div className="space-y-6 sm:space-y-8">
           {Object.entries(groupedTemplates).map(([category, categoryTemplates]) => (
             <div key={category}>
-              <h2 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">{category}</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-theme-primary mb-3 sm:mb-4">{category}</h2>
               <div className="space-y-3 sm:space-y-4">
                 {categoryTemplates.map((template) => {
                   const Icon = getTemplateIcon(template);
@@ -395,14 +395,14 @@ export default function ComplianceTemplatesPage() {
                     <div
                       key={template.id}
                       onClick={(e) => handleUseTemplate(template.id, e)}
-                      className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden hover:border-[#D37E91]/30 transition-colors cursor-pointer"
+                      className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden hover:border-module-fg/[0.30] transition-colors cursor-pointer"
                     >
                       {/* Collapsed Card View */}
                       <div className="p-3 sm:p-4">
                         <div className="flex items-start gap-3 sm:gap-4">
                           {/* Icon */}
                           <div className="flex-shrink-0 p-2 bg-white/[0.08] rounded-lg">
-                            <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                            <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-theme-primary" />
                           </div>
                           
                           {/* Content */}
@@ -410,7 +410,7 @@ export default function ComplianceTemplatesPage() {
                             <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2">
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                  <h3 className="text-sm sm:text-base font-semibold text-white break-words">{template.name}</h3>
+                                  <h3 className="text-sm sm:text-base font-semibold text-theme-primary break-words">{template.name}</h3>
                                   {isInUse && (
                                     <span className="px-2 py-0.5 text-xs font-medium bg-green-500/20 text-green-400 rounded border border-green-500/30 flex items-center gap-1 flex-shrink-0">
                                       <CheckCircle2 className="w-3 h-3" />
@@ -424,7 +424,7 @@ export default function ComplianceTemplatesPage() {
                                   )}
                                 </div>
                                 {template.description && (
-                                  <p className="text-sm text-white/60 line-clamp-1">
+                                  <p className="text-sm text-theme-tertiary line-clamp-1">
                                     {template.description}
                                   </p>
                                 )}
@@ -437,7 +437,7 @@ export default function ComplianceTemplatesPage() {
                                   className="p-2 hover:bg-white/[0.08] rounded-lg transition-colors"
                                   title="Use template to create task"
                                 >
-                                  <Edit2 className="w-4 h-4 text-white/60 hover:text-white" />
+                                  <Edit2 className="w-4 h-4 text-theme-tertiary hover:text-white" />
                                 </button>
                                 <button
                                   onClick={(e) => {
@@ -448,9 +448,9 @@ export default function ComplianceTemplatesPage() {
                                   title={isExpanded ? "Collapse" : "Expand"}
                                 >
                                   {isExpanded ? (
-                                    <ChevronUp className="w-4 h-4 text-white/60 hover:text-white" />
+                                    <ChevronUp className="w-4 h-4 text-theme-tertiary hover:text-white" />
                                   ) : (
-                                    <ChevronDown className="w-4 h-4 text-white/60 hover:text-white" />
+                                    <ChevronDown className="w-4 h-4 text-theme-tertiary hover:text-white" />
                                   )}
                                 </button>
                               </div>
@@ -464,16 +464,16 @@ export default function ComplianceTemplatesPage() {
                             {/* Description (full) */}
                             {template.description && (
                               <div>
-                                <p className="text-xs text-white/40 mb-1">Description</p>
-                                <p className="text-sm text-white/70">{template.description}</p>
+                                <p className="text-xs text-theme-tertiary mb-1">Description</p>
+                                <p className="text-sm text-theme-secondary">{template.description}</p>
                               </div>
                             )}
 
                             {/* Frequency */}
                             {template.frequency && (
-                              <div className="flex items-center gap-2 text-sm text-white/60">
+                              <div className="flex items-center gap-2 text-sm text-theme-tertiary">
                                 <Calendar className="w-4 h-4" />
-                                <span className="text-xs text-white/40 mr-2">Frequency:</span>
+                                <span className="text-xs text-theme-tertiary mr-2">Frequency:</span>
                                 <span>{FREQUENCY_LABELS[template.frequency] || template.frequency}</span>
                               </div>
                             )}
@@ -481,28 +481,28 @@ export default function ComplianceTemplatesPage() {
                             {/* Category */}
                             {template.audit_category && (
                               <div>
-                                <p className="text-xs text-white/40 mb-1">Category</p>
-                                <p className="text-sm text-white/70">{template.audit_category}</p>
+                                <p className="text-xs text-theme-tertiary mb-1">Category</p>
+                                <p className="text-sm text-theme-secondary">{template.audit_category}</p>
                               </div>
                             )}
 
                             {/* Compliance Standard */}
                             {template.compliance_standard && (
                               <div>
-                                <p className="text-xs text-white/40 mb-1">Regulation</p>
-                                <p className="text-sm text-white/70">{template.compliance_standard}</p>
+                                <p className="text-xs text-theme-tertiary mb-1">Regulation</p>
+                                <p className="text-sm text-theme-secondary">{template.compliance_standard}</p>
                               </div>
                             )}
 
                             {/* Evidence Types */}
                             {template.evidence_types && template.evidence_types.length > 0 && (
                               <div>
-                                <p className="text-xs text-white/40 mb-2">Required Evidence</p>
+                                <p className="text-xs text-theme-tertiary mb-2">Required Evidence</p>
                                 <div className="flex flex-wrap gap-2">
                                   {template.evidence_types.map((evidence, idx) => (
                                     <span
                                       key={idx}
-                                      className="px-2 py-1 text-xs bg-[#D37E91]/15 text-[#D37E91] rounded border border-[#D37E91]/20"
+                                      className="px-2 py-1 text-xs bg-module-fg/[0.15] text-module-fg rounded border border-module-fg/[0.20]"
                                     >
                                       {evidence}
                                     </span>
@@ -535,7 +535,7 @@ export default function ComplianceTemplatesPage() {
       {/* No templates found message - only show if searching and no results */}
       {!loading && searchTerm && filteredTemplates.length === 0 && (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
-          <p className="text-white/60">
+          <p className="text-theme-tertiary">
             No templates found matching your search "{searchTerm}".
           </p>
         </div>

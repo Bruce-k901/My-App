@@ -38,7 +38,7 @@ interface Incident {
 
 export default function IncidentsPage() {
   return (
-    <Suspense fallback={<div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen p-6"><p className="text-gray-600 dark:text-white/60">Loading...</p></div>}>
+    <Suspense fallback={<div className="w-full bg-theme-surface-elevated min-h-screen p-6"><p className="text-theme-secondary">Loading...</p></div>}>
       <IncidentsPageContent />
     </Suspense>
   );
@@ -274,7 +274,7 @@ function IncidentsPageContent() {
       case 'near_miss':
         return 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-500/40';
       default:
-        return 'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-500/40';
+        return 'bg-gray-50 dark:bg-theme-surface-elevated0/20 text-theme-secondary border-gray-200 dark:border-gray-500/40';
     }
   };
 
@@ -287,9 +287,9 @@ function IncidentsPageContent() {
       case 'resolved':
         return 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-300 border-green-200 dark:border-green-500/40';
       case 'closed':
-        return 'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-500/40';
+        return 'bg-gray-50 dark:bg-theme-surface-elevated0/20 text-theme-secondary border-gray-200 dark:border-gray-500/40';
       default:
-        return 'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-500/40';
+        return 'bg-gray-50 dark:bg-theme-surface-elevated0/20 text-theme-secondary border-gray-200 dark:border-gray-500/40';
     }
   };
 
@@ -315,20 +315,20 @@ function IncidentsPageContent() {
   const activeTabInfo = getActiveTabInfo();
 
   return (
-    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+    <div className="w-full bg-theme-surface-elevated min-h-screen">
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-              <AlertTriangle className="w-8 h-8 text-red-600 dark:text-[#D37E91]" />
+            <h1 className="text-3xl font-bold text-theme-primary mb-2 flex items-center gap-3">
+              <AlertTriangle className="w-8 h-8 text-red-600 dark:text-module-fg" />
               Incident Reports
             </h1>
-            <p className="text-gray-600 dark:text-white/60">Track and manage safety incidents and accidents</p>
+            <p className="text-theme-secondary">Track and manage safety incidents and accidents</p>
           </div>
           <Button
             onClick={handleReportIncident}
-            className="bg-[#D37E91] hover:bg-[#D37E91]/90 text-white dark:bg-red-600 dark:hover:bg-red-700"
+            className="bg-module-fg hover:bg-module-fg/90 text-white dark:bg-red-600 dark:hover:bg-red-700"
           >
             <Plus className="w-4 h-4 mr-2" />
             {activeTab === 'staff_sickness' ? 'Log Sickness' : 'Report Incident'}
@@ -336,7 +336,7 @@ function IncidentsPageContent() {
         </div>
 
         {/* Incident Type Tabs */}
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-2 mb-6">
+        <div className="bg-theme-surface border border-theme rounded-lg p-2 mb-6">
           <div className="flex flex-wrap gap-2">
             {INCIDENT_TABS.map((tab) => {
               const Icon = tab.icon;
@@ -347,8 +347,8 @@ function IncidentsPageContent() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${
                     isActive
-                      ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91] border border-[#D37E91]/30 dark:border-[#D37E91]/30'
-                      : 'text-gray-600 dark:text-white/60 hover:bg-gray-100 dark:hover:bg-white/[0.05] hover:text-gray-900 dark:hover:text-white'
+                      ? 'bg-module-fg/10 dark:bg-module-fg/25 text-module-fg dark:text-module-fg border border-module-fg/[0.30] dark:border-module-fg/[0.30]'
+                      : 'text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.05] hover:text-theme-primary'
                   }`}
                 >
                   <Icon className={`w-4 h-4 ${isActive ? tab.color : ''}`} />
@@ -357,24 +357,24 @@ function IncidentsPageContent() {
               );
             })}
           </div>
-          <p className="text-sm text-gray-500 dark:text-white/40 mt-2 px-2">
+          <p className="text-sm text-theme-tertiary mt-2 px-2">
             {activeTabInfo.description}
           </p>
         </div>
 
         {/* Filters and Search - Hide for staff sickness tab */}
         {activeTab !== 'staff_sickness' && (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-4 mb-6">
+          <div className="bg-theme-surface border border-theme rounded-lg p-4 mb-6">
             <div className="flex flex-col md:flex-row gap-4">
               {/* Search */}
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-theme-tertiary" />
                 <input
                   type="text"
                   placeholder={`Search ${activeTabInfo.label.toLowerCase()}...`}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full pl-10 pr-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] dark:focus:ring-module-fg"
                 />
               </div>
 
@@ -418,15 +418,15 @@ function IncidentsPageContent() {
 
         {/* Staff Sickness Tab - Redirect to dedicated page */}
         {activeTab === 'staff_sickness' ? (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-12 text-center">
+          <div className="bg-theme-surface border border-theme rounded-lg p-12 text-center">
             <UserX className="w-16 h-16 text-purple-400 dark:text-purple-400/60 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Staff Sickness & Exclusion Log</h3>
-            <p className="text-gray-600 dark:text-white/60 mb-6">
+            <h3 className="text-xl font-semibold text-theme-primary mb-2">Staff Sickness & Exclusion Log</h3>
+            <p className="text-theme-secondary mb-6">
               Track staff illness, exclusion periods, and return-to-work clearance in the dedicated sickness log.
             </p>
             <Button
               onClick={() => window.location.href = '/dashboard/incidents/staff-sickness'}
-              className="bg-[#D37E91] hover:bg-[#D37E91]/90 text-white dark:bg-purple-600 dark:hover:bg-purple-700"
+              className="bg-module-fg hover:bg-module-fg/90 text-white dark:bg-purple-600 dark:hover:bg-purple-700"
             >
               <UserX className="w-4 h-4 mr-2" />
               Open Sickness Log
@@ -434,16 +434,16 @@ function IncidentsPageContent() {
           </div>
         ) : loading ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-white/60">Loading {activeTabInfo.label.toLowerCase()}...</p>
+            <p className="text-theme-secondary">Loading {activeTabInfo.label.toLowerCase()}...</p>
           </div>
         ) : filteredIncidents.length === 0 ? (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-12 text-center">
+          <div className="bg-theme-surface border border-theme rounded-lg p-12 text-center">
             {(() => {
               const Icon = activeTabInfo.icon;
               return <Icon className={`w-16 h-16 text-gray-300 dark:text-white/20 mx-auto mb-4`} />;
             })()}
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No {activeTabInfo.label.toLowerCase()} found</h3>
-            <p className="text-gray-600 dark:text-white/60 mb-6">
+            <h3 className="text-xl font-semibold text-theme-primary mb-2">No {activeTabInfo.label.toLowerCase()} found</h3>
+            <p className="text-theme-secondary mb-6">
               {searchTerm || statusFilter !== 'all' || severityFilter !== 'all'
                 ? 'Try adjusting your filters'
                 : `No ${activeTabInfo.label.toLowerCase()} have been reported yet`}
@@ -451,7 +451,7 @@ function IncidentsPageContent() {
             {!searchTerm && statusFilter === 'all' && severityFilter === 'all' && (
               <Button
                 onClick={handleReportIncident}
-                className="bg-[#D37E91] hover:bg-[#D37E91]/90 text-white dark:bg-red-600 dark:hover:bg-red-700"
+                className="bg-module-fg hover:bg-module-fg/90 text-white dark:bg-red-600 dark:hover:bg-red-700"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Report First {activeTab === 'customer_complaint' ? 'Complaint' : 'Incident'}
@@ -463,13 +463,13 @@ function IncidentsPageContent() {
             {filteredIncidents.map((incident) => (
               <div
                 key={incident.id}
-                className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-6 hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
+                className="bg-theme-surface border border-theme rounded-lg p-6 hover:bg-theme-hover transition-colors"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{incident.title}</h3>
-                    <p className="text-gray-700 dark:text-white/70 text-sm mb-3">{incident.description}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-white/50">
+                    <h3 className="text-lg font-semibold text-theme-primary mb-2">{incident.title}</h3>
+                    <p className="text-theme-secondary text-sm mb-3">{incident.description}</p>
+                    <div className="flex items-center gap-4 text-sm text-theme-tertiary">
                       <span>Reported by: {incident.reported_by}</span>
                       <span>•</span>
                       <span>{new Date(incident.reported_date || incident.reported_at).toLocaleDateString()}</span>
@@ -490,7 +490,7 @@ function IncidentsPageContent() {
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 pt-4 border-t border-gray-200 dark:border-white/10">
+                <div className="flex items-center gap-2 pt-4 border-t border-theme">
                   <Button
                     onClick={() => {
                       setViewingIncident(incident);
@@ -498,7 +498,7 @@ function IncidentsPageContent() {
                     }}
                     variant="outline"
                     size="sm"
-                    className="text-gray-700 dark:text-white border-gray-300 dark:border-white/20 hover:bg-gray-100 dark:hover:bg-white/10"
+                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted"
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     View Report
@@ -515,7 +515,7 @@ function IncidentsPageContent() {
                     }}
                     variant="outline"
                     size="sm"
-                    className="text-gray-700 dark:text-white border-gray-300 dark:border-white/20 hover:bg-gray-100 dark:hover:bg-white/10"
+                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Download

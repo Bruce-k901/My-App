@@ -14,7 +14,6 @@ import {
   HelpCircle,
   ChevronDown,
 } from "@/components/ui/icons";
-import { Button } from "@/components/ui";
 import { useState } from "react";
 
 const modules = [
@@ -22,6 +21,7 @@ const modules = [
     name: "Checkly",
     tagline: "Compliance & Quality Control",
     icon: ClipboardCheck,
+    color: "#F1E194",
     features: [
       "Digital checklists & task logging",
       "Temperature monitoring & alerts",
@@ -33,6 +33,7 @@ const modules = [
     name: "Stockly",
     tagline: "Inventory & Purchasing",
     icon: Package,
+    color: "#789A99",
     features: [
       "Real-time stock levels",
       "AI-powered invoice processing",
@@ -44,6 +45,7 @@ const modules = [
     name: "Teamly",
     tagline: "People & Payroll",
     icon: Users,
+    color: "#D37E91",
     features: [
       "Staff scheduling & rotas",
       "Time & attendance tracking",
@@ -55,6 +57,7 @@ const modules = [
     name: "Planly",
     tagline: "Production & Orders",
     icon: Factory,
+    color: "#ACC8A2",
     features: [
       "Production planning",
       "Customer order management",
@@ -66,6 +69,7 @@ const modules = [
     name: "Assetly",
     tagline: "Asset Management",
     icon: Wrench,
+    color: "#F3E7D9",
     features: [
       "Equipment tracking",
       "PPM scheduling",
@@ -77,6 +81,7 @@ const modules = [
     name: "Msgly",
     tagline: "Team Communication",
     icon: MessageSquare,
+    color: "#CBDDE9",
     features: [
       "In-app messaging",
       "Task notifications",
@@ -133,34 +138,32 @@ export default function PricingPage() {
         {/* HERO */}
         <section className="relative text-center pt-8 pb-12 sm:pt-12 sm:pb-16 md:pt-16 md:pb-20 min-h-[450px] sm:min-h-[500px] flex flex-col justify-center">
           <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 md:px-10">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.15] bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.15] text-[#e8e8e8] mb-6">
               One platform. One price.
               <br />
               Everything you need.
             </h1>
-            <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto mb-4 px-2">
+            <p className="text-lg sm:text-xl text-theme-tertiary max-w-3xl mx-auto mb-4 px-2">
               Replace spreadsheets, paper checklists, and disconnected tools
               with a single platform that runs your entire operation.
             </p>
-            <p className="text-base text-gray-400 max-w-2xl mx-auto mb-8 px-2">
+            <p className="text-base text-theme-tertiary max-w-2xl mx-auto mb-8 px-2">
               No hidden fees. No per-user charges. No feature gates.
             </p>
 
             {/* Price Hero */}
             <div className="bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-2xl p-8 sm:p-10 max-w-lg mx-auto mb-8">
-              <p className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-2">
+              <p className="text-5xl sm:text-6xl md:text-7xl font-bold text-theme-primary mb-2">
                 £300
               </p>
-              <p className="text-xl text-gray-300 mb-1">per site / month</p>
-              <p className="text-sm text-gray-400 mb-6">
+              <p className="text-xl text-theme-tertiary mb-1">per site / month</p>
+              <p className="text-sm text-theme-tertiary mb-6">
                 That's less than £10/day for complete operations management
               </p>
-              <Link href="/signup" className="block">
-                <Button variant="primary" fullWidth className="text-lg py-3">
-                  Start Your 60-Day Free Trial
-                </Button>
+              <Link href="/signup" className="block btn-marketing-primary w-full text-center text-lg">
+                Start Your 60-Day Free Trial
               </Link>
-              <p className="text-xs text-gray-500 mt-3">
+              <p className="text-xs text-theme-tertiary mt-3">
                 No credit card required • Full access to everything
               </p>
             </div>
@@ -171,10 +174,10 @@ export default function PricingPage() {
         <section className="relative px-4 sm:px-6 py-12 sm:py-16 text-gray-200">
           <div className="relative z-10 max-w-6xl mx-auto">
             <div className="text-center mb-10 sm:mb-14">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-theme-primary mb-4">
                 Six modules. One subscription.
               </h2>
-              <p className="text-gray-400 max-w-2xl mx-auto">
+              <p className="text-theme-tertiary max-w-2xl mx-auto">
                 Every Opsly subscription includes full access to all modules.
                 No upsells, no tier restrictions — just everything you need to
                 run your operation.
@@ -187,24 +190,37 @@ export default function PricingPage() {
                 return (
                   <GlassCard
                     key={module.name}
-                    className="flex flex-col hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(211,126,145,0.2)]"
+                    className="flex flex-col hover:border-white/20"
+                    style={{
+                      boxShadow: 'none',
+                      transition: 'border-color 0.3s, box-shadow 0.3s',
+                    }}
+                    onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
+                      (e.currentTarget as HTMLDivElement).style.boxShadow = `0 0 15px ${module.color}15`;
+                    }}
+                    onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
+                      (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
+                    }}
                   >
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-magenta-500/30 to-blue-500/30 flex items-center justify-center">
-                        <Icon className="w-5 h-5 text-magenta-400" />
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: `${module.color}12` }}
+                      >
+                        <Icon className="w-5 h-5" style={{ color: module.color }} />
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-white">
+                        <h3 className="text-lg font-semibold" style={{ color: module.color }}>
                           {module.name}
                         </h3>
-                        <p className="text-sm text-gray-400">{module.tagline}</p>
+                        <p className="text-sm text-theme-tertiary">{module.tagline}</p>
                       </div>
                     </div>
                     <ul className="space-y-2 flex-1">
                       {module.features.map((feature, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-gray-300">{feature}</span>
+                          <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: `${module.color}99` }} />
+                          <span className="text-sm text-theme-tertiary">{feature}</span>
                         </li>
                       ))}
                     </ul>
@@ -218,31 +234,31 @@ export default function PricingPage() {
         {/* VALUE COMPARISON */}
         <section className="relative px-4 sm:px-6 py-12 sm:py-16 text-gray-200">
           <div className="relative z-10 max-w-4xl mx-auto">
-            <div className="bg-gradient-to-r from-magenta-500/10 to-blue-500/10 border border-white/10 rounded-2xl p-6 sm:p-10">
-              <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-6">
+            <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 sm:p-10">
+              <h2 className="text-2xl sm:text-3xl font-bold text-theme-primary text-center mb-6">
                 Think of it as a fractional ops director
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="text-center p-6 bg-white/5 rounded-xl">
-                  <p className="text-4xl font-bold text-magenta-400 mb-2">
+                  <p className="text-4xl font-bold text-[#e8e8e8] mb-2">
                     £300
                   </p>
-                  <p className="text-gray-300 mb-1">per month with Opsly</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-theme-tertiary mb-1">per month with Opsly</p>
+                  <p className="text-sm text-theme-tertiary">
                     Full operations platform
                   </p>
                 </div>
                 <div className="text-center p-6 bg-white/5 rounded-xl">
-                  <p className="text-4xl font-bold text-gray-400 mb-2">
+                  <p className="text-4xl font-bold text-theme-tertiary mb-2">
                     £2,000+
                   </p>
-                  <p className="text-gray-300 mb-1">Part-time ops manager</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-theme-tertiary mb-1">Part-time ops manager</p>
+                  <p className="text-sm text-theme-tertiary">
                     Still needs tools to work with
                   </p>
                 </div>
               </div>
-              <p className="text-center text-gray-400 mt-6 text-sm">
+              <p className="text-center text-theme-tertiary mt-6 text-sm">
                 Opsly replaces 3–4 separate subscriptions (compliance software,
                 inventory system, scheduling tool, task management) with one
                 integrated platform.
@@ -255,15 +271,15 @@ export default function PricingPage() {
         <section className="relative px-4 sm:px-6 py-12 sm:py-16 text-gray-200">
           <div className="relative z-10 max-w-4xl mx-auto">
             <div className="text-center mb-8">
-              <div className="inline-block px-4 py-2 bg-gradient-to-r from-magenta-500/20 to-blue-500/20 rounded-full border border-magenta-500/30 mb-4">
-                <span className="text-sm font-medium text-white">
+              <div className="inline-block px-4 py-2 bg-white/[0.05] rounded-full border border-white/20 mb-4">
+                <span className="text-sm font-medium text-theme-primary">
                   Optional Add-on
                 </span>
               </div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-theme-primary mb-4">
                 Personalized Onboarding
               </h2>
-              <p className="text-gray-400 max-w-2xl mx-auto">
+              <p className="text-theme-tertiary max-w-2xl mx-auto">
                 Let us handle the heavy lifting. Our team will set everything up
                 for you and train your staff on-site.
               </p>
@@ -271,8 +287,8 @@ export default function PricingPage() {
 
             <GlassCard className="max-w-2xl mx-auto">
               <div className="text-center mb-6">
-                <p className="text-4xl font-bold text-white mb-1">£750</p>
-                <p className="text-gray-400">per site (one-time)</p>
+                <p className="text-4xl font-bold text-theme-primary mb-1">£750</p>
+                <p className="text-theme-tertiary">per site (one-time)</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
@@ -284,8 +300,8 @@ export default function PricingPage() {
                   "Dedicated onboarding specialist",
                 ].map((feature, i) => (
                   <div key={i} className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-gray-300">{feature}</span>
+                    <CheckCircle2 className="w-4 h-4 text-white/50 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-theme-tertiary">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -296,7 +312,7 @@ export default function PricingPage() {
         {/* FAQ */}
         <section className="relative px-4 sm:px-6 py-12 sm:py-16 text-gray-200">
           <div className="relative z-10 max-w-3xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-10">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-theme-primary text-center mb-10">
               Frequently Asked Questions
             </h2>
             <div className="space-y-3">
@@ -309,18 +325,18 @@ export default function PricingPage() {
                     onClick={() => setOpenFaq(openFaq === index ? null : index)}
                     className="w-full flex items-center justify-between p-5 text-left"
                   >
-                    <span className="font-medium text-white pr-4">
+                    <span className="font-medium text-theme-primary pr-4">
                       {faq.question}
                     </span>
                     <ChevronDown
-                      className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform ${
+                      className={`w-5 h-5 text-theme-tertiary flex-shrink-0 transition-transform ${
                         openFaq === index ? "rotate-180" : ""
                       }`}
                     />
                   </button>
                   {openFaq === index && (
                     <div className="px-5 pb-5 pt-0">
-                      <p className="text-gray-400 text-sm">{faq.answer}</p>
+                      <p className="text-theme-tertiary text-sm">{faq.answer}</p>
                     </div>
                   )}
                 </div>
@@ -332,24 +348,20 @@ export default function PricingPage() {
         {/* CTA */}
         <section className="relative flex flex-col items-center justify-center text-center px-4 sm:px-6 py-12 sm:py-16 pb-16 sm:pb-20">
           <div className="relative z-10 max-w-3xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-theme-primary">
               Ready to streamline your operations?
             </h2>
-            <p className="text-gray-400 mb-8 max-w-xl mx-auto">
+            <p className="text-theme-tertiary mb-8 max-w-xl mx-auto">
               Start your 60-day free trial today. No credit card required, no
               strings attached. Just full access to everything Opsly has to
               offer.
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4">
-              <Link href="/signup">
-                <Button variant="primary" className="text-lg px-8 py-3">
-                  Start Your 60-Day Free Trial
-                </Button>
+              <Link href="/signup" className="btn-marketing-primary text-lg">
+                Start Your 60-Day Free Trial
               </Link>
-              <Link href="/contact">
-                <Button variant="outline" className="text-lg px-8 py-3">
-                  Questions? Get in Touch
-                </Button>
+              <Link href="/contact" className="btn-marketing-secondary text-lg">
+                Questions? Get in Touch
               </Link>
             </div>
           </div>

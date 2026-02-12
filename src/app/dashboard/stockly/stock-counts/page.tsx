@@ -112,30 +112,30 @@ export default function StockCountsPage() {
   }, [counts]);
 
   return (
-    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+    <div className="w-full bg-theme-surface-elevated min-h-screen">
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div className="flex items-center gap-4">
             <Link 
               href="/dashboard/stockly"
-              className="p-2 rounded-lg bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
+ className="p-2 rounded-lg bg-theme-surface ] hover:bg-theme-muted text-theme-secondary hover:text-theme-primary transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-                <Package className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+              <h1 className="text-3xl font-bold text-theme-primary mb-2 flex items-center gap-3">
+                <Package className="w-8 h-8 text-module-fg" />
                 Stock Counts
               </h1>
-              <p className="text-sm text-gray-600 dark:text-white/60">
+              <p className="text-sm text-theme-secondary">
                 Compare system inventory vs actual stock on shelves
               </p>
             </div>
           </div>
           <Button 
             onClick={() => setIsCreateModalOpen(true)} 
-            className="bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] transition-all duration-200 ease-in-out"
+            className="bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow transition-all duration-200 ease-in-out"
           >
             <Plus className="mr-2 h-4 w-4" />
             New Count
@@ -144,37 +144,37 @@ export default function StockCountsPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6">
+        <div className="bg-theme-surface border border-theme rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 dark:text-white/60 text-sm">In Progress</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.inProgress}</p>
+              <p className="text-theme-secondary text-sm">In Progress</p>
+              <p className="text-3xl font-bold text-theme-primary mt-1">{stats.inProgress}</p>
             </div>
-            <FileText className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+            <FileText className="h-8 w-8 text-module-fg" />
           </div>
         </div>
         
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6">
+        <div className="bg-theme-surface border border-theme rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 dark:text-white/60 text-sm">Pending Review</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.pending}</p>
+              <p className="text-theme-secondary text-sm">Pending Review</p>
+              <p className="text-3xl font-bold text-theme-primary mt-1">{stats.pending}</p>
             </div>
             <Calendar className="h-8 w-8 text-amber-600 dark:text-amber-400" />
           </div>
         </div>
         
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6">
+        <div className="bg-theme-surface border border-theme rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 dark:text-white/60 text-sm">Last Count</p>
-              <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">
+              <p className="text-theme-secondary text-sm">Last Count</p>
+              <p className="text-xl font-bold text-theme-primary mt-1">
                 {stats.lastCountDate
                   ? new Date(stats.lastCountDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
                   : 'Never'}
               </p>
             </div>
-            <CheckCircle className="h-8 w-8 text-gray-600 dark:text-gray-400" />
+            <CheckCircle className="h-8 w-8 text-theme-secondary" />
           </div>
         </div>
       </div>
@@ -184,21 +184,21 @@ export default function StockCountsPage() {
         <Button
           variant={filter === 'all' ? 'default' : 'outline'}
           onClick={() => setFilter('all')}
-          className={filter === 'all' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'}
+          className={filter === 'all' ? 'bg-module-fg hover:bg-module-fg/90 text-white' : 'border-theme text-theme-secondary hover:bg-theme-hover'}
         >
           All Statuses
         </Button>
         <Button
           variant={filter === 'active' ? 'default' : 'outline'}
           onClick={() => setFilter('active')}
-          className={filter === 'active' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'}
+          className={filter === 'active' ? 'bg-module-fg hover:bg-module-fg/90 text-white' : 'border-theme text-theme-secondary hover:bg-theme-hover'}
         >
           Active
         </Button>
         <Button
           variant={filter === 'finalized' ? 'default' : 'outline'}
           onClick={() => setFilter('finalized')}
-          className={filter === 'finalized' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'}
+          className={filter === 'finalized' ? 'bg-module-fg hover:bg-module-fg/90 text-white' : 'border-theme text-theme-secondary hover:bg-theme-hover'}
         >
           Completed
         </Button>
@@ -207,21 +207,21 @@ export default function StockCountsPage() {
       {/* Content */}
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-emerald-600 dark:text-emerald-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-module-fg" />
         </div>
       ) : counts.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl">
+        <div className="text-center py-12 bg-theme-surface border border-theme rounded-xl">
           <div className="max-w-md mx-auto">
-            <FileText className="h-16 w-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            <FileText className="h-16 w-16 text-theme-disabled mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-theme-primary mb-2">
               No stock counts yet
             </h3>
-            <p className="text-gray-600 dark:text-white/60 mb-6">
+            <p className="text-theme-secondary mb-6">
               Get started by creating your first stock count
             </p>
             <Button 
               onClick={() => setIsCreateModalOpen(true)} 
-              className="bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] transition-all duration-200 ease-in-out"
+              className="bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow transition-all duration-200 ease-in-out"
             >
               <Plus className="mr-2 h-4 w-4" />
               New Count

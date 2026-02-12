@@ -151,7 +151,7 @@ export default function MyTrainingPage() {
       case 'expired':
         return <AlertTriangle className="w-5 h-5 text-red-400" />;
       default:
-        return <BookOpen className="w-5 h-5 text-neutral-400" />;
+        return <BookOpen className="w-5 h-5 text-theme-tertiary" />;
     }
   };
 
@@ -188,7 +188,7 @@ export default function MyTrainingPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-module-fg" />
       </div>
     );
   }
@@ -203,14 +203,14 @@ export default function MyTrainingPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-white mb-2">My Training</h1>
-        <p className="text-neutral-400">View your course assignments, progress, and completed training</p>
+        <h1 className="text-2xl font-bold text-theme-primary mb-2">My Training</h1>
+        <p className="text-theme-tertiary">View your course assignments, progress, and completed training</p>
       </div>
 
       {/* Pending Invitations */}
       {pendingInvitations.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
             <Mail className="w-5 h-5 text-amber-400" />
             Pending Invitations
           </h2>
@@ -224,10 +224,10 @@ export default function MyTrainingPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       {getStatusIcon(assignment.status)}
-                      <h3 className="font-medium text-white">{assignment.course?.name || 'Unknown Course'}</h3>
+                      <h3 className="font-medium text-theme-primary">{assignment.course?.name || 'Unknown Course'}</h3>
                     </div>
                     {assignment.deadline_date && (
-                      <p className="text-sm text-neutral-400">
+                      <p className="text-sm text-theme-tertiary">
                         Deadline: {new Date(assignment.deadline_date).toLocaleDateString('en-GB')}
                       </p>
                     )}
@@ -237,7 +237,7 @@ export default function MyTrainingPage() {
                   </div>
                   <Link
                     href={`/training/confirm/${assignment.id}`}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/80 text-white rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-module-fg hover:bg-module-fg/[0.80] text-white rounded-lg transition-colors"
                   >
                     Confirm & Start
                     <ArrowRight className="w-4 h-4" />
@@ -252,7 +252,7 @@ export default function MyTrainingPage() {
       {/* In Progress Courses */}
       {inProgressCourses.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
             <Clock className="w-5 h-5 text-blue-400" />
             In Progress
           </h2>
@@ -270,17 +270,17 @@ export default function MyTrainingPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         {getStatusIcon(assignment.status)}
-                        <h3 className="font-medium text-white">{assignment.course?.name || 'Unknown Course'}</h3>
+                        <h3 className="font-medium text-theme-primary">{assignment.course?.name || 'Unknown Course'}</h3>
                       </div>
                       {assignment.deadline_date && (
-                        <p className="text-sm text-neutral-400">
+                        <p className="text-sm text-theme-tertiary">
                           Deadline: {new Date(assignment.deadline_date).toLocaleDateString('en-GB')}
                         </p>
                       )}
                     </div>
                     <Link
                       href={courseUrl}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-module-fg hover:bg-module-fg/90 text-white rounded-lg transition-colors"
                     >
                       Continue
                       <ArrowRight className="w-4 h-4" />
@@ -288,8 +288,8 @@ export default function MyTrainingPage() {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-neutral-400">Progress</span>
-                      <span className="text-white font-medium">{progressPercent}%</span>
+                      <span className="text-theme-tertiary">Progress</span>
+                      <span className="text-theme-primary font-medium">{progressPercent}%</span>
                     </div>
                     <div className="w-full bg-neutral-700 rounded-full h-2">
                       <div
@@ -308,7 +308,7 @@ export default function MyTrainingPage() {
       {/* Completed Courses */}
       {completedRecords.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
             <CheckCircle className="w-5 h-5 text-green-400" />
             Completed Courses
           </h2>
@@ -332,9 +332,9 @@ export default function MyTrainingPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         {getStatusIcon('completed')}
-                        <h3 className="font-medium text-white">{record.course?.name || 'Unknown Course'}</h3>
+                        <h3 className="font-medium text-theme-primary">{record.course?.name || 'Unknown Course'}</h3>
                       </div>
-                      <div className="space-y-1 text-sm text-neutral-400">
+                      <div className="space-y-1 text-sm text-theme-tertiary">
                         {record.completed_at && (
                           <p>Completed: {new Date(record.completed_at).toLocaleDateString('en-GB')}</p>
                         )}
@@ -348,7 +348,7 @@ export default function MyTrainingPage() {
                           </p>
                         )}
                         {record.certificate_number && (
-                          <p className="text-xs text-neutral-500">Cert: {record.certificate_number}</p>
+                          <p className="text-xs text-theme-tertiary">Cert: {record.certificate_number}</p>
                         )}
                       </div>
                     </div>
@@ -356,7 +356,7 @@ export default function MyTrainingPage() {
                       <Link
                         href={`/api/certificates/${record.id}`}
                         target="_blank"
-                        className="flex items-center gap-2 px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/80 text-white rounded-lg transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-module-fg hover:bg-module-fg/[0.80] text-white rounded-lg transition-colors"
                       >
                         <Download className="w-4 h-4" />
                         Certificate
@@ -373,7 +373,7 @@ export default function MyTrainingPage() {
       {/* Expiring Soon */}
       {expiringSoon.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-amber-400" />
             Expiring Soon
           </h2>
@@ -385,7 +385,7 @@ export default function MyTrainingPage() {
               >
                 <div className="flex items-center gap-2 mb-2">
                   <AlertTriangle className="w-5 h-5 text-amber-400" />
-                  <h3 className="font-medium text-white">{record.course?.name || 'Unknown Course'}</h3>
+                  <h3 className="font-medium text-theme-primary">{record.course?.name || 'Unknown Course'}</h3>
                 </div>
                 {record.expiry_date && (
                   <p className="text-sm text-amber-200">
@@ -403,9 +403,9 @@ export default function MyTrainingPage() {
         inProgressCourses.length === 0 &&
         completedRecords.length === 0 && (
           <div className="text-center py-12">
-            <GraduationCap className="w-16 h-16 text-neutral-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-white mb-2">No Training Assigned</h3>
-            <p className="text-neutral-400">
+            <GraduationCap className="w-16 h-16 text-theme-tertiary mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-theme-primary mb-2">No Training Assigned</h3>
+            <p className="text-theme-tertiary">
               You don't have any training assignments yet. Your manager will assign courses when needed.
             </p>
           </div>

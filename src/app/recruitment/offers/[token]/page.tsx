@@ -146,9 +146,9 @@ export default function OfferAcceptancePage() {
           <div className="w-16 h-16 rounded-full bg-red-500/20 border-2 border-red-500/50 flex items-center justify-center mx-auto mb-4">
             <X className="w-8 h-8 text-red-400" />
           </div>
-          <h1 className="text-2xl font-semibold text-white mb-2">Unable to Load Job Offer</h1>
-          <p className="text-white/60 text-sm mb-4">{error || 'Offer not found'}</p>
-          <p className="text-white/40 text-xs">
+          <h1 className="text-2xl font-semibold text-theme-primary mb-2">Unable to Load Job Offer</h1>
+          <p className="text-theme-tertiary text-sm mb-4">{error || 'Offer not found'}</p>
+          <p className="text-theme-tertiary text-xs">
             This link may have expired or the offer may have been withdrawn. Please contact {offer?.company?.name || 'the company'} for assistance.
           </p>
         </div>
@@ -174,18 +174,18 @@ export default function OfferAcceptancePage() {
           
           <div className="relative z-10">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#D37E91] via-purple-500 to-blue-500 flex items-center justify-center mx-auto mb-4 shadow-[0_0_30px_rgba(211, 126, 145,0.5)]">
-              <Building2 className="w-10 h-10 text-white" />
+              <Building2 className="w-10 h-10 text-theme-primary" />
             </div>
             <div className="mb-3">
               <span className="inline-block px-3 py-1 text-xs font-semibold bg-[#D37E91]/30 text-[#D37E91] border border-[#D37E91]/50 rounded-full mb-3">
                 🎉 JOB OFFER
               </span>
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Congratulations, {offer.candidate.full_name}!</h1>
-            <p className="text-white/80 text-lg font-medium mb-1">
+            <h1 className="text-3xl font-bold text-theme-primary mb-2">Congratulations, {offer.candidate.full_name}!</h1>
+            <p className="text-theme-secondary text-lg font-medium mb-1">
               {offer.company.name} wants you on their team!
             </p>
-            <p className="text-white/60 text-sm">
+            <p className="text-theme-tertiary text-sm">
               Review your offer details below and accept to begin your journey with us
             </p>
           </div>
@@ -195,14 +195,14 @@ export default function OfferAcceptancePage() {
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8">
           <div className="flex items-center gap-3 mb-6">
             <FileText className="w-6 h-6 text-[#D37E91]" />
-            <h2 className="text-xl font-semibold text-white">Your Job Offer Details</h2>
+            <h2 className="text-xl font-semibold text-theme-primary">Your Job Offer Details</h2>
           </div>
           
           <div className="space-y-6">
             {/* Position */}
             <div>
-              <div className="text-xs text-white/50 mb-1">Position</div>
-              <div className="text-white font-semibold text-lg">{offer.position_title}</div>
+              <div className="text-xs text-theme-tertiary mb-1">Position</div>
+              <div className="text-theme-primary font-semibold text-lg">{offer.position_title}</div>
               <div className="flex items-center gap-2 mt-2">
                 <span className="px-2 py-0.5 text-xs rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30">
                   {offer.boh_foh}
@@ -215,10 +215,10 @@ export default function OfferAcceptancePage() {
 
             {/* Start Date */}
             <div className="flex items-center gap-3">
-              <Calendar className="w-5 h-5 text-white/40" />
+              <Calendar className="w-5 h-5 text-theme-tertiary" />
               <div>
-                <div className="text-xs text-white/50">Start Date</div>
-                <div className="text-white">
+                <div className="text-xs text-theme-tertiary">Start Date</div>
+                <div className="text-theme-primary">
                   {new Date(offer.start_date).toLocaleDateString('en-GB', {
                     weekday: 'long',
                     day: 'numeric',
@@ -231,10 +231,10 @@ export default function OfferAcceptancePage() {
 
             {/* Pay */}
             <div className="flex items-center gap-3">
-              <DollarSign className="w-5 h-5 text-white/40" />
+              <DollarSign className="w-5 h-5 text-theme-tertiary" />
               <div>
-                <div className="text-xs text-white/50">Pay Rate</div>
-                <div className="text-white text-lg font-semibold">
+                <div className="text-xs text-theme-tertiary">Pay Rate</div>
+                <div className="text-theme-primary text-lg font-semibold">
                   £{offer.pay_rate.toFixed(2)} {offer.pay_frequency === 'hourly' ? 'per hour' : 'per year'}
                 </div>
               </div>
@@ -243,20 +243,20 @@ export default function OfferAcceptancePage() {
             {/* Contract Hours */}
             {offer.contract_hours && (
               <div className="flex items-center gap-3">
-                <Clock className="w-5 h-5 text-white/40" />
+                <Clock className="w-5 h-5 text-theme-tertiary" />
                 <div>
-                  <div className="text-xs text-white/50">Contract Hours</div>
-                  <div className="text-white">{offer.contract_hours} hours per week</div>
+                  <div className="text-xs text-theme-tertiary">Contract Hours</div>
+                  <div className="text-theme-primary">{offer.contract_hours} hours per week</div>
                 </div>
               </div>
             )}
 
             {/* Contract Type */}
             <div className="flex items-center gap-3">
-              <FileText className="w-5 h-5 text-white/40" />
+              <FileText className="w-5 h-5 text-theme-tertiary" />
               <div>
-                <div className="text-xs text-white/50">Contract Type</div>
-                <div className="text-white capitalize">{offer.contract_type.replace('_', ' ')}</div>
+                <div className="text-xs text-theme-tertiary">Contract Type</div>
+                <div className="text-theme-primary capitalize">{offer.contract_type.replace('_', ' ')}</div>
               </div>
             </div>
           </div>
@@ -266,26 +266,26 @@ export default function OfferAcceptancePage() {
         <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-xl p-8">
           <div className="flex items-center gap-3 mb-4">
             <Check className="w-6 h-6 text-green-400" />
-            <h2 className="text-xl font-semibold text-white">Accept Your Job Offer</h2>
+            <h2 className="text-xl font-semibold text-theme-primary">Accept Your Job Offer</h2>
           </div>
           
-          <p className="text-white/70 text-base mb-2 font-medium">
+          <p className="text-theme-secondary text-base mb-2 font-medium">
             Ready to join {offer.company.name}?
           </p>
-          <p className="text-white/60 text-sm mb-6">
+          <p className="text-theme-tertiary text-sm mb-6">
             By typing your full name below, you accept this job offer and agree to the terms stated above. This will serve as your electronic signature.
           </p>
 
           <div>
-            <label className="text-xs text-white/50 block mb-2">Type your full name *</label>
+            <label className="text-xs text-theme-tertiary block mb-2">Type your full name *</label>
             <input
               type="text"
               value={signature}
               onChange={(e) => setSignature(e.target.value)}
               placeholder="Enter your full name"
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-base"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary text-base"
             />
-            <p className="text-xs text-white/40 mt-2">This will serve as your electronic signature</p>
+            <p className="text-xs text-theme-tertiary mt-2">This will serve as your electronic signature</p>
           </div>
 
           <div className="flex items-center gap-3 mt-8">
@@ -308,7 +308,7 @@ export default function OfferAcceptancePage() {
             </button>
           </div>
 
-          <p className="text-xs text-white/40 text-center mt-4">
+          <p className="text-xs text-theme-tertiary text-center mt-4">
             Offer expires on {new Date(offer.expires_at).toLocaleDateString()}
           </p>
         </div>
@@ -317,28 +317,28 @@ export default function OfferAcceptancePage() {
         <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-2 border-blue-500/30 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-4">
             <Clock className="w-5 h-5 text-blue-400" />
-            <h3 className="text-white font-semibold text-lg">What Happens After You Accept?</h3>
+            <h3 className="text-theme-primary font-semibold text-lg">What Happens After You Accept?</h3>
           </div>
-          <ol className="space-y-3 text-sm text-white/80">
+          <ol className="space-y-3 text-sm text-theme-secondary">
             <li className="flex items-start gap-3">
               <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/50 flex items-center justify-center text-blue-300 font-semibold text-xs">1</span>
-              <span><strong className="text-white">Accept the offer</strong> by signing above - you're officially joining the team!</span>
+              <span><strong className="text-theme-primary">Accept the offer</strong> by signing above - you're officially joining the team!</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/50 flex items-center justify-center text-blue-300 font-semibold text-xs">2</span>
-              <span><strong className="text-white">Complete onboarding</strong> - set up your profile (takes 15-20 minutes)</span>
+              <span><strong className="text-theme-primary">Complete onboarding</strong> - set up your profile (takes 15-20 minutes)</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/50 flex items-center justify-center text-blue-300 font-semibold text-xs">3</span>
-              <span><strong className="text-white">Upload documents</strong> - ID, certificates, and required paperwork</span>
+              <span><strong className="text-theme-primary">Upload documents</strong> - ID, certificates, and required paperwork</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/50 flex items-center justify-center text-blue-300 font-semibold text-xs">4</span>
-              <span><strong className="text-white">Manager review</strong> - your manager will approve everything</span>
+              <span><strong className="text-theme-primary">Manager review</strong> - your manager will approve everything</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 border border-green-500/50 flex items-center justify-center text-green-300 font-semibold text-xs">5</span>
-              <span><strong className="text-white">Start your new role!</strong> You're ready for your first shift! 🎉</span>
+              <span><strong className="text-theme-primary">Start your new role!</strong> You're ready for your first shift! 🎉</span>
             </li>
           </ol>
         </div>

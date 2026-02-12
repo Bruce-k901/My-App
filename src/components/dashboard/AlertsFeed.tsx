@@ -596,8 +596,8 @@ export default function AlertsFeed() {
       border: 'border-blue-200 dark:border-white/[0.1]',
       icon: Bell,
       iconColor: 'text-blue-600 dark:text-blue-400',
-      textColor: 'text-blue-800 dark:text-white/80',
-      labelColor: 'text-blue-600 dark:text-white/60'
+      textColor: 'text-blue-800 dark:text-theme-secondary',
+      labelColor: 'text-blue-600 dark:text-theme-tertiary'
     }
   }
 
@@ -607,11 +607,11 @@ export default function AlertsFeed() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-semibold text-[rgb(var(--text-primary))] dark:text-white">Alerts Feed</h2>
-          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mt-1">Active alerts and notifications</p>
+          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mt-1">Active alerts and notifications</p>
         </div>
         {alerts.length > 0 && (
           <button
-            className="text-sm px-3 py-1.5 rounded-lg border border-[rgb(var(--border))] dark:border-white/20 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:bg-black/[0.05] dark:hover:bg-white/10 transition-colors"
+            className="text-sm px-3 py-1.5 rounded-lg border border-[rgb(var(--border))] dark:border-white/20 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:bg-black/[0.05] dark:hover:bg-white/10 transition-colors"
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
           >
@@ -625,7 +625,7 @@ export default function AlertsFeed() {
           {loading && (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#D37E91]"></div>
-              <span className="ml-3 text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Loading alerts...</span>
+              <span className="ml-3 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm">Loading alerts...</span>
             </div>
           )}
           
@@ -638,7 +638,7 @@ export default function AlertsFeed() {
           {!loading && alerts.length === 0 ? (
             <div className="text-center py-8">
               <Bell className="w-8 h-8 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-2" />
-              <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60">No active alerts</p>
+              <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">No active alerts</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -700,7 +700,7 @@ export default function AlertsFeed() {
               })}
               {alerts.length > 10 && (
                 <div className="text-center pt-2">
-                  <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40">
+                  <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
                     Showing 10 of {alerts.length} alerts
                   </p>
                 </div>

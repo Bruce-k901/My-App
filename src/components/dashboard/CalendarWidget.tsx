@@ -1296,7 +1296,7 @@ export default function CalendarWidget() {
           <div className="h-[400px] flex items-center justify-center">
             <div className="flex flex-col items-center gap-2">
               <div className="w-8 h-8 border-2 border-[#D37E91] border-t-transparent rounded-full animate-spin"></div>
-              <div className="text-gray-600 dark:text-gray-400">Loading calendar...</div>
+              <div className="text-theme-secondary">Loading calendar...</div>
             </div>
           </div>
         ) : (
@@ -1415,8 +1415,8 @@ function CalendarHeader({
             <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#D37E91] dark:text-[#D37E91]" />
           </div>
           <div>
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent">Daily Notes & Actions</h3>
-            <p className="text-xs text-gray-600 dark:text-gray-400 hidden sm:block font-medium">Mon-Sun weekly view</p>
+            <h3 className="text-xl sm:text-2xl font-bold text-theme-primary bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent">Daily Notes & Actions</h3>
+            <p className="text-xs text-theme-secondary hidden sm:block font-medium">Mon-Sun weekly view</p>
           </div>
         </div>
 
@@ -1426,22 +1426,22 @@ function CalendarHeader({
             onClick={() => navigateWeek("prev")}
             className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border border-white/10 dark:border-white/10 hover:bg-[#D37E91]/10 dark:hover:bg-[#D37E91]/20 hover:border-[#D37E91]/40 dark:hover:border-[#D37E91]/50 transition-all"
           >
-            <ChevronLeft className="w-4 h-4 text-gray-700 dark:text-gray-300" />
+            <ChevronLeft className="w-4 h-4 text-theme-secondary" />
           </button>
-          <span className="text-sm font-semibold text-gray-900 dark:text-white px-3 bg-white/50 dark:bg-white/5 rounded-lg py-1.5 border border-white/10 dark:border-white/10 min-w-[180px] text-center">
+          <span className="text-sm font-semibold text-theme-primary px-3 bg-white/50 dark:bg-white/5 rounded-lg py-1.5 border border-white/10 dark:border-white/10 min-w-[180px] text-center">
             {format(weekStart, "MMM dd")} - {format(weekEnd, "MMM dd, yyyy")}
           </span>
           <button
             onClick={() => navigateWeek("next")}
             className="p-2 rounded-lg bg-white/[0.05] dark:bg-white/[0.05] border border-white/10 dark:border-white/10 hover:bg-[#D37E91]/10 dark:hover:bg-[#D37E91]/20 hover:border-[#D37E91]/40 dark:hover:border-[#D37E91]/50 transition-all"
           >
-            <ChevronRight className="w-4 h-4 text-gray-700 dark:text-gray-300" />
+            <ChevronRight className="w-4 h-4 text-theme-secondary" />
           </button>
 
           {/* Expand Calendar Button - Icon only */}
           <button
             onClick={onExpandClick}
-            className="p-2 rounded-lg bg-[#D37E91]/10 dark:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/40 dark:border-[#D37E91]/50 hover:bg-[#D37E91]/20 dark:hover:bg-[#D37E91]/30 hover:border-[#D37E91]/60 dark:hover:border-[#D37E91]/70 hover:shadow-[0_0_12px_rgba(211,126,145,0.6)] transition-all"
+            className="p-2 rounded-lg bg-[#D37E91]/10 dark:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/40 dark:border-[#D37E91]/50 hover:bg-[#D37E91]/20 dark:hover:bg-[#D37E91]/30 hover:border-[#D37E91]/60 dark:hover:border-[#D37E91]/70 hover:shadow-module-glow transition-all"
             title="Full Calendar"
           >
             <Calendar className="w-4 h-4" />
@@ -1451,33 +1451,33 @@ function CalendarHeader({
 
       {/* Bottom row: Filter Toggles */}
       <div className="flex items-center gap-1.5 flex-wrap">
-        <span className="text-xs text-gray-500 dark:text-gray-400 mr-1">Filters:</span>
+        <span className="text-xs text-theme-tertiary mr-1">Filters:</span>
         {filterTypes.map(({ key, label, color }) => {
           const isActive = filters[key];
           const colorClasses: Record<string, { active: string; inactive: string }> = {
             purple: {
               active: "bg-purple-500/20 dark:bg-purple-500/30 text-purple-700 dark:text-purple-200 border-purple-500/50 dark:border-purple-400/60",
-              inactive: "bg-white/5 text-gray-500 dark:text-gray-400 border-white/10 hover:border-purple-400/40 hover:bg-purple-500/10",
+              inactive: "bg-white/5 text-theme-tertiary border-white/10 hover:border-purple-400/40 hover:bg-module-fg/10",
             },
             blue: {
               active: "bg-blue-500/20 dark:bg-blue-500/30 text-blue-700 dark:text-blue-200 border-blue-500/50 dark:border-blue-400/60",
-              inactive: "bg-white/5 text-gray-500 dark:text-gray-400 border-white/10 hover:border-blue-400/40 hover:bg-blue-500/10",
+              inactive: "bg-white/5 text-theme-tertiary border-white/10 hover:border-blue-400/40 hover:bg-module-fg/10",
             },
             emerald: {
-              active: "bg-emerald-500/20 dark:bg-emerald-500/30 text-emerald-700 dark:text-emerald-200 border-emerald-500/50 dark:border-emerald-400/60",
-              inactive: "bg-white/5 text-gray-500 dark:text-gray-400 border-white/10 hover:border-emerald-400/40 hover:bg-emerald-500/10",
+              active: "bg-module-fg/20 dark:bg-emerald-500/30 text-emerald-700 dark:text-emerald-200 border-module-fg/30 dark:border-emerald-400/60",
+              inactive: "bg-white/5 text-theme-tertiary border-white/10 hover:border-emerald-400/40 hover:bg-module-fg/10",
             },
             gray: {
-              active: "bg-gray-500/20 dark:bg-gray-500/30 text-gray-700 dark:text-gray-200 border-gray-500/50 dark:border-gray-400/60",
-              inactive: "bg-white/5 text-gray-500 dark:text-gray-400 border-white/10 hover:border-gray-400/40 hover:bg-gray-500/10",
+              active: "bg-gray-500/20 dark:bg-theme-surface-elevated0/30 text-gray-700 dark:text-gray-200 border-gray-500/50 dark:border-gray-400/60",
+              inactive: "bg-white/5 text-theme-tertiary border-white/10 hover:border-gray-400/40 hover:bg-theme-surface-elevated0/10",
             },
             yellow: {
               active: "bg-yellow-500/20 dark:bg-yellow-500/30 text-yellow-700 dark:text-yellow-200 border-yellow-500/50 dark:border-yellow-400/60",
-              inactive: "bg-white/5 text-gray-500 dark:text-gray-400 border-white/10 hover:border-yellow-400/40 hover:bg-yellow-500/10",
+              inactive: "bg-white/5 text-theme-tertiary border-white/10 hover:border-yellow-400/40 hover:bg-yellow-500/10",
             },
             pink: {
               active: "bg-[#D37E91]/25 dark:bg-[#D37E91]/35 text-[#D37E91] dark:text-[#D37E91]/70 border-[#D37E91]/50 dark:border-[#D37E91]/60",
-              inactive: "bg-white/5 text-gray-500 dark:text-gray-400 border-white/10 hover:border-[#D37E91]/40 hover:bg-[#D37E91]/15",
+              inactive: "bg-white/5 text-theme-tertiary border-white/10 hover:border-[#D37E91]/40 hover:bg-[#D37E91]/15",
             },
           };
           return (
@@ -1592,12 +1592,12 @@ function WeekView({ startDate, items, onSlotClick, onItemClick, onReschedule }: 
             >
               <div className="flex items-center justify-between mb-1">
                 <div className="flex-1">
-                  <div className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+                  <div className="text-xs text-theme-secondary uppercase tracking-wide">
                     {format(day, "EEE")}
                   </div>
                   <div
                     className={`text-sm font-semibold mt-1 ${
-                      isSameDay(day, new Date()) ? "text-[#D37E91]" : "text-gray-900 dark:text-white"
+                      isSameDay(day, new Date()) ? "text-[#D37E91]" : "text-theme-primary"
                     }`}
                   >
                     {format(day, "MMM d")}
@@ -1667,7 +1667,7 @@ function WeekView({ startDate, items, onSlotClick, onItemClick, onReschedule }: 
                   onSlotClick={onSlotClick}
                 >
                   {finalDayItems.length === 0 ? (
-                    <div className="text-xs text-gray-500 dark:text-gray-500 text-center py-4 italic border-2 border-dashed border-gray-300/30 dark:border-gray-600/30 rounded-lg mx-1">No items</div>
+ <div className="text-xs text-theme-tertiary text-center py-4 italic border-2 border-dashed border-gray-300/30 dark:border-gray-600/30 rounded-lg mx-1">No items</div>
                   ) : (
                     <div className="space-y-1">
                       {finalDayItems.map((item) => {
@@ -1779,7 +1779,7 @@ function CalendarItemComponent({ item, onClick }: CalendarItemComponentProps) {
   const itemColors: Record<CalendarItemType, string> = {
     task: "bg-gradient-to-br from-purple-500/30 to-purple-600/20 dark:from-purple-500/40 dark:to-purple-600/30 border-2 border-purple-500/50 dark:border-purple-400/60 shadow-sm hover:shadow-md",
     meeting: "bg-gradient-to-br from-blue-500/30 to-blue-600/20 dark:from-blue-500/40 dark:to-blue-600/30 border-2 border-blue-500/50 dark:border-blue-400/60 shadow-sm hover:shadow-md",
-    call: "bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 dark:from-emerald-500/40 dark:to-emerald-600/30 border-2 border-emerald-500/50 dark:border-emerald-400/60 shadow-sm hover:shadow-md",
+    call: "bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 dark:from-emerald-500/40 dark:to-emerald-600/30 border-2 border-module-fg/30 dark:border-emerald-400/60 shadow-sm hover:shadow-md",
     note: "bg-gradient-to-br from-gray-500/30 to-gray-600/20 dark:from-gray-500/40 dark:to-gray-600/30 border-2 border-gray-500/50 dark:border-gray-400/60 shadow-sm hover:shadow-md",
     reminder: "bg-gradient-to-br from-yellow-500/30 to-yellow-600/20 dark:from-yellow-500/40 dark:to-yellow-600/30 border-2 border-yellow-500/50 dark:border-yellow-400/60 shadow-sm hover:shadow-md",
     message: "bg-gradient-to-br from-[#D37E91]/35 to-[#D37E91]/25 dark:from-[#D37E91]/40 dark:to-[#D37E91]/80/30 border-2 border-[#D37E91]/50 dark:border-[#D37E91]/60 shadow-sm hover:shadow-md",
@@ -1806,7 +1806,7 @@ function CalendarItemComponent({ item, onClick }: CalendarItemComponentProps) {
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <div className={`text-xs font-semibold truncate leading-tight ${isApprovalTask ? 'text-red-600 dark:text-red-400' : 'text-gray-800 dark:text-white'}`}>{item.title}</div>
+          <div className={`text-xs font-semibold truncate leading-tight ${isApprovalTask ? 'text-red-600 dark:text-red-400' : 'text-theme-primary'}`}>{item.title}</div>
           {item.scheduledAt && (
             <div className="text-[10px] font-medium text-gray-600 dark:text-gray-200 mt-0.5">
               {format(item.scheduledAt, "h:mm a")}
@@ -1818,7 +1818,7 @@ function CalendarItemComponent({ item, onClick }: CalendarItemComponentProps) {
             {item.assignees?.slice(0, 2).map((assignee) => (
               <div
                 key={assignee.id}
-                className="w-4 h-4 rounded-full bg-gray-600 dark:bg-gray-600 flex items-center justify-center text-[8px] text-white"
+                className="w-4 h-4 rounded-full bg-gray-600 dark:bg-gray-600 flex items-center justify-center text-[8px] text-theme-primary"
                 title={assignee.name}
               >
                 {assignee.avatar_url ? (
@@ -1829,7 +1829,7 @@ function CalendarItemComponent({ item, onClick }: CalendarItemComponentProps) {
               </div>
             ))}
             {(item.assignees?.length || 0) > 2 && (
-              <span className="text-[8px] text-gray-400 dark:text-gray-400">+{(item.assignees?.length || 0) - 2}</span>
+ <span className="text-[8px] text-theme-tertiary">+{(item.assignees?.length || 0) - 2}</span>
             )}
           </div>
         )}
@@ -1904,7 +1904,7 @@ function CalendarModal({
       >
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-semibold text-theme-primary">
               {format(currentMonth, "MMMM yyyy")}
             </h2>
             <div className="flex items-center gap-2">
@@ -1912,17 +1912,17 @@ function CalendarModal({
                 onClick={() => navigateMonth("prev")}
                 className="p-2 rounded-lg bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06] transition-colors"
               >
-                <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                <ChevronLeft className="w-4 h-4 text-theme-secondary" />
               </button>
               <button
                 onClick={() => navigateMonth("next")}
                 className="p-2 rounded-lg bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06] transition-colors"
               >
-                <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                <ChevronRight className="w-4 h-4 text-theme-secondary" />
               </button>
               <button
                 onClick={() => setCurrentMonth(new Date())}
-                className="px-3 py-1.5 rounded-lg bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 ease-in-out text-sm"
+                className="px-3 py-1.5 rounded-lg bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-module-glow transition-all duration-200 ease-in-out text-sm"
               >
                 Today
               </button>
@@ -1932,7 +1932,7 @@ function CalendarModal({
             onClick={onClose}
             className="p-2 rounded-lg bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06] transition-colors"
           >
-            <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <X className="w-5 h-5 text-theme-secondary" />
           </button>
         </div>
 
@@ -1940,7 +1940,7 @@ function CalendarModal({
         <div className="grid grid-cols-7 gap-2">
           {/* Day headers */}
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-            <div key={day} className="p-2 text-center text-sm font-medium text-gray-600 dark:text-gray-400">
+            <div key={day} className="p-2 text-center text-sm font-medium text-theme-secondary">
               {day}
             </div>
           ))}
@@ -1970,7 +1970,7 @@ function CalendarModal({
               >
                 <div
                   className={`text-sm font-semibold mb-1 ${
-                    isToday ? "text-[#D37E91]" : isCurrentMonth ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-500"
+ isToday ?"text-[#D37E91]": isCurrentMonth ?"text-theme-primary":"text-theme-tertiary"
                   }`}
                 >
                   {format(day, "d")}
@@ -1982,8 +1982,8 @@ function CalendarModal({
                     const miniItemColors: Record<CalendarItemType, string> = {
                       task: "bg-purple-500/20 border-purple-500/30",
                       meeting: "bg-blue-500/20 border-blue-500/30",
-                      call: "bg-emerald-500/20 border-emerald-500/30",
-                      note: "bg-gray-500/20 border-gray-500/30",
+                      call: "bg-module-fg/20 border-module-fg/30",
+                      note: "bg-theme-surface-elevated0/20 border-gray-500/30",
                       reminder: "bg-yellow-500/20 border-yellow-500/30",
                       message: "bg-[#D37E91]/25 border-[#D37E91]/30",
                     };
@@ -1995,14 +1995,14 @@ function CalendarModal({
                           e.stopPropagation();
                           onItemClick(item);
                         }}
-                        className={`text-xs p-1 rounded border truncate cursor-pointer hover:opacity-80 ${itemColorClass} ${isApprovalTask ? 'text-red-600 dark:text-red-400' : 'text-white dark:text-white'}`}
+ className={`text-xs p-1 rounded border truncate cursor-pointer hover:opacity-80 ${itemColorClass} ${isApprovalTask ? 'text-red-600 dark:text-red-400' : 'text-theme-primary'}`}
                       >
                         {format(item.scheduledAt, "h:mm a")} {item.title}
                       </div>
                     );
                   })}
                   {dayItems.length > 3 && (
-                    <div className="text-xs text-gray-600 dark:text-gray-400">+{dayItems.length - 3} more</div>
+                    <div className="text-xs text-theme-secondary">+{dayItems.length - 3} more</div>
                   )}
                 </div>
               </div>
@@ -2093,20 +2093,20 @@ function CreateItemModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Create New Item</h2>
+          <h2 className="text-xl font-semibold text-theme-primary">Create New Item</h2>
           <button
             onClick={onClose}
             className="p-2 rounded-lg bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06] transition-colors"
           >
-            <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <X className="w-5 h-5 text-theme-secondary" />
           </button>
         </div>
 
         <div className="space-y-4">
           {/* Scheduled Time Display */}
           <div className="p-3 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg">
-            <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Scheduled for</div>
-            <div className="text-gray-900 dark:text-white font-medium">
+            <div className="text-sm text-theme-secondary mb-1">Scheduled for</div>
+            <div className="text-theme-primary font-medium">
               {format(scheduledTime, "EEEE, MMMM d, yyyy 'at' h:mm a")}
             </div>
           </div>
@@ -2127,27 +2127,27 @@ function CreateItemModal({
                 const colorClasses: Record<string, { active: string; inactive: string }> = {
                   purple: {
                     active: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-gray-600 dark:text-gray-400 border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
+                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-theme-secondary border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                   blue: {
                     active: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-gray-600 dark:text-gray-400 border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
+                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-theme-secondary border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                   emerald: {
-                    active: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-gray-600 dark:text-gray-400 border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
+                    active: "bg-module-fg/20 text-module-fg border-module-fg/30",
+                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-theme-secondary border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                   gray: {
-                    active: "bg-gray-500/20 text-gray-400 border-gray-500/30",
-                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-gray-600 dark:text-gray-400 border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
+                    active: "bg-theme-surface-elevated0/20 text-theme-tertiary border-gray-500/30",
+                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-theme-secondary border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                   yellow: {
                     active: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-gray-600 dark:text-gray-400 border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
+                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-theme-secondary border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                   pink: {
                     active: "bg-[#D37E91]/25 text-[#D37E91] border-[#D37E91]/30",
-                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-gray-600 dark:text-gray-400 border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
+                    inactive: "bg-white/[0.03] dark:bg-white/[0.03] text-theme-secondary border-white/[0.06] dark:border-white/[0.06] hover:bg-white/[0.06] dark:hover:bg-white/[0.06]",
                   },
                 };
                 return (
@@ -2175,7 +2175,7 @@ function CreateItemModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter item title"
-              className="w-full px-4 py-2 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+              className="w-full px-4 py-2 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg text-theme-primary placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
               autoFocus
             />
           </div>
@@ -2188,7 +2188,7 @@ function CreateItemModal({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter description (optional)"
               rows={3}
-              className="w-full px-4 py-2 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 resize-none"
+              className="w-full px-4 py-2 bg-white/[0.03] dark:bg-white/[0.03] border border-white/[0.06] dark:border-white/[0.06] rounded-lg text-theme-primary placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 resize-none"
             />
           </div>
         </div>
@@ -2199,7 +2199,7 @@ function CreateItemModal({
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="flex-1 px-4 py-2.5 bg-white/[0.05] dark:bg-white/[0.05] border border-white/[0.1] dark:border-white/[0.1] text-gray-900 dark:text-white rounded-lg hover:bg-white/[0.08] dark:hover:bg-white/[0.08] transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2.5 bg-white/[0.05] dark:bg-white/[0.05] border border-white/[0.1] dark:border-white/[0.1] text-theme-primary rounded-lg hover:bg-white/[0.08] dark:hover:bg-white/[0.08] transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
@@ -2207,7 +2207,7 @@ function CreateItemModal({
             type="button"
             onClick={handleCreate}
             disabled={loading || !title.trim()}
-            className="flex-1 px-4 py-2.5 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 ease-in-out text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2.5 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-module-glow transition-all duration-200 ease-in-out text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Creating..." : "Create"}
           </button>

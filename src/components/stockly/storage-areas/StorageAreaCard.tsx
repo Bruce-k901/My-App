@@ -54,28 +54,28 @@ export default function StorageAreaCard({
   };
 
   return (
-    <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6 hover:border-emerald-600 dark:hover:border-emerald-500/50 transition-all duration-200">
+    <div className="bg-theme-surface border border-theme rounded-xl p-6 hover:border-emerald-600 dark:hover:border-module-fg/30 transition-all duration-200">
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
         {/* Content */}
         <div className="flex-1">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+          <h3 className="text-xl font-semibold text-theme-primary mb-2">
             {area.name}
           </h3>
           
           {area.division && (
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30 text-sm font-medium mb-3">
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 dark:bg-module-fg/20 text-module-fg border border-emerald-200 dark:border-module-fg/30 text-sm font-medium mb-3">
               {area.division}
             </div>
           )}
           
           {area.description && (
-            <p className="text-gray-600 dark:text-white/60 text-sm mb-3 leading-relaxed">
+            <p className="text-theme-secondary text-sm mb-3 leading-relaxed">
               {area.description}
             </p>
           )}
           
-          <div className="flex items-center text-gray-600 dark:text-white/60 text-sm">
-            <Package className="h-4 w-4 mr-2 text-emerald-600 dark:text-emerald-400" />
+          <div className="flex items-center text-theme-secondary text-sm">
+            <Package className="h-4 w-4 mr-2 text-module-fg" />
             <span>
               {area.ingredient_count || 0} ingredient{area.ingredient_count !== 1 ? 's' : ''} assigned
             </span>
@@ -88,7 +88,7 @@ export default function StorageAreaCard({
             variant="ghost"
             size="sm"
             onClick={() => onEdit(area)}
-            className="text-gray-600 dark:text-white/60 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-600/10"
+            className="text-theme-secondary hover:text-module-fg dark:hover:text-module-fg hover:bg-module-fg/10"
           >
             <Edit className="h-4 w-4" />
             <span className="sr-only">Edit</span>
@@ -98,7 +98,7 @@ export default function StorageAreaCard({
             size="sm"
             onClick={handleDelete}
             disabled={deleting}
-            className="text-gray-600 dark:text-white/60 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-600/10"
+            className="text-theme-secondary hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-600/10"
           >
             {deleting ? (
               <Loader2 className="h-4 w-4 animate-spin" />

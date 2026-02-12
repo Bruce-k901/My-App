@@ -43,7 +43,7 @@ export default function ChecklyReportsPage() {
       <ReportFiltersBar />
 
       {/* Tabs */}
-      <div className="flex gap-1 sm:gap-2 border-b border-gray-200 dark:border-white/[0.1] overflow-x-auto">
+      <div className="flex gap-1 sm:gap-2 border-b border-theme overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -56,7 +56,7 @@ export default function ChecklyReportsPage() {
                 ${
                   isActive
                     ? "border-teamly text-teamly"
-                    : "border-transparent text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white/80"
+                    : "border-transparent text-theme-tertiary hover:text-theme-secondary dark:hover:text-theme-secondary"
                 }
               `}
             >

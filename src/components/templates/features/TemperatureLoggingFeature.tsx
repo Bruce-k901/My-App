@@ -181,9 +181,9 @@ export function TemperatureLoggingFeature({
 
   return (
     <>
-      <div className="border-t border-gray-200 dark:border-white/10 pt-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Temperature Logs</h2>
-        <p className="text-sm text-gray-600 dark:text-white/60 mb-4">
+      <div className="border-t border-theme pt-6">
+        <h2 className="text-lg font-semibold text-theme-primary mb-4">Temperature Logs</h2>
+        <p className="text-sm text-theme-secondary mb-4">
           {isTemplateMode 
             ? "Temperature logs are automatically populated from selected assets. Set min/max ranges to define acceptable temperature ranges for each asset."
             : "Temperature logs are automatically populated from selected assets. Set min/max ranges to trigger callouts when readings are out of range."
@@ -193,18 +193,18 @@ export function TemperatureLoggingFeature({
         {temperatures.length > 0 && (
           <div className="mb-3">
             <div className={`grid grid-cols-1 gap-3 ${isTemplateMode ? 'md:grid-cols-4' : 'md:grid-cols-5'}`}>
-              <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+              <label className="text-xs font-semibold text-theme-secondary uppercase tracking-wide">
                 Equipment Name
               </label>
-              <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+              <label className="text-xs font-semibold text-theme-secondary uppercase tracking-wide">
                 Nickname
               </label>
               {!isTemplateMode && (
-                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+                <label className="text-xs font-semibold text-theme-secondary uppercase tracking-wide">
                   Temperature
                 </label>
               )}
-              <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+              <label className="text-xs font-semibold text-theme-secondary uppercase tracking-wide">
                 Temperature Range
               </label>
               <div></div> {/* Empty cell for Remove button column */}
@@ -213,8 +213,8 @@ export function TemperatureLoggingFeature({
         )}
         
         {temperatures.length === 0 && selectedAssets.length === 0 && (
-          <div className="mb-4 p-4 rounded-lg border border-gray-200 dark:border-white/[0.1] bg-gray-50 dark:bg-white/[0.03]">
-            <p className="text-sm text-gray-600 dark:text-white/60">
+          <div className="mb-4 p-4 rounded-lg border border-theme bg-gray-50 dark:bg-white/[0.03]">
+            <p className="text-sm text-theme-secondary">
               {isTemplateMode 
                 ? "Select assets in the Asset Selection section above to create temperature logs. Temperature logs will be automatically populated from selected assets."
                 : "No temperature logs configured. Select assets to add temperature logs."
@@ -251,7 +251,7 @@ export function TemperatureLoggingFeature({
                 className={`p-4 rounded-lg border ${
                   isFail ? 'bg-red-50 dark:bg-red-500/10 border-red-500/50' :
                   isWarning ? 'bg-yellow-50 dark:bg-yellow-500/10 border-yellow-500/50' :
-                  'bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06]'
+                  'bg-gray-50 dark:bg-white/[0.03] border-theme'
                 }`}
               >
                 <div className={`grid grid-cols-1 gap-3 ${isTemplateMode ? 'md:grid-cols-[2.6fr_1.5fr_2fr_auto]' : 'md:grid-cols-[2.6fr_1.5fr_1.5fr_2fr_auto]'} items-center`}>
@@ -265,7 +265,7 @@ export function TemperatureLoggingFeature({
                         onChange(newTemps);
                       }}
                       placeholder="Equipment name"
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                       readOnly={!!asset}
                       title={temp.equipment || asset?.name || ''}
                     />
@@ -280,7 +280,7 @@ export function TemperatureLoggingFeature({
                         onChange(newTemps);
                       }}
                       placeholder="e.g., FR1"
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                     />
                   </div>
                   {!isTemplateMode && (
@@ -292,10 +292,10 @@ export function TemperatureLoggingFeature({
                         }}
                         placeholder="Temperature (°C)"
                         fontSize="14px"
-                        className={`w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] ${
+ className={`w-full px-4 py-2 rounded-lg bg-theme-surface ] border text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] ${
                           isFail ? 'border-red-500' :
                           isWarning ? 'border-yellow-500' :
-                          'border-gray-300 dark:border-white/[0.1]'
+                          'border-theme'
                         }`}
                         style={{ fontSize: '14px' }}
                       />
@@ -316,11 +316,11 @@ export function TemperatureLoggingFeature({
                         }}
                         placeholder="Min"
                         fontSize="14px"
-                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                         style={{ fontSize: '14px', fontFamily: 'inherit' }}
                       />
                     </div>
-                    <span className="text-gray-500 dark:text-gray-400 flex-shrink-0 text-sm font-medium px-1">–</span>
+                    <span className="text-theme-tertiary flex-shrink-0 text-sm font-medium px-1">–</span>
                     <div className="flex-1 min-w-0">
                       <TemperatureInput
                         value={tempMaxDisplay}
@@ -329,7 +329,7 @@ export function TemperatureLoggingFeature({
                         }}
                         placeholder="Max"
                         fontSize="14px"
-                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                         style={{ fontSize: '14px', fontFamily: 'inherit' }}
                       />
                     </div>
@@ -350,7 +350,7 @@ export function TemperatureLoggingFeature({
                   </div>
                 </div>
                 {(tempMin !== undefined || tempMax !== undefined) && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 pt-2 border-t border-gray-200 dark:border-white/[0.1]">
+                  <p className="text-xs text-theme-tertiary mt-3 pt-2 border-t border-theme">
                     Range: {tempMin !== undefined ? `${tempMin}°C` : 'no min'} – {tempMax !== undefined ? `${tempMax}°C` : 'no max'}
                   </p>
                 )}
@@ -359,7 +359,7 @@ export function TemperatureLoggingFeature({
           })}
           
           {temperatures.length === 0 && selectedAssets.length > 0 && (
-            <p className="text-sm text-gray-600 dark:text-white/60">
+            <p className="text-sm text-theme-secondary">
               Click "Auto-populate from Assets" to create temperature logs for selected assets.
             </p>
           )}

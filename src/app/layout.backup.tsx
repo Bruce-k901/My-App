@@ -66,7 +66,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="icon" type="image/x-icon" href="/favicon.ico?v=3" />
         <link rel="shortcut icon" href="/favicon.ico?v=3" />
       </head>
-      <body className={`bg-neutral-950 text-white font-sans ${poppins.variable}`} suppressHydrationWarning>
+      <body className={`bg-neutral-950 text-theme-primary font-sans ${poppins.variable}`} suppressHydrationWarning>
         <ErrorBoundaryWrapper>
           <ReactQueryProvider>
             <QueryProvider>

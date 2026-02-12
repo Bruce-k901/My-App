@@ -48,7 +48,7 @@ export function QuickActions({
         variant="outline"
         onClick={onCopyLastWeek}
         disabled={disabled}
-        className="bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.06]"
+        className="bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06]"
       >
         <Copy className="h-4 w-4 mr-2" />
         Copy Last Week
@@ -60,7 +60,7 @@ export function QuickActions({
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           disabled={disabled}
           className={cn(
-            'bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.06]',
+            'bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06]',
             isDropdownOpen && 'ring-2 ring-[#14B8A6]/50'
           )}
         >
@@ -73,13 +73,13 @@ export function QuickActions({
         </Button>
 
         {isDropdownOpen && (
-          <div className="absolute z-[150] mt-1 w-48 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-white/10 rounded-lg shadow-xl overflow-hidden">
+          <div className="absolute z-[150] mt-1 w-48 bg-theme-surface border border-theme rounded-lg shadow-xl overflow-hidden">
             {dayNames.map((day, index) => (
               <button
                 key={day}
                 type="button"
                 onClick={() => handleFillDay(index)}
-                className="w-full px-4 py-2 text-left text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/[0.06] transition-colors"
+                className="w-full px-4 py-2 text-left text-theme-secondary hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06] transition-colors"
               >
                 Fill {day} column
               </button>
@@ -92,7 +92,7 @@ export function QuickActions({
         variant="outline"
         onClick={onClearAll}
         disabled={disabled}
-        className="bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
+        className="bg-gray-50 dark:bg-white/[0.03] border-theme text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
       >
         <Trash2 className="h-4 w-4 mr-2" />
         Clear All

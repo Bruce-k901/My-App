@@ -54,7 +54,7 @@ export function TicketCommentInput({
           placeholder={placeholder}
           rows={4}
           disabled={isSubmitting}
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-white/[0.06] bg-white dark:bg-white/[0.06] text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91] disabled:opacity-50 shadow-sm"
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-white/[0.06] bg-white dark:bg-white/[0.06] text-theme-primary placeholder-gray-500 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91] disabled:opacity-50 shadow-sm"
         />
       </div>
 
@@ -62,7 +62,7 @@ export function TicketCommentInput({
       <div className="flex items-center justify-between">
         {/* Internal note toggle (admin only) */}
         {canCreateInternal && (
-          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-white/60 cursor-pointer">
+          <label className="flex items-center gap-2 text-sm text-theme-secondary cursor-pointer">
             <input
               type="checkbox"
               checked={isInternal}

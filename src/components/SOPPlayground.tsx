@@ -212,7 +212,7 @@ export default function SOPPlayground({
   if (!editor) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-neutral-400">Loading editor...</div>
+        <div className="text-theme-tertiary">Loading editor...</div>
       </div>
     );
   }
@@ -221,7 +221,7 @@ export default function SOPPlayground({
     <div className="max-w-6xl mx-auto p-4 space-y-4">
       {/* Toolbar */}
       {editor && (
-        <div className="sticky top-0 z-40 bg-neutral-800/30 rounded-xl p-2 backdrop-blur-sm border border-neutral-700/50">
+        <div className="sticky top-0 z-40 bg-neutral-800/30 rounded-xl p-2 backdrop-blur-sm border border-theme/50">
           <div className="flex flex-wrap gap-1">
             {/* Text Formatting */}
             <div className="flex gap-1 border-r border-neutral-600 pr-2 mr-2">
@@ -230,7 +230,7 @@ export default function SOPPlayground({
                 className={`p-1.5 rounded transition-colors ${
                   editor.isActive('bold') 
                     ? 'bg-magenta-600 text-white' 
-                    : 'bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600'
+                    : 'bg-neutral-700/50 text-theme-tertiary hover:bg-neutral-600'
                 }`}
               >
                 <Bold size={14} />
@@ -240,7 +240,7 @@ export default function SOPPlayground({
                 className={`p-1.5 rounded transition-colors ${
                   editor.isActive('italic') 
                     ? 'bg-magenta-600 text-white' 
-                    : 'bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600'
+                    : 'bg-neutral-700/50 text-theme-tertiary hover:bg-neutral-600'
                 }`}
               >
                 <Italic size={14} />
@@ -254,7 +254,7 @@ export default function SOPPlayground({
                 className={`p-1.5 rounded transition-colors ${
                   editor.isActive('heading', { level: 1 }) 
                     ? 'bg-magenta-600 text-white' 
-                    : 'bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600'
+                    : 'bg-neutral-700/50 text-theme-tertiary hover:bg-neutral-600'
                 }`}
               >
                 <Heading1 size={14} />
@@ -264,7 +264,7 @@ export default function SOPPlayground({
                 className={`p-1.5 rounded transition-colors ${
                   editor.isActive('heading', { level: 2 }) 
                     ? 'bg-magenta-600 text-white' 
-                    : 'bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600'
+                    : 'bg-neutral-700/50 text-theme-tertiary hover:bg-neutral-600'
                 }`}
               >
                 <Heading2 size={14} />
@@ -278,7 +278,7 @@ export default function SOPPlayground({
                 className={`p-1.5 rounded transition-colors ${
                   editor.isActive('bulletList') 
                     ? 'bg-magenta-600 text-white' 
-                    : 'bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600'
+                    : 'bg-neutral-700/50 text-theme-tertiary hover:bg-neutral-600'
                 }`}
               >
                 <List size={14} />
@@ -288,7 +288,7 @@ export default function SOPPlayground({
                 className={`p-1.5 rounded transition-colors ${
                   editor.isActive('orderedList') 
                     ? 'bg-magenta-600 text-white' 
-                    : 'bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600'
+                    : 'bg-neutral-700/50 text-theme-tertiary hover:bg-neutral-600'
                 }`}
               >
                 <ListOrdered size={14} />
@@ -304,13 +304,13 @@ export default function SOPPlayground({
                     editor.chain().focus().setImage({ src: url }).run();
                   }
                 }}
-                className="p-1.5 rounded bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600 transition-colors"
+                className="p-1.5 rounded bg-neutral-700/50 text-theme-tertiary hover:bg-neutral-600 transition-colors"
               >
                 <ImageIcon size={14} />
               </button>
               <button
                 onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
-                className="p-1.5 rounded bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600 transition-colors"
+                className="p-1.5 rounded bg-neutral-700/50 text-theme-tertiary hover:bg-neutral-600 transition-colors"
               >
                 <TableIcon size={14} />
               </button>
@@ -326,7 +326,7 @@ export default function SOPPlayground({
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 border transition-all ${
                   templateLoaded 
                     ? 'border-green-500 text-green-400 bg-green-500/10' 
-                    : 'border-white/[0.12] text-white hover:bg-white/[0.12]'
+                    : 'border-white/[0.12] text-theme-primary hover:bg-white/[0.12]'
                 }`}
                 type="button"
               >
@@ -350,77 +350,77 @@ export default function SOPPlayground({
             <div className="flex gap-1 border-l border-neutral-600 pl-2 ml-2">
               <button
                 onClick={() => handleInsertBlock("prepHeader")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-theme-primary bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <FileText size={14} className="inline mr-1" />
                 Header
               </button>
               <button
                 onClick={() => handleInsertBlock("preStartChecklist")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-theme-primary bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <CheckSquare size={14} className="inline mr-1" />
                 Pre-Start
               </button>
               <button
                 onClick={() => handleInsertBlock("equipmentList")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-theme-primary bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <Wrench size={14} className="inline mr-1" />
                 Equipment
               </button>
               <button
                 onClick={() => handleInsertBlock("ppeList")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-theme-primary bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <Shield size={14} className="inline mr-1" />
                 PPE
               </button>
               <button
                 onClick={() => handleInsertBlock("ingredientTable")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-theme-primary bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <Package size={14} className="inline mr-1" />
                 Ingredients
               </button>
               <button
                 onClick={() => handleInsertBlock("processSteps")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-theme-primary bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <Play size={14} className="inline mr-1" />
                 Process
               </button>
               <button
                 onClick={() => handleInsertBlock("storageInfo")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-theme-primary bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <Archive size={14} className="inline mr-1" />
                 Storage
               </button>
               <button
                 onClick={() => handleInsertBlock("postFinishChecklist")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-theme-primary bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <ClipboardCheck size={14} className="inline mr-1" />
                 Post-Finish
               </button>
               <button
                 onClick={() => handleInsertBlock("sopComplianceCheck")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-theme-primary bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <ShieldCheck size={14} className="inline mr-1" />
                 Compliance
               </button>
               <button
                 onClick={() => handleInsertBlock("imageBlock")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-theme-primary bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <ImageIcon size={14} className="inline mr-1" />
                 Image
               </button>
               <button
                 onClick={() => handleInsertBlock("attachmentBlock")}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-theme-primary bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.12] hover:border-magenta-400 hover:shadow-[0_0_12px_rgba(211, 126, 145,0.4)] transition-all duration-150 backdrop-blur-md"
               >
                 <Paperclip size={14} className="inline mr-1" />
                 Attachment
@@ -431,7 +431,7 @@ export default function SOPPlayground({
       )}
 
       {/* Editor */}
-      <div className="bg-neutral-800/30 rounded-xl backdrop-blur-sm border border-neutral-700/50 overflow-hidden relative z-0 mt-4">
+      <div className="bg-neutral-800/30 rounded-xl backdrop-blur-sm border border-theme/50 overflow-hidden relative z-0 mt-4">
         <SOPProvider>
           <EditorContent 
             editor={editor} 
@@ -442,9 +442,9 @@ export default function SOPPlayground({
 
       {/* JSON Preview */}
       {showPreview && jsonOutput && (
-        <div className="bg-neutral-800/30 rounded-xl p-4 backdrop-blur-sm border border-neutral-700/50">
-          <h3 className="text-base font-semibold text-white mb-3">JSON Output</h3>
-          <pre className="bg-neutral-900/50 rounded-lg p-3 overflow-x-auto text-sm text-neutral-300 max-h-64">
+        <div className="bg-neutral-800/30 rounded-xl p-4 backdrop-blur-sm border border-theme/50">
+          <h3 className="text-base font-semibold text-theme-primary mb-3">JSON Output</h3>
+          <pre className="bg-neutral-900/50 rounded-lg p-3 overflow-x-auto text-sm text-theme-tertiary max-h-64">
             {JSON.stringify(jsonOutput, null, 2)}
           </pre>
         </div>

@@ -301,7 +301,7 @@ export default function EHOScoreChart({ siteId, companyId }: EHOScoreChartProps)
                     className={`w-3 h-3 ${
                       i < rating.stars
                         ? 'fill-current'
-                        : 'text-black/20 dark:text-white/20'
+ : 'text-theme-primary/20/20'
                     }`}
                     style={{ color: i < rating.stars ? rating.color : undefined }}
                   />

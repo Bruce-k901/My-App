@@ -79,16 +79,16 @@ export function NotificationPreferences({ customerId }: Props) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+        <Loader2 className="h-6 w-6 animate-spin text-theme-tertiary" />
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2 pb-4 border-b border-gray-200 dark:border-gray-700">
-        <Bell className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+      <div className="flex items-center gap-2 pb-4 border-b border-theme">
+        <Bell className="h-5 w-5 text-theme-tertiary" />
+        <h3 className="text-lg font-semibold text-theme-primary">
           Notification Preferences
         </h3>
       </div>
@@ -107,15 +107,15 @@ export function NotificationPreferences({ customerId }: Props) {
             />
             <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 rounded peer-checked:bg-orange-500 peer-checked:border-orange-500 flex items-center justify-center transition-colors">
               {preferences.email_enabled && (
-                <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                <Check className="h-3 w-3 text-theme-primary" strokeWidth={3} />
               )}
             </div>
           </div>
           <div className="flex-1">
-            <div className="font-medium text-gray-900 dark:text-white">
+            <div className="font-medium text-theme-primary">
               Enable email notifications
             </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            <div className="text-sm text-theme-tertiary mt-0.5">
               Receive email updates about your orders
             </div>
           </div>
@@ -142,15 +142,15 @@ export function NotificationPreferences({ customerId }: Props) {
             />
             <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 rounded peer-checked:bg-orange-500 peer-checked:border-orange-500 flex items-center justify-center transition-colors">
               {preferences.notify_on_auto_generation && (
-                <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                <Check className="h-3 w-3 text-theme-primary" strokeWidth={3} />
               )}
             </div>
           </div>
           <div className="flex-1">
-            <div className="font-medium text-gray-900 dark:text-white">
+            <div className="font-medium text-theme-primary">
               Standing order notifications
             </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            <div className="text-sm text-theme-tertiary mt-0.5">
               Get notified when orders are automatically generated from your standing order
             </div>
           </div>
@@ -177,15 +177,15 @@ export function NotificationPreferences({ customerId }: Props) {
             />
             <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 rounded peer-checked:bg-orange-500 peer-checked:border-orange-500 flex items-center justify-center transition-colors">
               {preferences.notify_on_confirmation && (
-                <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                <Check className="h-3 w-3 text-theme-primary" strokeWidth={3} />
               )}
             </div>
           </div>
           <div className="flex-1">
-            <div className="font-medium text-gray-900 dark:text-white">
+            <div className="font-medium text-theme-primary">
               Order confirmations
             </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            <div className="text-sm text-theme-tertiary mt-0.5">
               Receive confirmation emails when orders are confirmed
             </div>
           </div>
@@ -212,15 +212,15 @@ export function NotificationPreferences({ customerId }: Props) {
             />
             <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 rounded peer-checked:bg-orange-500 peer-checked:border-orange-500 flex items-center justify-center transition-colors">
               {preferences.notify_on_delivery_day && (
-                <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                <Check className="h-3 w-3 text-theme-primary" strokeWidth={3} />
               )}
             </div>
           </div>
           <div className="flex-1">
-            <div className="font-medium text-gray-900 dark:text-white">
+            <div className="font-medium text-theme-primary">
               Delivery reminders
             </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            <div className="text-sm text-theme-tertiary mt-0.5">
               Get reminded about upcoming deliveries
             </div>
           </div>

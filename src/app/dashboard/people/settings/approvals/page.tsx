@@ -715,8 +715,8 @@ export default function ApprovalWorkflowsPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D37E91] mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-white/60">Loading approval workflows...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-module-fg mx-auto mb-4"></div>
+          <p className="text-theme-tertiary">Loading approval workflows...</p>
         </div>
       </div>
     );
@@ -729,13 +729,13 @@ export default function ApprovalWorkflowsPage() {
         <div>
           <Link
             href="/dashboard/people/settings"
-            className="inline-flex items-center gap-2 text-sm text-gray-900 dark:text-white/60 hover:text-gray-900 dark:text-white mb-4"
+            className="inline-flex items-center gap-2 text-sm text-theme-primary/60 hover:text-theme-primary mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Settings
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Approval Workflows</h1>
-          <p className="text-gray-500 dark:text-white/60">
+          <h1 className="text-2xl font-bold text-theme-primary mb-2">Approval Workflows</h1>
+          <p className="text-theme-tertiary">
             Configure multi-level approval processes for rota, payroll, leave, and more
           </p>
         </div>
@@ -748,7 +748,7 @@ export default function ApprovalWorkflowsPage() {
       {/* Workflows List */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {workflows.map((workflow) => (
-          <div key={workflow.id} className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6">
+          <div key={workflow.id} className="bg-theme-surface border border-theme rounded-lg p-6">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-start gap-3 flex-1">
                 <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-500/20 flex items-center justify-center flex-shrink-0">
@@ -756,22 +756,22 @@ export default function ApprovalWorkflowsPage() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{workflow.name}</h3>
+                    <h3 className="text-lg font-semibold text-theme-primary">{workflow.name}</h3>
                     <span
                       className={`px-2 py-0.5 text-xs rounded-full ${
                         workflow.is_active
                           ? 'bg-green-500/20 text-green-400'
-                          : 'bg-gray-100 dark:bg-neutral-500/20 text-gray-500 dark:text-white/60'
+                          : 'bg-gray-100 dark:bg-neutral-500/20 text-theme-tertiary'
                       }`}
                     >
                       {workflow.is_active ? 'Active' : 'Inactive'}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-white/60 mb-2">
+                  <p className="text-sm text-theme-tertiary mb-2">
                     {workflowTypes.find(t => t.value === workflow.type)?.label}
                   </p>
                   {workflow.description && (
-                    <p className="text-sm text-gray-500 dark:text-white/50 mb-3">{workflow.description}</p>
+                    <p className="text-sm text-theme-tertiary mb-3">{workflow.description}</p>
                   )}
                   
                   {/* Steps */}
@@ -781,8 +781,8 @@ export default function ApprovalWorkflowsPage() {
                         <span className="w-6 h-6 rounded-full bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs font-medium">
                           {step.step_order}
                         </span>
-                        <span className="text-gray-900 dark:text-white">{step.step_name || `Step ${step.step_order}`}</span>
-                        <span className="text-gray-900 dark:text-white">{step.approver_role}</span>
+                        <span className="text-theme-primary">{step.step_name || `Step ${step.step_order}`}</span>
+                        <span className="text-theme-primary">{step.approver_role}</span>
                         {step.is_required && (
                           <span className="text-xs text-red-400">*</span>
                         )}
@@ -794,13 +794,13 @@ export default function ApprovalWorkflowsPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => openEditWorkflow(workflow)}
-                  className="p-2 text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white transition-colors"
+                  className="p-2 text-theme-tertiary hover:text-theme-primary transition-colors"
                 >
                   <Edit2 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => deleteWorkflow(workflow.id)}
-                  className="p-2 text-gray-500 dark:text-white/60 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  className="p-2 text-theme-tertiary hover:text-red-600 dark:hover:text-red-400 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -810,9 +810,9 @@ export default function ApprovalWorkflowsPage() {
         ))}
 
         {workflows.length === 0 && (
-          <div className="col-span-2 text-center py-12 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg">
-            <GitBranch className="w-12 h-12 text-gray-500 dark:text-white/60 mx-auto mb-4" />
-            <p className="text-gray-500 dark:text-white/60 mb-4">No approval workflows defined yet</p>
+          <div className="col-span-2 text-center py-12 bg-theme-surface border border-theme rounded-lg">
+            <GitBranch className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
+            <p className="text-theme-tertiary mb-4">No approval workflows defined yet</p>
             <Button onClick={openNewWorkflow}>
               <Plus className="w-4 h-4 mr-2" />
               Create Your First Workflow
@@ -822,16 +822,16 @@ export default function ApprovalWorkflowsPage() {
       </div>
 
       {/* Stock Count Approval Settings */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Stock Count Approval Settings</h2>
-        <p className="text-sm text-gray-500 dark:text-white/60 mb-6">
+      <div className="bg-theme-surface border border-theme rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-theme-primary mb-4">Stock Count Approval Settings</h2>
+        <p className="text-sm text-theme-tertiary mb-6">
           Configure how stock counts are approved in your organization
         </p>
 
         <div className="space-y-6">
           {/* Approval Hierarchy */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
               Approval Hierarchy
             </label>
             <Select
@@ -845,7 +845,7 @@ export default function ApprovalWorkflowsPage() {
               ]}
               placeholder="Select approver role"
             />
-            <p className="text-xs text-gray-500 dark:text-white/50 mt-2">
+            <p className="text-xs text-theme-tertiary mt-2">
               Stock counts will be sent to this role for approval based on your organizational hierarchy
             </p>
           </div>
@@ -861,10 +861,10 @@ export default function ApprovalWorkflowsPage() {
                 className="w-4 h-4 mt-1"
               />
               <div className="flex-1">
-                <label htmlFor="allowFallback" className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
+                <label htmlFor="allowFallback" className="block text-sm font-medium text-theme-secondary mb-1">
                   Allow Counter or Site Manager to Approve
                 </label>
-                <p className="text-xs text-gray-500 dark:text-white/50">
+                <p className="text-xs text-theme-tertiary">
                   If no approver is found in the hierarchy, allow the counter (person who marked it ready) or site manager to approve the stock count. 
                   If disabled, defaults to Owner/Admin.
                 </p>
@@ -902,12 +902,12 @@ export default function ApprovalWorkflowsPage() {
       {/* Workflow Modal */}
       {showWorkflowModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-gray-50 dark:bg-[#0B0D13] border border-gray-200 dark:border-white/[0.06] rounded-lg max-w-2xl w-full p-6 my-8">
+          <div className="bg-white dark:bg-theme-surface-elevated border border-theme rounded-lg max-w-2xl w-full p-6 my-8">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-semibold text-theme-primary">
                 {editingWorkflow ? 'Edit Workflow' : 'Add Workflow'}
               </h2>
-              <button onClick={closeModal} className="text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white">
+              <button onClick={closeModal} className="text-theme-tertiary hover:text-theme-primary">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -916,20 +916,20 @@ export default function ApprovalWorkflowsPage() {
               {/* Basic Info */}
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Workflow Name *
                   </label>
                   <input
                     type="text"
                     value={workflowName}
                     onChange={(e) => setWorkflowName(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white"
+ className="w-full px-3 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary"
                     placeholder="e.g., Rota Approval Process"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Workflow Type *
                   </label>
                   <Select
@@ -956,13 +956,13 @@ export default function ApprovalWorkflowsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Description (Optional)
                   </label>
                   <textarea
                     value={workflowDescription}
                     onChange={(e) => setWorkflowDescription(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white"
+ className="w-full px-3 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary"
                     rows={2}
                     placeholder="Brief description of this workflow"
                   />
@@ -976,7 +976,7 @@ export default function ApprovalWorkflowsPage() {
                     onChange={(e) => setWorkflowIsActive(e.target.checked)}
                     className="w-4 h-4"
                   />
-                  <label htmlFor="isActive" className="text-sm text-gray-700 dark:text-white/80">
+                  <label htmlFor="isActive" className="text-sm text-theme-secondary">
                     Workflow is active
                   </label>
                 </div>
@@ -985,7 +985,7 @@ export default function ApprovalWorkflowsPage() {
               {/* Approval Steps */}
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white/80">
+                  <label className="block text-sm font-medium text-theme-secondary">
                     Approval Steps *
                   </label>
                   <Button onClick={addStep} size="sm">
@@ -1006,7 +1006,7 @@ export default function ApprovalWorkflowsPage() {
                         </span>
                         <div className="flex-1 space-y-3">
                           <div>
-                            <label className="block text-xs text-gray-500 dark:text-white/60 mb-1">
+                            <label className="block text-xs text-theme-tertiary mb-1">
                               Step Name *
                             </label>
                             <input
@@ -1016,12 +1016,12 @@ export default function ApprovalWorkflowsPage() {
                                 updateStep(index, 'step_name', e.target.value)
                               }
                               placeholder={`Step ${index + 1}`}
-                              className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] rounded text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/50 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+ className="w-full px-3 py-2 bg-theme-surface ] border border-theme rounded text-sm text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
                               required
                             />
                           </div>
                           <div>
-                            <label className="block text-xs text-gray-500 dark:text-white/60 mb-1">
+                            <label className="block text-xs text-theme-tertiary mb-1">
                               Approver Role
                             </label>
                             <Select
@@ -1038,7 +1038,7 @@ export default function ApprovalWorkflowsPage() {
                             />
                           </div>
                           <div>
-                            <label className="flex items-center gap-2 text-xs text-gray-500 dark:text-white/60">
+                            <label className="flex items-center gap-2 text-xs text-theme-tertiary">
                               <input
                                 type="checkbox"
                                 checked={step.is_required ?? true}
@@ -1054,20 +1054,20 @@ export default function ApprovalWorkflowsPage() {
                           <button
                             onClick={() => moveStepUp(index)}
                             disabled={index === 0}
-                            className="p-1 text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                            className="p-1 text-theme-tertiary hover:text-theme-primary disabled:opacity-30 disabled:cursor-not-allowed"
                           >
                             <MoveUp className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => moveStepDown(index)}
                             disabled={index === workflowSteps.length - 1}
-                            className="p-1 text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                            className="p-1 text-theme-tertiary hover:text-theme-primary disabled:opacity-30 disabled:cursor-not-allowed"
                           >
                             <MoveDown className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => removeStep(index)}
-                            className="p-1 text-gray-500 dark:text-white/60 hover:text-red-600 dark:hover:text-red-400"
+                            className="p-1 text-theme-tertiary hover:text-red-600 dark:hover:text-red-400"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -1077,8 +1077,8 @@ export default function ApprovalWorkflowsPage() {
                   ))}
 
                   {workflowSteps.length === 0 && (
-                    <div className="text-center py-8 border border-dashed border-gray-200 dark:border-white/[0.06] rounded-lg">
-                      <p className="text-sm text-gray-500 dark:text-white/50">
+                    <div className="text-center py-8 border border-dashed border-theme rounded-lg">
+                      <p className="text-sm text-theme-tertiary">
                         No approval steps yet. Click "Add Step" to get started.
                       </p>
                     </div>

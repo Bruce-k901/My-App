@@ -164,9 +164,9 @@ export default function WeeklyEmployeeView({
         };
       default:
         return {
-          bg: 'bg-gray-500/10',
+          bg: 'bg-theme-surface-elevated0/10',
           border: 'border-gray-500/30',
-          text: 'text-gray-500',
+          text: 'text-theme-tertiary',
           icon: <Minus className="w-3.5 h-3.5" />
         };
     }
@@ -174,7 +174,7 @@ export default function WeeklyEmployeeView({
 
   // Get variance color
   function getVarianceColor(variance: number): string {
-    if (variance === 0) return 'text-gray-400';
+    if (variance === 0) return 'text-theme-tertiary';
     if (variance > 0) return 'text-green-400';
     return 'text-red-400';
   }
@@ -188,9 +188,9 @@ export default function WeeklyEmployeeView({
 
   if (employeeWeeks.length === 0) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 text-center">
-        <User className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-        <p className="text-gray-500 dark:text-white/60">No employees with shifts this week</p>
+      <div className="bg-theme-surface border border-theme rounded-xl p-8 text-center">
+        <User className="w-12 h-12 text-theme-tertiary mx-auto mb-3" />
+        <p className="text-theme-tertiary">No employees with shifts this week</p>
       </div>
     );
   }
@@ -200,20 +200,20 @@ export default function WeeklyEmployeeView({
       {employeeWeeks.map(employee => (
         <div
           key={employee.staffId}
-          className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden"
+          className="bg-theme-surface border border-theme rounded-xl overflow-hidden"
         >
           {/* Employee Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/[0.06]">
+          <div className="flex items-center justify-between p-4 border-b border-theme">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
                 {employee.staffName.split(' ').map(n => n[0]).join('').substring(0, 2)}
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">
+                <h3 className="font-semibold text-theme-primary">
                   {employee.staffName}
                 </h3>
                 {employee.positionTitle && (
-                  <p className="text-sm text-gray-500 dark:text-white/60">
+                  <p className="text-sm text-theme-tertiary">
                     {employee.positionTitle}
                   </p>
                 )}
@@ -223,21 +223,21 @@ export default function WeeklyEmployeeView({
             {/* Week Totals */}
             <div className="flex items-center gap-6">
               <div className="text-right">
-                <p className="text-xs text-gray-500 dark:text-white/50">Scheduled</p>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                <p className="text-xs text-theme-tertiary">Scheduled</p>
+                <p className="text-lg font-semibold text-theme-primary">
                   {employee.totalScheduledHours.toFixed(1)}h
                 </p>
               </div>
 
               <div className="text-right">
-                <p className="text-xs text-gray-500 dark:text-white/50">Actual</p>
+                <p className="text-xs text-theme-tertiary">Actual</p>
                 <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
                   {employee.totalActualHours.toFixed(1)}h
                 </p>
               </div>
 
               <div className="text-right">
-                <p className="text-xs text-gray-500 dark:text-white/50">Variance</p>
+                <p className="text-xs text-theme-tertiary">Variance</p>
                 <div className={`flex items-center gap-1 justify-end ${getVarianceColor(employee.totalVariance)}`}>
                   {getVarianceIcon(employee.totalVariance)}
                   <p className="text-lg font-semibold">
@@ -247,8 +247,8 @@ export default function WeeklyEmployeeView({
               </div>
 
               {employee.hourlyRate && (
-                <div className="text-right border-l border-gray-200 dark:border-white/[0.06] pl-6">
-                  <p className="text-xs text-gray-500 dark:text-white/50">Est. Pay</p>
+                <div className="text-right border-l border-theme pl-6">
+                  <p className="text-xs text-theme-tertiary">Est. Pay</p>
                   <p className="text-lg font-semibold text-green-600 dark:text-green-400">
                     £{(employee.totalActualHours * employee.hourlyRate).toFixed(2)}
                   </p>
@@ -277,7 +277,7 @@ export default function WeeklyEmployeeView({
                   >
                     {/* Day Header */}
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-medium text-gray-500 dark:text-white/60">
+                      <span className="text-xs font-medium text-theme-tertiary">
                         {day.dayName.substring(0, 3)}
                       </span>
                       {hasShift && (
@@ -293,8 +293,8 @@ export default function WeeklyEmployeeView({
                         {/* Scheduled */}
                         {day.scheduledStart && (
                           <div>
-                            <p className="text-[10px] text-gray-400 dark:text-white/40 uppercase">Sched</p>
-                            <p className="text-xs font-mono text-gray-600 dark:text-white/70">
+                            <p className="text-[10px] text-theme-tertiary uppercase">Sched</p>
+                            <p className="text-xs font-mono text-theme-secondary">
                               {formatTime(day.scheduledStart)}-{formatTime(day.scheduledEnd)}
                             </p>
                           </div>
@@ -303,8 +303,8 @@ export default function WeeklyEmployeeView({
                         {/* Actual */}
                         {day.clockIn && (
                           <div>
-                            <p className="text-[10px] text-gray-400 dark:text-white/40 uppercase">Actual</p>
-                            <p className="text-xs font-mono text-gray-900 dark:text-white">
+                            <p className="text-[10px] text-theme-tertiary uppercase">Actual</p>
+                            <p className="text-xs font-mono text-theme-primary">
                               {formatTime(day.clockIn)}-{day.clockOut ? formatTime(day.clockOut) : '...'}
                             </p>
                           </div>
@@ -312,8 +312,8 @@ export default function WeeklyEmployeeView({
 
                         {/* Hours */}
                         {day.actualHours !== null && (
-                          <div className="pt-1 border-t border-gray-200 dark:border-white/[0.06]">
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                          <div className="pt-1 border-t border-theme">
+                            <p className="text-sm font-semibold text-theme-primary">
                               {day.actualHours.toFixed(1)}h
                             </p>
                           </div>
@@ -329,7 +329,7 @@ export default function WeeklyEmployeeView({
                       </div>
                     ) : (
                       <div className="text-center py-2">
-                        <p className="text-xs text-gray-400 dark:text-white/30">Off</p>
+                        <p className="text-xs text-theme-tertiary/30">Off</p>
                       </div>
                     )}
                   </div>
@@ -339,7 +339,7 @@ export default function WeeklyEmployeeView({
           </div>
 
           {/* Footer - Sign-off status */}
-          <div className="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-white/[0.02] border-t border-gray-200 dark:border-white/[0.06]">
+          <div className="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-white/[0.02] border-t border-theme">
             <div className="flex items-center gap-2">
               {employee.signedOffCount === employee.totalShifts && employee.totalShifts > 0 ? (
                 <>
@@ -350,8 +350,8 @@ export default function WeeklyEmployeeView({
                 </>
               ) : (
                 <>
-                  <Clock className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-500 dark:text-white/60">
+                  <Clock className="w-4 h-4 text-theme-tertiary" />
+                  <span className="text-sm text-theme-tertiary">
                     {employee.signedOffCount}/{employee.totalShifts} shifts signed off
                   </span>
                 </>

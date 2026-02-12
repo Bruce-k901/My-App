@@ -150,23 +150,23 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-4xl max-h-[90vh] bg-white dark:bg-neutral-900 rounded-xl shadow-xl overflow-hidden">
+      <div className="relative w-full max-w-4xl max-h-[90vh] bg-theme-surface rounded-xl shadow-xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-white/10">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-theme">
+          <h2 className="text-lg font-semibold text-theme-primary">
             Create Customer
           </h2>
           <button
             type="button"
             onClick={handleClose}
-            className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+            className="p-2 rounded-lg text-theme-tertiary hover:text-theme-secondary/40 hover:bg-theme-muted transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-200 dark:border-white/10 px-4">
+        <div className="flex border-b border-theme px-4">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
@@ -178,7 +178,7 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                   'flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors',
                   activeTab === tab.id
                     ? 'border-[#14B8A6] text-[#14B8A6]'
-                    : 'border-transparent text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white'
+                    : 'border-transparent text-theme-tertiary hover:text-theme-secondary'
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -205,47 +205,47 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                 {/* Left Column */}
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Customer Name *</Label>
+                    <Label className="text-theme-secondary">Customer Name *</Label>
                     <Input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g., ABC Bakery"
-                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
                       required
                     />
                   </div>
 
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Contact Name</Label>
+                    <Label className="text-theme-secondary">Contact Name</Label>
                     <Input
                       type="text"
                       value={contactName}
                       onChange={(e) => setContactName(e.target.value)}
                       placeholder="Primary contact"
-                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
                     />
                   </div>
 
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Phone</Label>
+                    <Label className="text-theme-secondary">Phone</Label>
                     <Input
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="Phone number"
-                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
                     />
                   </div>
 
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Email</Label>
+                    <Label className="text-theme-secondary">Email</Label>
                     <Input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="email@example.com"
-                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
                     />
                   </div>
                 </div>
@@ -253,24 +253,24 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                 {/* Right Column */}
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Address</Label>
+                    <Label className="text-theme-secondary">Address</Label>
                     <Textarea
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                       placeholder="Delivery address"
-                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
                       rows={4}
                     />
                   </div>
 
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Postcode</Label>
+                    <Label className="text-theme-secondary">Postcode</Label>
                     <Input
                       type="text"
                       value={postcode}
                       onChange={(e) => setPostcode(e.target.value)}
                       placeholder="e.g., SW1A 1AA"
-                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
                     />
                   </div>
                 </div>
@@ -282,10 +282,10 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Left Column */}
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
                     <div>
-                      <span className="font-medium text-gray-900 dark:text-white">Requires Delivery</span>
-                      <p className="text-sm text-gray-500 dark:text-white/60">Customer will appear on delivery schedule</p>
+                      <span className="font-medium text-theme-primary">Requires Delivery</span>
+                      <p className="text-sm text-theme-tertiary">Customer will appear on delivery schedule</p>
                     </div>
                     <Switch
                       checked={needsDelivery}
@@ -294,8 +294,8 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                   </div>
 
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Default Fulfillment</Label>
-                    <div className="mt-2 flex rounded-lg overflow-hidden border border-gray-200 dark:border-white/[0.06]">
+                    <Label className="text-theme-secondary">Default Fulfillment</Label>
+                    <div className="mt-2 flex rounded-lg overflow-hidden border border-theme">
                       <button
                         type="button"
                         onClick={() => setDefaultFulfillment('delivery')}
@@ -303,7 +303,7 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                           'flex-1 px-4 py-2.5 text-sm font-medium transition-colors',
                           defaultFulfillment === 'delivery'
                             ? 'bg-[#14B8A6] text-white'
-                            : 'bg-gray-50 dark:bg-white/[0.03] text-gray-700 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/[0.06]'
+                            : 'bg-gray-50 dark:bg-white/[0.03] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06]'
                         )}
                       >
                         Delivery
@@ -312,10 +312,10 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                         type="button"
                         onClick={() => setDefaultFulfillment('collection')}
                         className={cn(
-                          'flex-1 px-4 py-2.5 text-sm font-medium transition-colors border-l border-gray-200 dark:border-white/[0.06]',
+                          'flex-1 px-4 py-2.5 text-sm font-medium transition-colors border-l border-theme',
                           defaultFulfillment === 'collection'
                             ? 'bg-[#14B8A6] text-white'
-                            : 'bg-gray-50 dark:bg-white/[0.03] text-gray-700 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/[0.06]'
+                            : 'bg-gray-50 dark:bg-white/[0.03] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06]'
                         )}
                       >
                         Collection
@@ -324,15 +324,15 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                   </div>
 
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Destination Group</Label>
+                    <Label className="text-theme-secondary">Destination Group</Label>
                     <select
                       value={destinationGroupId}
                       onChange={(e) => setDestinationGroupId(e.target.value)}
-                      className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                      className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
                     >
-                      <option value="" className="bg-white dark:bg-neutral-900">No group</option>
+                      <option value="" className="bg-theme-surface">No group</option>
                       {(destinationGroups || []).map((group: any) => (
-                        <option key={group.id} value={group.id} className="bg-white dark:bg-neutral-900">
+                        <option key={group.id} value={group.id} className="bg-theme-surface">
                           {group.name}
                         </option>
                       ))}
@@ -340,7 +340,7 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                   </div>
 
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Default Ship State</Label>
+                    <Label className="text-theme-secondary">Default Ship State</Label>
                     <div className="mt-2 flex gap-4">
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
@@ -350,7 +350,7 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                           onChange={() => setDefaultShipState('baked')}
                           className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
                         />
-                        <span className="text-gray-900 dark:text-white">Baked (Fresh)</span>
+                        <span className="text-theme-primary">Baked (Fresh)</span>
                       </label>
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
@@ -360,7 +360,7 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                           onChange={() => setDefaultShipState('frozen')}
                           className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
                         />
-                        <span className="text-gray-900 dark:text-white">Frozen</span>
+                        <span className="text-theme-primary">Frozen</span>
                       </label>
                     </div>
                   </div>
@@ -369,12 +369,12 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                 {/* Right Column */}
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Delivery Instructions</Label>
+                    <Label className="text-theme-secondary">Delivery Instructions</Label>
                     <Textarea
                       value={deliveryInstructions}
                       onChange={(e) => setDeliveryInstructions(e.target.value)}
                       placeholder="Special delivery instructions (e.g., use back entrance, call on arrival)..."
-                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
                       rows={6}
                     />
                   </div>
@@ -388,22 +388,22 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                 {/* Left Column */}
                 <div className="space-y-4">
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Payment Terms</Label>
+                    <Label className="text-theme-secondary">Payment Terms</Label>
                     <select
                       value={defaultPaymentTerms}
                       onChange={(e) => setDefaultPaymentTerms(e.target.value as PaymentTerms)}
-                      className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                      className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
                     >
-                      <option value="prepaid" className="bg-white dark:bg-neutral-900">Prepaid</option>
-                      <option value="net_7" className="bg-white dark:bg-neutral-900">Net 7</option>
-                      <option value="net_14" className="bg-white dark:bg-neutral-900">Net 14</option>
-                      <option value="net_30" className="bg-white dark:bg-neutral-900">Net 30</option>
-                      <option value="net_60" className="bg-white dark:bg-neutral-900">Net 60</option>
+                      <option value="prepaid" className="bg-theme-surface">Prepaid</option>
+                      <option value="net_7" className="bg-theme-surface">Net 7</option>
+                      <option value="net_14" className="bg-theme-surface">Net 14</option>
+                      <option value="net_30" className="bg-theme-surface">Net 30</option>
+                      <option value="net_60" className="bg-theme-surface">Net 60</option>
                     </select>
                   </div>
 
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Minimum Order Value (GBP)</Label>
+                    <Label className="text-theme-secondary">Minimum Order Value (GBP)</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -411,12 +411,12 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                       value={minimumOrderValue}
                       onChange={(e) => setMinimumOrderValue(e.target.value)}
                       placeholder="0.00"
-                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
                     />
                   </div>
 
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Below Minimum Charge (GBP)</Label>
+                    <Label className="text-theme-secondary">Below Minimum Charge (GBP)</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -424,42 +424,42 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                       value={belowMinimumCharge}
                       onChange={(e) => setBelowMinimumCharge(e.target.value)}
                       placeholder="0.00"
-                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
                     />
                   </div>
                 </div>
 
                 {/* Right Column - Finance Contact */}
                 <div className="space-y-4">
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">Finance Contact</h3>
+                  <h3 className="text-sm font-medium text-theme-primary">Finance Contact</h3>
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Name</Label>
+                    <Label className="text-theme-secondary">Name</Label>
                     <Input
                       type="text"
                       value={financeContactName}
                       onChange={(e) => setFinanceContactName(e.target.value)}
                       placeholder="Accounts contact name"
-                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
                     />
                   </div>
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Email</Label>
+                    <Label className="text-theme-secondary">Email</Label>
                     <Input
                       type="email"
                       value={financeContactEmail}
                       onChange={(e) => setFinanceContactEmail(e.target.value)}
                       placeholder="accounts@example.com"
-                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
                     />
                   </div>
                   <div>
-                    <Label className="text-gray-700 dark:text-white/80">Phone</Label>
+                    <Label className="text-theme-secondary">Phone</Label>
                     <Input
                       type="tel"
                       value={financeContactPhone}
                       onChange={(e) => setFinanceContactPhone(e.target.value)}
                       placeholder="Phone number"
-                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                      className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
                     />
                   </div>
                 </div>
@@ -471,10 +471,10 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Left Column */}
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
                     <div>
-                      <span className="font-medium text-gray-900 dark:text-white">Ad-hoc Customer</span>
-                      <p className="text-sm text-gray-500 dark:text-white/60">One-time or occasional orders only</p>
+                      <span className="font-medium text-theme-primary">Ad-hoc Customer</span>
+                      <p className="text-sm text-theme-tertiary">One-time or occasional orders only</p>
                     </div>
                     <Switch
                       checked={isAdHoc}
@@ -482,10 +482,10 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
                     <div>
-                      <span className="font-medium text-gray-900 dark:text-white">Frozen Only</span>
-                      <p className="text-sm text-gray-500 dark:text-white/60">Customer can only receive frozen products</p>
+                      <span className="font-medium text-theme-primary">Frozen Only</span>
+                      <p className="text-sm text-theme-tertiary">Customer can only receive frozen products</p>
                     </div>
                     <Switch
                       checked={frozenOnly}
@@ -496,10 +496,10 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
 
                 {/* Right Column */}
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
                     <div>
-                      <span className="font-medium text-gray-900 dark:text-white">Active</span>
-                      <p className="text-sm text-gray-500 dark:text-white/60">Customer can receive orders</p>
+                      <span className="font-medium text-theme-primary">Active</span>
+                      <p className="text-sm text-theme-tertiary">Customer can receive orders</p>
                     </div>
                     <Switch
                       checked={isActive}
@@ -507,10 +507,10 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
                     <div>
-                      <span className="font-medium text-gray-900 dark:text-white">Portal Access</span>
-                      <p className="text-sm text-gray-500 dark:text-white/60">Allow customer to log in and place orders</p>
+                      <span className="font-medium text-theme-primary">Portal Access</span>
+                      <p className="text-sm text-theme-tertiary">Allow customer to log in and place orders</p>
                     </div>
                     <Switch
                       checked={portalEnabled}
@@ -531,12 +531,12 @@ export function CreateCustomerModal({ siteId, isOpen, onClose, onSuccess }: Crea
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/[0.02]">
+          <div className="flex justify-end gap-3 px-6 py-4 border-t border-theme bg-gray-50 dark:bg-white/[0.02]">
             <Button
               type="button"
               variant="outline"
               onClick={handleClose}
-              className="bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/[0.06]"
+              className="bg-theme-surface border-theme text-theme-secondary hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06]"
             >
               Cancel
             </Button>

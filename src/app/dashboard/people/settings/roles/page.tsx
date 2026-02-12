@@ -333,14 +333,14 @@ export default function RolesAndPermissionsPage() {
       case 'low':
         return 'bg-green-500/20 text-green-400 border-green-500/30';
       default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+        return 'bg-theme-surface-elevated0/20 text-theme-tertiary border-gray-500/30';
     }
   };
 
   if (rolesLoading || permissionsLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-900 dark:text-white">Loading roles and permissions...</div>
+        <div className="text-theme-primary">Loading roles and permissions...</div>
       </div>
     );
   }
@@ -351,25 +351,25 @@ export default function RolesAndPermissionsPage() {
       <div>
         <Link
           href="/dashboard/people/settings"
-          className="inline-flex items-center gap-2 text-sm text-gray-900 dark:text-white/60 hover:text-gray-900 dark:hover:text-white mb-4"
+          className="inline-flex items-center gap-2 text-sm text-theme-primary/60 hover:text-theme-primary mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Settings
         </Link>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-              <Shield className="w-6 h-6 text-[#D37E91]" />
+            <h1 className="text-2xl font-bold text-theme-primary mb-2 flex items-center gap-2">
+              <Shield className="w-6 h-6 text-module-fg" />
               Roles & Permissions
             </h1>
-            <p className="text-gray-500 dark:text-white/60">
+            <p className="text-theme-tertiary">
               Define user roles and configure access permissions
             </p>
           </div>
           <PermissionGate permission="settings.roles">
             <Button
               onClick={handleNewRole}
-              className="bg-transparent border border-blue-600 dark:border-blue-400 text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
+              className="bg-transparent border border-blue-600 dark:border-blue-400 text-module-fg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Role
@@ -381,20 +381,20 @@ export default function RolesAndPermissionsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Roles List */}
         <div className="lg:col-span-1">
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Roles</h2>
+          <div className="bg-theme-surface border border-theme rounded-lg p-4">
+            <h2 className="text-lg font-semibold text-theme-primary mb-4">Roles</h2>
             {rolesLoading ? (
               <div className="text-center py-8">
-                <p className="text-gray-400 text-sm">Loading roles...</p>
+                <p className="text-theme-tertiary text-sm">Loading roles...</p>
               </div>
             ) : roles.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-gray-400 text-sm mb-2">No roles found</p>
+                <p className="text-theme-tertiary text-sm mb-2">No roles found</p>
                 {rolesError && (
                   <p className="text-xs text-red-400 mb-2">Error: {rolesError.message}</p>
                 )}
                 {profile?.company_id && (
-                  <p className="text-xs text-gray-500 mb-4">Company ID: {profile.company_id}</p>
+                  <p className="text-xs text-theme-tertiary mb-4">Company ID: {profile.company_id}</p>
                 )}
                 <div className="flex flex-col gap-2 items-center">
                   <Button
@@ -402,21 +402,21 @@ export default function RolesAndPermissionsPage() {
                       queryClient.invalidateQueries({ queryKey: ['roles'] });
                       queryClient.refetchQueries({ queryKey: ['roles'] });
                     }}
-                    className="bg-transparent border border-gray-300 dark:border-white/20 text-gray-900 dark:text-white/70 hover:border-gray-400 dark:hover:border-white/40 text-xs mb-2"
+                    className="bg-transparent border border-gray-300 dark:border-white/20 text-theme-primary/70 hover:border-gray-400 dark:hover:border-white/40 text-xs mb-2"
                   >
                     Refresh
                   </Button>
                   <Button
                     onClick={handleSeedDefaultRoles}
-                    className="bg-transparent border border-blue-600 dark:border-blue-400 text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] text-sm"
+                    className="bg-transparent border border-blue-600 dark:border-blue-400 text-module-fg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] text-sm"
                   >
                     <Shield className="w-4 h-4 mr-2" />
                     Seed Default Roles
                   </Button>
-                  <span className="text-xs text-gray-500">or</span>
+                  <span className="text-xs text-theme-tertiary">or</span>
                   <Button
                     onClick={handleNewRole}
-                    className="bg-transparent border border-gray-300 dark:border-white/20 text-gray-900 dark:text-white/70 hover:border-gray-400 dark:hover:border-white/40 text-sm"
+                    className="bg-transparent border border-gray-300 dark:border-white/20 text-theme-primary/70 hover:border-gray-400 dark:hover:border-white/40 text-sm"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Create Custom Role
@@ -436,8 +436,8 @@ export default function RolesAndPermissionsPage() {
                     onClick={() => handleSelectRole(role.id)}
                     className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                       isSelected
-                        ? 'bg-[#D37E91]/10 border-blue-200 dark:border-blue-500/50'
-                        : 'bg-gray-50 dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.12]'
+                        ? 'bg-module-fg/[0.10] border-blue-200 dark:border-blue-500/50'
+                        : 'bg-gray-50 dark:bg-white/[0.02] border-theme hover:border-gray-300 dark:hover:border-white/[0.12]'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -449,14 +449,14 @@ export default function RolesAndPermissionsPage() {
                           {React.createElement(IconComponent, { className: "w-4 h-4" })}
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">{role.name}</p>
+                          <p className="text-sm font-medium text-theme-primary">{role.name}</p>
                           {role.is_system_role && (
-                            <span className="text-xs text-gray-400">System Role</span>
+                            <span className="text-xs text-theme-tertiary">System Role</span>
                           )}
                         </div>
                       </div>
                       {isSelected && (
-                        <Check className="w-4 h-4 text-[#D37E91]" />
+                        <Check className="w-4 h-4 text-module-fg" />
                       )}
                     </div>
                   </div>
@@ -470,14 +470,14 @@ export default function RolesAndPermissionsPage() {
         {/* Role Editor */}
         <div className="lg:col-span-2">
           {selectedRoleId || isCreating ? (
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6">
+            <div className="bg-theme-surface border border-theme rounded-lg p-6">
               {roleLoading ? (
-                <div className="text-center py-8 text-gray-400">Loading role...</div>
+                <div className="text-center py-8 text-theme-tertiary">Loading role...</div>
               ) : (
                 <>
                   {/* Role Header */}
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    <h2 className="text-xl font-semibold text-theme-primary">
                       {isCreating ? 'Create New Role' : role?.name || 'Edit Role'}
                     </h2>
                     <div className="flex items-center gap-2">
@@ -493,7 +493,7 @@ export default function RolesAndPermissionsPage() {
                       <Button
                         onClick={handleSaveRole}
                         disabled={updateMutation.isPending || updatePermissionsMutation.isPending}
-                        className="bg-transparent border border-blue-600 dark:border-blue-400 text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
+                        className="bg-transparent border border-blue-600 dark:border-blue-400 text-module-fg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
                       >
                         <Save className="w-4 h-4 mr-2" />
                         Save
@@ -504,7 +504,7 @@ export default function RolesAndPermissionsPage() {
                   {/* Role Details Form */}
                   <div className="mb-6 space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-theme-tertiary mb-2">
                         Role Name <span className="text-red-400">*</span>
                       </label>
                       <Input
@@ -516,7 +516,7 @@ export default function RolesAndPermissionsPage() {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-theme-tertiary mb-2">
                         Slug (auto-generated from name)
                       </label>
                       <Input
@@ -528,7 +528,7 @@ export default function RolesAndPermissionsPage() {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-theme-tertiary mb-2">
                         Description
                       </label>
                       <textarea
@@ -536,13 +536,13 @@ export default function RolesAndPermissionsPage() {
                         onChange={(e) => setRoleForm({ ...roleForm, description: e.target.value })}
                         placeholder="Describe this role's responsibilities..."
                         rows={3}
-                        className="w-full px-3 py-2 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-md text-gray-900 dark:text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                        className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-md text-theme-primary text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-module-fg/50"
                       />
                     </div>
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-theme-tertiary mb-2">
                           Hierarchy Level
                         </label>
                         <Input
@@ -551,11 +551,11 @@ export default function RolesAndPermissionsPage() {
                           onChange={(e) => setRoleForm({ ...roleForm, hierarchy_level: parseInt(e.target.value) || 100 })}
                           className="w-full"
                         />
-                        <p className="text-xs text-gray-400 mt-1">Lower = more access (0 = Owner, 100 = Employee)</p>
+                        <p className="text-xs text-theme-tertiary mt-1">Lower = more access (0 = Owner, 100 = Employee)</p>
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-theme-tertiary mb-2">
                           Color
                         </label>
                         <div className="flex items-center gap-2">
@@ -563,7 +563,7 @@ export default function RolesAndPermissionsPage() {
                             type="color"
                             value={roleForm.color}
                             onChange={(e) => setRoleForm({ ...roleForm, color: e.target.value })}
-                            className="w-12 h-10 rounded border border-gray-200 dark:border-white/[0.06] cursor-pointer"
+                            className="w-12 h-10 rounded border border-theme cursor-pointer"
                           />
                           <Input
                             value={roleForm.color}
@@ -586,12 +586,12 @@ export default function RolesAndPermissionsPage() {
 
                   {/* Permissions Matrix */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Permissions</h3>
+                    <h3 className="text-lg font-semibold text-theme-primary">Permissions</h3>
                     
                     {Object.entries(permissionsByArea).map(([area, areaPermissions]) => (
-                      <div key={area} className="border border-gray-200 dark:border-white/[0.06] rounded-lg overflow-hidden">
-                        <div className="bg-gray-50 dark:bg-white/[0.02] px-4 py-3 border-b border-gray-200 dark:border-white/[0.06]">
-                          <h4 className="text-sm font-medium text-gray-900 dark:text-white capitalize">{area}</h4>
+                      <div key={area} className="border border-theme rounded-lg overflow-hidden">
+                        <div className="bg-gray-50 dark:bg-white/[0.02] px-4 py-3 border-b border-theme">
+                          <h4 className="text-sm font-medium text-theme-primary capitalize">{area}</h4>
                         </div>
                         <div className="divide-y divide-gray-200 dark:divide-white/[0.06]">
                           {areaPermissions.map((permission) => {
@@ -601,7 +601,7 @@ export default function RolesAndPermissionsPage() {
                             return (
                               <div
                                 key={permission.id}
-                                className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
+                                className="px-4 py-3 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02] transition-colors"
                               >
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-3 flex-1">
@@ -609,11 +609,11 @@ export default function RolesAndPermissionsPage() {
                                       type="checkbox"
                                       checked={isEnabled}
                                       onChange={() => togglePermission(permission.id)}
-                                      className="w-4 h-4 rounded border-gray-300 dark:border-white/[0.2] bg-white dark:bg-white/[0.05] text-[#D37E91] focus:ring-[#D37E91]/50"
+ className="w-4 h-4 rounded border-gray-300 dark:border-white/[0.2] bg-theme-surface ] text-module-fg focus:ring-module-fg/50"
                                     />
                                     <div className="flex-1">
                                       <div className="flex items-center gap-2">
-                                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                        <p className="text-sm font-medium text-theme-primary">
                                           {permission.name}
                                         </p>
                                         <span
@@ -623,7 +623,7 @@ export default function RolesAndPermissionsPage() {
                                         </span>
                                       </div>
                                       {permission.description && (
-                                        <p className="text-xs text-gray-400 mt-1">
+                                        <p className="text-xs text-theme-tertiary mt-1">
                                           {permission.description}
                                         </p>
                                       )}
@@ -633,11 +633,11 @@ export default function RolesAndPermissionsPage() {
                                     <select
                                       value={assignment?.scope || 'self'}
                                       onChange={(e) => updatePermissionScope(permission.id, e.target.value as PermissionScope)}
-                                      className="ml-4 px-3 py-1.5 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-md text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                                      className="ml-4 px-3 py-1.5 bg-theme-surface border border-theme rounded-md text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50"
                                       onClick={(e) => e.stopPropagation()}
                                     >
                                       {SCOPE_OPTIONS.map(opt => (
-                                        <option key={opt.value} value={opt.value} className="bg-white dark:bg-gray-50 dark:bg-[#0B0D13] text-gray-900 dark:text-white">
+                                        <option key={opt.value} value={opt.value} className="bg-white dark:bg-theme-surface-elevated text-theme-primary">
                                           {opt.label}
                                         </option>
                                       ))}
@@ -655,10 +655,10 @@ export default function RolesAndPermissionsPage() {
               )}
             </div>
           ) : (
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-12 text-center">
-              <Shield className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-              <p className="text-gray-400 mb-2">Select a role to view and edit permissions</p>
-              <p className="text-sm text-gray-500">
+            <div className="bg-theme-surface border border-theme rounded-lg p-12 text-center">
+              <Shield className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
+              <p className="text-theme-tertiary mb-2">Select a role to view and edit permissions</p>
+              <p className="text-sm text-theme-tertiary">
                 Or create a new custom role to match your organization's needs
               </p>
             </div>
@@ -669,9 +669,9 @@ export default function RolesAndPermissionsPage() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-50 dark:bg-[#0B0D13] border border-gray-200 dark:border-white/[0.06] rounded-lg max-w-md w-full p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Delete Role</h3>
-            <p className="text-gray-400 mb-6">
+          <div className="bg-white dark:bg-theme-surface-elevated border border-theme rounded-lg max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-theme-primary mb-2">Delete Role</h3>
+            <p className="text-theme-tertiary mb-6">
               Are you sure you want to delete this role? This action cannot be undone.
             </p>
             <div className="flex gap-3">
@@ -683,7 +683,7 @@ export default function RolesAndPermissionsPage() {
               </Button>
               <Button
                 onClick={() => setShowDeleteConfirm(null)}
-                className="flex-1 border-white/12 text-gray-300 hover:bg-white/[0.08]"
+                className="flex-1 border-white/12 text-theme-tertiary hover:bg-white/[0.08]"
               >
                 Cancel
               </Button>

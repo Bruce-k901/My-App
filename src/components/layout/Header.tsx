@@ -121,7 +121,7 @@ export function Header({
           {/* Mobile Menu Button */}
           <button
             onClick={handleMobileMenuClick}
-            className="lg:hidden p-2 rounded-lg hover:bg-black/[0.05] dark:hover:bg-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+            className="lg:hidden p-2 rounded-lg hover:bg-black/[0.05] dark:hover:bg-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors"
             aria-label="Open menu"
           >
             <Menu className="w-5 h-5" />
@@ -156,7 +156,7 @@ export function Header({
         {/* Mobile Search Icon */}
         <button
           onClick={() => setSearchOpen(true)}
-          className="lg:hidden p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+          className="lg:hidden p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors"
         >
           <Search className="w-5 h-5" />
         </button>
@@ -174,7 +174,7 @@ export function Header({
           {/* Calendar Button */}
           <button
             onClick={() => setCalendarOpen(true)}
-            className="hidden lg:flex items-center justify-center w-10 h-10 rounded-lg bg-teal-500/10 border border-teal-500/50 text-teal-500 hover:bg-teal-500/20 hover:shadow-[0_0_12px_rgba(20,184,166,0.5)] transition-all"
+            className="hidden lg:flex items-center justify-center w-10 h-10 rounded-lg bg-module-fg/10 border border-module-fg/30 text-teal-500 hover:bg-module-fg/10 hover:shadow-module-glow transition-all"
             aria-label="Open Calendar"
           >
             <Calendar className="w-4 h-4" />
@@ -183,7 +183,7 @@ export function Header({
           {/* Ask AI Button */}
           <button
             onClick={() => setAiAssistantOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#D37E91]/10 border border-[#D37E91]/50 text-[#D37E91] hover:bg-[#D37E91]/20 hover:shadow-[0_0_12px_rgba(211,126,145,0.5)] transition-all h-10"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#D37E91]/10 border border-[#D37E91]/50 text-[#D37E91] hover:bg-[#D37E91]/20 hover:shadow-module-glow transition-all h-10"
             aria-label="Ask AI Assistant"
           >
             <Sparkles className="w-4 h-4 flex-shrink-0" />
@@ -203,7 +203,7 @@ export function Header({
             `}
             aria-label="Menu"
           >
-            <Menu className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-white/60" />
+            <Menu className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
           </button>
 
           {/* Profile - Hidden on mobile, shown in burger menu */}

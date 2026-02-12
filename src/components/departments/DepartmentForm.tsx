@@ -137,10 +137,10 @@ export default function DepartmentFormComponent({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Basic Information */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-white">Basic Information</h3>
+        <h3 className="text-lg font-semibold text-theme-primary">Basic Information</h3>
         
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-theme-tertiary mb-2">
             Department Name <span className="text-red-400">*</span>
           </label>
           
@@ -160,7 +160,7 @@ export default function DepartmentFormComponent({
                 }}
                 className="w-4 h-4 text-[#D37E91] bg-white/[0.03] border-white/[0.06] focus:ring-[#D37E91]/50"
               />
-              <span className="text-sm text-gray-300">Standard</span>
+              <span className="text-sm text-theme-tertiary">Standard</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -174,7 +174,7 @@ export default function DepartmentFormComponent({
                 }}
                 className="w-4 h-4 text-[#D37E91] bg-white/[0.03] border-white/[0.06] focus:ring-[#D37E91]/50"
               />
-              <span className="text-sm text-gray-300">Other (Custom)</span>
+              <span className="text-sm text-theme-tertiary">Other (Custom)</span>
             </label>
           </div>
 
@@ -234,7 +234,7 @@ export default function DepartmentFormComponent({
                     selectedParentId: selected.parent_department_id,
                   });
                 }}
-                className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={loadingStandard}
               >
                 <option value="" className="bg-[#0B0D13] text-white">Select a standard department...</option>
@@ -323,7 +323,7 @@ export default function DepartmentFormComponent({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-theme-tertiary mb-2">
             Description
           </label>
           <textarea
@@ -331,13 +331,13 @@ export default function DepartmentFormComponent({
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             placeholder="Brief description of the department"
             rows={3}
-            className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+            className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-theme-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
           />
         </div>
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-gray-300">
+            <label className="block text-sm font-medium text-theme-tertiary">
               Parent Department
             </label>
             {!showCreateParentForm && (
@@ -354,20 +354,20 @@ export default function DepartmentFormComponent({
           {showCreateParentForm ? (
             <div className="space-y-3 p-4 bg-white/[0.02] border border-white/[0.06] rounded-md">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-medium text-white">Create Parent Department</h4>
+                <h4 className="text-sm font-medium text-theme-primary">Create Parent Department</h4>
                 <button
                   type="button"
                   onClick={() => {
                     setShowCreateParentForm(false);
                     setParentFormData(DEFAULT_DEPARTMENT_FORM);
                   }}
-                  className="text-gray-400 hover:text-white"
+                  className="text-theme-tertiary hover:text-white"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">
+                <label className="block text-xs font-medium text-theme-tertiary mb-1">
                   Parent Department Name <span className="text-red-400">*</span>
                 </label>
                 <Input
@@ -378,7 +378,7 @@ export default function DepartmentFormComponent({
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">
+                <label className="block text-xs font-medium text-theme-tertiary mb-1">
                   Description
                 </label>
                 <textarea
@@ -386,7 +386,7 @@ export default function DepartmentFormComponent({
                   onChange={(e) => setParentFormData({ ...parentFormData, description: e.target.value })}
                   placeholder="Brief description"
                   rows={2}
-                  className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                  className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-theme-primary text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -427,7 +427,7 @@ export default function DepartmentFormComponent({
                     setShowCreateParentForm(false);
                     setParentFormData(DEFAULT_DEPARTMENT_FORM);
                   }}
-                  className="border-white/12 text-gray-300 hover:bg-white/[0.08] text-sm px-3 py-1.5"
+                  className="border-white/12 text-theme-tertiary hover:bg-white/[0.08] text-sm px-3 py-1.5"
                 >
                   Cancel
                 </Button>
@@ -448,7 +448,7 @@ export default function DepartmentFormComponent({
                     parent_department_id: value || null,
                   });
                 }}
-                className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50"
+                className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50"
               >
                 <option value="" className="bg-[#0B0D13] text-white">None (Top Level)</option>
                 
@@ -485,7 +485,7 @@ export default function DepartmentFormComponent({
                 {/* Separator if both standard and custom departments exist */}
                 {standardDepartments.filter((sd) => !sd.parent_department_id).length > 0 &&
                   departments.filter((d) => d.id !== department?.id && d.status === 'active').length > 0 && (
-                    <option disabled className="bg-[#0B0D13] text-gray-500">
+                    <option disabled className="bg-[#0B0D13] text-theme-tertiary">
                       ────────────────────
                     </option>
                   )}
@@ -530,13 +530,13 @@ export default function DepartmentFormComponent({
                   const exists = departments.some((d) => d.name === sd.name && d.status === 'active');
                   return !exists;
                 }) && (
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-xs text-theme-tertiary">
                   💡 Standard departments shown above. Disabled options need to be created first.
                 </p>
               )}
               
               {formData.parent_department_id && (
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-xs text-theme-tertiary">
                   Selected: {departments.find((d) => d.id === formData.parent_department_id)?.name || 'Unknown'}
                 </p>
               )}
@@ -545,7 +545,7 @@ export default function DepartmentFormComponent({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-theme-tertiary mb-2">
             Status
           </label>
           <select
@@ -556,7 +556,7 @@ export default function DepartmentFormComponent({
                 status: e.target.value as 'active' | 'inactive' | 'archived',
               })
             }
-            className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50"
+            className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50"
           >
             <option value="active" className="bg-[#0B0D13] text-white">Active</option>
             <option value="inactive" className="bg-[#0B0D13] text-white">Inactive</option>
@@ -567,10 +567,10 @@ export default function DepartmentFormComponent({
 
       {/* Contact Information */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-white">Contact Information</h3>
+        <h3 className="text-lg font-semibold text-theme-primary">Contact Information</h3>
         
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-theme-tertiary mb-2">
             Contact Name
           </label>
           <Input
@@ -582,7 +582,7 @@ export default function DepartmentFormComponent({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               Contact Email
             </label>
             <Input
@@ -598,7 +598,7 @@ export default function DepartmentFormComponent({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               Contact Phone
             </label>
             <Input
@@ -610,7 +610,7 @@ export default function DepartmentFormComponent({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-theme-tertiary mb-2">
             Mobile Phone
           </label>
           <Input
@@ -622,7 +622,7 @@ export default function DepartmentFormComponent({
 
         {/* Additional Contact Details */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-theme-tertiary mb-2">
             Additional Contact Details
           </label>
           <div className="space-y-2">
@@ -652,7 +652,7 @@ export default function DepartmentFormComponent({
               onChange={(e) => updateContactDetails('notes', e.target.value)}
               placeholder="Additional notes (e.g., Available 9-5 weekdays)"
               rows={2}
-              className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+              className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-theme-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
             />
           </div>
         </div>
@@ -660,11 +660,11 @@ export default function DepartmentFormComponent({
 
       {/* Additional Metadata */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-white">Additional Metadata</h3>
+        <h3 className="text-lg font-semibold text-theme-primary">Additional Metadata</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               Budget Code
             </label>
             <Input
@@ -675,7 +675,7 @@ export default function DepartmentFormComponent({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               Cost Center
             </label>
             <Input
@@ -686,7 +686,7 @@ export default function DepartmentFormComponent({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               Head Count
             </label>
             <Input
@@ -698,7 +698,7 @@ export default function DepartmentFormComponent({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               Location
             </label>
             <Input
@@ -717,7 +717,7 @@ export default function DepartmentFormComponent({
           variant="outline"
           onClick={onCancel}
           disabled={isLoading}
-          className="border-white/12 text-gray-300 hover:bg-white/[0.08]"
+          className="border-white/12 text-theme-tertiary hover:bg-white/[0.08]"
         >
           Cancel
         </Button>

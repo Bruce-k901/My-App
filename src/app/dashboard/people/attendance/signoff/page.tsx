@@ -893,7 +893,7 @@ export default function AttendanceSignOffPage() {
                 break_minutes: breakMinutes,
                 estimated_cost: estimatedCost,
                 company_id: companyId,
-                color: '#D37E91', // Default color
+                color: 'rgb(var(--module-fg))', // Default color
                 status: 'scheduled'
               });
             
@@ -1565,13 +1565,13 @@ export default function AttendanceSignOffPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0B0D13] p-6">
+    <div className="min-h-screen bg-theme-surface-elevated p-6">
       <div className="max-w-[1800px] mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Timesheets</h1>
-            <p className="text-gray-500 dark:text-white/60 text-sm mt-1">
+            <h1 className="text-2xl font-bold text-theme-primary">Timesheets</h1>
+            <p className="text-theme-tertiary text-sm mt-1">
               Review and approve staff hours before payroll
             </p>
           </div>
@@ -1580,7 +1580,7 @@ export default function AttendanceSignOffPage() {
             value={selectedSiteId}
             onChange={(e) => setSelectedSiteId(e.target.value)}
             disabled={sites.length === 0 || loading}
-            className="bg-white dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed min-w-[200px] text-gray-900 dark:text-white"
+            className="bg-theme-surface border border-gray-300 dark:border-white/[0.06] rounded-lg px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed min-w-[200px] text-theme-primary"
           >
             {sites.length === 0 ? (
               <option value="">No sites available</option>
@@ -1595,17 +1595,17 @@ export default function AttendanceSignOffPage() {
         </div>
         
         {/* Week Navigation */}
-        <div className="flex items-center justify-between bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 mb-6 shadow-sm dark:shadow-none">
+        <div className="flex items-center justify-between bg-theme-surface border border-theme rounded-xl p-4 mb-6 shadow-sm dark:shadow-none">
           <button
             onClick={goToPrevWeek}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.05] rounded-lg transition-colors text-gray-600 dark:text-white"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.05] rounded-lg transition-colors text-theme-secondary"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
 
           <div className="flex items-center gap-3">
             <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            <span className="font-medium text-gray-900 dark:text-white">
+            <span className="font-medium text-theme-primary">
               {weekStart.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
               {' - '}
               {new Date(weekStart.getTime() + 6 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', {
@@ -1622,7 +1622,7 @@ export default function AttendanceSignOffPage() {
                   Submitted to Payroll
                 </span>
                 {payDate && (
-                  <span className="text-xs text-gray-500 dark:text-white/60">
+                  <span className="text-xs text-theme-tertiary">
                     Pay Date: {payDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>
                 )}
@@ -1637,8 +1637,8 @@ export default function AttendanceSignOffPage() {
                 onClick={() => setViewMode('daily')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                   viewMode === 'daily'
-                    ? 'bg-white dark:bg-blue-600 text-gray-900 dark:text-white shadow-sm'
-                    : 'text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white'
+                    ? 'bg-white dark:bg-blue-600 text-theme-primary shadow-sm'
+                    : 'text-theme-tertiary hover:text-theme-secondary'
                 }`}
               >
                 <LayoutList className="w-4 h-4" />
@@ -1648,8 +1648,8 @@ export default function AttendanceSignOffPage() {
                 onClick={() => setViewMode('weekly')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                   viewMode === 'weekly'
-                    ? 'bg-white dark:bg-blue-600 text-gray-900 dark:text-white shadow-sm'
-                    : 'text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white'
+                    ? 'bg-white dark:bg-blue-600 text-theme-primary shadow-sm'
+                    : 'text-theme-tertiary hover:text-theme-secondary'
                 }`}
               >
                 <Users className="w-4 h-4" />
@@ -1659,7 +1659,7 @@ export default function AttendanceSignOffPage() {
 
             <button
               onClick={goToNextWeek}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.05] rounded-lg transition-colors text-gray-600 dark:text-white"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.05] rounded-lg transition-colors text-theme-secondary"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -1669,7 +1669,7 @@ export default function AttendanceSignOffPage() {
         {loading && (
           <div className="text-center py-12">
             <div className="animate-spin w-8 h-8 border-2 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full mx-auto"></div>
-            <p className="text-gray-500 dark:text-white/60 mt-3">Loading attendance data...</p>
+            <p className="text-theme-tertiary mt-3">Loading attendance data...</p>
           </div>
         )}
 
@@ -1692,10 +1692,10 @@ export default function AttendanceSignOffPage() {
         {!loading && employees.length > 0 && viewMode === 'daily' && (
           <div className="space-y-6">
             {weekDates.map(({ date, dayName }) => (
-              <div key={date} className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden shadow-sm dark:shadow-none">
+              <div key={date} className="bg-theme-surface border border-theme rounded-xl overflow-hidden shadow-sm dark:shadow-none">
                 {/* Day Header */}
-                <div className="bg-gray-50 dark:bg-white/[0.05] px-4 py-3 border-b border-gray-200 dark:border-white/[0.06] flex items-center justify-between">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                <div className="bg-theme-button px-4 py-3 border-b border-theme flex items-center justify-between">
+                  <h3 className="font-semibold text-theme-primary">
                     {dayName} - {new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}
                   </h3>
                   
@@ -1728,8 +1728,8 @@ export default function AttendanceSignOffPage() {
                         className={`
                           flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all font-medium
                           ${daySignedOff
-                            ? 'bg-green-100 dark:bg-green-500/20 border-green-500 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-500/30'
-                            : 'bg-transparent border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)]'
+                            ? 'bg-green-100 dark:bg-green-500/20 border-green-500 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-module-fg/10'
+                            : 'bg-transparent border-module-fg text-module-fg hover:shadow-module-glow dark:hover:shadow-module-glow'
                           }
                           ${(!canApprove || isLocked) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                         `}
@@ -1760,18 +1760,18 @@ export default function AttendanceSignOffPage() {
                 {/* Table */}
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead className="bg-gray-50 dark:bg-white/[0.05]">
+                    <thead className="bg-theme-button">
                       <tr>
-                        <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-white/60">Employee</th>
-                        <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-white/60">Scheduled Start</th>
-                        <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-white/60">Scheduled End</th>
-                        <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-white/60">Clock In</th>
-                        <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-white/60">Clock Out</th>
-                        <th className="text-center px-4 py-3 font-medium text-gray-500 dark:text-white/60">Rota'd Hrs</th>
-                        <th className="text-center px-4 py-3 font-medium text-gray-500 dark:text-white/60">Actual Hrs</th>
-                        <th className="text-center px-4 py-3 font-medium text-gray-500 dark:text-white/60">Rota'd Cost</th>
-                        <th className="text-center px-4 py-3 font-medium text-gray-500 dark:text-white/60">Actual Cost</th>
-                        <th className="text-center px-4 py-3 font-medium text-gray-500 dark:text-white/60 w-20">Sign Off</th>
+                        <th className="text-left px-4 py-3 font-medium text-theme-tertiary">Employee</th>
+                        <th className="text-left px-4 py-3 font-medium text-theme-tertiary">Scheduled Start</th>
+                        <th className="text-left px-4 py-3 font-medium text-theme-tertiary">Scheduled End</th>
+                        <th className="text-left px-4 py-3 font-medium text-theme-tertiary">Clock In</th>
+                        <th className="text-left px-4 py-3 font-medium text-theme-tertiary">Clock Out</th>
+                        <th className="text-center px-4 py-3 font-medium text-theme-tertiary">Rota'd Hrs</th>
+                        <th className="text-center px-4 py-3 font-medium text-theme-tertiary">Actual Hrs</th>
+                        <th className="text-center px-4 py-3 font-medium text-theme-tertiary">Rota'd Cost</th>
+                        <th className="text-center px-4 py-3 font-medium text-theme-tertiary">Actual Cost</th>
+                        <th className="text-center px-4 py-3 font-medium text-theme-tertiary w-20">Sign Off</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 dark:divide-white/[0.06]">
@@ -1991,27 +1991,27 @@ export default function AttendanceSignOffPage() {
                         }
                         
                         return (
-                          <tr key={employee.staffId} className="hover:bg-gray-50 dark:hover:bg-white/[0.02]">
+                          <tr key={employee.staffId} className="hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02]">
                             {/* Employee Name */}
                             <td className="px-4 py-3">
                               <div>
-                                <p className="font-medium text-gray-900 dark:text-white">{employee.staffName}</p>
+                                <p className="font-medium text-theme-primary">{employee.staffName}</p>
                                 {employee.positionTitle && (
-                                  <p className="text-xs text-gray-500 dark:text-white/50">{employee.positionTitle}</p>
+                                  <p className="text-xs text-theme-tertiary">{employee.positionTitle}</p>
                                 )}
                               </div>
                             </td>
                             
                             {/* Scheduled Start (read-only from rota) */}
                             <td className="px-4 py-3">
-                              <span className="text-sm text-gray-600 dark:text-white/60 w-24 inline-block text-center">
+                              <span className="text-sm text-theme-secondary w-24 inline-block text-center">
                                 {dayData.scheduledStart || '—'}
                               </span>
                             </td>
 
                             {/* Scheduled End (read-only from rota) */}
                             <td className="px-4 py-3">
-                              <span className="text-sm text-gray-600 dark:text-white/60 w-24 inline-block text-center">
+                              <span className="text-sm text-theme-secondary w-24 inline-block text-center">
                                 {dayData.scheduledEnd || '—'}
                               </span>
                             </td>
@@ -2042,28 +2042,28 @@ export default function AttendanceSignOffPage() {
                             
                             {/* Day Rota'd Hours (for this specific day) */}
                             <td className="px-4 py-3 text-center">
-                              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                              <span className="text-sm font-medium text-theme-primary">
                                 {dayRotaHours > 0 ? dayRotaHours.toFixed(2) : '—'}
                               </span>
                             </td>
 
                             {/* Day Actual Hours (for this specific day) */}
                             <td className="px-4 py-3 text-center">
-                              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                              <span className="text-sm font-medium text-theme-primary">
                                 {dayActualHours > 0 ? dayActualHours.toFixed(2) : '—'}
                               </span>
                             </td>
 
                             {/* Day Rota'd Cost (for this specific day) */}
                             <td className="px-4 py-3 text-center">
-                              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                              <span className="text-sm font-medium text-theme-primary">
                                 {dayRotaCost > 0 ? `£${dayRotaCost.toFixed(2)}` : '—'}
                               </span>
                             </td>
 
                             {/* Day Actual Cost (for this specific day) */}
                             <td className="px-4 py-3 text-center">
-                              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                              <span className="text-sm font-medium text-theme-primary">
                                 {dayActualCost > 0 ? `£${dayActualCost.toFixed(2)}` : '—'}
                               </span>
                             </td>
@@ -2090,12 +2090,12 @@ export default function AttendanceSignOffPage() {
                                   `}
                                   title={isLocked ? 'Week is locked - unlock to edit' : (dayData.signedOff ? 'Unsign off' : 'Sign off')}
                                 >
-                                  {dayData.signedOff && <Check className="w-3 h-3 text-white" />}
+                                  {dayData.signedOff && <Check className="w-3 h-3 text-theme-primary" />}
                                 </button>
                               ) : dayData.signedOff ? (
                                 <Check className="w-5 h-5 text-green-600 dark:text-green-400 mx-auto" />
                               ) : (
-                                <span className="text-gray-400 dark:text-white/40">—</span>
+                                <span className="text-theme-tertiary">—</span>
                               )}
                             </td>
                           </tr>
@@ -2276,23 +2276,23 @@ export default function AttendanceSignOffPage() {
                   }
                   
                   return (
-                    <div className="bg-gray-50 dark:bg-white/[0.05] border-t border-gray-200 dark:border-white/[0.06] px-4 py-3">
+                    <div className="bg-theme-button border-t border-theme px-4 py-3">
                       <div className="grid grid-cols-4 gap-4 text-sm">
                         <div>
-                          <p className="text-gray-500 dark:text-white/60 text-xs mb-1">Rota'd Hours</p>
-                          <p className="font-semibold text-gray-900 dark:text-white">{rotaHours.toFixed(2)}h</p>
+                          <p className="text-theme-tertiary text-xs mb-1">Rota'd Hours</p>
+                          <p className="font-semibold text-theme-primary">{rotaHours.toFixed(2)}h</p>
                         </div>
                         <div>
-                          <p className="text-gray-500 dark:text-white/60 text-xs mb-1">Actual Hours</p>
-                          <p className="font-semibold text-gray-900 dark:text-white">{actualHours.toFixed(2)}h</p>
+                          <p className="text-theme-tertiary text-xs mb-1">Actual Hours</p>
+                          <p className="font-semibold text-theme-primary">{actualHours.toFixed(2)}h</p>
                         </div>
                         <div>
-                          <p className="text-gray-500 dark:text-white/60 text-xs mb-1">Rota'd Cost</p>
-                          <p className="font-semibold text-gray-900 dark:text-white">£{rotaCost.toFixed(2)}</p>
+                          <p className="text-theme-tertiary text-xs mb-1">Rota'd Cost</p>
+                          <p className="font-semibold text-theme-primary">£{rotaCost.toFixed(2)}</p>
                         </div>
                         <div>
-                          <p className="text-gray-500 dark:text-white/60 text-xs mb-1">Actual Cost</p>
-                          <p className="font-semibold text-gray-900 dark:text-white">£{actualCost.toFixed(2)}</p>
+                          <p className="text-theme-tertiary text-xs mb-1">Actual Cost</p>
+                          <p className="font-semibold text-theme-primary">£{actualCost.toFixed(2)}</p>
                         </div>
                       </div>
                     </div>
@@ -2302,9 +2302,9 @@ export default function AttendanceSignOffPage() {
             ))}
             
             {/* Final Sign-Off Button - Always show */}
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6 flex items-center justify-between shadow-sm dark:shadow-none">
+            <div className="bg-theme-surface border border-theme rounded-xl p-6 flex items-center justify-between shadow-sm dark:shadow-none">
               <div>
-                <p className="text-sm text-gray-500 dark:text-white/60">
+                <p className="text-sm text-theme-tertiary">
                   {isLocked 
                     ? 'This week has been locked and submitted to payroll.'
                     : allSignedOff 
@@ -2320,8 +2320,8 @@ export default function AttendanceSignOffPage() {
                   className={`
                     flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 ease-in-out
                     ${allSignedOff && !locking
-                      ? 'bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:hover:shadow-[0_0_12px_rgba(96,165,250,0.5)] cursor-pointer'
-                      : 'bg-transparent border border-gray-400 dark:border-zinc-600 text-gray-400 dark:text-zinc-500 cursor-not-allowed opacity-50'
+                      ? 'bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow dark:hover:shadow-module-glow cursor-pointer'
+                      : 'bg-transparent border border-gray-400 dark:border-zinc-600 text-theme-tertiary cursor-not-allowed opacity-50'
                     }
                   `}
                 >
@@ -2357,7 +2357,7 @@ export default function AttendanceSignOffPage() {
                     disabled={unlocking || !canUnlock}
                     className={`
                       bg-transparent border border-amber-500/50 text-amber-600 dark:text-amber-400
-                      hover:shadow-[0_0_12px_rgba(245,158,11,0.5)]
+                      hover:shadow-module-glow
                       transition-all duration-200 px-4 py-2 rounded-lg
                       flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed
                     `}

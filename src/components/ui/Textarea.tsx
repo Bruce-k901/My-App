@@ -10,9 +10,9 @@ export default function Textarea({ className, ...props }: TextareaProps) {
     <textarea
       {...props}
       className={cn(
-        "flex min-h-[80px] w-full rounded-lg bg-theme-button dark:bg-white/[0.06] border border-theme dark:border-white/[0.12] text-theme-primary dark:text-white text-sm px-3 py-2",
-        "placeholder:text-theme-tertiary dark:placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D37E91]/50 focus-visible:border-[#D37E91]/50",
-        "hover:bg-theme-button-hover dark:hover:bg-white/[0.08] hover:border-theme-hover dark:hover:border-white/20 transition-colors resize-none",
+ "flex min-h-[80px] w-full rounded-lg bg-theme-button border border-theme text-theme-primary text-sm px-3 py-2",
+        "placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D37E91]/50 focus-visible:border-[#D37E91]/50",
+        "hover:bg-theme-button-hover hover:border-theme-hover dark:hover:border-white/20 transition-colors resize-none",
         className,
       )}
     />

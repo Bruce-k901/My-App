@@ -101,7 +101,7 @@ export default function WelcomeHeader() {
             Welcome{firstName ? `, ${firstName}` : ""}
           </h1>
           <p 
-            className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-xs sm:text-sm md:text-base"
+            className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-xs sm:text-sm md:text-base"
             suppressHydrationWarning
           >
             {formattedDate || "\u00A0"}

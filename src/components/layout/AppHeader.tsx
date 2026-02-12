@@ -32,7 +32,7 @@ export function AppHeader({
       {/* Burger Menu Button */}
       <button
         onClick={onBurgerClick}
-        className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+        className="p-2 text-theme-secondary hover:text-white hover:bg-white/10 rounded-lg transition-colors"
         aria-label="Open menu"
       >
         <Menu className="w-6 h-6" />

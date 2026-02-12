@@ -16,7 +16,7 @@ export function SidebarPin({ isCollapsed, onToggle, accentColor }: SidebarPinPro
   return (
     <button
       onClick={onToggle}
-      className="flex items-center justify-center w-full py-2 text-gray-400 dark:text-white/40 hover:text-gray-600 dark:hover:text-white/70 transition-colors group"
+      className="flex items-center justify-center w-full py-2 text-theme-tertiary hover:text-theme-secondary dark:hover:text-theme-secondary transition-colors group"
       title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
     >

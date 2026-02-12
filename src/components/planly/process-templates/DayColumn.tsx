@@ -56,15 +56,15 @@ export function DayColumn({
     <div
       ref={setNodeRef}
       className={cn(
-        'flex-shrink-0 w-80 bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-lg flex flex-col',
+        'flex-shrink-0 w-80 bg-white dark:bg-white/[0.02] border border-theme rounded-lg flex flex-col',
         isOver && 'ring-2 ring-[#14B8A6]/50 bg-teal-50 dark:bg-[#14B8A6]/5'
       )}
     >
       {/* Day Header */}
-      <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-white/[0.06]">
+      <div className="flex items-center justify-between p-3 border-b border-theme">
         <div className="flex items-center gap-2">
           <Calendar className="h-4 w-4 text-[#14B8A6]" />
-          <span className="font-medium text-gray-900 dark:text-white">Day {day.dayNumber}</span>
+          <span className="font-medium text-theme-primary">Day {day.dayNumber}</span>
           {isDeliveryDay ? (
             <span className="text-xs px-2 py-0.5 rounded bg-teal-100 dark:bg-[#14B8A6]/10 text-[#14B8A6] border border-teal-200 dark:border-[#14B8A6]/20">
               Delivery
@@ -74,14 +74,14 @@ export function DayColumn({
               D{day.dayOffset}
             </span>
           )}
-          <span className="text-xs text-gray-400 dark:text-white/40">
+          <span className="text-xs text-theme-tertiary">
             {visibleStages.length} {visibleStages.length === 1 ? 'stage' : 'stages'}
           </span>
         </div>
         {canDeleteDay && (
           <button
             onClick={onDeleteDay}
-            className="p-1.5 rounded text-gray-400 dark:text-white/40 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+            className="p-1.5 rounded text-theme-tertiary hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
             title="Delete day"
           >
             <Trash2 className="h-4 w-4" />
@@ -93,7 +93,7 @@ export function DayColumn({
       <div className="flex-1 p-3 space-y-2 overflow-y-auto min-h-[200px]">
         <SortableContext items={stageIds} strategy={verticalListSortingStrategy}>
           {visibleStages.length === 0 ? (
-            <div className="text-center py-8 text-gray-400 dark:text-white/40 text-sm">
+            <div className="text-center py-8 text-theme-tertiary text-sm">
               No stages for this day.
               <br />
               Click below to add one.
@@ -116,11 +116,11 @@ export function DayColumn({
       </div>
 
       {/* Add Step Button */}
-      <div className="p-3 border-t border-gray-200 dark:border-white/[0.06]">
+      <div className="p-3 border-t border-theme">
         <Button
           variant="ghost"
           onClick={onAddStep}
-          className="w-full justify-center text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05] border border-dashed border-gray-300 dark:border-white/[0.1]"
+          className="w-full justify-center text-theme-tertiary hover:text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.05] border border-dashed border-theme"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Step

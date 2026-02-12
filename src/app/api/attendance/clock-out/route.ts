@@ -58,6 +58,30 @@ export async function POST(request: NextRequest) {
     }
 
     if (!activeShift) {
+      // No active staff_attendance shift, but there may be orphaned time_entries
+      // records that are keeping the TimeClock UI showing "clocked in".
+      // Clean them up and return success so the UI resets.
+      const cleanupTime = new Date().toISOString();
+      const { data: orphans } = await supabase
+        .from('time_entries')
+        .update({
+          clock_out: cleanupTime,
+          status: 'completed',
+          notes: 'Auto-closed: no matching active shift in staff_attendance',
+        })
+        .eq('profile_id', profile.id)
+        .eq('status', 'active')
+        .is('clock_out', null)
+        .select('id');
+
+      if (orphans && orphans.length > 0) {
+        console.log(`Cleaned up ${orphans.length} orphaned time_entries on clock-out`);
+        return NextResponse.json({
+          success: true,
+          cleaned_orphans: orphans.length,
+        });
+      }
+
       return NextResponse.json(
         { error: 'No active shift found. Please clock in first.' },
         { status: 400 }
@@ -66,6 +90,9 @@ export async function POST(request: NextRequest) {
 
     // Update shift with clock-out time
     const clockOutTime = new Date().toISOString();
+    const clockInTime = new Date(activeShift.clock_in_time);
+    const grossHours = (new Date(clockOutTime).getTime() - clockInTime.getTime()) / (1000 * 60 * 60);
+
     const { data: updatedAttendance, error: updateError } = await supabase
       .from('staff_attendance')
       .update({
@@ -84,6 +111,25 @@ export async function POST(request: NextRequest) {
         { error: updateError.message || 'Failed to clock out' },
         { status: 500 }
       );
+    }
+
+    // Also close any active time_entries records for this user
+    const { error: timeEntryError } = await supabase
+      .from('time_entries')
+      .update({
+        clock_out: clockOutTime,
+        status: 'completed',
+        gross_hours: Math.round(grossHours * 100) / 100,
+        net_hours: Math.round(grossHours * 100) / 100,
+        notes: shiftNotes || null,
+      })
+      .eq('profile_id', profile.id)
+      .eq('status', 'active')
+      .is('clock_out', null);
+
+    if (timeEntryError) {
+      // Log but don't fail the clock-out — staff_attendance is the primary record
+      console.error('Error closing time_entries record (non-fatal):', timeEntryError);
     }
 
     return NextResponse.json({

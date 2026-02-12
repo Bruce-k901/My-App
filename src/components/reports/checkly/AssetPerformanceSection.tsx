@@ -81,9 +81,9 @@ export default function AssetPerformanceSection({ companyId, siteId }: Props) {
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
+      <div className="bg-theme-surface border border-theme rounded-xl p-8 flex items-center justify-center">
         <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
-        <span className="ml-3 text-gray-500 dark:text-white/60">Loading asset performance...</span>
+        <span className="ml-3 text-theme-tertiary">Loading asset performance...</span>
       </div>
     );
   }
@@ -117,9 +117,9 @@ export default function AssetPerformanceSection({ companyId, siteId }: Props) {
       </div>
 
       {/* Health Score */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Asset Health Score</h3>
+          <h3 className="text-lg font-semibold text-theme-primary">Asset Health Score</h3>
           <span
             className={`text-2xl font-bold ${
               healthScore >= 80 ? "text-green-400" : healthScore >= 60 ? "text-yellow-400" : "text-red-400"
@@ -140,14 +140,14 @@ export default function AssetPerformanceSection({ companyId, siteId }: Props) {
 
       {/* Category Breakdown */}
       {Object.keys(performance.byCategory).length > 0 && (
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Assets by Category</h3>
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">Assets by Category</h3>
           <div className="space-y-3">
             {Object.entries(performance.byCategory)
               .sort((a, b) => b[1] - a[1])
               .map(([category, count]) => (
                 <div key={category} className="flex items-center justify-between">
-                  <span className="text-gray-700 dark:text-white/80">{category}</span>
+                  <span className="text-theme-secondary">{category}</span>
                   <div className="flex items-center gap-3">
                     <div className="w-32 bg-gray-100 dark:bg-white/[0.05] rounded-full h-2">
                       <div
@@ -155,7 +155,7 @@ export default function AssetPerformanceSection({ companyId, siteId }: Props) {
                         style={{ width: `${(count / performance.total) * 100}%` }}
                       />
                     </div>
-                    <span className="text-gray-900 dark:text-white font-semibold w-12 text-right">{count}</span>
+                    <span className="text-theme-primary font-semibold w-12 text-right">{count}</span>
                   </div>
                 </div>
               ))}

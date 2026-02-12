@@ -55,7 +55,7 @@ export default function PlanlyPendingOrdersWidget({ companyId, siteId }: WidgetP
       case 'in_production':
         return 'bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400';
       default:
-        return 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400';
+        return 'bg-theme-muted text-theme-secondary';
     }
   };
 
@@ -93,12 +93,12 @@ export default function PlanlyPendingOrdersWidget({ companyId, siteId }: WidgetP
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <User className="w-3 h-3 text-[rgb(var(--text-tertiary))] dark:text-white/40" />
+                  <User className="w-3 h-3 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary" />
                   <p className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white truncate">
                     {order.customer_name}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 mt-0.5">
+                <div className="flex items-center gap-2 text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mt-0.5">
                   <span>{order.order_number}</span>
                   <span>•</span>
                   <span>{order.total_items} items</span>
@@ -108,7 +108,7 @@ export default function PlanlyPendingOrdersWidget({ companyId, siteId }: WidgetP
                 <span className={cn('text-xs px-2 py-0.5 rounded-full', getStatusColor(order.status))}>
                   {order.status.replace('_', ' ')}
                 </span>
-                <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 mt-1 flex items-center gap-1">
+                <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mt-1 flex items-center gap-1">
                   <Calendar className="w-3 h-3" />
                   {formatDate(order.delivery_date)}
                 </span>

@@ -190,7 +190,7 @@ export function ProductLinkModal({
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-theme-tertiary" />
           <Input
             placeholder="Search products..."
             value={searchQuery}
@@ -203,14 +203,14 @@ export function ProductLinkModal({
         <div className="flex-1 overflow-y-auto space-y-4 py-2">
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+              <Loader2 className="h-6 w-6 animate-spin text-theme-tertiary" />
             </div>
           ) : (
             <>
               {/* Currently linked products */}
               {linkedProducts.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-white/70 mb-2 flex items-center gap-2">
+                  <h4 className="text-sm font-medium text-theme-secondary mb-2 flex items-center gap-2">
                     <Check className="h-4 w-4 text-green-500" />
                     Currently Linked ({linkedProducts.length})
                   </h4>
@@ -222,11 +222,11 @@ export function ProductLinkModal({
                       >
                         <div className="flex items-center gap-2">
                           <Package className="h-4 w-4 text-green-600 dark:text-green-400" />
-                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          <span className="text-sm font-medium text-theme-primary">
                             {product.name}
                           </span>
                           {product.base_prep_grams_per_unit && (
-                            <span className="text-xs text-gray-500 dark:text-white/50">
+                            <span className="text-xs text-theme-tertiary">
                               ({product.base_prep_grams_per_unit}g/unit)
                             </span>
                           )}
@@ -247,8 +247,8 @@ export function ProductLinkModal({
               {/* Available products */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-white/70 flex items-center gap-2">
-                    <Package className="h-4 w-4 text-gray-400" />
+                  <h4 className="text-sm font-medium text-theme-secondary flex items-center gap-2">
+                    <Package className="h-4 w-4 text-theme-tertiary" />
                     Available Products ({availableProducts.length})
                   </h4>
                   {availableProducts.length > 0 && (
@@ -264,7 +264,7 @@ export function ProductLinkModal({
                         <button
                           type="button"
                           onClick={clearSelection}
-                          className="text-xs text-gray-500 hover:text-gray-700"
+                          className="text-xs text-theme-tertiary hover:text-theme-secondary"
                         >
                           Clear
                         </button>
@@ -274,7 +274,7 @@ export function ProductLinkModal({
                 </div>
 
                 {availableProducts.length === 0 ? (
-                  <div className="text-center py-4 text-gray-500 dark:text-white/50 text-sm">
+                  <div className="text-center py-4 text-theme-tertiary text-sm">
                     {searchQuery ? 'No products match your search' : 'All products are already linked'}
                   </div>
                 ) : (
@@ -292,7 +292,7 @@ export function ProductLinkModal({
                             'w-full flex items-center justify-between px-3 py-2 rounded-lg border transition-colors text-left',
                             isSelected
                               ? 'bg-[#14B8A6]/10 border-[#14B8A6]/30 dark:bg-[#14B8A6]/20 dark:border-[#14B8A6]/40'
-                              : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/10'
+                              : 'bg-theme-surface border-theme hover:bg-theme-surface-elevated dark:hover:bg-white/10'
                           )}
                         >
                           <div className="flex items-center gap-3">
@@ -304,15 +304,15 @@ export function ProductLinkModal({
                                   : 'border-gray-300 dark:border-white/30'
                               )}
                             >
-                              {isSelected && <Check className="h-3 w-3 text-white" />}
+                              {isSelected && <Check className="h-3 w-3 text-theme-primary" />}
                             </div>
-                            <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            <span className="text-sm font-medium text-theme-primary">
                               {product.name}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
                             {product.base_prep_grams_per_unit && (
-                              <span className="text-xs text-gray-500 dark:text-white/50">
+                              <span className="text-xs text-theme-tertiary">
                                 {product.base_prep_grams_per_unit}g/unit
                               </span>
                             )}
@@ -333,9 +333,9 @@ export function ProductLinkModal({
           )}
         </div>
 
-        <DialogFooter className="border-t border-gray-200 dark:border-white/10 pt-4">
+        <DialogFooter className="border-t border-theme pt-4">
           <div className="flex items-center justify-between w-full">
-            <span className="text-sm text-gray-500 dark:text-white/50">
+            <span className="text-sm text-theme-tertiary">
               {selectedIds.size > 0
                 ? `${selectedIds.size} product${selectedIds.size > 1 ? 's' : ''} selected`
                 : 'Select products to link'}

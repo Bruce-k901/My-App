@@ -84,7 +84,9 @@
       "Bash(powershell -File:*)",
       "Bash(node:*)",
       "Bash(npm uninstall:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(sort:*)",
+      "Bash(copy:*)"
     ]
   }
 }

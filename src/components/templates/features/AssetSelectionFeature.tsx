@@ -47,13 +47,13 @@ export function AssetSelectionFeature({
   };
 
   return (
-    <div className="border-t border-gray-200 dark:border-white/10 pt-6">
+    <div className="border-t border-theme pt-6">
       <button
         type="button"
         onClick={() => onExpandedChange?.(!isExpanded)}
         className="w-full flex items-center justify-between mb-4 text-left hover:opacity-80 transition-opacity"
       >
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h2 className="text-lg font-semibold text-theme-primary">
           Asset Selection
           {selectedAssets.length > 0 && (
             <span className="ml-2 text-sm font-normal text-[#D37E91] dark:text-[#D37E91]">
@@ -62,9 +62,9 @@ export function AssetSelectionFeature({
           )}
         </h2>
         {isExpanded ? (
-          <ChevronUp className="w-5 h-5 text-gray-600 dark:text-white/60" />
+          <ChevronUp className="w-5 h-5 text-theme-secondary" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-gray-600 dark:text-white/60" />
+          <ChevronDown className="w-5 h-5 text-theme-secondary" />
         )}
       </button>
       
@@ -72,10 +72,10 @@ export function AssetSelectionFeature({
         <>
           {sites.length > 0 && (
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+              <label className="block text-sm font-medium text-theme-primary mb-2">
                 Filter by Site
                 {selectedSiteId && (
-                  <span className="ml-2 text-xs text-gray-500 dark:text-gray-400 font-normal">
+                  <span className="ml-2 text-xs text-theme-tertiary font-normal">
                     (linked to header selector)
                   </span>
                 )}
@@ -87,7 +87,7 @@ export function AssetSelectionFeature({
                   // Note: Changing this will filter locally, but won't update the header selector
                   // The header selector is the source of truth for site selection
                 }}
-                className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
               >
                 <option value="">All Sites ({assets.length} assets)</option>
                 {sites.map((site) => {
@@ -102,7 +102,7 @@ export function AssetSelectionFeature({
             </div>
           )}
           
-          <div className="max-h-[300px] overflow-y-auto border border-gray-200 dark:border-white/[0.1] rounded-lg bg-gray-50 dark:bg-white/[0.05] p-3">
+          <div className="max-h-[300px] overflow-y-auto border border-theme rounded-lg bg-theme-button p-3">
             <div className="space-y-2">
               {filteredAssets.map((asset) => {
                 const isSelected = selectedAssets.includes(asset.id);
@@ -112,20 +112,20 @@ export function AssetSelectionFeature({
                     className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
                       isSelected
                         ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/25 border border-[#D37E91] dark:border-[#D37E91]/50'
-                        : 'bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] hover:bg-gray-50 dark:hover:bg-white/[0.05]'
+                        : 'bg-theme-surface border border-theme hover:bg-theme-hover'
                     }`}
                   >
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleAsset(asset.id)}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-white/[0.05] text-[#D37E91] focus:ring-[#D37E91] flex-shrink-0"
+ className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-theme-surface ] text-[#D37E91] focus:ring-[#D37E91] flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="text-gray-900 dark:text-white text-sm font-medium">
+                      <div className="text-theme-primary text-sm font-medium">
                         {asset.name}
                         {(asset.category || asset.site_name) && (
-                          <span className="ml-2 text-xs font-normal text-gray-600 dark:text-gray-400">
+                          <span className="ml-2 text-xs font-normal text-theme-secondary">
                             {asset.category && asset.site_name && (
                               <>({asset.category}, {asset.site_name})</>
                             )}
@@ -144,7 +144,7 @@ export function AssetSelectionFeature({
               })}
               
               {filteredAssets.length === 0 && (
-                <p className="text-gray-600 dark:text-gray-400 text-sm text-center py-4">
+                <p className="text-theme-secondary text-sm text-center py-4">
                   No assets found{selectedSiteFilter ? ' for selected site' : ''}
                 </p>
               )}

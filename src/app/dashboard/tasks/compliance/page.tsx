@@ -316,10 +316,10 @@ export default function CompliancePage() {
       'health_safety': 'bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-300 dark:border-red-500/20',
       'fire_safety': 'bg-orange-100 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-300 dark:border-orange-500/20',
       'cleaning': 'bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-300 dark:border-purple-500/20',
-      'compliance': 'bg-[#D37E91]/10 dark:bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91] border-[#D37E91] dark:border-[#D37E91]/20',
+      'compliance': 'bg-module-fg/10 dark:bg-module-fg/15 text-module-fg dark:text-module-fg border-module-fg dark:border-module-fg/20',
       'maintenance': 'bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-500/20'
     };
-    return colors[category] || 'bg-gray-100 dark:bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-300 dark:border-gray-500/20';
+ return colors[category] ||'bg-gray-100 dark:bg-theme-surface-elevated0/10 text-theme-secondary border-gray-300 dark:border-gray-500/20';
   };
 
   const getAuditCategoryColor = (auditCategory: string) => {
@@ -328,33 +328,33 @@ export default function CompliancePage() {
       'health_safety': 'bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-300 dark:border-red-500/20',
       'fire_safety': 'bg-orange-100 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-300 dark:border-orange-500/20',
       'cleaning': 'bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-300 dark:border-purple-500/20',
-      'compliance': 'bg-[#D37E91]/10 dark:bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91] border-[#D37E91] dark:border-[#D37E91]/20',
+      'compliance': 'bg-module-fg/10 dark:bg-module-fg/15 text-module-fg dark:text-module-fg border-module-fg dark:border-module-fg/20',
       'maintenance': 'bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-500/20'
     };
-    return colors[auditCategory] || 'bg-gray-100 dark:bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-300 dark:border-gray-500/20';
+ return colors[auditCategory] ||'bg-gray-100 dark:bg-theme-surface-elevated0/10 text-theme-secondary border-gray-300 dark:border-gray-500/20';
   };
 
   const categories = [...new Set(templates.map(t => t.audit_category || t.category).filter(Boolean))].sort();
 
   return (
-    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#0f1220] text-[rgb(var(--text-primary))] dark:text-white border border-[rgb(var(--border))] dark:border-neutral-800 rounded-xl p-4 sm:p-6 lg:p-8">
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[rgb(var(--surface-elevated))] text-[rgb(var(--text-primary))] dark:text-white border border-[rgb(var(--border))] dark:border-neutral-800 rounded-xl p-4 sm:p-6 lg:p-8">
       <BackToSetup />
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">Compliance Templates</h1>
-        <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm sm:text-base">Pre-built EHO compliance task templates for food safety, health & safety, and regulatory requirements</p>
+        <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm sm:text-base">Pre-built EHO compliance task templates for food safety, health & safety, and regulatory requirements</p>
       </div>
 
       {/* Search and Filters */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-white/40 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary w-4 h-4" />
           <input
             type="text"
             placeholder="Search compliance templates..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-theme-button dark:bg-white/[0.06] border border-theme dark:border-white/[0.1] rounded-lg text-theme-primary dark:text-white placeholder:text-theme-tertiary dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+ className="w-full pl-10 pr-4 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary placeholder:text-theme-tertiary dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-module-fg/40"
           />
         </div>
         
@@ -378,8 +378,8 @@ export default function CompliancePage() {
       {/* Loading State */}
       {loading && (
         <div className="mt-8 text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91]"></div>
-          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mt-2">Loading compliance templates...</p>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-module-fg"></div>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mt-2">Loading compliance templates...</p>
         </div>
       )}
 
@@ -393,18 +393,18 @@ export default function CompliancePage() {
             return (
               <div
                 key={template.id}
-                className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-lg p-5 hover:bg-theme-button-hover dark:hover:bg-white/[0.06] transition-colors cursor-pointer relative group"
+ className="bg-theme-surface border border-theme rounded-lg p-5 hover:bg-theme-button-hover transition-colors cursor-pointer relative group"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 pr-2">
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="p-2 bg-[#D37E91]/15 rounded-lg flex-shrink-0">
-                        <Icon className="w-4 h-4 text-[#D37E91] dark:text-[#D37E91]" />
+                      <div className="p-2 bg-module-fg/15 rounded-lg flex-shrink-0">
+                        <Icon className="w-4 h-4 text-module-fg dark:text-module-fg" />
                       </div>
                       <h3 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">{template.name}</h3>
                     </div>
                     {template.description && (
-                      <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mb-3 line-clamp-2">{template.description}</p>
+                      <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm mb-3 line-clamp-2">{template.description}</p>
                     )}
                   </div>
                   {(() => {
@@ -438,7 +438,7 @@ export default function CompliancePage() {
                 </div>
 
                 {/* Frequency and Dayparts */}
-                <div className="flex items-center gap-4 text-xs text-[rgb(var(--text-tertiary))] dark:text-white/50 mb-4">
+                <div className="flex items-center gap-4 text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mb-4">
                   {template.frequency && (
                     <div className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
@@ -459,7 +459,7 @@ export default function CompliancePage() {
                     e.stopPropagation();
                     handleUseTemplate(template);
                   }}
-                  className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-[#D37E91]/10 dark:bg-[#D37E91]/25 border border-[#D37E91] dark:border-[#D37E91]/40 rounded-lg text-[#D37E91] dark:text-[#D37E91] hover:bg-[#D37E91]/20 dark:hover:bg-[#D37E91]/35 transition-colors group-hover:border-[#D37E91] dark:group-hover:border-[#D37E91]/60"
+                  className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-module-fg/10 dark:bg-module-fg/25 border border-module-fg dark:border-module-fg/40 rounded-lg text-module-fg dark:text-module-fg hover:bg-module-fg/20 dark:hover:bg-module-fg/35 transition-colors group-hover:border-module-fg dark:group-hover:border-module-fg/60"
                 >
                   <Copy className="h-4 w-4" />
                   <span className="text-sm font-medium">Use Template</span>
@@ -474,7 +474,7 @@ export default function CompliancePage() {
       {!loading && filteredTemplates.length === 0 && (
         <div className="mt-8 text-center py-12">
           <FileText className="h-12 w-12 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-4" />
-          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2">
+          <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-2">
             {searchTerm || filterCategory !== 'all' 
               ? 'No templates match your search' 
               : 'No compliance templates available'}
@@ -485,19 +485,19 @@ export default function CompliancePage() {
                 setSearchTerm('');
                 setFilterCategory('all');
               }}
-              className="text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] text-sm mt-2"
+              className="text-module-fg dark:text-module-fg hover:text-module-fg dark:hover:text-module-fg text-sm mt-2"
             >
               Clear filters
             </button>
           ) : (
-            <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">Compliance templates will appear here when available</p>
+            <p className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm">Compliance templates will appear here when available</p>
           )}
         </div>
       )}
 
       {/* Template count */}
       {!loading && filteredTemplates.length > 0 && (
-        <div className="mt-6 text-sm text-[rgb(var(--text-tertiary))] dark:text-white/40">
+        <div className="mt-6 text-sm text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
           Showing {filteredTemplates.length} of {templates.length} compliance templates
         </div>
       )}

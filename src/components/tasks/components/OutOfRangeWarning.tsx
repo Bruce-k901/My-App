@@ -46,10 +46,10 @@ export function OutOfRangeWarning({ outOfRangeAssets }: OutOfRangeWarningProps) 
               <h4 className="text-sm font-semibold text-red-500 mb-1">
                 {asset.assetName} - Temperature Out of Range
               </h4>
-              <p className="text-xs text-neutral-300">
+              <p className="text-xs text-theme-tertiary">
                 Recorded: <span className="text-red-400 font-medium">{asset.temperature}°C</span>
                 <span className="mx-2">|</span>
-                Expected: <span className="text-neutral-400">{formatRange(asset)}</span>
+                Expected: <span className="text-theme-tertiary">{formatRange(asset)}</span>
               </p>
               <p className="text-xs text-red-400 mt-2">
                 Please investigate and take appropriate action

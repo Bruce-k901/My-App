@@ -57,7 +57,7 @@ export default function TeamlyReportsPage() {
       <ReportPageHeader title="Teamly Reports" subtitle="People, attendance, training compliance, and leave" />
       <ReportFiltersBar />
 
-      <div className="flex gap-1 sm:gap-2 border-b border-gray-200 dark:border-white/[0.1] overflow-x-auto">
+      <div className="flex gap-1 sm:gap-2 border-b border-theme overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -65,7 +65,7 @@ export default function TeamlyReportsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-2 sm:px-3 md:px-4 py-2 sm:py-3 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
-                activeTab === tab.id ? "border-blue-500 text-blue-400" : "border-transparent text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white/80"
+                activeTab === tab.id ? "border-blue-500 text-blue-400" : "border-transparent text-theme-tertiary hover:text-theme-secondary dark:hover:text-theme-secondary"
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -120,9 +120,9 @@ function AttendanceSection({
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
+      <div className="bg-theme-surface border border-theme rounded-xl p-8 flex items-center justify-center">
         <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
-        <span className="ml-3 text-gray-500 dark:text-white/60">Loading attendance data...</span>
+        <span className="ml-3 text-theme-tertiary">Loading attendance data...</span>
       </div>
     );
   }
@@ -138,14 +138,14 @@ function AttendanceSection({
       </div>
 
       {data.bySite.length > 0 && (
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Shifts by Site</h3>
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">Shifts by Site</h3>
           <div className="space-y-3">
             {data.bySite
               .sort((a, b) => b.count - a.count)
               .map((site) => (
                 <div key={site.siteId} className="flex items-center justify-between">
-                  <span className="text-gray-700 dark:text-white/80">{site.siteName}</span>
+                  <span className="text-theme-secondary">{site.siteName}</span>
                   <div className="flex items-center gap-3">
                     <div className="w-32 bg-gray-100 dark:bg-white/[0.05] rounded-full h-2">
                       <div
@@ -153,7 +153,7 @@ function AttendanceSection({
                         style={{ width: `${(site.count / data.totalShifts) * 100}%` }}
                       />
                     </div>
-                    <span className="text-gray-900 dark:text-white font-semibold w-12 text-right">{site.count}</span>
+                    <span className="text-theme-primary font-semibold w-12 text-right">{site.count}</span>
                   </div>
                 </div>
               ))}
@@ -224,9 +224,9 @@ function TrainingSection({ companyId, siteId }: { companyId: string; siteId: str
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
+      <div className="bg-theme-surface border border-theme rounded-xl p-8 flex items-center justify-center">
         <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
-        <span className="ml-3 text-gray-500 dark:text-white/60">Loading training data...</span>
+        <span className="ml-3 text-theme-tertiary">Loading training data...</span>
       </div>
     );
   }
@@ -245,9 +245,9 @@ function TrainingSection({ companyId, siteId }: { companyId: string; siteId: str
       </div>
 
       {/* Compliance Rate */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Training Compliance Rate</h3>
+          <h3 className="text-lg font-semibold text-theme-primary">Training Compliance Rate</h3>
           <span className={`text-3xl font-bold ${complianceRate >= 90 ? "text-green-400" : complianceRate >= 70 ? "text-yellow-400" : "text-red-400"}`}>
             {complianceRate}%
           </span>
@@ -262,22 +262,22 @@ function TrainingSection({ companyId, siteId }: { companyId: string; siteId: str
 
       {/* Expiring List */}
       {data.expiringList.length > 0 && (
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Expiring Within 30 Days</h3>
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">Expiring Within 30 Days</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-white/[0.06]">
-                  <th className="text-left py-2 text-gray-500 dark:text-white/50 font-medium">Staff Member</th>
-                  <th className="text-left py-2 text-gray-500 dark:text-white/50 font-medium">Course</th>
-                  <th className="text-right py-2 text-gray-500 dark:text-white/50 font-medium">Expiry Date</th>
+                <tr className="border-b border-theme">
+                  <th className="text-left py-2 text-theme-tertiary font-medium">Staff Member</th>
+                  <th className="text-left py-2 text-theme-tertiary font-medium">Course</th>
+                  <th className="text-right py-2 text-theme-tertiary font-medium">Expiry Date</th>
                 </tr>
               </thead>
               <tbody>
                 {data.expiringList.map((item, i) => (
                   <tr key={i} className="border-b border-gray-100 dark:border-white/[0.04]">
-                    <td className="py-2 text-gray-700 dark:text-white/80">{item.name}</td>
-                    <td className="py-2 text-gray-700 dark:text-white/80">{item.course}</td>
+                    <td className="py-2 text-theme-secondary">{item.name}</td>
+                    <td className="py-2 text-theme-secondary">{item.course}</td>
                     <td className="py-2 text-right text-yellow-400">{item.expiryDate}</td>
                   </tr>
                 ))}
@@ -344,9 +344,9 @@ function LeaveSection({
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
+      <div className="bg-theme-surface border border-theme rounded-xl p-8 flex items-center justify-center">
         <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
-        <span className="ml-3 text-gray-500 dark:text-white/60">Loading leave data...</span>
+        <span className="ml-3 text-theme-tertiary">Loading leave data...</span>
       </div>
     );
   }

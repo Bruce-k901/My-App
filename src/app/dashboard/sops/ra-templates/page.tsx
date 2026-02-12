@@ -38,8 +38,8 @@ export default function RATemplatesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-gradient-to-r dark:from-neutral-700/20 dark:to-neutral-800/20 rounded-2xl p-6 border border-gray-200 dark:border-neutral-700/30">
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">RA Templates</h1>
+      <div className="bg-white dark:bg-gradient-to-r dark:from-neutral-700/20 dark:to-neutral-800/20 rounded-2xl p-6 border border-theme/30">
+        <h1 className="text-2xl font-semibold text-theme-primary mb-2">RA Templates</h1>
         <p className="text-gray-600 dark:text-neutral-300 text-sm">Select a template to create a new risk assessment</p>
       </div>
 
@@ -59,7 +59,7 @@ export default function RATemplatesPage() {
                 <h3 className={`text-lg font-semibold ${template.lightText} dark:text-white`}>{template.title}</h3>
               </div>
               <p className={`text-sm ${template.lightText} opacity-90 dark:text-neutral-300`}>{template.description}</p>
-              <div className={`mt-4 flex items-center gap-2 text-xs font-medium ${template.lightIcon} dark:text-neutral-400`}>
+ <div className={`mt-4 flex items-center gap-2 text-xs font-medium ${template.lightIcon} dark:text-theme-tertiary`}>
                 <Plus size={14} />
                 <span>Create new</span>
               </div>

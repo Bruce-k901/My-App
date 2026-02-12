@@ -279,7 +279,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-t-lg text-sm font-medium whitespace-nowrap transition-all relative ${
                   activeTab === tab.id
                     ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 border-b-2 border-blue-500 dark:border-blue-500 shadow-sm'
-                    : 'text-theme-secondary hover:text-theme-primary hover:bg-blue-50/50 dark:hover:bg-blue-500/10 hover:border-b-2 hover:border-blue-300 dark:hover:border-blue-500/30'
+                    : 'text-theme-secondary hover:text-theme-primary hover:bg-blue-50/50 dark:hover:bg-module-fg/10 hover:border-b-2 hover:border-blue-300 dark:hover:border-blue-500/30'
                 }`}
               >
                 <Icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-blue-600 dark:text-blue-400' : ''}`} />
@@ -679,7 +679,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
             <Button
               type="submit"
               disabled={saving}
-              className="flex-1 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white border-0 shadow-[0_0_12px_rgba(59,130,246,0.4)] dark:shadow-[0_0_12px_rgba(59,130,246,0.5)] hover:shadow-[0_0_16px_rgba(59,130,246,0.6)] dark:hover:shadow-[0_0_16px_rgba(59,130,246,0.7)] transition-all duration-200"
+              className="flex-1 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white border-0 shadow-[0_0_12px_rgba(59,130,246,0.4)] dark:shadow-[0_0_12px_rgba(59,130,246,0.5)] hover:shadow-module-glow dark:hover:shadow-module-glow transition-all duration-200"
             >
               {saving ? (
                 <>
@@ -698,7 +698,7 @@ export default function AddExecutiveModal({ open, onClose, companyId, onRefresh 
               variant="outline"
               onClick={onClose}
               disabled={saving}
-              className="flex-1 border-theme hover:border-blue-300 dark:hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-blue-500/10"
+              className="flex-1 border-theme hover:border-blue-300 dark:hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-module-fg/10"
             >
               Cancel
             </Button>

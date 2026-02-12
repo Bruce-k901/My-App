@@ -131,7 +131,7 @@ export function ProductList({ siteId }: ProductListProps) {
       {/* Sticky Header */}
       <div className="sticky top-0 z-10 bg-gray-50 dark:bg-[#0B0F1A] -mx-4 px-4 pt-2 pb-4 space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Products</h1>
+          <h1 className="text-2xl font-bold text-theme-primary">Products</h1>
           <Button
             onClick={handleAddNew}
             className="bg-[#14B8A6] hover:bg-[#0D9488] text-white"
@@ -144,7 +144,7 @@ export function ProductList({ siteId }: ProductListProps) {
         {/* Tabs - inside sticky header when content loaded */}
         {!isLoading && !error && (
           <>
-            <div className="border-b border-gray-200 dark:border-white/10">
+            <div className="border-b border-theme">
               <nav className="flex space-x-4" aria-label="Tabs">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
@@ -157,7 +157,7 @@ export function ProductList({ siteId }: ProductListProps) {
                         'flex items-center gap-2 px-4 py-2 border-b-2 font-medium text-sm transition-colors',
                         isActive
                           ? 'border-[#14B8A6] text-[#14B8A6]'
-                          : 'border-transparent text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white hover:border-gray-300 dark:hover:border-white/30'
+                          : 'border-transparent text-theme-tertiary hover:text-theme-secondary hover:border-gray-300 dark:hover:border-white/30'
                       )}
                     >
                       <Icon className="h-4 w-4" />
@@ -169,13 +169,13 @@ export function ProductList({ siteId }: ProductListProps) {
             </div>
 
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-white/40" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-theme-tertiary" />
               <Input
                 type="text"
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40"
+                className="pl-10 bg-theme-surface border-theme text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary"
               />
             </div>
           </>
@@ -195,13 +195,13 @@ export function ProductList({ siteId }: ProductListProps) {
       {/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center min-h-[300px]">
-          <div className="text-gray-500 dark:text-white/60">Loading products...</div>
+          <div className="text-theme-tertiary">Loading products...</div>
         </div>
       )}
 
       {/* Error State */}
       {error && !isLoading && (
-        <Card className="p-12 text-center bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
+        <Card className="p-12 text-center bg-theme-surface border-theme">
           <div className="text-red-500 dark:text-red-400">Error loading products. Please try again.</div>
         </Card>
       )}
@@ -215,14 +215,14 @@ export function ProductList({ siteId }: ProductListProps) {
           <Card
             key={product.id}
             className={cn(
-              "p-4 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 transition-all",
+              "p-4 bg-theme-surface border-theme transition-all",
               updatingId === product.id && "opacity-50"
             )}
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                  <h3 className="font-semibold text-theme-primary truncate">
                     {getProductName(product)}
                   </h3>
                   {product.is_new && (
@@ -239,7 +239,7 @@ export function ProductList({ siteId }: ProductListProps) {
                   )}
                 </div>
                 {product.stockly_product?.category && (
-                  <div className="text-xs text-gray-500 dark:text-white/40 mt-1">
+                  <div className="text-xs text-theme-tertiary mt-1">
                     {product.stockly_product.category}
                   </div>
                 )}
@@ -248,7 +248,7 @@ export function ProductList({ siteId }: ProductListProps) {
             </div>
 
             {/* Product details */}
-            <div className="space-y-1 text-sm text-gray-600 dark:text-white/60 mb-3">
+            <div className="space-y-1 text-sm text-theme-secondary mb-3">
               {product.category && (
                 <div>Category: {product.category.name}</div>
               )}
@@ -260,17 +260,17 @@ export function ProductList({ siteId }: ProductListProps) {
 
             {/* Description if present */}
             {product.description && (
-              <p className="text-sm text-gray-500 dark:text-white/50 mb-3 line-clamp-2">
+              <p className="text-sm text-theme-tertiary mb-3 line-clamp-2">
                 {product.description}
               </p>
             )}
 
             {/* Toggles & Actions */}
             {activeTab === 'active' ? (
-              <div className="space-y-3 pt-3 border-t border-gray-200 dark:border-white/10">
+              <div className="space-y-3 pt-3 border-t border-theme">
                 {/* Toggle switches */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 dark:text-white/60">Show "New!" badge</span>
+                  <span className="text-sm text-theme-secondary">Show "New!" badge</span>
                   <Switch
                     checked={product.is_new}
                     onChange={(checked) => updateProduct(product.id, { is_new: checked })}
@@ -278,7 +278,7 @@ export function ProductList({ siteId }: ProductListProps) {
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 dark:text-white/60">Pause ordering</span>
+                  <span className="text-sm text-theme-secondary">Pause ordering</span>
                   <Switch
                     checked={product.is_paused}
                     onChange={(checked) => updateProduct(product.id, { is_paused: checked })}
@@ -292,7 +292,7 @@ export function ProductList({ siteId }: ProductListProps) {
                     variant="outline"
                     size="sm"
                     onClick={() => handleEdit(product)}
-                    className="bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
+                    className="bg-theme-surface border-theme text-theme-secondary hover:bg-theme-surface-elevated dark:hover:bg-white/10"
                   >
                     Edit
                   </Button>
@@ -301,7 +301,7 @@ export function ProductList({ siteId }: ProductListProps) {
                     size="sm"
                     onClick={() => archiveProduct(product.id)}
                     disabled={updatingId === product.id}
-                    className="text-gray-500 dark:text-white/60 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
+                    className="text-theme-tertiary hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
                   >
                     <Archive className="h-4 w-4 mr-1" />
                     Archive
@@ -309,8 +309,8 @@ export function ProductList({ siteId }: ProductListProps) {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-white/10">
-                <div className="text-xs text-gray-500 dark:text-white/40">
+              <div className="flex items-center justify-between pt-3 border-t border-theme">
+                <div className="text-xs text-theme-tertiary">
                   Archived {product.archived_at ? new Date(product.archived_at).toLocaleDateString() : ''}
                 </div>
                 <Button
@@ -318,7 +318,7 @@ export function ProductList({ siteId }: ProductListProps) {
                   size="sm"
                   onClick={() => restoreProduct(product.id)}
                   disabled={updatingId === product.id}
-                  className="bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
+                  className="bg-theme-surface border-theme text-theme-secondary hover:bg-theme-surface-elevated dark:hover:bg-white/10"
                 >
                   <RotateCcw className="h-4 w-4 mr-1" />
                   Restore
@@ -331,8 +331,8 @@ export function ProductList({ siteId }: ProductListProps) {
 
         {/* Empty state */}
         {filteredProducts.length === 0 && (
-          <Card className="p-12 text-center bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
-            <div className="text-gray-500 dark:text-white/60">
+          <Card className="p-12 text-center bg-theme-surface border-theme">
+            <div className="text-theme-tertiary">
               {searchQuery
                 ? 'No products match your search'
                 : activeTab === 'archived'

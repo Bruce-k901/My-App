@@ -105,7 +105,7 @@ export default function OrderDetailPage() {
   if (!order) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        <p className="text-white/60">Order not found</p>
+        <p className="text-theme-tertiary">Order not found</p>
         <Link
           href="/customer/orders"
           className="text-[#D37E91] hover:text-[#D37E91]/80 text-sm mt-4 inline-block"
@@ -122,15 +122,15 @@ export default function OrderDetailPage() {
       <div className="mb-6">
         <Link
           href="/customer/orders"
-          className="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm mb-4 transition-colors"
+          className="inline-flex items-center gap-2 text-theme-tertiary hover:text-white text-sm mb-4 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Orders
         </Link>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">Order Details</h1>
-            <p className="text-white/60 text-sm mt-1">Order #{order.order_number}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary">Order Details</h1>
+            <p className="text-theme-tertiary text-sm mt-1">Order #{order.order_number}</p>
           </div>
           <span
             className={`text-sm px-3 py-1.5 rounded ${
@@ -152,29 +152,29 @@ export default function OrderDetailPage() {
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <div className="text-sm text-white/60 mb-1">Order Date</div>
-            <div className="text-white font-medium">{formatDate(order.order_date)}</div>
+            <div className="text-sm text-theme-tertiary mb-1">Order Date</div>
+            <div className="text-theme-primary font-medium">{formatDate(order.order_date)}</div>
           </div>
           <div>
-            <div className="text-sm text-white/60 mb-1 flex items-center gap-2">
+            <div className="text-sm text-theme-tertiary mb-1 flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               Delivery Date
             </div>
-            <div className="text-white font-medium">{formatDate(order.delivery_date)}</div>
+            <div className="text-theme-primary font-medium">{formatDate(order.delivery_date)}</div>
           </div>
         </div>
       </div>
 
       {/* Order Items */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden mb-6">
-        <h2 className="text-lg font-semibold text-white p-4 sm:p-6 pb-4 border-b border-white/[0.06]">
+        <h2 className="text-lg font-semibold text-theme-primary p-4 sm:p-6 pb-4 border-b border-white/[0.06]">
           Order Items
         </h2>
         {!order.items || order.items.length === 0 ? (
-          <div className="p-6 text-center text-white/60">
+          <div className="p-6 text-center text-theme-tertiary">
             <p>No items in this order</p>
             {order.id && (
-              <p className="text-xs mt-2 text-white/40">
+              <p className="text-xs mt-2 text-theme-tertiary">
                 Order ID: {order.id}
               </p>
             )}
@@ -184,10 +184,10 @@ export default function OrderDetailPage() {
             <table className="w-full border-collapse">
               <thead className="sticky top-0 z-20">
                 <tr className="bg-white/[0.05] border-b border-white/[0.1]">
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-white">Product</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-white">Quantity</th>
-                  <th className="px-4 py-3 text-right text-sm font-semibold text-white">Unit Price</th>
-                  <th className="px-4 py-3 text-right text-sm font-semibold text-white">Line Total</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-theme-primary">Product</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-theme-primary">Quantity</th>
+                  <th className="px-4 py-3 text-right text-sm font-semibold text-theme-primary">Unit Price</th>
+                  <th className="px-4 py-3 text-right text-sm font-semibold text-theme-primary">Line Total</th>
                 </tr>
               </thead>
               <tbody>
@@ -214,11 +214,11 @@ export default function OrderDetailPage() {
                       >
                         <td className="px-4 py-3">
                           <div>
-                            <div className="font-medium text-white text-sm">
+                            <div className="font-medium text-theme-primary text-sm">
                               {productName}
                             </div>
                             {productUnit && (
-                              <div className="text-xs text-white/60 mt-0.5">
+                              <div className="text-xs text-theme-tertiary mt-0.5">
                                 {productUnit}
                               </div>
                             )}
@@ -229,10 +229,10 @@ export default function OrderDetailPage() {
                             {item.quantity}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-right text-white/80">
+                        <td className="px-4 py-3 text-right text-theme-secondary">
                           {formatCurrency(item.unit_price)}
                         </td>
-                        <td className="px-4 py-3 text-right text-white font-medium">
+                        <td className="px-4 py-3 text-right text-theme-primary font-medium">
                           {formatCurrency(lineTotal)}
                         </td>
                       </tr>
@@ -240,7 +240,7 @@ export default function OrderDetailPage() {
                   })
                 ) : (
                   <tr>
-                    <td colSpan={4} className="px-4 py-6 text-center text-white/60">
+                    <td colSpan={4} className="px-4 py-6 text-center text-theme-tertiary">
                       No items found in this order
                     </td>
                   </tr>
@@ -254,11 +254,11 @@ export default function OrderDetailPage() {
       {/* Order Summary */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-white/60">Subtotal</span>
-          <span className="text-white font-medium">{formatCurrency(order.subtotal)}</span>
+          <span className="text-theme-tertiary">Subtotal</span>
+          <span className="text-theme-primary font-medium">{formatCurrency(order.subtotal)}</span>
         </div>
         <div className="flex items-center justify-between pt-4 border-t border-white/[0.06]">
-          <span className="text-lg font-semibold text-white">Total</span>
+          <span className="text-lg font-semibold text-theme-primary">Total</span>
           <span className="text-2xl font-bold text-[#D37E91]">{formatCurrency(order.total)}</span>
         </div>
       </div>
@@ -266,16 +266,16 @@ export default function OrderDetailPage() {
       {/* Invoice Download (if available) */}
       {order.status === 'delivered' && (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6">
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
             <FileText className="w-5 h-5 text-[#D37E91]" />
             Invoice
           </h2>
-          <p className="text-white/60 text-sm mb-4">
+          <p className="text-theme-tertiary text-sm mb-4">
             Your invoice is available for download.
           </p>
           <Button
             variant="ghost"
-            className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] min-h-[44px]"
+            className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-module-glow min-h-[44px]"
             disabled
           >
             <Download className="w-4 h-4 mr-2" />

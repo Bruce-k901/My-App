@@ -107,10 +107,10 @@ export default function LowStockWidget({ siteId, companyId }: LowStockWidgetProp
     return (
       <WidgetCard title="Low Stock Alerts" module="stockly" viewAllHref="/dashboard/stockly/stock-items">
         <div className="flex items-center gap-2 py-4 justify-center">
-          <div className="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center">
-            <Check className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="w-6 h-6 rounded-full bg-module-fg/10 flex items-center justify-center">
+            <Check className="w-3.5 h-3.5 text-module-fg" />
           </div>
-          <span className="text-emerald-400 text-xs">Stock levels are healthy</span>
+          <span className="text-module-fg text-xs">Stock levels are healthy</span>
         </div>
       </WidgetCard>
     );

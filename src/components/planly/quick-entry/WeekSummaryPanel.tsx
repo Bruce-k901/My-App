@@ -19,7 +19,7 @@ export function WeekSummaryPanel({
 
   return (
     <div className="flex items-center justify-between text-sm px-2">
-      <span className="text-gray-500 dark:text-white/50">
+      <span className="text-theme-tertiary">
         {grandTotal.quantity} items across {grandTotal.days} days
       </span>
       <div className="flex items-center gap-4">
@@ -29,7 +29,7 @@ export function WeekSummaryPanel({
             <span className="text-xs font-medium">Unsaved</span>
           </div>
         )}
-        <span className="font-semibold text-gray-900 dark:text-white">
+        <span className="font-semibold text-theme-primary">
           Total: £{grandTotal.value.toFixed(2)}
         </span>
       </div>

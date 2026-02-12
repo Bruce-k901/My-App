@@ -212,15 +212,15 @@ export default function SignupPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-semibold text-white">Check Your Email</h1>
-              <p className="text-white/80 text-sm sm:text-base">
-                We've sent a confirmation email to <strong className="text-white">{pendingSignupData.email}</strong>
+              <h1 className="text-2xl sm:text-3xl font-semibold text-theme-primary">Check Your Email</h1>
+              <p className="text-theme-secondary text-sm sm:text-base">
+                We've sent a confirmation email to <strong className="text-theme-primary">{pendingSignupData.email}</strong>
               </p>
-              <p className="text-white/60 text-xs sm:text-sm">
+              <p className="text-theme-tertiary text-xs sm:text-sm">
                 Please click the confirmation link in the email to complete your account setup. Once confirmed, you'll be automatically signed in and can continue setting up your company.
               </p>
               <div className="pt-4 space-y-3">
-                <p className="text-white/50 text-xs">
+                <p className="text-theme-tertiary text-xs">
                   Didn't receive the email? Check your spam folder or{" "}
                   <button
                     onClick={() => {
@@ -250,13 +250,13 @@ export default function SignupPage() {
       <main className="flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 py-6 sm:py-10">
         <GlassCard className="py-6 sm:py-8 px-4 sm:px-6 w-full max-w-md mx-auto">
           <form onSubmit={handleSignup} className="w-full space-y-4 sm:space-y-5">
-            <h1 className="text-2xl sm:text-3xl font-semibold text-center mb-4 sm:mb-6 text-white">Create Your Account</h1>
+            <h1 className="text-2xl sm:text-3xl font-semibold text-center mb-4 sm:mb-6 text-theme-primary">Create Your Account</h1>
 
             {error && <p className="text-xs sm:text-sm text-red-400 text-center mb-3">{error}</p>}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-white/60 text-sm mb-2">First Name</label>
+                <label className="block text-theme-tertiary text-sm mb-2">First Name</label>
                 <Input
                   placeholder="First Name"
                   value={form.firstName}
@@ -266,7 +266,7 @@ export default function SignupPage() {
                 />
               </div>
               <div>
-                <label className="block text-white/60 text-sm mb-2">Last Name</label>
+                <label className="block text-theme-tertiary text-sm mb-2">Last Name</label>
                 <Input
                   placeholder="Last Name"
                   value={form.lastName}
@@ -278,7 +278,7 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label className="block text-white/60 text-sm mb-2">Company Name</label>
+              <label className="block text-theme-tertiary text-sm mb-2">Company Name</label>
               <Input
                 placeholder="Company Name"
                 value={form.company}
@@ -289,7 +289,7 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label className="block text-white/60 text-sm mb-2">Your Role</label>
+              <label className="block text-theme-tertiary text-sm mb-2">Your Role</label>
               <select
                 value={form.role}
                 onChange={(e) =>
@@ -298,7 +298,7 @@ export default function SignupPage() {
                     role: e.target.value as "Owner" | "Admin" | "Manager",
                   })
                 }
-                className="w-full rounded-md bg-black/40 border border-white/20 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+                className="w-full rounded-md bg-black/40 border border-white/20 px-3 py-2 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
               >
                 <option value="Owner">Owner</option>
                 <option value="Admin">Admin</option>
@@ -313,7 +313,7 @@ export default function SignupPage() {
               See: tests/signup-email-fields.test.tsx
             */}
             <div>
-              <label htmlFor="signup-email" className="block text-white/60 text-sm mb-2">
+              <label htmlFor="signup-email" className="block text-theme-tertiary text-sm mb-2">
                 Email Address <span className="text-red-400">*</span>
               </label>
               <Input
@@ -329,7 +329,7 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label htmlFor="signup-confirm-email" className="block text-white/60 text-sm mb-2">
+              <label htmlFor="signup-confirm-email" className="block text-theme-tertiary text-sm mb-2">
                 Confirm Email Address <span className="text-red-400">*</span>
               </label>
               <Input
@@ -348,7 +348,7 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label className="block text-white/60 text-sm mb-2">Password</label>
+              <label className="block text-theme-tertiary text-sm mb-2">Password</label>
               <div className="relative">
                 <Input
                   placeholder="Password"
@@ -360,7 +360,7 @@ export default function SignupPage() {
                 />
                 <button
                   type="button"
-                  className="absolute right-10 sm:right-12 top-1/2 -translate-y-1/2 text-white/60 hover:text-white p-1"
+                  className="absolute right-10 sm:right-12 top-1/2 -translate-y-1/2 text-theme-tertiary hover:text-white p-1"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label="Toggle password visibility"
                 >
@@ -368,7 +368,7 @@ export default function SignupPage() {
                 </button>
                 <button
                   type="button"
-                  className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white p-1"
+                  className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-theme-tertiary hover:text-white p-1"
                   onClick={generatePassword}
                   aria-label="Generate password"
                 >

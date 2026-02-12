@@ -126,7 +126,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
       {/* LEFT COLUMN */}
       <div className="space-y-3">
         <div>
-          <label className="block text-sm font-medium text-gray-300">Company Name *</label>
+          <label className="block text-sm font-medium text-theme-tertiary">Company Name *</label>
           <div className="space-y-1 relative">
             <input
               type="text"
@@ -135,11 +135,11 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
                 setForm({ ...form, name: e.target.value });
                 setQuery(e.target.value);
               }}
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
               placeholder="Start typing company name..."
               required
             />
-            {loading && <div className="absolute right-3 top-8 text-xs text-gray-400">...</div>}
+            {loading && <div className="absolute right-3 top-8 text-xs text-theme-tertiary">...</div>}
 
             {lookupResults.length > 0 && (
               <ul className="absolute z-50 bg-white border border-gray-200 rounded-lg shadow-md w-full mt-1 max-h-60 overflow-y-auto">
@@ -149,9 +149,9 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
                     className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={() => handleSelect(r)}
                   >
-                    <div className="font-medium text-gray-800">{r.name}</div>
+                    <div className="font-medium text-theme-primary">{r.name}</div>
                     {r.address_line && (
-                      <div className="text-xs text-gray-500 truncate">{r.address_line}</div>
+                      <div className="text-xs text-theme-tertiary truncate">{r.address_line}</div>
                     )}
                   </li>
                 ))}
@@ -161,29 +161,29 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300">Contact Name</label>
+          <label className="block text-sm font-medium text-theme-tertiary">Contact Name</label>
           <input
             type="text"
             value={form.contact_name || ""}
             onChange={(e) => setForm({ ...form, contact_name: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
             placeholder="Primary contact person"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300">Address</label>
+          <label className="block text-sm font-medium text-theme-tertiary">Address</label>
           <textarea
             rows={2}
             value={form.address || ""}
             onChange={(e) => setForm({ ...form, address: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
             placeholder="Full business address"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300">Postcode</label>
+          <label className="block text-sm font-medium text-theme-tertiary">Postcode</label>
           <input
             type="text"
             value={form.postcode || ""}
@@ -192,7 +192,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
               setForm({ ...form, postcode: value });
               validatePostcode(value);
             }}
-            className={`w-full rounded-md border px-2 py-1 text-white ${
+            className={`w-full rounded-md border px-2 py-1 text-theme-primary ${
               postcodeError ? "border-red-500 bg-red-900/20" : "border-gray-600 bg-gray-800"
             }`}
             placeholder="SW1A 1AA"
@@ -201,30 +201,30 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300">Region</label>
+          <label className="block text-sm font-medium text-theme-tertiary">Region</label>
           <input
             type="text"
             value={form.region || ""}
             onChange={(e) => setForm({ ...form, region: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
             placeholder="Auto-populated from postcode"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300">Website</label>
+          <label className="block text-sm font-medium text-theme-tertiary">Website</label>
           <input
             type="url"
             placeholder="https://example.com"
             value={form.website || ""}
             onChange={(e) => setForm({ ...form, website: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-sm font-medium text-gray-300">Callout Fee (£)</label>
+            <label className="block text-sm font-medium text-theme-tertiary">Callout Fee (£)</label>
             <input
               type="number"
               step="0.01"
@@ -232,11 +232,11 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
               placeholder="0.00"
               value={form.callout_fee || ""}
               onChange={(e) => setForm({ ...form, callout_fee: e.target.value })}
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300">Hourly Rate (£)</label>
+            <label className="block text-sm font-medium text-theme-tertiary">Hourly Rate (£)</label>
             <input
               type="number"
               step="0.01"
@@ -244,7 +244,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
               placeholder="0.00"
               value={form.hourly_rate || ""}
               onChange={(e) => setForm({ ...form, hourly_rate: e.target.value })}
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
             />
           </div>
         </div>
@@ -256,48 +256,48 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
 
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-sm font-medium text-gray-300">Telephone</label>
+            <label className="block text-sm font-medium text-theme-tertiary">Telephone</label>
             <input
               type="text"
               value={form.phone || ""}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300">OOH Phone</label>
+            <label className="block text-sm font-medium text-theme-tertiary">OOH Phone</label>
             <input
               type="text"
               value={form.ooh_phone || ""}
               onChange={(e) => setForm({ ...form, ooh_phone: e.target.value })}
-              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+              className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300">Email</label>
+          <label className="block text-sm font-medium text-theme-tertiary">Email</label>
           <input
             type="email"
             value={form.email || ""}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300">Service Description</label>
+          <label className="block text-sm font-medium text-theme-tertiary">Service Description</label>
           <textarea
             rows={3}
             placeholder="Describe the services this contractor provides..."
             value={form.notes || ""}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Site</label>
+          <label className="block text-sm font-medium text-theme-tertiary mb-1">Site</label>
           <SiteSelector
             value={form.site_id || null}
             onChange={(value) => setForm({ ...form, site_id: value || "" })}
@@ -307,7 +307,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Type</label>
+          <label className="block text-sm font-medium text-theme-tertiary mb-1">Type</label>
           <Select
             value={form.type || ""}
             onValueChange={(value: string) => setForm({ ...form, type: value })}
@@ -322,7 +322,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Status</label>
+          <label className="block text-sm font-medium text-theme-tertiary mb-1">Status</label>
           <Select
             value={form.status || "active"}
             onValueChange={(value: string) => setForm({ ...form, status: value })}
@@ -343,7 +343,7 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
             onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
             className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-[#D37E91] focus:ring-[#D37E91]"
           />
-          <label htmlFor="is_active" className="text-sm font-medium text-gray-300">
+          <label htmlFor="is_active" className="text-sm font-medium text-theme-tertiary">
             Active Contractor
           </label>
         </div>
@@ -351,25 +351,25 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
 
       {/* THIRD COLUMN - Contract Details */}
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-2">Contract Details</h3>
+        <h3 className="text-sm font-semibold text-theme-tertiary uppercase tracking-wide mb-2">Contract Details</h3>
         
         <div>
-          <label className="block text-sm font-medium text-gray-300">Contract Start Date</label>
+          <label className="block text-sm font-medium text-theme-tertiary">Contract Start Date</label>
           <input
             type="date"
             value={form.contract_start || ""}
             onChange={(e) => setForm({ ...form, contract_start: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300">Contract Expiry Date</label>
+          <label className="block text-sm font-medium text-theme-tertiary">Contract Expiry Date</label>
           <input
             type="date"
             value={form.contract_expiry || ""}
             onChange={(e) => setForm({ ...form, contract_expiry: e.target.value })}
-            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-white"
+            className="w-full rounded-md border border-gray-600 bg-gray-800 px-2 py-1 text-theme-primary"
           />
         </div>
 
@@ -509,12 +509,12 @@ function ContractFileUpload({ value, onChange }: { value: string; onChange: (url
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-300 mb-2">Contract File</label>
+      <label className="block text-sm font-medium text-theme-tertiary mb-2">Contract File</label>
       
       {value ? (
         <div className="flex items-center gap-2 p-2 rounded-md border border-gray-600 bg-gray-800">
-          <FileText className="h-4 w-4 text-gray-400" />
-          <span className="flex-1 text-sm text-white truncate">{getFileName(value)}</span>
+          <FileText className="h-4 w-4 text-theme-tertiary" />
+          <span className="flex-1 text-sm text-theme-primary truncate">{getFileName(value)}</span>
           <a
             href={value}
             target="_blank"
@@ -558,7 +558,7 @@ function ContractFileUpload({ value, onChange }: { value: string; onChange: (url
               </>
             )}
           </Button>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-theme-tertiary mt-1">
             PDF, Word, or image files (max 10MB)
           </p>
         </div>

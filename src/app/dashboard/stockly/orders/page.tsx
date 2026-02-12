@@ -143,7 +143,7 @@ export default function PurchaseOrdersPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'draft':
-        return 'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-500/30';
+ return'bg-gray-50 dark:bg-theme-surface-elevated0/20 text-theme-secondary border border-gray-200 dark:border-gray-500/30';
       case 'pending_approval':
         return 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30';
       case 'approved':
@@ -151,7 +151,7 @@ export default function PurchaseOrdersPage() {
       case 'sent':
         return 'bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30';
       case 'acknowledged':
-        return 'bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30';
+        return 'bg-indigo-50 dark:bg-module-fg/20 text-module-fg border border-indigo-200 dark:border-module-fg/30';
       case 'partial_received':
         return 'bg-orange-50 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-500/30';
       case 'received':
@@ -159,7 +159,7 @@ export default function PurchaseOrdersPage() {
       case 'cancelled':
         return 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/30';
       default:
-        return 'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-500/30';
+ return'bg-gray-50 dark:bg-theme-surface-elevated0/20 text-theme-secondary border border-gray-200 dark:border-gray-500/30';
     }
   };
 
@@ -220,36 +220,36 @@ export default function PurchaseOrdersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-module-fg animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+    <div className="w-full bg-theme-surface-elevated min-h-screen">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link 
               href="/dashboard/stockly"
-              className="p-2 rounded-lg bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
+ className="p-2 rounded-lg bg-theme-surface ] hover:bg-theme-muted border border-theme text-theme-secondary hover:text-theme-primary transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-                <FileText className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+              <h1 className="text-3xl font-bold text-theme-primary mb-2 flex items-center gap-3">
+                <FileText className="w-8 h-8 text-module-fg" />
                 Purchase Orders
               </h1>
-              <p className="text-gray-600 dark:text-white/60 text-sm mt-1">
+              <p className="text-theme-secondary text-sm mt-1">
                 Manage your supplier orders
               </p>
             </div>
           </div>
           <Link
             href="/dashboard/stockly/orders/new"
-            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out"
           >
             <Plus className="w-5 h-5" />
             New Order
@@ -257,11 +257,11 @@ export default function PurchaseOrdersPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+        <div className="bg-theme-surface border border-theme rounded-xl p-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
               <label htmlFor="order-search" className="sr-only">Search orders</label>
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-white/40" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary" />
               <input
                 id="order-search"
                 name="order_search"
@@ -269,7 +269,7 @@ export default function PurchaseOrdersPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by order number or supplier..."
-                className="w-full pl-10 pr-4 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
+ className="w-full pl-10 pr-4 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
               />
             </div>
             <div className="sm:w-48">
@@ -279,7 +279,7 @@ export default function PurchaseOrdersPage() {
                 name="status_filter"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-4 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
+ className="w-full px-4 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
               >
                 {STATUS_OPTIONS.map(option => (
                   <option key={option.value} value={option.value}>
@@ -293,10 +293,10 @@ export default function PurchaseOrdersPage() {
 
         {/* Orders List */}
         {filteredOrders.length === 0 ? (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-12 text-center">
+          <div className="bg-theme-surface border border-theme rounded-xl p-12 text-center">
             <Package className="w-12 h-12 text-gray-300 dark:text-white/20 mx-auto mb-4" />
-            <h3 className="text-gray-900 dark:text-white font-medium mb-2">No purchase orders found</h3>
-            <p className="text-gray-600 dark:text-white/60 text-sm mb-4">
+            <h3 className="text-theme-primary font-medium mb-2">No purchase orders found</h3>
+            <p className="text-theme-secondary text-sm mb-4">
               {searchTerm || statusFilter !== 'all' 
                 ? 'Try adjusting your filters'
                 : 'Create your first purchase order to get started'}
@@ -304,7 +304,7 @@ export default function PurchaseOrdersPage() {
             {!searchTerm && statusFilter === 'all' && (
               <Link
                 href="/dashboard/stockly/orders/new"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out"
               >
                 <Plus className="w-4 h-4" />
                 Create Order
@@ -312,48 +312,48 @@ export default function PurchaseOrdersPage() {
             )}
           </div>
         ) : (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
+          <div className="bg-theme-surface border border-theme rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 dark:bg-white/[0.05] border-b border-gray-200 dark:border-white/[0.06]">
+                <thead className="bg-theme-button border-b border-theme">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Order Number
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Supplier
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Order Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Expected Delivery
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-right text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Total
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-right text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-white/[0.06]">
                   {filteredOrders.map((order) => (
-                    <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
+                    <tr key={order.id} className="hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02] transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-gray-900 dark:text-white font-medium">{order.order_number}</div>
+                        <div className="text-theme-primary font-medium">{order.order_number}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-gray-900 dark:text-white">{order.supplier.name}</div>
+                        <div className="text-theme-primary">{order.supplier.name}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-gray-700 dark:text-white/80">{formatDate(order.order_date)}</div>
+                        <div className="text-theme-secondary">{formatDate(order.order_date)}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-gray-700 dark:text-white/80">
+                        <div className="text-theme-secondary">
                           {order.expected_delivery ? formatDate(order.expected_delivery) : '-'}
                         </div>
                       </td>
@@ -363,7 +363,7 @@ export default function PurchaseOrdersPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <div className="text-gray-900 dark:text-white font-medium">
+                        <div className="text-theme-primary font-medium">
                           £{order.total?.toFixed(2) || '0.00'}
                         </div>
                       </td>
@@ -371,7 +371,7 @@ export default function PurchaseOrdersPage() {
                         <div className="flex items-center justify-end gap-2">
                           <Link
                             href={`/dashboard/stockly/orders/${order.id}`}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-module-fg hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
                           >
                             <Eye className="w-4 h-4" />
                             View
@@ -396,17 +396,17 @@ export default function PurchaseOrdersPage() {
         {/* Delete Confirmation Modal */}
         {deleteModalOpen && orderToDelete && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-[#1a1d24] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
+            <div className="bg-white dark:bg-[#1a1d24] border border-theme rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center">
                   <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-theme-primary">
                   Delete Purchase Order
                 </h3>
               </div>
-              <p className="text-gray-600 dark:text-white/60 mb-6">
-                Are you sure you want to delete order <span className="font-medium text-gray-900 dark:text-white">{orderToDelete.order_number}</span>?
+              <p className="text-theme-secondary mb-6">
+                Are you sure you want to delete order <span className="font-medium text-theme-primary">{orderToDelete.order_number}</span>?
                 This will also delete all order lines. This action cannot be undone.
               </p>
               <div className="flex items-center justify-end gap-3">
@@ -416,7 +416,7 @@ export default function PurchaseOrdersPage() {
                     setOrderToDelete(null);
                   }}
                   disabled={deleting}
-                  className="px-4 py-2 text-gray-700 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors disabled:opacity-50"
+                  className="px-4 py-2 text-theme-secondary hover:text-theme-primary hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>

@@ -379,7 +379,7 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-8 h-8 text-[#D37E91] dark:text-[#D37E91] animate-spin" />
-          <span className="ml-3 text-gray-500 dark:text-white/60">Loading...</span>
+          <span className="ml-3 text-theme-tertiary">Loading...</span>
         </div>
       </div>
     )
@@ -389,14 +389,14 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">EHO Readiness Pack</h1>
-        <p className="text-gray-500 dark:text-neutral-400">
+        <h1 className="text-3xl font-bold text-theme-primary mb-2">EHO Readiness Pack</h1>
+ <p className="text-gray-500 dark:text-theme-tertiary">
           Analyze your compliance readiness and generate comprehensive reports for Environmental Health Officer inspections
         </p>
       </div>
 
       {/* Site Selector - Always Visible */}
-      <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+      <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-xl p-6">
         <Select
           label="Site"
           value={selectedSiteId}
@@ -430,12 +430,12 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
                 <ShieldCheck className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Full EHO Compliance Pack</h2>
-                <p className="text-sm text-gray-600 dark:text-white/60 mt-1">
+                <h2 className="text-lg font-semibold text-theme-primary">Full EHO Compliance Pack</h2>
+                <p className="text-sm text-theme-secondary mt-1">
                   Generate a comprehensive A-Z compliance report covering all 14 sections — temperature logs, cleaning records,
                   training certificates, incidents, pest control, COSHH, equipment, documentation, and more.
                 </p>
-                <p className="text-xs text-gray-400 dark:text-white/40 mt-2">
+                <p className="text-xs text-theme-tertiary mt-2">
                   {startDate && endDate
                     ? `Report period: ${startDate} to ${endDate}`
                     : 'Defaults to the last 90 days if no dates are set below'
@@ -465,52 +465,52 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
       )}
 
       {/* Report Generator - Collapsible */}
-      <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
+      <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-xl overflow-hidden">
         <button
           onClick={() => setReportGeneratorExpanded(!reportGeneratorExpanded)}
           className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
         >
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Generate Report</h2>
-            <p className="text-sm text-gray-500 dark:text-white/60">Export compliance data as PDF, JSON, or ZIP</p>
+            <h2 className="text-lg font-semibold text-theme-primary">Generate Report</h2>
+            <p className="text-sm text-theme-tertiary">Export compliance data as PDF, JSON, or ZIP</p>
           </div>
           {reportGeneratorExpanded ? (
-            <ChevronUp className="w-5 h-5 text-gray-400 dark:text-white/60" />
+            <ChevronUp className="w-5 h-5 text-theme-tertiary" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-gray-400 dark:text-white/60" />
+            <ChevronDown className="w-5 h-5 text-theme-tertiary" />
           )}
         </button>
 
         {reportGeneratorExpanded && (
-          <div className="px-6 pb-6 pt-2 border-t border-gray-200 dark:border-white/[0.06] space-y-6">
+          <div className="px-6 pb-6 pt-2 border-t border-theme space-y-6">
             {/* Date Range */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Start Date
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40" />
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-theme-tertiary" />
                   <input
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91] dark:focus:border-[#D37E91]/50"
+ className="w-full pl-10 pr-4 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91] dark:focus:border-[#D37E91]/50"
                     max={endDate}
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   End Date
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40" />
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-theme-tertiary" />
                   <input
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91] dark:focus:border-[#D37E91]/50"
+ className="w-full pl-10 pr-4 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91] dark:focus:border-[#D37E91]/50"
                     min={startDate}
                     max={new Date().toISOString().split('T')[0]}
                   />
@@ -520,14 +520,14 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
 
             {/* Template Categories */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Template Categories (optional - leave empty for all)
               </label>
               <div className="flex flex-wrap gap-2">
                 {templateCategories.map((cat) => (
                   <label
                     key={cat.value}
-                    className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors"
+ className="flex items-center gap-2 px-3 py-2 bg-theme-surface ] border border-theme rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors"
                   >
                     <input
                       type="checkbox"
@@ -541,7 +541,7 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
                       }}
                       className="w-4 h-4 text-[#D37E91] rounded focus:ring-[#D37E91]"
                     />
-                    <span className="text-sm text-gray-700 dark:text-white/80">{cat.label}</span>
+                    <span className="text-sm text-theme-secondary">{cat.label}</span>
                   </label>
                 ))}
               </div>
@@ -556,13 +556,13 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
                   onChange={(e) => setIncludeMissedTasks(e.target.checked)}
                   className="w-4 h-4 text-[#D37E91] rounded focus:ring-[#D37E91]"
                 />
-                <span className="text-sm text-gray-700 dark:text-white/80">Include missed tasks in report</span>
+                <span className="text-sm text-theme-secondary">Include missed tasks in report</span>
               </label>
             </div>
 
             {/* Export Format */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Export Format
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -571,11 +571,11 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
                   className={`flex flex-col items-center gap-2 p-4 border rounded-lg transition-all ${
                     exportFormat === 'pdf'
                       ? 'border-[#D37E91] dark:border-[#D37E91]/50 bg-[#D37E91]/10 dark:bg-[#D37E91]/15'
-                      : 'border-gray-200 dark:border-white/[0.1] bg-white dark:bg-white/[0.03] hover:bg-gray-50 dark:hover:bg-white/[0.05]'
+                      : 'border-theme bg-theme-surface hover:bg-theme-hover'
                   }`}
                 >
-                  <FileText className={`w-6 h-6 ${exportFormat === 'pdf' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-gray-400 dark:text-white/60'}`} />
-                  <span className={`text-sm font-medium ${exportFormat === 'pdf' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-gray-600 dark:text-white/70'}`}>
+                  <FileText className={`w-6 h-6 ${exportFormat === 'pdf' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-theme-tertiary'}`} />
+                  <span className={`text-sm font-medium ${exportFormat === 'pdf' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-theme-secondary'}`}>
                     PDF
                   </span>
                 </button>
@@ -584,11 +584,11 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
                   className={`flex flex-col items-center gap-2 p-4 border rounded-lg transition-all ${
                     exportFormat === 'json'
                       ? 'border-[#D37E91] dark:border-[#D37E91]/50 bg-[#D37E91]/10 dark:bg-[#D37E91]/15'
-                      : 'border-gray-200 dark:border-white/[0.1] bg-white dark:bg-white/[0.03] hover:bg-gray-50 dark:hover:bg-white/[0.05]'
+                      : 'border-theme bg-theme-surface hover:bg-theme-hover'
                   }`}
                 >
-                  <FileJson className={`w-6 h-6 ${exportFormat === 'json' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-gray-400 dark:text-white/60'}`} />
-                  <span className={`text-sm font-medium ${exportFormat === 'json' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-gray-600 dark:text-white/70'}`}>
+                  <FileJson className={`w-6 h-6 ${exportFormat === 'json' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-theme-tertiary'}`} />
+                  <span className={`text-sm font-medium ${exportFormat === 'json' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-theme-secondary'}`}>
                     JSON
                   </span>
                 </button>
@@ -597,11 +597,11 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
                   className={`flex flex-col items-center gap-2 p-4 border rounded-lg transition-all ${
                     exportFormat === 'zip'
                       ? 'border-[#D37E91] dark:border-[#D37E91]/50 bg-[#D37E91]/10 dark:bg-[#D37E91]/15'
-                      : 'border-gray-200 dark:border-white/[0.1] bg-white dark:bg-white/[0.03] hover:bg-gray-50 dark:hover:bg-white/[0.05]'
+                      : 'border-theme bg-theme-surface hover:bg-theme-hover'
                   }`}
                 >
-                  <Archive className={`w-6 h-6 ${exportFormat === 'zip' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-gray-400 dark:text-white/60'}`} />
-                  <span className={`text-sm font-medium ${exportFormat === 'zip' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-gray-600 dark:text-white/70'}`}>
+                  <Archive className={`w-6 h-6 ${exportFormat === 'zip' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-theme-tertiary'}`} />
+                  <span className={`text-sm font-medium ${exportFormat === 'zip' ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-theme-secondary'}`}>
                     ZIP
                   </span>
                 </button>
@@ -610,19 +610,19 @@ export default function EHOReportGenerator({ onReportGenerated }: EHOReportGener
 
             {/* Summary Preview */}
             {summary.length > 0 && (
-              <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Quick Summary</h3>
+ <div className="bg-theme-surface ] border border-theme rounded-lg p-4">
+                <h3 className="text-sm font-semibold text-theme-primary mb-3">Quick Summary</h3>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <div className="text-xs text-gray-500 dark:text-white/60 mb-1">Total Tasks</div>
-                    <div className="text-lg font-bold text-gray-900 dark:text-white">{totalTasks}</div>
+                    <div className="text-xs text-theme-tertiary mb-1">Total Tasks</div>
+                    <div className="text-lg font-bold text-theme-primary">{totalTasks}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 dark:text-white/60 mb-1">Completed</div>
+                    <div className="text-xs text-theme-tertiary mb-1">Completed</div>
                     <div className="text-lg font-bold text-green-600 dark:text-green-400">{totalCompleted}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 dark:text-white/60 mb-1">Rate</div>
+                    <div className="text-xs text-theme-tertiary mb-1">Rate</div>
                     <div className="text-lg font-bold text-[#D37E91] dark:text-[#D37E91]">{overallCompletionRate}%</div>
                   </div>
                 </div>

@@ -53,7 +53,7 @@ export default function DeliverySchedulePage() {
   if (!siteId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
+        <div className="text-theme-tertiary">Please select a site</div>
       </div>
     );
   }
@@ -61,7 +61,7 @@ export default function DeliverySchedulePage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Loading delivery schedule...</div>
+        <div className="text-theme-tertiary">Loading delivery schedule...</div>
       </div>
     );
   }
@@ -81,15 +81,15 @@ export default function DeliverySchedulePage() {
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center justify-between print:hidden">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Delivery Schedule</h1>
+        <h1 className="text-2xl font-bold text-theme-primary">Delivery Schedule</h1>
         <div className="flex items-center gap-4">
           <Button variant="outline" onClick={handlePrevWeek}>
             <ChevronLeft className="h-4 w-4 mr-2" />
             Previous Week
           </Button>
           <div className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-[#14B8A6]" />
-            <span className="text-gray-900 dark:text-white font-medium">
+            <Calendar className="h-5 w-5 text-module-fg" />
+            <span className="text-theme-primary font-medium">
               {format(weekStart, 'd MMM')} - {format(weekEnd, 'd MMM yyyy')}
             </span>
           </div>
@@ -97,7 +97,7 @@ export default function DeliverySchedulePage() {
             Next Week
             <ChevronRight className="h-4 w-4 ml-2" />
           </Button>
-          <Button onClick={handlePrint} className="bg-[#14B8A6] hover:bg-[#0D9488] text-white">
+          <Button onClick={handlePrint} className="bg-module-fg hover:bg-module-fg/90 text-white">
             <Printer className="h-4 w-4 mr-2" />
             Print Schedule
           </Button>
@@ -106,8 +106,8 @@ export default function DeliverySchedulePage() {
 
       {/* Print header - only visible when printing */}
       <div className="hidden print:block mb-4">
-        <h1 className="text-xl font-bold text-black">Delivery Schedule</h1>
-        <p className="text-sm text-gray-600">
+        <h1 className="text-xl font-bold text-theme-primary">Delivery Schedule</h1>
+        <p className="text-sm text-theme-secondary">
           {format(weekStart, 'd MMM')} - {format(weekEnd, 'd MMM yyyy')}
         </p>
       </div>
@@ -115,13 +115,13 @@ export default function DeliverySchedulePage() {
       <Card className="p-6 overflow-x-auto print:p-0 print:shadow-none print:border-none">
         <table className="w-full print:text-xs">
           <thead>
-            <tr className="border-b border-gray-200 dark:border-white/10 print:border-gray-300">
-              <th className="text-left py-3 px-4 text-gray-900 dark:text-white font-semibold print:text-black print:py-2 print:px-2">Customer</th>
-              <th className="text-left py-3 px-4 text-gray-900 dark:text-white font-semibold print:text-black print:py-2 print:px-2">Contact</th>
-              <th className="text-left py-3 px-4 text-gray-900 dark:text-white font-semibold print:text-black print:py-2 print:px-2">Address</th>
-              <th className="text-left py-3 px-4 text-gray-900 dark:text-white font-semibold print:text-black print:py-2 print:px-2">Postcode</th>
+            <tr className="border-b border-theme print:border-gray-300">
+              <th className="text-left py-3 px-4 text-theme-primary font-semibold print:text-theme-primary print:py-2 print:px-2">Customer</th>
+              <th className="text-left py-3 px-4 text-theme-primary font-semibold print:text-theme-primary print:py-2 print:px-2">Contact</th>
+              <th className="text-left py-3 px-4 text-theme-primary font-semibold print:text-theme-primary print:py-2 print:px-2">Address</th>
+              <th className="text-left py-3 px-4 text-theme-primary font-semibold print:text-theme-primary print:py-2 print:px-2">Postcode</th>
               {DAYS.map((day) => (
-                <th key={day} className="text-center py-3 px-2 text-gray-900 dark:text-white font-semibold text-sm print:text-black print:py-2">
+                <th key={day} className="text-center py-3 px-2 text-theme-primary font-semibold text-sm print:text-theme-primary print:py-2">
                   {day.slice(0, 3)}
                 </th>
               ))}
@@ -129,25 +129,25 @@ export default function DeliverySchedulePage() {
           </thead>
           <tbody>
             {entries.map((entry, idx) => (
-              <tr key={entry.customer_id || idx} className="border-b border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 print:border-gray-200 print:hover:bg-transparent">
+              <tr key={entry.customer_id || idx} className="border-b border-theme hover:bg-theme-hover print:border-gray-200 print:hover:bg-transparent">
                 <td className="py-3 px-4 print:py-2 print:px-2">
                   <Link
                     href={`/dashboard/planly/customers/${entry.customer_id}`}
-                    className="text-gray-900 dark:text-white hover:text-[#14B8A6] hover:underline print:text-black print:no-underline"
+                    className="text-theme-primary hover:text-module-fg hover:underline print:text-theme-primary print:no-underline"
                   >
                     {entry.customer_name}
                   </Link>
                 </td>
-                <td className="py-3 px-4 text-gray-500 dark:text-white/60 print:text-gray-600 print:py-2 print:px-2">{entry.contact_name}</td>
-                <td className="py-3 px-4 text-gray-500 dark:text-white/60 print:text-gray-600 print:py-2 print:px-2">{entry.address}</td>
-                <td className="py-3 px-4 text-gray-500 dark:text-white/60 print:text-gray-600 print:py-2 print:px-2">{entry.postcode}</td>
+                <td className="py-3 px-4 text-theme-tertiary print:text-theme-secondary print:py-2 print:px-2">{entry.contact_name}</td>
+                <td className="py-3 px-4 text-theme-tertiary print:text-theme-secondary print:py-2 print:px-2">{entry.address}</td>
+                <td className="py-3 px-4 text-theme-tertiary print:text-theme-secondary print:py-2 print:px-2">{entry.postcode}</td>
                 {DAYS.map((day) => {
                   const dayKey = format(addDays(weekStart, DAYS.indexOf(day)), 'yyyy-MM-dd');
                   const hasDelivery = entry.deliveries[dayKey] || false;
                   return (
                     <td key={day} className="py-3 px-2 text-center print:py-2">
                       {hasDelivery && (
-                        <span className="text-[#14B8A6] print:text-black">●</span>
+                        <span className="text-module-fg print:text-theme-primary">●</span>
                       )}
                     </td>
                   );
@@ -157,14 +157,14 @@ export default function DeliverySchedulePage() {
           </tbody>
           {entries.length > 0 && (
             <tfoot>
-              <tr className="border-t-2 border-gray-300 dark:border-white/20 bg-gray-50 dark:bg-white/5 print:border-gray-400 print:bg-gray-100">
-                <td colSpan={4} className="py-3 px-4 text-gray-900 dark:text-white font-semibold print:text-black print:py-2 print:px-2">
+              <tr className="border-t-2 border-gray-300 dark:border-white/20 bg-theme-button print:border-gray-400 print:bg-gray-100">
+                <td colSpan={4} className="py-3 px-4 text-theme-primary font-semibold print:text-theme-primary print:py-2 print:px-2">
                   Drop count:
                 </td>
                 {DAYS.map((day) => {
                   const dayKey = format(addDays(weekStart, DAYS.indexOf(day)), 'yyyy-MM-dd');
                   return (
-                    <td key={day} className="py-3 px-2 text-center text-gray-900 dark:text-white font-semibold print:text-black print:py-2">
+                    <td key={day} className="py-3 px-2 text-center text-theme-primary font-semibold print:text-theme-primary print:py-2">
                       {dailyTotals[dayKey] || 0}
                     </td>
                   );
@@ -175,7 +175,7 @@ export default function DeliverySchedulePage() {
         </table>
 
         {entries.length === 0 && (
-          <div className="text-center py-12 text-gray-500 dark:text-white/60 print:text-gray-600">
+          <div className="text-center py-12 text-theme-tertiary print:text-theme-secondary">
             No deliveries scheduled for this week
           </div>
         )}

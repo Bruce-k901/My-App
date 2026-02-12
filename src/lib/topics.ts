@@ -82,10 +82,10 @@ export const TOPIC_COLORS = {
   [TOPICS.SITE]: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
   [TOPICS.SAFETY]: 'bg-red-500/10 text-red-500 border-red-500/20',
   [TOPICS.MAINTENANCE]: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
-  [TOPICS.OPERATIONS]: 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20',
+  [TOPICS.OPERATIONS]: 'bg-module-fg/10 text-cyan-500 border-module-fg/30',
   [TOPICS.HR]: 'bg-[#D37E91]/15 text-[#D37E91] border-[#D37E91]/20',
   [TOPICS.INCIDENTS]: 'bg-red-600/10 text-red-600 border-red-600/20',
   [TOPICS.COMPLIANCE]: 'bg-green-600/10 text-green-600 border-green-600/20',
-  [TOPICS.GENERAL]: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
+  [TOPICS.GENERAL]: 'bg-theme-surface-elevated0/10 text-theme-tertiary border-gray-500/20',
 } as const;
 

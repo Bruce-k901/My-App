@@ -59,8 +59,8 @@ export function TemperatureRenderer({
 
   if (equipmentList.length === 0) {
     return (
-      <div className="p-4 border border-yellow-500/30 bg-yellow-500/10 rounded-lg">
-        <p className="text-sm text-yellow-400">
+      <div className="p-4 border border-yellow-200 dark:border-yellow-500/30 bg-yellow-50 dark:bg-yellow-500/10 rounded-lg">
+        <p className="text-sm text-yellow-700 dark:text-yellow-400">
           No equipment configured for this task. Please check the task configuration.
         </p>
       </div>
@@ -69,7 +69,7 @@ export function TemperatureRenderer({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-medium text-white">Temperature Readings</h3>
+      <h3 className="text-sm font-medium text-theme-primary">Temperature Readings</h3>
 
       <div className="space-y-2">
         {equipmentList.map(equipment => (

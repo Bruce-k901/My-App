@@ -207,7 +207,7 @@ export default function OnboardingDocsPage() {
   if (!profile?.id) {
     return (
       <div className="p-6">
-        <div className="flex items-center gap-2 text-gray-600 dark:text-white/60">
+        <div className="flex items-center gap-2 text-theme-secondary">
           <Loader2 className="w-5 h-5 animate-spin text-blue-600 dark:text-blue-400" />
           Loading profile…
         </div>
@@ -219,8 +219,8 @@ export default function OnboardingDocsPage() {
     return (
       <div className="p-6 space-y-4">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Onboarding docs</h1>
-          <p className="text-sm text-gray-900 dark:text-white/60">This page is for managers/admins to manage company onboarding documents.</p>
+          <h1 className="text-xl font-semibold text-theme-primary">Onboarding docs</h1>
+          <p className="text-sm text-theme-primary/60">This page is for managers/admins to manage company onboarding documents.</p>
         </div>
         <Link href="/dashboard/people/onboarding" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
           Back to onboarding
@@ -233,11 +233,11 @@ export default function OnboardingDocsPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Company Onboarding Documents</h1>
-          <p className="text-sm text-gray-900 dark:text-white/60 mt-1">
+          <h1 className="text-xl font-semibold text-theme-primary">Company Onboarding Documents</h1>
+          <p className="text-sm text-theme-primary/60 mt-1">
             Manage the document library for employee onboarding (contracts, forms, policies)
           </p>
-          <p className="text-xs text-gray-600 dark:text-white/40 mt-1">
+          <p className="text-xs text-theme-secondary/40 mt-1">
             💡 For general company compliance documents (insurance, HACCP), upload them on the main <strong>Documents</strong> page
           </p>
             <div className="mt-3 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-lg p-3">
@@ -257,7 +257,7 @@ export default function OnboardingDocsPage() {
           <button
             onClick={() => void seedStarterKit()}
             disabled={seeding || !companyId}
-            className="px-4 py-2 rounded-lg text-sm bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed shadow-sm dark:shadow-none"
+            className="px-4 py-2 rounded-lg text-sm bg-module-fg hover:bg-module-fg/90 text-white transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed shadow-sm dark:shadow-none"
             title="Generate recommended onboarding document placeholders and starter packs"
           >
             {seeding ? 'Creating…' : '✨ Create starter kit'}
@@ -265,7 +265,7 @@ export default function OnboardingDocsPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => void load()}
-              className="px-3 py-1.5 rounded-lg text-sm bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] text-gray-600 hover:text-gray-900 dark:text-white/60 dark:hover:text-white border border-gray-200 dark:border-white/[0.1]"
+              className="px-3 py-1.5 rounded-lg text-sm bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] text-theme-secondary hover:text-theme-primary/60 border border-theme"
               title="Refresh"
             >
               Refresh
@@ -273,7 +273,7 @@ export default function OnboardingDocsPage() {
             <div className="flex items-center gap-2">
               <Link
                 href="/dashboard/people/onboarding/packs"
-                className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] text-gray-600 hover:text-gray-900 dark:text-white/60 dark:hover:text-white border border-gray-200 dark:border-white/[0.1] rounded-lg"
+                className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] text-theme-secondary hover:text-theme-primary/60 border border-theme rounded-lg"
               >
                 Manage Packs
               </Link>
@@ -297,19 +297,19 @@ export default function OnboardingDocsPage() {
       )}
 
       {filterNote && (
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 text-sm text-gray-900 dark:text-white/70">
+        <div className="bg-theme-surface border border-theme rounded-lg p-3 text-sm text-theme-primary/70">
           {filterNote}
         </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-5">
+        <div className="bg-theme-surface border border-theme rounded-xl p-5">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-xs text-gray-600 dark:text-white/50 mb-1">Total Documents</div>
-              <div className="text-gray-900 dark:text-white font-bold text-2xl">{counts.total}</div>
+              <div className="text-xs text-theme-secondary/50 mb-1">Total Documents</div>
+              <div className="text-theme-primary font-bold text-2xl">{counts.total}</div>
             </div>
-            <FileText className="w-8 h-8 text-gray-400 dark:text-white/20" />
+            <FileText className="w-8 h-8 text-theme-tertiary/20" />
           </div>
         </div>
         <div className="bg-green-50 dark:bg-gradient-to-br dark:from-green-500/10 dark:to-green-500/5 border border-green-200 dark:border-green-500/20 rounded-xl p-5">
@@ -341,22 +341,22 @@ export default function OnboardingDocsPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center gap-2 text-gray-600 dark:text-white/60">
+        <div className="flex items-center gap-2 text-theme-secondary">
           <Loader2 className="w-5 h-5 animate-spin text-blue-600 dark:text-blue-400" />
           Loading docs…
         </div>
       ) : docs.length === 0 ? (
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 text-center">
-          <FileText className="w-12 h-12 text-gray-900 dark:text-white/30 mx-auto mb-4" />
-          <div className="text-gray-900 dark:text-white font-semibold text-lg">No onboarding documents yet</div>
-          <div className="text-gray-600 dark:text-white/60 text-sm mt-2 max-w-md mx-auto">
+        <div className="bg-theme-surface border border-theme rounded-xl p-8 text-center">
+          <FileText className="w-12 h-12 text-theme-primary/30 mx-auto mb-4" />
+          <div className="text-theme-primary font-semibold text-lg">No onboarding documents yet</div>
+          <div className="text-theme-secondary text-sm mt-2 max-w-md mx-auto">
             Click <strong>"Create starter kit"</strong> above to generate a complete set of recommended onboarding document placeholders.
             You can then upload your own documents to replace them.
           </div>
         </div>
       ) : (
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
-          <div className="grid grid-cols-12 gap-3 px-5 py-3 border-b border-gray-200 dark:border-white/[0.06] text-xs font-medium text-gray-700 dark:text-white/50 bg-gray-50 dark:bg-white/[0.02]">
+        <div className="bg-theme-surface border border-theme rounded-xl overflow-hidden">
+          <div className="grid grid-cols-12 gap-3 px-5 py-3 border-b border-theme text-xs font-medium text-theme-secondary/50 bg-gray-50 dark:bg-white/[0.02]">
             <div className="col-span-5">Document Name & Description</div>
             <div className="col-span-3">Category</div>
             <div className="col-span-2">Status</div>
@@ -372,13 +372,13 @@ export default function OnboardingDocsPage() {
                     <div className="flex items-center gap-2">
                       <FileText className={`w-4 h-4 flex-shrink-0 ${hasFile ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`} />
                       <div className="flex-1 min-w-0">
-                        <div className="text-gray-900 dark:text-white font-medium text-sm">{d.name || 'Document'}</div>
-                        {d.notes && <div className="text-xs text-gray-600 dark:text-white/50 mt-1 line-clamp-2">{d.notes}</div>}
+                        <div className="text-theme-primary font-medium text-sm">{d.name || 'Document'}</div>
+                        {d.notes && <div className="text-xs text-theme-secondary/50 mt-1 line-clamp-2">{d.notes}</div>}
                       </div>
                     </div>
                   </div>
                   <div className="col-span-3">
-                    <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-white/70 border border-gray-200 dark:border-white/[0.1]">
+                    <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-white/5 text-theme-secondary border border-theme">
                       {d.category || 'Other'}
                     </span>
                   </div>
@@ -399,7 +399,7 @@ export default function OnboardingDocsPage() {
                     {hasFile && (
                       <button
                         onClick={() => openDoc(d)}
-                        className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] text-gray-600 hover:text-gray-900 dark:text-white/60 dark:hover:text-white border border-gray-200 dark:border-white/[0.1] rounded-lg flex items-center gap-1.5 transition-all"
+                        className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] text-theme-secondary hover:text-theme-primary/60 border border-theme rounded-lg flex items-center gap-1.5 transition-all"
                         title="Open and view document"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
@@ -414,8 +414,8 @@ export default function OnboardingDocsPage() {
                       }}
                       className={`px-3 py-1.5 text-sm rounded-lg flex items-center gap-1.5 transition-all ${
                         hasFile 
-                          ? 'bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] text-gray-600 hover:text-gray-900 dark:text-white/60 dark:hover:text-white border border-gray-200 dark:border-white/[0.1]' 
-                          : 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium shadow-sm dark:shadow-none'
+                          ? 'bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] text-theme-secondary hover:text-theme-primary/60 border border-theme' 
+                          : 'bg-module-fg hover:bg-module-fg/90 text-white font-medium shadow-sm dark:shadow-none'
                       }`}
                       title={hasFile ? 'Replace this document with a new version' : 'Upload your document to replace this placeholder'}
                     >

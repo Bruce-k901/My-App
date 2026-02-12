@@ -126,7 +126,7 @@ export function CountBadge({ count, label, status = 'urgent' }: CountBadgeProps)
   const statusColors = {
     urgent: 'bg-teamly/10 text-teamly border-teamly/30',
     warning: 'bg-blue-500/10 text-blue-400 border-blue-400/30',
-    good: 'bg-emerald-500/10 text-emerald-400 border-emerald-400/30',
+    good: 'bg-module-fg/10 text-module-fg border-emerald-400/30',
     neutral: 'bg-black/[0.03] dark:bg-white/[0.03] text-[rgb(var(--text-disabled))] border-black/10 dark:border-white/10',
   };
 
@@ -159,7 +159,7 @@ export function MiniItem({ text, sub, status = 'neutral', href }: MiniItemProps)
   const statusColors = {
     urgent: 'text-teamly',
     warning: 'text-blue-400',
-    good: 'text-emerald-400',
+    good: 'text-module-fg',
     neutral: 'text-[rgb(var(--text-disabled))]',
   };
 

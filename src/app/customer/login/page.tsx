@@ -53,16 +53,16 @@ export default function CustomerLoginPage() {
   return (
     <AuthLayout>
       <GlassCard className="mx-4 sm:mx-6 md:mx-auto max-w-md w-full">
-        <h1 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-center text-white">
+        <h1 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-center text-theme-primary">
           Customer Portal
         </h1>
-        <p className="text-sm text-white/60 text-center mb-6">
+        <p className="text-sm text-theme-tertiary text-center mb-6">
           Log in to place orders and manage your account
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
           <div>
-            <label className="block text-white/60 text-sm mb-2">Email</label>
+            <label className="block text-theme-tertiary text-sm mb-2">Email</label>
             <Input
               name="email"
               type="email"
@@ -76,7 +76,7 @@ export default function CustomerLoginPage() {
           </div>
 
           <div>
-            <label className="block text-white/60 text-sm mb-2">Password</label>
+            <label className="block text-theme-tertiary text-sm mb-2">Password</label>
             <div className="relative">
               <Input
                 name="password"
@@ -91,7 +91,7 @@ export default function CustomerLoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white p-1"
+                className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-theme-tertiary hover:text-white p-1"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? (

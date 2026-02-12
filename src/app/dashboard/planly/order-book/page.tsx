@@ -161,7 +161,7 @@ export default function PackingPlanPage() {
   if (!siteId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
+        <div className="text-theme-tertiary">Please select a site</div>
       </div>
     );
   }
@@ -194,7 +194,7 @@ export default function PackingPlanPage() {
       {/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-gray-500 dark:text-white/60">Loading packing plan...</div>
+          <div className="text-theme-tertiary">Loading packing plan...</div>
         </div>
       )}
 
@@ -207,7 +207,7 @@ export default function PackingPlanPage() {
 
       {/* Empty State */}
       {!isLoading && !error && (!gridData || !data?.orderItems || data.orderItems.length === 0 || !gridData?.customers || gridData.customers.length === 0) && (
-        <div className="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-zinc-400">
+        <div className="flex flex-col items-center justify-center py-16 text-theme-tertiary">
           <Package className="h-12 w-12 mb-4 opacity-50" />
           <p className="text-lg">No orders for {safeFormatDate(deliveryDate, 'd MMMM yyyy')}</p>
           <p className="text-sm mt-1">Select a different date or place some orders first</p>

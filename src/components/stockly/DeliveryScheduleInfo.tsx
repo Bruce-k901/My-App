@@ -121,7 +121,7 @@ export default function DeliveryScheduleInfo({
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 text-gray-500 dark:text-white/40 text-sm">
+      <div className="flex items-center gap-2 text-theme-tertiary text-sm">
         <Loader2 className="w-4 h-4 animate-spin" />
         Loading delivery schedule...
       </div>
@@ -136,7 +136,7 @@ export default function DeliveryScheduleInfo({
     <div className={`rounded-lg p-4 border ${
       cutoffPassed 
         ? 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30' 
-        : 'bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06]'
+        : 'bg-theme-surface border-theme'
     }`}>
       <div className="flex items-start gap-3">
         <div className={`p-2 rounded-lg ${
@@ -153,7 +153,7 @@ export default function DeliveryScheduleInfo({
         
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-gray-900 dark:text-white font-medium">Delivery Schedule</span>
+            <span className="text-theme-primary font-medium">Delivery Schedule</span>
             {deliveryInfo.uses_third_party && (
               <span className="px-2 py-0.5 bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 text-xs rounded">
                 3rd Party Logistics
@@ -163,24 +163,24 @@ export default function DeliveryScheduleInfo({
           
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <div className="flex items-center gap-1.5 text-gray-600 dark:text-white/60 mb-1">
+              <div className="flex items-center gap-1.5 text-theme-secondary mb-1">
                 <Calendar className="w-3.5 h-3.5" />
                 <span>Next Delivery</span>
               </div>
-              <p className="text-gray-900 dark:text-white font-medium">
+              <p className="text-theme-primary font-medium">
                 {formatDate(deliveryInfo.next_delivery_date)}
               </p>
             </div>
             
             <div>
-              <div className="flex items-center gap-1.5 text-gray-600 dark:text-white/60 mb-1">
+              <div className="flex items-center gap-1.5 text-theme-secondary mb-1">
                 <Clock className="w-3.5 h-3.5" />
                 <span>Order By</span>
               </div>
               <p className={`font-medium ${
                 cutoffPassed 
                   ? 'text-amber-700 dark:text-amber-400' 
-                  : 'text-gray-900 dark:text-white'
+                  : 'text-theme-primary'
               }`}>
                 {formatDate(deliveryInfo.order_by_date)} at {formatTime(deliveryInfo.order_by_time)}
               </p>
@@ -203,8 +203,8 @@ export default function DeliveryScheduleInfo({
 
           {/* Delivery days if available */}
           {supplier?.delivery_days && supplier.delivery_days.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/[0.06]">
-              <p className="text-gray-500 dark:text-white/40 text-xs mb-1">Delivery days:</p>
+            <div className="mt-3 pt-3 border-t border-theme">
+              <p className="text-theme-tertiary text-xs mb-1">Delivery days:</p>
               <div className="flex gap-1">
                 {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
                   const dayLower = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'][i];
@@ -215,7 +215,7 @@ export default function DeliveryScheduleInfo({
                       className={`px-2 py-0.5 rounded text-xs ${
                         isDeliveryDay 
                           ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400' 
-                          : 'bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-white/20'
+                          : 'bg-gray-100 dark:bg-white/5 text-theme-tertiary/20'
                       }`}
                     >
                       {day}

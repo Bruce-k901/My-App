@@ -30,7 +30,7 @@ const SOP_TEMPLATES = [
     title: 'Drinks (Bar)',
     description: 'Cocktails, spirits, and beverage recipes',
     icon: Wine,
-    color: 'from-purple-500/20 to-[#D37E91]/25',
+    color: 'from-purple-500/20 to-module-fg/25',
     borderColor: 'border-purple-500/30',
     link: '/dashboard/sops/drinks-template',
     category: 'Drinks'
@@ -61,7 +61,7 @@ const SOP_TEMPLATES = [
     description: 'Sanitation and hygiene procedures',
     icon: Sparkles,
     color: 'from-teal-500/20 to-blue-500/20',
-    borderColor: 'border-teal-500/30',
+    borderColor: 'border-module-fg/30',
     link: '/dashboard/sops/cleaning-template',
     category: 'Cleaning'
   },
@@ -81,7 +81,7 @@ const SOP_TEMPLATES = [
     description: 'End of shift and security checklist',
     icon: Lock,
     color: 'from-indigo-500/20 to-purple-500/20',
-    borderColor: 'border-indigo-500/30',
+    borderColor: 'border-module-fg/30',
     link: '/dashboard/sops/closing-template',
     category: 'Closing'
   }
@@ -108,7 +108,7 @@ export default function TemplatesPage() {
       {/* Search and Filter */}
       <div className="flex items-center gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-neutral-400" size={20} />
+ <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"size={20} />
           <input
             type="text"
             value={searchQuery}
@@ -153,7 +153,7 @@ export default function TemplatesPage() {
               icon: 'text-blue-600 dark:text-white'
             },
             'drinks': { 
-              bg: 'bg-purple-50 dark:bg-gradient-to-br dark:from-purple-500/20 dark:to-[#D37E91]/25', 
+              bg: 'bg-purple-50 dark:bg-gradient-to-br dark:from-purple-500/20 dark:to-module-fg/25', 
               border: 'border-purple-200 dark:border-purple-500/30',
               text: 'text-purple-900 dark:text-white',
               icon: 'text-purple-600 dark:text-white'
@@ -172,9 +172,9 @@ export default function TemplatesPage() {
             },
             'cleaning': { 
               bg: 'bg-teal-50 dark:bg-gradient-to-br dark:from-teal-500/20 dark:to-blue-500/20', 
-              border: 'border-teal-200 dark:border-teal-500/30',
+              border: 'border-teal-200 dark:border-module-fg/30',
               text: 'text-teal-900 dark:text-white',
-              icon: 'text-teal-600 dark:text-white'
+              icon: 'text-module-fg'
             },
             'opening': { 
               bg: 'bg-yellow-50 dark:bg-gradient-to-br dark:from-yellow-500/20 dark:to-orange-500/20', 
@@ -184,16 +184,16 @@ export default function TemplatesPage() {
             },
             'closing': { 
               bg: 'bg-indigo-50 dark:bg-gradient-to-br dark:from-indigo-500/20 dark:to-purple-500/20', 
-              border: 'border-indigo-200 dark:border-indigo-500/30',
+              border: 'border-indigo-200 dark:border-module-fg/30',
               text: 'text-indigo-900 dark:text-white',
-              icon: 'text-indigo-600 dark:text-white'
+              icon: 'text-module-fg'
             }
           };
           const colors = colorMap[template.id] || { 
             bg: 'bg-gray-50 dark:bg-gradient-to-br dark:from-gray-500/20 dark:to-gray-500/20', 
             border: 'border-gray-200 dark:border-gray-500/30',
-            text: 'text-gray-900 dark:text-white',
-            icon: 'text-gray-600 dark:text-white'
+            text: 'text-theme-primary',
+            icon: 'text-theme-secondary'
           };
           
           return (
@@ -219,7 +219,7 @@ export default function TemplatesPage() {
       </div>
 
       {filteredTemplates.length === 0 && (
-        <div className="text-center py-12 text-[rgb(var(--text-secondary))] dark:text-neutral-400">
+ <div className="text-center py-12 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
           No templates found matching your search.
         </div>
       )}

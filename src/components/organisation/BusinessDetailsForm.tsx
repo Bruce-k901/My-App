@@ -87,50 +87,50 @@ export default function BusinessDetailsForm({ onSaved }: { onSaved?: () => void 
     }
   };
 
-  if (loading) return <div className="text-slate-400">Loading business details…</div>;
+  if (loading) return <div className="text-theme-tertiary">Loading business details…</div>;
   if (error) return <div className="text-red-400">{error}</div>;
-  if (!company) return <div className="text-slate-400">No company record found.</div>;
+  if (!company) return <div className="text-theme-tertiary">No company record found.</div>;
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-slate-300">Company Name</span>
+          <span className="text-sm text-theme-secondary">Company Name</span>
           <input
-            className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white"
+            className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary"
             value={company.name || ""}
             onChange={(e) => setCompany({ ...company, name: e.target.value })}
           />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-slate-300">Contact Name</span>
+          <span className="text-sm text-theme-secondary">Contact Name</span>
           <input
-            className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white"
+            className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary"
             value={company.contact_name || ""}
             onChange={(e) => setCompany({ ...company, contact_name: e.target.value })}
           />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-slate-300">Email</span>
+          <span className="text-sm text-theme-secondary">Email</span>
           <input
-            className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white"
+            className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary"
             value={company.email || ""}
             onChange={(e) => setCompany({ ...company, email: e.target.value })}
           />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-slate-300">Phone</span>
+          <span className="text-sm text-theme-secondary">Phone</span>
           <input
-            className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white"
+            className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary"
             value={company.phone || ""}
             onChange={(e) => setCompany({ ...company, phone: e.target.value })}
           />
         </label>
       </div>
       <label className="flex flex-col gap-1">
-        <span className="text-sm text-slate-300">Address</span>
+        <span className="text-sm text-theme-secondary">Address</span>
         <textarea
-          className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-white"
+          className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary"
           rows={3}
           value={company.address || ""}
           onChange={(e) => setCompany({ ...company, address: e.target.value })}
@@ -141,14 +141,14 @@ export default function BusinessDetailsForm({ onSaved }: { onSaved?: () => void 
         <button
           onClick={save}
           disabled={saving}
-          className="px-4 py-2 rounded bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12]"
+          className="px-4 py-2 rounded bg-white/[0.06] border border-white/[0.1] text-theme-primary hover:bg-white/[0.12]"
         >
           {saving ? "Saving…" : "Save"}
         </button>
         <button
           onClick={async () => { await save(); }}
           disabled={saving}
-          className="px-4 py-2 rounded bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12]"
+          className="px-4 py-2 rounded bg-white/[0.06] border border-white/[0.1] text-theme-primary hover:bg-white/[0.12]"
         >
           {saving ? "Saving…" : "Save & Continue"}
         </button>

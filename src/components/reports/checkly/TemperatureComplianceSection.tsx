@@ -124,9 +124,9 @@ export default function TemperatureComplianceSection({ companyId, siteId, dateRa
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
+      <div className="bg-theme-surface border border-theme rounded-xl p-8 flex items-center justify-center">
         <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
-        <span className="ml-3 text-gray-500 dark:text-white/60">Loading temperature compliance...</span>
+        <span className="ml-3 text-theme-tertiary">Loading temperature compliance...</span>
       </div>
     );
   }
@@ -143,9 +143,9 @@ export default function TemperatureComplianceSection({ companyId, siteId, dateRa
       </div>
 
       {/* Compliance Rate */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Temperature Compliance Rate</h3>
+          <h3 className="text-lg font-semibold text-theme-primary">Temperature Compliance Rate</h3>
           <span
             className={`text-3xl font-bold ${
               compliance.complianceRate >= 95 ? "text-green-400" : compliance.complianceRate >= 85 ? "text-yellow-400" : "text-red-400"
@@ -166,14 +166,14 @@ export default function TemperatureComplianceSection({ companyId, siteId, dateRa
 
       {/* Site Breakdown */}
       {compliance.bySite.length > 0 && (
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Compliance by Site</h3>
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">Compliance by Site</h3>
           <div className="space-y-3">
             {compliance.bySite
               .sort((a, b) => b.complianceRate - a.complianceRate)
               .map((site) => (
                 <div key={site.siteId} className="flex items-center justify-between">
-                  <span className="text-gray-700 dark:text-white/80">{site.siteName}</span>
+                  <span className="text-theme-secondary">{site.siteName}</span>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <div

@@ -337,34 +337,34 @@ export default function SuppliersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-600 dark:text-white">Loading suppliers...</div>
+        <div className="text-theme-secondary">Loading suppliers...</div>
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+    <div className="w-full bg-theme-surface-elevated min-h-screen">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link 
                 href="/dashboard/stockly"
-                className="p-2 rounded-lg bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
+ className="p-2 rounded-lg bg-theme-surface ] hover:bg-theme-muted border border-theme text-theme-secondary hover:text-theme-primary transition-colors"
               >
                 <ArrowLeft className="w-5 h-5" />
               </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-                <Building2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+              <h1 className="text-3xl font-bold text-theme-primary mb-2 flex items-center gap-3">
+                <Building2 className="w-8 h-8 text-module-fg" />
                 Suppliers
               </h1>
-              <p className="text-gray-600 dark:text-white/60 text-sm mt-1">Manage your supplier contacts and ordering information</p>
+              <p className="text-theme-secondary text-sm mt-1">Manage your supplier contacts and ordering information</p>
             </div>
           </div>
           <button
             onClick={openAddModal}
-            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out"
           >
             <Plus className="w-5 h-5" />
             Add Supplier
@@ -372,9 +372,9 @@ export default function SuppliersPage() {
         </div>
 
         {/* Search */}
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+        <div className="bg-theme-surface border border-theme rounded-xl p-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-tertiary" size={18} />
             <Input
               type="text"
               placeholder="Search suppliers..."
@@ -387,12 +387,12 @@ export default function SuppliersPage() {
 
         {/* Suppliers List */}
         {filteredSuppliers.length === 0 ? (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-12 text-center">
+          <div className="bg-theme-surface border border-theme rounded-xl p-12 text-center">
           <Building2 className="w-12 h-12 text-gray-300 dark:text-white/20 mx-auto mb-4" />
-          <h3 className="text-gray-900 dark:text-white font-medium mb-2">
+          <h3 className="text-theme-primary font-medium mb-2">
             {searchTerm ? 'No suppliers found' : 'No suppliers yet'}
           </h3>
-          <p className="text-gray-600 dark:text-white/60 text-sm mb-4">
+          <p className="text-theme-secondary text-sm mb-4">
             {searchTerm
               ? 'Try adjusting your search terms'
               : 'Get started by adding your first supplier'}
@@ -400,7 +400,7 @@ export default function SuppliersPage() {
           {!searchTerm && (
             <button
               onClick={openAddModal}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out"
             >
               <Plus className="w-4 h-4" />
               Add Supplier
@@ -412,26 +412,26 @@ export default function SuppliersPage() {
             {filteredSuppliers.map((supplier) => (
               <div
                 key={supplier.id}
-                className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-5 hover:bg-gray-50 dark:hover:bg-white/[0.05] hover:border-emerald-500/50 dark:hover:border-emerald-500/50 transition-colors"
+                className="bg-theme-surface border border-theme rounded-xl p-5 hover:bg-theme-hover hover:border-module-fg/30 dark:hover:border-module-fg/30 transition-colors"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{supplier.name}</h3>
+                    <h3 className="text-lg font-semibold text-theme-primary mb-1">{supplier.name}</h3>
                     {supplier.code && (
-                      <p className="text-xs text-gray-500 dark:text-white/40 mb-2">Code: {supplier.code}</p>
+                      <p className="text-xs text-theme-tertiary mb-2">Code: {supplier.code}</p>
                     )}
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => openEditModal(supplier)}
-                      className="p-2 text-gray-500 dark:text-white/40 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                      className="p-2 text-theme-tertiary hover:text-module-fg dark:hover:text-module-fg transition-colors"
                       aria-label="Edit supplier"
                     >
                       <Edit2 size={16} />
                     </button>
                     <button
                       onClick={() => handleDelete(supplier)}
-                      className="p-2 text-gray-500 dark:text-white/40 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                      className="p-2 text-theme-tertiary hover:text-red-600 dark:hover:text-red-400 transition-colors"
                       aria-label="Delete supplier"
                     >
                       <Trash2 size={16} />
@@ -441,43 +441,43 @@ export default function SuppliersPage() {
 
                 <div className="space-y-2 text-sm">
                   {supplier.contact_name && (
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-white/80">
-                      <span className="text-gray-500 dark:text-white/50">Contact:</span>
+                    <div className="flex items-center gap-2 text-theme-secondary">
+                      <span className="text-theme-tertiary">Contact:</span>
                       <span>{supplier.contact_name}</span>
                     </div>
                   )}
                   {supplier.phone && (
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-white/80">
-                      <Phone size={14} className="text-gray-500 dark:text-white/50" />
+                    <div className="flex items-center gap-2 text-theme-secondary">
+                      <Phone size={14} className="text-theme-tertiary" />
                       <span>{supplier.phone}</span>
                     </div>
                   )}
                   {supplier.email && (
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-white/80">
-                      <Mail size={14} className="text-gray-500 dark:text-white/50" />
+                    <div className="flex items-center gap-2 text-theme-secondary">
+                      <Mail size={14} className="text-theme-tertiary" />
                       <span className="truncate">{supplier.email}</span>
                     </div>
                   )}
                   {supplier.ordering_method && (
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-white/80">
-                      <span className="text-gray-500 dark:text-white/50">Ordering:</span>
+                    <div className="flex items-center gap-2 text-theme-secondary">
+                      <span className="text-theme-tertiary">Ordering:</span>
                       <span>{getOrderingMethodLabel(supplier.ordering_method)}</span>
                     </div>
                   )}
                   {supplier.delivery_days && supplier.delivery_days.length > 0 && (
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-white/80">
-                      <Calendar size={14} className="text-gray-500 dark:text-white/50" />
+                    <div className="flex items-center gap-2 text-theme-secondary">
+                      <Calendar size={14} className="text-theme-tertiary" />
                       <span>{formatDeliveryDays(supplier.delivery_days)}</span>
                     </div>
                   )}
                   {supplier.payment_terms_days && (
-                    <div className="text-gray-500 dark:text-white/40 text-xs">
+                    <div className="text-theme-tertiary text-xs">
                       Payment terms: {supplier.payment_terms_days} days
                     </div>
                   )}
                   {supplier.order_cutoff_time && (
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-white/80">
-                      <Clock size={14} className="text-gray-500 dark:text-white/50" />
+                    <div className="flex items-center gap-2 text-theme-secondary">
+                      <Clock size={14} className="text-theme-tertiary" />
                       <span className="text-xs">Order cutoff: {supplier.order_cutoff_time}</span>
                     </div>
                   )}
@@ -491,7 +491,7 @@ export default function SuppliersPage() {
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+              <DialogTitle className="text-xl font-semibold text-theme-primary">
                 {editingSupplier ? 'Edit Supplier' : 'Add Supplier'}
               </DialogTitle>
             </DialogHeader>
@@ -500,7 +500,7 @@ export default function SuppliersPage() {
               {/* Basic Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Supplier Name *</label>
+                  <label className="block text-sm text-theme-secondary mb-1">Supplier Name *</label>
                   <Input
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -508,7 +508,7 @@ export default function SuppliersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Supplier Code</label>
+                  <label className="block text-sm text-theme-secondary mb-1">Supplier Code</label>
                   <Input
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value })}
@@ -520,7 +520,7 @@ export default function SuppliersPage() {
               {/* Contact Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Contact Name</label>
+                  <label className="block text-sm text-theme-secondary mb-1">Contact Name</label>
                   <Input
                     value={formData.contact_name}
                     onChange={(e) => setFormData({ ...formData, contact_name: e.target.value })}
@@ -528,7 +528,7 @@ export default function SuppliersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Phone</label>
+                  <label className="block text-sm text-theme-secondary mb-1">Phone</label>
                   <Input
                     type="tel"
                     value={formData.phone}
@@ -539,7 +539,7 @@ export default function SuppliersPage() {
               </div>
 
               <div>
-                <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Email</label>
+                <label className="block text-sm text-theme-secondary mb-1">Email</label>
                 <Input
                   type="email"
                   value={formData.email}
@@ -549,8 +549,8 @@ export default function SuppliersPage() {
               </div>
 
               {/* Address */}
-              <div className="border-t border-gray-200 dark:border-white/10 pt-4">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Address</h3>
+              <div className="border-t border-theme pt-4">
+                <h3 className="text-sm font-semibold text-theme-primary mb-3">Address</h3>
                 <div className="space-y-3">
                   <Input
                     value={formData.address_line1}
@@ -578,11 +578,11 @@ export default function SuppliersPage() {
               </div>
 
               {/* Ordering Method */}
-              <div className="border-t border-gray-200 dark:border-white/10 pt-4">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Ordering</h3>
+              <div className="border-t border-theme pt-4">
+                <h3 className="text-sm font-semibold text-theme-primary mb-3">Ordering</h3>
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Ordering Method</label>
+                    <label className="block text-sm text-theme-secondary mb-1">Ordering Method</label>
                     <Select
                       value={formData.ordering_method}
                       onValueChange={(val) => setFormData({ ...formData, ordering_method: val })}
@@ -618,8 +618,8 @@ export default function SuppliersPage() {
               </div>
 
               {/* Delivery Days */}
-              <div className="border-t border-gray-200 dark:border-white/10 pt-4">
-                <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Delivery Days</label>
+              <div className="border-t border-theme pt-4">
+                <label className="block text-sm text-theme-secondary mb-2">Delivery Days</label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {DAYS_OF_WEEK.map((day) => (
                     <button
@@ -628,8 +628,8 @@ export default function SuppliersPage() {
                       onClick={() => toggleDeliveryDay(day.value)}
                       className={`p-2 rounded text-sm transition-colors ${
                         formData.delivery_days.includes(day.value)
-                          ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500'
-                          : 'bg-white dark:bg-white/[0.06] text-gray-700 dark:text-white/80 border border-gray-200 dark:border-white/10 hover:border-emerald-500/50 dark:hover:border-emerald-500/50'
+                          ? 'bg-emerald-50 dark:bg-module-fg/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500'
+                          : 'bg-white dark:bg-white/[0.06] text-theme-secondary border border-theme hover:border-module-fg/30 dark:hover:border-module-fg/30'
                       }`}
                     >
                       {day.label}
@@ -639,11 +639,11 @@ export default function SuppliersPage() {
               </div>
 
               {/* Payment & Terms */}
-              <div className="border-t border-gray-200 dark:border-white/10 pt-4">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Payment & Terms</h3>
+              <div className="border-t border-theme pt-4">
+                <h3 className="text-sm font-semibold text-theme-primary mb-3">Payment & Terms</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Payment Terms (days)</label>
+                    <label className="block text-sm text-theme-secondary mb-1">Payment Terms (days)</label>
                     <Input
                       type="number"
                       value={formData.payment_terms_days}
@@ -652,7 +652,7 @@ export default function SuppliersPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Min Order Value</label>
+                    <label className="block text-sm text-theme-secondary mb-1">Min Order Value</label>
                     <Input
                       type="number"
                       step="0.01"
@@ -662,7 +662,7 @@ export default function SuppliersPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Lead Time (days)</label>
+                    <label className="block text-sm text-theme-secondary mb-1">Lead Time (days)</label>
                     <Input
                       type="number"
                       value={formData.lead_time_days}
@@ -673,7 +673,7 @@ export default function SuppliersPage() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                   <div>
-                    <label htmlFor="order-cutoff-time" className="block text-sm text-gray-700 dark:text-white/80 mb-1">Order Cutoff Time</label>
+                    <label htmlFor="order-cutoff-time" className="block text-sm text-theme-secondary mb-1">Order Cutoff Time</label>
                     <TimePicker
                       id="order-cutoff-time"
                       name="order_cutoff_time"
@@ -681,10 +681,10 @@ export default function SuppliersPage() {
                       onChange={(value) => setFormData({ ...formData, order_cutoff_time: value })}
                       className="w-full"
                     />
-                    <p className="text-xs text-gray-500 dark:text-white/40 mt-1">Time by which orders must be placed (15-minute intervals)</p>
+                    <p className="text-xs text-theme-tertiary mt-1">Time by which orders must be placed (15-minute intervals)</p>
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-700 dark:text-white/80 mb-1">Account Number</label>
+                    <label className="block text-sm text-theme-secondary mb-1">Account Number</label>
                     <Input
                       value={formData.account_number}
                       onChange={(e) => setFormData({ ...formData, account_number: e.target.value })}
@@ -695,7 +695,7 @@ export default function SuppliersPage() {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-white/10">
+              <div className="flex gap-3 pt-4 border-t border-theme">
                 <Button
                   onClick={handleSave}
                   disabled={saving || !formData.name.trim()}

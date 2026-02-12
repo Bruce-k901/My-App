@@ -119,7 +119,7 @@ export function QuickActionsGrid({ section, userRole }: QuickActionsGridProps) {
           >
             <action.icon size={22} style={{ color: action.color }} />
           </div>
-          <span className="text-[11px] font-medium text-center text-gray-400 leading-tight">
+          <span className="text-[11px] font-medium text-center text-theme-tertiary leading-tight">
             {action.label}
           </span>
         </button>

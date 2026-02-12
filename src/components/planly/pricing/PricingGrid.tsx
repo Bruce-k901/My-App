@@ -273,10 +273,10 @@ export function PricingGrid({
   return (
     <div className="space-y-4 max-w-4xl">
       {/* Bulk Controls */}
-      <div className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] space-y-3">
+      <div className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-theme space-y-3">
         {/* Discount Row */}
         <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-600 dark:text-white/60 whitespace-nowrap w-28">
+          <span className="text-sm text-theme-secondary whitespace-nowrap w-28">
             Bulk discount:
           </span>
           <div className="relative w-24">
@@ -290,7 +290,7 @@ export function PricingGrid({
               placeholder="0"
               className="pr-7 h-9 text-sm text-right"
             />
-            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-400 dark:text-white/40">
+            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-theme-tertiary">
               %
             </span>
           </div>
@@ -304,18 +304,18 @@ export function PricingGrid({
           >
             Apply Discount
           </Button>
-          <span className="text-xs text-gray-400 dark:text-white/40">
+          <span className="text-xs text-theme-tertiary">
             Calculates custom price from list price
           </span>
         </div>
 
         {/* Date Row */}
         <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-600 dark:text-white/60 whitespace-nowrap w-28">
+          <span className="text-sm text-theme-secondary whitespace-nowrap w-28">
             Expiry date:
           </span>
           <div className="relative w-[180px]">
-            <Calendar className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-white/40" />
+            <Calendar className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-theme-tertiary" />
             <Input
               type="date"
               value={bulkDate}
@@ -331,7 +331,7 @@ export function PricingGrid({
             size="sm"
             onClick={applyBulkDate}
             disabled={!bulkDate}
-            className="bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.06]"
+            className="bg-theme-surface border-theme text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06]"
           >
             Set Date
           </Button>
@@ -341,7 +341,7 @@ export function PricingGrid({
             variant="outline"
             size="sm"
             onClick={applyBulkNoExpiry}
-            className="bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.06]"
+            className="bg-theme-surface border-theme text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06]"
           >
             Set No Expiry
           </Button>
@@ -349,24 +349,24 @@ export function PricingGrid({
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] overflow-hidden">
+      <div className="rounded-lg border border-theme bg-white dark:bg-white/[0.02] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gray-50 dark:bg-white/[0.03] border-b border-gray-200 dark:border-white/[0.06]">
-                <th className="px-3 py-2 text-left text-sm font-medium text-gray-700 dark:text-white/80">
+              <tr className="bg-gray-50 dark:bg-white/[0.03] border-b border-theme">
+                <th className="px-3 py-2 text-left text-sm font-medium text-theme-secondary">
                   Product
                 </th>
-                <th className="px-3 py-2 text-right text-sm font-medium text-gray-700 dark:text-white/80 w-24">
+                <th className="px-3 py-2 text-right text-sm font-medium text-theme-secondary w-24">
                   List
                 </th>
-                <th className="px-3 py-2 text-right text-sm font-medium text-gray-700 dark:text-white/80 w-28">
+                <th className="px-3 py-2 text-right text-sm font-medium text-theme-secondary w-28">
                   Custom
                 </th>
-                <th className="px-3 py-2 text-center text-sm font-medium text-gray-700 dark:text-white/80 w-36">
+                <th className="px-3 py-2 text-center text-sm font-medium text-theme-secondary w-36">
                   Valid Until
                 </th>
-                <th className="px-3 py-2 text-center text-sm font-medium text-gray-700 dark:text-white/80 w-20">
+                <th className="px-3 py-2 text-center text-sm font-medium text-theme-secondary w-20">
                   No Expiry
                 </th>
                 <th className="px-2 py-2 w-10"></th>
@@ -383,21 +383,21 @@ export function PricingGrid({
                   <tr
                     key={product.id}
                     className={cn(
-                      'hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors',
+                      'hover:bg-theme-surface-elevated/50 dark:hover:bg-white/[0.01] transition-colors',
                       isChanged && 'bg-amber-50/50 dark:bg-amber-500/5'
                     )}
                   >
-                    <td className="px-3 py-2 text-sm font-medium text-gray-900 dark:text-white">
+                    <td className="px-3 py-2 text-sm font-medium text-theme-primary">
                       {product.name}
                     </td>
 
-                    <td className="px-3 py-2 text-right text-sm text-gray-500 dark:text-white/50">
+                    <td className="px-3 py-2 text-right text-sm text-theme-tertiary">
                       £{product.list_price.toFixed(2)}
                     </td>
 
                     <td className="px-2 py-1.5">
                       <div className="relative">
-                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 dark:text-white/40">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-theme-tertiary">
                           £
                         </span>
                         <Input
@@ -417,7 +417,7 @@ export function PricingGrid({
                     <td className="px-2 py-1.5">
                       {hasCustomPrice && !effective.no_expiry ? (
                         <div className="relative">
-                          <Calendar className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 dark:text-white/40" />
+                          <Calendar className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-theme-tertiary" />
                           <Input
                             type="date"
                             value={effective.effective_to || ''}
@@ -429,7 +429,7 @@ export function PricingGrid({
                           />
                         </div>
                       ) : (
-                        <div className="text-center text-xs text-gray-400 dark:text-white/30">
+                        <div className="text-center text-xs text-theme-tertiary/30">
                           {hasCustomPrice && effective.no_expiry
                             ? 'No expiry'
                             : '-'}
@@ -457,7 +457,7 @@ export function PricingGrid({
                         <button
                           type="button"
                           onClick={() => handleClearPrice(product.id)}
-                          className="p-1 rounded hover:bg-gray-100 dark:hover:bg-white/[0.06] text-gray-400 dark:text-white/40 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                          className="p-1 rounded hover:bg-gray-100 dark:hover:bg-white/[0.06] text-theme-tertiary hover:text-red-500 dark:hover:text-red-400 transition-colors"
                           title="Clear custom price"
                         >
                           <X className="h-3.5 w-3.5" />
@@ -474,7 +474,7 @@ export function PricingGrid({
 
       {/* Actions */}
       <div className="flex justify-between items-center">
-        <div className="text-sm text-gray-500 dark:text-white/50">
+        <div className="text-sm text-theme-tertiary">
           {hasChanges && (
             <span className="text-amber-600 dark:text-amber-400">
               {Object.keys(changes).length} unsaved{' '}
@@ -488,7 +488,7 @@ export function PricingGrid({
             variant="outline"
             onClick={handleClearAll}
             disabled={!hasAnyCustomPrices || isSaving}
-            className="bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
+            className="bg-gray-50 dark:bg-white/[0.03] border-theme text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
           >
             Clear All
           </Button>

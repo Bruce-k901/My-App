@@ -209,16 +209,16 @@ export default function DocumentReviewModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-[#0B0D13] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-[#0B0D13] border border-theme rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Review Document</h2>
-            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-1">{documentName}</p>
+            <h2 className="text-xl font-bold text-theme-primary">Review Document</h2>
+ <p className="text-sm text-gray-500 dark:text-theme-tertiary mt-1">{documentName}</p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-white transition-colors"
+ className="text-gray-500 dark:text-theme-tertiary hover:text-gray-700 transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -233,13 +233,13 @@ export default function DocumentReviewModal({
             
             <button
               onClick={() => setAction('update_expiry')}
-              className="w-full p-4 bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors text-left"
+              className="w-full p-4 bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors text-left"
             >
               <div className="flex items-center gap-3">
                 <Calendar className="h-5 w-5 text-blue-500 dark:text-blue-400" />
                 <div>
-                  <div className="font-medium text-gray-900 dark:text-white">Update Expiry Date</div>
-                  <div className="text-sm text-gray-500 dark:text-neutral-400">
+                  <div className="font-medium text-theme-primary">Update Expiry Date</div>
+ <div className="text-sm text-gray-500 dark:text-theme-tertiary">
                     Document is still relevant, just extend the expiry date
                   </div>
                 </div>
@@ -248,13 +248,13 @@ export default function DocumentReviewModal({
 
             <button
               onClick={() => setAction('upload_new_version')}
-              className="w-full p-4 bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors text-left"
+              className="w-full p-4 bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors text-left"
             >
               <div className="flex items-center gap-3">
                 <Upload className="h-5 w-5 text-green-500 dark:text-green-400" />
                 <div>
-                  <div className="font-medium text-gray-900 dark:text-white">Upload New Version</div>
-                  <div className="text-sm text-gray-500 dark:text-neutral-400">
+                  <div className="font-medium text-theme-primary">Upload New Version</div>
+ <div className="text-sm text-gray-500 dark:text-theme-tertiary">
                     Replace with updated document (old version will be archived)
                   </div>
                 </div>
@@ -267,18 +267,18 @@ export default function DocumentReviewModal({
         {action === 'update_expiry' && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 New Expiry Date
               </label>
               <input
                 type="date"
                 value={newExpiryDate}
                 onChange={(e) => setNewExpiryDate(e.target.value)}
-                className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91]"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91]"
                 min={new Date().toISOString().split('T')[0]}
               />
               {currentExpiryDate && (
-                <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
+ <p className="text-xs text-gray-500 dark:text-theme-tertiary mt-1">
                   Current expiry: {new Date(currentExpiryDate).toLocaleDateString()}
                 </p>
               )}
@@ -316,7 +316,7 @@ export default function DocumentReviewModal({
         {action === 'upload_new_version' && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Version Number
               </label>
               <input
@@ -324,17 +324,17 @@ export default function DocumentReviewModal({
                 value={newVersion}
                 onChange={(e) => setNewVersion(e.target.value)}
                 placeholder="e.g., v2, v3"
-                className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91]"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91]"
               />
               {currentVersion && (
-                <p className="text-xs text-gray-500 dark:text-neutral-400 mt-1">
+ <p className="text-xs text-gray-500 dark:text-theme-tertiary mt-1">
                   Current version: {currentVersion}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 New Document File
               </label>
               <div className="border border-gray-300 dark:border-white/[0.06] border-dashed rounded-lg p-6 text-center">
@@ -349,11 +349,11 @@ export default function DocumentReviewModal({
                   htmlFor="new-document-file"
                   className="cursor-pointer flex flex-col items-center gap-2"
                 >
-                  <Upload className="h-8 w-8 text-gray-400 dark:text-neutral-400" />
+ <Upload className="h-8 w-8 text-gray-400 dark:text-theme-tertiary"/>
                   <span className="text-sm text-gray-600 dark:text-neutral-300">
                     {newFile ? newFile.name : 'Click to select file'}
                   </span>
-                  <span className="text-xs text-gray-500 dark:text-neutral-400">
+ <span className="text-xs text-gray-500 dark:text-theme-tertiary">
                     PDF, Word, Excel, or Image (max 10MB)
                   </span>
                 </label>

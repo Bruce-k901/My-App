@@ -46,15 +46,15 @@ export function DashboardSettingsPanel({
       <div
         className={cn(
           'fixed right-0 top-0 h-full w-full max-w-md z-50',
-          'bg-white dark:bg-[#0a0a0a] border-l border-theme dark:border-white/[0.06]',
+          'bg-white dark:bg-[#0a0a0a] border-l border-theme',
           'transform transition-transform duration-300',
           isOpen ? 'translate-x-0' : 'translate-x-full'
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-theme dark:border-white/[0.06]">
+        <div className="flex items-center justify-between p-4 border-b border-theme">
           <div className="flex items-center gap-2">
-            <Settings className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-white/60" />
+            <Settings className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
             <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">
               Dashboard Settings
             </h2>
@@ -63,13 +63,13 @@ export function DashboardSettingsPanel({
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
           >
-            <X className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-white/60" />
+            <X className="w-5 h-5 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
           </button>
         </div>
 
         {/* Content */}
         <div className="overflow-y-auto h-[calc(100%-140px)] p-4">
-          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mb-6">
+          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-6">
             Choose which widgets to display on your dashboard. Changes are saved automatically.
           </p>
 
@@ -111,7 +111,7 @@ export function DashboardSettingsPanel({
                             <p className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white">
                               {widget.name}
                             </p>
-                            <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 truncate">
+                            <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary truncate">
                               {widget.description}
                             </p>
                           </div>
@@ -135,10 +135,10 @@ export function DashboardSettingsPanel({
         </div>
 
         {/* Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-theme dark:border-white/[0.06] bg-white dark:bg-[#0a0a0a]">
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-theme bg-white dark:bg-[#0a0a0a]">
           <button
             onClick={onResetToDefaults}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-theme dark:border-white/[0.06] text-[rgb(var(--text-secondary))] dark:text-white/60 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-theme text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
           >
             <RotateCcw className="w-4 h-4" />
             Reset to Defaults
@@ -156,11 +156,11 @@ export function DashboardSettingsButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-colors"
+      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-theme-surface border border-theme hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-colors"
       title="Dashboard settings"
     >
-      <Settings className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-white/60" />
-      <span className="text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 hidden sm:inline">
+      <Settings className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
+      <span className="text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hidden sm:inline">
         Customize
       </span>
     </button>

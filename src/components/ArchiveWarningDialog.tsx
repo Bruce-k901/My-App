@@ -38,11 +38,11 @@ export function ArchiveWarningDialog({
             <AlertTriangle className="h-6 w-6 text-amber-400" />
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-white mb-2">
+            <h3 className="text-lg font-semibold text-theme-primary mb-2">
               Archive {itemType}?
             </h3>
-            <p className="text-white/60 mb-4">
-              You are about to archive <strong className="text-white">{itemName}</strong>.
+            <p className="text-theme-tertiary mb-4">
+              You are about to archive <strong className="text-theme-primary">{itemName}</strong>.
             </p>
             
             {hasAffectedItems && (
@@ -53,12 +53,12 @@ export function ArchiveWarningDialog({
                 
                 {affectedItems?.recipes && affectedItems.recipes.length > 0 && (
                   <div>
-                    <p className="text-sm font-medium text-white/60 mb-2">
+                    <p className="text-sm font-medium text-theme-tertiary mb-2">
                       Recipes ({affectedItems.recipes.length}):
                     </p>
                     <ul className="text-sm space-y-1 ml-4">
                       {affectedItems.recipes.map(recipe => (
-                        <li key={recipe.id} className="text-white/80 list-disc">
+                        <li key={recipe.id} className="text-theme-secondary list-disc">
                           {recipe.name}
                         </li>
                       ))}
@@ -68,12 +68,12 @@ export function ArchiveWarningDialog({
                 
                 {affectedItems?.sops && affectedItems.sops.length > 0 && (
                   <div>
-                    <p className="text-sm font-medium text-white/60 mb-2">
+                    <p className="text-sm font-medium text-theme-tertiary mb-2">
                       SOPs ({affectedItems.sops.length}):
                     </p>
                     <ul className="text-sm space-y-1 ml-4">
                       {affectedItems.sops.map(sop => (
-                        <li key={sop.id} className="text-white/80 list-disc">
+                        <li key={sop.id} className="text-theme-secondary list-disc">
                           {sop.title}
                         </li>
                       ))}
@@ -87,7 +87,7 @@ export function ArchiveWarningDialog({
               <Button
                 variant="outline"
                 onClick={onClose}
-                className="flex-1 bg-white/5 border-white/10 text-white hover:bg-white/10"
+                className="flex-1 bg-white/5 border-white/10 text-theme-primary hover:bg-white/10"
               >
                 Cancel
               </Button>
@@ -101,7 +101,7 @@ export function ArchiveWarningDialog({
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg hover:bg-white/5 text-white/40 hover:text-white transition-colors"
+            className="p-1 rounded-lg hover:bg-white/5 text-theme-tertiary hover:text-white transition-colors"
             aria-label="Close"
           >
             <X className="w-5 h-5" />

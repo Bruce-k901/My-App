@@ -280,7 +280,7 @@
   }
 
   /* Teal accent for category bullets */
-  .text-teal-600 {
+  .text-module-fg {
     color: #0d9488 !important;
   }
 }

@@ -13,7 +13,7 @@ interface ReviewPageContentProps {
 export default function ReviewPageContent(props: ReviewPageContentProps) {
   if (!ReviewPortal) {
     console.error('ReviewPortal is not defined');
-    return <div className="text-white p-4">Error: ReviewPortal component not found</div>;
+    return <div className="text-theme-primary p-4">Error: ReviewPortal component not found</div>;
   }
   return <ReviewPortal {...props} />;
 }

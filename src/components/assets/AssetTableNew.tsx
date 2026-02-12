@@ -90,7 +90,7 @@ export default function AssetTableNew({ companyId, onEdit, onArchive, onViewLogs
   if (loading) {
     return (
       <div className="min-h-[200px] flex items-center justify-center">
-        <p className="text-slate-400">Loading assets...</p>
+        <p className="text-theme-tertiary">Loading assets...</p>
       </div>
     );
   }
@@ -98,7 +98,7 @@ export default function AssetTableNew({ companyId, onEdit, onArchive, onViewLogs
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full text-sm text-neutral-200">
-        <thead className="border-b border-neutral-700 text-neutral-400">
+        <thead className="border-b border-theme text-theme-tertiary">
           <tr>
             <th className="py-3 text-left">Asset</th>
             <th className="text-left">Category</th>
@@ -118,52 +118,52 @@ export default function AssetTableNew({ companyId, onEdit, onArchive, onViewLogs
             <tr key={asset.id} className="border-b border-neutral-800 hover:bg-neutral-800/40">
               <td className="py-3">
                 <div>
-                  <div className="font-medium text-white">{asset.name}</div>
+                  <div className="font-medium text-theme-primary">{asset.name}</div>
                   {asset.notes && (
-                    <div className="text-xs text-neutral-500 mt-1 truncate max-w-[200px]">
+                    <div className="text-xs text-theme-tertiary mt-1 truncate max-w-[200px]">
                       {asset.notes}
                     </div>
                   )}
                 </div>
               </td>
               <td>
-                <span className="capitalize text-neutral-300">
+                <span className="capitalize text-theme-tertiary">
                   {asset.category}
                 </span>
               </td>
               <td>
-                <span className="text-neutral-300">
+                <span className="text-theme-tertiary">
                   {(asset as any).sites?.name || 'Unknown'}
                 </span>
               </td>
               <td>
-                <div className="text-neutral-300">
+                <div className="text-theme-tertiary">
                   {asset.brand && <div className="font-medium">{asset.brand}</div>}
-                  {asset.model && <div className="text-xs text-neutral-500">{asset.model}</div>}
+                  {asset.model && <div className="text-xs text-theme-tertiary">{asset.model}</div>}
                 </div>
               </td>
               <td>
-                <span className="text-neutral-300 font-mono text-xs">
+                <span className="text-theme-tertiary font-mono text-xs">
                   {asset.serial_number || '-'}
                 </span>
               </td>
               <td>
-                <span className="text-neutral-300">
+                <span className="text-theme-tertiary">
                   {asset.install_date ? new Date(asset.install_date).toLocaleDateString() : '-'}
                 </span>
               </td>
               <td>
-                <span className="text-neutral-300">
+                <span className="text-theme-tertiary">
                   {asset.warranty_end ? new Date(asset.warranty_end).toLocaleDateString() : '-'}
                 </span>
               </td>
               <td>
-                <span className="text-neutral-300">
+                <span className="text-theme-tertiary">
                   {asset.next_service_date ? new Date(asset.next_service_date).toLocaleDateString() : '-'}
                 </span>
               </td>
               <td>
-                <span className="text-neutral-300">
+                <span className="text-theme-tertiary">
                   {(asset as any).ppm_contractor?.name || '-'}
                 </span>
               </td>
@@ -173,7 +173,7 @@ export default function AssetTableNew({ companyId, onEdit, onArchive, onViewLogs
                     ? 'bg-green-900/30 text-green-400' 
                     : asset.status === 'Maintenance'
                     ? 'bg-yellow-900/30 text-yellow-400'
-                    : 'bg-neutral-900/30 text-neutral-400'
+                    : 'bg-neutral-900/30 text-theme-tertiary'
                 }`}>
                   {asset.status}
                 </span>
@@ -213,7 +213,7 @@ export default function AssetTableNew({ companyId, onEdit, onArchive, onViewLogs
           ))}
           {assets.length === 0 && (
             <tr>
-              <td colSpan={11} className="py-8 text-center text-neutral-500">
+              <td colSpan={11} className="py-8 text-center text-theme-tertiary">
                 No assets found. Create your first asset to get started.
               </td>
             </tr>

@@ -111,18 +111,18 @@ export default function ScheduleInterviewModal({ candidate, application, company
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white dark:bg-[#14161c] border border-gray-200 dark:border-white/10 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div className="bg-white dark:bg-[#14161c] border border-theme rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-white/[0.06] sticky top-0 bg-white dark:bg-[#14161c] z-10">
+        <div className="flex items-center justify-between p-6 border-b border-theme sticky top-0 bg-white dark:bg-[#14161c] z-10">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Schedule Interview</h2>
-            <p className="text-sm text-gray-600 dark:text-white/60 mt-1">
+            <h2 className="text-xl font-semibold text-theme-primary">Schedule Interview</h2>
+            <p className="text-sm text-theme-secondary mt-1">
               {candidate.full_name} - {application.job.title}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-theme-secondary hover:text-theme-primary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -132,7 +132,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
         <div className="p-6 space-y-6">
           {/* Interview Type */}
           <div>
-            <label className="block text-sm font-medium text-white/70 mb-3">
+            <label className="block text-sm font-medium text-theme-secondary mb-3">
               Interview Type *
             </label>
             <div className="grid grid-cols-3 gap-3">
@@ -144,8 +144,8 @@ export default function ScheduleInterviewModal({ candidate, application, company
                     : 'border-white/10 bg-white/5 hover:bg-white/10'
                 }`}
               >
-                <Building2 className="w-6 h-6 mx-auto mb-2 text-white/70" />
-                <div className="text-white text-sm font-medium">In-Person</div>
+                <Building2 className="w-6 h-6 mx-auto mb-2 text-theme-secondary" />
+                <div className="text-theme-primary text-sm font-medium">In-Person</div>
               </button>
               <button
                 onClick={() => setInterviewType('video')}
@@ -155,8 +155,8 @@ export default function ScheduleInterviewModal({ candidate, application, company
                     : 'border-white/10 bg-white/5 hover:bg-white/10'
                 }`}
               >
-                <Video className="w-6 h-6 mx-auto mb-2 text-white/70" />
-                <div className="text-white text-sm font-medium">Video Call</div>
+                <Video className="w-6 h-6 mx-auto mb-2 text-theme-secondary" />
+                <div className="text-theme-primary text-sm font-medium">Video Call</div>
               </button>
               <button
                 onClick={() => setInterviewType('phone')}
@@ -166,8 +166,8 @@ export default function ScheduleInterviewModal({ candidate, application, company
                     : 'border-white/10 bg-white/5 hover:bg-white/10'
                 }`}
               >
-                <Phone className="w-6 h-6 mx-auto mb-2 text-white/70" />
-                <div className="text-white text-sm font-medium">Phone</div>
+                <Phone className="w-6 h-6 mx-auto mb-2 text-theme-secondary" />
+                <div className="text-theme-primary text-sm font-medium">Phone</div>
               </button>
             </div>
           </div>
@@ -175,7 +175,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
           {/* Date & Time */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-white/70 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 <Calendar className="w-4 h-4 inline mr-1" />
                 Date *
               </label>
@@ -184,11 +184,11 @@ export default function ScheduleInterviewModal({ candidate, application, company
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91]"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-white/70 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 <Clock className="w-4 h-4 inline mr-1" />
                 Time
               </label>
@@ -202,7 +202,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
 
           {/* Location */}
           <div>
-            <label className="block text-sm font-medium text-white/70 mb-2">
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
               <MapPin className="w-4 h-4 inline mr-1" />
               Location / Meeting Link
             </label>
@@ -211,13 +211,13 @@ export default function ScheduleInterviewModal({ candidate, application, company
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder={interviewType === 'video' ? 'Zoom/Teams link' : interviewType === 'phone' ? 'We will call you' : 'Office address'}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
             />
           </div>
 
           {/* Additional Info */}
           <div>
-            <label className="block text-sm font-medium text-white/70 mb-2">
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
               Additional Information
             </label>
             <textarea
@@ -225,7 +225,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
               onChange={(e) => setAdditionalInfo(e.target.value)}
               placeholder="e.g., What to bring, who will interview you, parking info..."
               rows={3}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] resize-none"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] resize-none"
             />
           </div>
 
@@ -238,7 +238,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
               onChange={(e) => setSendEmail(e.target.checked)}
               className="w-4 h-4 rounded accent-[#D37E91]"
             />
-            <label htmlFor="send-email" className="text-sm text-white/70 cursor-pointer">
+            <label htmlFor="send-email" className="text-sm text-theme-secondary cursor-pointer">
               Send email invitation to candidate
             </label>
           </div>
@@ -249,7 +249,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
           <button
             onClick={onClose}
             disabled={saving}
-            className="px-4 py-2 rounded-lg text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-white disabled:opacity-50"
+            className="px-4 py-2 rounded-lg text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-theme-primary disabled:opacity-50"
           >
             Cancel
           </button>

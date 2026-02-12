@@ -15,7 +15,7 @@ export default function UserCard({ user }: { user: any }) {
   return (
     <Card className="bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all cursor-pointer border border-white/10 shadow-sm rounded-2xl">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold flex items-center gap-2 text-white">
+        <CardTitle className="text-lg font-semibold flex items-center gap-2 text-theme-primary">
           <UserCircle2 size={18} />
           {user.full_name || "Unnamed User"}
         </CardTitle>

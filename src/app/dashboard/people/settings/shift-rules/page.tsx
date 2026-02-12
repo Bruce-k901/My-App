@@ -59,7 +59,7 @@ export default function ShiftRulesPage() {
     return (
       <div className="space-y-6">
         <div className="text-center py-12">
-          <p className="text-gray-900 dark:text-white/60">Loading shift rules...</p>
+          <p className="text-theme-primary/60">Loading shift rules...</p>
         </div>
       </div>
     );
@@ -72,16 +72,16 @@ export default function ShiftRulesPage() {
         <div>
           <Link
             href="/dashboard/people/settings"
-            className="inline-flex items-center gap-2 text-sm text-gray-900 dark:text-white/60 hover:text-gray-900 dark:text-white mb-4"
+            className="inline-flex items-center gap-2 text-sm text-theme-primary/60 hover:text-theme-primary mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Settings
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-theme-primary mb-2 flex items-center gap-2">
             <Clock className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             Shift Rules
           </h1>
-          <p className="text-gray-500 dark:text-white/60">
+          <p className="text-theme-tertiary">
             Configure Working Time Directive compliance, breaks, and overtime settings
           </p>
         </div>
@@ -97,11 +97,11 @@ export default function ShiftRulesPage() {
       </div>
 
       {/* Rest Periods Section */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Rest Periods</h2>
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-theme-primary mb-6">Rest Periods</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-primary/80 mb-2">
               Minimum Rest Between Shifts (hours)
             </label>
             <Input
@@ -112,11 +112,11 @@ export default function ShiftRulesPage() {
               onChange={(e) => updateField('min_rest_between_shifts', parseInt(e.target.value) || 0)}
               placeholder="11"
             />
-            <p className="text-xs text-gray-900 dark:text-white/50 mt-1">UK default: 11 hours</p>
+            <p className="text-xs text-theme-primary/50 mt-1">UK default: 11 hours</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-primary/80 mb-2">
               Weekly Rest Type
             </label>
             <Select
@@ -130,7 +130,7 @@ export default function ShiftRulesPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-primary/80 mb-2">
               Minimum Weekly Rest (hours)
             </label>
             <Input
@@ -146,11 +146,11 @@ export default function ShiftRulesPage() {
       </div>
 
       {/* Working Hours Section */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Working Hours</h2>
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-theme-primary mb-6">Working Hours</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-primary/80 mb-2">
               Maximum Weekly Hours
             </label>
             <Input
@@ -161,11 +161,11 @@ export default function ShiftRulesPage() {
               onChange={(e) => updateField('max_weekly_hours', parseInt(e.target.value) || 0)}
               placeholder="48"
             />
-            <p className="text-xs text-gray-900 dark:text-white/50 mt-1">UK default: 48 hours</p>
+            <p className="text-xs text-theme-primary/50 mt-1">UK default: 48 hours</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-primary/80 mb-2">
               Reference Period (weeks)
             </label>
             <Input
@@ -176,14 +176,14 @@ export default function ShiftRulesPage() {
               onChange={(e) => updateField('weekly_hours_reference_weeks', parseInt(e.target.value) || 0)}
               placeholder="17"
             />
-            <p className="text-xs text-gray-900 dark:text-white/50 mt-1">Averaging period for weekly hours</p>
+            <p className="text-xs text-theme-primary/50 mt-1">Averaging period for weekly hours</p>
           </div>
 
           <div className="md:col-span-2">
             <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]">
               <div>
-                <p className="font-medium text-gray-900 dark:text-white">Allow WTD Opt-out</p>
-                <p className="text-sm text-gray-900 dark:text-white/60 mt-1">
+                <p className="font-medium text-theme-primary">Allow WTD Opt-out</p>
+                <p className="text-sm text-theme-primary/60 mt-1">
                   Allow employees to opt out of Working Time Directive limits
                 </p>
               </div>
@@ -197,11 +197,11 @@ export default function ShiftRulesPage() {
       </div>
 
       {/* Break Rules Section */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Break Rules</h2>
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-theme-primary mb-6">Break Rules</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-primary/80 mb-2">
               Break Required After (hours)
             </label>
             <Input
@@ -216,11 +216,11 @@ export default function ShiftRulesPage() {
               }}
               placeholder="6"
             />
-            <p className="text-xs text-gray-900 dark:text-white/50 mt-1">Default: 6 hours (360 minutes)</p>
+            <p className="text-xs text-theme-primary/50 mt-1">Default: 6 hours (360 minutes)</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-primary/80 mb-2">
               Minimum Break Duration (minutes)
             </label>
             <Input
@@ -236,8 +236,8 @@ export default function ShiftRulesPage() {
           <div className="md:col-span-2">
             <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]">
               <div>
-                <p className="font-medium text-gray-900 dark:text-white">Paid Breaks</p>
-                <p className="text-sm text-gray-900 dark:text-white/60 mt-1">
+                <p className="font-medium text-theme-primary">Paid Breaks</p>
+                <p className="text-sm text-theme-primary/60 mt-1">
                   Breaks are paid and count towards working hours
                 </p>
               </div>
@@ -251,11 +251,11 @@ export default function ShiftRulesPage() {
       </div>
 
       {/* Night Work Section */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Night Work</h2>
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-theme-primary mb-6">Night Work</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-primary/80 mb-2">
               Night Shift Start Time
             </label>
             <TimePicker
@@ -266,7 +266,7 @@ export default function ShiftRulesPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-primary/80 mb-2">
               Night Shift End Time
             </label>
             <TimePicker
@@ -277,7 +277,7 @@ export default function ShiftRulesPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-primary/80 mb-2">
               Max Night Shift Hours
             </label>
             <Input
@@ -293,11 +293,11 @@ export default function ShiftRulesPage() {
       </div>
 
       {/* Overtime Section */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Overtime</h2>
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
+        <h2 className="text-xl font-semibold text-theme-primary mb-6">Overtime</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-primary/80 mb-2">
               Daily Overtime After (hours)
             </label>
             <Input
@@ -311,11 +311,11 @@ export default function ShiftRulesPage() {
               }}
               placeholder="Leave empty for no daily overtime"
             />
-            <p className="text-xs text-gray-900 dark:text-white/50 mt-1">Leave empty to disable daily overtime</p>
+            <p className="text-xs text-theme-primary/50 mt-1">Leave empty to disable daily overtime</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-primary/80 mb-2">
               Weekly Overtime After (hours)
             </label>
             <Input
@@ -329,7 +329,7 @@ export default function ShiftRulesPage() {
               }}
               placeholder="40"
             />
-            <p className="text-xs text-gray-900 dark:text-white/50 mt-1">Default: 40 hours</p>
+            <p className="text-xs text-theme-primary/50 mt-1">Default: 40 hours</p>
           </div>
         </div>
       </div>

@@ -56,16 +56,16 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
       }
     >
       {isOpen && (
-        <div className="mt-3 text-sm text-gray-600 dark:text-gray-300 pt-2 px-1">
+        <div className="mt-3 text-sm text-theme-secondary pt-2 px-1">
           {/* Mobile: Stack fields vertically, Desktop: Keep horizontal */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 mb-3">
             <div>
-              <span className="text-gray-500 text-xs uppercase tracking-wide">Region</span>
-              <div className="text-gray-900 dark:text-white mt-0.5">{site.region || "—"}</div>
+              <span className="text-theme-tertiary text-xs uppercase tracking-wide">Region</span>
+              <div className="text-theme-primary mt-0.5">{site.region || "—"}</div>
             </div>
             <div>
-              <span className="text-gray-500 text-xs uppercase tracking-wide">City</span>
-              <div className="text-gray-900 dark:text-white mt-0.5">{site.city || "—"}</div>
+              <span className="text-theme-tertiary text-xs uppercase tracking-wide">City</span>
+              <div className="text-theme-primary mt-0.5">{site.city || "—"}</div>
             </div>
           </div>
 
@@ -73,11 +73,11 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
           {gm && (
             <div className="mb-4 p-3 bg-gray-50 dark:bg-white/[0.03] rounded-lg border border-gray-200 dark:border-white/[0.05]">
               <div className="font-semibold text-gray-700 dark:text-gray-200 mb-2 text-sm">General Manager</div>
-              <div className="mt-1 text-gray-600 dark:text-gray-300 space-y-1.5">
-                <div className="text-gray-900 dark:text-white font-medium">{gm.full_name}</div>
+              <div className="mt-1 text-theme-secondary space-y-1.5">
+                <div className="text-theme-primary font-medium">{gm.full_name}</div>
                 {gm.phone && (
                   <div className="flex items-center gap-2">
-                    <Phone size={14} className="text-gray-500 flex-shrink-0" />
+                    <Phone size={14} className="text-theme-tertiary flex-shrink-0" />
                     <a
                       href={`tel:${gm.phone}`}
                       className="hover:text-[#D37E91] transition-colors break-all"
@@ -88,7 +88,7 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
                 )}
                 {gm.email && (
                   <div className="flex items-center gap-2">
-                    <Mail size={14} className="text-gray-500 flex-shrink-0" />
+                    <Mail size={14} className="text-theme-tertiary flex-shrink-0" />
                     <a
                       href={`mailto:${gm.email}`}
                       className="hover:text-[#D37E91] transition-colors break-all text-xs md:text-sm"
@@ -105,7 +105,7 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
             <div className="mb-4">
               <div className="font-semibold text-gray-700 dark:text-gray-200 mb-2 text-sm">Operating Schedule</div>
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[200px] border-collapse text-gray-600 dark:text-gray-300">
+                <table className="w-full min-w-[200px] border-collapse text-theme-secondary">
                   <tbody>
                     {(() => {
                       const weekdayOrder = [
@@ -138,12 +138,12 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
                         const active = infoTyped.active ?? true;
 
                         return (
-                          <tr key={day} className={!active ? "text-gray-500" : ""}>
+                          <tr key={day} className={!active ? "text-theme-tertiary" : ""}>
                             <td className="pr-3 md:pr-6 py-1 capitalize text-xs md:text-sm">{day}:</td>
                             <td className="tabular-nums text-xs md:text-sm">
                               {active ? (
                                 <>
-                                  {open} <span className="px-1 text-gray-500">→</span> {close}
+                                  {open} <span className="px-1 text-theme-tertiary">→</span> {close}
                                 </>
                               ) : (
                                 "Closed"
@@ -158,7 +158,7 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
               </div>
             </div>
           ) : (
-            <div className="text-gray-500 text-sm mb-4">No operating schedule</div>
+            <div className="text-theme-tertiary text-sm mb-4">No operating schedule</div>
           )}
 
           {Array.isArray(site.planned_closures) && site.planned_closures.length > 0 ? (
@@ -169,14 +169,14 @@ function SiteCard({ site, onEdit }: SiteCardProps) {
                   .filter((c: any) => c.is_active)
                   .map((c: any) => (
                     <li key={c.id} className="break-words">
-                      <span className="text-gray-600 dark:text-gray-300">{c.closure_start} → {c.closure_end}</span>
-                      {c.notes && <span className="text-gray-500 dark:text-gray-400"> — {c.notes}</span>}
+                      <span className="text-theme-secondary">{c.closure_start} → {c.closure_end}</span>
+                      {c.notes && <span className="text-theme-tertiary"> — {c.notes}</span>}
                     </li>
                   ))}
               </ul>
             </div>
           ) : (
-            <div className="text-gray-500 text-sm mb-4">No planned closures</div>
+            <div className="text-theme-tertiary text-sm mb-4">No planned closures</div>
           )}
 
           <div className="flex justify-end pt-2 border-t border-gray-200 dark:border-white/[0.05]">

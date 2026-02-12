@@ -12,7 +12,7 @@ export default function OrganizationDocumentsPage() {
   const { loading: authLoading, companyId } = useAppContext();
 
   // 2. Early returns ONLY AFTER all hooks
-  if (authLoading) return <div className="p-8 text-gray-500 dark:text-white">Loading...</div>;
+  if (authLoading) return <div className="p-8 text-theme-tertiary">Loading...</div>;
 
   if (!companyId) {
     return (
@@ -21,12 +21,12 @@ export default function OrganizationDocumentsPage() {
           <h2 className="text-xl font-semibold text-yellow-600 dark:text-yellow-400 mb-2">
             Company Setup Required
           </h2>
-          <p className="text-gray-600 dark:text-white/80 mb-4">
+          <p className="text-theme-secondary mb-4">
             Please complete your company setup to access this page.
           </p>
           <a
             href="/dashboard/business"
-            className="inline-block px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg transition-all duration-200"
+            className="inline-block px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg),0.7)] rounded-lg transition-all duration-200"
           >
             Complete Setup
           </a>
@@ -37,7 +37,7 @@ export default function OrganizationDocumentsPage() {
 
   return (
     <OrgContentWrapper title="Documents & Policies">
-      <Suspense fallback={<div className="text-neutral-400 text-center py-8">Loading...</div>}>
+      <Suspense fallback={<div className="text-theme-tertiary text-center py-8">Loading...</div>}>
         <DocumentsPoliciesSection />
       </Suspense>
     </OrgContentWrapper>

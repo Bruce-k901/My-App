@@ -102,7 +102,7 @@ function AccordionItem({ site, onRefresh, companyId }: { site: Site; onRefresh?:
         title={
           <div>
             <div className="text-lg font-semibold">{title}</div>
-            <div className="text-sm text-gray-400">{subtitle}</div>
+            <div className="text-sm text-theme-tertiary">{subtitle}</div>
           </div>
         }
         rightActions={
@@ -132,12 +132,12 @@ function AccordionItem({ site, onRefresh, companyId }: { site: Site; onRefresh?:
         }
       >
         {isOpen && (
-          <div className="mt-3 text-sm text-gray-300 border-t border-white/[0.1] pt-2">
+          <div className="mt-3 text-sm text-theme-tertiary border-t border-white/[0.1] pt-2">
             {/* Site Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-800/50 rounded-lg">
               <div>
-                <h4 className="text-sm font-medium text-gray-300 mb-2">Address</h4>
-                <div className="text-sm text-gray-400 space-y-1">
+                <h4 className="text-sm font-medium text-theme-tertiary mb-2">Address</h4>
+                <div className="text-sm text-theme-tertiary space-y-1">
                   {site.address_line1 && <div>{site.address_line1}</div>}
                   {site.address_line2 && <div>{site.address_line2}</div>}
                   <div>
@@ -150,40 +150,40 @@ function AccordionItem({ site, onRefresh, companyId }: { site: Site; onRefresh?:
               </div>
               
               <div>
-                <h4 className="text-sm font-medium text-gray-300 mb-2">Contact Information</h4>
-                <div className="text-sm text-gray-400 space-y-1">
+                <h4 className="text-sm font-medium text-theme-tertiary mb-2">Contact Information</h4>
+                <div className="text-sm text-theme-tertiary space-y-1">
                   {gm ? (
                     <>
-                      <div><span className="text-gray-500">General Manager:</span> {gm.full_name}</div>
-                      <div><span className="text-gray-500">Phone:</span> {gm.phone}</div>
-                      <div><span className="text-gray-500">Email:</span> {gm.email}</div>
+                      <div><span className="text-theme-tertiary">General Manager:</span> {gm.full_name}</div>
+                      <div><span className="text-theme-tertiary">Phone:</span> {gm.phone}</div>
+                      <div><span className="text-theme-tertiary">Email:</span> {gm.email}</div>
                     </>
                   ) : site.gm_user_id ? (
-                    <div className="text-gray-500">Loading GM information...</div>
+                    <div className="text-theme-tertiary">Loading GM information...</div>
                   ) : (
-                    <div className="text-gray-500">No GM assigned</div>
+                    <div className="text-theme-tertiary">No GM assigned</div>
                   )}
                 </div>
               </div>
               
               <div>
-                <h4 className="text-sm font-medium text-gray-300 mb-2">Site Details</h4>
-                <div className="text-sm text-gray-400 space-y-1">
-                  {site.region && <div><span className="text-gray-500">Region:</span> {site.region}</div>}
-                  {site.status && <div><span className="text-gray-500">Status:</span> {site.status}</div>}
+                <h4 className="text-sm font-medium text-theme-tertiary mb-2">Site Details</h4>
+                <div className="text-sm text-theme-tertiary space-y-1">
+                  {site.region && <div><span className="text-theme-tertiary">Region:</span> {site.region}</div>}
+                  {site.status && <div><span className="text-theme-tertiary">Status:</span> {site.status}</div>}
             </div>
               </div>
               
               <div>
-                <h4 className="text-sm font-medium text-gray-300 mb-2">Operating Hours</h4>
-                <div className="text-sm text-gray-400 space-y-1">
-                  {site.days_open && <div><span className="text-gray-500">Days Open:</span> {site.days_open}</div>}
+                <h4 className="text-sm font-medium text-theme-tertiary mb-2">Operating Hours</h4>
+                <div className="text-sm text-theme-tertiary space-y-1">
+                  {site.days_open && <div><span className="text-theme-tertiary">Days Open:</span> {site.days_open}</div>}
                   {(site.opening_time_from || site.opening_time_to) && (
                     <div>
-                      <span className="text-gray-500">Hours:</span> {site.opening_time_from || "N/A"} - {site.opening_time_to || "N/A"}
+                      <span className="text-theme-tertiary">Hours:</span> {site.opening_time_from || "N/A"} - {site.opening_time_to || "N/A"}
                     </div>
                   )}
-                  {site.yearly_closures && <div><span className="text-gray-500">Yearly Closures:</span> {site.yearly_closures}</div>}
+                  {site.yearly_closures && <div><span className="text-theme-tertiary">Yearly Closures:</span> {site.yearly_closures}</div>}
                 </div>
               </div>
             </div>

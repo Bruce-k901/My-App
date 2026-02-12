@@ -144,7 +144,7 @@ export default function OverdueMaintenanceWidget({ companyId, siteId }: WidgetPr
                 <p className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white truncate">
                   {task.asset_name}
                 </p>
-                <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 truncate">
+                <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary truncate">
                   {task.task_name}
                 </p>
               </div>

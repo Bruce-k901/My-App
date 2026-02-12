@@ -31,7 +31,7 @@ export default function MarketingSubPageLayout({ children }: { children: React.R
   }, []);
 
   return (
-    <div className="marketing-page min-h-screen flex flex-col bg-transparent text-white">
+    <div className="marketing-page min-h-screen flex flex-col bg-transparent text-theme-primary">
       <MarketingHeader />
       <main className="flex-1 bg-transparent">{children}</main>
     </div>

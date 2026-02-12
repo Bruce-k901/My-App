@@ -413,7 +413,7 @@ export default function SalesManagementPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-module-fg dark:text-module-fg animate-spin" />
       </div>
     );
   }
@@ -425,13 +425,13 @@ export default function SalesManagementPage() {
         <div className="flex items-center gap-4">
           <Link 
             href="/dashboard/stockly"
-            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+ className="p-2 rounded-lg bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Sales Data</h1>
-            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mt-1">Import POS data or enter sales manually</p>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm mt-1">Import POS data or enter sales manually</p>
           </div>
         </div>
         
@@ -439,20 +439,20 @@ export default function SalesManagementPage() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors disabled:opacity-50"
+ className="p-2 rounded-lg bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
           <button
             onClick={() => setShowImportModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-theme-button dark:bg-white/10 hover:bg-theme-button-hover dark:hover:bg-white/20 text-[rgb(var(--text-primary))] dark:text-white rounded-lg transition-colors"
+ className="flex items-center gap-2 px-4 py-2 bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-primary))] dark:text-white rounded-lg transition-colors"
           >
             <Upload className="w-5 h-5" />
             Import CSV
           </button>
           <button
             onClick={() => setShowManualModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-[#D37E91] hover:bg-emerald-700 dark:hover:bg-[#D37E91]/90 text-white rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-module-fg hover:bg-emerald-700 dark:hover:bg-module-fg/90 text-white rounded-lg transition-colors"
           >
             <Plus className="w-5 h-5" />
             Add Sale
@@ -462,50 +462,50 @@ export default function SalesManagementPage() {
 
       {/* 30-Day Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-4">
+ <div className="bg-theme-surface-elevated border border-theme rounded-xl p-4">
           <div className="flex items-center gap-2 mb-1">
             <DollarSign className="w-4 h-4 text-green-500 dark:text-green-400" />
-            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-xs">Revenue</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-xs">Revenue</span>
           </div>
           <p className="text-xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(totals.revenue)}</p>
         </div>
         
-        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-4">
+ <div className="bg-theme-surface-elevated border border-theme rounded-xl p-4">
           <div className="flex items-center gap-2 mb-1">
             <Receipt className="w-4 h-4 text-red-500 dark:text-red-400" />
-            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-xs">COGS</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-xs">COGS</span>
           </div>
           <p className="text-xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(totals.cost)}</p>
         </div>
         
-        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-4">
+ <div className="bg-theme-surface-elevated border border-theme rounded-xl p-4">
           <div className="flex items-center gap-2 mb-1">
             <TrendingUp className="w-4 h-4 text-blue-500 dark:text-blue-400" />
-            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-xs">Gross Profit</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-xs">Gross Profit</span>
           </div>
           <p className="text-xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(totals.profit)}</p>
         </div>
         
-        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-4">
+ <div className="bg-theme-surface-elevated border border-theme rounded-xl p-4">
           <div className="flex items-center gap-2 mb-1">
-            <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-[#D37E91]" />
-            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-xs">GP %</span>
+            <TrendingUp className="w-4 h-4 text-module-fg dark:text-module-fg" />
+            <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-xs">GP %</span>
           </div>
           <p className={`text-xl font-bold ${getGpColor(totals.gp)}`}>{totals.gp.toFixed(1)}%</p>
         </div>
         
-        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-4">
+ <div className="bg-theme-surface-elevated border border-theme rounded-xl p-4">
           <div className="flex items-center gap-2 mb-1">
             <Receipt className="w-4 h-4 text-purple-500 dark:text-purple-400" />
-            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-xs">Transactions</span>
+            <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-xs">Transactions</span>
           </div>
           <p className="text-xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{totals.transactions.toLocaleString()}</p>
         </div>
         
-        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-4">
+ <div className="bg-theme-surface-elevated border border-theme rounded-xl p-4">
           <div className="flex items-center gap-2 mb-1">
-            <Users className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />
-            <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-xs">Covers</span>
+            <Users className="w-4 h-4 text-module-fg" />
+            <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-xs">Covers</span>
           </div>
           <p className="text-xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{totals.covers.toLocaleString()}</p>
         </div>
@@ -514,42 +514,42 @@ export default function SalesManagementPage() {
       {/* Quick Link to GP Report */}
       <Link
         href="/dashboard/stockly/reports/gp"
-        className="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-500/10 dark:from-[#D37E91]/10 to-purple-500/10 border border-emerald-500/30 dark:border-[#D37E91]/30 rounded-xl hover:border-emerald-500/50 dark:hover:border-[#D37E91]/50 transition-colors"
+        className="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-500/10 dark:from-module-fg/[0.10] to-purple-500/10 border border-module-fg/30 dark:border-module-fg/[0.30] rounded-xl hover:border-module-fg/30 dark:hover:border-module-fg/[0.50] transition-colors"
       >
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-emerald-500/20 dark:bg-[#D37E91]/20 rounded-lg">
-            <TrendingUp className="w-6 h-6 text-emerald-600 dark:text-[#D37E91]" />
+          <div className="p-3 bg-module-fg/20 dark:bg-module-fg/20 rounded-lg">
+            <TrendingUp className="w-6 h-6 text-module-fg dark:text-module-fg" />
           </div>
           <div>
             <h3 className="font-semibold text-[rgb(var(--text-primary))] dark:text-white">Gross Profit Report</h3>
-            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">View detailed GP analysis, trends, and category breakdown</p>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm">View detailed GP analysis, trends, and category breakdown</p>
           </div>
         </div>
-        <ChevronRight className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-white/40" />
+        <ChevronRight className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary" />
       </Link>
 
       {/* Daily Sales Table */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
         <div className="px-6 py-4 border-b border-white/[0.06]">
-          <h2 className="text-lg font-semibold text-white">Daily Sales (Last 30 Days)</h2>
+          <h2 className="text-lg font-semibold text-theme-primary">Daily Sales (Last 30 Days)</h2>
         </div>
         
         {dailySummaries.length === 0 ? (
           <div className="p-12 text-center">
             <Receipt className="w-12 h-12 text-white/20 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-white mb-2">No sales data yet</h3>
-            <p className="text-white/60 mb-4">Import from your POS or add sales manually</p>
+            <h3 className="text-lg font-medium text-theme-primary mb-2">No sales data yet</h3>
+            <p className="text-theme-tertiary mb-4">Import from your POS or add sales manually</p>
             <div className="flex items-center justify-center gap-3">
               <button
                 onClick={() => setShowImportModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-theme-primary rounded-lg transition-colors"
               >
                 <Upload className="w-4 h-4" />
                 Import CSV
               </button>
               <button
                 onClick={() => setShowManualModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-[#D37E91] hover:bg-emerald-700 dark:hover:bg-[#D37E91]/90 text-white rounded-lg transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-module-fg hover:bg-emerald-700 dark:hover:bg-module-fg/90 text-white rounded-lg transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Add Sale
@@ -561,28 +561,28 @@ export default function SalesManagementPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-white/[0.06]">
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Date</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Revenue</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">COGS</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">GP</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">GP %</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Covers</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Avg/Cover</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-theme-tertiary">Date</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-theme-tertiary">Revenue</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-theme-tertiary">COGS</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-theme-tertiary">GP</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-theme-tertiary">GP %</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-theme-tertiary">Covers</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-theme-tertiary">Avg/Cover</th>
                 </tr>
               </thead>
               <tbody>
                 {dailySummaries.map((day) => (
                   <tr key={day.id} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
-                    <td className="px-4 py-3 text-white font-medium">
+                    <td className="px-4 py-3 text-theme-primary font-medium">
                       {formatDate(day.summary_date)}
                     </td>
-                    <td className="px-4 py-3 text-right text-white">
+                    <td className="px-4 py-3 text-right text-theme-primary">
                       {formatCurrency(day.net_revenue)}
                     </td>
-                    <td className="px-4 py-3 text-right text-white/70">
+                    <td className="px-4 py-3 text-right text-theme-secondary">
                       {formatCurrency(day.total_cost)}
                     </td>
-                    <td className="px-4 py-3 text-right text-white">
+                    <td className="px-4 py-3 text-right text-theme-primary">
                       {formatCurrency(day.gross_profit)}
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -590,10 +590,10 @@ export default function SalesManagementPage() {
                         {day.gp_percentage.toFixed(1)}%
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right text-white/70">
+                    <td className="px-4 py-3 text-right text-theme-secondary">
                       {day.total_covers}
                     </td>
-                    <td className="px-4 py-3 text-right text-white/70">
+                    <td className="px-4 py-3 text-right text-theme-secondary">
                       {day.total_covers > 0 ? formatCurrency(day.net_revenue / day.total_covers) : '-'}
                     </td>
                   </tr>
@@ -606,8 +606,8 @@ export default function SalesManagementPage() {
 
       {/* Recent Imports */}
       {recentImports.length > 0 && (
-        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-theme dark:border-white/[0.06]">
+ <div className="bg-theme-surface-elevated border border-theme rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-theme">
             <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">Recent Imports</h2>
           </div>
           <div className="divide-y divide-theme dark:divide-white/[0.06]">
@@ -628,12 +628,12 @@ export default function SalesManagementPage() {
                   </div>
                   <div>
                     <p className="text-[rgb(var(--text-primary))] dark:text-white font-medium">{imp.filename || 'Manual Import'}</p>
-                    <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">
+                    <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm">
                       {imp.records_imported} records • {formatCurrency(imp.revenue_total)}
                     </p>
                   </div>
                 </div>
-                <span className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">
+                <span className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm">
                   {new Date(imp.created_at).toLocaleDateString('en-GB')}
                 </span>
               </div>
@@ -645,17 +645,17 @@ export default function SalesManagementPage() {
       {/* Import Modal */}
       {showImportModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-theme-surface dark:bg-[#1a1a2e] border border-theme dark:border-white/10 rounded-xl w-full max-w-md">
-            <div className="p-6 border-b border-theme dark:border-white/10">
+ <div className="bg-theme-surface dark:bg-[#1a1a2e] border border-theme rounded-xl w-full max-w-md">
+ <div className="p-6 border-b border-theme">
               <h2 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white">Import Sales Data</h2>
-              <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mt-1">Upload a CSV file from your POS system</p>
+              <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm mt-1">Upload a CSV file from your POS system</p>
             </div>
             
             <div className="p-6 space-y-4">
-              <div className="bg-theme-button dark:bg-white/5 border border-dashed border-theme dark:border-white/20 rounded-xl p-8 text-center">
-                <FileSpreadsheet className="w-12 h-12 text-[rgb(var(--text-tertiary))] dark:text-white/30 mx-auto mb-4" />
-                <p className="text-[rgb(var(--text-primary))] dark:text-white/80 mb-2">Drop your CSV file here or click to browse</p>
-                <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm mb-4">
+ <div className="bg-theme-button border border-dashed border-theme rounded-xl p-8 text-center">
+                <FileSpreadsheet className="w-12 h-12 text-[rgb(var(--text-tertiary))] dark:text-theme-disabled mx-auto mb-4" />
+                <p className="text-[rgb(var(--text-primary))] dark:text-theme-secondary mb-2">Drop your CSV file here or click to browse</p>
+                <p className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm mb-4">
                   Expected columns: date, revenue (or total), covers (optional)
                 </p>
                 <input
@@ -668,7 +668,7 @@ export default function SalesManagementPage() {
                 />
                 <label
                   htmlFor="csv-upload"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-[#D37E91] hover:bg-emerald-700 dark:hover:bg-[#D37E91]/90 text-white rounded-lg cursor-pointer transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-module-fg hover:bg-emerald-700 dark:hover:bg-module-fg/90 text-white rounded-lg cursor-pointer transition-colors"
                 >
                   {importing ? (
                     <>
@@ -697,10 +697,10 @@ export default function SalesManagementPage() {
               </div>
             </div>
             
-            <div className="p-6 border-t border-theme dark:border-white/10">
+ <div className="p-6 border-t border-theme">
               <button
                 onClick={() => setShowImportModal(false)}
-                className="w-full px-4 py-2 bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-primary))] dark:text-white rounded-lg transition-colors"
+ className="w-full px-4 py-2 bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-primary))] dark:text-white rounded-lg transition-colors"
               >
                 Cancel
               </button>
@@ -712,50 +712,50 @@ export default function SalesManagementPage() {
       {/* Manual Entry Modal */}
       {showManualModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-theme-surface dark:bg-[#1a1a2e] border border-theme dark:border-white/10 rounded-xl w-full max-w-md">
-            <div className="p-6 border-b border-theme dark:border-white/10">
+ <div className="bg-theme-surface dark:bg-[#1a1a2e] border border-theme rounded-xl w-full max-w-md">
+ <div className="p-6 border-b border-theme">
               <h2 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white">Add Sales Entry</h2>
-              <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mt-1">Manually enter daily sales data</p>
+              <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm mt-1">Manually enter daily sales data</p>
             </div>
             
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white/80 mb-2">Date</label>
+                <label className="block text-sm font-medium text-[rgb(var(--text-primary))] dark:text-theme-secondary mb-2">Date</label>
                 <input
                   type="date"
                   value={manualEntry.sale_date}
                   onChange={(e) => setManualEntry({ ...manualEntry, sale_date: e.target.value })}
-                  className="w-full px-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-[#D37E91]"
+ className="w-full px-3 py-2 bg-theme-button border border-theme rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-module-fg"
                 />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white/80 mb-2">Gross Revenue</label>
+                  <label className="block text-sm font-medium text-[rgb(var(--text-primary))] dark:text-theme-secondary mb-2">Gross Revenue</label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-white/40">£</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">£</span>
                     <input
                       type="number"
                       step="0.01"
                       value={manualEntry.gross_revenue}
                       onChange={(e) => setManualEntry({ ...manualEntry, gross_revenue: e.target.value })}
                       placeholder="0.00"
-                      className="w-full pl-7 pr-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/30 focus:outline-none focus:border-emerald-500 dark:focus:border-[#D37E91]"
+ className="w-full pl-7 pr-3 py-2 bg-theme-button border border-theme rounded-lg text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-disabled focus:outline-none focus:border-emerald-500 dark:focus:border-module-fg"
                     />
                   </div>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white/80 mb-2">Discounts</label>
+                  <label className="block text-sm font-medium text-[rgb(var(--text-primary))] dark:text-theme-secondary mb-2">Discounts</label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-white/40">£</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">£</span>
                     <input
                       type="number"
                       step="0.01"
                       value={manualEntry.discounts}
                       onChange={(e) => setManualEntry({ ...manualEntry, discounts: e.target.value })}
                       placeholder="0.00"
-                      className="w-full pl-7 pr-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/30 focus:outline-none focus:border-emerald-500 dark:focus:border-[#D37E91]"
+ className="w-full pl-7 pr-3 py-2 bg-theme-button border border-theme rounded-lg text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-disabled focus:outline-none focus:border-emerald-500 dark:focus:border-module-fg"
                     />
                   </div>
                 </div>
@@ -763,21 +763,21 @@ export default function SalesManagementPage() {
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white/80 mb-2">Covers</label>
+                  <label className="block text-sm font-medium text-[rgb(var(--text-primary))] dark:text-theme-secondary mb-2">Covers</label>
                   <input
                     type="number"
                     value={manualEntry.covers}
                     onChange={(e) => setManualEntry({ ...manualEntry, covers: e.target.value })}
-                    className="w-full px-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-[#D37E91]"
+ className="w-full px-3 py-2 bg-theme-button border border-theme rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-module-fg"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white/80 mb-2">Payment</label>
+                  <label className="block text-sm font-medium text-[rgb(var(--text-primary))] dark:text-theme-secondary mb-2">Payment</label>
                   <select
                     value={manualEntry.payment_method}
                     onChange={(e) => setManualEntry({ ...manualEntry, payment_method: e.target.value })}
-                    className="w-full px-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-[#D37E91]"
+ className="w-full px-3 py-2 bg-theme-button border border-theme rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-module-fg"
                   >
                     <option value="card">Card</option>
                     <option value="cash">Cash</option>
@@ -787,17 +787,17 @@ export default function SalesManagementPage() {
               </div>
             </div>
             
-            <div className="p-6 border-t border-theme dark:border-white/10 flex gap-3">
+ <div className="p-6 border-t border-theme flex gap-3">
               <button
                 onClick={() => setShowManualModal(false)}
-                className="flex-1 px-4 py-2 bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-primary))] dark:text-white rounded-lg transition-colors"
+ className="flex-1 px-4 py-2 bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-primary))] dark:text-white rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleManualEntry}
                 disabled={saving || !manualEntry.gross_revenue}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-[#D37E91] hover:bg-emerald-700 dark:hover:bg-[#D37E91]/90 text-white rounded-lg transition-colors disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-module-fg hover:bg-emerald-700 dark:hover:bg-module-fg/90 text-white rounded-lg transition-colors disabled:opacity-50"
               >
                 {saving ? (
                   <>

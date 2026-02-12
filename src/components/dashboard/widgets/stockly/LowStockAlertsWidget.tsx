@@ -144,7 +144,7 @@ export default function LowStockAlertsWidget({ companyId, siteId }: WidgetProps)
                       style={{ width: `${Math.min(percentage, 100)}%` }}
                     />
                   </div>
-                  <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40">
+                  <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
                     Min: {item.min_quantity}
                   </span>
                 </div>

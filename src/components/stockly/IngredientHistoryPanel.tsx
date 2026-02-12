@@ -47,7 +47,7 @@ const MOVEMENT_TYPE_CONFIG: Record<string, { label: string; icon: React.ElementT
   pos_drawdown: { label: 'Sale', icon: ShoppingCart, color: 'text-cyan-500' },
   internal_sale: { label: 'Internal Sale', icon: ShoppingCart, color: 'text-indigo-500' },
   staff_sale: { label: 'Staff Sale', icon: ShoppingCart, color: 'text-[#D37E91]' },
-  return_supplier: { label: 'Return', icon: ArrowRightLeft, color: 'text-gray-500' },
+  return_supplier: { label: 'Return', icon: ArrowRightLeft, color: 'text-theme-tertiary' },
 };
 
 export function IngredientHistoryPanel({ ingredientId, companyId }: IngredientHistoryPanelProps) {
@@ -159,7 +159,7 @@ export function IngredientHistoryPanel({ ingredientId, companyId }: IngredientHi
   };
 
   const getMovementConfig = (type: string) => {
-    return MOVEMENT_TYPE_CONFIG[type] || { label: type, icon: Package, color: 'text-gray-500' };
+    return MOVEMENT_TYPE_CONFIG[type] || { label: type, icon: Package, color: 'text-theme-tertiary' };
   };
 
   // Don't render anything for unsaved ingredients
@@ -171,7 +171,7 @@ export function IngredientHistoryPanel({ ingredientId, companyId }: IngredientHi
     return (
       <div className="flex items-center justify-center py-8">
         <Loader2 className="w-5 h-5 animate-spin text-emerald-500" />
-        <span className="ml-2 text-sm text-gray-500 dark:text-white/50">Loading history...</span>
+        <span className="ml-2 text-sm text-theme-tertiary">Loading history...</span>
       </div>
     );
   }
@@ -182,7 +182,7 @@ export function IngredientHistoryPanel({ ingredientId, companyId }: IngredientHi
 
   if (!hasAnyHistory) {
     return (
-      <div className="text-center py-6 text-sm text-gray-500 dark:text-white/40">
+      <div className="text-center py-6 text-sm text-theme-tertiary">
         No history recorded yet
       </div>
     );
@@ -195,16 +195,16 @@ export function IngredientHistoryPanel({ ingredientId, companyId }: IngredientHi
   ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
-    <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 md:col-span-2 lg:col-span-3">
+    <div className="bg-theme-surface border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
       <div className="flex items-center justify-between mb-3">
-        <div className="text-xs font-semibold text-gray-700 dark:text-white/80 uppercase">History</div>
+        <div className="text-xs font-semibold text-theme-secondary uppercase">History</div>
         <div className="flex gap-1">
           <button
             onClick={() => setActiveTab('all')}
             className={`px-2 py-1 text-xs rounded transition ${
               activeTab === 'all'
-                ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
-                : 'text-gray-500 dark:text-white/50 hover:bg-gray-100 dark:hover:bg-white/5'
+                ? 'bg-module-fg/20 text-module-fg'
+                : 'text-theme-tertiary hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
           >
             All
@@ -213,8 +213,8 @@ export function IngredientHistoryPanel({ ingredientId, companyId }: IngredientHi
             onClick={() => setActiveTab('movements')}
             className={`px-2 py-1 text-xs rounded transition ${
               activeTab === 'movements'
-                ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
-                : 'text-gray-500 dark:text-white/50 hover:bg-gray-100 dark:hover:bg-white/5'
+                ? 'bg-module-fg/20 text-module-fg'
+                : 'text-theme-tertiary hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
           >
             Stock
@@ -223,8 +223,8 @@ export function IngredientHistoryPanel({ ingredientId, companyId }: IngredientHi
             onClick={() => setActiveTab('prices')}
             className={`px-2 py-1 text-xs rounded transition ${
               activeTab === 'prices'
-                ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
-                : 'text-gray-500 dark:text-white/50 hover:bg-gray-100 dark:hover:bg-white/5'
+                ? 'bg-module-fg/20 text-module-fg'
+                : 'text-theme-tertiary hover:bg-gray-100 dark:hover:bg-white/5'
             }`}
           >
             Prices
@@ -252,14 +252,14 @@ export function IngredientHistoryPanel({ ingredientId, companyId }: IngredientHi
           {(activeTab === 'movements' || activeTab === 'all') && (
             <div className={activeTab === 'all' ? '' : 'md:col-span-2'}>
               {activeTab !== 'all' && (
-                <div className="text-xs font-medium text-gray-600 dark:text-white/60 mb-2 flex items-center gap-1">
+                <div className="text-xs font-medium text-theme-secondary mb-2 flex items-center gap-1">
                   <Package size={12} />
                   Stock Movements
                 </div>
               )}
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {stockMovements.length === 0 ? (
-                  <div className="text-xs text-gray-400 dark:text-white/30 text-center py-4">
+                  <div className="text-xs text-theme-tertiary/30 text-center py-4">
                     No stock movements recorded
                   </div>
                 ) : (
@@ -282,14 +282,14 @@ export function IngredientHistoryPanel({ ingredientId, companyId }: IngredientHi
           {(activeTab === 'prices' || activeTab === 'all') && (
             <div className={activeTab === 'all' ? '' : 'md:col-span-2'}>
               {activeTab !== 'all' && (
-                <div className="text-xs font-medium text-gray-600 dark:text-white/60 mb-2 flex items-center gap-1">
+                <div className="text-xs font-medium text-theme-secondary mb-2 flex items-center gap-1">
                   <TrendingUp size={12} />
                   Price Changes
                 </div>
               )}
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {priceHistory.length === 0 ? (
-                  <div className="text-xs text-gray-400 dark:text-white/30 text-center py-4">
+                  <div className="text-xs text-theme-tertiary/30 text-center py-4">
                     No price changes recorded
                   </div>
                 ) : (
@@ -349,25 +349,25 @@ function MovementItem({
 
   return (
     <div className="flex items-start gap-2 p-2 bg-gray-50 dark:bg-white/[0.02] rounded-lg border border-gray-100 dark:border-white/[0.04]">
-      <div className={`p-1.5 rounded-md bg-white dark:bg-white/[0.05] ${config.color}`}>
+ <div className={`p-1.5 rounded-md bg-theme-surface ] ${config.color}`}>
         <Icon size={12} />
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-gray-700 dark:text-white/80">{config.label}</span>
-          <span className={`text-xs font-semibold ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : isNegative ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-white/60'}`}>
+          <span className="text-xs font-medium text-theme-secondary">{config.label}</span>
+          <span className={`text-xs font-semibold ${isPositive ? 'text-module-fg' : isNegative ? 'text-red-600 dark:text-red-400' : 'text-theme-secondary'}`}>
             {isPositive ? '+' : isNegative ? '-' : ''}{formatQuantity(movement.quantity)}{unit && ` ${unit}`}
           </span>
           {movement.total_cost != null && movement.total_cost > 0 && (
-            <span className="text-xs text-gray-500 dark:text-white/40">
+            <span className="text-xs text-theme-tertiary">
               (£{movement.total_cost.toFixed(2)})
             </span>
           )}
         </div>
         {cleanNotes(movement.notes) && (
-          <div className="text-xs text-gray-500 dark:text-white/40 truncate mt-0.5">{cleanNotes(movement.notes)}</div>
+          <div className="text-xs text-theme-tertiary truncate mt-0.5">{cleanNotes(movement.notes)}</div>
         )}
-        <div className="text-[10px] text-gray-400 dark:text-white/30 mt-1" title={formatDate(movement.recorded_at)}>
+        <div className="text-[10px] text-theme-tertiary/30 mt-1" title={formatDate(movement.recorded_at)}>
           {formatRelativeDate(movement.recorded_at)}
         </div>
       </div>
@@ -391,38 +391,38 @@ function PriceItem({
 
   return (
     <div className="flex items-start gap-2 p-2 bg-gray-50 dark:bg-white/[0.02] rounded-lg border border-gray-100 dark:border-white/[0.04]">
-      <div className={`p-1.5 rounded-md bg-white dark:bg-white/[0.05] ${isIncrease ? 'text-red-500' : isDecrease ? 'text-emerald-500' : 'text-blue-500'}`}>
+ <div className={`p-1.5 rounded-md bg-theme-surface ] ${isIncrease ?'text-red-500': isDecrease ?'text-emerald-500':'text-blue-500'}`}>
         <Icon size={12} />
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-medium text-gray-700 dark:text-white/80">Price Change</span>
+          <span className="text-xs font-medium text-theme-secondary">Price Change</span>
           {price.old_unit_cost != null && (
             <>
-              <span className="text-xs text-gray-400 dark:text-white/30 line-through">
+              <span className="text-xs text-theme-tertiary/30 line-through">
                 £{price.old_unit_cost.toFixed(2)}
               </span>
-              <span className="text-gray-400 dark:text-white/30">→</span>
+              <span className="text-theme-tertiary/30">→</span>
             </>
           )}
-          <span className={`text-xs font-semibold ${isIncrease ? 'text-red-600 dark:text-red-400' : isDecrease ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-600 dark:text-white/60'}`}>
+          <span className={`text-xs font-semibold ${isIncrease ? 'text-red-600 dark:text-red-400' : isDecrease ? 'text-module-fg' : 'text-theme-secondary'}`}>
             £{price.new_unit_cost.toFixed(2)}
           </span>
           {price.change_percent != null && (
-            <span className={`text-[10px] px-1 py-0.5 rounded ${isIncrease ? 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400' : 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'}`}>
+            <span className={`text-[10px] px-1 py-0.5 rounded ${isIncrease ? 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400' : 'bg-module-fg/10 text-module-fg'}`}>
               {isIncrease ? '+' : ''}{price.change_percent.toFixed(1)}%
             </span>
           )}
         </div>
         {price.change_source && (
-          <div className="text-xs text-gray-500 dark:text-white/40 mt-0.5">
+          <div className="text-xs text-theme-tertiary mt-0.5">
             Source: {price.change_source}
           </div>
         )}
         {price.notes && (
-          <div className="text-xs text-gray-500 dark:text-white/40 truncate mt-0.5">{price.notes}</div>
+          <div className="text-xs text-theme-tertiary truncate mt-0.5">{price.notes}</div>
         )}
-        <div className="text-[10px] text-gray-400 dark:text-white/30 mt-1" title={formatDate(price.changed_at)}>
+        <div className="text-[10px] text-theme-tertiary/30 mt-1" title={formatDate(price.changed_at)}>
           {formatRelativeDate(price.changed_at)}
         </div>
       </div>

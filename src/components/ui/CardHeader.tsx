@@ -25,9 +25,9 @@ export default function CardHeader({
       onClick={onToggle}
     >
       <div className="flex flex-col gap-0.5 flex-1 min-w-0 pr-2">
-        <div className="text-base md:text-lg font-semibold text-gray-900 dark:text-white truncate">{title}</div>
+        <div className="text-base md:text-lg font-semibold text-theme-primary truncate">{title}</div>
         {subtitle && (
-          <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400 flex flex-wrap gap-1 items-center">
+          <div className="text-xs md:text-sm text-theme-tertiary flex flex-wrap gap-1 items-center">
             {subtitle.split(' • ').map((part, index, array) => {
               const trimmedPart = part.trim();
               

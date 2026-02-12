@@ -485,7 +485,7 @@ export default function VarianceReportPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-stockly-dark dark:text-stockly animate-spin" />
       </div>
     );
   }
@@ -497,13 +497,13 @@ export default function VarianceReportPage() {
         <div className="flex items-center gap-4">
           <Link 
             href="/dashboard/reports/stockly"
-            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+ className="p-2 rounded-lg bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Variance Analysis</h1>
-            <p className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mt-1">Stock count variances and shrinkage</p>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm mt-1">Stock count variances and shrinkage</p>
           </div>
         </div>
         
@@ -511,13 +511,13 @@ export default function VarianceReportPage() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-white transition-colors disabled:opacity-50"
+            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-white transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
           <button 
             onClick={handleExportExcel}
-            className="flex items-center gap-2 px-3 py-2 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 hover:bg-green-500/20 transition-colors text-sm"
+            className="flex items-center gap-2 px-3 py-2 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 hover:bg-module-fg/10 transition-colors text-sm"
           >
             <FileSpreadsheet className="w-4 h-4" />
             Excel
@@ -537,13 +537,13 @@ export default function VarianceReportPage() {
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
           <ClipboardList className="w-16 h-16 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-2">No Stock Counts Completed</h3>
-          <p className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 max-w-md mx-auto mb-6">
+          <p className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-theme-tertiary max-w-md mx-auto mb-6">
             Complete and approve a stock count to see variance analysis. 
             Variances show the difference between expected and actual stock levels.
           </p>
           <Link 
             href="/dashboard/stockly/stock-counts"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/90 text-white rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-stockly-dark dark:bg-stockly hover:bg-stockly-dark/90 dark:hover:bg-stockly/90 text-white rounded-lg transition-colors"
           >
             <ClipboardList className="w-4 h-4" />
             Start Stock Count
@@ -560,9 +560,9 @@ export default function VarianceReportPage() {
                 <div className="p-2 bg-orange-500/10 rounded-lg">
                   <AlertTriangle className="w-5 h-5 text-orange-400" />
                 </div>
-                <span className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Total Variance</span>
+                <span className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm">Total Variance</span>
               </div>
-              <p className={`text-2xl font-bold ${summary.totalVariance < 0 ? 'text-red-400' : summary.totalVariance > 0 ? 'text-green-400' : 'text-white'}`}>
+              <p className={`text-2xl font-bold ${summary.totalVariance < 0 ? 'text-red-400' : summary.totalVariance > 0 ? 'text-green-400' : 'text-theme-primary'}`}>
                 {formatCurrency(summary.totalVariance)}
               </p>
             </div>
@@ -572,7 +572,7 @@ export default function VarianceReportPage() {
                 <div className="p-2 bg-red-500/10 rounded-lg">
                   <TrendingDown className="w-5 h-5 text-red-400" />
                 </div>
-                <span className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Shrinkage</span>
+                <span className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm">Shrinkage</span>
               </div>
               <p className="text-2xl font-bold text-red-400">
                 {formatCurrency(summary.negativeVariance)}
@@ -584,7 +584,7 @@ export default function VarianceReportPage() {
                 <div className="p-2 bg-green-500/10 rounded-lg">
                   <TrendingUp className="w-5 h-5 text-green-400" />
                 </div>
-                <span className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Overage</span>
+                <span className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm">Overage</span>
               </div>
               <p className="text-2xl font-bold text-green-400">
                 {formatCurrency(summary.positiveVariance)}
@@ -596,7 +596,7 @@ export default function VarianceReportPage() {
                 <div className="p-2 bg-purple-500/10 rounded-lg">
                   <Package className="w-5 h-5 text-purple-400" />
                 </div>
-                <span className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">Items w/ Variance</span>
+                <span className="text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm">Items w/ Variance</span>
               </div>
               <p className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">
                 {summary.itemsWithVariance}
@@ -609,7 +609,7 @@ export default function VarianceReportPage() {
             <select
               value={selectedCount}
               onChange={(e) => setSelectedCount(e.target.value)}
-              className="px-3 py-2 bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-[#D37E91]"
+ className="px-3 py-2 bg-theme-button border border-theme rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:border-stockly-dark dark:focus:border-stockly"
             >
               <option value="all">All Stock Counts</option>
               {stockCounts.map(count => (
@@ -626,8 +626,8 @@ export default function VarianceReportPage() {
                   onClick={() => setViewMode(mode)}
                   className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                     viewMode === mode
-                    ? 'bg-emerald-500/20 dark:bg-[#D37E91]/20 text-emerald-600 dark:text-[#D37E91]'
-                    : 'text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white'
+                    ? 'bg-stockly-dark/20 dark:bg-stockly/20 text-stockly-dark dark:text-stockly'
+                    : 'text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))]'
                   }`}
                 >
                   {mode === 'items' ? 'By Item' : mode === 'categories' ? 'By Category' : 'By Count'}
@@ -642,13 +642,13 @@ export default function VarianceReportPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-theme dark:border-white/[0.06]">
-                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60">Item</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-white/60">Category</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Expected</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Counted</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Variance</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Value</th>
+                    <tr className="border-b border-theme">
+                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Item</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Category</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Expected</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Counted</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Variance</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Value</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -656,15 +656,15 @@ export default function VarianceReportPage() {
                       <tr key={item.id} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
                         <td className="px-4 py-3">
                           <div>
-                            <span className="text-white font-medium">{item.item_name}</span>
-                            <span className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-xs ml-2">{item.count_number}</span>
+                            <span className="text-theme-primary font-medium">{item.item_name}</span>
+                            <span className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-xs ml-2">{item.count_number}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-white/70">{item.category_name}</td>
-                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-white/70">
+                        <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-theme-secondary">{item.category_name}</td>
+                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-theme-secondary">
                           {item.expected_quantity} {item.unit}
                         </td>
-                        <td className="px-4 py-3 text-right text-white">
+                        <td className="px-4 py-3 text-right text-theme-primary">
                           {item.counted_quantity} {item.unit}
                         </td>
                         <td className="px-4 py-3 text-right">
@@ -695,8 +695,8 @@ export default function VarianceReportPage() {
               {filteredItems.length === 0 && (
                 <div className="p-12 text-center">
                   <Package className="w-12 h-12 text-green-400/30 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-white mb-2">No Variances</h3>
-                  <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">All counted items matched expected quantities</p>
+                  <h3 className="text-lg font-medium text-theme-primary mb-2">No Variances</h3>
+                  <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">All counted items matched expected quantities</p>
                 </div>
               )}
             </div>
@@ -708,25 +708,25 @@ export default function VarianceReportPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-theme dark:border-white/[0.06]">
-                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Category</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Items</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Shrinkage</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Overage</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Net Variance</th>
+                    <tr className="border-b border-theme">
+                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Category</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Items</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Shrinkage</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Overage</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Net Variance</th>
                     </tr>
                   </thead>
                   <tbody>
                     {categoryVariance.map((cat) => (
                       <tr key={cat.category_name} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
                         <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-white font-medium">{cat.category_name}</td>
-                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-white/70">{cat.item_count}</td>
+                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-theme-secondary">{cat.item_count}</td>
                         <td className="px-4 py-3 text-right text-red-400">{cat.negative_count}</td>
                         <td className="px-4 py-3 text-right text-green-400">{cat.positive_count}</td>
                         <td className="px-4 py-3 text-right">
                           <span className={`font-medium ${
                             cat.total_variance_value < 0 ? 'text-red-400' : 
-                            cat.total_variance_value > 0 ? 'text-green-400' : 'text-white'
+                            cat.total_variance_value > 0 ? 'text-green-400' : 'text-theme-primary'
                           }`}>
                             {formatCurrency(cat.total_variance_value)}
                           </span>
@@ -745,13 +745,13 @@ export default function VarianceReportPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-theme dark:border-white/[0.06]">
-                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Count #</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Type</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Completed</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Items</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Variance</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Status</th>
+                    <tr className="border-b border-theme">
+                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Count #</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Type</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Completed</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Items</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Variance</th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -760,20 +760,20 @@ export default function VarianceReportPage() {
                         <td className="px-4 py-3">
                           <Link 
                             href={`/dashboard/stockly/stock-counts/${count.id}`}
-                            className="text-white font-medium hover:text-[#D37E91]"
+                            className="text-theme-primary font-medium hover:text-stockly-dark dark:hover:text-stockly"
                           >
                             {count.count_number}
                           </Link>
                         </td>
-                        <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-white/70 capitalize">{count.count_type}</td>
-                        <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-white/70">{formatDate(count.completed_at || '')}</td>
-                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-white/70">
+                        <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-theme-secondary capitalize">{count.count_type}</td>
+                        <td className="px-4 py-3 text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-theme-secondary">{formatDate(count.completed_at || '')}</td>
+                        <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-[rgb(var(--text-primary))] dark:text-theme-secondary">
                           {count.items_counted}/{count.total_items}
                         </td>
                         <td className="px-4 py-3 text-right">
                           <span className={`font-medium ${
                             count.variance_value < 0 ? 'text-red-400' : 
-                            count.variance_value > 0 ? 'text-green-400' : 'text-white'
+                            count.variance_value > 0 ? 'text-green-400' : 'text-theme-primary'
                           }`}>
                             {formatCurrency(count.variance_value)}
                           </span>

@@ -120,12 +120,12 @@ export default function IngredientPullList({ date, data, loading }: IngredientPu
   if (!data || data.ingredients.length === 0) {
     return (
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">
+        <h2 className="text-lg font-semibold text-theme-primary mb-4">
           Ingredient Pull List
         </h2>
         <div className="text-center py-12">
           <ShoppingCart className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <p className="text-white/60">No ingredients required for this production</p>
+          <p className="text-theme-tertiary">No ingredients required for this production</p>
         </div>
       </div>
     );
@@ -140,10 +140,10 @@ export default function IngredientPullList({ date, data, loading }: IngredientPu
     <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-lg font-semibold text-white">
+          <h2 className="text-lg font-semibold text-theme-primary">
             Ingredient Pull List - {formatDate(data.prepDate)}
           </h2>
-          <p className="text-white/50 text-sm mt-1">
+          <p className="text-theme-tertiary text-sm mt-1">
             For {formatDate(data.deliveryDate)} Production
           </p>
         </div>
@@ -175,20 +175,20 @@ export default function IngredientPullList({ date, data, loading }: IngredientPu
       {/* Summary */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         <div className="bg-white/5 rounded-lg p-3">
-          <p className="text-white/60 text-xs mb-1">Total Items</p>
-          <p className="text-white font-semibold">{data.summary.totalCount}</p>
+          <p className="text-theme-tertiary text-xs mb-1">Total Items</p>
+          <p className="text-theme-primary font-semibold">{data.summary.totalCount}</p>
         </div>
         <div className="bg-white/5 rounded-lg p-3">
-          <p className="text-white/60 text-xs mb-1">Pulled</p>
+          <p className="text-theme-tertiary text-xs mb-1">Pulled</p>
           <p className="text-green-400 font-semibold">{currentPulledCount}</p>
         </div>
         <div className="bg-white/5 rounded-lg p-3">
-          <p className="text-white/60 text-xs mb-1">Insufficient</p>
+          <p className="text-theme-tertiary text-xs mb-1">Insufficient</p>
           <p className="text-red-400 font-semibold">{data.summary.insufficientCount}</p>
         </div>
         <div className="bg-white/5 rounded-lg p-3">
-          <p className="text-white/60 text-xs mb-1">Ready</p>
-          <p className="text-white font-semibold">{data.summary.readyPercent}%</p>
+          <p className="text-theme-tertiary text-xs mb-1">Ready</p>
+          <p className="text-theme-primary font-semibold">{data.summary.readyPercent}%</p>
         </div>
       </div>
 
@@ -218,22 +218,22 @@ export default function IngredientPullList({ date, data, loading }: IngredientPu
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-white/[0.06]">
-              <th className="px-4 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                 Ingredient
               </th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-white/60 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                 Needed
               </th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-white/60 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                 Stock
               </th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-white/60 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                 To Pull
               </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-white/60 uppercase tracking-wider">
+              <th className="px-4 py-3 text-center text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-white/60 uppercase tracking-wider">
+              <th className="px-4 py-3 text-center text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                 Action
               </th>
             </tr>
@@ -251,11 +251,11 @@ export default function IngredientPullList({ date, data, loading }: IngredientPu
                 >
                   <td className="px-4 py-3">
                     <div>
-                      <p className="text-white font-medium">{ingredient.name}</p>
-                      <p className="text-white/40 text-xs mt-0.5">{ingredient.category}</p>
+                      <p className="text-theme-primary font-medium">{ingredient.name}</p>
+                      <p className="text-theme-tertiary text-xs mt-0.5">{ingredient.category}</p>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-right text-white">
+                  <td className="px-4 py-3 text-right text-theme-primary">
                     {ingredient.needed.toFixed(2)} {ingredient.unit}
                   </td>
                   <td className={`px-4 py-3 text-right ${
@@ -263,7 +263,7 @@ export default function IngredientPullList({ date, data, loading }: IngredientPu
                       ? 'text-red-400' 
                       : ingredient.stockStatus === 'low'
                       ? 'text-amber-400'
-                      : 'text-white'
+                      : 'text-theme-primary'
                   }`}>
                     <div className="flex items-center justify-end gap-2">
                       <span>{ingredient.stock.toFixed(2)} {ingredient.unit}</span>
@@ -273,7 +273,7 @@ export default function IngredientPullList({ date, data, loading }: IngredientPu
                     </div>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <span className="text-white font-medium">
+                    <span className="text-theme-primary font-medium">
                       {ingredient.toPull.toFixed(2)} {ingredient.unit}
                     </span>
                   </td>
@@ -289,7 +289,7 @@ export default function IngredientPullList({ date, data, loading }: IngredientPu
                         Insufficient Stock
                       </span>
                     ) : (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/10 text-white/60 border border-white/20">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/10 text-theme-tertiary border border-white/20">
                         <AlertTriangle className="w-3 h-3 mr-1" />
                         Pending
                       </span>
@@ -312,7 +312,7 @@ export default function IngredientPullList({ date, data, loading }: IngredientPu
                     ) : (
                       <button
                         onClick={() => markPulled(ingredient.id)}
-                        className="px-3 py-1.5 text-xs bg-white/5 text-white/40 border border-white/10 rounded-lg hover:border-white/20 transition-colors"
+                        className="px-3 py-1.5 text-xs bg-white/5 text-theme-tertiary border border-white/10 rounded-lg hover:border-white/20 transition-colors"
                       >
                         Undo
                       </button>

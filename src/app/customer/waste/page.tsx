@@ -13,8 +13,8 @@ export default function WasteTrackingPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Waste Tracking</h1>
-        <p className="text-white/60 text-sm sm:text-base">
+        <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary mb-2">Waste Tracking</h1>
+        <p className="text-theme-tertiary text-sm sm:text-base">
           Track your unsold products and optimize your orders
         </p>
       </div>
@@ -28,10 +28,10 @@ export default function WasteTrackingPage() {
               <div className="p-3 bg-[#D37E91]/10 rounded-lg">
                 <Calendar className="w-6 h-6 text-[#D37E91]" />
               </div>
-              <ArrowRight className="w-5 h-5 text-white/40 group-hover:text-[#D37E91] transition-colors" />
+              <ArrowRight className="w-5 h-5 text-theme-tertiary group-hover:text-[#D37E91] transition-colors" />
             </div>
-            <h2 className="text-lg font-semibold text-white mb-2">Log Today's Sales</h2>
-            <p className="text-sm text-white/60">
+            <h2 className="text-lg font-semibold text-theme-primary mb-2">Log Today's Sales</h2>
+            <p className="text-sm text-theme-tertiary">
               Record how many products you sold today to track waste and optimize future orders.
             </p>
           </div>
@@ -44,10 +44,10 @@ export default function WasteTrackingPage() {
               <div className="p-3 bg-blue-500/10 rounded-lg">
                 <TrendingUp className="w-6 h-6 text-blue-400" />
               </div>
-              <ArrowRight className="w-5 h-5 text-white/40 group-hover:text-blue-400 transition-colors" />
+              <ArrowRight className="w-5 h-5 text-theme-tertiary group-hover:text-blue-400 transition-colors" />
             </div>
-            <h2 className="text-lg font-semibold text-white mb-2">View Insights</h2>
-            <p className="text-sm text-white/60">
+            <h2 className="text-lg font-semibold text-theme-primary mb-2">View Insights</h2>
+            <p className="text-sm text-theme-tertiary">
               Analyze waste patterns, identify trends, and get suggestions to reduce waste.
             </p>
           </div>
@@ -56,14 +56,14 @@ export default function WasteTrackingPage() {
 
       {/* Quick Info */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">How It Works</h3>
-        <div className="space-y-3 text-sm text-white/60">
+        <h3 className="text-lg font-semibold text-theme-primary mb-4">How It Works</h3>
+        <div className="space-y-3 text-sm text-theme-tertiary">
           <div className="flex items-start gap-3">
             <div className="w-6 h-6 rounded-full bg-[#D37E91]/20 text-[#D37E91] flex items-center justify-center text-xs font-semibold mt-0.5 flex-shrink-0">
               1
             </div>
             <div>
-              <strong className="text-white">Log your sales daily</strong> - After each delivery, record how many products you actually sold.
+              <strong className="text-theme-primary">Log your sales daily</strong> - After each delivery, record how many products you actually sold.
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -71,7 +71,7 @@ export default function WasteTrackingPage() {
               2
             </div>
             <div>
-              <strong className="text-white">Track waste patterns</strong> - See which days and products have the highest waste.
+              <strong className="text-theme-primary">Track waste patterns</strong> - See which days and products have the highest waste.
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -79,7 +79,7 @@ export default function WasteTrackingPage() {
               3
             </div>
             <div>
-              <strong className="text-white">Optimize your orders</strong> - Use insights to adjust your standing orders and reduce waste.
+              <strong className="text-theme-primary">Optimize your orders</strong> - Use insights to adjust your standing orders and reduce waste.
             </div>
           </div>
         </div>

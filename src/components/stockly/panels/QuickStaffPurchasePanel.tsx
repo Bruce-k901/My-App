@@ -275,7 +275,7 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
       <div className="p-6 space-y-4 flex-1 overflow-y-auto">
         {/* Staff Selection */}
         <div>
-          <label className="block text-sm font-medium text-white/80 mb-1">Staff Member *</label>
+          <label className="block text-sm font-medium text-theme-secondary mb-1">Staff Member *</label>
           {staffMembers.length > 0 ? (
             <select
               value={staffId}
@@ -284,7 +284,7 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
                 const member = staffMembers.find(m => m.id === e.target.value);
                 setStaffName(member?.name || '');
               }}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-magenta-500"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-magenta-500"
             >
               <option value="">Select staff member...</option>
               {staffMembers.map(member => (
@@ -297,14 +297,14 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
               value={staffName}
               onChange={(e) => setStaffName(e.target.value)}
               placeholder="Enter staff name..."
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-magenta-500"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-magenta-500"
             />
           )}
         </div>
 
         {/* Discount Selection */}
         <div>
-          <label className="block text-sm font-medium text-white/80 mb-2">Staff Discount</label>
+          <label className="block text-sm font-medium text-theme-secondary mb-2">Staff Discount</label>
           <div className="flex flex-wrap gap-2">
             {DISCOUNT_OPTIONS.map(option => (
               <button
@@ -313,7 +313,7 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
                 className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
                   discountPercent === option.value
                     ? 'bg-magenta-500/20 text-magenta-400 border border-magenta-500/50'
-                    : 'bg-white/5 text-white/60 border border-transparent hover:bg-white/10'
+                    : 'bg-white/5 text-theme-tertiary border border-transparent hover:bg-white/10'
                 }`}
               >
                 {option.label}
@@ -325,7 +325,7 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
         {/* Items */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="text-sm font-medium text-white/80">Items</label>
+            <label className="text-sm font-medium text-theme-secondary">Items</label>
             <button
               onClick={() => setShowItemSearch(true)}
               className="flex items-center gap-1 text-sm text-magenta-400 hover:text-magenta-300"
@@ -338,7 +338,7 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
           {lines.length === 0 ? (
             <div className="border border-dashed border-white/10 rounded-lg p-8 text-center">
               <ShoppingBag className="w-10 h-10 text-white/20 mx-auto mb-2" />
-              <p className="text-white/40 text-sm">No items added</p>
+              <p className="text-theme-tertiary text-sm">No items added</p>
               <button
                 onClick={() => setShowItemSearch(true)}
                 className="mt-2 text-magenta-400 text-sm hover:underline"
@@ -351,10 +351,10 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
               {lines.map((line, idx) => (
                 <div key={idx} className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-white font-medium">{line.name}</p>
+                    <p className="text-theme-primary font-medium">{line.name}</p>
                     <button
                       onClick={() => removeLine(idx)}
-                      className="p-1 text-white/40 hover:text-red-400"
+                      className="p-1 text-theme-tertiary hover:text-red-400"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -363,22 +363,22 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => updateLine(idx, { quantity: Math.max(1, line.quantity - 1) })}
-                        className="w-8 h-8 rounded bg-white/5 hover:bg-white/10 text-white flex items-center justify-center"
+                        className="w-8 h-8 rounded bg-white/5 hover:bg-white/10 text-theme-primary flex items-center justify-center"
                       >
                         -
                       </button>
-                      <span className="text-white w-8 text-center">{line.quantity}</span>
+                      <span className="text-theme-primary w-8 text-center">{line.quantity}</span>
                       <button
                         onClick={() => updateLine(idx, { quantity: line.quantity + 1 })}
-                        className="w-8 h-8 rounded bg-white/5 hover:bg-white/10 text-white flex items-center justify-center"
+                        className="w-8 h-8 rounded bg-white/5 hover:bg-white/10 text-theme-primary flex items-center justify-center"
                       >
                         +
                       </button>
                     </div>
                     <div className="flex-1 text-right">
-                      <p className="text-white font-medium">£{line.line_charge.toFixed(2)}</p>
+                      <p className="text-theme-primary font-medium">£{line.line_charge.toFixed(2)}</p>
                       {discountPercent > 0 && (
-                        <p className="text-white/40 text-xs line-through">
+                        <p className="text-theme-tertiary text-xs line-through">
                           £{(line.quantity * line.sell_price).toFixed(2)}
                         </p>
                       )}
@@ -393,7 +393,7 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
         {/* Payment Method */}
         {lines.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-2">Payment</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-2">Payment</label>
             <div className="flex flex-wrap gap-2">
               {PAYMENT_METHODS.map(method => (
                 <button
@@ -402,7 +402,7 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
                   className={`px-3 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors ${
                     paymentMethod === method.value
                       ? 'bg-magenta-500/20 text-magenta-400 border border-magenta-500/50'
-                      : 'bg-white/5 text-white/60 border border-transparent hover:bg-white/10'
+                      : 'bg-white/5 text-theme-tertiary border border-transparent hover:bg-white/10'
                   }`}
                 >
                   <span>{method.icon}</span>
@@ -416,13 +416,13 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
         {/* Notes */}
         {lines.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-1">Notes</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Notes</label>
             <input
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Optional notes..."
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-magenta-500"
+              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-magenta-500"
             />
           </div>
         )}
@@ -431,8 +431,8 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
         {lines.length > 0 && (
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-white/60">Cost Value</span>
-              <span className="text-white/60">£{totalCost.toFixed(2)}</span>
+              <span className="text-theme-tertiary">Cost Value</span>
+              <span className="text-theme-tertiary">£{totalCost.toFixed(2)}</span>
             </div>
             {totalDiscount > 0 && (
               <div className="flex justify-between text-sm">
@@ -441,10 +441,10 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
               </div>
             )}
             <div className="flex justify-between text-lg font-semibold border-t border-white/10 pt-2">
-              <span className="text-white">
+              <span className="text-theme-primary">
                 {paymentMethod === 'free' ? 'Comped' : 'To Pay'}
               </span>
-              <span className={paymentMethod === 'free' ? 'text-green-400' : 'text-white'}>
+              <span className={paymentMethod === 'free' ? 'text-green-400' : 'text-theme-primary'}>
                 {paymentMethod === 'free' ? 'FREE' : `£${totalCharge.toFixed(2)}`}
               </span>
             </div>
@@ -456,7 +456,7 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
       <div className="p-4 border-t border-white/10 flex items-center gap-3">
         <button
           onClick={onCancel}
-          className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors"
+          className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-theme-primary rounded-lg transition-colors"
         >
           Cancel
         </button>
@@ -479,16 +479,16 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 pt-20">
           <div className="bg-[#1a1a2e] border border-white/10 rounded-xl w-full max-w-md max-h-[60vh] flex flex-col">
             <div className="p-4 border-b border-white/10 flex items-center gap-3">
-              <Search className="w-5 h-5 text-white/40" />
+              <Search className="w-5 h-5 text-theme-tertiary" />
               <input
                 type="text"
                 value={itemSearch}
                 onChange={(e) => setItemSearch(e.target.value)}
                 placeholder="Search stock items..."
                 autoFocus
-                className="flex-1 bg-transparent text-white placeholder:text-white/40 focus:outline-none"
+                className="flex-1 bg-transparent text-theme-primary placeholder:text-theme-tertiary focus:outline-none"
               />
-              <button onClick={() => setShowItemSearch(false)} className="text-white/40 hover:text-white">
+              <button onClick={() => setShowItemSearch(false)} className="text-theme-tertiary hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -500,16 +500,16 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
                   className="w-full px-3 py-2 flex items-center justify-between hover:bg-white/5 rounded-lg text-left"
                 >
                   <div>
-                    <span className="text-white">{item.name}</span>
-                    <span className="text-white/40 text-xs ml-2">
+                    <span className="text-theme-primary">{item.name}</span>
+                    <span className="text-theme-tertiary text-xs ml-2">
                       {item.current_quantity} in stock
                     </span>
                   </div>
-                  <span className="text-white/60 text-sm">£{item.unit_cost?.toFixed(2)}</span>
+                  <span className="text-theme-tertiary text-sm">£{item.unit_cost?.toFixed(2)}</span>
                 </button>
               ))}
               {filteredItems.length === 0 && (
-                <p className="p-4 text-center text-white/40">No items found</p>
+                <p className="p-4 text-center text-theme-tertiary">No items found</p>
               )}
             </div>
           </div>

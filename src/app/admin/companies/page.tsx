@@ -125,23 +125,23 @@ export default function AdminCompaniesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Companies</h1>
-          <p className="text-white/60">Manage and monitor all registered companies</p>
+          <h1 className="text-3xl font-bold text-theme-primary mb-2">Companies</h1>
+          <p className="text-theme-tertiary">Manage and monitor all registered companies</p>
         </div>
-        <div className="text-white/40 text-sm">
+        <div className="text-theme-tertiary text-sm">
           {companies.length} total companies
         </div>
       </div>
 
       {/* Search */}
       <div className="relative mb-6">
-        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/40 w-5 h-5" />
+        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-theme-tertiary w-5 h-5" />
         <input
           type="text"
           placeholder="Search companies..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
+          className="w-full pl-12 pr-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-xl text-theme-primary placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
         />
       </div>
 
@@ -153,7 +153,7 @@ export default function AdminCompaniesPage() {
             green: 'bg-green-500/10 text-green-400 border-green-500/20',
             yellow: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
             red: 'bg-red-500/10 text-red-400 border-red-500/20',
-            gray: 'bg-gray-500/10 text-gray-400 border-gray-500/20'
+            gray: 'bg-theme-surface-elevated0/10 text-theme-tertiary border-gray-500/20'
           };
 
           return (
@@ -168,12 +168,12 @@ export default function AdminCompaniesPage() {
                   </div>
                   <div>
                     <div className="flex items-center gap-3">
-                      <h3 className="text-lg font-semibold text-white">{company.name}</h3>
+                      <h3 className="text-lg font-semibold text-theme-primary">{company.name}</h3>
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${healthColors[health.color]}`}>
                         {health.label}
                       </span>
                     </div>
-                    <div className="text-white/40 text-sm flex items-center gap-4 mt-1">
+                    <div className="text-theme-tertiary text-sm flex items-center gap-4 mt-1">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
                         Joined {new Date(company.created_at).toLocaleDateString()}
@@ -191,32 +191,32 @@ export default function AdminCompaniesPage() {
                   {/* Stats */}
                   <div className="flex items-center gap-6">
                     <div className="text-center">
-                      <div className="flex items-center gap-1 text-white">
-                        <Users className="w-4 h-4 text-white/40" />
+                      <div className="flex items-center gap-1 text-theme-primary">
+                        <Users className="w-4 h-4 text-theme-tertiary" />
                         <span className="font-semibold">{company.user_count}</span>
                       </div>
-                      <div className="text-white/40 text-xs">Users</div>
+                      <div className="text-theme-tertiary text-xs">Users</div>
                     </div>
                     <div className="text-center">
-                      <div className="flex items-center gap-1 text-white">
-                        <ClipboardList className="w-4 h-4 text-white/40" />
+                      <div className="flex items-center gap-1 text-theme-primary">
+                        <ClipboardList className="w-4 h-4 text-theme-tertiary" />
                         <span className="font-semibold">{company.task_count}</span>
                       </div>
-                      <div className="text-white/40 text-xs">Total Tasks</div>
+                      <div className="text-theme-tertiary text-xs">Total Tasks</div>
                     </div>
                     <div className="text-center">
                       <div className="flex items-center gap-1 text-green-400">
                         <CheckCircle2 className="w-4 h-4" />
                         <span className="font-semibold">{company.completed_today}</span>
                       </div>
-                      <div className="text-white/40 text-xs">Done Today</div>
+                      <div className="text-theme-tertiary text-xs">Done Today</div>
                     </div>
                     <div className="text-center">
                       <div className="flex items-center gap-1 text-yellow-400">
                         <AlertCircle className="w-4 h-4" />
                         <span className="font-semibold">{company.pending_today}</span>
                       </div>
-                      <div className="text-white/40 text-xs">Pending</div>
+                      <div className="text-theme-tertiary text-xs">Pending</div>
                     </div>
                   </div>
 
@@ -231,7 +231,7 @@ export default function AdminCompaniesPage() {
                     </button>
                     <button
                       onClick={() => router.push(`/admin/companies/${company.id}`)}
-                      className="p-2 hover:bg-white/[0.1] rounded-lg text-white/60 hover:text-white transition-colors"
+                      className="p-2 hover:bg-white/[0.1] rounded-lg text-theme-tertiary hover:text-white transition-colors"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>
@@ -245,7 +245,7 @@ export default function AdminCompaniesPage() {
         {filteredCompanies.length === 0 && (
           <div className="text-center py-12">
             <Building2 className="w-12 h-12 text-white/20 mx-auto mb-4" />
-            <p className="text-white/60">
+            <p className="text-theme-tertiary">
               {searchTerm ? 'No companies match your search' : 'No companies registered yet'}
             </p>
           </div>

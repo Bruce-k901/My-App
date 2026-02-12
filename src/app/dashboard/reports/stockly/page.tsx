@@ -459,7 +459,7 @@ export default function StocklyReportsPage() {
       description: 'Revenue vs COGS analysis',
       icon: Percent,
       href: '/dashboard/reports/stockly/gp',
-      color: 'text-[#D37E91]'
+      color: 'text-stockly-dark dark:text-stockly'
     },
     {
       title: 'Price Tracking',
@@ -533,7 +533,7 @@ export default function StocklyReportsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-stockly-dark dark:text-stockly animate-spin" />
       </div>
     );
   }
@@ -545,27 +545,27 @@ export default function StocklyReportsPage() {
         <div className="flex items-center gap-4">
           <Link
             href="/dashboard/stockly"
-            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+ className="p-2 rounded-lg bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Reports</h1>
-            <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm mt-1">Stock analytics and insights</p>
+            <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm mt-1">Stock analytics and insights</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           {/* Date Range Selector */}
-          <div className="flex bg-theme-button dark:bg-white/5 rounded-lg p-1">
+ <div className="flex bg-theme-button rounded-lg p-1">
             {(['week', 'month', 'quarter'] as const).map((range) => (
               <button
                 key={range}
                 onClick={() => setDateRange(range)}
                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                   dateRange === range
-                    ? 'bg-emerald-500/20 dark:bg-[#D37E91]/20 text-emerald-600 dark:text-[#D37E91]'
-                    : 'text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white'
+                    ? 'bg-stockly-dark/20 dark:bg-stockly/20 text-stockly-dark dark:text-stockly'
+                    : 'text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))]'
                 }`}
               >
                 {range.charAt(0).toUpperCase() + range.slice(1)}
@@ -577,7 +577,7 @@ export default function StocklyReportsPage() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors disabled:opacity-50"
+ className="p-2 rounded-lg bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
@@ -587,7 +587,7 @@ export default function StocklyReportsPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Stock Value */}
-        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
+ <div className="bg-theme-surface-elevated border border-theme rounded-xl p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="p-2 bg-blue-500/10 rounded-lg">
               <Package className="w-5 h-5 text-blue-500 dark:text-blue-400" />
@@ -606,11 +606,11 @@ export default function StocklyReportsPage() {
             )}
           </div>
           <p className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(metrics.stockValue)}</p>
-          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mt-1">Stock Value</p>
+          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mt-1">Stock Value</p>
         </div>
 
         {/* Monthly Spend */}
-        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
+ <div className="bg-theme-surface-elevated border border-theme rounded-xl p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="p-2 bg-green-500/10 rounded-lg">
               <DollarSign className="w-5 h-5 text-green-500 dark:text-green-400" />
@@ -629,11 +629,11 @@ export default function StocklyReportsPage() {
             )}
           </div>
           <p className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(metrics.monthlySpend)}</p>
-          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mt-1">{dateRange === 'week' ? 'Weekly' : dateRange === 'quarter' ? 'Quarterly' : 'Monthly'} Spend</p>
+          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mt-1">{dateRange === 'week' ? 'Weekly' : dateRange === 'quarter' ? 'Quarterly' : 'Monthly'} Spend</p>
         </div>
 
         {/* Variance */}
-        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
+ <div className="bg-theme-surface-elevated border border-theme rounded-xl p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="p-2 bg-orange-500/10 rounded-lg">
               <AlertTriangle className="w-5 h-5 text-orange-500 dark:text-orange-400" />
@@ -642,41 +642,41 @@ export default function StocklyReportsPage() {
           <p className={`text-2xl font-bold ${metrics.varianceValue < 0 ? 'text-red-600 dark:text-red-400' : 'text-[rgb(var(--text-primary))] dark:text-white'}`}>
             {formatCurrency(metrics.varianceValue)}
           </p>
-          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mt-1">Stock Variance</p>
+          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mt-1">Stock Variance</p>
         </div>
 
         {/* Wastage */}
-        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
+ <div className="bg-theme-surface-elevated border border-theme rounded-xl p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="p-2 bg-red-500/10 rounded-lg">
               <TrendingDown className="w-5 h-5 text-red-500 dark:text-red-400" />
             </div>
           </div>
           <p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(metrics.wastageValue)}</p>
-          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mt-1">Wastage</p>
+          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mt-1">Wastage</p>
         </div>
       </div>
 
       {/* Quick Reports Grid */}
-      <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+ <div className="bg-theme-surface-elevated border border-theme rounded-xl p-6">
         <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-4">Quick Reports</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {quickReports.map((report) => (
             <Link
               key={report.title}
               href={report.href}
-              className="flex items-center gap-4 p-4 bg-theme-button dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-lg hover:bg-theme-button-hover dark:hover:bg-white/[0.06] hover:border-theme dark:hover:border-white/[0.1] transition-colors group"
+ className="flex items-center gap-4 p-4 bg-theme-button border border-theme rounded-lg hover:bg-theme-button-hover hover:border-theme dark:hover:border-white/[0.1] transition-colors group"
             >
-              <div className={`p-3 rounded-lg bg-theme-button dark:bg-white/5`}>
+ <div className={`p-3 rounded-lg bg-theme-button`}>
                 <report.icon className={`w-5 h-5 ${report.color}`} />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-[rgb(var(--text-primary))] dark:text-white group-hover:text-emerald-600 dark:group-hover:text-[#D37E91] transition-colors">
+                <h3 className="font-medium text-[rgb(var(--text-primary))] dark:text-white group-hover:text-stockly-dark dark:group-hover:text-stockly transition-colors">
                   {report.title}
                 </h3>
-                <p className="text-sm text-[rgb(var(--text-tertiary))] dark:text-white/50 truncate">{report.description}</p>
+                <p className="text-sm text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary truncate">{report.description}</p>
               </div>
-              <ChevronRight className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-white/30 group-hover:text-[rgb(var(--text-secondary))] dark:group-hover:text-white/60 transition-colors" />
+              <ChevronRight className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-theme-disabled group-hover:text-[rgb(var(--text-secondary))] dark:group-hover:text-theme-tertiary transition-colors" />
             </Link>
           ))}
         </div>
@@ -685,14 +685,14 @@ export default function StocklyReportsPage() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Spend by Category */}
-        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+ <div className="bg-theme-surface-elevated border border-theme rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">Spend by Category</h2>
-            <PieChart className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-white/40" />
+            <PieChart className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary" />
           </div>
 
           {categorySpend.length === 0 ? (
-            <div className="text-center py-8 text-[rgb(var(--text-tertiary))] dark:text-white/40">
+            <div className="text-center py-8 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
               <BarChart3 className="w-12 h-12 mx-auto mb-2 opacity-50" />
               <p>No spend data for this period</p>
             </div>
@@ -701,15 +701,15 @@ export default function StocklyReportsPage() {
               {categorySpend.map((cat, index) => {
                 const maxValue = categorySpend[0]?.total || 1;
                 const percentage = (cat.total / maxValue) * 100;
-                const colors = ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500', 'bg-[#D37E91]', 'bg-yellow-500'];
+                const colors = ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500', 'bg-stockly dark:bg-stockly', 'bg-yellow-500'];
 
                 return (
                   <div key={cat.category_name}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-[rgb(var(--text-primary))] dark:text-white/80">{cat.category_name}</span>
+                      <span className="text-sm text-[rgb(var(--text-primary))] dark:text-theme-secondary">{cat.category_name}</span>
                       <span className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(cat.total)}</span>
                     </div>
-                    <div className="h-2 bg-theme-button dark:bg-white/5 rounded-full overflow-hidden">
+ <div className="h-2 bg-theme-button rounded-full overflow-hidden">
                       <div
                         className={`h-full ${colors[index % colors.length]} rounded-full transition-all duration-500`}
                         style={{ width: `${percentage}%` }}
@@ -723,14 +723,14 @@ export default function StocklyReportsPage() {
         </div>
 
         {/* Top Suppliers */}
-        <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+ <div className="bg-theme-surface-elevated border border-theme rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">Top Suppliers</h2>
-            <Users className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-white/40" />
+            <Users className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary" />
           </div>
 
           {supplierSpend.length === 0 ? (
-            <div className="text-center py-8 text-[rgb(var(--text-tertiary))] dark:text-white/40">
+            <div className="text-center py-8 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
               <Truck className="w-12 h-12 mx-auto mb-2 opacity-50" />
               <p>No supplier data for this period</p>
             </div>
@@ -739,15 +739,15 @@ export default function StocklyReportsPage() {
               {supplierSpend.map((sup, index) => {
                 const maxValue = supplierSpend[0]?.total || 1;
                 const percentage = (sup.total / maxValue) * 100;
-                const colors = ['bg-emerald-500 dark:bg-[#D37E91]', 'bg-cyan-500', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500', 'bg-indigo-500'];
+                const colors = ['bg-stockly-dark dark:bg-stockly', 'bg-cyan-500', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500', 'bg-indigo-500'];
 
                 return (
                   <div key={sup.supplier_name}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-[rgb(var(--text-primary))] dark:text-white/80">{sup.supplier_name}</span>
+                      <span className="text-sm text-[rgb(var(--text-primary))] dark:text-theme-secondary">{sup.supplier_name}</span>
                       <span className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white">{formatCurrency(sup.total)}</span>
                     </div>
-                    <div className="h-2 bg-theme-button dark:bg-white/5 rounded-full overflow-hidden">
+ <div className="h-2 bg-theme-button rounded-full overflow-hidden">
                       <div
                         className={`h-full ${colors[index % colors.length]} rounded-full transition-all duration-500`}
                         style={{ width: `${percentage}%` }}
@@ -762,12 +762,12 @@ export default function StocklyReportsPage() {
       </div>
 
       {/* Export Section */}
-      <div className="bg-theme-surface-elevated dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+ <div className="bg-theme-surface-elevated border border-theme rounded-xl p-6">
         <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-4">Export Reports</h2>
         <div className="flex flex-wrap gap-3">
           <button
             onClick={handleExcelExport}
-            className="flex items-center gap-2 px-4 py-2 bg-green-500/10 dark:bg-green-500/10 border border-green-500/30 dark:border-green-500/30 rounded-lg text-green-600 dark:text-green-400 hover:bg-green-500/20 dark:hover:bg-green-500/20 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-green-500/10 dark:bg-green-500/10 border border-green-500/30 dark:border-green-500/30 rounded-lg text-green-600 dark:text-green-400 hover:bg-module-fg/10 dark:hover:bg-module-fg/10 transition-colors"
           >
             <FileSpreadsheet className="w-4 h-4" />
             Export to Excel
@@ -779,7 +779,7 @@ export default function StocklyReportsPage() {
             <FileText className="w-4 h-4" />
             Export to PDF
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 dark:bg-blue-500/10 border border-blue-500/30 dark:border-blue-500/30 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 dark:hover:bg-blue-500/20 transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 dark:bg-blue-500/10 border border-blue-500/30 dark:border-blue-500/30 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-module-fg/10 dark:hover:bg-module-fg/10 transition-colors">
             <Download className="w-4 h-4" />
             Download All Data
           </button>

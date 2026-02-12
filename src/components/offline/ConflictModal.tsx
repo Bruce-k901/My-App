@@ -93,7 +93,7 @@ export function ConflictModal({ isOpen, conflict, onClose, onResolved }: Conflic
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="relative bg-white dark:bg-neutral-900 rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
+            className="relative bg-theme-surface rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-neutral-200 dark:border-neutral-800">
@@ -102,17 +102,17 @@ export function ConflictModal({ isOpen, conflict, onClose, onResolved }: Conflic
                   <AlertTriangle className="w-5 h-5 text-orange-500" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
+                  <h2 className="text-lg font-semibold text-theme-primary">
                     Sync Conflict
                   </h2>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  <p className="text-sm text-theme-secondary">
                     {conflict.operation.replace(/_/g, ' ')}
                   </p>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
+                className="text-theme-tertiary hover:text-theme-secondary dark:hover:text-neutral-200 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -120,7 +120,7 @@ export function ConflictModal({ isOpen, conflict, onClose, onResolved }: Conflic
 
             {/* Content */}
             <div className="p-6 space-y-6">
-              <p className="text-neutral-700 dark:text-neutral-300">
+              <p className="text-theme-secondary">
                 The item <strong>"{conflict.itemName}"</strong> was updated by{' '}
                 <strong>{conflict.updatedBy}</strong> while you were offline.
               </p>
@@ -140,13 +140,13 @@ export function ConflictModal({ isOpen, conflict, onClose, onResolved }: Conflic
                 </div>
 
                 <div className="p-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
-                  <div className="text-xs font-medium text-emerald-600 dark:text-emerald-400 uppercase mb-2">
+                  <div className="text-xs font-medium text-module-fg uppercase mb-2">
                     {conflict.updatedBy}'s Value
                   </div>
                   <div className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">
                     {conflict.theirValue}
                   </div>
-                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-2">
+                  <div className="text-xs text-module-fg mt-2">
                     Counted at {new Date(conflict.theirTime).toLocaleTimeString()}
                   </div>
                 </div>
@@ -157,16 +157,16 @@ export function ConflictModal({ isOpen, conflict, onClose, onResolved }: Conflic
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
-                  className="p-4 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700"
+                  className="p-4 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-theme"
                 >
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Enter Manual Value
                   </label>
                   <input
                     type="number"
                     value={manualValue}
                     onChange={(e) => setManualValue(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white"
+                    className="w-full px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-600 bg-theme-surface text-theme-primary"
                     placeholder="Enter value..."
                     autoFocus
                   />
@@ -180,7 +180,7 @@ export function ConflictModal({ isOpen, conflict, onClose, onResolved }: Conflic
                 <>
                   <button
                     onClick={() => setShowManual(false)}
-                    className="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-theme-secondary hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
                     disabled={isResolving}
                   >
                     Cancel
@@ -188,7 +188,7 @@ export function ConflictModal({ isOpen, conflict, onClose, onResolved }: Conflic
                   <button
                     onClick={() => resolve('manual')}
                     disabled={!manualValue || isResolving}
-                    className="px-4 py-2 text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 text-sm font-medium bg-module-fg hover:bg-module-fg/90 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isResolving ? 'Resolving...' : 'Use Manual Value'}
                   </button>
@@ -198,21 +198,21 @@ export function ConflictModal({ isOpen, conflict, onClose, onResolved }: Conflic
                   <button
                     onClick={() => resolve('keep_theirs')}
                     disabled={isResolving}
-                    className="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-theme-secondary hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
                   >
                     Use {conflict.updatedBy}'s ({conflict.theirValue})
                   </button>
                   <button
                     onClick={() => resolve('keep_mine')}
                     disabled={isResolving}
-                    className="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                    className="px-4 py-2 text-sm font-medium bg-module-fg hover:bg-module-fg/90 text-white rounded-lg transition-colors"
                   >
                     Use Mine ({conflict.yourValue})
                   </button>
                   <button
                     onClick={() => setShowManual(true)}
                     disabled={isResolving}
-                    className="px-4 py-2 text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
+                    className="px-4 py-2 text-sm font-medium bg-module-fg hover:bg-module-fg/90 text-white rounded-lg transition-colors"
                   >
                     Enter Manual Count
                   </button>

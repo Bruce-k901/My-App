@@ -36,7 +36,7 @@ export default function EntityPageLayout({
   };
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 text-gray-900 dark:text-white">
+    <div className="w-full max-w-[1200px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 text-theme-primary">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full mb-4 gap-3 sm:gap-4">
         {/* Left side - Title and Search */}
@@ -54,7 +54,7 @@ export default function EntityPageLayout({
               value={q}
               onChange={handleChange}
               placeholder={searchPlaceholder}
-              className="h-9 sm:h-10 px-2 sm:px-3 rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-transparent text-xs sm:text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-500 flex-1 min-w-0 sm:w-[192px]"
+              className="h-9 sm:h-10 px-2 sm:px-3 rounded-md border border-gray-300 dark:border-theme bg-white dark:bg-transparent text-xs sm:text-sm text-theme-primary placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-blue-700 dark:focus:ring-blue-500 flex-1 min-w-0 sm:w-[192px]"
             />
           </div>
         </div>
@@ -71,7 +71,7 @@ export default function EntityPageLayout({
                 console.log("🔥 ENTITY LAYOUT - Add button clicked");
                 onAdd();
               }}
-              className="h-9 sm:h-10 w-9 sm:w-10 flex items-center justify-center rounded-md border border-blue-700 dark:border-blue-500 text-blue-700 dark:text-blue-400 hover:bg-blue-700/10 dark:hover:bg-blue-500/10 transition-all"
+              className="h-9 sm:h-10 w-9 sm:w-10 flex items-center justify-center rounded-md border border-module-fg text-module-fg hover:bg-module-fg/10 dark:hover:bg-module-fg/10 transition-all"
               aria-label="Add"
             >
               <span className="text-base sm:text-lg leading-none">+</span>
@@ -119,10 +119,10 @@ function IconButton({ children, onClick, ariaLabel, variant = "neutral" }: { chi
     "transition-colors duration-150 ease-in-out",
   );
   const variants = {
-    neutral: "border border-gray-200 dark:border-white/[0.12] bg-gray-50 dark:bg-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.12]",
-    magentaOutline: "border border-[#D37E91] text-[#D37E91] bg-transparent hover:bg-[#D37E91]/10 dark:hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(211,126,145,0.25)]",
-    orangeOutline: "border border-orange-500 text-orange-500 bg-transparent hover:bg-orange-50 dark:hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)]",
-    navyOutline: "border border-blue-700 dark:border-blue-500 text-blue-700 dark:text-blue-400 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:shadow-[0_0_12px_rgba(30,64,175,0.25)]",
+    neutral: "border border-gray-200 dark:border-white/[0.12] bg-gray-50 dark:bg-white/[0.06] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.12]",
+    magentaOutline: "border border-[#D37E91] text-[#D37E91] bg-transparent hover:bg-[#D37E91]/10 dark:hover:bg-white/[0.04] hover:shadow-module-glow",
+    orangeOutline: "border border-orange-500 text-orange-500 bg-transparent hover:bg-orange-50 dark:hover:bg-white/[0.04] hover:shadow-module-glow",
+    navyOutline: "border border-module-fg text-module-fg bg-transparent hover:bg-module-fg/10 hover:shadow-module-glow",
   } as const;
   return (
     <button aria-label={ariaLabel} onClick={onClick} className={cn(base, variants[variant])}>

@@ -23,7 +23,7 @@ const SEVERITY_GROUPS: { key: Severity; label: string; containerClass: string }[
   {
     key: 'low',
     label: 'Low',
-    containerClass: 'bg-white/50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06]',
+    containerClass: 'bg-white/50 dark:bg-white/[0.03] border-theme',
   },
 ]
 
@@ -156,8 +156,8 @@ export function SiteManagerModal({ open, onClose, reportId, companyId, siteId }:
                       onClick={() => setModuleFilter(mf.value)}
                       className={`text-[10px] px-2 py-1 rounded-md font-medium transition-colors ${
                         moduleFilter === mf.value
-                          ? 'bg-gray-200 dark:bg-white/[0.1] text-gray-900 dark:text-white'
-                          : 'text-gray-400 dark:text-white/30 hover:text-gray-600 dark:hover:text-white/50'
+                          ? 'bg-gray-200 dark:bg-white/[0.1] text-theme-primary'
+                          : 'text-theme-tertiary/30 hover:text-theme-secondary dark:hover:text-theme-tertiary'
                       }`}
                     >
                       {mf.label}
@@ -171,7 +171,7 @@ export function SiteManagerModal({ open, onClose, reportId, companyId, siteId }:
                 <div className="space-y-4">
                   {groupedBySeverity.map(group => (
                     <div key={group.key} className={`rounded-lg border p-3 space-y-2 ${group.containerClass}`}>
-                      <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-white/50">
+                      <h3 className="text-xs font-semibold uppercase tracking-wider text-theme-secondary/50">
                         {group.label} ({group.items.length})
                       </h3>
                       <div className="space-y-2">
@@ -189,13 +189,13 @@ export function SiteManagerModal({ open, onClose, reportId, companyId, siteId }:
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12 text-gray-400 dark:text-white/30">
+                <div className="text-center py-12 text-theme-tertiary/30">
                   {items.length === 0 ? 'No issues found — great job!' : 'No items match the current filters'}
                 </div>
               )}
             </div>
           ) : (
-            <div className="text-center py-20 text-gray-400 dark:text-white/30">
+            <div className="text-center py-20 text-theme-tertiary/30">
               No report selected
             </div>
           )}

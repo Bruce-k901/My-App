@@ -60,12 +60,12 @@ const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Satur
 const WEEKDAY_LABELS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 // Shared Tailwind class strings for theme-aware styling
-const inputClasses = "w-full bg-gray-50 dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]";
-const readOnlyInputClasses = "w-full bg-gray-100 dark:bg-neutral-900 cursor-not-allowed border border-gray-300 dark:border-neutral-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white focus:outline-none";
-const labelClasses = "block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1";
-const selectClasses = "w-full bg-gray-50 dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]";
-const scheduleSelectClasses = "bg-gray-100 dark:bg-neutral-700 border border-gray-300 dark:border-neutral-600 rounded pl-2 pr-7 py-1 text-gray-900 dark:text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed";
-const scheduleRowClasses = "flex items-center gap-4 py-1.5 px-3 bg-gray-100 dark:bg-neutral-800 rounded-lg transition-opacity";
+const inputClasses = "w-full bg-theme-button border border-gray-300 dark:border-theme rounded-lg px-3 py-2 text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]";
+const readOnlyInputClasses = "w-full bg-gray-100 dark:bg-neutral-900 cursor-not-allowed border border-gray-300 dark:border-theme rounded-lg px-3 py-2 text-theme-primary focus:outline-none";
+const labelClasses = "block text-sm font-medium text-theme-secondary mb-1";
+const selectClasses = "w-full bg-theme-button border border-gray-300 dark:border-theme rounded-lg px-3 py-2 text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]";
+const scheduleSelectClasses = "bg-gray-100 dark:bg-neutral-700 border border-gray-300 dark:border-neutral-600 rounded pl-2 pr-7 py-1 text-theme-primary text-sm disabled:opacity-50 disabled:cursor-not-allowed";
+const scheduleRowClasses = "flex items-center gap-4 py-1.5 px-3 bg-theme-muted rounded-lg transition-opacity";
 
 export default function SiteFormBase({ mode, initialData, onClose, onSaved, companyId, gmList, onDelete }: SiteFormBaseProps) {
   console.log("🎨 Rendered", "SiteFormBase");
@@ -764,11 +764,11 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                   onChange={(checked: boolean) => handleCheckboxChange(day, checked)}
                   size={16}
                 />
-                <span className="text-gray-900 dark:text-white text-sm font-medium">{dayLabel}</span>
+                <span className="text-theme-primary text-sm font-medium">{dayLabel}</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-gray-500 dark:text-gray-400 text-sm">Open:</span>
+                <span className="text-theme-tertiary text-sm">Open:</span>
                 <select
                   value={dayData.open?.hh || ""}
                   onChange={(e) => handleScheduleChange(day, "open", "hh", e.target.value)}
@@ -796,7 +796,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                   ))}
                 </select>
 
-                <span className="text-gray-500 dark:text-gray-400 text-sm mx-2">Close:</span>
+                <span className="text-theme-tertiary text-sm mx-2">Close:</span>
                 <select
                   value={dayData.close?.hh || ""}
                   onChange={(e) => handleScheduleChange(day, "close", "hh", e.target.value)}
@@ -833,10 +833,10 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="relative z-[10000] bg-white dark:bg-neutral-900 rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="relative z-[10000] bg-theme-surface rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-gray-200 dark:border-neutral-800">
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-2xl font-semibold text-theme-primary">
             {mode === "new" ? "Add New Site" : "Edit Site"}
           </h2>
         </div>
@@ -845,7 +845,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
         <div className="flex-1 overflow-y-auto p-6">
           {/* A. Core Details */}
           <section>
-            <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Core Details</h3>
+            <h3 className="text-xl font-semibold mb-3 text-theme-primary">Core Details</h3>
 
             {/* Two-column responsive grid layout */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -949,7 +949,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
             {/* Header with Update GM button on the left */}
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Management Contact</h3>
+                <h3 className="text-xl font-semibold text-theme-primary">Management Contact</h3>
                 <button
                   type="button"
                   onClick={() => setGmEditMode((v) => !v)}
@@ -1013,7 +1013,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
           <section className="mt-6 border-t border-gray-200 dark:border-neutral-800 pt-6">
             {mode === "edit" ? (
               <div>
-                <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Operating Schedule</h3>
+                <h3 className="text-xl font-semibold mb-3 text-theme-primary">Operating Schedule</h3>
                 {renderScheduleRows()}
               </div>
             ) : (
@@ -1021,7 +1021,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 <button
                   type="button"
                   onClick={() => setOperatingScheduleOpen(!operatingScheduleOpen)}
-                  className="flex items-center justify-between w-full text-left text-xl font-semibold text-gray-900 dark:text-white mb-3 hover:text-[#D37E91] transition-colors"
+                  className="flex items-center justify-between w-full text-left text-xl font-semibold text-theme-primary mb-3 hover:text-[#D37E91] transition-colors"
                 >
                   Operating Schedule
                   <span className={`transform transition-transform ${operatingScheduleOpen ? 'rotate-180' : ''}`}>
@@ -1036,7 +1036,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
 
           {/* D. Planned Closures */}
           <section className="mt-6 border-t border-gray-200 dark:border-neutral-800 pt-6">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Planned Closures</h3>
+            <h3 className="text-xl font-semibold text-theme-primary mb-4">Planned Closures</h3>
 
             <div className="flex gap-2 items-center mb-3">
               <DatePicker
@@ -1046,9 +1046,9 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                   start: date?.toISOString().split("T")[0] || ""
                 }))}
                 placeholderText="Start date"
-                className="bg-white dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white p-2 rounded-md"
+                className="bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary p-2 rounded-md"
                 popperClassName="z-50"
-                calendarClassName="bg-white dark:bg-neutral-800 text-gray-900 dark:text-white rounded-md shadow-lg"
+                calendarClassName="bg-theme-surface text-theme-primary rounded-md shadow-lg"
               />
 
               <DatePicker
@@ -1060,16 +1060,16 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 minDate={newClosure.start ? new Date(newClosure.start) : undefined}
                 openToDate={newClosure.start ? new Date(newClosure.start) : undefined}
                 placeholderText="End date"
-                className="bg-white dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white p-2 rounded-md"
+                className="bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary p-2 rounded-md"
                 popperClassName="z-50"
-                calendarClassName="bg-white dark:bg-neutral-800 text-gray-900 dark:text-white rounded-md shadow-lg"
+                calendarClassName="bg-theme-surface text-theme-primary rounded-md shadow-lg"
               />
 
               <button
                 type="button"
                 onClick={handleAddClosure}
                 disabled={!newClosure.start || !newClosure.end}
-                className="px-4 py-2 border-2 border-green-500 text-green-600 dark:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 border-2 border-green-500 text-green-600 dark:text-green-500 hover:bg-module-fg/10 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 ✓ Confirm
               </button>
@@ -1078,8 +1078,8 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
             {formData.planned_closures?.length > 0 ? (
               <div className="space-y-2">
                 {formData.planned_closures.map((closure, i) => (
-                  <div key={i} className="flex justify-between items-center border border-gray-200 dark:border-neutral-700 rounded-md p-2">
-                    <span className="text-sm text-gray-900 dark:text-white">
+                  <div key={i} className="flex justify-between items-center border border-theme rounded-md p-2">
+                    <span className="text-sm text-theme-primary">
                       {new Date(closure.start).toLocaleDateString()} → {new Date(closure.end).toLocaleDateString()}
                     </span>
                     <button
@@ -1093,7 +1093,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 dark:text-neutral-500 text-sm">No planned closures yet.</p>
+ <p className="text-gray-500 dark:text-theme-tertiary text-sm">No planned closures yet.</p>
             )}
           </section>
         </div>
@@ -1120,7 +1120,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
             <button
               type="button"
               onClick={handleCancel}
-              className="px-6 py-2 text-gray-700 dark:text-white border border-gray-300 dark:border-white rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-200"
+              className="px-6 py-2 text-theme-secondary border border-gray-300 dark:border-white rounded-lg hover:bg-theme-hover transition-all duration-200"
               disabled={loading}
             >
               Cancel

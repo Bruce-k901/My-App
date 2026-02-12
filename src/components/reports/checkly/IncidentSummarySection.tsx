@@ -93,9 +93,9 @@ export default function IncidentSummarySection({ companyId, siteId, dateRange }:
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
+      <div className="bg-theme-surface border border-theme rounded-xl p-8 flex items-center justify-center">
         <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
-        <span className="ml-3 text-gray-500 dark:text-white/60">Loading incident summary...</span>
+        <span className="ml-3 text-theme-tertiary">Loading incident summary...</span>
       </div>
     );
   }
@@ -114,14 +114,14 @@ export default function IncidentSummarySection({ companyId, siteId, dateRange }:
 
       {/* Site Breakdown */}
       {summary.bySite.length > 0 && (
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Incidents by Site</h3>
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">Incidents by Site</h3>
           <div className="space-y-3">
             {summary.bySite
               .sort((a, b) => b.count - a.count)
               .map((site) => (
                 <div key={site.siteId} className="flex items-center justify-between">
-                  <span className="text-gray-700 dark:text-white/80">{site.siteName}</span>
+                  <span className="text-theme-secondary">{site.siteName}</span>
                   <div className="flex items-center gap-3">
                     <div className="w-32 bg-gray-100 dark:bg-white/[0.05] rounded-full h-2">
                       <div
@@ -129,7 +129,7 @@ export default function IncidentSummarySection({ companyId, siteId, dateRange }:
                         style={{ width: `${(site.count / summary.total) * 100}%` }}
                       />
                     </div>
-                    <span className="text-gray-900 dark:text-white font-semibold w-12 text-right">{site.count}</span>
+                    <span className="text-theme-primary font-semibold w-12 text-right">{site.count}</span>
                   </div>
                 </div>
               ))}

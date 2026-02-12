@@ -687,8 +687,8 @@ export default function AddonsSelection({
   return (
     <div className="space-y-4 sm:space-y-5 md:space-y-6">
       <div className="mb-4 sm:mb-6 md:mb-8">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 sm:mb-3">Add-ons & Offers</h2>
-        <p className="text-white/70 text-sm sm:text-base leading-relaxed max-w-3xl">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-theme-primary mb-2 sm:mb-3">Add-ons & Offers</h2>
+        <p className="text-theme-secondary text-sm sm:text-base leading-relaxed max-w-3xl">
           Enhance your plan with additional features and services. Choose one tier per category (Smart Sensors and Maintenance Kits).
         </p>
       </div>
@@ -702,7 +702,7 @@ export default function AddonsSelection({
             className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex-shrink-0 ${
               selectedCategory === category
                 ? 'bg-[#D37E91] text-white'
-                : 'bg-white/[0.05] text-white/60 hover:bg-white/[0.1] border border-white/[0.1]'
+                : 'bg-white/[0.05] text-theme-tertiary hover:bg-white/[0.1] border border-white/[0.1]'
             }`}
           >
             {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -715,7 +715,7 @@ export default function AddonsSelection({
         <div className="space-y-4 mb-10">
           <div className="flex items-center gap-2 mb-4">
             <CheckCircle2 className="w-5 h-5 text-green-400" />
-            <h3 className="text-xl font-bold text-white">Your Active Add-ons</h3>
+            <h3 className="text-xl font-bold text-theme-primary">Your Active Add-ons</h3>
           </div>
           {purchasedAddons.map((purchase) => {
             const qtyPerSite = (purchase as any).quantity_per_site || purchase.quantity || 1;
@@ -738,22 +738,22 @@ export default function AddonsSelection({
                         <CheckCircle2 className="w-5 h-5 text-green-400" />
                       </div>
                       <div>
-                        <h4 className="text-lg font-bold text-white">{purchase.addon.display_name}</h4>
+                        <h4 className="text-lg font-bold text-theme-primary">{purchase.addon.display_name}</h4>
                         <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs font-medium rounded-full mt-1 inline-block">
                           Active
                         </span>
                       </div>
                     </div>
-                    <p className="text-sm text-white/70 mb-4 ml-11">{purchase.addon.description}</p>
+                    <p className="text-sm text-theme-secondary mb-4 ml-11">{purchase.addon.description}</p>
                     <div className="space-y-3 text-sm ml-11">
                       {hardwareTotal && (
                         <div className="bg-white/[0.08] rounded-lg p-3 border border-white/10">
                           <div className="flex items-baseline justify-between gap-2">
-                            <span className="text-white/70">Hardware Cost (one-time)</span>
-                            <span className="text-lg font-bold text-white">£{parseFloat(hardwareTotal.toString()).toFixed(2)}</span>
+                            <span className="text-theme-secondary">Hardware Cost (one-time)</span>
+                            <span className="text-lg font-bold text-theme-primary">£{parseFloat(hardwareTotal.toString()).toFixed(2)}</span>
                           </div>
                           {(purchase.addon.name?.startsWith('smart_sensor_') || purchase.addon.name?.startsWith('maintenance_kit_') || purchase.addon.name?.startsWith('asset_tags_pack_')) && (
-                            <p className="text-xs text-white/50 mt-1.5">
+                            <p className="text-xs text-theme-tertiary mt-1.5">
                               {qtyPerSite} {purchase.addon.name?.startsWith('smart_sensor_') ? 'sensors' : 'tags'}/site × {siteCount} sites
                             </p>
                           )}
@@ -762,10 +762,10 @@ export default function AddonsSelection({
                       {monthlyRecurring && (
                         <div className="bg-white/[0.08] rounded-lg p-3 border border-white/10">
                           <div className="flex items-baseline justify-between gap-2">
-                            <span className="text-white/70">Monthly Management</span>
+                            <span className="text-theme-secondary">Monthly Management</span>
                             <span className="text-lg font-bold text-[#D37E91]">£{parseFloat(monthlyRecurring.toString()).toFixed(2)}/month</span>
                           </div>
-                          <p className="text-xs text-white/50 mt-1.5">
+                          <p className="text-xs text-theme-tertiary mt-1.5">
                             £{purchase.addon.monthly_management_cost?.toFixed(2) || '0.00'}/site/month × {siteCount} sites
                           </p>
                         </div>
@@ -773,8 +773,8 @@ export default function AddonsSelection({
                       {!hardwareTotal && !monthlyRecurring && (
                         <div className="bg-white/[0.08] rounded-lg p-3 border border-white/10">
                           <div className="flex items-baseline justify-between gap-2">
-                            <span className="text-white/70">Price</span>
-                            <span className="text-lg font-bold text-white">£{purchase.total_price.toFixed(2)}</span>
+                            <span className="text-theme-secondary">Price</span>
+                            <span className="text-lg font-bold text-theme-primary">£{purchase.total_price.toFixed(2)}</span>
                           </div>
                         </div>
                       )}
@@ -785,7 +785,7 @@ export default function AddonsSelection({
                       variant="outline"
                       size="sm"
                       onClick={() => handleEditAddon(purchase)}
-                      className="border-[#D37E91]/50 text-[#D37E91] hover:bg-[#D37E91]/10 hover:shadow-[0_0_12px_rgba(211,126,145,0.3)] transition-all"
+                      className="border-[#D37E91]/50 text-[#D37E91] hover:bg-[#D37E91]/10 hover:shadow-module-glow transition-all"
                     >
                       <Edit2 className="w-4 h-4 mr-1.5" />
                       Edit
@@ -814,17 +814,17 @@ export default function AddonsSelection({
           <div className="bg-gradient-to-r from-[#D37E91]/10 to-transparent border-l-4 border-[#D37E91] rounded-r-lg p-4 mb-6">
             <div className="flex items-center gap-2 mb-2">
               <Zap className="w-5 h-5 text-[#D37E91]" />
-              <h3 className="text-2xl font-bold text-white">Smart Temperature Sensors</h3>
+              <h3 className="text-2xl font-bold text-theme-primary">Smart Temperature Sensors</h3>
             </div>
-            <p className="text-white/70 text-sm ml-7 mb-4">
+            <p className="text-theme-secondary text-sm ml-7 mb-4">
               Plug-and-play temperature monitoring for fridges, freezers, and prep areas. Automatic logging, instant breach alerts, and EHO-ready compliance reports. Stop worrying about stock losses.
             </p>
             {/* How It Works - Combined */}
             <div className="ml-7 mt-4">
               <div className="bg-gradient-to-r from-[#D37E91]/10 to-blue-500/10 rounded-xl p-4 border border-[#D37E91]/20">
-                <p className="text-sm font-semibold text-white mb-2 text-center">How It Works:</p>
-                <p className="text-xs text-gray-300 text-center">
-                  Choose <strong className="text-white">one hardware pack</strong> (physical sensors) + <strong className="text-white">one software tier</strong> (monitoring features). The hardware pack is a one-time purchase, and the software tier is billed monthly per site.
+                <p className="text-sm font-semibold text-theme-primary mb-2 text-center">How It Works:</p>
+                <p className="text-xs text-theme-tertiary text-center">
+                  Choose <strong className="text-theme-primary">one hardware pack</strong> (physical sensors) + <strong className="text-theme-primary">one software tier</strong> (monitoring features). The hardware pack is a one-time purchase, and the software tier is billed monthly per site.
                 </p>
               </div>
             </div>
@@ -834,8 +834,8 @@ export default function AddonsSelection({
           {smartSensorPackAddons.length > 0 && (
             <div className="mb-8">
               <div className="text-center mb-6">
-                <h4 className="text-xl sm:text-2xl font-bold text-white mb-2">Step 1: Choose Your Hardware Pack</h4>
-                <p className="text-white/60 text-sm">One-time purchase • Free replacement for faulty units within warranty period</p>
+                <h4 className="text-xl sm:text-2xl font-bold text-theme-primary mb-2">Step 1: Choose Your Hardware Pack</h4>
+                <p className="text-theme-tertiary text-sm">One-time purchase • Free replacement for faulty units within warranty period</p>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 {smartSensorPackAddons.map((addon) => {
@@ -861,7 +861,7 @@ export default function AddonsSelection({
                         ? 'border-2 border-green-500/60 shadow-[0_0_20px_rgba(34,197,94,0.4)] bg-gradient-to-br from-green-500/5 to-transparent'
                         : hasPurchased
                         ? 'opacity-60 border-white/20'
-                        : 'border border-white/20 hover:border-[#D37E91]/60 hover:shadow-[0_0_20px_rgba(211,126,145,0.25)] hover:scale-[1.01] cursor-pointer'
+                        : 'border border-white/20 hover:border-[#D37E91]/60 hover:shadow-module-glow hover:scale-[1.01] cursor-pointer'
                     }`}
                   >
                     {isPurchased && (
@@ -885,19 +885,19 @@ export default function AddonsSelection({
                             isPurchased ? 'text-green-400' : 'text-[#D37E91]'
                           }`} />
                         </div>
-                        <h4 className="text-2xl font-bold text-white">{addon.display_name}</h4>
+                        <h4 className="text-2xl font-bold text-theme-primary">{addon.display_name}</h4>
                       </div>
-                      <p className="text-sm text-white/70 mb-4 leading-relaxed">{addon.description}</p>
+                      <p className="text-sm text-theme-secondary mb-4 leading-relaxed">{addon.description}</p>
 
                       {/* Features List */}
                       {addon.features && addon.features.length > 0 && (
                         <div className="mb-6">
-                          <p className="text-sm font-medium text-white mb-3">What's included:</p>
+                          <p className="text-sm font-medium text-theme-primary mb-3">What's included:</p>
                           <ul className="space-y-2">
                             {addon.features.slice(0, 6).map((feature: string, i: number) => (
                               <li key={i} className="flex items-start gap-2">
                                 <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                                <span className="text-sm text-gray-300">{feature}</span>
+                                <span className="text-sm text-theme-tertiary">{feature}</span>
                               </li>
                             ))}
                           </ul>
@@ -909,17 +909,17 @@ export default function AddonsSelection({
                         <div className="bg-gradient-to-br from-[#D37E91]/20 to-[#D37E91]/10 rounded-xl p-6 border-2 border-[#D37E91]/30 text-center">
                           {addon.hardware_cost ? (
                             <>
-                              <p className="text-4xl font-bold text-white mb-2">
+                              <p className="text-4xl font-bold text-theme-primary mb-2">
                                 £{addon.hardware_cost.toFixed(0)}
                               </p>
-                              <p className="text-sm text-white/70">one-time</p>
+                              <p className="text-sm text-theme-secondary">one-time</p>
                             </>
                           ) : addon.price ? (
                             <>
-                              <p className="text-4xl font-bold text-white mb-2">
+                              <p className="text-4xl font-bold text-theme-primary mb-2">
                                 £{addon.price.toFixed(0)}
                               </p>
-                              <p className="text-sm text-white/70">one-time</p>
+                              <p className="text-sm text-theme-secondary">one-time</p>
                             </>
                           ) : null}
                         </div>
@@ -942,7 +942,7 @@ export default function AddonsSelection({
                           fullWidth
                           onClick={() => handlePurchaseAddon(addon.id, addon.name, 1)}
                           disabled={isPurchasing}
-                          className="bg-[#D37E91] text-white border-[#D37E91] hover:bg-[#D37E91]/90 hover:shadow-[0_0_16px_rgba(211,126,145,0.6)] disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold py-3"
+                          className="bg-[#D37E91] text-white border-[#D37E91] hover:bg-[#D37E91]/90 hover:shadow-module-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold py-3"
                         >
                           {hasPurchased ? (
                             <>
@@ -971,7 +971,7 @@ export default function AddonsSelection({
                 <div className="flex items-center gap-4">
                   <div className="h-px bg-gradient-to-r from-transparent via-[#D37E91]/40 to-[#D37E91]/40 w-16 sm:w-24"></div>
                   <div className="bg-[#D37E91]/20 border border-[#D37E91]/40 rounded-full px-3 py-1.5">
-                    <span className="text-xs sm:text-sm font-semibold text-white">+</span>
+                    <span className="text-xs sm:text-sm font-semibold text-theme-primary">+</span>
                   </div>
                   <div className="h-px bg-gradient-to-l from-transparent via-[#D37E91]/40 to-[#D37E91]/40 w-16 sm:w-24"></div>
                 </div>
@@ -982,8 +982,8 @@ export default function AddonsSelection({
             {smartSensorSoftwareAddons.length > 0 && (
               <div className="mt-8 pt-8 border-t border-white/10">
                 <div className="text-center mb-6">
-                  <h4 className="text-xl sm:text-2xl font-bold text-white mb-2">Step 2: Choose Your Software Tier</h4>
-                  <p className="text-white/60 text-sm">Monthly per site • Cancel anytime • Works with any hardware pack</p>
+                  <h4 className="text-xl sm:text-2xl font-bold text-theme-primary mb-2">Step 2: Choose Your Software Tier</h4>
+                  <p className="text-theme-tertiary text-sm">Monthly per site • Cancel anytime • Works with any hardware pack</p>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {smartSensorSoftwareAddons.map((addon) => {
@@ -1009,7 +1009,7 @@ export default function AddonsSelection({
                             ? 'border-2 border-green-500/60 shadow-[0_0_20px_rgba(34,197,94,0.4)] bg-gradient-to-br from-green-500/5 to-transparent'
                             : hasPurchased
                             ? 'opacity-60 border-white/20'
-                            : 'border border-white/20 hover:border-[#D37E91]/60 hover:shadow-[0_0_20px_rgba(211,126,145,0.25)] hover:scale-[1.01] cursor-pointer'
+                            : 'border border-white/20 hover:border-[#D37E91]/60 hover:shadow-module-glow hover:scale-[1.01] cursor-pointer'
                         }`}
                       >
                         {isPurchased && (
@@ -1033,14 +1033,14 @@ export default function AddonsSelection({
                                 isPurchased ? 'text-green-400' : 'text-[#D37E91]'
                               }`} />
                             </div>
-                            <h4 className="text-2xl font-bold text-white">{addon.display_name}</h4>
+                            <h4 className="text-2xl font-bold text-theme-primary">{addon.display_name}</h4>
                           </div>
-                          <p className="text-sm text-white/70 mb-4 leading-relaxed">{addon.description}</p>
+                          <p className="text-sm text-theme-secondary mb-4 leading-relaxed">{addon.description}</p>
 
                           {/* Features List */}
                           {addon.features && addon.features.length > 0 && (
                             <div className="mb-6">
-                              <p className="text-sm font-medium text-white mb-3">
+                              <p className="text-sm font-medium text-theme-primary mb-3">
                                 {(addon.name.includes('professional') || addon.name.includes('pro') || addon.name.includes('business') || addon.name.includes('observatory'))
                                   ? addon.name.includes('business') || addon.name.includes('observatory')
                                     ? 'Everything in Professional, plus:'
@@ -1051,7 +1051,7 @@ export default function AddonsSelection({
                                 {addon.features.slice(0, 6).map((feature: string, i: number) => (
                                   <li key={i} className="flex items-start gap-2">
                                     <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                                    <span className="text-sm text-gray-300">{feature}</span>
+                                    <span className="text-sm text-theme-tertiary">{feature}</span>
                                   </li>
                                 ))}
                               </ul>
@@ -1063,17 +1063,17 @@ export default function AddonsSelection({
                             <div className="bg-gradient-to-br from-[#D37E91]/20 to-[#D37E91]/10 rounded-xl p-6 border-2 border-[#D37E91]/30 text-center">
                               {addon.monthly_management_cost ? (
                                 <>
-                                  <p className="text-4xl font-bold text-white mb-2">
+                                  <p className="text-4xl font-bold text-theme-primary mb-2">
                                     £{addon.monthly_management_cost.toFixed(0)}
                                   </p>
-                                  <p className="text-sm text-white/70">per site / month</p>
+                                  <p className="text-sm text-theme-secondary">per site / month</p>
                                 </>
                               ) : addon.price ? (
                                 <>
-                                  <p className="text-4xl font-bold text-white mb-2">
+                                  <p className="text-4xl font-bold text-theme-primary mb-2">
                                     £{addon.price.toFixed(0)}
                                   </p>
-                                  <p className="text-sm text-white/70">per site / month</p>
+                                  <p className="text-sm text-theme-secondary">per site / month</p>
                                 </>
                               ) : null}
                             </div>
@@ -1096,7 +1096,7 @@ export default function AddonsSelection({
                               fullWidth
                               onClick={() => handlePurchaseAddon(addon.id, addon.name, 1)}
                               disabled={isPurchasing}
-                              className="bg-[#D37E91] text-white border-[#D37E91] hover:bg-[#D37E91]/90 hover:shadow-[0_0_16px_rgba(211,126,145,0.6)] disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold py-3"
+                              className="bg-[#D37E91] text-white border-[#D37E91] hover:bg-[#D37E91]/90 hover:shadow-module-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold py-3"
                             >
                               {hasPurchased ? (
                                 <>
@@ -1124,34 +1124,34 @@ export default function AddonsSelection({
             <div className="bg-gradient-to-r from-blue-500/10 to-transparent border-l-4 border-blue-500 rounded-r-lg p-4 mb-6">
               <div className="flex items-center gap-2 mb-2">
                 <Award className="w-5 h-5 text-blue-400" />
-                <h3 className="text-2xl font-bold text-white">Asset Tags</h3>
+                <h3 className="text-2xl font-bold text-theme-primary">Asset Tags</h3>
               </div>
-              <p className="text-white/70 text-sm ml-7 mb-4">
+              <p className="text-theme-secondary text-sm ml-7 mb-4">
                 Give your equipment a digital passport. Physical tags that staff and contractors scan to access service history, report faults, and log maintenance visits. No more chasing paperwork or forgotten serial numbers.
               </p>
               {/* How It Works - Combined */}
               <div className="ml-7 mt-4">
                 <div className="bg-gradient-to-r from-[#D37E91]/10 to-blue-500/10 rounded-xl p-4 border border-[#D37E91]/20">
-                  <p className="text-sm font-semibold text-white mb-2 text-center">How It Works:</p>
-                  <p className="text-xs text-gray-300 text-center mb-3">
-                    Choose <strong className="text-white">one tag pack</strong> (physical tags) + <strong className="text-white">one software tier</strong> (scanning features). The tag pack is a one-time purchase, and the software tier is billed monthly per site.
+                  <p className="text-sm font-semibold text-theme-primary mb-2 text-center">How It Works:</p>
+                  <p className="text-xs text-theme-tertiary text-center mb-3">
+                    Choose <strong className="text-theme-primary">one tag pack</strong> (physical tags) + <strong className="text-theme-primary">one software tier</strong> (scanning features). The tag pack is a one-time purchase, and the software tier is billed monthly per site.
                   </p>
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 text-left mt-3">
                     <div className="bg-white/8 rounded-lg p-2 border border-white/20">
-                      <p className="text-xs font-semibold text-white mb-1">1. Choose</p>
-                      <p className="text-xs text-gray-300">Select tag pack & software tier</p>
+                      <p className="text-xs font-semibold text-theme-primary mb-1">1. Choose</p>
+                      <p className="text-xs text-theme-tertiary">Select tag pack & software tier</p>
                     </div>
                     <div className="bg-white/8 rounded-lg p-2 border border-white/20">
-                      <p className="text-xs font-semibold text-white mb-1">2. Ship</p>
-                      <p className="text-xs text-gray-300">We send tags with setup guide</p>
+                      <p className="text-xs font-semibold text-theme-primary mb-1">2. Ship</p>
+                      <p className="text-xs text-theme-tertiary">We send tags with setup guide</p>
                     </div>
                     <div className="bg-white/8 rounded-lg p-2 border border-white/20">
-                      <p className="text-xs font-semibold text-white mb-1">3. Link</p>
-                      <p className="text-xs text-gray-300">Connect tags to assets in Opsly</p>
+                      <p className="text-xs font-semibold text-theme-primary mb-1">3. Link</p>
+                      <p className="text-xs text-theme-tertiary">Connect tags to assets in Opsly</p>
                     </div>
                     <div className="bg-white/8 rounded-lg p-2 border border-white/20">
-                      <p className="text-xs font-semibold text-white mb-1">4. Scan</p>
-                      <p className="text-xs text-gray-300">Staff & contractors access everything</p>
+                      <p className="text-xs font-semibold text-theme-primary mb-1">4. Scan</p>
+                      <p className="text-xs text-theme-tertiary">Staff & contractors access everything</p>
                     </div>
                   </div>
                 </div>
@@ -1162,8 +1162,8 @@ export default function AddonsSelection({
             {assetTagPackAddons.length > 0 && (
               <div className="mb-8">
                 <div className="text-center mb-6">
-                  <h4 className="text-xl sm:text-2xl font-bold text-white mb-2">Step 1: Choose Your Tag Pack</h4>
-                  <p className="text-white/60 text-sm">One-time purchase • Free replacement tags included</p>
+                  <h4 className="text-xl sm:text-2xl font-bold text-theme-primary mb-2">Step 1: Choose Your Tag Pack</h4>
+                  <p className="text-theme-tertiary text-sm">One-time purchase • Free replacement tags included</p>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                   {assetTagPackAddons.map((addon) => {
@@ -1189,7 +1189,7 @@ export default function AddonsSelection({
                           ? 'border-2 border-green-500/60 shadow-[0_0_20px_rgba(34,197,94,0.4)] bg-gradient-to-br from-green-500/5 to-transparent'
                           : hasPurchased
                           ? 'opacity-60 border-white/20'
-                          : 'border border-white/20 hover:border-blue-500/60 hover:shadow-[0_0_20px_rgba(59,130,246,0.25)] hover:scale-[1.01] cursor-pointer'
+                          : 'border border-white/20 hover:border-blue-500/60 hover:shadow-module-glow hover:scale-[1.01] cursor-pointer'
                       }`}
                     >
                       {isPurchased && (
@@ -1213,14 +1213,14 @@ export default function AddonsSelection({
                               isPurchased ? 'text-green-400' : 'text-blue-400'
                             }`} />
                           </div>
-                          <h4 className="text-2xl font-bold text-white">{addon.display_name}</h4>
+                          <h4 className="text-2xl font-bold text-theme-primary">{addon.display_name}</h4>
                         </div>
-                        <p className="text-sm text-white/70 mb-4 leading-relaxed">{addon.description}</p>
+                        <p className="text-sm text-theme-secondary mb-4 leading-relaxed">{addon.description}</p>
 
                         {/* Features List - Match pricing page */}
                         {addon.features && addon.features.length > 0 && (
                           <div className="mb-6">
-                            <p className="text-sm font-medium text-white mb-3">
+                            <p className="text-sm font-medium text-theme-primary mb-3">
                               {(addon.name.includes('pro') || addon.name.includes('professional') || addon.name.includes('observatory') || addon.name.includes('premium'))
                                 ? 'Everything in Starter plus:' 
                                 : 'What\'s included:'}
@@ -1229,7 +1229,7 @@ export default function AddonsSelection({
                               {addon.features.slice(0, 6).map((feature: string, i: number) => (
                                 <li key={i} className="flex items-start gap-2">
                                   <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                                  <span className="text-sm text-gray-300">{feature}</span>
+                                  <span className="text-sm text-theme-tertiary">{feature}</span>
                                 </li>
                               ))}
                             </ul>
@@ -1241,17 +1241,17 @@ export default function AddonsSelection({
                           <div className="bg-gradient-to-br from-blue-500/20 to-blue-500/10 rounded-xl p-6 border-2 border-blue-500/30 text-center">
                             {addon.hardware_cost ? (
                               <>
-                                <p className="text-4xl font-bold text-white mb-2">
+                                <p className="text-4xl font-bold text-theme-primary mb-2">
                                   £{addon.hardware_cost.toFixed(0)}
                                 </p>
-                                <p className="text-sm text-white/70">one-time</p>
+                                <p className="text-sm text-theme-secondary">one-time</p>
                               </>
                             ) : addon.price ? (
                               <>
-                                <p className="text-4xl font-bold text-white mb-2">
+                                <p className="text-4xl font-bold text-theme-primary mb-2">
                                   £{addon.price.toFixed(0)}
                                 </p>
-                                <p className="text-sm text-white/70">one-time</p>
+                                <p className="text-sm text-theme-secondary">one-time</p>
                               </>
                             ) : null}
                           </div>
@@ -1310,7 +1310,7 @@ export default function AddonsSelection({
                               handlePurchaseAddon(addon.id, addon.name, 1);
                             }}
                             disabled={isPurchasing}
-                            className="bg-blue-500 text-white border-blue-500 hover:bg-blue-500/90 hover:shadow-[0_0_16px_rgba(59,130,246,0.6)] disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold py-3"
+                            className="bg-blue-500 text-white border-blue-500 hover:bg-module-fg/10 hover:shadow-module-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold py-3"
                           >
                             {hasPurchased ? (
                               <>
@@ -1339,7 +1339,7 @@ export default function AddonsSelection({
                 <div className="flex items-center gap-4">
                   <div className="h-px bg-gradient-to-r from-transparent via-[#D37E91]/40 to-[#D37E91]/40 w-16 sm:w-24"></div>
                   <div className="bg-[#D37E91]/20 border border-[#D37E91]/40 rounded-full px-3 py-1.5">
-                    <span className="text-xs sm:text-sm font-semibold text-white">+</span>
+                    <span className="text-xs sm:text-sm font-semibold text-theme-primary">+</span>
                   </div>
                   <div className="h-px bg-gradient-to-l from-transparent via-[#D37E91]/40 to-[#D37E91]/40 w-16 sm:w-24"></div>
                 </div>
@@ -1350,8 +1350,8 @@ export default function AddonsSelection({
             {assetTagsSoftwareAddons.length > 0 && (
               <div className="mt-8 pt-8 border-t border-white/10">
                 <div className="text-center mb-6">
-                  <h4 className="text-xl sm:text-2xl font-bold text-white mb-2">Step 2: Choose Your Software Tier</h4>
-                  <p className="text-white/60 text-sm">Monthly per site • Cancel anytime • Works with any tag pack</p>
+                  <h4 className="text-xl sm:text-2xl font-bold text-theme-primary mb-2">Step 2: Choose Your Software Tier</h4>
+                  <p className="text-theme-tertiary text-sm">Monthly per site • Cancel anytime • Works with any tag pack</p>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {assetTagsSoftwareAddons.map((addon) => {
@@ -1374,7 +1374,7 @@ export default function AddonsSelection({
                             ? 'border-2 border-green-500/60 shadow-[0_0_20px_rgba(34,197,94,0.4)] bg-gradient-to-br from-green-500/5 to-transparent'
                             : hasPurchased
                             ? 'opacity-60 border-white/20'
-                            : 'border border-white/20 hover:border-blue-500/60 hover:shadow-[0_0_20px_rgba(59,130,246,0.25)] hover:scale-[1.01] cursor-pointer'
+                            : 'border border-white/20 hover:border-blue-500/60 hover:shadow-module-glow hover:scale-[1.01] cursor-pointer'
                         }`}
                       >
                         {isPurchased && (
@@ -1398,14 +1398,14 @@ export default function AddonsSelection({
                                 isPurchased ? 'text-green-400' : 'text-blue-400'
                               }`} />
                             </div>
-                            <h4 className="text-2xl font-bold text-white">{addon.display_name}</h4>
+                            <h4 className="text-2xl font-bold text-theme-primary">{addon.display_name}</h4>
                           </div>
-                          <p className="text-sm text-white/70 mb-4 leading-relaxed">{addon.description}</p>
+                          <p className="text-sm text-theme-secondary mb-4 leading-relaxed">{addon.description}</p>
 
                           {/* Features List */}
                           {addon.features && addon.features.length > 0 && (
                             <div className="mb-6">
-                              <p className="text-sm font-medium text-white mb-3">
+                              <p className="text-sm font-medium text-theme-primary mb-3">
                                 {addon.name.includes('professional') || addon.name.includes('business')
                                   ? addon.name.includes('business') 
                                     ? 'Everything in Professional, plus:'
@@ -1416,7 +1416,7 @@ export default function AddonsSelection({
                                 {addon.features.slice(0, 6).map((feature: string, i: number) => (
                                   <li key={i} className="flex items-start gap-2">
                                     <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                                    <span className="text-sm text-gray-300">{feature}</span>
+                                    <span className="text-sm text-theme-tertiary">{feature}</span>
                                   </li>
                                 ))}
                               </ul>
@@ -1428,17 +1428,17 @@ export default function AddonsSelection({
                             <div className="bg-gradient-to-br from-blue-500/20 to-blue-500/10 rounded-xl p-6 border-2 border-blue-500/30 text-center">
                               {addon.monthly_management_cost ? (
                                 <>
-                                  <p className="text-4xl font-bold text-white mb-2">
+                                  <p className="text-4xl font-bold text-theme-primary mb-2">
                                     £{addon.monthly_management_cost.toFixed(0)}
                                   </p>
-                                  <p className="text-sm text-white/70">per site / month</p>
+                                  <p className="text-sm text-theme-secondary">per site / month</p>
                                 </>
                               ) : addon.price ? (
                                 <>
-                                  <p className="text-4xl font-bold text-white mb-2">
+                                  <p className="text-4xl font-bold text-theme-primary mb-2">
                                     £{addon.price.toFixed(0)}
                                   </p>
-                                  <p className="text-sm text-white/70">per site / month</p>
+                                  <p className="text-sm text-theme-secondary">per site / month</p>
                                 </>
                               ) : null}
                             </div>
@@ -1471,7 +1471,7 @@ export default function AddonsSelection({
                                 handlePurchaseAddon(addon.id, addon.name, 1);
                               }}
                               disabled={isPurchasing}
-                              className="bg-blue-500 text-white border-blue-500 hover:bg-blue-500/90 hover:shadow-[0_0_16px_rgba(59,130,246,0.6)] disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold py-3"
+                              className="bg-blue-500 text-white border-blue-500 hover:bg-module-fg/10 hover:shadow-module-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold py-3"
                             >
                               {hasPurchased ? (
                                 <>
@@ -1497,7 +1497,7 @@ export default function AddonsSelection({
           {/* Non-tiered Add-ons */}
           {filteredAddons.filter(a => !a.name.startsWith('smart_sensor_') && !a.name.startsWith('maintenance_kit_') && !a.name.startsWith('asset_tags_pack_') && !a.name.startsWith('asset_tags_software_')).length > 0 && (
           <div className="pt-6 border-t border-white/10">
-            <h3 className="text-lg font-semibold text-white mb-4">Other Add-ons</h3>
+            <h3 className="text-lg font-semibold text-theme-primary mb-4">Other Add-ons</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredAddons
                 .filter(a => !a.name.startsWith('smart_sensor_') && !a.name.startsWith('maintenance_kit_') && !a.name.startsWith('asset_tags_pack_') && !a.name.startsWith('asset_tags_software_'))
@@ -1511,25 +1511,25 @@ export default function AddonsSelection({
                       className={`flex flex-col min-h-[300px] ${
                         isPurchased
                           ? 'border-green-500/50'
-                          : 'hover:border-[#D37E91]/50 hover:shadow-[0_0_12px_rgba(211,126,145,0.2)]'
+                          : 'hover:border-[#D37E91]/50 hover:shadow-module-glow'
                       }`}
                     >
                       <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
-                          <h4 className="text-lg font-semibold text-white">{addon.display_name}</h4>
+                          <h4 className="text-lg font-semibold text-theme-primary">{addon.display_name}</h4>
                           {isPurchased && (
                             <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">
                               Purchased
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-white/60 mb-4">{addon.description}</p>
+                        <p className="text-sm text-theme-tertiary mb-4">{addon.description}</p>
 
                         <div className="mb-4">
                           <p className="text-2xl font-bold text-[#D37E91] mb-1">
                             {getAddonPrice(addon, 1)}
                           </p>
-                          <p className="text-xs text-white/60">{getAddonPriceDescription(addon, 1)}</p>
+                          <p className="text-xs text-theme-tertiary">{getAddonPriceDescription(addon, 1)}</p>
                         </div>
 
                         {addon.features.length > 0 && (
@@ -1537,7 +1537,7 @@ export default function AddonsSelection({
                             {addon.features.slice(0, 3).map((feature, i) => (
                               <li key={i} className="flex items-start gap-2">
                                 <CheckCircle2 className="w-3.5 h-3.5 text-green-400 mt-0.5 flex-shrink-0" />
-                                <span className="text-xs text-white/70">{feature}</span>
+                                <span className="text-xs text-theme-secondary">{feature}</span>
                               </li>
                             ))}
                           </ul>
@@ -1559,7 +1559,7 @@ export default function AddonsSelection({
                             variant="outline"
                             fullWidth
                             onClick={() => handlePurchaseAddon(addon.id, addon.name, 1)}
-                            className="border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)]"
+                            className="border-[#D37E91] text-[#D37E91] hover:shadow-module-glow"
                           >
                             <Plus className="w-4 h-4 mr-2" />
                             Add to Plan

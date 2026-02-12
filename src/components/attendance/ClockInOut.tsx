@@ -213,7 +213,7 @@ export default function ClockInOut() {
   if (loading) {
     return (
       <div className="bg-white/[0.03] border border-white/[0.1] rounded-xl p-6">
-        <div className="flex items-center gap-3 text-white/60">
+        <div className="flex items-center gap-3 text-theme-tertiary">
           <Clock className="w-5 h-5 animate-spin" />
           <span className="text-sm">Loading shift status...</span>
         </div>
@@ -233,17 +233,17 @@ export default function ClockInOut() {
           <div className="flex items-center gap-3">
             <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
             <div>
-              <h3 className="text-white font-semibold">On Shift</h3>
-              <p className="text-white/60 text-sm">
+              <h3 className="text-theme-primary font-semibold">On Shift</h3>
+              <p className="text-theme-tertiary text-sm">
                 {shiftStatus.siteName || 'Unknown Site'}
               </p>
             </div>
           </div>
           <div className="text-right">
-            <div className="text-white font-mono text-lg">
+            <div className="text-theme-primary font-mono text-lg">
               {formatHours(shiftStatus.hoursOnShift)}
             </div>
-            <p className="text-white/60 text-xs">Time on shift</p>
+            <p className="text-theme-tertiary text-xs">Time on shift</p>
           </div>
         </div>
 
@@ -253,7 +253,7 @@ export default function ClockInOut() {
               value={shiftNotes}
               onChange={(e) => setShiftNotes(e.target.value)}
               placeholder="Add handover notes (optional)..."
-              className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-white text-sm placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+              className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-theme-primary text-sm placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
               rows={3}
             />
             <div className="flex gap-2">
@@ -305,8 +305,8 @@ export default function ClockInOut() {
       <div className="flex items-center gap-3">
         <div className="w-3 h-3 bg-white/20 rounded-full" />
         <div>
-          <h3 className="text-white font-semibold">Clock In</h3>
-          <p className="text-white/60 text-sm">
+          <h3 className="text-theme-primary font-semibold">Clock In</h3>
+          <p className="text-theme-tertiary text-sm">
             Select a site to start your shift
           </p>
         </div>
@@ -314,7 +314,7 @@ export default function ClockInOut() {
 
       <div className="space-y-3">
         <div>
-          <label className="block text-sm text-white/80 mb-2">Site</label>
+          <label className="block text-sm text-theme-secondary mb-2">Site</label>
           <SiteSelector
             value={selectedSiteId}
             onChange={(siteId) => {

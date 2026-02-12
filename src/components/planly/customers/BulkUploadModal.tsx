@@ -90,9 +90,9 @@ export function BulkUploadModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col bg-white dark:bg-[#0F1629] border-gray-200 dark:border-white/10">
+      <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col bg-white dark:bg-[#0F1629] border-theme">
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle className="text-gray-900 dark:text-white">
+          <DialogTitle className="text-theme-primary">
             Bulk Upload Customers
           </DialogTitle>
         </DialogHeader>
@@ -223,7 +223,7 @@ function UploadStep({
       {/* Download Template Button */}
       <Button
         variant="outline"
-        className="w-full border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5"
+        className="w-full border-theme text-theme-secondary hover:bg-theme-hover"
         onClick={downloadCSVTemplate}
       >
         <Download className="w-4 h-4 mr-2" />
@@ -258,11 +258,11 @@ function UploadStep({
           handleFileUpload(f);
         }}
       >
-        <FileSpreadsheet className="w-12 h-12 mx-auto mb-4 text-gray-400 dark:text-white/40" />
-        <h3 className="font-medium mb-2 text-gray-900 dark:text-white">
+        <FileSpreadsheet className="w-12 h-12 mx-auto mb-4 text-theme-tertiary" />
+        <h3 className="font-medium mb-2 text-theme-primary">
           Drop your CSV file here
         </h3>
-        <p className="text-sm text-gray-500 dark:text-white/60 mb-4">
+        <p className="text-sm text-theme-tertiary mb-4">
           or click to browse
         </p>
 
@@ -279,7 +279,7 @@ function UploadStep({
 
         <Button
           variant="outline"
-          className="border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5"
+          className="border-theme text-theme-secondary hover:bg-theme-hover"
           onClick={() => document.getElementById('file-upload')?.click()}
         >
           Select File
@@ -315,9 +315,9 @@ function PreviewStep({
     <div className="space-y-4 p-1">
       {/* Summary */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg p-4">
-          <p className="text-sm text-gray-500 dark:text-white/60">Total Rows</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="bg-theme-button border border-theme rounded-lg p-4">
+          <p className="text-sm text-theme-tertiary">Total Rows</p>
+          <p className="text-2xl font-bold text-theme-primary">
             {data.length}
           </p>
         </div>
@@ -338,27 +338,27 @@ function PreviewStep({
       </div>
 
       {/* Preview Table */}
-      <div className="border border-gray-200 dark:border-white/10 rounded-lg overflow-hidden">
+      <div className="border border-theme rounded-lg overflow-hidden">
         <div className="max-h-72 overflow-y-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-white/5 sticky top-0">
+            <thead className="bg-theme-button sticky top-0">
               <tr>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-white/60">
+                <th className="px-4 py-2 text-left text-xs font-medium text-theme-tertiary">
                   Status
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-white/60">
+                <th className="px-4 py-2 text-left text-xs font-medium text-theme-tertiary">
                   Customer Name
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-white/60">
+                <th className="px-4 py-2 text-left text-xs font-medium text-theme-tertiary">
                   Address
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-white/60">
+                <th className="px-4 py-2 text-left text-xs font-medium text-theme-tertiary">
                   Contact
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-white/60">
+                <th className="px-4 py-2 text-left text-xs font-medium text-theme-tertiary">
                   Email
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-white/60">
+                <th className="px-4 py-2 text-left text-xs font-medium text-theme-tertiary">
                   Destination
                 </th>
               </tr>
@@ -378,7 +378,7 @@ function PreviewStep({
                   <tr
                     key={idx}
                     className={cn(
-                      'border-t border-gray-200 dark:border-white/10',
+                      'border-t border-theme',
                       !validation?.isValid && 'bg-red-50 dark:bg-red-500/10'
                     )}
                   >
@@ -388,22 +388,22 @@ function PreviewStep({
                       ) : (
                         <div className="group relative">
                           <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 cursor-help" />
-                          <div className="absolute left-0 bottom-full mb-1 hidden group-hover:block z-10 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs rounded px-2 py-1 whitespace-nowrap">
+                          <div className="absolute left-0 bottom-full mb-1 hidden group-hover:block z-10 bg-gray-900 dark:bg-white text-theme-primary dark:text-gray-900 text-xs rounded px-2 py-1 whitespace-nowrap">
                             {validation?.errors.join(', ')}
                           </div>
                         </div>
                       )}
                     </td>
-                    <td className="px-4 py-2 text-sm text-gray-900 dark:text-white">
+                    <td className="px-4 py-2 text-sm text-theme-primary">
                       {row['Customer Name']}
                     </td>
-                    <td className="px-4 py-2 text-sm text-gray-600 dark:text-white/70">
+                    <td className="px-4 py-2 text-sm text-theme-secondary">
                       {row['Address']}
                     </td>
-                    <td className="px-4 py-2 text-sm text-gray-600 dark:text-white/70">
+                    <td className="px-4 py-2 text-sm text-theme-secondary">
                       {row['Contact Name']}
                     </td>
-                    <td className="px-4 py-2 text-sm text-gray-600 dark:text-white/70">
+                    <td className="px-4 py-2 text-sm text-theme-secondary">
                       {row['Email']}
                     </td>
                     <td className="px-4 py-2 text-sm">
@@ -445,7 +445,7 @@ function PreviewStep({
         <Button
           variant="outline"
           onClick={onBack}
-          className="border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5"
+          className="border-theme text-theme-secondary hover:bg-theme-hover"
         >
           Back
         </Button>
@@ -469,10 +469,10 @@ function ProcessingStep() {
   return (
     <div className="flex flex-col items-center justify-center py-16">
       <Loader2 className="w-12 h-12 text-[#14B8A6] animate-spin mb-4" />
-      <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+      <h3 className="text-lg font-medium text-theme-primary mb-2">
         Importing customers...
       </h3>
-      <p className="text-sm text-gray-500 dark:text-white/60">
+      <p className="text-sm text-theme-tertiary">
         This may take a moment
       </p>
     </div>
@@ -496,7 +496,7 @@ function CompleteStep({
         <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
       </div>
 
-      <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+      <h3 className="text-lg font-medium text-theme-primary mb-2">
         Import Complete
       </h3>
 

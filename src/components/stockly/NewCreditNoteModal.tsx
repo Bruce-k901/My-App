@@ -430,7 +430,7 @@ export function NewCreditNoteModal({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-white">New Credit Note Request</DialogTitle>
+          <DialogTitle className="text-xl font-semibold text-theme-primary">New Credit Note Request</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 mt-4">
@@ -438,7 +438,7 @@ export function NewCreditNoteModal({
           <div className="space-y-4 pb-6 border-b border-gray-200 dark:border-neutral-800">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Supplier <span className="text-red-400">*</span>
                 </label>
                 <Select
@@ -456,7 +456,7 @@ export function NewCreditNoteModal({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Request Date</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">Request Date</label>
                 <Input
                   type="date"
                   value={formData.request_date}
@@ -467,7 +467,7 @@ export function NewCreditNoteModal({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Link to Delivery (Optional)</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-2">Link to Delivery (Optional)</label>
               <Select
                 value={formData.delivery_id}
                 onValueChange={(val) => setFormData(prev => ({ ...prev, delivery_id: val }))}
@@ -482,8 +482,8 @@ export function NewCreditNoteModal({
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
               <div>
-                <h3 className="text-lg font-semibold text-white">Line Items</h3>
-                <p className="text-xs text-slate-400 mt-1">Add items to request credit for</p>
+                <h3 className="text-lg font-semibold text-theme-primary">Line Items</h3>
+                <p className="text-xs text-theme-tertiary mt-1">Add items to request credit for</p>
               </div>
               <Button
                 onClick={addLineItem}
@@ -498,8 +498,8 @@ export function NewCreditNoteModal({
 
             {formData.lines.length === 0 ? (
               <div className="bg-white/[0.03] border border-gray-200 dark:border-neutral-800 rounded-lg p-10 text-center">
-                <p className="text-slate-400 text-base">No line items added yet</p>
-                <p className="text-sm text-slate-500 mt-3">
+                <p className="text-theme-tertiary text-base">No line items added yet</p>
+                <p className="text-sm text-theme-tertiary mt-3">
                   {!formData.supplier_id
                     ? 'Select a supplier first'
                     : 'Click "Add Line Item" to get started'}
@@ -516,10 +516,10 @@ export function NewCreditNoteModal({
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
                       {/* Item Search */}
                       <div className="md:col-span-5">
-                        <label className="block text-xs font-medium text-slate-300 mb-2">Item</label>
+                        <label className="block text-xs font-medium text-theme-secondary mb-2">Item</label>
                         {searchingLineIndex === index ? (
                           <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-tertiary" size={16} />
                             <Input
                               placeholder="Search items..."
                               value={searchTerm}
@@ -532,16 +532,16 @@ export function NewCreditNoteModal({
                               className="pl-10"
                               autoFocus
                             />
-                            <div className="absolute z-10 w-full mt-1 bg-neutral-900 border border-neutral-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                            <div className="absolute z-10 w-full mt-1 bg-neutral-900 border border-theme rounded-lg shadow-lg max-h-60 overflow-y-auto">
                               {filteredProductVariants.map((variant) => (
                                 <button
                                   key={variant.id}
                                   onClick={() => selectProductVariant(index, variant)}
                                   className="w-full text-left p-3 hover:bg-white/[0.05] border-b border-gray-200 dark:border-neutral-800 last:border-b-0"
                                 >
-                                  <div className="font-medium text-white">{variant.product_name}</div>
+                                  <div className="font-medium text-theme-primary">{variant.product_name}</div>
                                   {variant.supplier_code && (
-                                    <div className="text-xs text-slate-400">Code: {variant.supplier_code}</div>
+                                    <div className="text-xs text-theme-tertiary">Code: {variant.supplier_code}</div>
                                   )}
                                 </button>
                               ))}
@@ -551,8 +551,8 @@ export function NewCreditNoteModal({
                                   onClick={() => selectStockItem(index, item)}
                                   className="w-full text-left p-3 hover:bg-white/[0.05] border-b border-gray-200 dark:border-neutral-800 last:border-b-0"
                                 >
-                                  <div className="font-medium text-white">{item.name}</div>
-                                  <div className="text-xs text-slate-400">Stock Item</div>
+                                  <div className="font-medium text-theme-primary">{item.name}</div>
+                                  <div className="text-xs text-theme-tertiary">Stock Item</div>
                                 </button>
                               ))}
                             </div>
@@ -561,7 +561,7 @@ export function NewCreditNoteModal({
                                 setSearchingLineIndex(null);
                                 setSearchTerm('');
                               }}
-                              className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                              className="absolute right-2 top-1/2 -translate-y-1/2 text-theme-tertiary hover:text-white"
                             >
                               <X size={16} />
                             </button>
@@ -586,7 +586,7 @@ export function NewCreditNoteModal({
 
                       {/* Quantity */}
                       <div className="md:col-span-2">
-                        <label className="block text-xs font-medium text-slate-300 mb-2">Quantity</label>
+                        <label className="block text-xs font-medium text-theme-secondary mb-2">Quantity</label>
                         <Input
                           type="number"
                           step="0.001"
@@ -599,7 +599,7 @@ export function NewCreditNoteModal({
 
                       {/* Unit Price */}
                       <div className="md:col-span-2">
-                        <label className="block text-xs font-medium text-slate-300 mb-2">Unit Price</label>
+                        <label className="block text-xs font-medium text-theme-secondary mb-2">Unit Price</label>
                         <Input
                           type="number"
                           step="0.01"
@@ -612,7 +612,7 @@ export function NewCreditNoteModal({
 
                       {/* VAT Rate */}
                       <div className="md:col-span-1">
-                        <label className="block text-xs font-medium text-slate-300 mb-2">VAT</label>
+                        <label className="block text-xs font-medium text-theme-secondary mb-2">VAT</label>
                         <Select
                           value={line.vat_rate?.toString() || '0'}
                           onValueChange={(val) => updateLineItem(index, 'vat_rate', parseFloat(val))}
@@ -626,7 +626,7 @@ export function NewCreditNoteModal({
 
                       {/* Reason */}
                       <div className="md:col-span-2">
-                        <label className="block text-xs font-medium text-slate-300 mb-2">Reason</label>
+                        <label className="block text-xs font-medium text-theme-secondary mb-2">Reason</label>
                         <Select
                           value={line.reason}
                           onValueChange={(val) => updateLineItem(index, 'reason', val)}
@@ -640,7 +640,7 @@ export function NewCreditNoteModal({
                         <button
                           onClick={() => removeLineItem(index)}
                           disabled={saving}
-                          className="p-2 text-slate-400 hover:text-red-400 transition-colors disabled:opacity-50"
+                          className="p-2 text-theme-tertiary hover:text-red-400 transition-colors disabled:opacity-50"
                           title="Remove line"
                         >
                           <Trash2 size={18} />
@@ -652,18 +652,18 @@ export function NewCreditNoteModal({
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start mt-4">
                       {/* Line Total Display */}
                       <div className="md:col-span-4">
-                        <label className="block text-xs font-medium text-slate-300 mb-2">Line Total</label>
-                        <div className="h-10 flex items-center px-3 bg-white/[0.05] border border-neutral-700 rounded text-white font-medium text-sm">
+                        <label className="block text-xs font-medium text-theme-secondary mb-2">Line Total</label>
+                        <div className="h-10 flex items-center px-3 bg-white/[0.05] border border-theme rounded text-theme-primary font-medium text-sm">
                           {formatCurrency((line.quantity * line.unit_price) * (1 + line.vat_rate / 100))}
                         </div>
-                        <div className="text-xs text-slate-500 mt-1.5">
+                        <div className="text-xs text-theme-tertiary mt-1.5">
                           Ex-VAT: {formatCurrency(line.quantity * line.unit_price)} | VAT: {formatCurrency((line.quantity * line.unit_price) * line.vat_rate / 100)}
                         </div>
                       </div>
 
                       {/* Notes */}
                       <div className="md:col-span-8">
-                        <label className="block text-xs font-medium text-slate-300 mb-2">Notes</label>
+                        <label className="block text-xs font-medium text-theme-secondary mb-2">Notes</label>
                         <Input
                           value={line.notes || ''}
                           onChange={(e) => updateLineItem(index, 'notes', e.target.value)}
@@ -683,15 +683,15 @@ export function NewCreditNoteModal({
             <div className="bg-white/[0.05] border border-gray-200 dark:border-neutral-800 rounded-lg p-4">
               <div className="flex justify-end">
                 <div className="w-full md:w-64 space-y-2">
-                  <div className="flex justify-between text-slate-300">
+                  <div className="flex justify-between text-theme-secondary">
                     <span>Subtotal (Ex-VAT):</span>
                     <span className="font-medium">{formatCurrency(formData.subtotal)}</span>
                   </div>
-                  <div className="flex justify-between text-slate-300">
+                  <div className="flex justify-between text-theme-secondary">
                     <span>VAT:</span>
                     <span className="font-medium">{formatCurrency(formData.vat)}</span>
                   </div>
-                  <div className="border-t border-neutral-700 pt-2 flex justify-between text-white">
+                  <div className="border-t border-theme pt-2 flex justify-between text-theme-primary">
                     <span className="font-semibold">Total:</span>
                     <span className="font-bold text-lg">{formatCurrency(formData.total)}</span>
                   </div>

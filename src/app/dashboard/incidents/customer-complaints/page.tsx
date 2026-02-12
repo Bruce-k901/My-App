@@ -194,7 +194,7 @@ export default function CustomerComplaintsPage() {
       case 'near_miss':
         return 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-500/40';
       default:
-        return 'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-500/40';
+        return 'bg-gray-50 dark:bg-theme-surface-elevated0/20 text-theme-secondary border-gray-200 dark:border-gray-500/40';
     }
   };
 
@@ -207,9 +207,9 @@ export default function CustomerComplaintsPage() {
       case 'resolved':
         return 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-300 border-green-200 dark:border-green-500/40';
       case 'closed':
-        return 'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-500/40';
+        return 'bg-gray-50 dark:bg-theme-surface-elevated0/20 text-theme-secondary border-gray-200 dark:border-gray-500/40';
       default:
-        return 'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-500/40';
+        return 'bg-gray-50 dark:bg-theme-surface-elevated0/20 text-theme-secondary border-gray-200 dark:border-gray-500/40';
     }
   };
 
@@ -219,11 +219,11 @@ export default function CustomerComplaintsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-theme-primary mb-2 flex items-center gap-3">
               <AlertTriangle className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
               Customer Complaints
             </h1>
-            <p className="text-gray-600 dark:text-white/60">Track and manage customer complaints and feedback</p>
+            <p className="text-theme-secondary">Track and manage customer complaints and feedback</p>
           </div>
           <Button
             onClick={() => setIsIncidentModalOpen(true)}
@@ -235,17 +235,17 @@ export default function CustomerComplaintsPage() {
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-4 mb-6">
+        <div className="bg-theme-surface border border-theme rounded-lg p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-theme-tertiary" />
               <input
                 type="text"
                 placeholder="Search complaints..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full pl-10 pr-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] dark:focus:ring-module-fg"
               />
             </div>
 
@@ -289,13 +289,13 @@ export default function CustomerComplaintsPage() {
         {/* Complaints List */}
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-white/60">Loading complaints...</p>
+            <p className="text-theme-secondary">Loading complaints...</p>
           </div>
         ) : filteredComplaints.length === 0 ? (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-12 text-center">
+          <div className="bg-theme-surface border border-theme rounded-lg p-12 text-center">
             <AlertTriangle className="w-16 h-16 text-gray-300 dark:text-white/20 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No customer complaints found</h3>
-            <p className="text-gray-600 dark:text-white/60 mb-6">
+            <h3 className="text-xl font-semibold text-theme-primary mb-2">No customer complaints found</h3>
+            <p className="text-theme-secondary mb-6">
               {searchTerm || statusFilter !== 'all' || severityFilter !== 'all'
                 ? 'Try adjusting your filters'
                 : 'No customer complaints have been logged yet'}
@@ -315,13 +315,13 @@ export default function CustomerComplaintsPage() {
             {filteredComplaints.map((complaint) => (
               <div
                 key={complaint.id}
-                className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-6 hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
+                className="bg-theme-surface border border-theme rounded-lg p-6 hover:bg-theme-hover transition-colors"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{complaint.title}</h3>
-                    <p className="text-gray-700 dark:text-white/70 text-sm mb-3">{complaint.description}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-white/50">
+                    <h3 className="text-lg font-semibold text-theme-primary mb-2">{complaint.title}</h3>
+                    <p className="text-theme-secondary text-sm mb-3">{complaint.description}</p>
+                    <div className="flex items-center gap-4 text-sm text-theme-secondary/50">
                       <span>Reported by: {complaint.reported_by}</span>
                       <span>•</span>
                       <span>{new Date(complaint.reported_date || complaint.reported_at).toLocaleDateString()}</span>
@@ -342,7 +342,7 @@ export default function CustomerComplaintsPage() {
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 pt-4 border-t border-gray-200 dark:border-white/10">
+                <div className="flex items-center gap-2 pt-4 border-t border-theme">
                   <Button
                     onClick={() => {
                       setViewingComplaint(complaint);
@@ -350,7 +350,7 @@ export default function CustomerComplaintsPage() {
                     }}
                     variant="outline"
                     size="sm"
-                    className="text-gray-700 dark:text-white border-gray-300 dark:border-white/20 hover:bg-gray-100 dark:hover:bg-white/10"
+                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted"
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     View Report
@@ -367,7 +367,7 @@ export default function CustomerComplaintsPage() {
                     }}
                     variant="outline"
                     size="sm"
-                    className="text-gray-700 dark:text-white border-gray-300 dark:border-white/20 hover:bg-gray-100 dark:hover:bg-white/10"
+                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Download

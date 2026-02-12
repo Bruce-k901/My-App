@@ -208,7 +208,7 @@ export default function OrganizationSitesPage() {
   // Early returns ONLY AFTER all hooks
   if (ctxLoading) {
     console.log('Context loading:', ctxLoading, 'Profile:', profile);
-    return <div className="text-gray-500 dark:text-slate-400">Loading context...</div>;
+ return <div className="text-gray-500 dark:text-theme-tertiary">Loading context...</div>;
   }
 
   const handleSaved = async () => {
@@ -258,12 +258,12 @@ export default function OrganizationSitesPage() {
       )}
 
       {ctxLoading || loading ? (
-        <div className="text-gray-500 dark:text-slate-400">Loading sites…</div>
+ <div className="text-gray-500 dark:text-theme-tertiary">Loading sites…</div>
       ) : filteredSites.length === 0 ? (
         searchTerm ? (
-          <p className="text-gray-500 dark:text-gray-400">No sites found matching "{searchTerm}".</p>
+          <p className="text-theme-tertiary">No sites found matching "{searchTerm}".</p>
         ) : (
-          <p className="text-gray-500 dark:text-gray-400">No sites yet. Add one to get started.</p>
+          <p className="text-theme-tertiary">No sites yet. Add one to get started.</p>
         )
       ) : (
         <div className="space-y-3 md:space-y-4">

@@ -1215,7 +1215,7 @@ export default function DailyChecklistPage() {
     if (timing.status === 'due') return 'bg-green-500/10 text-green-400 border-green-500/20'
     if (timing.status === 'pending') return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
     
-    return 'bg-gray-500/10 text-gray-400 border-gray-500/20'
+    return 'bg-theme-surface-elevated0/10 text-theme-tertiary border-gray-500/20'
   }
 
   const getStatusIcon = (task: ChecklistTaskWithTemplate) => {
@@ -1259,7 +1259,7 @@ export default function DailyChecklistPage() {
       'cleaning': 'bg-purple-500/10 text-purple-400',
       'compliance': 'bg-yellow-500/10 text-yellow-400'
     }
-    return colors[category] || 'bg-gray-500/10 text-gray-400'
+    return colors[category] || 'bg-theme-surface-elevated0/10 text-theme-tertiary'
   }
 
   return (
@@ -1267,10 +1267,10 @@ export default function DailyChecklistPage() {
       {/* Simple Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary mb-2">
           Today's Tasks
         </h1>
-        <p className="text-neutral-400 text-sm sm:text-base">
+        <p className="text-theme-tertiary text-sm sm:text-base">
           {new Date().toLocaleDateString('en-US', { 
             weekday: 'long', 
             year: 'numeric', 
@@ -1301,15 +1301,15 @@ export default function DailyChecklistPage() {
               className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium flex items-center gap-2 ${
                 showUpcoming
                   ? 'bg-orange-500/10 border-orange-500/50 text-orange-400'
-                  : 'bg-white/[0.03] border-white/[0.06] text-white/70 hover:bg-white/[0.06] hover:border-white/[0.12]'
+                  : 'bg-white/[0.03] border-white/[0.06] text-theme-secondary hover:bg-white/[0.06] hover:border-white/[0.12]'
               }`}
             >
-              <Calendar className={`h-4 w-4 ${showUpcoming ? 'text-orange-400' : 'text-white/60'}`} />
+              <Calendar className={`h-4 w-4 ${showUpcoming ? 'text-orange-400' : 'text-theme-tertiary'}`} />
               {showUpcoming ? 'Hide' : 'Show'} Upcoming
               <span className={`px-2 py-0.5 rounded-full text-xs ${
                 showUpcoming 
                   ? 'bg-orange-500/20 text-orange-300' 
-                  : 'bg-white/10 text-white/80'
+                  : 'bg-white/10 text-theme-secondary'
               }`}>
                 {upcomingTasks.length}
               </span>
@@ -1320,17 +1320,17 @@ export default function DailyChecklistPage() {
             className={`px-4 py-2 rounded-lg border transition-all text-sm font-medium flex items-center gap-2 ${
               showCompleted
                 ? 'bg-green-500/10 border-green-500/50 text-green-400'
-                : 'bg-white/[0.03] border-white/[0.06] text-white/70 hover:bg-white/[0.06] hover:border-white/[0.12]'
+                : 'bg-white/[0.03] border-white/[0.06] text-theme-secondary hover:bg-white/[0.06] hover:border-white/[0.12]'
             } ${completedTasks.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={completedTasks.length === 0}
           >
-            <CheckCircle2 className={`h-4 w-4 ${showCompleted ? 'text-green-400' : 'text-white/60'}`} />
+            <CheckCircle2 className={`h-4 w-4 ${showCompleted ? 'text-green-400' : 'text-theme-tertiary'}`} />
             {showCompleted ? 'Hide' : 'Show'} Completed
             {completedTasks.length > 0 && (
               <span className={`px-2 py-0.5 rounded-full text-xs ${
                 showCompleted 
                   ? 'bg-green-500/20 text-green-300' 
-                  : 'bg-white/10 text-white/80'
+                  : 'bg-white/10 text-theme-secondary'
               }`}>
                 {completedTasks.length}
               </span>
@@ -1342,10 +1342,10 @@ export default function DailyChecklistPage() {
       {/* Tasks List */}
       {loading ? (
         <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#D37E91]/15 mb-4">
-            <Clock className="w-8 h-8 text-[#D37E91] animate-spin" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-module-fg/[0.15] mb-4">
+            <Clock className="w-8 h-8 text-module-fg animate-spin" />
           </div>
-          <h3 className="text-xl font-semibold text-white mb-2">Loading tasks...</h3>
+          <h3 className="text-xl font-semibold text-theme-primary mb-2">Loading tasks...</h3>
         </div>
       ) : tasks.length === 0 && completedTasks.length > 0 ? (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12">
@@ -1353,11 +1353,11 @@ export default function DailyChecklistPage() {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-500/10 mb-6">
               <CheckCircle2 className="w-10 h-10 text-green-400" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">All done for now! 🎉</h2>
-            <p className="text-white/60 text-lg mb-4">
+            <h2 className="text-2xl font-bold text-theme-primary mb-3">All done for now! 🎉</h2>
+            <p className="text-theme-tertiary text-lg mb-4">
               You've completed all your tasks for today.
             </p>
-            <p className="text-white/40 text-sm">
+            <p className="text-theme-tertiary text-sm">
               Check back later for new tasks or create a template to add more.
             </p>
           </div>
@@ -1368,11 +1368,11 @@ export default function DailyChecklistPage() {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-500/10 mb-6">
               <Calendar className="w-10 h-10 text-blue-400" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">No tasks for today</h2>
-            <p className="text-white/60 text-lg mb-4">
+            <h2 className="text-2xl font-bold text-theme-primary mb-3">No tasks for today</h2>
+            <p className="text-theme-tertiary text-lg mb-4">
               There are no tasks scheduled for today.
             </p>
-            <p className="text-white/40 text-sm">
+            <p className="text-theme-tertiary text-sm">
               Check back later or create a template to add tasks.
             </p>
           </div>
@@ -1404,7 +1404,7 @@ export default function DailyChecklistPage() {
       {/* Upcoming Callout Follow-up Tasks Section */}
       {showUpcoming && upcomingTasks.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-2xl font-bold text-white mb-4">Upcoming Callout Follow-ups</h2>
+          <h2 className="text-2xl font-bold text-theme-primary mb-4">Upcoming Callout Follow-ups</h2>
           <div className="space-y-3">
             {upcomingTasks.map((task, index) => {
               // Use task.id + index for unique keys (callout follow-up tasks)
@@ -1427,7 +1427,7 @@ export default function DailyChecklistPage() {
       {/* Completed Tasks Section */}
       {showCompleted && completedTasks.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-2xl font-bold text-white mb-4">Completed Tasks</h2>
+          <h2 className="text-2xl font-bold text-theme-primary mb-4">Completed Tasks</h2>
           <div className="space-y-3">
             {completedTasks.map((task) => {
               // Use completion_record.id as key if available, otherwise use task.id + completion_record.id
@@ -1450,35 +1450,35 @@ export default function DailyChecklistPage() {
       {/* Temperature Breach Follow-up Section */}
       {breachActions.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-2xl font-bold text-white mb-4">Temperature Breach Follow-ups</h2>
+          <h2 className="text-2xl font-bold text-theme-primary mb-4">Temperature Breach Follow-ups</h2>
           <div className="space-y-3">
             {breachActions.map((action) => {
               const log = action.temperature_log
               const evaluation = log?.meta?.evaluation
               return (
-                <div key={action.id} className="border border-white/10 rounded-lg p-3 text-sm text-white/70">
+                <div key={action.id} className="border border-white/10 rounded-lg p-3 text-sm text-theme-secondary">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="font-semibold text-white">
+                    <div className="font-semibold text-theme-primary">
                       {action.action_type === 'monitor' ? 'Monitor temperature' : 'Callout contractor'}
                     </div>
-                    <div className="text-xs text-white/50">
+                    <div className="text-xs text-theme-tertiary">
                       Created {new Date(action.created_at).toLocaleString()}
                     </div>
                   </div>
-                  <div className="mt-2 text-xs text-white/60 space-x-3">
-                    <span>Status: <span className="text-white/80">{action.status}</span></span>
+                  <div className="mt-2 text-xs text-theme-tertiary space-x-3">
+                    <span>Status: <span className="text-theme-secondary">{action.status}</span></span>
                     {action.due_at && (
-                      <span>Due: <span className="text-white/80">{new Date(action.due_at).toLocaleString()}</span></span>
+                      <span>Due: <span className="text-theme-secondary">{new Date(action.due_at).toLocaleString()}</span></span>
                     )}
                     {log?.recorded_at && (
-                      <span>Reading taken: <span className="text-white/80">{new Date(log.recorded_at).toLocaleString()}</span></span>
+                      <span>Reading taken: <span className="text-theme-secondary">{new Date(log.recorded_at).toLocaleString()}</span></span>
                     )}
                   </div>
                   {evaluation?.reason && (
-                    <p className="mt-2 text-xs text-white/60">Reason: {evaluation.reason}</p>
+                    <p className="mt-2 text-xs text-theme-tertiary">Reason: {evaluation.reason}</p>
                   )}
                   {action.notes && (
-                    <p className="mt-2 text-xs text-white/60">Notes: {action.notes}</p>
+                    <p className="mt-2 text-xs text-theme-tertiary">Notes: {action.notes}</p>
                   )}
                 </div>
               )

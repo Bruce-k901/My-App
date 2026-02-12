@@ -1241,11 +1241,11 @@ export default function ReviewCountItemsPage() {
           }}
           className={`w-full h-6 flex items-center justify-center rounded border ${
             hasFilter 
-              ? 'bg-emerald-100 dark:bg-emerald-600/20 border-emerald-300 dark:border-emerald-500' 
-              : 'bg-white dark:bg-white/[0.05] border-gray-200 dark:border-white/[0.06]'
+              ? 'bg-module-fg/10 border-emerald-300 dark:border-emerald-500' 
+ :'bg-theme-surface ] border-theme'
           } hover:bg-gray-50 dark:hover:bg-white/[0.08] transition-colors`}
         >
-          <Filter className={`h-3 w-3 ${hasFilter ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 dark:text-gray-500'}`} />
+          <Filter className={`h-3 w-3 ${hasFilter ? 'text-module-fg' : 'text-theme-tertiary'}`} />
         </button>
 
         {isOpen && (
@@ -1267,7 +1267,7 @@ export default function ReviewCountItemsPage() {
               }}
             />
             <div 
-              className="filter-dropdown-content absolute top-full left-0 mt-1 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-white/[0.06] rounded-lg shadow-lg z-[100] max-h-96 overflow-y-auto"
+              className="filter-dropdown-content absolute top-full left-0 mt-1 w-64 bg-white dark:bg-gray-800 border border-theme rounded-lg shadow-lg z-[100] max-h-96 overflow-y-auto"
               onMouseDown={(e) => e.stopPropagation()}
               onClick={(e) => e.stopPropagation()}
             >
@@ -1363,7 +1363,7 @@ export default function ReviewCountItemsPage() {
                         return (
                           <label
                             key={value}
-                            className="flex items-center gap-2 px-2 py-1 hover:bg-gray-50 dark:hover:bg-white/[0.05] cursor-pointer rounded"
+                            className="flex items-center gap-2 px-2 py-1 hover:bg-theme-hover cursor-pointer rounded"
                           >
                             <input
                               type="checkbox"
@@ -1380,17 +1380,17 @@ export default function ReviewCountItemsPage() {
                               }}
                               className="rounded border-gray-300 dark:border-white/[0.2]"
                             />
-                            <span className="text-sm text-gray-700 dark:text-gray-300 flex-1 truncate">{value}</span>
+                            <span className="text-sm text-theme-secondary flex-1 truncate">{value}</span>
                           </label>
                         );
                       })}
                       {uniqueValues.length === 0 && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 px-2">No values found</p>
+                        <p className="text-xs text-theme-tertiary px-2">No values found</p>
                       )}
                     </div>
                   </>
                 )}
-                <div className="flex gap-2 pt-2 border-t border-gray-200 dark:border-white/[0.06]">
+                <div className="flex gap-2 pt-2 border-t border-theme">
                   <Button
                     variant="outline"
                     size="sm"
@@ -1430,8 +1430,8 @@ export default function ReviewCountItemsPage() {
     
     return (
       <th 
-        className={`px-2 py-2 text-center text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider ${
-          isSticky ? 'sticky left-0 z-[3] bg-gray-50 dark:bg-white/[0.05] shadow-[4px_0_6px_rgba(0,0,0,0.15)] min-w-[150px] border-r-2 border-gray-200 dark:border-white/[0.1]' : 'z-[1]'
+        className={`px-2 py-2 text-center text-[10px] font-semibold text-theme-secondary uppercase tracking-wider ${
+          isSticky ? 'sticky left-0 z-[3] bg-theme-button shadow-[4px_0_6px_rgba(0,0,0,0.15)] min-w-[150px] border-r-2 border-theme' : 'z-[1]'
         }`}
       >
         <div className="flex flex-col items-center gap-1">
@@ -1443,12 +1443,12 @@ export default function ReviewCountItemsPage() {
             <span className="truncate">{label}</span>
             {isSorted ? (
               sortDirection === 'asc' ? (
-                <ArrowUp className="h-2.5 w-2.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                <ArrowUp className="h-2.5 w-2.5 text-module-fg flex-shrink-0" />
               ) : (
-                <ArrowDown className="h-2.5 w-2.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                <ArrowDown className="h-2.5 w-2.5 text-module-fg flex-shrink-0" />
               )
             ) : (
-              <ArrowUpDown className="h-2.5 w-2.5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+              <ArrowUpDown className="h-2.5 w-2.5 text-theme-tertiary flex-shrink-0" />
             )}
           </div>
           {/* Filter button below */}
@@ -1462,22 +1462,22 @@ export default function ReviewCountItemsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-[#0B0D13]">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-600 dark:text-emerald-400" />
+      <div className="flex items-center justify-center h-screen bg-theme-surface-elevated">
+        <Loader2 className="h-8 w-8 animate-spin text-module-fg" />
       </div>
     );
   }
 
   if (!count) {
     return (
-      <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+      <div className="w-full bg-theme-surface-elevated min-h-screen">
         <div className="container mx-auto py-8 px-4 max-w-7xl">
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">Stock count not found</p>
+            <p className="text-theme-secondary">Stock count not found</p>
             <Button
               variant="outline"
               onClick={() => router.push('/dashboard/stockly/stock-counts')}
-              className="mt-4 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="mt-4 border-theme text-theme-secondary hover:bg-theme-hover"
             >
               Back to Counts
             </Button>
@@ -1496,20 +1496,20 @@ export default function ReviewCountItemsPage() {
       }}
     >
       {/* FIXED HEADER - Never scrolls */}
-      <div className="flex-shrink-0 bg-white dark:bg-[#0a0a0a] border-b border-gray-200 dark:border-white/[0.06] px-6 py-4 space-y-4">
+      <div className="flex-shrink-0 bg-white dark:bg-[#0a0a0a] border-b border-theme px-6 py-4 space-y-4">
         {/* Back button, title, and action buttons */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 flex-1 min-w-0">
             <Button
               variant="ghost"
               onClick={() => router.push('/dashboard/stockly/stock-counts')}
-              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex-shrink-0"
+              className="text-theme-secondary hover:text-theme-primary flex-shrink-0"
             >
               <ChevronLeft className="mr-2 h-4 w-4" />
               Back
             </Button>
             <div className="flex items-center gap-3 flex-shrink-0 min-w-0">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white min-w-0 truncate">
+              <h1 className="text-xl font-bold text-theme-primary min-w-0 truncate">
                 {count?.name}
               </h1>
               {count?.status && (
@@ -1522,7 +1522,7 @@ export default function ReviewCountItemsPage() {
                     ? 'bg-red-100 dark:bg-red-600/20 text-red-800 dark:text-red-400'
                     : count.status === 'in_progress' || count.status === 'draft' || count.status === 'active'
                     ? 'bg-blue-100 dark:bg-blue-600/20 text-blue-800 dark:text-blue-400'
-                    : 'bg-gray-100 dark:bg-gray-600/20 text-gray-800 dark:text-gray-400'
+ :'bg-gray-100 dark:bg-gray-600/20 text-gray-800 dark:text-theme-tertiary'
                 }`}>
                   {count.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                 </span>
@@ -1548,7 +1548,7 @@ export default function ReviewCountItemsPage() {
               onClick={handleBackfill}
               disabled={backfilling}
               variant="outline"
-              className="border-blue-600/50 text-blue-400 hover:bg-blue-600/10 hover:border-blue-600"
+              className="border-blue-600/50 text-blue-400 hover:bg-module-fg/10 hover:border-blue-600"
               title="Update this count to work with the approval workflow"
             >
               {backfilling ? (
@@ -1572,7 +1572,7 @@ export default function ReviewCountItemsPage() {
               disabled={recalculating}
               size="sm"
               variant="outline"
-              className="border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800"
+              className="border-module-fg text-module-fg hover:bg-blue-100 dark:hover:bg-blue-800"
               title="Recalculate items_counted based on items with counted_quantity"
             >
               {recalculating ? (
@@ -1597,7 +1597,7 @@ export default function ReviewCountItemsPage() {
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 {loadingApprover && (
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Loading approver...</span>
+                  <span className="text-xs text-theme-tertiary">Loading approver...</span>
                 )}
                 {approverInfo && !loadingApprover && (
                   <div className="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-600/30 rounded text-xs">
@@ -1630,7 +1630,7 @@ export default function ReviewCountItemsPage() {
               </Button>
               </div>
               {approverInfo && !loadingApprover && (
-                <div className="text-xs text-gray-600 dark:text-gray-400 px-1">
+                <div className="text-xs text-theme-secondary px-1">
                   They will receive an in-app notification, Msgly message (from Opsly System), and a calendar task.
                 </div>
               )}
@@ -1681,7 +1681,7 @@ export default function ReviewCountItemsPage() {
                     onClick={handleApprove}
                     disabled={processing}
                     size="lg"
-                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                    className="flex-1 bg-module-fg hover:bg-module-fg/90 text-white"
                   >
                     <CheckCircle2 className="mr-2 h-5 w-5" />
                     {processing ? 'Processing...' : 'Approve'}
@@ -1708,7 +1708,7 @@ export default function ReviewCountItemsPage() {
                 onClick={handleApprove}
                 disabled={processing}
                 size="lg"
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="flex-1 bg-module-fg hover:bg-module-fg/90 text-white"
               >
                 <CheckCircle2 className="mr-2 h-5 w-5" />
                 {processing ? 'Processing...' : 'Approve'}
@@ -1737,17 +1737,17 @@ export default function ReviewCountItemsPage() {
           if (itemsWithChanges.length > 0) {
             console.log('✅ Rendering Save All button with', itemsWithChanges.length, 'items');
             return (
-              <div className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-600/30 rounded-lg px-4 py-3">
+              <div className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-600/10 border border-module-fg/30 rounded-lg px-4 py-3">
                 <div className="flex items-center gap-2">
-                  <Save className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                  <span className="text-sm font-medium text-emerald-800 dark:text-emerald-300">
+                  <Save className="h-5 w-5 text-module-fg" />
+                  <span className="text-sm font-medium text-emerald-800 dark:text-module-fg">
                     You have {itemsWithChanges.length} unsaved change{itemsWithChanges.length !== 1 ? 's' : ''}
                   </span>
                 </div>
                 <Button
                   onClick={handleSaveAll}
                   disabled={processing}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg"
+                  className="bg-module-fg hover:bg-module-fg/90 text-white shadow-lg"
                   size="lg"
                 >
                   {processing ? (
@@ -1773,12 +1773,12 @@ export default function ReviewCountItemsPage() {
           {/* Search Bar */}
           <div className="flex-1 flex gap-2 min-w-0 max-w-md">
             <div className="relative flex-1 min-w-0">
-              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
+              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-theme-tertiary" />
               <Input
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search..."
-                className="pl-8 h-9 text-sm bg-white dark:bg-white/[0.05] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+ className="pl-8 h-9 text-sm bg-theme-surface ] border-theme text-theme-primary"
               />
             </div>
             <Select
@@ -1822,7 +1822,7 @@ export default function ReviewCountItemsPage() {
               setSearchTerm('');
               setSortConfig(null);
             }}
-            className="border-gray-300 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 h-9 flex-shrink-0"
+            className="border-gray-300 dark:border-white/[0.06] text-theme-secondary hover:bg-theme-muted h-9 flex-shrink-0"
           >
             Clear
           </Button>
@@ -1830,52 +1830,52 @@ export default function ReviewCountItemsPage() {
       </div>
 
       {/* SCROLLABLE CONTENT */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50 dark:bg-[#0B0D13] min-h-0">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden bg-theme-surface-elevated min-h-0">
         <div className="p-6">
         
         {/* Variance Summary Cards */}
         {count && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-              <p className="text-gray-600 dark:text-gray-400 text-sm">Total Variance</p>
+            <div className="bg-theme-surface border border-theme rounded-lg p-4">
+              <p className="text-theme-secondary text-sm">Total Variance</p>
               <p className={`text-2xl font-bold mt-1 ${
                 overallSummary.varianceCost < 0 
                   ? 'text-red-600 dark:text-red-400' 
                   : overallSummary.varianceCost > 0
-                  ? 'text-emerald-600 dark:text-emerald-400'
-                  : 'text-gray-900 dark:text-white'
+                  ? 'text-module-fg'
+                  : 'text-theme-primary'
               }`}>
                 {overallSummary.varianceCost < 0 ? '-' : overallSummary.varianceCost > 0 ? '+' : ''}
                 £{Math.abs(overallSummary.varianceCost || 0).toFixed(2)}
               </p>
             </div>
             
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-              <p className="text-gray-600 dark:text-gray-400 text-sm">Shrinkage</p>
+            <div className="bg-theme-surface border border-theme rounded-lg p-4">
+              <p className="text-theme-secondary text-sm">Shrinkage</p>
               <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">
                 £{Math.abs(Math.min(overallSummary.varianceCost || 0, 0)).toFixed(2)}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+ <p className="text-xs text-theme-tertiary mt-1">
                 {filteredItems.filter(i => (i.variance_value || 0) < 0).length} items
               </p>
             </div>
             
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-              <p className="text-gray-600 dark:text-gray-400 text-sm">Overage</p>
-              <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+            <div className="bg-theme-surface border border-theme rounded-lg p-4">
+              <p className="text-theme-secondary text-sm">Overage</p>
+              <p className="text-2xl font-bold text-module-fg mt-1">
                 +£{Math.max(overallSummary.varianceCost || 0, 0).toFixed(2)}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+ <p className="text-xs text-theme-tertiary mt-1">
                 {filteredItems.filter(i => (i.variance_value || 0) > 0).length} items
               </p>
             </div>
             
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-              <p className="text-gray-600 dark:text-gray-400 text-sm">Items with Variance</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+            <div className="bg-theme-surface border border-theme rounded-lg p-4">
+              <p className="text-theme-secondary text-sm">Items with Variance</p>
+              <p className="text-2xl font-bold text-theme-primary mt-1">
                 {filteredItems.filter(i => Math.abs(i.variance_quantity || 0) > 0.001).length}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+ <p className="text-xs text-theme-tertiary mt-1">
                 of {filteredItems.length} total
               </p>
             </div>
@@ -1883,68 +1883,68 @@ export default function ReviewCountItemsPage() {
         )}
 
         {/* Collapsible Summary Table */}
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg mb-6 overflow-hidden">
+        <div className="bg-theme-surface border border-theme rounded-lg mb-6 overflow-hidden">
           <button
             onClick={() => setShowSummary(!showSummary)}
-            className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
+            className="w-full px-6 py-4 flex items-center justify-between hover:bg-theme-hover transition-colors"
           >
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Summary Statistics</h2>
+            <h2 className="text-lg font-semibold text-theme-primary">Summary Statistics</h2>
             {showSummary ? (
-              <ChevronUp className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              <ChevronUp className="h-5 w-5 text-theme-secondary" />
             ) : (
-              <ChevronDown className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              <ChevronDown className="h-5 w-5 text-theme-secondary" />
             )}
           </button>
 
           {showSummary && (
-            <div className="border-t border-gray-200 dark:border-white/[0.06]">
+            <div className="border-t border-theme">
               <div className="overflow-x-auto">
                 {/* Overall Totals */}
                 <div className="p-4 bg-emerald-50 dark:bg-emerald-600/10">
-                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Overall Totals</h3>
+                  <h3 className="text-sm font-semibold text-theme-secondary mb-3">Overall Totals</h3>
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-gray-200 dark:border-white/[0.06]">
-                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">Metric</th>
-                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Opening Stock</th>
-                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Purchases</th>
-                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Production</th>
-                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Sales</th>
-                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Waste</th>
-                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Closing Stock</th>
-                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Variance Units</th>
-                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Variance Cost</th>
-                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Avg % Var Units</th>
-                        <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Avg % Var Cost</th>
+                      <tr className="border-b border-theme">
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-theme-secondary">Metric</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Opening Stock</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Purchases</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Production</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Sales</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Waste</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Closing Stock</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Variance Units</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Variance Cost</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Avg % Var Units</th>
+                        <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Avg % Var Cost</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className="border-b border-gray-200 dark:border-white/[0.06]">
-                        <td className="px-4 py-2 font-medium text-gray-900 dark:text-white">Total</td>
-                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(overallSummary.openingStock)}</td>
-                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(overallSummary.purchases)}</td>
-                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(overallSummary.production)}</td>
-                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(overallSummary.sales)}</td>
-                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(overallSummary.waste)}</td>
-                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(overallSummary.closingStock)}</td>
+                      <tr className="border-b border-theme">
+                        <td className="px-4 py-2 font-medium text-theme-primary">Total</td>
+                        <td className="px-4 py-2 text-right text-theme-primary">{formatNumber(overallSummary.openingStock)}</td>
+                        <td className="px-4 py-2 text-right text-theme-primary">{formatNumber(overallSummary.purchases)}</td>
+                        <td className="px-4 py-2 text-right text-theme-primary">{formatNumber(overallSummary.production)}</td>
+                        <td className="px-4 py-2 text-right text-theme-primary">{formatNumber(overallSummary.sales)}</td>
+                        <td className="px-4 py-2 text-right text-theme-primary">{formatNumber(overallSummary.waste)}</td>
+                        <td className="px-4 py-2 text-right text-theme-primary">{formatNumber(overallSummary.closingStock)}</td>
                         <td className={`px-4 py-2 text-right font-medium ${
                           overallSummary.varianceUnits < 0 ? 'text-red-600 dark:text-red-400' : 
                           overallSummary.varianceUnits > 0 ? 'text-green-600 dark:text-green-400' : 
-                          'text-gray-900 dark:text-white'
+                          'text-theme-primary'
                         }`}>
                           {formatNumber(overallSummary.varianceUnits)}
                         </td>
                         <td className={`px-4 py-2 text-right font-medium ${
                           overallSummary.varianceCost < 0 ? 'text-red-600 dark:text-red-400' : 
                           overallSummary.varianceCost > 0 ? 'text-green-600 dark:text-green-400' : 
-                          'text-gray-900 dark:text-white'
+                          'text-theme-primary'
                         }`}>
                           {formatNumber(overallSummary.varianceCost)}
                         </td>
-                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">
+                        <td className="px-4 py-2 text-right text-theme-primary">
                           {overallSummary.avgVariancePercentUnits !== null ? `${formatNumber(overallSummary.avgVariancePercentUnits, 2)}%` : '—'}
                         </td>
-                        <td className="px-4 py-2 text-right text-gray-900 dark:text-white">
+                        <td className="px-4 py-2 text-right text-theme-primary">
                           {overallSummary.avgVariancePercentCost !== null ? `${formatNumber(overallSummary.avgVariancePercentCost, 2)}%` : '—'}
                         </td>
                       </tr>
@@ -1955,60 +1955,60 @@ export default function ReviewCountItemsPage() {
                 {/* Per-Library Summaries */}
                 {librarySummaries.length > 0 && (
                   <div className="p-4">
-                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Per-Library Summaries</h3>
+                    <h3 className="text-sm font-semibold text-theme-secondary mb-3">Per-Library Summaries</h3>
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-gray-200 dark:border-white/[0.06]">
-                          <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">Library</th>
-                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Items</th>
-                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Opening Stock</th>
-                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Purchases</th>
-                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Production</th>
-                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Sales</th>
-                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Waste</th>
-                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Closing Stock</th>
-                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Variance Units</th>
-                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Variance Cost</th>
-                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Avg % Var Units</th>
-                          <th className="px-4 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Avg % Var Cost</th>
+                        <tr className="border-b border-theme">
+                          <th className="px-4 py-2 text-left text-xs font-semibold text-theme-secondary">Library</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Items</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Opening Stock</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Purchases</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Production</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Sales</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Waste</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Closing Stock</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Variance Units</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Variance Cost</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Avg % Var Units</th>
+                          <th className="px-4 py-2 text-right text-xs font-semibold text-theme-secondary">Avg % Var Cost</th>
                         </tr>
                       </thead>
                       <tbody>
                         {librarySummaries.map((libSummary) => {
                           const Icon = getLibraryIcon(libSummary.libraryType as LibraryType);
                           return (
-                            <tr key={libSummary.libraryType} className="border-b border-gray-200 dark:border-white/[0.06] hover:bg-gray-50 dark:hover:bg-white/[0.02]">
+                            <tr key={libSummary.libraryType} className="border-b border-theme hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02]">
                               <td className="px-4 py-2">
                                 <div className="flex items-center gap-2">
-                                  <Icon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                                  <span className="font-medium text-gray-900 dark:text-white">{libSummary.libraryName}</span>
+                                  <Icon className="h-4 w-4 text-module-fg" />
+                                  <span className="font-medium text-theme-primary">{libSummary.libraryName}</span>
                                 </div>
                               </td>
-                              <td className="px-4 py-2 text-right text-gray-600 dark:text-gray-400">{libSummary.itemCount}</td>
-                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(libSummary.summary.openingStock)}</td>
-                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(libSummary.summary.purchases)}</td>
-                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(libSummary.summary.production)}</td>
-                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(libSummary.summary.sales)}</td>
-                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(libSummary.summary.waste)}</td>
-                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">{formatNumber(libSummary.summary.closingStock)}</td>
+                              <td className="px-4 py-2 text-right text-theme-secondary">{libSummary.itemCount}</td>
+                              <td className="px-4 py-2 text-right text-theme-primary">{formatNumber(libSummary.summary.openingStock)}</td>
+                              <td className="px-4 py-2 text-right text-theme-primary">{formatNumber(libSummary.summary.purchases)}</td>
+                              <td className="px-4 py-2 text-right text-theme-primary">{formatNumber(libSummary.summary.production)}</td>
+                              <td className="px-4 py-2 text-right text-theme-primary">{formatNumber(libSummary.summary.sales)}</td>
+                              <td className="px-4 py-2 text-right text-theme-primary">{formatNumber(libSummary.summary.waste)}</td>
+                              <td className="px-4 py-2 text-right text-theme-primary">{formatNumber(libSummary.summary.closingStock)}</td>
                               <td className={`px-4 py-2 text-right font-medium ${
                                 libSummary.summary.varianceUnits < 0 ? 'text-red-600 dark:text-red-400' : 
                                 libSummary.summary.varianceUnits > 0 ? 'text-green-600 dark:text-green-400' : 
-                                'text-gray-900 dark:text-white'
+                                'text-theme-primary'
                               }`}>
                                 {formatNumber(libSummary.summary.varianceUnits)}
                               </td>
                               <td className={`px-4 py-2 text-right font-medium ${
                                 libSummary.summary.varianceCost < 0 ? 'text-red-600 dark:text-red-400' : 
                                 libSummary.summary.varianceCost > 0 ? 'text-green-600 dark:text-green-400' : 
-                                'text-gray-900 dark:text-white'
+                                'text-theme-primary'
                               }`}>
                                 {formatNumber(libSummary.summary.varianceCost)}
                               </td>
-                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">
+                              <td className="px-4 py-2 text-right text-theme-primary">
                                 {libSummary.summary.avgVariancePercentUnits !== null ? `${formatNumber(libSummary.summary.avgVariancePercentUnits, 2)}%` : '—'}
                               </td>
-                              <td className="px-4 py-2 text-right text-gray-900 dark:text-white">
+                              <td className="px-4 py-2 text-right text-theme-primary">
                                 {libSummary.summary.avgVariancePercentCost !== null ? `${formatNumber(libSummary.summary.avgVariancePercentCost, 2)}%` : '—'}
                               </td>
                             </tr>
@@ -2025,8 +2025,8 @@ export default function ReviewCountItemsPage() {
 
         {/* Review Report Table - Grouped by Library */}
         {Object.entries(itemsByLibrary).length === 0 ? (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-8 text-center">
-            <p className="text-gray-500 dark:text-gray-400">No items found</p>
+          <div className="bg-theme-surface border border-theme rounded-lg p-8 text-center">
+            <p className="text-theme-tertiary">No items found</p>
           </div>
         ) : (
           Object.entries(itemsByLibrary).map(([libraryType, libraryItems]) => {
@@ -2036,15 +2036,15 @@ export default function ReviewCountItemsPage() {
             return (
               <div key={libraryType} className="mb-8">
                 {/* Library Header */}
-                <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-600/30 rounded-t-lg px-6 py-4 flex items-center gap-3">
-                  <Icon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-module-fg/30 rounded-t-lg px-6 py-4 flex items-center gap-3">
+                  <Icon className="h-5 w-5 text-module-fg" />
+                  <h2 className="text-lg font-semibold text-theme-primary">
                     {libraryName} ({libraryItems.length} items)
                   </h2>
                 </div>
 
                 {/* Split table container */}
-                <div className="flex bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] border-t-0 rounded-b-lg">
+                <div className="flex bg-theme-surface border border-theme border-t-0 rounded-b-lg">
                   
                   {/* FROZEN ITEM COLUMN */}
                   <div 
@@ -2067,7 +2067,7 @@ export default function ReviewCountItemsPage() {
                         syncingScroll.current = false;
                       });
                     }}
-                    className="flex-shrink-0 border-r-2 border-gray-200 dark:border-white/[0.1] [&::-webkit-scrollbar]:hidden"
+                    className="flex-shrink-0 border-r-2 border-theme [&::-webkit-scrollbar]:hidden"
                     style={{
                       width: '200px',
                       height: 'calc(100vh - 250px)',
@@ -2079,9 +2079,9 @@ export default function ReviewCountItemsPage() {
                     }}
                   >
                     <table style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse' }}>
-                      <thead className="sticky top-0 bg-gray-50 dark:bg-white/[0.05] z-10">
+                      <thead className="sticky top-0 bg-theme-button z-10">
                         <tr>
-                          <th className="px-3 py-3 text-left text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200 dark:border-white/[0.06]">
+                          <th className="px-3 py-3 text-left text-[10px] font-semibold text-theme-secondary uppercase tracking-wider border-b border-theme">
                             <div className="flex flex-col items-center gap-1">
                               {/* Heading with sort icon */}
                               <div 
@@ -2091,12 +2091,12 @@ export default function ReviewCountItemsPage() {
                                 <span className="truncate">Item</span>
                                 {sortConfig?.field === 'item' ? (
                                   sortConfig.direction === 'asc' ? (
-                                    <ArrowUp className="h-2.5 w-2.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                                    <ArrowUp className="h-2.5 w-2.5 text-module-fg flex-shrink-0" />
                                   ) : (
-                                    <ArrowDown className="h-2.5 w-2.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                                    <ArrowDown className="h-2.5 w-2.5 text-module-fg flex-shrink-0" />
                                   )
                                 ) : (
-                                  <ArrowUpDown className="h-2.5 w-2.5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                                  <ArrowUpDown className="h-2.5 w-2.5 text-theme-tertiary flex-shrink-0" />
                                 )}
                               </div>
                               {/* Filter button below */}
@@ -2115,13 +2115,13 @@ export default function ReviewCountItemsPage() {
                           return (
                             <tr
                               key={item.id}
-                              className={`border-b border-gray-200 dark:border-white/[0.06] ${
+                              className={`border-b border-theme ${
                                 isEditing
                                   ? 'bg-blue-50 dark:bg-blue-500/10'
-                                  : 'hover:bg-gray-50 dark:hover:bg-white/[0.02]'
+                                  : 'hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02]'
                               }`}
                             >
-                              <td className="px-3 py-2.5 text-xs text-gray-900 dark:text-white font-medium" style={{ height: '45px' }}>
+                              <td className="px-3 py-2.5 text-xs text-theme-primary font-medium" style={{ height: '45px' }}>
                                 <div className="line-clamp-2 leading-tight">
                                   {item.ingredient?.name || 'Unknown'}
                                 </div>
@@ -2163,8 +2163,8 @@ export default function ReviewCountItemsPage() {
                     }}
                   >
                     <table style={{ width: '100%', minWidth: 'max-content', tableLayout: 'auto', borderCollapse: 'collapse' }}>
-                      <thead className="sticky top-0 bg-gray-50 dark:bg-white/[0.05] z-10">
-                        <tr className="border-b border-gray-200 dark:border-white/[0.06]">
+                      <thead className="sticky top-0 bg-theme-button z-10">
+                        <tr className="border-b border-theme">
                           {renderSortableHeader('supplier', 'Supplier', 'left', false, false, false)}
                           {renderSortableHeader('measurement', 'Measurement', 'left', false, false, false)}
                           {renderSortableHeader('openingStock', 'Opening', 'right', true, false, false)}
@@ -2179,14 +2179,14 @@ export default function ReviewCountItemsPage() {
                           {renderSortableHeader('variancePercentCost', '% Var Cost', 'right', true, false, false)}
                           {renderSortableHeader('comments', 'Comments', 'left', false, false, false)}
                           {count?.status === 'pending_review' && (
-                            <th className="px-2 py-3 text-center text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider min-w-[120px]">
+                            <th className="px-2 py-3 text-center text-[10px] font-semibold text-theme-secondary uppercase tracking-wider min-w-[120px]">
                               <div className="flex flex-col items-center gap-1">
                                 <span>Reviewer Comment</span>
                               </div>
                             </th>
                           )}
                           {count?.status === 'ready_for_approval' && isApprover && (
-                            <th className="px-2 py-3 text-center text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider min-w-[120px]">
+                            <th className="px-2 py-3 text-center text-[10px] font-semibold text-theme-secondary uppercase tracking-wider min-w-[120px]">
                               <div className="flex flex-col items-center gap-1">
                                 <span>Approval Comments</span>
                               </div>
@@ -2194,13 +2194,13 @@ export default function ReviewCountItemsPage() {
                           )}
                           {/* Show saved approval/rejection comments for approved/rejected counts */}
                           {(count?.status === 'approved' || count?.status === 'rejected') && (
-                            <th className="px-2 py-3 text-center text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider min-w-[140px]">
+                            <th className="px-2 py-3 text-center text-[10px] font-semibold text-theme-secondary uppercase tracking-wider min-w-[140px]">
                               <div className="flex flex-col items-center gap-1">
                                 <span>{count?.status === 'rejected' ? 'Rejection feedback' : 'Approval comments'}</span>
                               </div>
                             </th>
                           )}
-                          <th className="px-2 py-3 text-center text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider min-w-[80px]">
+                          <th className="px-2 py-3 text-center text-[10px] font-semibold text-theme-secondary uppercase tracking-wider min-w-[80px]">
                             <div className="flex flex-col items-center gap-1">
                               <span>Actions</span>
                             </div>
@@ -2252,46 +2252,46 @@ export default function ReviewCountItemsPage() {
                           return (
                             <tr
                               key={item.id}
-                              className={`border-b border-gray-200 dark:border-white/[0.06] ${
+                              className={`border-b border-theme ${
                                 isEditing
                                   ? 'bg-blue-50 dark:bg-blue-500/10'
                                   : hasRejectionFeedback
                                   ? 'bg-amber-50 dark:bg-amber-600/10 hover:bg-amber-100 dark:hover:bg-amber-600/20'
-                                  : 'hover:bg-gray-50 dark:hover:bg-white/[0.02]'
+                                  : 'hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02]'
                               }`}
                             >
                               {/* Supplier */}
-                              <td className="px-2 py-2.5 text-xs text-gray-700 dark:text-gray-300 text-left" style={{ height: '45px' }}>
+                              <td className="px-2 py-2.5 text-xs text-theme-secondary text-left" style={{ height: '45px' }}>
                                 {(item.ingredient as any)?.supplier || '—'}
                               </td>
 
                               {/* Measurement */}
-                              <td className="px-2 py-2.5 text-xs text-gray-700 dark:text-gray-300 text-center" style={{ height: '45px' }}>
+                              <td className="px-2 py-2.5 text-xs text-theme-secondary text-center" style={{ height: '45px' }}>
                                 {item.unit_of_measurement || '—'}
                               </td>
 
                               {/* Opening Stock */}
-                              <td className="px-2 py-2.5 text-xs text-gray-700 dark:text-gray-300 text-center" style={{ height: '45px' }}>
+                              <td className="px-2 py-2.5 text-xs text-theme-secondary text-center" style={{ height: '45px' }}>
                                 {formatNumber(item.opening_stock)}
                               </td>
 
                               {/* Purchases */}
-                              <td className="px-2 py-2.5 text-xs text-gray-700 dark:text-gray-300 text-center" style={{ height: '45px' }}>
+                              <td className="px-2 py-2.5 text-xs text-theme-secondary text-center" style={{ height: '45px' }}>
                                 {formatNumber(item.stock_in)}
                               </td>
 
                               {/* Production */}
-                              <td className="px-2 py-2.5 text-xs text-gray-700 dark:text-gray-300 text-center" style={{ height: '45px' }}>
+                              <td className="px-2 py-2.5 text-xs text-theme-secondary text-center" style={{ height: '45px' }}>
                                 {formatNumber(item.transfers_in)}
                               </td>
 
                               {/* Sales */}
-                              <td className="px-2 py-2.5 text-xs text-gray-700 dark:text-gray-300 text-center" style={{ height: '45px' }}>
+                              <td className="px-2 py-2.5 text-xs text-theme-secondary text-center" style={{ height: '45px' }}>
                                 {formatNumber(item.sales)}
                               </td>
 
                               {/* Waste */}
-                              <td className="px-2 py-2.5 text-xs text-gray-700 dark:text-gray-300 text-center" style={{ height: '45px' }}>
+                              <td className="px-2 py-2.5 text-xs text-theme-secondary text-center" style={{ height: '45px' }}>
                                 {formatNumber(item.waste)}
                               </td>
 
@@ -2317,7 +2317,7 @@ export default function ReviewCountItemsPage() {
                                         }));
                                       }
                                     }}
-                                    className="w-20 h-7 text-xs bg-white dark:bg-white/[0.05] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500/50"
+ className="w-20 h-7 text-xs bg-theme-surface ] border-theme text-theme-primary focus:ring-1 focus:ring-emerald-500/50"
                                     placeholder="0.00"
                                   />
                                 </div>
@@ -2329,7 +2329,7 @@ export default function ReviewCountItemsPage() {
                                   ? 'text-red-600 dark:text-red-400' 
                                   : varianceQuantity !== null && varianceQuantity > 0
                                   ? 'text-green-600 dark:text-green-400'
-                                  : 'text-gray-900 dark:text-white'
+                                  : 'text-theme-primary'
                               }`} style={{ height: '45px' }}>
                                 {formatNumber(varianceQuantity)}
                               </td>
@@ -2340,7 +2340,7 @@ export default function ReviewCountItemsPage() {
                                   ? 'text-red-600 dark:text-red-400' 
                                   : varianceValue !== null && varianceValue > 0
                                   ? 'text-green-600 dark:text-green-400'
-                                  : 'text-gray-900 dark:text-white'
+                                  : 'text-theme-primary'
                               }`} style={{ height: '45px' }}>
                                 {formatNumber(varianceValue)}
                               </td>
@@ -2351,7 +2351,7 @@ export default function ReviewCountItemsPage() {
                                   ? 'text-red-600 dark:text-red-400' 
                                   : variancePercentage !== null && variancePercentage > 0
                                   ? 'text-green-600 dark:text-green-400'
-                                  : 'text-gray-900 dark:text-white'
+                                  : 'text-theme-primary'
                               }`} style={{ height: '45px' }}>
                                 {variancePercentage !== null ? `${formatNumber(variancePercentage, 2)}%` : '—'}
                               </td>
@@ -2362,7 +2362,7 @@ export default function ReviewCountItemsPage() {
                                   ? 'text-red-600 dark:text-red-400' 
                                   : varianceCostPercent !== null && varianceCostPercent > 0
                                   ? 'text-green-600 dark:text-green-400'
-                                  : 'text-gray-900 dark:text-white'
+                                  : 'text-theme-primary'
                               }`} style={{ height: '45px' }}>
                                 {varianceCostPercent !== null ? `${formatNumber(varianceCostPercent, 2)}%` : '—'}
                               </td>
@@ -2389,7 +2389,7 @@ export default function ReviewCountItemsPage() {
                                         }));
                                       }
                                     }}
-                                    className="w-24 h-7 text-xs bg-white dark:bg-white/[0.05] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:ring-1 focus:ring-emerald-500/50"
+ className="w-24 h-7 text-xs bg-theme-surface ] border-theme text-theme-primary focus:ring-1 focus:ring-emerald-500/50"
                                     placeholder="Comment..."
                                   />
                                 </div>
@@ -2418,7 +2418,7 @@ export default function ReviewCountItemsPage() {
                                           }));
                                         }
                                       }}
-                                      className="w-32 h-7 text-xs bg-amber-50 dark:bg-amber-600/10 border-amber-200 dark:border-amber-600/30 text-gray-900 dark:text-white focus:ring-1 focus:ring-amber-500/50"
+                                      className="w-32 h-7 text-xs bg-amber-50 dark:bg-amber-600/10 border-amber-200 dark:border-amber-600/30 text-theme-primary focus:ring-1 focus:ring-amber-500/50"
                                       placeholder="Reviewer note..."
                                     />
                                   </div>
@@ -2448,7 +2448,7 @@ export default function ReviewCountItemsPage() {
                                           }));
                                         }
                                       }}
-                                      className="w-32 h-7 text-xs bg-blue-50 dark:bg-blue-600/10 border-blue-200 dark:border-blue-600/30 text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500/50"
+                                      className="w-32 h-7 text-xs bg-blue-50 dark:bg-blue-600/10 border-blue-200 dark:border-blue-600/30 text-theme-primary focus:ring-1 focus:ring-blue-500/50"
                                       placeholder="Approval note..."
                                     />
                                   </div>
@@ -2462,7 +2462,7 @@ export default function ReviewCountItemsPage() {
                                   style={{ height: '45px' }}
                                 >
                                   <div className="flex justify-center">
-                                    <div className="w-32 px-2 py-1 text-xs bg-blue-50 dark:bg-blue-600/10 border border-blue-200 dark:border-blue-600/30 text-gray-900 dark:text-white rounded">
+                                    <div className="w-32 px-2 py-1 text-xs bg-blue-50 dark:bg-blue-600/10 border border-blue-200 dark:border-blue-600/30 text-theme-primary rounded">
                                       {(item as any).approval_comments}
                                     </div>
                                   </div>
@@ -2475,7 +2475,7 @@ export default function ReviewCountItemsPage() {
                                   className="px-2 py-2.5 text-xs whitespace-nowrap text-center"
                                   style={{ height: '45px' }}
                                 >
-                                  <span className="text-gray-400 dark:text-gray-600">—</span>
+                                  <span className="text-theme-disabled">—</span>
                                 </td>
                               )}
 
@@ -2515,17 +2515,17 @@ export default function ReviewCountItemsPage() {
       {showRejectionModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-xl font-bold text-theme-primary mb-4">
               Stock Count Requires Attention
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-sm text-theme-secondary mb-4">
               Please explain what needs to be fixed. The counter will receive this feedback and can make corrections.
             </p>
             <textarea
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               placeholder="Enter rejection reason..."
-              className="w-full h-32 p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+              className="w-full h-32 p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-theme-primary resize-none"
             />
             <div className="flex gap-2 mt-4">
               <Button

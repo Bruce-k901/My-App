@@ -388,7 +388,7 @@ function uiShell(
             type="button"
             onClick={onBack}
             disabled={!onBack}
-            className="rounded-lg border border-orange-400/60 px-4 py-2 text-sm text-orange-600 dark:text-orange-200 transition hover:border-orange-500 dark:hover:border-orange-300 hover:text-orange-700 dark:hover:text-orange-100 hover:shadow-[0_0_12px_rgba(251,146,60,0.35)] disabled:cursor-not-allowed disabled:border-[rgb(var(--border))] dark:disabled:border-neutral-800 disabled:text-[rgb(var(--text-tertiary))] dark:disabled:text-neutral-600 disabled:shadow-none"
+            className="rounded-lg border border-orange-400/60 px-4 py-2 text-sm text-orange-600 dark:text-orange-200 transition hover:border-orange-500 dark:hover:border-orange-300 hover:text-orange-700 dark:hover:text-orange-100 hover:shadow-module-glow disabled:cursor-not-allowed disabled:border-[rgb(var(--border))] dark:disabled:border-neutral-800 disabled:text-[rgb(var(--text-tertiary))] dark:disabled:text-neutral-600 disabled:shadow-none"
           >
             Back
           </button>
@@ -453,11 +453,11 @@ function Content({
           className="mb-4 w-full rounded-lg border border-[rgb(var(--border))] dark:border-neutral-800 bg-[rgb(var(--surface))] dark:bg-neutral-950 object-contain"
         />
       ) : null}
-      <p className="leading-relaxed text-[rgb(var(--text-secondary))] dark:text-slate-200">{text}</p>
+      <p className="leading-relaxed text-[rgb(var(--text-secondary))] dark:text-theme-primary">{text}</p>
       {module?.objectives && module.objectives.length ? (
         <div className="mt-4 rounded-xl border border-[rgb(var(--border))] dark:border-white/10 bg-[rgb(var(--surface-elevated))] dark:bg-white/5 p-4">
           <h3 className="text-sm font-semibold text-[rgb(var(--text-primary))] dark:text-white">Learning objectives</h3>
-          <ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-[rgb(var(--text-secondary))] dark:text-slate-200">
+          <ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-primary">
             {module.objectives.map((objective) => (
               <li key={objective}>{objective}</li>
             ))}
@@ -476,7 +476,7 @@ function Content({
           {showDeck ? (
             <div className="mt-4 rounded-xl border border-[rgb(var(--border))] dark:border-white/10 bg-[rgb(var(--surface))] dark:bg-black/60 p-4">
               {deckLoading ? (
-                <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-slate-300">Loading deck…</p>
+                <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-secondary">Loading deck…</p>
               ) : deckError ? (
                 <p className="text-sm text-red-600 dark:text-red-400">{deckError}</p>
               ) : deckContent ? (
@@ -501,7 +501,7 @@ function DeckMarkdown({ content }: { content: string }) {
     if (!listBuffer) return;
     if (listBuffer.type === "ul") {
       elements.push(
-        <ul key={`ul-${elements.length}`} className="ml-4 list-disc space-y-1 text-[rgb(var(--text-secondary))] dark:text-slate-200">
+        <ul key={`ul-${elements.length}`} className="ml-4 list-disc space-y-1 text-[rgb(var(--text-secondary))] dark:text-theme-primary">
           {listBuffer.items.map((item, index) => (
             <li key={index}>{renderInlineMarkdown(item)}</li>
           ))}
@@ -509,7 +509,7 @@ function DeckMarkdown({ content }: { content: string }) {
       );
     } else {
       elements.push(
-        <ol key={`ol-${elements.length}`} className="ml-4 list-decimal space-y-1 text-[rgb(var(--text-secondary))] dark:text-slate-200">
+        <ol key={`ol-${elements.length}`} className="ml-4 list-decimal space-y-1 text-[rgb(var(--text-secondary))] dark:text-theme-primary">
           {listBuffer.items.map((item, index) => (
             <li key={index}>{renderInlineMarkdown(item)}</li>
           ))}
@@ -578,7 +578,7 @@ function DeckMarkdown({ content }: { content: string }) {
 
     flushList();
     elements.push(
-      <p key={`p-${elements.length}`} className="text-[rgb(var(--text-secondary))] dark:text-slate-200">
+      <p key={`p-${elements.length}`} className="text-[rgb(var(--text-secondary))] dark:text-theme-primary">
         {renderInlineMarkdown(line)}
       </p>
     );
@@ -642,11 +642,11 @@ function Onboarding({
   return (
     <div>
       <h2 className="mb-3 text-3xl font-semibold text-[#D37E91] dark:text-[#D37E91]/70">{page.title}</h2>
-      <p className="mb-5 text-sm text-[rgb(var(--text-secondary))] dark:text-slate-300">{page.text}</p>
+      <p className="mb-5 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-secondary">{page.text}</p>
       <div className="grid gap-4 md:grid-cols-2">
         {page.fields.map((field) => (
-          <label key={field.key} className="flex flex-col gap-2 text-sm text-[rgb(var(--text-secondary))] dark:text-slate-200">
-            <span className="text-xs font-semibold uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-slate-400">{field.label}</span>
+          <label key={field.key} className="flex flex-col gap-2 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-primary">
+ <span className="text-xs font-semibold uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">{field.label}</span>
             <input
               type="text"
               value={state[field.key] ?? ""}
@@ -657,7 +657,7 @@ function Onboarding({
               }
               readOnly={lockFields}
               disabled={lockFields}
-              className="w-full rounded-lg border border-[rgb(var(--border))] dark:border-white/10 bg-[rgb(var(--surface-elevated))] dark:bg-white/5 px-3 py-2 text-sm text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-slate-500 disabled:cursor-not-allowed disabled:border-[rgb(var(--border))] dark:disabled:border-neutral-800 disabled:bg-[rgb(var(--surface))] dark:disabled:bg-neutral-900"
+ className="w-full rounded-lg border border-[rgb(var(--border))] dark:border-white/10 bg-[rgb(var(--surface-elevated))] dark:bg-white/5 px-3 py-2 text-sm text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary disabled:cursor-not-allowed disabled:border-[rgb(var(--border))] dark:disabled:border-neutral-800 disabled:bg-[rgb(var(--surface))] dark:disabled:bg-neutral-900"
               required={field.required}
             />
           </label>
@@ -679,7 +679,7 @@ function Onboarding({
       >
         {page.cta.label}
       </button>
-      <p className="mt-2 text-xs text-[rgb(var(--text-tertiary))] dark:text-slate-400">
+ <p className="mt-2 text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
         Start with your details, then progress through all modules. Your results are saved automatically.
       </p>
     </div>
@@ -720,7 +720,7 @@ function Interaction({ page, onPass, onBack }: { page: InteractionPage; onPass: 
           className="mb-4 w-full rounded-lg border border-[rgb(var(--border))] dark:border-neutral-800 bg-[rgb(var(--surface))] dark:bg-neutral-950 object-contain"
         />
       ) : null}
-      <p className="mb-4 text-[rgb(var(--text-secondary))] dark:text-slate-200">{page.text}</p>
+      <p className="mb-4 text-[rgb(var(--text-secondary))] dark:text-theme-primary">{page.text}</p>
 
       {page.interaction.type === "drag_drop" ? (
         <div className="space-y-3">
@@ -738,12 +738,12 @@ function Interaction({ page, onPass, onBack }: { page: InteractionPage; onPass: 
                       className={`group flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs sm:text-sm transition ${
                         selected
                           ? "border-[#D37E91]/70 bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91] shadow-[0_0_14px_rgba(211, 126, 145,0.35)]"
-                          : "border-[rgb(var(--border))] dark:border-neutral-700 text-[rgb(var(--text-secondary))] dark:text-slate-200 hover:border-[rgb(var(--border-hover))] dark:hover:border-neutral-500"
+                          : "border-[rgb(var(--border))] dark:border-theme text-[rgb(var(--text-secondary))] dark:text-theme-primary hover:border-[rgb(var(--border-hover))] dark:hover:border-neutral-500"
                       }`}
                     >
                       <Check
                         className={`h-3 w-3 transition ${
-                          selected ? "opacity-100 text-[#D37E91] dark:text-[#D37E91]/70" : "opacity-0 text-[rgb(var(--text-tertiary))] dark:text-slate-400 group-hover:opacity-40"
+ selected ?"opacity-100 text-[#D37E91] dark:text-[#D37E91]/70":"opacity-0 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary group-hover:opacity-40"
                         }`}
                       />
                       <span>{right}</span>
@@ -768,12 +768,12 @@ function Interaction({ page, onPass, onBack }: { page: InteractionPage; onPass: 
                 className={`group flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition ${
                   selected
                     ? "border-[#D37E91]/70 bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91] shadow-[0_0_14px_rgba(211, 126, 145,0.35)]"
-                    : "border-[rgb(var(--border))] dark:border-neutral-700 bg-[rgb(var(--surface))] dark:bg-neutral-950 text-[rgb(var(--text-secondary))] dark:text-slate-100 hover:border-[rgb(var(--border-hover))] dark:hover:border-neutral-500"
+                    : "border-[rgb(var(--border))] dark:border-theme bg-[rgb(var(--surface))] dark:bg-neutral-950 text-[rgb(var(--text-secondary))] dark:text-slate-100 hover:border-[rgb(var(--border-hover))] dark:hover:border-neutral-500"
                 }`}
               >
                 <Check
                   className={`h-4 w-4 transition ${
-                    selected ? "opacity-100 text-[#D37E91] dark:text-[#D37E91]/70" : "opacity-0 text-[rgb(var(--text-tertiary))] dark:text-slate-400 group-hover:opacity-40"
+ selected ?"opacity-100 text-[#D37E91] dark:text-[#D37E91]/70":"opacity-0 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary group-hover:opacity-40"
                   }`}
                 />
                 <span>{step}</span>
@@ -787,7 +787,7 @@ function Interaction({ page, onPass, onBack }: { page: InteractionPage; onPass: 
           <button
             type="button"
             onClick={onBack}
-            className="rounded-lg border border-orange-400/60 px-4 py-2 text-sm text-orange-600 dark:text-orange-200 transition hover:border-orange-500 dark:hover:border-orange-300 hover:text-orange-700 dark:hover:text-orange-100 hover:shadow-[0_0_12px_rgba(251,146,60,0.35)]"
+            className="rounded-lg border border-orange-400/60 px-4 py-2 text-sm text-orange-600 dark:text-orange-200 transition hover:border-orange-500 dark:hover:border-orange-300 hover:text-orange-700 dark:hover:text-orange-100 hover:shadow-module-glow"
           >
             Back
           </button>
@@ -799,7 +799,7 @@ function Interaction({ page, onPass, onBack }: { page: InteractionPage; onPass: 
             Check
           </button>
         </div>
-      {feedback ? <p className="mt-3 text-sm text-[rgb(var(--text-secondary))] dark:text-slate-200">{feedback}</p> : null}
+      {feedback ? <p className="mt-3 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-primary">{feedback}</p> : null}
     </div>
   );
 }
@@ -855,7 +855,7 @@ function ModuleQuiz({
     return (
       <div>
         <h2 className="mb-3 text-3xl font-semibold text-[#D37E91] dark:text-[#D37E91]/70">Module knowledge check</h2>
-        <p className="text-[rgb(var(--text-secondary))] dark:text-slate-300">No quiz items configured for this module.</p>
+        <p className="text-[rgb(var(--text-secondary))] dark:text-theme-secondary">No quiz items configured for this module.</p>
       </div>
     );
   }
@@ -864,7 +864,7 @@ function ModuleQuiz({
     return (
       <div>
         <h2 className="mb-3 text-3xl font-semibold text-[#D37E91] dark:text-[#D37E91]/70">Module knowledge check</h2>
-        <p className="text-[rgb(var(--text-secondary))] dark:text-slate-300">Great work! Moving to the next section…</p>
+        <p className="text-[rgb(var(--text-secondary))] dark:text-theme-secondary">Great work! Moving to the next section…</p>
       </div>
     );
   }
@@ -877,7 +877,7 @@ function ModuleQuiz({
   return (
     <div>
       <h2 className="mb-3 text-3xl font-semibold text-[#D37E91] dark:text-[#D37E91]/70">Module knowledge check</h2>
-      <p className="mb-4 text-[rgb(var(--text-secondary))] dark:text-slate-200">{stem}</p>
+      <p className="mb-4 text-[rgb(var(--text-secondary))] dark:text-theme-primary">{stem}</p>
       <div className="flex flex-wrap gap-2">
         {options.map((option) => (
           <button
@@ -897,7 +897,7 @@ function ModuleQuiz({
         ))}
       </div>
       {feedbackMode === "immediate" ? (
-        <p className="mt-3 text-xs text-[rgb(var(--text-tertiary))] dark:text-slate-400">Immediate feedback is shown after you answer.</p>
+ <p className="mt-3 text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">Immediate feedback is shown after you answer.</p>
       ) : null}
     </div>
   );
@@ -912,7 +912,7 @@ function FinalQuiz({ count, onDone }: { count: number; onDone: (percent: number)
   return (
     <div>
       <h2 className="mb-3 text-3xl font-semibold text-[#D37E91] dark:text-[#D37E91]/70">Final assessment</h2>
-      <p className="text-[rgb(var(--text-secondary))] dark:text-slate-200">
+      <p className="text-[rgb(var(--text-secondary))] dark:text-theme-primary">
         Complete the {count}-question assessment to finish the course. Your score will appear on the
         completion screen.
       </p>
@@ -924,7 +924,7 @@ function Completion({ title, text, payload }: { title: string; text: string; pay
   return (
     <div>
       <h2 className="mb-3 text-3xl font-semibold text-[#D37E91] dark:text-[#D37E91]/70">{title}</h2>
-      <p className="mb-4 text-[rgb(var(--text-secondary))] dark:text-slate-200">{text}</p>
+      <p className="mb-4 text-[rgb(var(--text-secondary))] dark:text-theme-primary">{text}</p>
       <ResultSummary payload={payload} />
       <div className="mt-6 flex flex-wrap gap-2">
         <Link
@@ -935,7 +935,7 @@ function Completion({ title, text, payload }: { title: string; text: string; pay
         </Link>
         <Link
           href="/dashboard"
-          className="rounded-lg border border-[rgb(var(--border))] dark:border-white/10 px-4 py-2 text-sm text-[rgb(var(--text-secondary))] dark:text-slate-200 transition hover:border-[rgb(var(--border-hover))] dark:hover:border-white/30 hover:text-[rgb(var(--text-primary))] dark:hover:text-white"
+          className="rounded-lg border border-[rgb(var(--border))] dark:border-white/10 px-4 py-2 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-primary transition hover:border-[rgb(var(--border-hover))] dark:hover:border-white/30 hover:text-[rgb(var(--text-primary))]"
         >
           Back to Dashboard
         </Link>
@@ -956,21 +956,21 @@ function ResultSummary({ payload }: { payload: any }) {
   return (
     <div className="rounded-2xl border border-[rgb(var(--border))] dark:border-white/10 bg-[rgb(var(--surface-elevated))] dark:bg-white/5 p-4">
       <h3 className="text-sm font-semibold text-[rgb(var(--text-primary))] dark:text-white">Result summary</h3>
-      <dl className="mt-3 grid gap-2 text-sm text-[rgb(var(--text-secondary))] dark:text-slate-200 sm:grid-cols-2">
+      <dl className="mt-3 grid gap-2 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-primary sm:grid-cols-2">
         <div>
-          <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-slate-400">Learner</dt>
+ <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">Learner</dt>
           <dd>{learner.full_name || "—"}</dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-slate-400">Position</dt>
+ <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">Position</dt>
           <dd>{learner.position || "—"}</dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-slate-400">Home site</dt>
+ <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">Home site</dt>
           <dd>{learner.home_site || "—"}</dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-slate-400">Final score</dt>
+ <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">Final score</dt>
           <dd>
             {scores?.final?.score_percent != null
               ? `${scores.final.score_percent}%`
@@ -978,7 +978,7 @@ function ResultSummary({ payload }: { payload: any }) {
           </dd>
         </div>
         <div>
-          <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-slate-400">Pass mark</dt>
+ <dt className="text-xs uppercase tracking-wide text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">Pass mark</dt>
           <dd>{scores?.final?.passed ? "Met" : "Not met"}</dd>
         </div>
       </dl>

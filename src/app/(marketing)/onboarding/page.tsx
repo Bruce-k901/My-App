@@ -3,9 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import DarkVeil from '@/components/ui/DarkVeil';
-import GlassCard from '@/components/ui/GlassCard';
-import { Button } from '@/components/ui';
-import { 
+import {
   CheckCircle2, 
   AlertCircle, 
   Building2, 
@@ -221,7 +219,7 @@ export default function OnboardingPage() {
       case 'medium':
         return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
       default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+        return 'bg-theme-surface-elevated0/20 text-theme-tertiary border-gray-500/30';
     }
   };
 
@@ -243,14 +241,14 @@ export default function OnboardingPage() {
             <div className="flex justify-start mb-4">
               <Link 
                 href="/dashboard"
-                className="flex items-center gap-2 text-sm text-slate-400 hover:text-magenta-400 transition-colors"
+                className="flex items-center gap-2 text-sm text-theme-tertiary hover:text-white transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back to Dashboard</span>
               </Link>
             </div>
 
-            <h1 className="hero-title text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold leading-[1.4] bg-gradient-to-r from-magenta-400 to-blue-500 bg-clip-text text-transparent mb-8 sm:mb-12 pb-3 overflow-visible px-2">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold leading-[1.4] text-[#e8e8e8] mb-8 sm:mb-12 pb-3 overflow-visible px-2">
               Setting Up Your Opsly Platform
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-checkly-gray max-w-2xl mx-auto mb-6 sm:mb-8 leading-relaxed pt-2 px-4">
@@ -258,11 +256,11 @@ export default function OnboardingPage() {
               Proper setup is the foundation of a successful deployment.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-0 px-4">
-              <Link href="/dashboard/business">
-                <Button variant="primary">Start Setup Now</Button>
+              <Link href="/dashboard/business" className="btn-marketing-primary">
+                Start Setup Now
               </Link>
-              <Link href="/contact">
-                <Button variant="primary">Schedule Onboarding Call</Button>
+              <Link href="/contact" className="btn-marketing-secondary">
+                Schedule Onboarding Call
               </Link>
             </div>
           </div>
@@ -272,40 +270,40 @@ export default function OnboardingPage() {
         <section className="relative px-4 sm:px-6 -mt-12 sm:-mt-16 md:-mt-24 pb-10 sm:pb-14 text-gray-200">
           <div className="relative z-10 max-w-7xl mx-auto">
             <div className="text-center mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-white px-2 sm:px-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-theme-primary px-2 sm:px-4">
                 Why Proper Setup is Critical
               </h2>
-              <p className="text-gray-400 max-w-3xl mx-auto px-2 sm:px-4">
+              <p className="text-theme-tertiary max-w-3xl mx-auto px-2 sm:px-4">
                 The difference between a good system and a great system is in the setup. 
                 Here's what you unlock with proper configuration:
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(211, 126, 145,0.35)] transition">
-                <h3 className="text-xl font-semibold text-white mb-2">Accurate Compliance Tracking</h3>
-                <p className="text-gray-300">
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-white/20 hover:shadow-[0_0_10px_rgba(255,255,255,0.08)] transition">
+                <h3 className="text-xl font-semibold text-theme-primary mb-2">Accurate Compliance Tracking</h3>
+                <p className="text-theme-tertiary">
                   Proper setup ensures every task, temperature reading, and incident is correctly attributed to the right site, asset, and team member, creating a bulletproof audit trail.
                 </p>
               </div>
 
-              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-blue-400/50 hover:shadow-[0_0_18px_rgba(59,130,246,0.25)] transition">
-                <h3 className="text-xl font-semibold text-white mb-2">Time Savings from Day One</h3>
-                <p className="text-gray-300">
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-white/20 hover:shadow-[0_0_10px_rgba(255,255,255,0.08)] transition">
+                <h3 className="text-xl font-semibold text-theme-primary mb-2">Time Savings from Day One</h3>
+                <p className="text-theme-tertiary">
                   Automated task generation, smart scheduling, and role-based assignments eliminate hours of manual planning each week, letting your team focus on operations.
                 </p>
               </div>
 
-              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-magenta-400/50 hover:shadow-[0_0_18px_rgba(211, 126, 145,0.35)] transition">
-                <h3 className="text-xl font-semibold text-white mb-2">Immediate ROI</h3>
-                <p className="text-gray-300">
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-white/20 hover:shadow-[0_0_10px_rgba(255,255,255,0.08)] transition">
+                <h3 className="text-xl font-semibold text-theme-primary mb-2">Immediate ROI</h3>
+                <p className="text-theme-tertiary">
                   Complete setup unlocks the full power of Opsly: automated compliance, real-time alerts, comprehensive reporting, and data-driven insights that improve operations.
                 </p>
               </div>
 
-              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-blue-400/50 hover:shadow-[0_0_18px_rgba(59,130,246,0.25)] transition">
-                <h3 className="text-xl font-semibold text-white mb-2">Scalable Foundation</h3>
-                <p className="text-gray-300">
+              <div className="rounded-2xl bg-white/[0.03] backdrop-blur-md p-6 border border-white/20 hover:border-white/20 hover:shadow-[0_0_10px_rgba(255,255,255,0.08)] transition">
+                <h3 className="text-xl font-semibold text-theme-primary mb-2">Scalable Foundation</h3>
+                <p className="text-theme-tertiary">
                   A well-configured system grows with your business. Add new sites, users, and processes seamlessly without disrupting existing operations.
                 </p>
               </div>
@@ -317,10 +315,10 @@ export default function OnboardingPage() {
         <section className="relative px-4 sm:px-6 py-8 sm:py-12 text-gray-200">
           <div className="relative z-10 max-w-5xl mx-auto">
             <div className="text-center mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-white px-2 sm:px-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-theme-primary px-2 sm:px-4">
                 Step-by-Step Setup Guide
               </h2>
-              <p className="text-gray-400 max-w-3xl mx-auto px-2 sm:px-4">
+              <p className="text-theme-tertiary max-w-3xl mx-auto px-2 sm:px-4">
                 Follow these steps in order for the smoothest onboarding experience. 
                 Each step builds on the previous one to create a comprehensive compliance system.
               </p>
@@ -330,7 +328,7 @@ export default function OnboardingPage() {
               {setupSteps.map((step, index) => (
                 <div 
                   key={step.id}
-                  className="rounded-2xl bg-white/[0.03] backdrop-blur-md border border-white/20 hover:border-magenta-400/50 transition overflow-hidden"
+                  className="rounded-2xl bg-white/[0.03] backdrop-blur-md border border-white/20 hover:border-white/20 transition overflow-hidden"
                 >
                   {/* Step Header - Clickable */}
                   <div className="relative">
@@ -340,29 +338,29 @@ export default function OnboardingPage() {
                     >
                       <div className="flex items-center gap-3 sm:gap-4">
                         {/* Step Number */}
-                        <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-magenta-400/20 flex items-center justify-center text-magenta-400 font-bold text-sm sm:text-base border border-magenta-400/30">
+                        <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-white/10 flex items-center justify-center text-[#e8e8e8] font-bold text-sm sm:text-base border border-white/20">
                           {index + 1}
                         </div>
 
                         {/* Icon */}
-                        <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-white/5 flex items-center justify-center text-magenta-400">
+                        <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#e8e8e8]">
                           {step.icon}
                         </div>
 
                         {/* Content */}
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-wrap items-center gap-2 mb-1">
-                            <h3 className="text-base sm:text-lg font-semibold text-white">
+                            <h3 className="text-base sm:text-lg font-semibold text-theme-primary">
                               {step.title}
                             </h3>
                             <span className={`px-2 py-0.5 rounded-full text-xs font-semibold border uppercase ${getImportanceBadge(step.importance)}`}>
                               {step.importance}
                             </span>
                           </div>
-                          <p className="text-sm text-gray-400 mb-1">
+                          <p className="text-sm text-theme-tertiary mb-1">
                             {step.description}
                           </p>
-                          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                          <div className="flex items-center gap-1.5 text-xs text-theme-tertiary">
                             <Clock className="w-3 h-3" />
                             <span>{step.estimatedTime}</span>
                           </div>
@@ -377,7 +375,7 @@ export default function OnboardingPage() {
                         e.stopPropagation();
                         toggleStep(step.id);
                       }}
-                      className="absolute top-4 sm:top-6 right-4 sm:right-6 p-2 text-gray-400 hover:text-white transition-colors z-10"
+                      className="absolute top-4 sm:top-6 right-4 sm:right-6 p-2 text-theme-tertiary hover:text-white transition-colors z-10"
                       aria-label={expandedStep === step.id ? "Collapse details" : "Expand details"}
                     >
                       {expandedStep === step.id ? (
@@ -393,14 +391,14 @@ export default function OnboardingPage() {
                     <div className="px-4 sm:px-6 pb-4 sm:pb-6 border-t border-white/5 pt-4 sm:pt-6 space-y-4 sm:space-y-6">
                       {/* Benefits */}
                       <div>
-                        <h4 className="text-base sm:text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" />
+                        <h4 className="text-base sm:text-lg font-semibold text-theme-primary mb-3 flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-white/50" />
                           Benefits
                         </h4>
                         <ul className="space-y-2">
                           {step.benefits.map((benefit, idx) => (
-                            <li key={idx} className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-gray-300">
-                              <div className="w-1.5 h-1.5 rounded-full bg-green-400 mt-2 flex-shrink-0" />
+                            <li key={idx} className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-theme-tertiary">
+                              <div className="w-1.5 h-1.5 rounded-full bg-white/40 mt-2 flex-shrink-0" />
                               <span>{benefit}</span>
                             </li>
                           ))}
@@ -409,14 +407,14 @@ export default function OnboardingPage() {
 
                       {/* Tips */}
                       <div>
-                        <h4 className="text-base sm:text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                          <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
+                        <h4 className="text-base sm:text-lg font-semibold text-theme-primary mb-3 flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-white/50" />
                           Pro Tips
                         </h4>
                         <ul className="space-y-2">
                           {step.tips.map((tip, idx) => (
-                            <li key={idx} className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-gray-300">
-                              <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-2 flex-shrink-0" />
+                            <li key={idx} className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-theme-tertiary">
+                              <div className="w-1.5 h-1.5 rounded-full bg-white/40 mt-2 flex-shrink-0" />
                               <span>{tip}</span>
                             </li>
                           ))}
@@ -425,10 +423,8 @@ export default function OnboardingPage() {
 
                       {/* Go to Page Button */}
                       <div className="pt-2">
-                        <Link href={step.href}>
-                          <Button variant="primary" fullWidth>
-                            Go to {step.title}
-                          </Button>
+                        <Link href={step.href} className="btn-marketing-primary w-full text-center block">
+                          Go to {step.title}
                         </Link>
                       </div>
                     </div>
@@ -442,19 +438,19 @@ export default function OnboardingPage() {
         {/* CTA */}
         <section className="relative flex flex-col items-center justify-center text-center px-4 sm:px-6 py-8 sm:py-10 pb-10 sm:pb-14">
           <div className="relative z-10 max-w-4xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-white px-2 sm:px-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-theme-primary px-2 sm:px-4">
               Ready to Get Started?
             </h2>
-            <p className="text-gray-400 mb-6 sm:mb-8 max-w-xl mx-auto px-2 sm:px-4 text-sm sm:text-base">
+            <p className="text-theme-tertiary mb-6 sm:mb-8 max-w-xl mx-auto px-2 sm:px-4 text-sm sm:text-base">
               Our onboarding team is here to help you every step of the way. 
               Schedule a personalized setup session or dive in on your own.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-2 sm:px-4">
-              <Link href="/dashboard/business">
-                <Button variant="primary">Begin Setup Process</Button>
+              <Link href="/dashboard/business" className="btn-marketing-primary">
+                Begin Setup Process
               </Link>
-              <Link href="/contact">
-                <Button variant="primary">Talk to Our Team</Button>
+              <Link href="/contact" className="btn-marketing-secondary">
+                Talk to Our Team
               </Link>
             </div>
           </div>
@@ -463,23 +459,23 @@ export default function OnboardingPage() {
         {/* HELP SECTION */}
         <section className="relative px-4 sm:px-6 pb-10 sm:pb-14">
           <div className="relative z-10 max-w-4xl mx-auto">
-            <div className="rounded-2xl bg-blue-500/10 backdrop-blur-md p-6 border border-blue-500/20">
+            <div className="rounded-2xl bg-white/[0.05] backdrop-blur-md p-6 border border-white/15">
               <div className="flex items-start gap-4">
-                <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400 flex-shrink-0 mt-1" />
+                <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white/60 flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-white mb-2">
+                  <h3 className="text-base sm:text-lg font-semibold text-theme-primary mb-2">
                     Need Help?
                   </h3>
-                  <p className="text-sm sm:text-base text-gray-300 mb-3">
+                  <p className="text-sm sm:text-base text-theme-tertiary mb-3">
                     Our support team is available to assist with your setup. We offer personalized onboarding sessions, 
                     video tutorials, and comprehensive documentation to ensure your success.
                   </p>
                   <div className="flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm">
-                    <a href="mailto:support@opsly.app" className="text-blue-400 hover:text-blue-300 transition-colors">
+                    <a href="mailto:support@opsly.app" className="text-white/70 hover:text-white transition-colors">
                       support@opsly.app
                     </a>
-                    <span className="text-gray-600">•</span>
-                    <a href="tel:+441234567890" className="text-blue-400 hover:text-blue-300 transition-colors">
+                    <span className="text-theme-secondary">•</span>
+                    <a href="tel:+441234567890" className="text-white/70 hover:text-white transition-colors">
                       +44 (0) 123 456 7890
                     </a>
                   </div>

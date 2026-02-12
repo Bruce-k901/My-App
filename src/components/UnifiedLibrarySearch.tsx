@@ -32,9 +32,9 @@ const LIBRARIES = [
     id: 'chemicals_library', 
     name: 'Chemicals', 
     icon: FlaskConical, 
-    color: 'text-teal-400',
-    bgColor: 'bg-teal-500/10',
-    borderColor: 'border-teal-500/30'
+    color: 'text-module-fg',
+    bgColor: 'bg-module-fg/10',
+    borderColor: 'border-module-fg/30'
   },
   { 
     id: 'drinks_library', 
@@ -56,9 +56,9 @@ const LIBRARIES = [
     id: 'glassware_library', 
     name: 'Glassware', 
     icon: GlassWater, 
-    color: 'text-cyan-400',
-    bgColor: 'bg-cyan-500/10',
-    borderColor: 'border-cyan-500/30'
+    color: 'text-module-fg',
+    bgColor: 'bg-module-fg/10',
+    borderColor: 'border-module-fg/30'
   },
   { 
     id: 'packaging_library', 
@@ -269,14 +269,14 @@ export default function UnifiedLibrarySearch({
     <div ref={searchRef} className={`relative ${className}`}>
       {/* Search Input */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-neutral-400" size={18} />
+ <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"size={18} />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
           placeholder="Type to search across all libraries (Ingredients, PPE, Chemicals, Drinks, etc.)..."
-          className="w-full bg-theme-button dark:bg-white/5 border border-theme dark:border-white/10 rounded-lg pl-10 pr-10 py-3 text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 transition-all"
+ className="w-full bg-theme-button border border-theme rounded-lg pl-10 pr-10 py-3 text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 transition-all"
           autoFocus
         />
         {searchQuery && (
@@ -286,7 +286,7 @@ export default function UnifiedLibrarySearch({
               setSearchQuery("");
               setIsOpen(false);
             }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-neutral-400 hover:text-[rgb(var(--text-primary))] dark:hover:text-white"
+ className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))]"
           >
             <X size={18} />
           </button>
@@ -295,13 +295,13 @@ export default function UnifiedLibrarySearch({
 
       {/* Library Filters and Results Container */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-theme-surface-elevated dark:bg-[#1a1a2e] border border-theme dark:border-white/20 rounded-lg shadow-xl overflow-hidden">
+ <div className="absolute z-50 w-full mt-2 bg-theme-surface-elevated dark:bg-[#1a1a2e] border border-theme rounded-lg shadow-xl overflow-hidden">
           {/* Library Filters */}
           <div 
-            className="p-3 border-b border-theme dark:border-white/10"
+ className="p-3 border-b border-theme"
             onClick={(e) => e.stopPropagation()}
           >
-          <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2 font-medium">Select libraries to search:</div>
+          <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-2 font-medium">Select libraries to search:</div>
           <div className="flex flex-wrap gap-2">
             {availableLibraries.map((lib) => {
                 const Icon = lib.icon;
@@ -318,10 +318,10 @@ export default function UnifiedLibrarySearch({
                     className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium transition-colors ${
                       isSelected
                         ? `${lib.bgColor} ${lib.borderColor} border`
-                        : 'bg-theme-button dark:bg-neutral-700 text-[rgb(var(--text-secondary))] dark:text-neutral-300 hover:bg-theme-button-hover dark:hover:bg-neutral-600'
+ : 'bg-theme-button text-[rgb(var(--text-secondary))] dark:text-neutral-300 hover:bg-theme-button-hover dark:hover:bg-neutral-600'
                     }`}
                   >
-                    <Icon size={14} className={isSelected ? lib.color : 'text-[rgb(var(--text-tertiary))] dark:text-neutral-400'} />
+ <Icon size={14} className={isSelected ? lib.color :'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'} />
                     {lib.name}
                   </button>
                 );
@@ -335,9 +335,9 @@ export default function UnifiedLibrarySearch({
             onClick={(e) => e.stopPropagation()}
           >
             {loading ? (
-              <div className="p-4 text-center text-[rgb(var(--text-secondary))] dark:text-white/60">Searching...</div>
+              <div className="p-4 text-center text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Searching...</div>
             ) : totalResults === 0 ? (
-              <div className="p-4 text-center text-[rgb(var(--text-secondary))] dark:text-white/60">
+              <div className="p-4 text-center text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
                 {searchQuery ? (
                   <>No results found for "{searchQuery}"</>
                 ) : (
@@ -360,7 +360,7 @@ export default function UnifiedLibrarySearch({
                       <div className="flex items-center gap-2 mb-2">
                         <Icon size={16} className={lib.color} />
                         <span className="font-semibold text-[rgb(var(--text-primary))] dark:text-white">{lib.name}</span>
-                        <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400">({items.length} results)</span>
+ <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">({items.length} results)</span>
                       </div>
                       <div className="space-y-1">
                         {items.map((item) => (
@@ -379,11 +379,11 @@ export default function UnifiedLibrarySearch({
                                 <div className="font-medium text-[rgb(var(--text-primary))] dark:text-white">
                                   {getDisplayName(item, libraryId)}
                                 </div>
-                                <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-400">
+ <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
                                   {getDisplayInfo(item, libraryId)}
                                 </div>
                               </div>
-                              <ChevronDown size={16} className="text-[rgb(var(--text-tertiary))] dark:text-neutral-400" />
+ <ChevronDown size={16} className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"/>
                             </div>
                           </button>
                         ))}

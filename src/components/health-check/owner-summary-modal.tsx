@@ -134,44 +134,44 @@ export function OwnerSummaryModal({ open, onClose, companyId }: OwnerSummaryModa
             <div className="animate-spin h-8 w-8 border-2 border-gray-300 dark:border-white/20 border-t-blue-500 rounded-full" />
           </div>
         ) : !report ? (
-          <div className="text-center py-16 text-gray-400 dark:text-white/30">
+          <div className="text-center py-16 text-theme-tertiary/30">
             No health check data available yet.
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto space-y-6 pr-1">
             {/* Top stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
-                <div className="text-3xl font-bold text-gray-900 dark:text-white">
+              <div className="p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
+                <div className="text-3xl font-bold text-theme-primary">
                   {report.healthScore != null ? `${Math.round(report.healthScore)}%` : '—'}
                 </div>
                 {scoreDelta != null && scoreDelta !== 0 && (
-                  <div className={`text-xs font-medium mt-1 ${scoreDelta > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                  <div className={`text-xs font-medium mt-1 ${scoreDelta > 0 ? 'text-module-fg' : 'text-red-600 dark:text-red-400'}`}>
                     {scoreDelta > 0 ? '+' : ''}{scoreDelta.toFixed(1)}% vs last week
                   </div>
                 )}
-                <div className="text-[10px] text-gray-500 dark:text-white/40 mt-1">Avg Health Score</div>
+                <div className="text-[10px] text-theme-tertiary mt-1">Avg Health Score</div>
               </div>
 
-              <div className="p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+              <div className="p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
                 <div className="text-3xl font-bold text-red-600 dark:text-red-400">{report.criticalCount}</div>
-                <div className="text-[10px] text-gray-500 dark:text-white/40 mt-1">Critical Issues</div>
+                <div className="text-[10px] text-theme-tertiary mt-1">Critical Issues</div>
               </div>
 
-              <div className="p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
-                <div className="text-3xl font-bold text-gray-900 dark:text-white">{report.siteCount}</div>
-                <div className="text-[10px] text-gray-500 dark:text-white/40 mt-1">Sites Scanned</div>
+              <div className="p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
+                <div className="text-3xl font-bold text-theme-primary">{report.siteCount}</div>
+                <div className="text-[10px] text-theme-tertiary mt-1">Sites Scanned</div>
               </div>
 
-              <div className="p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
-                <div className="text-3xl font-bold text-gray-900 dark:text-white">{report.totalItems}</div>
-                <div className="text-[10px] text-gray-500 dark:text-white/40 mt-1">Total Issues</div>
+              <div className="p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
+                <div className="text-3xl font-bold text-theme-primary">{report.totalItems}</div>
+                <div className="text-[10px] text-theme-tertiary mt-1">Total Issues</div>
               </div>
             </div>
 
             {/* Resolution progress */}
             <div>
-              <div className="flex justify-between text-xs text-gray-500 dark:text-white/40 mb-2">
+              <div className="flex justify-between text-xs text-theme-tertiary mb-2">
                 <span>{report.completedItems} resolved of {report.totalItems}</span>
                 <span>{pct}%</span>
               </div>
@@ -181,19 +181,19 @@ export function OwnerSummaryModal({ open, onClose, companyId }: OwnerSummaryModa
             {/* Module scores */}
             {Object.keys(report.moduleScores).length > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-gray-700 dark:text-white/60 mb-3">Module Scores</h3>
+                <h3 className="text-sm font-medium text-theme-secondary/60 mb-3">Module Scores</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {Object.entries(report.moduleScores).map(([mod, score]) => {
                     const colors = MODULE_BADGE_COLOURS[mod as HealthCheckModule]
                     const label = MODULE_LABELS[mod as HealthCheckModule] ?? mod
                     return (
-                      <div key={mod} className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+                      <div key={mod} className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
                         <div className="flex items-center justify-between mb-2">
                           <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${colors?.bg ?? ''} ${colors?.text ?? ''}`}>
                             {label}
                           </span>
                           <span className={`text-sm font-bold ${
-                            score >= 80 ? 'text-emerald-600 dark:text-emerald-400'
+                            score >= 80 ? 'text-module-fg'
                             : score >= 50 ? 'text-amber-600 dark:text-amber-400'
                             : 'text-red-600 dark:text-red-400'
                           }`}>
@@ -219,7 +219,7 @@ export function OwnerSummaryModal({ open, onClose, companyId }: OwnerSummaryModa
             {/* Trend chart */}
             {trend.length > 1 && (
               <div>
-                <h3 className="text-sm font-medium text-gray-700 dark:text-white/60 mb-3">Health Score Trend</h3>
+                <h3 className="text-sm font-medium text-theme-secondary/60 mb-3">Health Score Trend</h3>
                 <div className="h-64 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={trend} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>

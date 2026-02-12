@@ -103,13 +103,13 @@ export default function CapacityStatus({ date, data, loading }: CapacityStatusPr
   if (!data || data.equipment.length === 0) {
     return (
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">
+        <h2 className="text-lg font-semibold text-theme-primary mb-4">
           Capacity Status - {formatDate(date)}
         </h2>
         <div className="text-center py-12">
           <TrendingUp className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <p className="text-white/60">No equipment configured</p>
-          <p className="text-white/40 text-sm mt-2">
+          <p className="text-theme-tertiary">No equipment configured</p>
+          <p className="text-theme-tertiary text-sm mt-2">
             Add equipment in settings to track capacity
           </p>
         </div>
@@ -120,7 +120,7 @@ export default function CapacityStatus({ date, data, loading }: CapacityStatusPr
   return (
     <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-white">
+        <h2 className="text-lg font-semibold text-theme-primary">
           Capacity Status - {formatDate(date)}
         </h2>
         {data.hasOverload && (
@@ -148,8 +148,8 @@ export default function CapacityStatus({ date, data, loading }: CapacityStatusPr
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-2xl">{getEquipmentIcon(item.type)}</span>
                   <div>
-                    <h3 className="text-white font-semibold">{item.name}</h3>
-                    <p className="text-white/40 text-sm capitalize">{item.type}</p>
+                    <h3 className="text-theme-primary font-semibold">{item.name}</h3>
+                    <p className="text-theme-tertiary text-sm capitalize">{item.type}</p>
                   </div>
                 </div>
               </div>
@@ -163,7 +163,7 @@ export default function CapacityStatus({ date, data, loading }: CapacityStatusPr
             {/* Capacity Bar */}
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-white/60 text-sm">Utilization</span>
+                <span className="text-theme-tertiary text-sm">Utilization</span>
                 <span className={`text-sm font-medium ${
                   item.status === 'overloaded' ? 'text-red-400' :
                   item.status === 'tight' ? 'text-amber-400' :
@@ -183,19 +183,19 @@ export default function CapacityStatus({ date, data, loading }: CapacityStatusPr
             {/* Capacity Details */}
             <div className="grid grid-cols-3 gap-4 mb-4">
               <div>
-                <p className="text-white/60 text-xs mb-1">Capacity</p>
-                <p className="text-white font-medium">
+                <p className="text-theme-tertiary text-xs mb-1">Capacity</p>
+                <p className="text-theme-primary font-medium">
                   {item.capacity} {item.unit}
                 </p>
               </div>
               <div>
-                <p className="text-white/60 text-xs mb-1">Scheduled</p>
-                <p className="text-white font-medium">
+                <p className="text-theme-tertiary text-xs mb-1">Scheduled</p>
+                <p className="text-theme-primary font-medium">
                   {item.scheduled} {item.unit}
                 </p>
               </div>
               <div>
-                <p className="text-white/60 text-xs mb-1">Available</p>
+                <p className="text-theme-tertiary text-xs mb-1">Available</p>
                 <p className={`font-medium ${
                   item.available < (item.capacity * 0.1) ? 'text-amber-400' : 'text-green-400'
                 }`}>
@@ -230,7 +230,7 @@ export default function CapacityStatus({ date, data, loading }: CapacityStatusPr
             {/* Time Slots */}
             {item.schedule && item.schedule.length > 0 && (
               <div className="pt-4 border-t border-white/[0.06]">
-                <p className="text-white/60 text-sm font-medium mb-3">Time Slots:</p>
+                <p className="text-theme-tertiary text-sm font-medium mb-3">Time Slots:</p>
                 <div className="space-y-2">
                   {item.schedule.map((slot) => (
                     <div
@@ -238,12 +238,12 @@ export default function CapacityStatus({ date, data, loading }: CapacityStatusPr
                       className="flex items-center justify-between px-3 py-2 bg-white/5 rounded-lg"
                     >
                       <div className="flex items-center gap-3">
-                        <Clock className="w-4 h-4 text-white/40" />
-                        <span className="text-white/80 text-sm">{slot.time}</span>
-                        <span className="text-white/60 text-sm">{slot.product}</span>
+                        <Clock className="w-4 h-4 text-theme-tertiary" />
+                        <span className="text-theme-secondary text-sm">{slot.time}</span>
+                        <span className="text-theme-tertiary text-sm">{slot.product}</span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-white/60 text-sm">
+                        <span className="text-theme-tertiary text-sm">
                           {slot.quantity} {item.unit}
                         </span>
                         <span className={`text-xs font-medium px-2 py-0.5 rounded ${

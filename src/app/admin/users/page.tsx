@@ -89,7 +89,7 @@ export default function AdminUsersPage() {
       case 'owner': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
       case 'admin': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
       case 'manager': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      default: return 'bg-theme-surface-elevated0/20 text-theme-tertiary border-gray-500/30';
     }
   };
 
@@ -106,23 +106,23 @@ export default function AdminUsersPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">All Users</h1>
-          <p className="text-white/60">View all users across the platform</p>
+          <h1 className="text-3xl font-bold text-theme-primary mb-2">All Users</h1>
+          <p className="text-theme-tertiary">View all users across the platform</p>
         </div>
-        <div className="text-white/40 text-sm">
+        <div className="text-theme-tertiary text-sm">
           {users.length} total users
         </div>
       </div>
 
       {/* Search */}
       <div className="relative mb-6">
-        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/40 w-5 h-5" />
+        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-theme-tertiary w-5 h-5" />
         <input
           type="text"
           placeholder="Search by name, email, or company..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
+          className="w-full pl-12 pr-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-xl text-theme-primary placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
         />
       </div>
 
@@ -131,11 +131,11 @@ export default function AdminUsersPage() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/[0.06]">
-              <th className="text-left p-4 text-white/60 font-medium">User</th>
-              <th className="text-left p-4 text-white/60 font-medium">Company</th>
-              <th className="text-left p-4 text-white/60 font-medium">Role</th>
-              <th className="text-left p-4 text-white/60 font-medium">Last Active</th>
-              <th className="text-left p-4 text-white/60 font-medium">Joined</th>
+              <th className="text-left p-4 text-theme-tertiary font-medium">User</th>
+              <th className="text-left p-4 text-theme-tertiary font-medium">Company</th>
+              <th className="text-left p-4 text-theme-tertiary font-medium">Role</th>
+              <th className="text-left p-4 text-theme-tertiary font-medium">Last Active</th>
+              <th className="text-left p-4 text-theme-tertiary font-medium">Joined</th>
             </tr>
           </thead>
           <tbody>
@@ -147,12 +147,12 @@ export default function AdminUsersPage() {
                       {user.is_platform_admin ? (
                         <Shield className="w-5 h-5 text-[#D37E91]" />
                       ) : (
-                        <User className="w-5 h-5 text-white/60" />
+                        <User className="w-5 h-5 text-theme-tertiary" />
                       )}
                     </div>
                     <div>
-                      <div className="text-white font-medium">{user.full_name || 'No name'}</div>
-                      <div className="text-white/40 text-sm flex items-center gap-1">
+                      <div className="text-theme-primary font-medium">{user.full_name || 'No name'}</div>
+                      <div className="text-theme-tertiary text-sm flex items-center gap-1">
                         <Mail className="w-3 h-3" />
                         {user.email}
                       </div>
@@ -161,12 +161,12 @@ export default function AdminUsersPage() {
                 </td>
                 <td className="p-4">
                   {user.company_name ? (
-                    <div className="flex items-center gap-2 text-white/80">
-                      <Building2 className="w-4 h-4 text-white/40" />
+                    <div className="flex items-center gap-2 text-theme-secondary">
+                      <Building2 className="w-4 h-4 text-theme-tertiary" />
                       {user.company_name}
                     </div>
                   ) : (
-                    <span className="text-white/40">—</span>
+                    <span className="text-theme-tertiary">—</span>
                   )}
                 </td>
                 <td className="p-4">
@@ -174,13 +174,13 @@ export default function AdminUsersPage() {
                     {user.is_platform_admin ? 'Platform Admin' : (user.app_role || 'User')}
                   </span>
                 </td>
-                <td className="p-4 text-white/60 text-sm">
+                <td className="p-4 text-theme-tertiary text-sm">
                   {user.last_login 
                     ? new Date(user.last_login).toLocaleDateString()
                     : 'Never'
                   }
                 </td>
-                <td className="p-4 text-white/60 text-sm">
+                <td className="p-4 text-theme-tertiary text-sm">
                   {new Date(user.created_at).toLocaleDateString()}
                 </td>
               </tr>
@@ -191,7 +191,7 @@ export default function AdminUsersPage() {
         {filteredUsers.length === 0 && (
           <div className="text-center py-12">
             <Users className="w-12 h-12 text-white/20 mx-auto mb-4" />
-            <p className="text-white/60">
+            <p className="text-theme-tertiary">
               {searchTerm ? 'No users match your search' : 'No users found'}
             </p>
           </div>

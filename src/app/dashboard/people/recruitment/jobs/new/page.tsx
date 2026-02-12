@@ -98,76 +98,76 @@ export default function PostJobPage() {
       <div className="flex items-center gap-4">
         <Link
           href="/dashboard/people/recruitment"
-          className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white/80"
+          className="p-2 rounded-lg bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-theme text-theme-primary/80"
         >
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div className="flex-1">
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Post New Job</h1>
-          <p className="text-sm text-gray-900 dark:text-white/60 mt-1">
+          <h1 className="text-xl font-semibold text-theme-primary">Post New Job</h1>
+          <p className="text-sm text-theme-primary/60 mt-1">
             Create a new job posting to start hiring
           </p>
         </div>
       </div>
 
       {/* Form */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6 space-y-6">
+      <div className="bg-theme-surface border border-theme rounded-xl p-6 space-y-6">
         {/* Job Details */}
         <div className="space-y-4">
-          <h2 className="text-gray-900 dark:text-white font-semibold">Job Details</h2>
+          <h2 className="text-theme-primary font-semibold">Job Details</h2>
 
           <div>
-            <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Job Title *</label>
+            <label className="text-xs text-theme-primary/50 block mb-1">Job Title *</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g., Server, Chef, Bartender"
-              className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm"
+              className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-theme rounded-lg text-theme-primary text-sm"
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Department</label>
+              <label className="text-xs text-theme-primary/50 block mb-1">Department</label>
               <input
                 type="text"
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
                 placeholder="e.g., Kitchen, Bar, Front of House"
-                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm"
+                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-theme rounded-lg text-theme-primary text-sm"
               />
             </div>
 
             <div>
-              <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Location</label>
+              <label className="text-xs text-theme-primary/50 block mb-1">Location</label>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="e.g., London Bridge, Multiple sites"
-                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm"
+                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-theme rounded-lg text-theme-primary text-sm"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Job Description</label>
+            <label className="text-xs text-theme-primary/50 block mb-1">Job Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe the role, responsibilities, and what you're looking for..."
               rows={6}
-              className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm resize-none"
+              className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-theme rounded-lg text-theme-primary text-sm resize-none"
             />
           </div>
         </div>
 
         {/* Position Type (CRITICAL) */}
-        <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-white/[0.06]">
+        <div className="space-y-4 pt-4 border-t border-theme">
           <div>
-            <h2 className="text-gray-900 dark:text-white font-semibold mb-1">Position Type</h2>
-            <p className="text-xs text-gray-900 dark:text-white/40">
+            <h2 className="text-theme-primary font-semibold mb-1">Position Type</h2>
+            <p className="text-xs text-theme-primary/40">
               These determine which onboarding pack is auto-assigned
             </p>
           </div>
@@ -175,7 +175,7 @@ export default function PostJobPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* BOH/FOH */}
             <div>
-              <label className="text-xs text-gray-900 dark:text-white/50 block mb-2">Work Area *</label>
+              <label className="text-xs text-theme-primary/50 block mb-2">Work Area *</label>
               <div className="grid grid-cols-3 gap-2">
                 {(['FOH', 'BOH', 'BOTH'] as const).map((option) => (
                   <button
@@ -184,14 +184,14 @@ export default function PostJobPage() {
                     className={`px-3 py-2 rounded-lg text-sm transition-all ${
                       bohFoh === option
                         ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border-2 border-blue-600 dark:border-blue-400'
-                        : 'bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white/60 border-2 border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
+                        : 'bg-gray-100 dark:bg-white/5 text-theme-primary/60 border-2 border-theme hover:bg-gray-200 dark:hover:bg-white/10'
                     }`}
                   >
                     {option}
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-gray-900 dark:text-white/30 mt-1">
+              <p className="text-xs text-theme-primary/30 mt-1">
                 {bohFoh === 'FOH' && 'Front of House (servers, hosts, bar staff)'}
                 {bohFoh === 'BOH' && 'Back of House (chefs, kitchen staff)'}
                 {bohFoh === 'BOTH' && 'Flexible across all areas'}
@@ -200,7 +200,7 @@ export default function PostJobPage() {
 
             {/* Hourly/Salaried */}
             <div>
-              <label className="text-xs text-gray-900 dark:text-white/50 block mb-2">Pay Structure *</label>
+              <label className="text-xs text-theme-primary/50 block mb-2">Pay Structure *</label>
               <div className="grid grid-cols-2 gap-2">
                 {(['hourly', 'salaried'] as const).map((option) => (
                   <button
@@ -209,7 +209,7 @@ export default function PostJobPage() {
                     className={`px-3 py-2 rounded-lg text-sm transition-all ${
                       payType === option
                         ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border-2 border-blue-600 dark:border-blue-400'
-                        : 'bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white/60 border-2 border-gray-300 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
+                        : 'bg-gray-100 dark:bg-white/5 text-theme-primary/60 border-2 border-theme hover:bg-gray-200 dark:hover:bg-white/10'
                     }`}
                   >
                     {option === 'hourly' ? 'Hourly' : 'Salaried'}
@@ -221,12 +221,12 @@ export default function PostJobPage() {
         </div>
 
         {/* Pay & Contract */}
-        <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-white/[0.06]">
-          <h2 className="text-gray-900 dark:text-white font-semibold">Pay & Contract</h2>
+        <div className="space-y-4 pt-4 border-t border-theme">
+          <h2 className="text-theme-primary font-semibold">Pay & Contract</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">
+              <label className="text-xs text-theme-primary/50 block mb-1">
                 Min Pay Rate (£{payType === 'hourly' ? '/hour' : '/year'})
               </label>
               <input
@@ -235,12 +235,12 @@ export default function PostJobPage() {
                 value={payRateMin}
                 onChange={(e) => setPayRateMin(e.target.value)}
                 placeholder={payType === 'hourly' ? '11.50' : '25000'}
-                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm"
+                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-theme rounded-lg text-theme-primary text-sm"
               />
             </div>
 
             <div>
-              <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">
+              <label className="text-xs text-theme-primary/50 block mb-1">
                 Max Pay Rate (£{payType === 'hourly' ? '/hour' : '/year'})
               </label>
               <input
@@ -249,14 +249,14 @@ export default function PostJobPage() {
                 value={payRateMax}
                 onChange={(e) => setPayRateMax(e.target.value)}
                 placeholder={payType === 'hourly' ? '15.00' : '35000'}
-                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm"
+                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-theme rounded-lg text-theme-primary text-sm"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Contract Type</label>
+              <label className="text-xs text-theme-primary/50 block mb-1">Contract Type</label>
               <Select
                 value={contractType}
                 onValueChange={(v) => setContractType(v as any)}
@@ -271,7 +271,7 @@ export default function PostJobPage() {
             </div>
 
             <div>
-              <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">
+              <label className="text-xs text-theme-primary/50 block mb-1">
                 Contract Hours (per week)
               </label>
               <input
@@ -280,18 +280,18 @@ export default function PostJobPage() {
                 value={contractHours}
                 onChange={(e) => setContractHours(e.target.value)}
                 placeholder="e.g., 40, 20, 16"
-                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm"
+                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-theme rounded-lg text-theme-primary text-sm"
               />
             </div>
           </div>
         </div>
 
         {/* Requirements */}
-        <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-white/[0.06]">
-          <h2 className="text-gray-900 dark:text-white font-semibold">Requirements</h2>
+        <div className="space-y-4 pt-4 border-t border-theme">
+          <h2 className="text-theme-primary font-semibold">Requirements</h2>
 
           <div>
-            <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">
+            <label className="text-xs text-theme-primary/50 block mb-1">
               Required Skills (comma-separated)
             </label>
             <input
@@ -299,12 +299,12 @@ export default function PostJobPage() {
               value={requiredSkills}
               onChange={(e) => setRequiredSkills(e.target.value)}
               placeholder="e.g., Customer service, Cash handling, Teamwork"
-              className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm"
+              className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-theme rounded-lg text-theme-primary text-sm"
             />
           </div>
 
           <div>
-            <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">
+            <label className="text-xs text-theme-primary/50 block mb-1">
               Required Certifications (comma-separated)
             </label>
             <input
@@ -312,27 +312,27 @@ export default function PostJobPage() {
               value={requiredCerts}
               onChange={(e) => setRequiredCerts(e.target.value)}
               placeholder="e.g., Food Hygiene Level 2, Personal License"
-              className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm"
+              className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-theme rounded-lg text-theme-primary text-sm"
             />
           </div>
 
           <div>
-            <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Experience Required</label>
+            <label className="text-xs text-theme-primary/50 block mb-1">Experience Required</label>
             <input
               type="text"
               value={experienceRequired}
               onChange={(e) => setExperienceRequired(e.target.value)}
               placeholder="e.g., 1-2 years, No experience needed, Previous chef experience"
-              className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm"
+              className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-theme rounded-lg text-theme-primary text-sm"
             />
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between gap-4 pt-4 border-t border-gray-200 dark:border-white/[0.06]">
+        <div className="flex items-center justify-between gap-4 pt-4 border-t border-theme">
           <Link
             href="/dashboard/people/recruitment"
-            className="px-4 py-2 rounded-lg text-sm bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white/80"
+            className="px-4 py-2 rounded-lg text-sm bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-theme text-theme-primary/80"
           >
             Cancel
           </Link>
@@ -341,7 +341,7 @@ export default function PostJobPage() {
             <button
               onClick={() => handleSave(false)}
               disabled={saving || publishing || !title.trim()}
-              className="px-4 py-2 rounded-lg text-sm bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white disabled:opacity-50 flex items-center gap-2"
+              className="px-4 py-2 rounded-lg text-sm bg-theme-muted hover:bg-gray-200 dark:hover:bg-white/15 border border-theme text-theme-primary disabled:opacity-50 flex items-center gap-2"
             >
               {saving ? (
                 <>

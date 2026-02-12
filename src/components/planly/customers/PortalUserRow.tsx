@@ -57,8 +57,8 @@ export function PortalUserRow({
     not_invited: {
       icon: AlertCircle,
       label: 'Not Invited',
-      className: 'text-gray-500 dark:text-white/40',
-      bgClassName: 'bg-gray-100 dark:bg-white/10',
+      className: 'text-theme-tertiary',
+      bgClassName: 'bg-theme-muted',
     },
     invited: {
       icon: Clock,
@@ -83,7 +83,7 @@ export function PortalUserRow({
   const StatusIcon = statusConfig[status].icon;
 
   return (
-    <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10">
+    <div className="flex items-center gap-3 p-3 bg-theme-button rounded-lg border border-theme">
       {/* Primary indicator */}
       <button
         type="button"
@@ -92,7 +92,7 @@ export function PortalUserRow({
           'p-1 rounded',
           user.is_primary
             ? 'text-amber-500 dark:text-amber-400'
-            : 'text-gray-300 dark:text-white/20 hover:text-gray-400 dark:hover:text-white/40'
+ :'text-theme-tertiary /20 hover:text-theme-tertiary dark:hover:text-theme-tertiary'
         )}
         title={user.is_primary ? 'Primary contact' : 'Set as primary'}
       >
@@ -105,7 +105,7 @@ export function PortalUserRow({
           value={user.name}
           onChange={(e) => onUpdate({ name: e.target.value })}
           placeholder="Name"
-          className="h-8 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40"
+          className="h-8 bg-theme-surface border-theme text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary"
         />
       </div>
 
@@ -117,7 +117,7 @@ export function PortalUserRow({
           onChange={(e) => onUpdate({ email: e.target.value })}
           placeholder="Email address"
           disabled={!!user.auth_user_id}
-          className="h-8 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 disabled:opacity-50"
+          className="h-8 bg-theme-surface border-theme text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary disabled:opacity-50"
         />
       </div>
 
@@ -138,7 +138,7 @@ export function PortalUserRow({
           variant="outline"
           onClick={handleSendInvite}
           disabled={isSending || !user.email}
-          className="h-8 px-3 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
+          className="h-8 px-3 bg-theme-surface border-theme text-theme-primary hover:bg-theme-surface-elevated dark:hover:bg-white/10"
         >
           <Send className="h-3 w-3 mr-1" />
           {isSending ? 'Sending...' : status === 'not_invited' ? 'Invite' : 'Resend'}

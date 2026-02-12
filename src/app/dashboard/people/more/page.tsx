@@ -25,8 +25,8 @@ export default function MorePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">More</h1>
-        <p className="text-gray-500 dark:text-white/60">Additional Teamly features</p>
+        <h1 className="text-2xl font-bold text-theme-primary">More</h1>
+        <p className="text-theme-tertiary">Additional Teamly features</p>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -34,14 +34,14 @@ export default function MorePage() {
           <Link
             key={item.href}
             href={item.href}
-            className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6 hover:border-[#D37E91]/50 transition-colors group"
+            className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6 hover:border-module-fg/50 transition-colors group"
           >
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#D37E91] to-blue-500 flex items-center justify-center flex-shrink-0">
-                <item.icon className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-module-fg to-blue-500 flex items-center justify-center flex-shrink-0">
+                <item.icon className="w-6 h-6 text-theme-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-white group-hover:text-[#D37E91] transition-colors">
+                <h3 className="font-medium text-theme-primary group-hover:text-module-fg transition-colors">
                   {item.label}
                 </h3>
               </div>

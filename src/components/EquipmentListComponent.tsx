@@ -69,7 +69,7 @@ export default function EquipmentListComponent({ node, updateAttributes, selecte
       <SOPBlockWrapper node={node} deleteNode={handleDelete}>
         <div className="relative p-4 rounded-2xl border border-magenta-500/30 bg-white/5 backdrop-blur-md shadow-sm">
           <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2 text-xs text-gray-400">
+        <div className="flex items-center gap-2 text-xs text-theme-tertiary">
           <span 
             className="cursor-grab select-none hover:text-magenta-400 transition-colors"
             contentEditable={false}
@@ -81,7 +81,7 @@ export default function EquipmentListComponent({ node, updateAttributes, selecte
         </div>
         <button
           onClick={addRow}
-          className="relative overflow-hidden group px-3 py-1.5 rounded-xl text-xs font-medium text-white"
+          className="relative overflow-hidden group px-3 py-1.5 rounded-xl text-xs font-medium text-theme-primary"
         >
           <span className="absolute inset-0 bg-gradient-to-r from-magenta-600/60 to-magenta-500/80 blur-sm group-hover:blur transition-all"></span>
           <span className="relative z-10">+ Add Equipment</span>
@@ -90,7 +90,7 @@ export default function EquipmentListComponent({ node, updateAttributes, selecte
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-gray-200 border-collapse">
-          <thead className="text-gray-400 text-xs border-b border-magenta-500/20">
+          <thead className="text-theme-tertiary text-xs border-b border-magenta-500/20">
             <tr>
               <th className="text-left p-2">Equipment</th>
               <th className="text-left p-2">Colour Code</th>
@@ -103,7 +103,7 @@ export default function EquipmentListComponent({ node, updateAttributes, selecte
           <tbody>
             {rows.length === 0 && (
               <tr>
-                <td colSpan={6} className="text-center text-gray-500 italic py-4">
+                <td colSpan={6} className="text-center text-theme-tertiary italic py-4">
                   No equipment added yet.
                 </td>
               </tr>
@@ -114,7 +114,7 @@ export default function EquipmentListComponent({ node, updateAttributes, selecte
                   <input
                     value={row.name}
                     onChange={(e) => updateCell(i, "name", e.target.value)}
-                    className="w-full bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-white focus:border-magenta-400 focus:outline-none"
+                    className="w-full bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
                     placeholder="Equipment name"
                   />
                 </td>
@@ -122,7 +122,7 @@ export default function EquipmentListComponent({ node, updateAttributes, selecte
                   <select
                     value={row.colourCode}
                     onChange={(e) => updateCell(i, "colourCode", e.target.value)}
-                    className="w-full bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-white focus:border-magenta-400 focus:outline-none"
+                    className="w-full bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
                   >
                     {colourOptions.map(option => (
                       <option key={option} value={option}>{option}</option>
@@ -133,7 +133,7 @@ export default function EquipmentListComponent({ node, updateAttributes, selecte
                   <select
                     value={row.hotCold}
                     onChange={(e) => updateCell(i, "hotCold", e.target.value)}
-                    className={`w-full bg-neutral-800 border rounded-md px-2 py-1 text-sm text-white focus:border-magenta-400 focus:outline-none ${
+                    className={`w-full bg-neutral-800 border rounded-md px-2 py-1 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none ${
                       row.hotCold === "Hot" 
                         ? "border-red-500/50 bg-red-500/10" 
                         : "border-blue-500/50 bg-blue-500/10"
@@ -161,7 +161,7 @@ export default function EquipmentListComponent({ node, updateAttributes, selecte
                   <input
                     value={row.notes}
                     onChange={(e) => updateCell(i, "notes", e.target.value)}
-                    className="w-full bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-white focus:border-magenta-400 focus:outline-none"
+                    className="w-full bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
                     placeholder="Cleaning notes..."
                   />
                 </td>

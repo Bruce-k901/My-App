@@ -49,22 +49,22 @@ export default function ServiceCompletionModal({ ppm, asset, user, onClose }: {
       <h3 className="text-xl font-semibold mb-4">Complete Service</h3>
 
       <label className="block mb-3">
-        <span className="text-sm text-gray-300">Service Date</span>
+        <span className="text-sm text-theme-tertiary">Service Date</span>
         <input
           type="date"
           value={form.service_date}
           onChange={e => setForm({ ...form, service_date: e.target.value })}
-          className="w-full bg-neutral-800 border border-neutral-700 rounded-md p-2 mt-1"
+          className="w-full bg-neutral-800 border border-theme rounded-md p-2 mt-1"
         />
       </label>
 
       <label className="block mb-3">
-        <span className="text-sm text-gray-300">Notes</span>
+        <span className="text-sm text-theme-tertiary">Notes</span>
         <textarea
           rows={3}
           value={form.notes}
           onChange={e => setForm({ ...form, notes: e.target.value })}
-          className="w-full bg-neutral-800 border border-neutral-700 rounded-md p-2 mt-1"
+          className="w-full bg-neutral-800 border border-theme rounded-md p-2 mt-1"
         />
       </label>
 

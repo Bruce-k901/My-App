@@ -84,23 +84,23 @@ export function DayColumn({
       <div className={`p-1.5 border-b border-gray-200 dark:border-neutral-800 ${isToday ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/10' : ''}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-1">
-            <span className={`text-xs font-medium ${isToday ? 'text-[#D37E91]' : 'text-gray-500 dark:text-white/60'}`}>
+            <span className={`text-xs font-medium ${isToday ? 'text-[#D37E91]' : 'text-theme-tertiary'}`}>
               {dayName}
             </span>
-            <span className={`text-lg font-bold ${isToday ? 'text-[#D37E91]' : 'text-gray-900 dark:text-white'}`}>
+            <span className={`text-lg font-bold ${isToday ? 'text-[#D37E91]' : 'text-theme-primary'}`}>
               {dayNum}
             </span>
           </div>
           <button
             onClick={onAddShift}
-            className="p-1 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded text-gray-400 dark:text-neutral-500 hover:text-gray-700 dark:hover:text-white transition-colors"
+ className="p-1 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded text-gray-400 dark:text-theme-tertiary hover:text-gray-700 transition-colors"
           >
             <Plus className="w-4 h-4" />
           </button>
         </div>
         
         {/* Day Stats Row */}
-        <div className="flex items-center gap-2 mt-1 text-xs text-gray-400 dark:text-neutral-500">
+ <div className="flex items-center gap-2 mt-1 text-xs text-gray-400 dark:text-theme-tertiary">
           <span className="flex items-center gap-0.5">
             <Clock className="w-3 h-3" />
             {dayStats.totalHours}h
@@ -121,7 +121,7 @@ export function DayColumn({
               forecastStatus === 'under' ? 'bg-amber-500/10 text-amber-400' :
               forecastStatus === 'over' ? 'bg-blue-500/10 text-blue-400' :
               forecastStatus === 'good' ? 'bg-green-500/10 text-green-400' :
-              'bg-neutral-700 text-gray-500 dark:text-white/60'
+              'bg-neutral-700 text-theme-tertiary'
             }`}
             onClick={() => setShowForecastInput(true)}
             >
@@ -137,7 +137,7 @@ export function DayColumn({
           ) : (
             <button
               onClick={() => setShowForecastInput(true)}
-              className="w-full flex items-center gap-1.5 text-xs px-1.5 py-0.5 rounded bg-neutral-700/50 text-gray-500 dark:text-white/60 hover:bg-neutral-700 hover:text-neutral-300 transition-colors"
+              className="w-full flex items-center gap-1.5 text-xs px-1.5 py-0.5 rounded bg-neutral-700/50 text-theme-tertiary hover:bg-neutral-700 hover:text-theme-tertiary transition-colors"
             >
               <DollarSign className="w-3 h-3" />
               <span>Add forecast</span>
@@ -175,7 +175,7 @@ export function DayColumn({
         {shifts.length === 0 && (
           <button
             onClick={onAddShift}
-            className="w-full h-full min-h-[100px] flex items-center justify-center text-gray-400 dark:text-neutral-600 hover:text-gray-500 dark:hover:text-white/60 text-sm border border-dashed border-gray-300 dark:border-neutral-700 rounded hover:border-gray-400 dark:hover:border-neutral-500 transition-colors"
+            className="w-full h-full min-h-[100px] flex items-center justify-center text-gray-400 dark:text-neutral-600 hover:text-gray-500 dark:hover:text-theme-tertiary text-sm border border-dashed border-gray-300 dark:border-theme rounded hover:border-gray-400 dark:hover:border-neutral-500 transition-colors"
           >
             + Add shift
           </button>

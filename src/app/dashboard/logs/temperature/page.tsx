@@ -69,7 +69,7 @@ const getTemperatureStatus = (
   if (temp === null || temp === undefined) {
     return { 
       label: 'Not Recorded', 
-      color: 'text-gray-500 dark:text-gray-400', 
+      color: 'text-theme-tertiary', 
       icon: '○',
       variant: 'secondary'
     };
@@ -1275,72 +1275,72 @@ export default function TemperatureLogsPage() {
   }, [filteredLogs]);
 
   return (
-    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+    <div className="w-full bg-theme-surface-elevated min-h-screen">
       <div className="w-full px-4">
         <div className="max-w-[2000px] mx-auto p-6">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <Thermometer className="w-8 h-8 text-red-600 dark:text-[#D37E91]" />
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Temperature Logs</h1>
+            <Thermometer className="w-8 h-8 text-red-600 dark:text-module-fg" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary">Temperature Logs</h1>
           </div>
-          <p className="text-gray-600 dark:text-white/60 text-sm sm:text-base">
+          <p className="text-theme-secondary text-sm sm:text-base">
             Historical log of all temperature readings collected by your business
           </p>
         </div>
 
         {/* Summary Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
-            <div className="text-gray-600 dark:text-white/60 text-sm mb-1">Total Readings</div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</div>
+          <div className="bg-theme-surface border border-theme rounded-xl p-4">
+            <div className="text-theme-secondary text-sm mb-1">Total Readings</div>
+            <div className="text-2xl font-bold text-theme-primary">{stats.total}</div>
           </div>
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
-            <div className="text-gray-600 dark:text-white/60 text-sm mb-1">In Range</div>
+          <div className="bg-theme-surface border border-theme rounded-xl p-4">
+            <div className="text-theme-secondary text-sm mb-1">In Range</div>
             <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.inRange}</div>
           </div>
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
-            <div className="text-gray-600 dark:text-white/60 text-sm mb-1">Out of Range</div>
+          <div className="bg-theme-surface border border-theme rounded-xl p-4">
+            <div className="text-theme-secondary text-sm mb-1">Out of Range</div>
             <div className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.outOfRange}</div>
           </div>
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
-            <div className="text-gray-600 dark:text-white/60 text-sm mb-1">Follow-Ups Required</div>
+          <div className="bg-theme-surface border border-theme rounded-xl p-4">
+            <div className="text-theme-secondary text-sm mb-1">Follow-Ups Required</div>
             <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{stats.followUps}</div>
           </div>
         </div>
 
         {/* Export & Analytics Section */}
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
+        <div className="bg-theme-surface border border-theme rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
-            <Download className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Export & Analytics</h2>
+            <Download className="w-5 h-5 text-module-fg dark:text-module-fg" />
+            <h2 className="text-lg font-semibold text-theme-primary">Export & Analytics</h2>
           </div>
 
           {/* Export Date Range */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div>
-              <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Export Start Date</label>
+              <label className="block text-sm text-theme-secondary mb-2">Export Start Date</label>
               <input
                 type="date"
                 value={exportStart}
                 onChange={(e) => setExportStart(e.target.value)}
-                className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                className="w-full bg-white dark:bg-white/[0.06] border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] dark:focus:ring-module-fg/[0.50] focus:border-module-fg/[0.50] transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Export End Date</label>
+              <label className="block text-sm text-theme-secondary mb-2">Export End Date</label>
               <input
                 type="date"
                 value={exportEnd}
                 onChange={(e) => setExportEnd(e.target.value)}
-                className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                className="w-full bg-white dark:bg-white/[0.06] border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] dark:focus:ring-module-fg/[0.50] focus:border-module-fg/[0.50] transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
               />
             </div>
             <div className="flex items-end">
               <button
                 type="button"
                 onClick={exportCsv}
-                className="w-full bg-transparent text-[#D37E91] border border-[#D37E91] rounded-lg px-4 py-2 hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all font-medium flex items-center justify-center gap-2"
+                className="w-full bg-transparent text-module-fg border border-module-fg rounded-lg px-4 py-2 hover:shadow-[0_0_12px_rgba(var(--module-fg),0.7)] transition-all font-medium flex items-center justify-center gap-2"
               >
                 <Download className="w-4 h-4" />
                 Export CSV
@@ -1494,16 +1494,16 @@ export default function TemperatureLogsPage() {
             return (
               <>
                 {/* Equipment Filters */}
-                <div className="flex gap-4 mb-6 p-4 bg-gray-50 dark:bg-white/[0.05] rounded-lg">
+                <div className="flex gap-4 mb-6 p-4 bg-theme-button rounded-lg">
                   <div className="flex-1">
-                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-white/80">Equipment Type</label>
+                    <label className="block text-sm font-medium mb-2 text-theme-secondary">Equipment Type</label>
                     <select
                       value={equipmentTypeFilter}
                       onChange={(e) => {
                         setEquipmentTypeFilter(e.target.value);
                         setSelectedAssetFilter('all'); // Reset asset filter when type changes
                       }}
-                      className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                      className="w-full bg-white dark:bg-white/[0.06] border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] dark:focus:ring-module-fg/[0.50] focus:border-module-fg/[0.50] transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                     >
                       <option value="chilled">Chilled (0-8°C)</option>
                       <option value="frozen">Frozen (&lt;-10°C)</option>
@@ -1513,11 +1513,11 @@ export default function TemperatureLogsPage() {
                   </div>
 
                   <div className="flex-1">
-                    <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-white/80">Specific Equipment</label>
+                    <label className="block text-sm font-medium mb-2 text-theme-secondary">Specific Equipment</label>
                     <select
                       value={selectedAssetFilter}
                       onChange={(e) => setSelectedAssetFilter(e.target.value)}
-                      className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                      className="w-full bg-white dark:bg-white/[0.06] border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] dark:focus:ring-module-fg/[0.50] focus:border-module-fg/[0.50] transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                     >
                       <option value="all">All Equipment in Type</option>
                       {assetsInType.map(asset => (
@@ -1531,11 +1531,11 @@ export default function TemperatureLogsPage() {
 
                 {/* Graph */}
                 <div className="mb-4">
-                  <h3 className="text-lg font-medium mb-2 text-gray-900 dark:text-white">
+                  <h3 className="text-lg font-medium mb-2 text-theme-primary">
                     Temperature Trend - {equipmentTypeFilter.charAt(0).toUpperCase() + equipmentTypeFilter.slice(1)}
                     {selectedAssetFilter !== 'all' && ` (${assetsInType.find(a => a.id === selectedAssetFilter)?.nickname || assetsInType.find(a => a.id === selectedAssetFilter)?.name})`}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-white/60 mb-4">
+                  <p className="text-sm text-theme-secondary mb-4">
                     Last 50 readings for selected equipment
                   </p>
                 </div>
@@ -1554,7 +1554,7 @@ export default function TemperatureLogsPage() {
                           return value?.replace(/\s+\d{2}:\d{2}$/, '') || value;
                         }}
                         tick={{ fontSize: 12, fill: 'currentColor' }}
-                        className="text-gray-600 dark:text-white/60"
+                        className="text-theme-secondary"
                         label={{
                           value: 'Date',
                           position: 'insideBottom',
@@ -1566,7 +1566,7 @@ export default function TemperatureLogsPage() {
                       {/* Y Axis - Temperature */}
                       <YAxis
                         tick={{ fontSize: 12, fill: 'currentColor' }}
-                        className="text-gray-600 dark:text-white/60"
+                        className="text-theme-secondary"
                         label={{
                           value: 'Temperature (°C)',
                           angle: -90,
@@ -1646,7 +1646,7 @@ export default function TemperatureLogsPage() {
                       {selectedAssetFilter === 'all' ? (
                         // Multiple assets - one Line per asset using pivoted dataKey
                         (() => {
-                          const colors = ['#D37E91', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'];
+                          const colors = ['rgb(var(--module-fg))', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'];
                           const assetIds = Array.from(assetNameMap.keys());
 
                           return assetIds.map((assetId, index) => (
@@ -1668,10 +1668,10 @@ export default function TemperatureLogsPage() {
                         <Line
                           type="monotone"
                           dataKey="temperature"
-                          stroke="#D37E91"
+                          stroke="rgb(var(--module-fg))"
                           strokeWidth={3}
                           name="Temperature"
-                          dot={{ r: 5, fill: '#D37E91' }}
+                          dot={{ r: 5, fill: 'rgb(var(--module-fg))' }}
                           activeDot={{ r: 7 }}
                         />
                       )}
@@ -1680,8 +1680,8 @@ export default function TemperatureLogsPage() {
                 ) : (
                   <div className="flex flex-col items-center justify-center h-[400px] bg-gray-50 dark:bg-white/[0.03] rounded-lg">
                     <div className="text-6xl mb-4">📊</div>
-                    <p className="text-gray-500 dark:text-white/60 text-lg">No data to display</p>
-                    <p className="text-gray-400 dark:text-white/40 text-sm mt-2">
+                    <p className="text-theme-tertiary text-lg">No data to display</p>
+                    <p className="text-theme-tertiary text-sm mt-2">
                       Select a different equipment type or check your filters
                     </p>
                   </div>
@@ -1692,15 +1692,15 @@ export default function TemperatureLogsPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
+        <div className="bg-theme-surface border border-theme rounded-xl p-4 sm:p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Filters</h2>
+              <Filter className="w-5 h-5 text-module-fg dark:text-module-fg" />
+              <h2 className="text-lg font-semibold text-theme-primary">Filters</h2>
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors text-sm"
+              className="text-theme-secondary hover:text-theme-primary transition-colors text-sm"
             >
               {showFilters ? "Hide" : "Show"} Filters
             </button>
@@ -1711,15 +1711,15 @@ export default function TemperatureLogsPage() {
               {/* Site Filter - Show if company has more than 1 site */}
               {sites.length > 1 && (
                 <div>
-                  <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Site</label>
+                  <label className="block text-sm text-theme-secondary mb-2">Site</label>
                   <select
                     value={filterSite}
                     onChange={(e) => setFilterSite(e.target.value)}
-                    className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                    className="w-full bg-white dark:bg-white/[0.06] border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] dark:focus:ring-module-fg/[0.50] focus:border-module-fg/[0.50] transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                   >
-                    <option value="" className="bg-white dark:bg-[#0B0D13]">All Sites</option>
+                    <option value="" className="bg-white dark:bg-[rgb(var(--surface-elevated))]">All Sites</option>
                     {sites.map((site) => (
-                      <option key={site.id} value={site.id} className="bg-white dark:bg-[#0B0D13]">
+                      <option key={site.id} value={site.id} className="bg-white dark:bg-[rgb(var(--surface-elevated))]">
                         {site.name}
                       </option>
                     ))}
@@ -1729,15 +1729,15 @@ export default function TemperatureLogsPage() {
 
               {/* Asset Filter */}
               <div>
-                <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Asset</label>
+                <label className="block text-sm text-theme-secondary mb-2">Asset</label>
                 <select
                   value={filterAsset}
                   onChange={(e) => setFilterAsset(e.target.value)}
-                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                  className="w-full bg-white dark:bg-white/[0.06] border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] dark:focus:ring-module-fg/[0.50] focus:border-module-fg/[0.50] transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                 >
-                  <option value="" className="bg-white dark:bg-[#0B0D13]">All Assets</option>
+                  <option value="" className="bg-white dark:bg-[rgb(var(--surface-elevated))]">All Assets</option>
                   {assets.map((a) => (
-                    <option key={a.id} value={a.id} className="bg-white dark:bg-[#0B0D13]">
+                    <option key={a.id} value={a.id} className="bg-white dark:bg-[rgb(var(--surface-elevated))]">
                       {a.name}
                     </option>
                   ))}
@@ -1747,15 +1747,15 @@ export default function TemperatureLogsPage() {
               {/* Asset Type Filter */}
               {assetTypes.length > 0 && (
                 <div>
-                  <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Asset Type</label>
+                  <label className="block text-sm text-theme-secondary mb-2">Asset Type</label>
                   <select
                     value={filterAssetType}
                     onChange={(e) => setFilterAssetType(e.target.value)}
-                    className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                    className="w-full bg-white dark:bg-white/[0.06] border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] dark:focus:ring-module-fg/[0.50] focus:border-module-fg/[0.50] transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                   >
-                    <option value="" className="bg-white dark:bg-[#0B0D13]">All Types</option>
+                    <option value="" className="bg-white dark:bg-[rgb(var(--surface-elevated))]">All Types</option>
                     {assetTypes.map((type) => (
-                      <option key={type} value={type} className="bg-white dark:bg-[#0B0D13]">
+                      <option key={type} value={type} className="bg-white dark:bg-[rgb(var(--surface-elevated))]">
                         {type}
                       </option>
                     ))}
@@ -1765,31 +1765,31 @@ export default function TemperatureLogsPage() {
 
               {/* Status Filter */}
               <div>
-                <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Status</label>
+                <label className="block text-sm text-theme-secondary mb-2">Status</label>
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                  className="w-full bg-white dark:bg-white/[0.06] border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] dark:focus:ring-module-fg/[0.50] focus:border-module-fg/[0.50] transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                 >
-                  <option value="" className="bg-white dark:bg-[#0B0D13]">All Statuses</option>
-                  <option value="ok" className="bg-white dark:bg-[#0B0D13]">OK</option>
-                  <option value="warning" className="bg-white dark:bg-[#0B0D13]">Warning</option>
-                  <option value="failed" className="bg-white dark:bg-[#0B0D13]">Failed</option>
+                  <option value="" className="bg-white dark:bg-[rgb(var(--surface-elevated))]">All Statuses</option>
+                  <option value="ok" className="bg-white dark:bg-[rgb(var(--surface-elevated))]">OK</option>
+                  <option value="warning" className="bg-white dark:bg-[rgb(var(--surface-elevated))]">Warning</option>
+                  <option value="failed" className="bg-white dark:bg-[rgb(var(--surface-elevated))]">Failed</option>
                 </select>
               </div>
 
               {/* Day Part Filter */}
               {dayParts.length > 0 && (
                 <div>
-                  <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Day Part</label>
+                  <label className="block text-sm text-theme-secondary mb-2">Day Part</label>
                   <select
                     value={filterDayPart}
                     onChange={(e) => setFilterDayPart(e.target.value)}
-                    className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                    className="w-full bg-white dark:bg-white/[0.06] border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] dark:focus:ring-module-fg/[0.50] focus:border-module-fg/[0.50] transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                   >
-                    <option value="" className="bg-white dark:bg-[#0B0D13]">All</option>
+                    <option value="" className="bg-white dark:bg-[rgb(var(--surface-elevated))]">All</option>
                     {dayParts.map((dp) => (
-                      <option key={dp} value={dp} className="bg-white dark:bg-[#0B0D13]">
+                      <option key={dp} value={dp} className="bg-white dark:bg-[rgb(var(--surface-elevated))]">
                         {dp}
                       </option>
                     ))}
@@ -1799,23 +1799,23 @@ export default function TemperatureLogsPage() {
 
               {/* Date Range Start */}
               <div>
-                <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Date From</label>
+                <label className="block text-sm text-theme-secondary mb-2">Date From</label>
                 <input
                   type="date"
                   value={dateRangeStart}
                   onChange={(e) => setDateRangeStart(e.target.value)}
-                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                  className="w-full bg-white dark:bg-white/[0.06] border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] dark:focus:ring-module-fg/[0.50] focus:border-module-fg/[0.50] transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                 />
               </div>
 
               {/* Date Range End */}
               <div>
-                <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Date To</label>
+                <label className="block text-sm text-theme-secondary mb-2">Date To</label>
                 <input
                   type="date"
                   value={dateRangeEnd}
                   onChange={(e) => setDateRangeEnd(e.target.value)}
-                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50 transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
+                  className="w-full bg-white dark:bg-white/[0.06] border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] dark:focus:ring-module-fg/[0.50] focus:border-module-fg/[0.50] transition-all hover:border-gray-300 dark:hover:border-white/[0.2]"
                 />
               </div>
 
@@ -1831,7 +1831,7 @@ export default function TemperatureLogsPage() {
                     setDateRangeStart("");
                     setDateRangeEnd("");
                   }}
-                  className="w-full bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] text-gray-700 dark:text-white/80 rounded-lg px-4 py-2 hover:bg-gray-50 dark:hover:bg-white/[0.1] transition-all text-sm flex items-center justify-center gap-2"
+                  className="w-full bg-white dark:bg-white/[0.06] border border-theme text-theme-secondary rounded-lg px-4 py-2 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.1] transition-all text-sm flex items-center justify-center gap-2"
                 >
                   <X className="w-4 h-4" />
                   Clear Filters
@@ -1842,18 +1842,18 @@ export default function TemperatureLogsPage() {
         </div>
 
         {/* Logs Table */}
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden mb-6">
-          <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-white/[0.06] flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Readings</h2>
-            <span className="text-gray-600 dark:text-white/60 text-sm">{filteredLogs.length} records</span>
+        <div className="bg-theme-surface border border-theme rounded-xl overflow-hidden mb-6">
+          <div className="p-4 sm:p-6 border-b border-theme flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-theme-primary">Recent Readings</h2>
+            <span className="text-theme-secondary text-sm">{filteredLogs.length} records</span>
           </div>
           {loading ? (
             <div className="p-12 text-center">
-              <div className="inline-block w-8 h-8 border-4 border-[#D37E91] border-t-transparent rounded-full animate-spin" />
-              <p className="mt-4 text-gray-600 dark:text-white/60">Loading temperature logs...</p>
+              <div className="inline-block w-8 h-8 border-4 border-module-fg border-t-transparent rounded-full animate-spin" />
+              <p className="mt-4 text-theme-secondary">Loading temperature logs...</p>
             </div>
           ) : filteredLogs.length === 0 ? (
-            <div className="p-12 text-center text-gray-600 dark:text-white/60">
+            <div className="p-12 text-center text-theme-secondary">
               <Thermometer className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p>No temperature logs found</p>
             </div>
@@ -1863,18 +1863,18 @@ export default function TemperatureLogsPage() {
                 <colgroup>
                   <col style={{ width: '16%' }} /><col style={{ width: '7%' }} /><col style={{ width: '9%' }} /><col style={{ width: '11%' }} /><col style={{ width: '12%' }} /><col style={{ width: '8%' }} /><col style={{ width: '7%' }} /><col style={{ width: '11%' }} /><col style={{ width: '9%' }} /><col style={{ width: '10%' }} />
                 </colgroup>
-                <thead className="bg-gray-50 dark:bg-white/[0.05] border-b border-gray-200 dark:border-white/[0.06]">
+                <thead className="bg-theme-button border-b border-theme">
                   <tr>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Equipment</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Reading</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Expected Range</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Status</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Trend</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Time Since</th>
-                    <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Follow-Up</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Recorded By</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Day Part</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-white/80">Date & Time</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Equipment</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Reading</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Expected Range</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Status</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Trend</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Time Since</th>
+                    <th className="text-center py-3 px-4 text-sm font-semibold text-theme-secondary">Follow-Up</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Recorded By</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Day Part</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-theme-secondary">Date & Time</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1882,16 +1882,16 @@ export default function TemperatureLogsPage() {
                     logsByDay.map((dayGroup) => (
                       <React.Fragment key={dayGroup.date}>
                         {/* Day Header Row */}
-                        <tr className="bg-gray-100 dark:bg-white/[0.05] border-t-2 border-gray-300 dark:border-white/[0.1]">
+                        <tr className="bg-gray-100 dark:bg-white/[0.05] border-t-2 border-theme">
                           <td 
                             colSpan={10} 
-                            className="py-3 px-4 font-semibold text-gray-700 dark:text-white/80"
+                            className="py-3 px-4 font-semibold text-theme-secondary"
                           >
                             <div className="flex items-center justify-between">
                               <span className="text-base">
                                 📅 {dayGroup.dayName}
                               </span>
-                              <span className="text-sm font-normal text-gray-500 dark:text-white/60">
+                              <span className="text-sm font-normal text-theme-tertiary">
                                 {dayGroup.logs.length} reading{dayGroup.logs.length !== 1 ? 's' : ''}
                               </span>
                             </div>
@@ -1919,13 +1919,13 @@ export default function TemperatureLogsPage() {
                           return (
                             <tr
                               key={log.id}
-                              className="border-b border-gray-100 dark:border-white/[0.05] hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
+                              className="border-b border-theme hover:bg-theme-hover transition-colors"
                             >
                               {/* Equipment: Nickname + Asset Name */}
                               <td className="py-3 px-4">
                                 <div className="flex flex-col">
                                   <div className="flex items-center gap-2">
-                                    <span className="font-bold text-lg text-gray-900 dark:text-white">
+                                    <span className="font-bold text-lg text-theme-primary">
                                       {log.nickname || 'No Nickname'}
                                     </span>
                                     {categoryBadge && (
@@ -1934,14 +1934,14 @@ export default function TemperatureLogsPage() {
                                       </span>
                                     )}
                                   </div>
-                                  <span className="text-sm text-gray-500 dark:text-white/60">
+                                  <span className="text-sm text-theme-tertiary">
                                     {log.display_name || log.nickname || log.position?.nickname || log.asset?.name || log.asset_name || 'Unknown Asset'}
                                   </span>
                                 </div>
                               </td>
                               
                               {/* Reading */}
-                              <td className="py-3 px-4 font-mono text-base font-semibold text-gray-900 dark:text-white">
+                              <td className="py-3 px-4 font-mono text-base font-semibold text-theme-primary">
                                 {log.reading !== null && log.reading !== undefined
                                   ? `${log.reading}°C`
                                   : '—'
@@ -1949,7 +1949,7 @@ export default function TemperatureLogsPage() {
                               </td>
                               
                               {/* Expected Range */}
-                              <td className="py-3 px-4 text-sm text-gray-600 dark:text-white/60">
+                              <td className="py-3 px-4 text-sm text-theme-secondary">
                                 {formatTempRange(log.temp_min, log.temp_max)}
                               </td>
                               
@@ -1967,7 +1967,7 @@ export default function TemperatureLogsPage() {
                                   // Only show sparkline if we have asset_id and temperature range defined
                                   if (!log.asset_id) {
                                     return (
-                                      <span className="text-sm text-gray-400 dark:text-white/40">No asset</span>
+                                      <span className="text-sm text-theme-tertiary">No asset</span>
                                     );
                                   }
                                   
@@ -1976,7 +1976,7 @@ export default function TemperatureLogsPage() {
                                   
                                   if (minTemp === null || maxTemp === null) {
                                     return (
-                                      <span className="text-sm text-gray-400 dark:text-white/40">No range set</span>
+                                      <span className="text-sm text-theme-tertiary">No range set</span>
                                     );
                                   }
                                   
@@ -1995,11 +1995,11 @@ export default function TemperatureLogsPage() {
                               {/* Time Since Last - SIMPLIFIED */}
                               <td className="py-3 px-4">
                                 {timeSince ? (
-                                  <span className="text-sm font-medium text-gray-700 dark:text-white/80">
+                                  <span className="text-sm font-medium text-theme-secondary">
                                     {timeSince.display}
                                   </span>
                                 ) : (
-                                  <span className="text-sm text-gray-400 dark:text-white/40">First check</span>
+                                  <span className="text-sm text-theme-tertiary">First check</span>
                                 )}
                               </td>
                               
@@ -2016,12 +2016,12 @@ export default function TemperatureLogsPage() {
                                     Yes
                                   </button>
                                 ) : (
-                                  <span className="text-gray-400 dark:text-white/40">—</span>
+                                  <span className="text-theme-tertiary">—</span>
                                 )}
                               </td>
                               
                               {/* Recorded By - FIXED */}
-                              <td className="py-3 px-4 text-sm text-gray-700 dark:text-white/80">
+                              <td className="py-3 px-4 text-sm text-theme-secondary">
                                 {log.recorder?.first_name && log.recorder?.last_name
                                   ? `${log.recorder.first_name} ${log.recorder.last_name}`
                                   : log.recorder?.email 
@@ -2035,16 +2035,16 @@ export default function TemperatureLogsPage() {
                               {/* Day Part */}
                               <td className="py-3 px-4">
                                 {log.day_part ? (
-                                  <span className="text-sm px-2 py-1 bg-gray-100 dark:bg-white/10 rounded text-gray-700 dark:text-white/80">
+                                  <span className="text-sm px-2 py-1 bg-theme-muted rounded text-theme-secondary">
                                     {log.day_part.replace(/_/g, ' ')}
                                   </span>
                                 ) : (
-                                  <span className="text-gray-400 dark:text-white/40">—</span>
+                                  <span className="text-theme-tertiary">—</span>
                                 )}
                               </td>
                               
                               {/* Date & Time - Show only time since date is in header */}
-                              <td className="py-3 px-4 text-sm font-mono text-gray-700 dark:text-white/80">
+                              <td className="py-3 px-4 text-sm font-mono text-theme-secondary">
                                 {format(new Date(log.recorded_at || log.created_at || ''), 'HH:mm:ss')}
                               </td>
                             </tr>
@@ -2054,7 +2054,7 @@ export default function TemperatureLogsPage() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={10} className="text-center text-gray-500 dark:text-white/60 py-8">
+                      <td colSpan={10} className="text-center text-theme-tertiary py-8">
                         No temperature logs found
                       </td>
                     </tr>

@@ -2015,8 +2015,8 @@ export function TaskFromTemplateModal({
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div className="bg-white dark:bg-[#14161c] rounded-xl p-8 border border-gray-200 dark:border-white/[0.1] shadow-2xl">
-          <p className="text-gray-900 dark:text-white">Loading template...</p>
+        <div className="bg-white dark:bg-[#14161c] rounded-xl p-8 border border-theme shadow-2xl">
+          <p className="text-theme-primary">Loading template...</p>
         </div>
       </div>
     );
@@ -2026,11 +2026,11 @@ export function TaskFromTemplateModal({
     // Can't create without template
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div className="bg-white dark:bg-[#14161c] rounded-xl p-8 border border-gray-200 dark:border-white/[0.1] shadow-2xl">
-          <p className="text-gray-900 dark:text-white mb-4">Template not found</p>
+        <div className="bg-white dark:bg-[#14161c] rounded-xl p-8 border border-theme shadow-2xl">
+          <p className="text-theme-primary mb-4">Template not found</p>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded transition-all duration-200"
+            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow rounded transition-all duration-200"
           >
             Close
           </button>
@@ -2058,15 +2058,15 @@ export function TaskFromTemplateModal({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-[#14161c] rounded-xl max-w-3xl w-full max-h-[90vh] overflow-hidden border border-gray-200 dark:border-white/[0.1] shadow-2xl">
+      <div className="bg-white dark:bg-[#14161c] rounded-xl max-w-3xl w-full max-h-[90vh] overflow-hidden border border-theme shadow-2xl">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 dark:border-white/[0.1]">
+        <div className="p-6 border-b border-theme">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-2xl font-bold text-theme-primary mb-2">
                 {existingTask || existingSiteChecklist ? (existingSiteChecklist ? 'Edit Configuration' : 'Edit Task') : 'Create Task'}: {template?.name || existingTask?.custom_name || existingSiteChecklist?.name || 'Task'}
               </h1>
-              <p className="text-gray-600 dark:text-white/60">
+              <p className="text-theme-secondary">
                 {existingTask || existingSiteChecklist
                   ? (existingSiteChecklist ? 'Update the task configuration' : (template ? 'Update the task details' : 'Template not found. You can still edit the task details.'))
                   : 'Fill in the details for this task instance'}
@@ -2074,7 +2074,7 @@ export function TaskFromTemplateModal({
             </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.1] text-gray-600 dark:text-white/60 transition-colors"
+            className="p-2 rounded-lg hover:bg-theme-muted text-theme-secondary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -2086,12 +2086,12 @@ export function TaskFromTemplateModal({
           <div className="space-y-6">
             {/* Basic Information */}
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Task Details</h2>
+              <h2 className="text-lg font-semibold text-theme-primary">Task Details</h2>
               
               <div>
-                <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                <label className="block text-sm font-medium text-theme-primary mb-2">
                   Task Name {!existingTask && <span className="text-red-500">*</span>}
-                  {existingTask && <span className="text-gray-500 dark:text-gray-400">(optional)</span>}
+                  {existingTask && <span className="text-theme-tertiary">(optional)</span>}
                 </label>
                 <input
                   type="text"
@@ -2099,15 +2099,15 @@ export function TaskFromTemplateModal({
                   onChange={(e) => setFormData({ ...formData, custom_name: e.target.value })}
                   placeholder={existingTask ? (existingTask.custom_name || template?.name || 'Task name') : 'Enter a unique name for this task (e.g., "Front counter setup checklist")'}
                   required={!existingTask}
-                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                 />
                 {!existingTask && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="text-xs text-theme-tertiary mt-1">
                     This name will identify this task in your Active Tasks list. Make it specific and unique.
                   </p>
                 )}
                 {existingTask && existingTask.custom_name && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Current: {existingTask.custom_name}</p>
+                  <p className="text-xs text-theme-tertiary mt-1">Current: {existingTask.custom_name}</p>
                 )}
               </div>
 
@@ -2127,11 +2127,11 @@ export function TaskFromTemplateModal({
                 
                 return (
                   <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                    <label className="block text-sm font-medium text-theme-primary mb-2">
                       Site <span className="text-red-500">*</span>
                     </label>
                     {loadingSites ? (
-                      <div className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-500 dark:text-gray-400">
+ <div className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-tertiary">
                         Loading sites...
                       </div>
                     ) : availableSites.length === 0 ? (
@@ -2144,7 +2144,7 @@ export function TaskFromTemplateModal({
                           value={taskSiteId}
                           onChange={(e) => setTaskSiteId(e.target.value)}
                           required
-                          className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                         >
                           <option value="">Select a site</option>
                           {availableSites.map(site => (
@@ -2154,7 +2154,7 @@ export function TaskFromTemplateModal({
                           ))}
                         </select>
                         {taskSiteId && (
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          <p className="text-xs text-theme-tertiary mt-1">
                             This task will be visible to all {availableSites.find(s => s.id === taskSiteId)?.name || ''} staff in My Tasks
                           </p>
                         )}
@@ -2165,30 +2165,30 @@ export function TaskFromTemplateModal({
               })()}
 
               {/* Instructions - Expandable Section */}
-              <div className="border border-gray-200 dark:border-white/10 rounded-lg overflow-hidden">
+              <div className="border border-theme rounded-lg overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setInstructionsExpanded(!instructionsExpanded)}
                   className="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-white/[0.03] hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">Instructions</span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">(optional - defaults to template instructions)</span>
+                    <span className="text-sm font-medium text-theme-primary">Instructions</span>
+                    <span className="text-xs text-theme-tertiary">(optional - defaults to template instructions)</span>
                   </div>
                   {instructionsExpanded ? (
-                    <ChevronUp className="w-4 h-4 text-gray-600 dark:text-white/60" />
+                    <ChevronUp className="w-4 h-4 text-theme-secondary" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-gray-600 dark:text-white/60" />
+                    <ChevronDown className="w-4 h-4 text-theme-secondary" />
                   )}
                 </button>
                 {instructionsExpanded && (
-                  <div className="p-4 border-t border-gray-200 dark:border-white/10">
+                  <div className="p-4 border-t border-theme">
                     <textarea
                       value={formData.custom_instructions}
                       onChange={(e) => setFormData({ ...formData, custom_instructions: e.target.value })}
                       placeholder={template?.instructions || 'Instructions will come from template...'}
                       rows={8}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91] resize-y"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91] resize-y"
                     />
                   </div>
                 )}
@@ -2198,8 +2198,8 @@ export function TaskFromTemplateModal({
                 <div className="border border-[#D37E91]/30 bg-[#D37E91]/10 rounded-xl p-4 space-y-3 shadow-[0_0_18px_rgba(211,126,145,0.15)]">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="text-sm text-white/90">
-                      <p className="font-semibold text-white">Training Matrix Shortcut</p>
-                      <p className="text-xs text-white/70 mt-1">
+                      <p className="font-semibold text-theme-primary">Training Matrix Shortcut</p>
+                      <p className="text-xs text-theme-secondary mt-1">
                         {matrixField?.help_text || 'Open the live Training Matrix in a new tab, review compliance status, then return to complete this task.'}
                       </p>
                     </div>
@@ -2213,7 +2213,7 @@ export function TaskFromTemplateModal({
                     </button>
                   </div>
                   {matrixDisplayUrl && (
-                    <p className="text-[10px] text-white/50 break-all">
+                    <p className="text-[10px] text-theme-tertiary break-all">
                       {matrixDisplayUrl}
                     </p>
                   )}
@@ -2223,13 +2223,13 @@ export function TaskFromTemplateModal({
               {/* Scheduling Section */}
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">Due Date *</label>
+                  <label className="block text-sm font-medium text-theme-primary mb-2">Due Date *</label>
                   <input
                     type="date"
                     value={formData.due_date}
                     onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
                     required
-                    className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                   />
                 </div>
 
@@ -2237,8 +2237,8 @@ export function TaskFromTemplateModal({
                 {template?.frequency === 'daily' ? (
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <label className="block text-sm font-medium text-gray-900 dark:text-white">
-                        Schedule Times <span className="text-gray-500 dark:text-gray-400 text-xs font-normal">(select dayparts and set times)</span>
+                      <label className="block text-sm font-medium text-theme-primary">
+                        Schedule Times <span className="text-theme-tertiary text-xs font-normal">(select dayparts and set times)</span>
                       </label>
                       <select
                         value=""
@@ -2252,7 +2252,7 @@ export function TaskFromTemplateModal({
                             e.target.value = ''; // Reset dropdown
                           }
                         }}
-                        className="px-3 py-1.5 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="px-3 py-1.5 rounded-lg bg-theme-surface ] border border-theme text-theme-primary text-xs focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                       >
                         <option value="">+ Add Daypart</option>
                         {availableDayparts
@@ -2307,7 +2307,7 @@ export function TaskFromTemplateModal({
                                   }}
                                   className="w-5 h-5 accent-[#D37E91] cursor-pointer"
                                 />
-                                <label className="text-sm font-medium text-gray-900 dark:text-white capitalize flex-1 cursor-pointer" onClick={() => {
+                                <label className="text-sm font-medium text-theme-primary capitalize flex-1 cursor-pointer" onClick={() => {
                                   if (!isSelected) {
                                     setFormData({
                                       ...formData,
@@ -2319,7 +2319,7 @@ export function TaskFromTemplateModal({
                                 </label>
                                 {isSelected && (
                                   <div className="flex items-center gap-2">
-                                    <label className="text-xs text-gray-600 dark:text-white/60">Time:</label>
+                                    <label className="text-xs text-theme-secondary">Time:</label>
                                     <TimePicker
                                       value={daypartEntry?.due_time || ''}
                                       onChange={(value) => {
@@ -2340,13 +2340,13 @@ export function TaskFromTemplateModal({
                           );
                         })
                       ) : (
-                        <p className="text-sm text-gray-600 dark:text-white/60 text-center py-4">
+                        <p className="text-sm text-theme-secondary text-center py-4">
                           No dayparts added yet. Use the dropdown above to add dayparts.
                         </p>
                       )}
                     </div>
                     {formData.dayparts.length > 0 && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                      <p className="text-xs text-theme-tertiary mt-2">
                         ✓ {formData.dayparts.length} daypart{formData.dayparts.length !== 1 ? 's' : ''} scheduled
                       </p>
                     )}
@@ -2354,7 +2354,7 @@ export function TaskFromTemplateModal({
                 ) : (
                   /* Single Due Time for non-daily tasks */
                   <div>
-                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">Due Time</label>
+                    <label className="block text-sm font-medium text-theme-primary mb-2">Due Time</label>
                     <TimePicker
                       value={formData.due_time}
                       onChange={(value) => setFormData({ ...formData, due_time: value })}
@@ -2365,11 +2365,11 @@ export function TaskFromTemplateModal({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">Priority</label>
+                <label className="block text-sm font-medium text-theme-primary mb-2">Priority</label>
                 <select
                   value={formData.priority}
                   onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
-                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -2396,10 +2396,10 @@ export function TaskFromTemplateModal({
                     onExpandedChange={setIsAssetSelectionExpanded}
                   />
                 ) : (
-                  <div className="border-t border-gray-200 dark:border-white/10 pt-6">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Asset Selection</h2>
-                    <div className="p-4 rounded-lg border border-gray-200 dark:border-white/[0.1] bg-gray-50 dark:bg-white/[0.03]">
-                      <p className="text-sm text-gray-600 dark:text-white/60">
+                  <div className="border-t border-theme pt-6">
+                    <h2 className="text-lg font-semibold text-theme-primary mb-4">Asset Selection</h2>
+                    <div className="p-4 rounded-lg border border-theme bg-gray-50 dark:bg-white/[0.03]">
+                      <p className="text-sm text-theme-secondary">
                         {loading ? 'Loading assets...' : 'No assets found. Please ensure assets are configured for your company.'}
                       </p>
                     </div>
@@ -2410,14 +2410,14 @@ export function TaskFromTemplateModal({
 
             {/* Call Point Management - Only show if template has fire_alarm_call_point field */}
             {hasCallPointField && (
-              <div className="border-t border-gray-200 dark:border-white/10 pt-6">
+              <div className="border-t border-theme pt-6">
                 {/* Collapsible Header */}
                 <button
                   type="button"
                   onClick={() => setIsCallPointManagementExpanded(!isCallPointManagementExpanded)}
                   className="w-full flex items-center justify-between mb-4 text-left hover:opacity-80 transition-opacity"
                 >
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <h2 className="text-lg font-semibold text-theme-primary">
                     Fire Alarm Call Points
                     {callPoints.length > 0 && (
                       <span className="ml-2 text-sm font-normal text-[#D37E91] dark:text-[#D37E91]">
@@ -2426,9 +2426,9 @@ export function TaskFromTemplateModal({
                     )}
                   </h2>
                   {isCallPointManagementExpanded ? (
-                    <ChevronUp className="w-5 h-5 text-gray-600 dark:text-white/60" />
+                    <ChevronUp className="w-5 h-5 text-theme-secondary" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-600 dark:text-white/60" />
+                    <ChevronDown className="w-5 h-5 text-theme-secondary" />
                   )}
                 </button>
                 
@@ -2437,15 +2437,15 @@ export function TaskFromTemplateModal({
                   <div className="space-y-4">
                     {/* Existing Call Points */}
                     {callPoints.length > 0 && (
-                      <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-                        <h3 className="text-md font-semibold text-gray-900 dark:text-white mb-3">Existing Call Points</h3>
+                      <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg p-4">
+                        <h3 className="text-md font-semibold text-theme-primary mb-3">Existing Call Points</h3>
                         <div className="space-y-2">
                           {callPoints.map((cp) => (
-                            <div key={cp.id} className="flex items-center justify-between bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg p-3">
+ <div key={cp.id} className="flex items-center justify-between bg-theme-surface ] border border-theme rounded-lg p-3">
                               <div>
-                                <span className="text-gray-900 dark:text-white text-sm font-medium">{cp.label}</span>
+                                <span className="text-theme-primary text-sm font-medium">{cp.label}</span>
                                 {cp.location && cp.location !== cp.label && (
-                                  <span className="text-gray-500 dark:text-gray-400 text-xs ml-2">({cp.location})</span>
+                                  <span className="text-theme-tertiary text-xs ml-2">({cp.location})</span>
                                 )}
                               </div>
                               <button
@@ -2479,10 +2479,10 @@ export function TaskFromTemplateModal({
                     
                     {/* Add New Call Point */}
                     <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-                      <h3 className="text-md font-semibold text-white mb-3">Add New Call Point</h3>
+                      <h3 className="text-md font-semibold text-theme-primary mb-3">Add New Call Point</h3>
                       <div className="space-y-3">
                         <div>
-                          <label className="block text-sm font-medium text-white mb-2">
+                          <label className="block text-sm font-medium text-theme-primary mb-2">
                             Call Point Name <span className="text-red-400">*</span>
                           </label>
                           <input
@@ -2490,11 +2490,11 @@ export function TaskFromTemplateModal({
                             value={newCallPoint.name}
                             onChange={(e) => setNewCallPoint({ ...newCallPoint, name: e.target.value })}
                             placeholder="e.g., Call Point 1 - Front Entrance"
-                            className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                          <label className="block text-sm font-medium text-theme-primary mb-2">
                             Location (Optional)
                           </label>
                           <input
@@ -2502,7 +2502,7 @@ export function TaskFromTemplateModal({
                             value={newCallPoint.location}
                             onChange={(e) => setNewCallPoint({ ...newCallPoint, location: e.target.value })}
                             placeholder="e.g., Front Entrance, Kitchen, Bar Area"
-                            className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                           />
                         </div>
                         <button
@@ -2546,11 +2546,11 @@ export function TaskFromTemplateModal({
                             }
                           }}
                           disabled={!newCallPoint.name.trim()}
-                          className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
+                          className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-theme-tertiary"
                         >
                           Add Call Point
                         </button>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-theme-tertiary">
                           Add all fire alarm call points for this venue. These will appear in the dropdown when creating tasks from this template.
                         </p>
                       </div>
@@ -2616,8 +2616,8 @@ export function TaskFromTemplateModal({
             )}
 
             {enabledFeatures.requiresSOP && (
-              <div className="border-t border-gray-200 dark:border-white/10 pt-6">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">SOP Upload</h2>
+              <div className="border-t border-theme pt-6">
+                <h2 className="text-lg font-semibold text-theme-primary mb-4">SOP Upload</h2>
                 <div className="space-y-3">
                   <label className="block">
                     <input
@@ -2627,17 +2627,17 @@ export function TaskFromTemplateModal({
                       className="hidden"
                       id="sop-upload"
                     />
-                    <span className="inline-block px-4 py-2 bg-[#D37E91]/10 dark:bg-transparent border border-[#D37E91] dark:border-[#D37E91] text-[#D37E91] dark:text-[#D37E91] hover:bg-[#D37E91]/10 dark:hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg transition-all duration-200 cursor-pointer font-medium">
+                    <span className="inline-block px-4 py-2 bg-[#D37E91]/10 dark:bg-transparent border border-[#D37E91] dark:border-[#D37E91] text-[#D37E91] dark:text-[#D37E91] hover:bg-[#D37E91]/10 dark:hover:shadow-module-glow rounded-lg transition-all duration-200 cursor-pointer font-medium">
                       Upload SOP Document
                     </span>
                   </label>
                   {formData.sopUploads.length > 0 && (
                     <div className="space-y-2">
                       {formData.sopUploads.map((sop, index) => (
-                        <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
+                        <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg p-3">
                           <div className="flex items-center gap-3">
-                            <span className="text-gray-900 dark:text-white text-sm">{sop.fileName}</span>
-                            <span className="text-gray-500 dark:text-gray-400 text-xs">({formatFileSize(sop.fileSize)})</span>
+                            <span className="text-theme-primary text-sm">{sop.fileName}</span>
+                            <span className="text-theme-tertiary text-xs">({formatFileSize(sop.fileSize)})</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <a href={sop.url} target="_blank" rel="noopener noreferrer" className="text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] text-sm font-medium">
@@ -2660,8 +2660,8 @@ export function TaskFromTemplateModal({
             )}
 
             {enabledFeatures.requiresRiskAssessment && (
-              <div className="border-t border-gray-200 dark:border-white/10 pt-6">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Risk Assessment Upload</h2>
+              <div className="border-t border-theme pt-6">
+                <h2 className="text-lg font-semibold text-theme-primary mb-4">Risk Assessment Upload</h2>
                 <div className="space-y-3">
                   <label className="block">
                     <input
@@ -2671,17 +2671,17 @@ export function TaskFromTemplateModal({
                       className="hidden"
                       id="ra-upload"
                     />
-                    <span className="inline-block px-4 py-2 bg-white dark:bg-transparent border border-[#D37E91] dark:border-[#D37E91] text-[#D37E91] dark:text-[#D37E91] hover:bg-[#D37E91]/10 dark:hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded transition-all duration-200 cursor-pointer font-medium">
+                    <span className="inline-block px-4 py-2 bg-white dark:bg-transparent border border-[#D37E91] dark:border-[#D37E91] text-[#D37E91] dark:text-[#D37E91] hover:bg-[#D37E91]/10 dark:hover:shadow-module-glow rounded transition-all duration-200 cursor-pointer font-medium">
                       Upload Risk Assessment
                     </span>
                   </label>
                   {formData.raUploads.length > 0 && (
                     <div className="space-y-2">
                       {formData.raUploads.map((ra, index) => (
-                        <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
+                        <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg p-3">
                           <div className="flex items-center gap-3">
-                            <span className="text-gray-900 dark:text-white text-sm">{ra.fileName}</span>
-                            <span className="text-gray-500 dark:text-gray-400 text-xs">({formatFileSize(ra.fileSize)})</span>
+                            <span className="text-theme-primary text-sm">{ra.fileName}</span>
+                            <span className="text-theme-tertiary text-xs">({formatFileSize(ra.fileSize)})</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <a href={ra.url} target="_blank" rel="noopener noreferrer" className="text-[#D37E91] dark:text-[#D37E91] hover:text-[#D37E91] dark:hover:text-[#D37E91] text-sm font-medium">
@@ -2705,7 +2705,7 @@ export function TaskFromTemplateModal({
 
             {/* Document Upload Feature - Only show if enabled in template features */}
             {enabledFeatures.documentUpload && (
-              <div className="border-t border-gray-200 dark:border-white/10 pt-6">
+              <div className="border-t border-theme pt-6">
                 <DocumentUploadFeature
                   uploads={formData.documentUploads}
                   onUpload={(uploads) => setFormData({ ...formData, documentUploads: uploads })}
@@ -2727,12 +2727,12 @@ export function TaskFromTemplateModal({
             {/* Library Selections - Only show if enabled in template features */}
             {enabledFeatures.libraryDropdown && (
             <div className="border-t border-white/10 pt-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Library Selections</h2>
+              <h2 className="text-lg font-semibold text-theme-primary mb-4">Library Selections</h2>
               
               {/* Step 1: Select a library type */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between gap-2">
-                  <label className="block text-sm font-medium text-white">Select a Library</label>
+                  <label className="block text-sm font-medium text-theme-primary">Select a Library</label>
                   <button
                     type="button"
                     onClick={async () => {
@@ -2763,7 +2763,7 @@ export function TaskFromTemplateModal({
                     setSelectedLibraryType(e.target.value);
                     setTempLibrarySelection([]); // Reset temp selection when changing library
                   }}
-                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                 >
                   <option value="">-- Select a library --</option>
                   {libraryData.ppe.length > 0 && <option value="ppe">PPE Library</option>}
@@ -2777,7 +2777,7 @@ export function TaskFromTemplateModal({
               {/* Step 2: Select items from the chosen library */}
               {selectedLibraryType && (
                 <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-                  <h3 className="text-md font-semibold text-white mb-3 capitalize">
+                  <h3 className="text-md font-semibold text-theme-primary mb-3 capitalize">
                     Select Items from {selectedLibraryType.replace('_', ' ')} Library
                   </h3>
                   
@@ -2802,7 +2802,7 @@ export function TaskFromTemplateModal({
 
                     return (
                       <>
-                        <div className="max-h-[300px] overflow-y-auto border border-gray-200 dark:border-white/[0.1] rounded-lg bg-gray-50 dark:bg-white/[0.05] p-3">
+                        <div className="max-h-[300px] overflow-y-auto border border-theme rounded-lg bg-theme-button p-3">
                           <div className="space-y-2">
                             {libraryItems.map((item) => {
                               const itemId = item.id;
@@ -2824,17 +2824,17 @@ export function TaskFromTemplateModal({
                                     }}
                                     className="w-4 h-4 accent-[#D37E91] cursor-pointer"
                                   />
-                                  <span className="text-white text-sm flex-1">{getItemName(item)}</span>
+                                  <span className="text-theme-primary text-sm flex-1">{getItemName(item)}</span>
                                 </label>
                               );
                             })}
                           </div>
                         </div>
                         {libraryItems.length === 0 && (
-                          <p className="text-xs text-gray-400 mt-1 mb-3">No items available in this library</p>
+                          <p className="text-xs text-theme-tertiary mt-1 mb-3">No items available in this library</p>
                         )}
                         {libraryItems.length > 0 && (
-                          <p className="text-xs text-gray-400 mt-1 mb-3">
+                          <p className="text-xs text-theme-tertiary mt-1 mb-3">
                             {tempLibrarySelection.length} item(s) selected
                           </p>
                         )}
@@ -2857,7 +2857,7 @@ export function TaskFromTemplateModal({
                               toast.success(`Added ${tempLibrarySelection.length} item(s) from ${selectedLibraryType.replace('_', ' ')} library`);
                             }}
                             disabled={tempLibrarySelection.length === 0}
-                            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
+                            className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-theme-tertiary"
                           >
                             Add to Task
                           </button>
@@ -2867,7 +2867,7 @@ export function TaskFromTemplateModal({
                               setSelectedLibraryType('');
                               setTempLibrarySelection([]);
                             }}
-                            className="px-4 py-2 border border-white/10 rounded text-gray-300 hover:bg-white/10 transition-colors"
+                            className="px-4 py-2 border border-white/10 rounded text-theme-tertiary hover:bg-white/10 transition-colors"
                           >
                             Cancel
                           </button>
@@ -2886,12 +2886,12 @@ export function TaskFromTemplateModal({
                   formData.selectedLibraries.drinks.length > 0 ||
                   formData.selectedLibraries.disposables.length > 0) && (
                 <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-                  <h3 className="text-md font-semibold text-white mb-3">Selected Library Items</h3>
+                  <h3 className="text-md font-semibold text-theme-primary mb-3">Selected Library Items</h3>
                   <div className="space-y-3">
                     {formData.selectedLibraries.ppe.length > 0 && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium text-white">PPE Library ({formData.selectedLibraries.ppe.length} items)</h4>
+                          <h4 className="text-sm font-medium text-theme-primary">PPE Library ({formData.selectedLibraries.ppe.length} items)</h4>
                           <button
                             type="button"
                             onClick={() => {
@@ -2910,7 +2910,7 @@ export function TaskFromTemplateModal({
                             if (!item) return null;
                             return (
                               <div key={itemId} className="flex items-center justify-between bg-white/[0.03] rounded p-2">
-                                <span className="text-white text-sm">{item.item_name}</span>
+                                <span className="text-theme-primary text-sm">{item.item_name}</span>
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -2937,7 +2937,7 @@ export function TaskFromTemplateModal({
                     {formData.selectedLibraries.chemicals.length > 0 && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium text-white">Chemicals Library ({formData.selectedLibraries.chemicals.length} items)</h4>
+                          <h4 className="text-sm font-medium text-theme-primary">Chemicals Library ({formData.selectedLibraries.chemicals.length} items)</h4>
                           <button
                             type="button"
                             onClick={() => {
@@ -2956,7 +2956,7 @@ export function TaskFromTemplateModal({
                             if (!item) return null;
                             return (
                               <div key={itemId} className="flex items-center justify-between bg-white/[0.03] rounded p-2">
-                                <span className="text-white text-sm">{item.product_name}</span>
+                                <span className="text-theme-primary text-sm">{item.product_name}</span>
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -2983,7 +2983,7 @@ export function TaskFromTemplateModal({
                     {formData.selectedLibraries.equipment.length > 0 && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium text-white">Equipment Library ({formData.selectedLibraries.equipment.length} items)</h4>
+                          <h4 className="text-sm font-medium text-theme-primary">Equipment Library ({formData.selectedLibraries.equipment.length} items)</h4>
                           <button
                             type="button"
                             onClick={() => {
@@ -3002,7 +3002,7 @@ export function TaskFromTemplateModal({
                             if (!item) return null;
                             return (
                               <div key={itemId} className="flex items-center justify-between bg-white/[0.03] rounded p-2">
-                                <span className="text-white text-sm">{item.equipment_name}</span>
+                                <span className="text-theme-primary text-sm">{item.equipment_name}</span>
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -3028,7 +3028,7 @@ export function TaskFromTemplateModal({
                     {formData.selectedLibraries.ingredients.length > 0 && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium text-white">Ingredients Library ({formData.selectedLibraries.ingredients.length} items)</h4>
+                          <h4 className="text-sm font-medium text-theme-primary">Ingredients Library ({formData.selectedLibraries.ingredients.length} items)</h4>
                           <button
                             type="button"
                             onClick={() => {
@@ -3047,7 +3047,7 @@ export function TaskFromTemplateModal({
                             if (!item) return null;
                             return (
                               <div key={itemId} className="flex items-center justify-between bg-white/[0.03] rounded p-2">
-                                <span className="text-white text-sm">{item.ingredient_name}</span>
+                                <span className="text-theme-primary text-sm">{item.ingredient_name}</span>
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -3073,7 +3073,7 @@ export function TaskFromTemplateModal({
                     {formData.selectedLibraries.drinks.length > 0 && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium text-white">Drinks Library ({formData.selectedLibraries.drinks.length} items)</h4>
+                          <h4 className="text-sm font-medium text-theme-primary">Drinks Library ({formData.selectedLibraries.drinks.length} items)</h4>
                           <button
                             type="button"
                             onClick={() => {
@@ -3092,7 +3092,7 @@ export function TaskFromTemplateModal({
                             if (!item) return null;
                             return (
                               <div key={itemId} className="flex items-center justify-between bg-white/[0.03] rounded p-2">
-                                <span className="text-white text-sm">{item.item_name}</span>
+                                <span className="text-theme-primary text-sm">{item.item_name}</span>
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -3118,7 +3118,7 @@ export function TaskFromTemplateModal({
                     {formData.selectedLibraries.disposables.length > 0 && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium text-white">Disposables Library ({formData.selectedLibraries.disposables.length} items)</h4>
+                          <h4 className="text-sm font-medium text-theme-primary">Disposables Library ({formData.selectedLibraries.disposables.length} items)</h4>
                           <button
                             type="button"
                             onClick={() => {
@@ -3137,7 +3137,7 @@ export function TaskFromTemplateModal({
                             if (!item) return null;
                             return (
                               <div key={itemId} className="flex items-center justify-between bg-white/[0.03] rounded p-2">
-                                <span className="text-white text-sm">{item.item_name}</span>
+                                <span className="text-theme-primary text-sm">{item.item_name}</span>
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -3168,13 +3168,13 @@ export function TaskFromTemplateModal({
 
             {/* General Notes */}
             <div className="border-t border-white/10 pt-6">
-              <label className="block text-sm font-medium text-white mb-2">Additional Notes</label>
+              <label className="block text-sm font-medium text-theme-primary mb-2">Additional Notes</label>
               <textarea
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 placeholder="Add any additional notes for this task..."
                 rows={3}
-                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
               />
             </div>
           </div>
@@ -3184,7 +3184,7 @@ export function TaskFromTemplateModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2 border border-gray-300 dark:border-white/10 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors font-medium"
+              className="px-5 py-2 border border-theme rounded-lg text-theme-secondary hover:bg-theme-muted transition-colors font-medium"
             >
               Cancel
             </button>

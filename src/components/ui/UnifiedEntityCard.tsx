@@ -58,9 +58,9 @@ export default function UnifiedEntityCard({
     >
       <div className="flex justify-between items-center">
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-white truncate">{title}</h3>
+          <h3 className="text-lg font-semibold text-theme-primary truncate">{title}</h3>
           {subtitle && (
-            <p className="text-sm text-gray-300 mt-1 truncate">{subtitle}</p>
+            <p className="text-sm text-theme-tertiary mt-1 truncate">{subtitle}</p>
           )}
         </div>
         

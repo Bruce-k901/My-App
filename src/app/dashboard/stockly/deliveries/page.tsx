@@ -146,11 +146,11 @@ export default function DeliveriesPage() {
 
   function getStatusBadge(status: string) {
     const styles = {
-      draft: 'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-500/30',
+ draft:'bg-gray-50 dark:bg-theme-surface-elevated0/20 text-theme-secondary border-gray-200 dark:border-gray-500/30',
       pending_review: 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/30',
       confirmed: 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/30',
       disputed: 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/30',
-      cancelled: 'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-500/30',
+ cancelled:'bg-gray-50 dark:bg-theme-surface-elevated0/20 text-theme-secondary border-gray-200 dark:border-gray-500/30',
     };
 
     const labels = {
@@ -234,29 +234,29 @@ export default function DeliveriesPage() {
   if (loading && deliveries.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-600 dark:text-white">Loading deliveries...</div>
+        <div className="text-theme-secondary">Loading deliveries...</div>
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+    <div className="w-full bg-theme-surface-elevated min-h-screen">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link 
               href="/dashboard/stockly"
-              className="p-2 rounded-lg bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
+ className="p-2 rounded-lg bg-theme-surface ] hover:bg-theme-muted border border-theme text-theme-secondary hover:text-theme-primary transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-                <Calendar className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+              <h1 className="text-3xl font-bold text-theme-primary mb-2 flex items-center gap-3">
+                <Calendar className="w-8 h-8 text-module-fg" />
                 Deliveries
               </h1>
-              <p className="text-gray-600 dark:text-white/60 text-sm mt-1">
+              <p className="text-theme-secondary text-sm mt-1">
                 Manage delivery receipts and invoices
               </p>
             </div>
@@ -264,14 +264,14 @@ export default function DeliveriesPage() {
           <div className="flex gap-3">
             <button
               onClick={() => setIsManualModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out"
             >
               <Plus className="w-5 h-5" />
               Add Delivery
             </button>
             <button
               onClick={() => setIsUploadModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out"
             >
               <Plus className="w-5 h-5" />
               Upload Invoice
@@ -280,10 +280,10 @@ export default function DeliveriesPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+        <div className="bg-theme-surface border border-theme rounded-xl p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-tertiary" size={18} />
             <Input
               type="text"
               placeholder="Search invoices..."
@@ -325,14 +325,14 @@ export default function DeliveriesPage() {
 
         {/* Deliveries Table */}
         {filteredDeliveries.length === 0 ? (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-12 text-center">
+          <div className="bg-theme-surface border border-theme rounded-xl p-12 text-center">
             <FileText className="mx-auto text-gray-300 dark:text-white/20 mb-4" size={48} />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 className="text-lg font-semibold text-theme-primary mb-2">
               {searchTerm || statusFilter !== 'all' || supplierFilter !== 'all' || startDate || endDate
                 ? 'No deliveries found'
                 : 'No deliveries yet'}
             </h3>
-            <p className="text-gray-600 dark:text-white/60 mb-6">
+            <p className="text-theme-secondary mb-6">
               {searchTerm || statusFilter !== 'all' || supplierFilter !== 'all' || startDate || endDate
                 ? 'Try adjusting your filters'
                 : 'Get started by uploading your first invoice'}
@@ -340,7 +340,7 @@ export default function DeliveriesPage() {
             {!searchTerm && statusFilter === 'all' && supplierFilter === 'all' && !startDate && !endDate && (
               <button
                 onClick={() => setIsUploadModalOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out"
               >
                 <Plus className="w-4 h-4" />
                 Upload Invoice
@@ -348,30 +348,30 @@ export default function DeliveriesPage() {
             )}
           </div>
         ) : (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
+          <div className="bg-theme-surface border border-theme rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 dark:bg-white/[0.05] border-b border-gray-200 dark:border-white/[0.06]">
+                <thead className="bg-theme-button border-b border-theme">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Supplier
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Invoice #
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Items
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Total
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 dark:text-white/60 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -380,22 +380,22 @@ export default function DeliveriesPage() {
                   {filteredDeliveries.map((delivery) => (
                     <tr
                       key={delivery.id}
-                      className="hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors cursor-pointer"
+                      className="hover:bg-theme-hover transition-colors cursor-pointer"
                       onClick={() => router.push(`/dashboard/stockly/deliveries/${delivery.id}`)}
                     >
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-primary">
                         {formatDate(delivery.delivery_date)}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-primary">
                         {delivery.supplier?.name || '—'}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-white/80">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-secondary">
                         {delivery.invoice_number || '—'}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-white/80">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-secondary">
                         {delivery.lines?.[0]?.count || 0} items
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white font-medium">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-primary font-medium">
                         {formatCurrency(delivery.total)}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
@@ -408,7 +408,7 @@ export default function DeliveriesPage() {
                               e.stopPropagation();
                               router.push(`/dashboard/stockly/deliveries/${delivery.id}`);
                             }}
-                            className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+                            className="text-module-fg hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
                           >
                             <Eye size={18} />
                           </button>

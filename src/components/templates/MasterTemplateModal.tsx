@@ -38,7 +38,7 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ id, name, description, enable
       onClick={onChange}
       className={`p-3 rounded border transition-all text-left ${enabled 
         ? 'border-[#D37E91] bg-[#D37E91]/15 dark:bg-[#D37E91]/15' 
-        : 'border-gray-300 dark:border-white/[0.1] bg-white dark:bg-white/[0.02] hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50'}`}
+        : 'border-theme bg-white dark:bg-white/[0.02] hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50'}`}
     >
       <div className="flex items-start gap-2">
         <input
@@ -49,15 +49,15 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ id, name, description, enable
         />
         <div className="flex-1">
           <div className="flex items-center gap-1">
-            <span className="text-sm font-medium text-gray-900 dark:text-white">{name}</span>
+            <span className="text-sm font-medium text-theme-primary">{name}</span>
             <div className="group relative">
               <Info className="w-4 h-4 text-[#D37E91] dark:text-[#D37E91]" />
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-xs rounded p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-theme-surface border border-theme text-theme-primary text-xs rounded p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
                 {description}
               </div>
             </div>
           </div>
-          <div className="text-xs text-gray-600 dark:text-white/60 mt-1">{description}</div>
+          <div className="text-xs text-theme-secondary mt-1">{description}</div>
         </div>
       </div>
     </button>
@@ -858,9 +858,9 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
     
     if (availableSites.length === 0) {
       return (
-        <div className="space-y-4 p-4 border border-gray-200 dark:border-white/10 rounded-lg bg-gray-50 dark:bg-white/[0.03]">
+        <div className="space-y-4 p-4 border border-theme rounded-lg bg-gray-50 dark:bg-white/[0.03]">
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Site Assignment</h3>
+            <h3 className="text-sm font-semibold text-theme-primary mb-2">Site Assignment</h3>
             <p className="text-xs text-yellow-600 dark:text-yellow-400">
               Loading sites... Please wait.
             </p>
@@ -870,10 +870,10 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
     }
     
     return (
-      <div className="space-y-4 p-4 border border-gray-200 dark:border-white/10 rounded-lg bg-gray-50 dark:bg-white/[0.03]">
+      <div className="space-y-4 p-4 border border-theme rounded-lg bg-gray-50 dark:bg-white/[0.03]">
         <div>
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Site Assignment</h3>
-          <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+          <h3 className="text-sm font-semibold text-theme-primary mb-2">Site Assignment</h3>
+          <p className="text-xs text-theme-secondary mb-3">
             Select which sites can use this template
           </p>
         </div>
@@ -893,13 +893,13 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             }}
             className="w-4 h-4 text-[#D37E91] border-gray-300 rounded focus:ring-[#D37E91]"
           />
-          <span className="text-sm font-medium text-gray-900 dark:text-white">
+          <span className="text-sm font-medium text-theme-primary">
             Apply to all sites ({availableSites.length})
           </span>
         </label>
         
         {!applyToAllSites && availableSites.length > 0 && (
-          <div className="space-y-2 max-h-48 overflow-y-auto border border-gray-200 dark:border-white/10 rounded p-2 bg-white dark:bg-[#141823]">
+          <div className="space-y-2 max-h-48 overflow-y-auto border border-theme rounded p-2 bg-white dark:bg-[#141823]">
             {availableSites.map(site => (
               <label key={site.id} className="flex items-center space-x-2 cursor-pointer">
                 <input
@@ -914,7 +914,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                   }}
                   className="w-4 h-4 text-[#D37E91] border-gray-300 rounded focus:ring-[#D37E91]"
                 />
-                <span className="text-sm text-gray-900 dark:text-white">{site.name}</span>
+                <span className="text-sm text-theme-primary">{site.name}</span>
               </label>
             ))}
           </div>
@@ -926,7 +926,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
           </p>
         )}
         
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-theme-tertiary">
           {selectedSites.length} site{selectedSites.length !== 1 ? 's' : ''} selected
         </p>
       </div>
@@ -935,15 +935,15 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
-      <div className="bg-white dark:bg-[#14161c] rounded-xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-gray-200 dark:border-white/[0.1] shadow-2xl flex flex-col">
+      <div className="bg-white dark:bg-[#14161c] rounded-xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-theme shadow-2xl flex flex-col">
         {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-white/10 flex-shrink-0">
+        <div className="p-4 sm:p-6 border-b border-theme flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-theme-primary mb-2">
                 {editingTemplate ? 'Edit Template Configuration' : 'Template Builder'}
               </h1>
-              <p className="text-gray-600 dark:text-white/60 text-sm sm:text-base">
+              <p className="text-theme-secondary text-sm sm:text-base">
                 {editingTemplate 
                   ? 'Modify template features and configuration. This will affect all future tasks created from this template.'
                   : 'Create comprehensive compliance task templates with all required elements'
@@ -952,7 +952,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-white/60 flex-shrink-0 transition-colors"
+              className="p-2 rounded-lg hover:bg-theme-muted text-theme-secondary flex-shrink-0 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -963,17 +963,17 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         <div className="flex-1 overflow-y-auto bg-white dark:bg-[#14161c] min-h-0">
           <div className="p-4 sm:p-6">
           {/* Template Configuration */}
-          <div className="mb-6 pb-6 border-b border-gray-200 dark:border-white/10">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Template Configuration</h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Define the basic information for your template</p>
+          <div className="mb-6 pb-6 border-b border-theme">
+            <h2 className="text-lg font-semibold text-theme-primary mb-1">Template Configuration</h2>
+            <p className="text-sm text-theme-secondary mb-4">Define the basic information for your template</p>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Template Name</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Template Name</label>
               <input
                 type="text"
                 value={templateConfig.templateName}
                 onChange={(e) => setTemplateConfig(prev => ({ ...prev, templateName: e.target.value }))}
-                className="w-full p-2 border border-gray-300 dark:border-white/10 rounded bg-white dark:bg-white/[0.05] text-gray-900 dark:text-white text-sm"
+ className="w-full p-2 border border-theme rounded bg-theme-surface ] text-theme-primary text-sm"
                 placeholder="Enter template name"
               />
             </div>
@@ -1003,11 +1003,11 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
 
           {/* Frequency & Scheduling */}
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Frequency & Scheduling</h2>
+            <h2 className="text-lg font-semibold text-theme-primary mb-4">Frequency & Scheduling</h2>
             
             {/* Frequency Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-white mb-3">
+              <label className="block text-sm font-medium text-theme-primary mb-3">
                 Task Frequency
               </label>
               <select
@@ -1025,7 +1025,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                     setNextInstanceDates([]);
                   }
                 }}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
               >
                 <option value="Daily">Daily</option>
                 <option value="Weekly">Weekly</option>
@@ -1041,7 +1041,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             {/* Weekly Day Selection */}
             {templateConfig.frequency === 'Weekly' && (
               <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-900 dark:text-white mb-3">
+                <label className="block text-sm font-medium text-theme-primary mb-3">
                   Days of Week to Run Task
                 </label>
                 <div className="grid grid-cols-7 gap-2">
@@ -1067,7 +1067,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       className={`px-3 py-2 rounded-lg border text-center transition-all text-sm ${
                         weeklyDays.includes(day.value)
                           ? "border-[#D37E91] bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91]"
-                          : "border-gray-300 dark:border-neutral-800 bg-white dark:bg-[#141823] text-gray-700 dark:text-slate-400 hover:border-gray-400 dark:hover:border-neutral-700"
+ :"border-gray-300 bg-white dark:bg-[#141823] text-gray-700 dark:text-theme-tertiary hover:border-gray-400 dark:hover:border-theme"
                       }`}
                     >
                       {day.label}
@@ -1084,7 +1084,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             {templateConfig.frequency === 'Monthly' && (
               <div className="mt-4 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 dark:text-white mb-3">
+                  <label className="block text-sm font-medium text-theme-primary mb-3">
                     Monthly Schedule Option
                   </label>
                   <div className="space-y-3">
@@ -1099,7 +1099,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                         }}
                         className="w-4 h-4 text-magenta-500"
                       />
-                      <label htmlFor="monthly_date" className="text-sm text-gray-700 dark:text-slate-200">
+                      <label htmlFor="monthly_date" className="text-sm text-gray-700 dark:text-theme-primary">
                         Specific Day of Month
                       </label>
                     </div>
@@ -1111,7 +1111,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                         value={monthlyDay || ''}
                         onChange={(e) => setMonthlyDay(parseInt(e.target.value) || null)}
                         placeholder="Day (1-31)"
-                        className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-[#141823] border border-gray-300 dark:border-neutral-800 text-gray-900 dark:text-slate-200 ml-7"
+                        className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-[#141823] border border-gray-300 dark:border-neutral-800 text-gray-900 dark:text-theme-primary ml-7"
                       />
                     )}
                     
@@ -1127,7 +1127,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                         }}
                         className="w-4 h-4 text-[#D37E91] dark:text-magenta-500"
                       />
-                      <label htmlFor="monthly_last_weekday" className="text-sm text-gray-700 dark:text-slate-200">
+                      <label htmlFor="monthly_last_weekday" className="text-sm text-gray-700 dark:text-theme-primary">
                         Last Weekday of Month
                       </label>
                     </div>
@@ -1135,7 +1135,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       <select
                         value={monthlyLastWeekday || 'friday'}
                         onChange={(e) => setMonthlyLastWeekday(e.target.value)}
-                        className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-[#141823] border border-gray-300 dark:border-neutral-800 text-gray-900 dark:text-slate-200 ml-7"
+                        className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-[#141823] border border-gray-300 dark:border-neutral-800 text-gray-900 dark:text-theme-primary ml-7"
                       >
                         <option value="monday">Monday</option>
                         <option value="tuesday">Tuesday</option>
@@ -1152,7 +1152,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             {/* Annual/Biannual/Quarterly Date Selection */}
             {(templateConfig.frequency === 'Annually' || templateConfig.frequency === 'Bi-Annually' || templateConfig.frequency === 'Quarterly') && (
               <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-900 dark:text-white mb-3">
+                <label className="block text-sm font-medium text-theme-primary mb-3">
                   {templateConfig.frequency === 'Annually' ? 'Annual' : templateConfig.frequency === 'Bi-Annually' ? 'Bi-annual' : 'Quarterly'} Date (Month-Day)
                 </label>
                 <input
@@ -1169,9 +1169,9 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       setNextInstanceDates([]);
                     }
                   }}
-                  className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                 />
-                <p className="text-xs text-gray-600 dark:text-slate-400 mt-2">
+ <p className="text-xs text-gray-600 dark:text-theme-tertiary mt-2">
                   Tasks will be automatically scheduled for this date {templateConfig.frequency === 'Annually' ? 'each year' : templateConfig.frequency === 'Bi-Annually' ? 'every 6 months' : 'each quarter'}
                 </p>
                 
@@ -1181,7 +1181,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                     <p className="text-xs font-medium text-emerald-700 dark:text-green-400 mb-2">Next Scheduled Instances:</p>
                     <div className="space-y-1">
                       {nextInstanceDates.map((dateStr, idx) => (
-                        <div key={idx} className="text-xs text-emerald-600 dark:text-green-300">
+                        <div key={idx} className="text-xs text-module-fg dark:text-green-300">
                           {dateStr}
                         </div>
                       ))}
@@ -1194,12 +1194,12 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             {/* Custom Frequency Options */}
             {templateConfig.frequency === 'Custom' && (
               <div className="mt-4 space-y-4">
-                <div className="p-4 bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/10 rounded-lg">
+                <div className="p-4 bg-gray-50 dark:bg-white/[0.02] border border-theme rounded-lg">
                   <p className="text-sm text-orange-600 dark:text-orange-400 mb-3">Custom frequency - configure all options:</p>
                   
                   {/* Days of week */}
                   <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">Days of Week (optional)</label>
+                    <label className="block text-sm font-medium text-theme-primary mb-2">Days of Week (optional)</label>
                     <div className="grid grid-cols-7 gap-2">
                       {[
                         { value: 0, label: 'Sun' },
@@ -1223,7 +1223,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                           className={`px-3 py-2 rounded-lg border text-center transition-all text-sm ${
                             weeklyDays.includes(day.value)
                               ? "border-[#D37E91] bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91]"
-                              : "border-gray-300 dark:border-neutral-800 bg-white dark:bg-[#141823] text-gray-700 dark:text-slate-400 hover:border-gray-400 dark:hover:border-neutral-700"
+ :"border-gray-300 bg-white dark:bg-[#141823] text-gray-700 dark:text-theme-tertiary hover:border-gray-400 dark:hover:border-theme"
                           }`}
                         >
                           {day.label}
@@ -1234,7 +1234,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
 
                   {/* Specific date */}
                   <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">Specific Date (optional)</label>
+                    <label className="block text-sm font-medium text-theme-primary mb-2">Specific Date (optional)</label>
                     <input
                       type="date"
                       value={annualDate ? `${new Date().getFullYear()}-${annualDate}` : ''}
@@ -1247,7 +1247,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                           setAnnualDate('');
                         }
                       }}
-                      className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+ className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                     />
                   </div>
                 </div>
@@ -1257,7 +1257,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             {/* Day Parts Selection - Show for all frequencies */}
             {templateConfig.frequency !== 'On Demand' && (
               <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-900 dark:text-white mb-3">
+                <label className="block text-sm font-medium text-theme-primary mb-3">
                   When to Run Task (Day Parts)
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -1269,7 +1269,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       className={`px-4 py-3 rounded-lg border text-center transition-all ${
                         selectedDayparts.includes(part.value)
                           ? "border-[#D37E91] bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91]"
-                          : "border-gray-300 dark:border-neutral-800 bg-white dark:bg-[#141823] text-gray-700 dark:text-slate-400 hover:border-gray-400 dark:hover:border-neutral-700"
+ :"border-gray-300 bg-white dark:bg-[#141823] text-gray-700 dark:text-theme-tertiary hover:border-gray-400 dark:hover:border-theme"
                       }`}
                     >
                       <div className="text-sm font-medium">{part.label}</div>
@@ -1282,13 +1282,13 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             {/* Time Settings - Show if dayparts selected */}
             {selectedDayparts.length > 0 && templateConfig.frequency !== 'On Demand' && (
               <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-900 dark:text-white mb-3">
+                <label className="block text-sm font-medium text-theme-primary mb-3">
                   Check Times
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {selectedDayparts.map((dayPart) => (
                     <div key={dayPart}>
-                      <label className="block text-xs text-gray-600 dark:text-slate-400 mb-1 capitalize">
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1 capitalize">
                         {dayPart.replace('_', ' ')}
                       </label>
                       <TimePicker
@@ -1308,9 +1308,9 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
           </div>
 
           {/* Template Features */}
-          <div className="mb-6 pb-6 border-b border-gray-200 dark:border-white/10">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Template Features</h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Select the features and requirements for this template</p>
+          <div className="mb-6 pb-6 border-b border-theme">
+            <h2 className="text-lg font-semibold text-theme-primary mb-1">Template Features</h2>
+            <p className="text-sm text-theme-secondary mb-4">Select the features and requirements for this template</p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {featureList.map((feature) => (
@@ -1332,10 +1332,10 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         </div>
 
       {/* Footer */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 p-4 sm:p-6 border-t border-gray-200 dark:border-white/10 bg-white dark:bg-[#14161c] flex-shrink-0">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 p-4 sm:p-6 border-t border-theme bg-white dark:bg-[#14161c] flex-shrink-0">
           <button
             onClick={onClose}
-            className="w-full sm:w-auto px-5 py-2 border border-gray-300 dark:border-white/10 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors font-medium"
+            className="w-full sm:w-auto px-5 py-2 border border-theme rounded-lg text-theme-secondary hover:bg-theme-muted transition-colors font-medium"
           >
             Cancel
           </button>

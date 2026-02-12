@@ -1410,32 +1410,32 @@ export function RecipeIngredientsTable({
   }, [calculateCost]);
 
   if (loading) {
-    return <div className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm py-4">Loading ingredients...</div>;
+    return <div className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm py-4">Loading ingredients...</div>;
   }
 
   return (
     <div className="space-y-4">
-      <div className="bg-theme-surface dark:bg-white/[0.02] border border-theme dark:border-white/[0.06] rounded-lg" style={{ overflow: 'visible' }}>
+ <div className="bg-theme-surface border border-theme rounded-lg" style={{ overflow: 'visible' }}>
         <div style={{ overflow: 'hidden', borderRadius: '0.5rem' }}>
           <table className="w-full">
-          <thead className="bg-theme-button dark:bg-white/[0.03]">
+ <thead className="bg-theme-button">
             <tr>
-              <th className="px-4 py-2 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 w-[30%]">Ingredient</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 w-[20%]">Supplier</th>
-              <th className="px-2 py-2 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 w-[10%]">Qty</th>
-              <th className="px-2 py-2 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 w-[8%]">Unit</th>
-              <th className="px-2 py-2 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 w-[10%]">Unit Cost</th>
-              <th className="px-4 py-2 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 w-[12%]">Total Cost</th>
-              <th className="px-2 py-2 text-center text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 w-[5%]">Sub</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary w-[30%]">Ingredient</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary w-[20%]">Supplier</th>
+              <th className="px-2 py-2 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary w-[10%]">Qty</th>
+              <th className="px-2 py-2 text-left text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary w-[8%]">Unit</th>
+              <th className="px-2 py-2 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary w-[10%]">Unit Cost</th>
+              <th className="px-4 py-2 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary w-[12%]">Total Cost</th>
+              <th className="px-2 py-2 text-center text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary w-[5%]">Sub</th>
               {isEditing && (
-                <th className="px-2 py-2 text-center text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 w-[5%]">Actions</th>
+                <th className="px-2 py-2 text-center text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary w-[5%]">Actions</th>
               )}
             </tr>
           </thead>
           <tbody>
             {ingredients.length === 0 && !isEditing ? (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">
+                <td colSpan={7} className="px-4 py-8 text-center text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm">
                   No ingredients added yet
                 </td>
               </tr>
@@ -1452,8 +1452,8 @@ export function RecipeIngredientsTable({
                   <tr
                     key={ingredient.id}
                     className={`
-                      border-t border-theme dark:border-white/[0.06]
-                      transition-colors hover:bg-theme-button dark:hover:bg-white/[0.02]
+                      border-t border-theme
+ transition-colors hover:bg-theme-button
                       ${pendingChanges.has(ingredient.id!) ? 'bg-amber-500/5 border-l-2 border-l-amber-500' : ''}
                       ${pendingChanges.get(ingredient.id!) === 'deleted' ? 'opacity-50 line-through' : ''}
                     `}
@@ -1536,7 +1536,7 @@ export function RecipeIngredientsTable({
                               return () => clearTimeout(timeoutId);
                             }}
                             placeholder="Search ingredients..."
-                            className="w-full px-3 py-1.5 bg-theme-button dark:bg-white/[0.05] border border-theme dark:border-white/[0.1] rounded-md text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+ className="w-full px-3 py-1.5 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                           />
                           {mounted && showSearchDropdown[ingredient.id] && (() => {
                             // DEBUG: Log dropdown render attempt
@@ -1663,7 +1663,7 @@ export function RecipeIngredientsTable({
                                   console.groupEnd();
                                 }
                               }}
-                              className="ingredient-dropdown fixed z-[99999] bg-theme-surface-elevated dark:bg-[#0B0D13] border border-theme dark:border-white/[0.06] rounded-md shadow-2xl max-h-60 overflow-y-auto"
+                              className="ingredient-dropdown fixed z-[99999] bg-theme-surface-elevated dark:bg-[#0B0D13] border border-theme rounded-md shadow-2xl max-h-60 overflow-y-auto"
                               style={{
                                 top: `${position.top}px`,
                                 left: `${position.left}px`,
@@ -1681,8 +1681,8 @@ export function RecipeIngredientsTable({
                                 if (loadingAvailableIngredients) {
                                   return (
                                     <div className="px-3 py-4 text-center">
-                                      <Loader2 className="w-4 h-4 animate-spin mx-auto mb-2 text-[rgb(var(--text-secondary))] dark:text-white/60" />
-                                      <div className="text-sm text-[rgb(var(--text-tertiary))] dark:text-white/40">Loading ingredients...</div>
+                                      <Loader2 className="w-4 h-4 animate-spin mx-auto mb-2 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
+                                      <div className="text-sm text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">Loading ingredients...</div>
                                     </div>
                                   );
                                 }
@@ -1701,7 +1701,7 @@ export function RecipeIngredientsTable({
                                           e.stopPropagation();
                                           loadAvailableIngredients();
                                         }}
-                                        className="text-xs text-emerald-500 dark:text-emerald-400 hover:underline"
+                                        className="text-xs text-module-fg hover:underline"
                                       >
                                         Retry loading ingredients
                                       </button>
@@ -1732,17 +1732,17 @@ export function RecipeIngredientsTable({
                                         });
                                         handleSelectIngredient(ingredient.id, ing);
                                       }}
-                                      className="w-full px-3 py-2 text-left text-[rgb(var(--text-primary))] dark:text-white hover:bg-theme-button dark:hover:bg-white/[0.05] border-b border-theme dark:border-white/[0.06] last:border-b-0 transition-colors cursor-pointer"
+ className="w-full px-3 py-2 text-left text-[rgb(var(--text-primary))] dark:text-white hover:bg-theme-button border-b border-theme last:border-b-0 transition-colors cursor-pointer"
                                     >
                                       <div className="font-medium">{ing.ingredient_name}</div>
                                       {ing.supplier && (
-                                        <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-white/60">{ing.supplier}</div>
+                                        <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">{ing.supplier}</div>
                                       )}
                                     </button>
                                   ));
                                 } else {
                                   return (
-                                    <div className="px-3 py-2 text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">
+                                    <div className="px-3 py-2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm">
                                       {availableIngredients.length === 0 
                                         ? (availableIngredientsError 
                                             ? `Error: ${availableIngredientsError}` 
@@ -1761,12 +1761,12 @@ export function RecipeIngredientsTable({
                         <div>
                           <span className="text-[rgb(var(--text-primary))] dark:text-white">{ingredient.ingredient_name || '-'}</span>
                           {ingredient.is_sub_recipe && (
-                            <span className="ml-2 text-xs text-emerald-400">(Sub Recipe)</span>
+                            <span className="ml-2 text-xs text-module-fg">(Sub Recipe)</span>
                           )}
                         </div>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm w-[20%]">
+                    <td className="px-4 py-3 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm w-[20%]">
                       {isEditingThis ? (
                         <input
                           type="text"
@@ -1787,7 +1787,7 @@ export function RecipeIngredientsTable({
                               setSearchQueries(prev => ({ ...prev, [ingredient.id]: ingredient.ingredient_name || '' }));
                             }
                           }}
-                          className="w-full px-3 py-1.5 bg-theme-button dark:bg-white/[0.05] border border-theme dark:border-white/[0.1] rounded-md text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+ className="w-full px-3 py-1.5 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                           placeholder="Supplier"
                         />
                       ) : (
@@ -1854,13 +1854,13 @@ export function RecipeIngredientsTable({
                               setSearchQueries(prev => ({ ...prev, [ingredient.id]: ingredient.ingredient_name || '' }));
                             }
                           }}
-                          className="w-full px-2 py-1.5 bg-theme-button dark:bg-white/[0.05] border border-theme dark:border-white/[0.1] rounded-md text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-right text-sm"
+ className="w-full px-2 py-1.5 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-right text-sm"
                         />
                       ) : (
                         <span className="text-[rgb(var(--text-primary))] dark:text-white text-sm">{ingredient.quantity || '0'}</span>
                       )}
                     </td>
-                    <td className="px-2 py-3 text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm w-[8%]">
+                    <td className="px-2 py-3 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm w-[8%]">
                       {isEditingThis ? (
                         <Select
                           value={(editingId === ingredient.id ? (draft?.unit_id ?? '') : (ingredient.unit_id ?? '')) || ''}
@@ -1894,7 +1894,7 @@ export function RecipeIngredientsTable({
                         <span className="text-sm">{ingredient.unit_abbreviation || ingredient.unit_name || '-'}</span>
                       )}
                     </td>
-                    <td className="px-2 py-3 text-right text-white/60 text-sm w-[10%]">
+                    <td className="px-2 py-3 text-right text-theme-tertiary text-sm w-[10%]">
                       {isEditingThis ? (
                         <input
                           type="number"
@@ -1924,7 +1924,7 @@ export function RecipeIngredientsTable({
                               setSearchQueries(prev => ({ ...prev, [ingredient.id]: ingredient.ingredient_name || '' }));
                             }
                           }}
-                          className="w-full px-2 py-1.5 bg-theme-button dark:bg-white/[0.05] border border-theme dark:border-white/[0.1] rounded-md text-[rgb(var(--text-primary))] dark:text-white placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-right text-sm"
+ className="w-full px-2 py-1.5 bg-theme-button border border-theme rounded-md text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-right text-sm"
                           placeholder="0.00"
                         />
                       ) : (
@@ -1936,7 +1936,7 @@ export function RecipeIngredientsTable({
                             ? rawUnitCost / (yieldPercent / 100)
                             : rawUnitCost;
                           return (
-                            <span className="text-emerald-400 text-sm" title={yieldPercent < 100 ? `Raw: ${formatUnitCost(rawUnitCost)} (${yieldPercent}% yield)` : undefined}>
+                            <span className="text-module-fg text-sm" title={yieldPercent < 100 ? `Raw: ${formatUnitCost(rawUnitCost)} (${yieldPercent}% yield)` : undefined}>
                               {formatUnitCost(effectiveUnitCost)}
                             </span>
                           );
@@ -1944,11 +1944,11 @@ export function RecipeIngredientsTable({
                       )}
                     </td>
                     <td className="px-4 py-3 text-right text-[rgb(var(--text-primary))] dark:text-white font-medium w-[12%]">
-                      <span className="text-emerald-400">£{cost.toFixed(2)}</span>
+                      <span className="text-module-fg">£{cost.toFixed(2)}</span>
                     </td>
                     <td className="px-2 py-3 text-center w-[5%]">
                       {ingredient.is_sub_recipe ? (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-module-fg/10 text-module-fg border border-module-fg/30">
                           Yes
                         </span>
                       ) : (
@@ -1960,7 +1960,7 @@ export function RecipeIngredientsTable({
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => handleEdit(ingredient)}
-                            className="p-1.5 rounded-lg bg-theme-button dark:bg-white/5 hover:bg-theme-button-hover dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+ className="p-1.5 rounded-lg bg-theme-button hover:bg-theme-button-hover text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors"
                             aria-label="Edit"
                           >
                             <Edit className="w-4 h-4" />
@@ -1980,18 +1980,18 @@ export function RecipeIngredientsTable({
               })
             )}
           </tbody>
-          <tfoot className="bg-theme-button dark:bg-white/[0.03] border-t border-theme dark:border-white/[0.06]">
+ <tfoot className="bg-theme-button border-t border-theme">
             <tr>
-              <td colSpan={isEditing ? 3 : 2} className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">
+              <td colSpan={isEditing ? 3 : 2} className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
                 Total Recipe Cost:
               </td>
-              <td className="px-4 py-3 text-right text-lg font-bold text-emerald-400">
+              <td className="px-4 py-3 text-right text-lg font-bold text-module-fg">
                 £{totalCost.toFixed(2)}
               </td>
-              <td colSpan={isEditing ? 1 : 2} className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">
+              <td colSpan={isEditing ? 1 : 2} className="px-4 py-3 text-right text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
                 Recipe Yield:
               </td>
-              <td className="px-4 py-3 text-right text-lg font-bold text-emerald-400">
+              <td className="px-4 py-3 text-right text-lg font-bold text-module-fg">
                 {(() => {
                   // Use calculated yield if available (real-time), otherwise use saved yield
                   const displayYield = calculatedYield !== null ? calculatedYield : (yieldQty || null);
@@ -2022,7 +2022,7 @@ export function RecipeIngredientsTable({
         <div className="flex items-center justify-between gap-4">
           <button
             onClick={handleAdd}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-module-fg/10 hover:bg-module-fg/10 text-module-fg border border-module-fg/30 rounded-lg transition-colors"
           >
             <Plus className="w-4 h-4" />
             Add Ingredient
@@ -2034,8 +2034,8 @@ export function RecipeIngredientsTable({
             disabled={isSavingAll || !hasUnsavedChanges}
             className={`flex items-center gap-2 px-6 py-2 font-medium rounded-lg transition-colors ${
               hasUnsavedChanges
-                ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
-                : 'bg-gray-500/20 text-gray-400 cursor-not-allowed'
+                ? 'bg-module-fg hover:bg-module-fg/90 text-white'
+                : 'bg-theme-surface-elevated0/20 text-theme-tertiary cursor-not-allowed'
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {isSavingAll ? (

@@ -286,12 +286,12 @@ export default function PPMSchedulePage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
+      <div className="flex flex-col items-center justify-center h-full text-center text-theme-tertiary">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mx-auto"></div>
+          <div className="h-8 bg-theme-muted-strong rounded w-1/4 mx-auto"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+              <div key={i} className="h-48 bg-theme-muted-strong rounded-lg"></div>
             ))}
           </div>
         </div>
@@ -301,10 +301,10 @@ export default function PPMSchedulePage() {
 
   if (!profile?.company_id) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
+      <div className="flex flex-col items-center justify-center h-full text-center text-theme-tertiary">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-12 w-12 mb-3 text-gray-400 dark:text-gray-500"
+          className="h-12 w-12 mb-3 text-theme-tertiary"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -316,18 +316,18 @@ export default function PPMSchedulePage() {
             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
           />
         </svg>
-        <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">No company context</p>
-        <p className="text-gray-500 dark:text-gray-400">Please sign in or complete setup to view PPM assets.</p>
+        <p className="text-lg font-semibold text-theme-secondary">No company context</p>
+        <p className="text-theme-tertiary">Please sign in or complete setup to view PPM assets.</p>
       </div>
     );
   }
 
   if (!assets.length && !loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
+      <div className="flex flex-col items-center justify-center h-full text-center text-theme-tertiary">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-12 w-12 mb-3 text-gray-400 dark:text-gray-500"
+          className="h-12 w-12 mb-3 text-theme-tertiary"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -339,8 +339,8 @@ export default function PPMSchedulePage() {
             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
           />
         </svg>
-        <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">No PPM assets found</p>
-        <p className="text-gray-500 dark:text-gray-400">No assets are set up for PPM scheduling yet. Add your first asset to get started.</p>
+        <p className="text-lg font-semibold text-theme-secondary">No PPM assets found</p>
+        <p className="text-theme-tertiary">No assets are set up for PPM scheduling yet. Add your first asset to get started.</p>
       </div>
     );
   }
@@ -349,25 +349,25 @@ export default function PPMSchedulePage() {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">PPM Schedule</h1>
+        <h1 className="text-2xl font-semibold text-theme-primary">PPM Schedule</h1>
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Search */}
           <div className="relative min-w-[240px]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-tertiary w-4 h-4" />
             <input
               type="text"
               placeholder="Search assets..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-800 border border-theme rounded-lg text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
             />
           </div>
 
           {/* Filter Button */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors h-[42px]"
+            className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-800 border border-theme rounded-lg text-theme-secondary hover:bg-theme-hover transition-colors h-[42px]"
           >
             <Filter className="w-4 h-4" />
             Filter
@@ -377,7 +377,7 @@ export default function PPMSchedulePage() {
           <button
             onClick={handleGenerateSchedules}
             disabled={generatingSchedules}
-            className="flex items-center gap-2 px-4 py-2.5 bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-600 text-white rounded-lg transition-all duration-200 h-[42px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2.5 bg-module-fg hover:bg-module-fg/90 text-white rounded-lg transition-all duration-200 h-[42px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {generatingSchedules ? (
               <>
@@ -393,19 +393,19 @@ export default function PPMSchedulePage() {
           </button>
 
           {/* Add PPM Button */}
-          <button className="flex items-center gap-2 px-4 py-2.5 border border-cyan-600 dark:border-cyan-500 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-500/10 rounded-lg transition-all duration-200 h-[42px] whitespace-nowrap">
+          <button className="flex items-center gap-2 px-4 py-2.5 border border-module-fg text-module-fg hover:bg-module-fg/10 rounded-lg transition-all duration-200 h-[42px] whitespace-nowrap">
             <Plus className="w-4 h-4" />
             Add PPM
           </button>
 
           {/* View Toggle */}
-          <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-1 h-[42px]">
+          <div className="flex items-center bg-white dark:bg-gray-800 border border-theme rounded-lg p-1 h-[42px]">
             <button
               onClick={() => setViewMode('list')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-all duration-200 ${
                 viewMode === 'list'
-                  ? 'bg-cyan-100 dark:bg-cyan-500/10 border border-cyan-600 dark:border-cyan-500 text-cyan-600 dark:text-cyan-400'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-transparent'
+                  ? 'bg-module-fg/10 border border-module-fg text-module-fg'
+                  : 'text-theme-tertiary hover:text-theme-primary border border-transparent'
               }`}
             >
               <List className="w-4 h-4" />
@@ -415,8 +415,8 @@ export default function PPMSchedulePage() {
               onClick={() => setViewMode('calendar')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-all duration-200 ${
                 viewMode === 'calendar'
-                  ? 'bg-cyan-100 dark:bg-cyan-500/10 border border-cyan-600 dark:border-cyan-500 text-cyan-600 dark:text-cyan-400'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-transparent'
+                  ? 'bg-module-fg/10 border border-module-fg text-module-fg'
+                  : 'text-theme-tertiary hover:text-theme-primary border border-transparent'
               }`}
             >
               <Calendar className="w-4 h-4" />
@@ -429,7 +429,7 @@ export default function PPMSchedulePage() {
       {/* PPM Groups Section */}
       {ppmGroups.length > 0 && viewMode === 'list' && (
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-3">
+          <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-3">
             <Layers className="w-5 h-5 text-assetly" />
             PPM Groups
           </h2>
@@ -443,8 +443,8 @@ export default function PPMSchedulePage() {
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">{group.name}</h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{group.site_name}</p>
+                      <h3 className="text-base font-semibold text-theme-primary truncate">{group.name}</h3>
+                      <p className="text-xs text-theme-tertiary mt-0.5">{group.site_name}</p>
                     </div>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${color}`}>
                       {getStatusDisplayText(status)}
@@ -452,15 +452,15 @@ export default function PPMSchedulePage() {
                   </div>
                   <div className="space-y-2 text-sm">
                     {group.ppm_contractor_name && (
-                      <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-2 text-theme-tertiary">
                         <Wrench className="w-3.5 h-3.5" /> {group.ppm_contractor_name}
                       </div>
                     )}
-                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center gap-2 text-theme-tertiary">
                       <Calendar className="w-3.5 h-3.5" /> {getFrequencyText(group.ppm_frequency_months)}
                     </div>
                     {group.next_service_date && (
-                      <div className="text-xs text-gray-400">Next: {formatServiceDate(group.next_service_date)}</div>
+                      <div className="text-xs text-theme-tertiary">Next: {formatServiceDate(group.next_service_date)}</div>
                     )}
                     <div className="flex items-center gap-1 text-xs text-assetly mt-1">
                       <Package className="w-3 h-3" /> {group.asset_count} asset{group.asset_count !== 1 ? 's' : ''}
@@ -494,11 +494,11 @@ export default function PPMSchedulePage() {
           })}
           {filteredAssets.length === 0 && !loading && (
             <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
-              <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
-                <Calendar className="w-8 h-8 text-gray-500 dark:text-gray-400" />
+              <div className="w-16 h-16 bg-theme-muted-strong rounded-full flex items-center justify-center mb-4">
+                <Calendar className="w-8 h-8 text-theme-tertiary" />
               </div>
-              <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">No PPM assets found</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md">
+              <h3 className="text-lg font-medium text-theme-secondary mb-2">No PPM assets found</h3>
+              <p className="text-theme-tertiary mb-6 max-w-md">
                 {Object.values(filters).some(f => f)
                   ? "No assets match your current filters. Try adjusting your search criteria or clearing filters."
                   : "No assets are set up for PPM scheduling yet. Add your first asset to get started."
@@ -507,7 +507,7 @@ export default function PPMSchedulePage() {
               {Object.values(filters).some(f => f) && (
                 <button
                   onClick={() => setFilters({ site: '', contractor: '', status: '', dateRange: '' })}
-                  className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-600 text-white rounded-lg transition-all duration-200"
+                  className="px-4 py-2 bg-module-fg hover:bg-module-fg/90 text-white rounded-lg transition-all duration-200"
                 >
                   Clear All Filters
                 </button>
@@ -537,15 +537,15 @@ export default function PPMSchedulePage() {
           onClick={() => setShowFilters(false)}
         >
           <div
-            className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-6 space-y-6 mt-16"
+            className="w-full max-w-md bg-white dark:bg-gray-800 border border-theme rounded-lg shadow-xl p-6 space-y-6 mt-16"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Filter PPM Assets</h3>
+              <h3 className="text-lg font-semibold text-theme-primary">Filter PPM Assets</h3>
               <button
                 onClick={() => setShowFilters(false)}
-                className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+ className="flex items-center justify-center w-8 h-8 rounded-lg text-theme-tertiary hover:text-theme-primary hover:bg-theme-muted transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -555,11 +555,11 @@ export default function PPMSchedulePage() {
 
             {/* Site Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Site</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-2">Site</label>
               <select
                 value={filters.site}
                 onChange={(e) => setFilters(prev => ({ ...prev, site: e.target.value }))}
-                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-cyan-500"
               >
                 <option value="">All Sites</option>
                 {sites.map(site => (
@@ -570,11 +570,11 @@ export default function PPMSchedulePage() {
 
             {/* Contractor Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contractor</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-2">Contractor</label>
               <select
                 value={filters.contractor}
                 onChange={(e) => setFilters(prev => ({ ...prev, contractor: e.target.value }))}
-                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-cyan-500"
               >
                 <option value="">All Contractors</option>
                 {contractors.map(contractor => (
@@ -585,11 +585,11 @@ export default function PPMSchedulePage() {
 
             {/* Status Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-2">Status</label>
               <select
                 value={filters.status}
                 onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-cyan-500"
               >
                 <option value="">All Statuses</option>
                 <option value="upcoming">Upcoming</option>
@@ -602,11 +602,11 @@ export default function PPMSchedulePage() {
 
             {/* Date Range Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Range</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-2">Date Range</label>
               <select
                 value={filters.dateRange}
                 onChange={(e) => setFilters(prev => ({ ...prev, dateRange: e.target.value }))}
-                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-cyan-500"
               >
                 <option value="">All Dates</option>
                 <option value="next-7-days">Next 7 Days</option>
@@ -619,7 +619,7 @@ export default function PPMSchedulePage() {
             {/* Clear Filters */}
             <button
               onClick={() => setFilters({ site: '', contractor: '', status: '', dateRange: '' })}
-              className="w-full px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-white rounded-lg transition-colors"
+              className="w-full px-3 py-2 bg-gray-100 hover:bg-theme-muted-strong dark:hover:bg-gray-600 text-theme-secondary rounded-lg transition-colors"
             >
               Clear All Filters
             </button>

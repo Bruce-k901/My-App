@@ -116,20 +116,20 @@ export function ReviewComparisonView({
   return (
     <div className="space-y-6">
       {/* Stats Header */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
+      <div className="bg-theme-surface border border-theme rounded-lg p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-[#D37E91]" />
-            <h3 className="font-medium text-white">Alignment Overview</h3>
+            <BarChart3 className="w-5 h-5 text-module-fg" />
+            <h3 className="font-medium text-theme-primary">Alignment Overview</h3>
           </div>
           
           {/* Filter */}
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-gray-500 dark:text-white/60" />
+            <Filter className="w-4 h-4 text-theme-tertiary" />
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value as FilterType)}
-              className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+              className="w-full px-4 py-2 bg-theme-surface border border-theme rounded-md text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/50"
             >
               <option value="all">Show All</option>
               <option value="aligned">Aligned Only</option>
@@ -140,21 +140,21 @@ export function ReviewComparisonView({
         
         {stats.total > 0 ? (
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-3 bg-green-500/10 rounded-lg border border-green-500/20">
-              <div className="text-2xl font-bold text-green-400">{stats.aligned}</div>
-              <div className="text-xs text-green-400/70">Aligned</div>
+            <div className="text-center p-3 bg-green-100 dark:bg-green-500/10 rounded-lg border border-green-200 dark:border-green-500/20">
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.aligned}</div>
+              <div className="text-xs text-green-600/70 dark:text-green-400/70">Aligned</div>
             </div>
-            <div className="text-center p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
-              <div className="text-2xl font-bold text-amber-400">{stats.minorGaps}</div>
-              <div className="text-xs text-amber-400/70">Minor Gaps</div>
+            <div className="text-center p-3 bg-amber-100 dark:bg-amber-500/10 rounded-lg border border-amber-200 dark:border-amber-500/20">
+              <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{stats.minorGaps}</div>
+              <div className="text-xs text-amber-600/70 dark:text-amber-400/70">Minor Gaps</div>
             </div>
-            <div className="text-center p-3 bg-red-500/10 rounded-lg border border-red-500/20">
-              <div className="text-2xl font-bold text-red-400">{stats.significantGaps}</div>
-              <div className="text-xs text-red-400/70">Discuss</div>
+            <div className="text-center p-3 bg-red-100 dark:bg-red-500/10 rounded-lg border border-red-200 dark:border-red-500/20">
+              <div className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.significantGaps}</div>
+              <div className="text-xs text-red-600/70 dark:text-red-400/70">Discuss</div>
             </div>
           </div>
         ) : (
-          <p className="text-sm text-gray-500 dark:text-white/60">
+          <p className="text-sm text-theme-tertiary">
             Complete rating questions to see alignment stats
           </p>
         )}
@@ -169,29 +169,29 @@ export function ReviewComparisonView({
           if (filter !== 'all' && visibleQuestions.length === 0) return null;
           
           return (
-            <div key={section.id} className="bg-white/[0.03] border border-white/[0.06] rounded-lg overflow-hidden">
+            <div key={section.id} className="bg-theme-surface border border-theme rounded-lg overflow-hidden">
               <button
                 onClick={() => toggleSection(section.id)}
-                className="w-full px-6 py-4 hover:bg-white/[0.02] transition-colors flex items-center justify-between"
+                className="w-full px-6 py-4 hover:bg-theme-hover transition-colors flex items-center justify-between"
               >
                 <div className="flex items-center gap-4 text-left">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.05] text-sm font-medium text-white">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-theme-button text-sm font-medium text-theme-primary">
                     {sectionIndex + 1}
                   </div>
                   <div>
-                    <h3 className="font-medium text-white">{section.title}</h3>
+                    <h3 className="font-medium text-theme-primary">{section.title}</h3>
                     {section.description && (
-                      <p className="text-sm text-gray-500 dark:text-white/60 mt-0.5">{section.description}</p>
+                      <p className="text-sm text-theme-tertiary mt-0.5">{section.description}</p>
                     )}
                   </div>
                 </div>
-                <span className="text-neutral-500">
+                <span className="text-theme-tertiary">
                   {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
                 </span>
               </button>
               
               {isExpanded && (
-                <div className="px-6 pb-6 border-t border-white/[0.06] pt-6 space-y-4">
+                <div className="px-6 pb-6 border-t border-theme pt-6 space-y-4">
                   {visibleQuestions.map((question, qIndex) => (
                     <ReviewComparisonQuestion
                       key={question.id}
@@ -203,7 +203,7 @@ export function ReviewComparisonView({
                   ))}
                   
                   {visibleQuestions.length === 0 && (
-                    <p className="text-sm text-neutral-500 text-center py-4">
+                    <p className="text-sm text-theme-tertiary text-center py-4">
                       No questions match the current filter
                     </p>
                   )}

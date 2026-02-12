@@ -173,7 +173,7 @@ export function DayApprovalPanel({
       case 'needs_review':
         return 'bg-yellow-50 dark:bg-amber-500/10 text-yellow-600 dark:text-amber-400 border-yellow-200 dark:border-amber-500/20';
       default:
-        return 'bg-gray-50 dark:bg-white/[0.05] text-gray-600 dark:text-white/70 border-gray-200 dark:border-white/[0.06]';
+        return 'bg-theme-button text-theme-secondary border-theme';
     }
   };
 
@@ -266,23 +266,23 @@ export function DayApprovalPanel({
 
   if (loading) {
     return (
-      <div className="mt-4 p-4 bg-white dark:bg-white/[0.05] rounded-lg border border-gray-200 dark:border-white/[0.06] shadow-sm dark:shadow-none">
-        <div className="text-center text-gray-600 dark:text-white/70">Loading approvals...</div>
+ <div className="mt-4 p-4 bg-theme-surface ] rounded-lg border border-theme shadow-sm dark:shadow-none">
+        <div className="text-center text-theme-secondary">Loading approvals...</div>
       </div>
     );
   }
 
   return (
-    <div className={`mt-4 p-4 bg-white dark:bg-white/[0.05] rounded-lg border shadow-sm dark:shadow-none transition-all ${
+ <div className={`mt-4 p-4 bg-theme-surface ] rounded-lg border shadow-sm dark:shadow-none transition-all ${
       allDaysApproved
         ? 'border-green-200 dark:border-green-500/30'
-        : 'border-gray-200 dark:border-white/[0.06]'
+        : 'border-theme'
     }`}>
       <div
         className={`flex items-center justify-between ${isExpanded ? 'mb-4' : ''} ${allDaysApproved ? 'cursor-pointer' : ''}`}
         onClick={() => allDaysApproved && setIsExpanded(!isExpanded)}
       >
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
           {allDaysApproved ? (
             <CheckCircle2 className="w-5 h-5 text-green-500 dark:text-green-400" />
           ) : (
@@ -297,7 +297,7 @@ export function DayApprovalPanel({
         </h3>
         <div className="flex items-center gap-3">
           {!canApprove && !allDaysApproved && (
-            <span className="text-xs text-gray-600 dark:text-white/70">Only senior managers can approve days</span>
+            <span className="text-xs text-theme-secondary">Only senior managers can approve days</span>
           )}
           {allDaysApproved && (
             <button
@@ -305,7 +305,7 @@ export function DayApprovalPanel({
                 e.stopPropagation();
                 setIsExpanded(!isExpanded);
               }}
-              className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] text-gray-500 dark:text-white/60 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] text-theme-tertiary transition-colors"
               aria-label={isExpanded ? 'Collapse' : 'Expand'}
             >
               {isExpanded ? (
@@ -389,7 +389,7 @@ export function DayApprovalPanel({
                     <span className={labourPercent > 35 ? 'text-red-400' : labourPercent > 30 ? 'text-amber-400' : 'text-green-400'}>
                       {labourPercent.toFixed(1)}%
                     </span>
-                    <span className="text-gray-500 dark:text-white/50 text-[10px]">labour</span>
+                    <span className="text-theme-tertiary text-[10px]">labour</span>
                   </div>
                 )}
               </div>
@@ -408,7 +408,7 @@ export function DayApprovalPanel({
                     <button
                       onClick={() => handleApprove(dateStr)}
                       disabled={processing === dateStr}
-                      className="px-2 py-1.5 text-xs bg-transparent border border-green-200 dark:border-green-500/50 text-green-600 dark:text-green-400 rounded hover:bg-green-50 dark:hover:bg-green-500/10 disabled:opacity-50 transition-colors flex items-center justify-center gap-1"
+                      className="px-2 py-1.5 text-xs bg-transparent border border-green-200 dark:border-green-500/50 text-green-600 dark:text-green-400 rounded hover:bg-module-fg/10 disabled:opacity-50 transition-colors flex items-center justify-center gap-1"
                     >
                       <Check className="w-3 h-3" />
                       Approve
@@ -436,11 +436,11 @@ export function DayApprovalPanel({
       {/* Review Modal */}
       {showReviewModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 dark:bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-[#171b2d] rounded-lg border border-gray-200 dark:border-white/[0.1] w-full max-w-md p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="bg-white dark:bg-[#171b2d] rounded-lg border border-theme w-full max-w-md p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-theme-primary mb-4">
               {approvals[showReviewModal]?.status === 'needs_review' ? 'Edit Review' : 'Mark Day for Review'}
             </h3>
-            <p className="text-sm text-gray-600 dark:text-white/70 mb-4">
+            <p className="text-sm text-theme-secondary mb-4">
               Please select why this day needs review:
             </p>
             
@@ -448,25 +448,25 @@ export function DayApprovalPanel({
               {(Object.keys(REVIEW_REASON_LABELS) as ReviewReason[]).map((reason) => (
                 <label
                   key={reason}
-                  className="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/[0.08] cursor-pointer border border-gray-200 dark:border-white/[0.06]"
+                  className="flex items-center gap-2 p-2 rounded-lg bg-theme-button hover:bg-gray-100 dark:hover:bg-white/[0.08] cursor-pointer border border-theme"
                 >
                   <input
                     type="checkbox"
                     checked={(reviewReasons[showReviewModal] || []).includes(reason)}
                     onChange={() => toggleReviewReason(showReviewModal, reason)}
-                    className="w-4 h-4 rounded border-gray-300 dark:border-white/[0.1] bg-white dark:bg-white/[0.06] text-blue-600 dark:text-blue-400 focus:ring-blue-500 focus:ring-2"
+                    className="w-4 h-4 rounded border-theme bg-white dark:bg-white/[0.06] text-blue-600 dark:text-blue-400 focus:ring-blue-500 focus:ring-2"
                   />
-                  <span className="text-sm text-gray-900 dark:text-white">{REVIEW_REASON_LABELS[reason]}</span>
+                  <span className="text-sm text-theme-primary">{REVIEW_REASON_LABELS[reason]}</span>
                 </label>
               ))}
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Additional notes (optional):</label>
+              <label className="block text-sm text-theme-secondary mb-2">Additional notes (optional):</label>
               <textarea
                 value={reviewNotes[showReviewModal] || ''}
                 onChange={(e) => setReviewNotes({ ...reviewNotes, [showReviewModal]: e.target.value })}
-                className="w-full p-3 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-white/40"
+                className="w-full p-3 bg-white dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary text-sm placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary"
                 placeholder="Add any additional context..."
                 rows={3}
               />
@@ -479,7 +479,7 @@ export function DayApprovalPanel({
                   setReviewReasons({ ...reviewReasons, [showReviewModal]: [] });
                   setReviewNotes({ ...reviewNotes, [showReviewModal]: '' });
                 }}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] border border-gray-300 dark:border-white/[0.1] text-gray-600 hover:text-gray-900 dark:text-white/60 dark:hover:text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] border border-theme text-theme-secondary hover:text-theme-primary/60 rounded-lg transition-colors"
               >
                 Cancel
               </button>

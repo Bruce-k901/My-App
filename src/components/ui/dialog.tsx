@@ -51,7 +51,7 @@ export function DialogContent({ children, className = '', style }: DialogContent
   // Only apply default max-w-md if className doesn't specify a max-width
   // Check for any max-w class (including arbitrary values like max-w-[3600px])
   const hasCustomMaxWidth = /max-w-/.test(className);
-  const base = `bg-white dark:bg-[#0B0D13] p-4 sm:p-6 rounded-lg border border-gray-200 dark:border-white/[0.08] shadow-lg w-full ${hasCustomMaxWidth ? '' : 'max-w-md'} max-h-[90vh] sm:max-h-[85vh] overflow-y-auto mx-4 sm:mx-0`;
+  const base = `bg-white dark:bg-[#0B0D13] p-4 sm:p-6 rounded-lg border border-theme shadow-lg w-full ${hasCustomMaxWidth ? '' : 'max-w-md'} max-h-[90vh] sm:max-h-[85vh] overflow-y-auto mx-4 sm:mx-0`;
   // Put className last so custom max-w classes can override base styles
   return (
     <div style={style} className={`${base} ${className}`}>
@@ -65,7 +65,7 @@ export function DialogHeader({ children }: DialogHeaderProps) {
 }
 
 export function DialogTitle({ children, className = '' }: DialogTitleProps) {
-  return <h2 className={`text-lg font-semibold text-gray-900 dark:text-white ${className}`}>{children}</h2>;
+  return <h2 className={`text-lg font-semibold text-theme-primary ${className}`}>{children}</h2>;
 }
 
 interface DialogDescriptionProps {
@@ -79,7 +79,7 @@ interface DialogFooterProps {
 }
 
 export function DialogDescription({ children, className = '' }: DialogDescriptionProps) {
-  return <p className={`text-sm text-gray-600 dark:text-neutral-400 mt-2 ${className}`}>{children}</p>;
+ return <p className={`text-sm text-gray-600 dark:text-theme-tertiary mt-2 ${className}`}>{children}</p>;
 }
 
 export function DialogFooter({ children, className = '' }: DialogFooterProps) {

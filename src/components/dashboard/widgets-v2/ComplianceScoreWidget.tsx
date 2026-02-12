@@ -157,7 +157,7 @@ export default function ComplianceScoreWidget({ siteId, companyId }: ComplianceS
         <div>
           <div className="text-[10.5px] text-[rgb(var(--text-disabled))] mb-0.5">This week</div>
           <div
-            className={`text-[10.5px] ${change >= 0 ? 'text-emerald-400' : 'text-blue-400'}`}
+            className={`text-[10.5px] ${change >= 0 ? 'text-module-fg' : 'text-blue-400'}`}
           >
             {change >= 0 ? '↑' : '↓'} {Math.abs(change)}% from last week
           </div>

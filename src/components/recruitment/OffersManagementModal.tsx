@@ -253,8 +253,8 @@ export default function OffersManagementModal({
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-white/[0.06] sticky top-0 bg-[#14161c] z-10">
             <div>
-              <h2 className="text-xl font-semibold text-white">Manage Offers</h2>
-              <p className="text-sm text-white/60 mt-1">
+              <h2 className="text-xl font-semibold text-theme-primary">Manage Offers</h2>
+              <p className="text-sm text-theme-tertiary mt-1">
                 {candidate.full_name} - {application.job_title}
               </p>
             </div>
@@ -268,7 +268,7 @@ export default function OffersManagementModal({
               </button>
               <button
                 onClick={onClose}
-                className="p-2 rounded-lg hover:bg-white/5 text-white/60 hover:text-white"
+                className="p-2 rounded-lg hover:bg-white/5 text-theme-tertiary hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -278,13 +278,13 @@ export default function OffersManagementModal({
           {/* Content */}
           {loading ? (
             <div className="p-12 flex items-center justify-center">
-              <Loader2 className="w-6 h-6 text-white/40 animate-spin" />
+              <Loader2 className="w-6 h-6 text-theme-tertiary animate-spin" />
             </div>
           ) : offers.length === 0 ? (
             <div className="p-12 text-center">
-              <FileText className="w-12 h-12 text-white/30 mx-auto mb-4" />
-              <div className="text-white font-semibold text-lg mb-2">No Offers Found</div>
-              <div className="text-white/60 text-sm mb-4">
+              <FileText className="w-12 h-12 text-theme-disabled mx-auto mb-4" />
+              <div className="text-theme-primary font-semibold text-lg mb-2">No Offers Found</div>
+              <div className="text-theme-tertiary text-sm mb-4">
                 No offer letters have been created for this application yet.
               </div>
               <button
@@ -294,7 +294,7 @@ export default function OffersManagementModal({
                 <Plus className="w-4 h-4" />
                 Create First Offer
               </button>
-              <div className="text-white/40 text-xs mt-4">
+              <div className="text-theme-tertiary text-xs mt-4">
                 If you expected to see offers here, this may be due to RLS policies.
                 <br />
                 Please ensure you have run: <code className="bg-white/5 px-1 rounded">supabase/sql/fix_offer_letters_rls.sql</code>
@@ -320,11 +320,11 @@ export default function OffersManagementModal({
                               ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
                               : offer.status === 'viewed'
                               ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
-                              : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                              : 'bg-theme-surface-elevated0/20 text-theme-tertiary border border-gray-500/30'
                           }`}>
                             {offer.status.charAt(0).toUpperCase() + offer.status.slice(1)}
                           </span>
-                          <span className="text-xs text-white/50">
+                          <span className="text-xs text-theme-tertiary">
                             Created {new Date(offer.created_at).toLocaleDateString('en-GB', {
                               day: 'numeric',
                               month: 'short',
@@ -336,25 +336,25 @@ export default function OffersManagementModal({
                         </div>
 
                         <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div className="flex items-center gap-2 text-white/70">
-                            <Calendar className="w-4 h-4 text-white/40" />
-                            <span className="text-white/50">Start:</span>
-                            <strong className="text-white">{offer.start_date ? new Date(offer.start_date).toLocaleDateString('en-GB') : 'Not set'}</strong>
+                          <div className="flex items-center gap-2 text-theme-secondary">
+                            <Calendar className="w-4 h-4 text-theme-tertiary" />
+                            <span className="text-theme-tertiary">Start:</span>
+                            <strong className="text-theme-primary">{offer.start_date ? new Date(offer.start_date).toLocaleDateString('en-GB') : 'Not set'}</strong>
                           </div>
-                          <div className="flex items-center gap-2 text-white/70">
-                            <DollarSign className="w-4 h-4 text-white/40" />
-                            <span className="text-white/50">Pay:</span>
-                            <strong className="text-white">£{offer.pay_rate}{offer.pay_frequency === 'hourly' ? '/hr' : '/year'}</strong>
+                          <div className="flex items-center gap-2 text-theme-secondary">
+                            <DollarSign className="w-4 h-4 text-theme-tertiary" />
+                            <span className="text-theme-tertiary">Pay:</span>
+                            <strong className="text-theme-primary">£{offer.pay_rate}{offer.pay_frequency === 'hourly' ? '/hr' : '/year'}</strong>
                           </div>
                           {offer.contract_type && (
-                            <div className="flex items-center gap-2 text-white/70">
-                              <Briefcase className="w-4 h-4 text-white/40" />
-                              <span className="text-white/50">Contract:</span>
-                              <strong className="text-white">{offer.contract_type.replace('_', ' ')}{offer.contract_hours ? ` (${offer.contract_hours}h/week)` : ''}</strong>
+                            <div className="flex items-center gap-2 text-theme-secondary">
+                              <Briefcase className="w-4 h-4 text-theme-tertiary" />
+                              <span className="text-theme-tertiary">Contract:</span>
+                              <strong className="text-theme-primary">{offer.contract_type.replace('_', ' ')}{offer.contract_hours ? ` (${offer.contract_hours}h/week)` : ''}</strong>
                             </div>
                           )}
                           {offer.sent_at && (
-                            <div className="text-xs text-white/50">
+                            <div className="text-xs text-theme-tertiary">
                               Sent: {new Date(offer.sent_at).toLocaleDateString('en-GB')}
                             </div>
                           )}
@@ -372,7 +372,7 @@ export default function OffersManagementModal({
 
                         {offer.offer_token && (
                           <div className="mt-3 p-2 bg-white/[0.02] rounded text-xs">
-                            <span className="text-white/50">Offer Link: </span>
+                            <span className="text-theme-tertiary">Offer Link: </span>
                             <code className="text-[#D37E91] break-all">
                               {window.location.origin}/recruitment/offers/{offer.offer_token}
                             </code>

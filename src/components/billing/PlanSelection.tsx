@@ -157,8 +157,8 @@ export default function PlanSelection({
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-semibold text-white mb-2">Select Your Plan</h2>
-        <p className="text-white/60 text-sm">
+        <h2 className="text-xl font-semibold text-theme-primary mb-2">Select Your Plan</h2>
+        <p className="text-theme-tertiary text-sm">
           {siteCount === 1
             ? "As a single site user, you can choose Starter or upgrade to Pro or Enterprise."
             : `You have ${siteCount} sites. Choose the plan that best fits your needs.`}
@@ -194,36 +194,36 @@ export default function PlanSelection({
               )}
 
               {plan.name === 'pro' && !isCurrentPlan && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#D37E91] text-black px-3 py-1 rounded-full text-xs font-semibold">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#D37E91] text-theme-primary px-3 py-1 rounded-full text-xs font-semibold">
                   Most Popular
                 </div>
               )}
 
               <div className="flex-1">
-                <h3 className="text-xl font-semibold text-white mb-2">{plan.display_name}</h3>
+                <h3 className="text-xl font-semibold text-theme-primary mb-2">{plan.display_name}</h3>
                 
                 {plan.name === 'starter' && (
-                  <p className="text-sm text-white/60 mb-4">For single cafés, restaurants, or bakeries</p>
+                  <p className="text-sm text-theme-tertiary mb-4">For single cafés, restaurants, or bakeries</p>
                 )}
                 {plan.name === 'pro' && (
-                  <p className="text-sm text-white/60 mb-4">For multi-site operators & growing groups</p>
+                  <p className="text-sm text-theme-tertiary mb-4">For multi-site operators & growing groups</p>
                 )}
                 {plan.name === 'enterprise' && (
-                  <p className="text-sm text-white/60 mb-4">For hotels, schools, and multi-venue operators</p>
+                  <p className="text-sm text-theme-tertiary mb-4">For hotels, schools, and multi-venue operators</p>
                 )}
 
                 <div className="mb-4">
                   <p className="text-3xl font-bold text-[#D37E91] mb-1">
                     {getPlanPrice(plan)}
                   </p>
-                  <p className="text-sm text-white/60">{getPlanPriceDescription(plan)}</p>
+                  <p className="text-sm text-theme-tertiary">{getPlanPriceDescription(plan)}</p>
                 </div>
 
                 <ul className="space-y-2 mb-6">
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-2">
                       <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-white/80">{feature}</span>
+                      <span className="text-sm text-theme-secondary">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -231,7 +231,7 @@ export default function PlanSelection({
 
               <div className="mt-auto pt-4 border-t border-white/10">
                 {!isAvailable && (
-                  <p className="text-xs text-white/40 text-center mb-3">
+                  <p className="text-xs text-theme-tertiary text-center mb-3">
                     {plan.name === 'starter' && siteCount > 1
                       ? 'Available for single site only'
                       : plan.name === 'pro' && siteCount === 1
@@ -270,8 +270,8 @@ export default function PlanSelection({
 
       {siteCount === 1 && (
         <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-          <p className="text-sm text-white/80">
-            <strong className="text-white">Note:</strong> As a single site user, you can choose Starter (£40/month) 
+          <p className="text-sm text-theme-secondary">
+            <strong className="text-theme-primary">Note:</strong> As a single site user, you can choose Starter (£40/month) 
             or upgrade to Pro (£55/month) for access to advanced features. Enterprise plans are available 
             with custom pricing - contact sales for details.
           </p>

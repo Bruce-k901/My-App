@@ -274,8 +274,8 @@ export default function ApplyPage() {
       <div className="min-h-screen bg-[#0A0B0F] flex items-center justify-center p-6">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-white mb-2">Job Not Available</h1>
-          <p className="text-white/60 mb-6">
+          <h1 className="text-2xl font-bold text-theme-primary mb-2">Job Not Available</h1>
+          <p className="text-theme-tertiary mb-6">
             This job posting is no longer accepting applications.
           </p>
           <Link
@@ -300,7 +300,7 @@ export default function ApplyPage() {
         <div className="max-w-3xl mx-auto px-6 py-8">
           <Link
             href={`/jobs/${jobIdOrSlug}`}
-            className="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm mb-6 transition-colors"
+            className="inline-flex items-center gap-2 text-theme-tertiary hover:text-white text-sm mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to job details
@@ -309,27 +309,27 @@ export default function ApplyPage() {
           <div className="flex items-start gap-4">
             <div className="flex-1">
               {job.companies?.name && (
-                <div className="flex items-center gap-2 text-white/60 text-sm mb-2">
+                <div className="flex items-center gap-2 text-theme-tertiary text-sm mb-2">
                   <Building2 className="w-4 h-4" />
                   <span>{job.companies.name}</span>
                 </div>
               )}
-              <h1 className="text-2xl font-bold text-white mb-3">Apply for {job.title}</h1>
+              <h1 className="text-2xl font-bold text-theme-primary mb-3">Apply for {job.title}</h1>
               
               <div className="flex flex-wrap items-center gap-3 text-sm">
                 {job.location && (
-                  <div className="flex items-center gap-2 text-white/70">
+                  <div className="flex items-center gap-2 text-theme-secondary">
                     <MapPin className="w-4 h-4" />
                     <span>{job.location}</span>
                   </div>
                 )}
                 {job.department && (
-                  <div className="flex items-center gap-2 text-white/70">
+                  <div className="flex items-center gap-2 text-theme-secondary">
                     <Briefcase className="w-4 h-4" />
                     <span>{job.department}</span>
                   </div>
                 )}
-                <div className="flex items-center gap-2 text-white/70">
+                <div className="flex items-center gap-2 text-theme-secondary">
                   <DollarSign className="w-4 h-4" />
                   <span>{payRange}</span>
                 </div>
@@ -344,11 +344,11 @@ export default function ApplyPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Personal Information */}
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Personal Information</h2>
+            <h2 className="text-lg font-semibold text-theme-primary mb-4">Personal Information</h2>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Full Name *
                 </label>
                 <input
@@ -356,14 +356,14 @@ export default function ApplyPage() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Your full name"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] transition-colors"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] transition-colors"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Email Address *
                   </label>
                   <input
@@ -371,13 +371,13 @@ export default function ApplyPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your.email@example.com"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] transition-colors"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] transition-colors"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Phone Number *
                   </label>
                   <input
@@ -385,14 +385,14 @@ export default function ApplyPage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="07XXX XXXXXX"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] transition-colors"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] transition-colors"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   How did you hear about this job? (Optional)
                 </label>
                 <select
@@ -418,11 +418,11 @@ export default function ApplyPage() {
 
           {/* CV Upload */}
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Your CV *</h2>
+            <h2 className="text-lg font-semibold text-theme-primary mb-4">Your CV *</h2>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-3">
+                <label className="block text-sm font-medium text-theme-secondary mb-3">
                   Upload your CV
                 </label>
                 <div className="relative">
@@ -440,16 +440,16 @@ export default function ApplyPage() {
                     {cvFile ? (
                       <div className="text-center">
                         <CheckCircle2 className="w-8 h-8 text-green-400 mx-auto mb-2" />
-                        <p className="text-white font-medium">{cvFile.name}</p>
-                        <p className="text-white/50 text-xs mt-1">
+                        <p className="text-theme-primary font-medium">{cvFile.name}</p>
+                        <p className="text-theme-tertiary text-xs mt-1">
                           {(cvFile.size / 1024 / 1024).toFixed(2)} MB
                         </p>
                       </div>
                     ) : (
                       <div className="text-center">
-                        <Upload className="w-8 h-8 text-white/40 group-hover:text-[#D37E91] mx-auto mb-2 transition-colors" />
-                        <p className="text-white/70 font-medium">Click to upload your CV</p>
-                        <p className="text-white/40 text-xs mt-1">
+                        <Upload className="w-8 h-8 text-theme-tertiary group-hover:text-[#D37E91] mx-auto mb-2 transition-colors" />
+                        <p className="text-theme-secondary font-medium">Click to upload your CV</p>
+                        <p className="text-theme-tertiary text-xs mt-1">
                           PDF, DOC, DOCX (Max 5MB)
                         </p>
                       </div>
@@ -462,10 +462,10 @@ export default function ApplyPage() {
 
           {/* Cover Letter */}
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Cover Letter (Optional)</h2>
+            <h2 className="text-lg font-semibold text-theme-primary mb-4">Cover Letter (Optional)</h2>
             
             <div>
-              <label className="block text-sm font-medium text-white/70 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Tell us why you're a great fit for this role
               </label>
               <textarea
@@ -473,7 +473,7 @@ export default function ApplyPage() {
                 onChange={(e) => setCoverLetter(e.target.value)}
                 rows={8}
                 placeholder="Share your experience, skills, and why you're interested in this position..."
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] transition-colors resize-none"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] transition-colors resize-none"
               />
             </div>
           </div>
@@ -482,7 +482,7 @@ export default function ApplyPage() {
           <div className="flex items-center justify-between gap-4 pt-4">
             <Link
               href={`/jobs/${jobIdOrSlug}`}
-              className="px-6 py-3 rounded-lg text-white/70 hover:text-white transition-colors"
+              className="px-6 py-3 rounded-lg text-theme-secondary hover:text-white transition-colors"
             >
               Cancel
             </Link>

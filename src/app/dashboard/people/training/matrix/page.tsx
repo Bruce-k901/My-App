@@ -9,7 +9,7 @@ const ComplianceMatrixPageClient = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-white/60">Loading...</div>
+        <div className="text-theme-tertiary">Loading...</div>
       </div>
     )
   }

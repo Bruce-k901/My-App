@@ -87,26 +87,26 @@ export function MobileHeader({
     <header className="px-5 pt-4 pb-6 relative">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-gray-400 text-sm">{getGreeting()}</p>
-          <h1 className="text-2xl font-bold mt-0.5 text-white">{userName}</h1>
+          <p className="text-theme-tertiary text-sm">{getGreeting()}</p>
+          <h1 className="text-2xl font-bold mt-0.5 text-theme-primary">{userName}</h1>
 
           {/* Site selector for owners */}
           {showSiteSelector && isOwnerOrAdmin && sites.length > 0 ? (
             <button
               onClick={() => setShowSiteDropdown(!showSiteDropdown)}
-              className="flex items-center gap-2 mt-1 text-gray-400 text-sm hover:text-gray-300 transition-colors"
+              className="flex items-center gap-2 mt-1 text-theme-tertiary text-sm hover:text-theme-tertiary transition-colors"
             >
               <MapPin size={14} />
               <span>{displaySiteName}</span>
               <ChevronDown size={14} className={`transition-transform ${showSiteDropdown ? 'rotate-180' : ''}`} />
             </button>
           ) : (
-            <div className="flex items-center gap-2 mt-1 text-gray-400 text-sm">
+            <div className="flex items-center gap-2 mt-1 text-theme-tertiary text-sm">
               <MapPin size={14} />
               <span>{displaySiteName}</span>
               {department && (
                 <>
-                  <span className="text-gray-600">•</span>
+                  <span className="text-theme-secondary">•</span>
                   <span>{department}</span>
                 </>
               )}
@@ -133,7 +133,7 @@ export function MobileHeader({
           {notificationsEnabled ? (
             <Bell size={20} className="text-[#D37E91]" />
           ) : (
-            <BellOff size={20} className="text-gray-500" />
+            <BellOff size={20} className="text-theme-tertiary" />
           )}
         </button>
       </div>
@@ -150,7 +150,7 @@ export function MobileHeader({
               onClick={() => handleSiteSelect('all')}
               className={cn(
                 "w-full px-4 py-3 text-left flex items-center justify-between border-b border-white/10",
-                (siteId === 'all' || !siteId) ? 'text-[#D37E91]' : 'text-white'
+                (siteId === 'all' || !siteId) ? 'text-[#D37E91]' : 'text-theme-primary'
               )}
             >
               <span>All Sites</span>
@@ -162,7 +162,7 @@ export function MobileHeader({
                 onClick={() => handleSiteSelect(site.id)}
                 className={cn(
                   "w-full px-4 py-3 text-left flex items-center justify-between border-b border-white/5 last:border-0",
-                  siteId === site.id ? 'text-[#D37E91]' : 'text-white/80'
+                  siteId === site.id ? 'text-[#D37E91]' : 'text-theme-secondary'
                 )}
               >
                 <span>{site.name}</span>

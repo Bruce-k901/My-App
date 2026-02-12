@@ -143,24 +143,24 @@ export function ConversationHeader({ conversationId }: ConversationHeaderProps) 
 
   if (loading) {
     return (
-      <div className="flex-shrink-0 h-16 border-b border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] px-4 flex items-center">
+      <div className="flex-shrink-0 h-16 border-b border-theme bg-white dark:bg-white/[0.02] px-4 flex items-center">
         <div className="h-4 w-32 bg-gray-200 dark:bg-white/[0.1] rounded animate-pulse" />
       </div>
     );
   }
 
   return (
-    <div className="flex-shrink-0 h-16 border-b border-gray-200 dark:border-white/[0.06] bg-white dark:bg-[#0B0D13] px-4 flex items-center justify-between relative">
+    <div className="flex-shrink-0 h-16 border-b border-theme bg-white dark:bg-[#0B0D13] px-4 flex items-center justify-between relative">
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <div className="flex-shrink-0 p-2 bg-[#D37E91]/10 dark:bg-[#D37E91]/15 rounded-lg">
           <Icon className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
         </div>
         <div className="flex-1 min-w-0">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white truncate">
+          <h2 className="text-base font-semibold text-theme-primary truncate">
             {getConversationName()}
           </h2>
           {participants.length > 0 && (
-            <p className="text-xs text-gray-500 dark:text-white/50 truncate">
+            <p className="text-xs text-theme-tertiary truncate">
               {participants.length} {participants.length === 1 ? 'participant' : 'participants'}
             </p>
           )}

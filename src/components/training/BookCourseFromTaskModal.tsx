@@ -137,33 +137,33 @@ export function BookCourseFromTaskModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-neutral-800 rounded-lg border border-neutral-700 w-full max-w-md shadow-xl">
+      <div className="bg-neutral-800 rounded-lg border border-theme w-full max-w-md shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-neutral-700">
-          <h2 className="text-xl font-semibold text-white">Book Course</h2>
+        <div className="flex items-center justify-between p-6 border-b border-theme">
+          <h2 className="text-xl font-semibold text-theme-primary">Book Course</h2>
           <button
             onClick={onClose}
             className="p-1 hover:bg-neutral-700 rounded-lg transition-colors"
             disabled={booking}
           >
-            <X className="w-5 h-5 text-gray-500 dark:text-white/60" />
+            <X className="w-5 h-5 text-theme-tertiary" />
           </button>
         </div>
 
         {/* Content */}
         <div className="p-6 space-y-4">
           <div>
-            <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Employee</p>
-            <p className="text-white font-medium">{employeeName}</p>
+            <p className="text-sm text-theme-tertiary mb-1">Employee</p>
+            <p className="text-theme-primary font-medium">{employeeName}</p>
           </div>
 
           <div>
-            <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Course</p>
-            <p className="text-white font-medium">{actualCourseName}</p>
+            <p className="text-sm text-theme-tertiary mb-1">Course</p>
+            <p className="text-theme-primary font-medium">{actualCourseName}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-2">
+            <label className="block text-sm font-medium text-theme-primary mb-2">
               Course Deadline <span className="text-red-400">*</span>
             </label>
             <div className="relative">
@@ -172,12 +172,12 @@ export function BookCourseFromTaskModal({
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-4 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                className="w-full px-4 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                 disabled={booking}
               />
-              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-white/60 pointer-events-none" />
+              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary pointer-events-none" />
             </div>
-            <p className="text-xs text-neutral-500 mt-1">
+            <p className="text-xs text-theme-tertiary mt-1">
               The employee will receive a notification to confirm and start the course
             </p>
           </div>
@@ -213,11 +213,11 @@ export function BookCourseFromTaskModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-neutral-700">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-theme">
           <button
             onClick={onClose}
             disabled={booking}
-            className="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-lg transition-colors disabled:opacity-50"
+            className="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-theme-primary rounded-lg transition-colors disabled:opacity-50"
           >
             Cancel
           </button>

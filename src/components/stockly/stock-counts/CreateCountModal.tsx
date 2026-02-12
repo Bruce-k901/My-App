@@ -404,44 +404,44 @@ export default function CreateCountModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="!max-w-[3600px] w-[95vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl text-gray-900 dark:text-white">Create Stock Count</DialogTitle>
-          <p className="text-gray-600 dark:text-white/60">Simple 3-step setup</p>
+          <DialogTitle className="text-2xl text-theme-primary">Create Stock Count</DialogTitle>
+          <p className="text-theme-secondary">Simple 3-step setup</p>
         </DialogHeader>
 
         <div className="space-y-8 mt-6">
           {/* Step 1: Basic Info */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">1. Basic Information</h3>
+            <h3 className="text-lg font-semibold text-theme-primary mb-4">1. Basic Information</h3>
             
             <div className="grid grid-cols-3 gap-6">
               <div className="space-y-2 col-span-2">
-                <Label htmlFor="name" className="text-sm font-medium text-gray-900 dark:text-white">Count Name</Label>
+                <Label htmlFor="name" className="text-sm font-medium text-theme-primary">Count Name</Label>
                 <Input
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g., Weekly Count - W1 Jan 2026"
-                  className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:border-emerald-600 dark:focus:border-emerald-500 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 text-gray-900 dark:text-white w-full"
+                  className="bg-white dark:bg-gray-900 border-theme focus:border-emerald-600 dark:focus:border-emerald-500 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 text-theme-primary w-full"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="date" className="text-sm font-medium text-gray-900 dark:text-white">Count Date</Label>
+                <Label htmlFor="date" className="text-sm font-medium text-theme-primary">Count Date</Label>
                 <Input
                   id="date"
                   type="date"
                   value={countDate}
                   onChange={(e) => setCountDate(e.target.value)}
-                  className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:border-emerald-600 dark:focus:border-emerald-500 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 text-gray-900 dark:text-white w-full"
+                  className="bg-white dark:bg-gray-900 border-theme focus:border-emerald-600 dark:focus:border-emerald-500 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 text-theme-primary w-full"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="site" className="text-sm font-medium text-gray-900 dark:text-white">Site *</Label>
+                <Label htmlFor="site" className="text-sm font-medium text-theme-primary">Site *</Label>
                 {loading ? (
-                  <div className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-md text-gray-600 dark:text-white/60 text-sm">
+ <div className="w-full px-3 py-2 bg-theme-surface ] border border-theme rounded-md text-theme-secondary text-sm">
                     Loading sites...
                   </div>
                 ) : sites.length > 0 ? (
@@ -449,7 +449,7 @@ export default function CreateCountModal({
                     id="site"
                     value={selectedSiteId || ''}
                     onChange={(e) => setSelectedSiteId(e.target.value)}
-                    className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 appearance-none cursor-pointer"
+                    className="w-full bg-white dark:bg-gray-900 border border-theme rounded-lg px-4 py-2.5 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 appearance-none cursor-pointer"
                   >
                     <option value="">Select site...</option>
                     {sites.map(site => (
@@ -457,7 +457,7 @@ export default function CreateCountModal({
                     ))}
                   </select>
                 ) : (
-                  <div className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-md text-gray-600 dark:text-white/60 text-sm">
+ <div className="w-full px-3 py-2 bg-theme-surface ] border border-theme rounded-md text-theme-secondary text-sm">
                     {error || 'No sites available'}
                   </div>
                 )}
@@ -467,7 +467,7 @@ export default function CreateCountModal({
 
           {/* Step 2: Select Libraries */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">2. Select Libraries to Count</h3>
+            <h3 className="text-lg font-semibold text-theme-primary mb-4">2. Select Libraries to Count</h3>
             
             <div className="grid grid-cols-2 gap-4">
               {libraries.map((library) => {
@@ -481,7 +481,7 @@ export default function CreateCountModal({
                     className={`flex items-center gap-4 p-5 border rounded-lg cursor-pointer transition-all ${
                       isSelected
                         ? 'border-emerald-600 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-600/10 shadow-sm'
-                        : 'border-gray-200 dark:border-white/[0.06] hover:border-gray-300 dark:hover:border-white/[0.1] bg-white dark:bg-white/[0.03] hover:shadow-sm'
+                        : 'border-theme hover:border-gray-300 dark:hover:border-white/[0.1] bg-theme-surface hover:shadow-sm'
                     }`}
                   >
                     <div onClick={(e) => e.stopPropagation()}>
@@ -497,18 +497,18 @@ export default function CreateCountModal({
                       />
                     </div>
                     
-                    <Icon className="h-6 w-6 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                    <Icon className="h-6 w-6 text-module-fg flex-shrink-0" />
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
-                        <h4 className="font-semibold text-gray-900 dark:text-white text-base">
+                        <h4 className="font-semibold text-theme-primary text-base">
                           {library.name}
                         </h4>
-                        <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
+                        <span className="text-sm font-medium text-module-fg whitespace-nowrap">
                           {library.count} items
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600 dark:text-white/60 mt-1">
+                      <p className="text-sm text-theme-secondary mt-1">
                         {library.description}
                       </p>
                     </div>
@@ -518,8 +518,8 @@ export default function CreateCountModal({
             </div>
 
             {selectedLibraries.length > 0 && (
-              <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-600/30 rounded-lg p-4">
-                <p className="text-emerald-700 dark:text-emerald-400 font-medium">
+              <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-module-fg/30 rounded-lg p-4">
+                <p className="text-module-fg font-medium">
                   Total: {getTotalItems()} items will be loaded for counting
                 </p>
               </div>
@@ -528,15 +528,15 @@ export default function CreateCountModal({
 
           {/* Step 3: Notes */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">3. Additional Notes (Optional)</h3>
+            <h3 className="text-lg font-semibold text-theme-primary mb-2">3. Additional Notes (Optional)</h3>
             <div className="space-y-2">
-              <Label htmlFor="notes" className="text-sm font-medium text-gray-900 dark:text-white">Notes</Label>
+              <Label htmlFor="notes" className="text-sm font-medium text-theme-primary">Notes</Label>
               <Textarea
                 id="notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Optional notes about this count..."
-                className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus-visible:ring-emerald-500/50 dark:focus-visible:ring-emerald-500 focus-visible:border-emerald-600 dark:focus-visible:border-emerald-500 text-gray-900 dark:text-white resize-none w-full"
+                className="bg-white dark:bg-gray-900 border-theme focus-visible:ring-emerald-500/50 dark:focus-visible:ring-emerald-500 focus-visible:border-emerald-600 dark:focus-visible:border-emerald-500 text-theme-primary resize-none w-full"
                 rows={3}
               />
             </div>
@@ -550,13 +550,13 @@ export default function CreateCountModal({
           )}
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex justify-end gap-3 pt-4 border-t border-theme">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
               disabled={loading}
-              className="border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-white"
+              className="border-theme hover:bg-theme-hover text-theme-secondary"
             >
               Cancel
             </Button>

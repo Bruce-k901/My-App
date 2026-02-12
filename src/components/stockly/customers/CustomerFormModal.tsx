@@ -186,12 +186,12 @@ export default function CustomerFormModal({
       >
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-2xl font-semibold text-white">
+            <DialogTitle className="text-2xl font-semibold text-theme-primary">
               {isEdit ? 'Edit Customer' : 'Add New Customer'}
             </DialogTitle>
             <button
               onClick={onClose}
-              className="text-white/60 hover:text-white transition-colors"
+              className="text-theme-tertiary hover:text-white transition-colors"
               aria-label="Close"
             >
               <X className="w-5 h-5" />
@@ -206,7 +206,7 @@ export default function CustomerFormModal({
             <div className="space-y-6">
               {/* Section 1: Business Details */}
               <div className="space-y-4">
-                <h3 className="text-base font-semibold text-emerald-400 border-b border-white/[0.06] pb-2">
+                <h3 className="text-base font-semibold text-module-fg border-b border-white/[0.06] pb-2">
                   Business Details
                 </h3>
 
@@ -220,9 +220,9 @@ export default function CustomerFormModal({
                     onChange={(e) => handleChange('business_name', e.target.value)}
                     placeholder="e.g., High Grade Coffee"
                     required
-                    className="focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50"
+                    className="focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
                   />
-                  <p className="text-xs text-white/50 mt-1.5">The name of the cafe/restaurant</p>
+                  <p className="text-xs text-theme-tertiary mt-1.5">The name of the cafe/restaurant</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -233,7 +233,7 @@ export default function CustomerFormModal({
                       value={formData.trading_name || ''}
                       onChange={(e) => handleChange('trading_name', e.target.value)}
                       placeholder="Same as business name if different"
-                      className="focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50"
+                      className="focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
                     />
                   </div>
 
@@ -244,7 +244,7 @@ export default function CustomerFormModal({
                       value={formData.contact_name || ''}
                       onChange={(e) => handleChange('contact_name', e.target.value)}
                       placeholder="e.g., John Smith"
-                      className="focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50"
+                      className="focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
                     />
                   </div>
                 </div>
@@ -260,9 +260,9 @@ export default function CustomerFormModal({
                       onChange={(e) => handleChange('email', e.target.value)}
                       placeholder="orders@cafe.com"
                       required
-                      className="focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50"
+                      className="focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
                     />
-                    <p className="text-xs text-white/50 mt-1.5">Used for portal login and order confirmations</p>
+                    <p className="text-xs text-theme-tertiary mt-1.5">Used for portal login and order confirmations</p>
                   </div>
 
                   <div>
@@ -272,7 +272,7 @@ export default function CustomerFormModal({
                       value={formData.phone || ''}
                       onChange={(e) => handleChange('phone', e.target.value)}
                       placeholder="+44 20 1234 5678"
-                      className="focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50"
+                      className="focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
                     />
                   </div>
                 </div>
@@ -280,7 +280,7 @@ export default function CustomerFormModal({
 
               {/* Section 2: Delivery Address */}
               <div className="space-y-4">
-                <h3 className="text-base font-semibold text-emerald-400 border-b border-white/[0.06] pb-2">
+                <h3 className="text-base font-semibold text-module-fg border-b border-white/[0.06] pb-2">
                   Delivery Address
                 </h3>
 
@@ -294,7 +294,7 @@ export default function CustomerFormModal({
                     onChange={(e) => handleChange('address_line1', e.target.value)}
                     placeholder="123 High Street"
                     required
-                    className="focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50"
+                    className="focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
                   />
                 </div>
 
@@ -305,7 +305,7 @@ export default function CustomerFormModal({
                     value={formData.address_line2 || ''}
                     onChange={(e) => handleChange('address_line2', e.target.value)}
                     placeholder="Unit 4B"
-                    className="focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50"
+                    className="focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
                   />
                 </div>
 
@@ -320,7 +320,7 @@ export default function CustomerFormModal({
                       onChange={(e) => handleChange('city', e.target.value)}
                       placeholder="London"
                       required
-                      className="focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50"
+                      className="focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
                     />
                   </div>
 
@@ -334,9 +334,9 @@ export default function CustomerFormModal({
                       onChange={(e) => handleChange('postcode', e.target.value)}
                       placeholder="SW1A 1AA"
                       required
-                      className="focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50"
+                      className="focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
                     />
-                    <p className="text-xs text-white/50 mt-1.5">We'll calculate delivery distance</p>
+                    <p className="text-xs text-theme-tertiary mt-1.5">We'll calculate delivery distance</p>
                   </div>
                 </div>
               </div>
@@ -347,7 +347,7 @@ export default function CustomerFormModal({
 
               {/* Section 3: Payment Terms */}
               <div className="space-y-4">
-                <h3 className="text-base font-semibold text-emerald-400 border-b border-white/[0.06] pb-2">
+                <h3 className="text-base font-semibold text-module-fg border-b border-white/[0.06] pb-2">
                   Payment Terms
                 </h3>
 
@@ -356,7 +356,7 @@ export default function CustomerFormModal({
                   <select
                     value={formData.payment_terms_days || 30}
                     onChange={(e) => handleChange('payment_terms_days', parseInt(e.target.value))}
-                    className="w-full h-10 rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50 hover:bg-white/[0.08] hover:border-white/20 transition-colors"
+                    className="w-full h-10 rounded-lg bg-white/[0.06] border border-white/[0.12] text-theme-primary text-sm px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30 hover:bg-white/[0.08] hover:border-white/20 transition-colors"
                   >
                     <option value="0">Prepaid (pay before delivery)</option>
                     <option value="7">Net 7 (7 days after invoice)</option>
@@ -375,9 +375,9 @@ export default function CustomerFormModal({
                       value={formData.credit_limit || ''}
                       onChange={(e) => handleChange('credit_limit', e.target.value ? parseFloat(e.target.value) : null)}
                       placeholder="0.00"
-                      className="focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50"
+                      className="focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
                     />
-                    <p className="text-xs text-white/50 mt-1.5">Maximum outstanding balance allowed</p>
+                    <p className="text-xs text-theme-tertiary mt-1.5">Maximum outstanding balance allowed</p>
                   </div>
 
                   <div>
@@ -388,7 +388,7 @@ export default function CustomerFormModal({
                       value={formData.minimum_order_value || ''}
                       onChange={(e) => handleChange('minimum_order_value', e.target.value ? parseFloat(e.target.value) : null)}
                       placeholder="0.00"
-                      className="focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50"
+                      className="focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
                     />
                   </div>
                 </div>
@@ -396,7 +396,7 @@ export default function CustomerFormModal({
 
               {/* Section 4: Delivery Notes */}
               <div className="space-y-4">
-                <h3 className="text-base font-semibold text-emerald-400 border-b border-white/[0.06] pb-2">
+                <h3 className="text-base font-semibold text-module-fg border-b border-white/[0.06] pb-2">
                   Delivery Notes
                 </h3>
 
@@ -407,15 +407,15 @@ export default function CustomerFormModal({
                     onChange={(e) => handleChange('delivery_notes', e.target.value)}
                     placeholder="e.g., Use back entrance, call on arrival"
                     rows={4}
-                    className="w-full rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm px-3 py-2 placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50 hover:bg-white/[0.08] hover:border-white/20 transition-colors resize-none"
+                    className="w-full rounded-lg bg-white/[0.06] border border-white/[0.12] text-theme-primary text-sm px-3 py-2 placeholder:text-theme-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30 hover:bg-white/[0.08] hover:border-white/20 transition-colors resize-none"
                   />
-                  <p className="text-xs text-white/50 mt-1.5">These notes will be printed on delivery notes</p>
+                  <p className="text-xs text-theme-tertiary mt-1.5">These notes will be printed on delivery notes</p>
                 </div>
               </div>
 
               {/* Section 5: Internal Notes */}
               <div className="space-y-4">
-                <h3 className="text-base font-semibold text-emerald-400 border-b border-white/[0.06] pb-2">
+                <h3 className="text-base font-semibold text-module-fg border-b border-white/[0.06] pb-2">
                   Internal Notes
                 </h3>
 
@@ -426,9 +426,9 @@ export default function CustomerFormModal({
                     onChange={(e) => handleChange('internal_notes', e.target.value)}
                     placeholder="Any internal notes about this customer..."
                     rows={4}
-                    className="w-full rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm px-3 py-2 placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500/50 hover:bg-white/[0.08] hover:border-white/20 transition-colors resize-none"
+                    className="w-full rounded-lg bg-white/[0.06] border border-white/[0.12] text-theme-primary text-sm px-3 py-2 placeholder:text-theme-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30 hover:bg-white/[0.08] hover:border-white/20 transition-colors resize-none"
                   />
-                  <p className="text-xs text-white/50 mt-1.5">Only visible to you, not the customer</p>
+                  <p className="text-xs text-theme-tertiary mt-1.5">Only visible to you, not the customer</p>
                 </div>
               </div>
             </div>
@@ -447,7 +447,7 @@ export default function CustomerFormModal({
             <Button
               type="submit"
               loading={loading}
-              className="flex-1 bg-transparent text-emerald-400 border border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)]"
+              className="flex-1 bg-transparent text-module-fg border border-emerald-500 hover:shadow-module-glow"
             >
               {isEdit ? 'Save Changes' : 'Add Customer'}
             </Button>

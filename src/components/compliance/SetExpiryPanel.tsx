@@ -106,14 +106,14 @@ export default function SetExpiryPanel({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-neutral-900 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-neutral-700">
+        <div className="flex items-center justify-between p-6 border-b border-theme">
           <div className="flex items-center gap-3">
             <AlertCircle className="w-6 h-6 text-yellow-500" />
-            <h2 className="text-xl font-semibold text-white">Set Expiry Date</h2>
+            <h2 className="text-xl font-semibold text-theme-primary">Set Expiry Date</h2>
           </div>
           <button
             onClick={onClose}
-            className="text-neutral-400 hover:text-white transition-colors"
+            className="text-theme-tertiary hover:text-white transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -127,7 +127,7 @@ export default function SetExpiryPanel({
               <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-medium text-yellow-500 mb-1">COMPLIANCE GAP</h3>
-                <p className="text-sm text-neutral-300">
+                <p className="text-sm text-theme-tertiary">
                   {taskType === 'training_no_expiry' && (
                     <>
                       {taskData.staff_name} - {taskData.course_name || 'Training'}
@@ -152,7 +152,7 @@ export default function SetExpiryPanel({
 
           {/* Expiry Date Input */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               Enter Expiry Date <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -160,10 +160,10 @@ export default function SetExpiryPanel({
                 type="date"
                 value={expiryDate}
                 onChange={(e) => setExpiryDate(e.target.value)}
-                className="w-full rounded-lg bg-neutral-800 border border-neutral-700 text-white px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg bg-neutral-800 border border-theme text-theme-primary px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 min={new Date().toISOString().split('T')[0]}
               />
-              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 pointer-events-none" />
+              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary pointer-events-none" />
             </div>
           </div>
 
@@ -172,7 +172,7 @@ export default function SetExpiryPanel({
             <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
               <div className="flex items-start gap-2">
                 <Calendar className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-neutral-300">
+                <div className="text-sm text-theme-tertiary">
                   <p className="font-medium text-blue-400 mb-1">Suggested Expiry Date</p>
                   <p>
                     Based on completion date, suggested expiry is{' '}
@@ -197,10 +197,10 @@ export default function SetExpiryPanel({
           )}
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-700">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-theme">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-lg bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition-colors"
+              className="px-4 py-2 rounded-lg bg-neutral-800 text-theme-tertiary hover:bg-neutral-700 transition-colors"
               disabled={loading}
             >
               Cancel

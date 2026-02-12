@@ -27,9 +27,9 @@ export default function DepartmentCard({
             <Building2 className="w-5 h-5 text-[#D37E91]" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-semibold text-white mb-1">{department.name}</h3>
+            <h3 className="text-lg font-semibold text-theme-primary mb-1">{department.name}</h3>
             {department.description && (
-              <p className="text-sm text-gray-400 mt-1">{department.description}</p>
+              <p className="text-sm text-theme-tertiary mt-1">{department.description}</p>
             )}
           </div>
         </div>
@@ -40,7 +40,7 @@ export default function DepartmentCard({
                 ? 'bg-green-500/20 text-green-400'
                 : department.status === 'inactive'
                 ? 'bg-yellow-500/20 text-yellow-400'
-                : 'bg-gray-500/20 text-gray-400'
+                : 'bg-theme-surface-elevated0/20 text-theme-tertiary'
             }`}
           >
             {department.status}
@@ -49,7 +49,7 @@ export default function DepartmentCard({
             variant="ghost"
             size="sm"
             onClick={() => onEdit(department)}
-            className="text-gray-400 hover:text-white"
+            className="text-theme-tertiary hover:text-white"
           >
             <Edit2 className="w-4 h-4" />
           </Button>
@@ -57,7 +57,7 @@ export default function DepartmentCard({
             variant="ghost"
             size="sm"
             onClick={() => onDelete(department)}
-            className="text-gray-400 hover:text-red-400"
+            className="text-theme-tertiary hover:text-red-400"
           >
             <Trash2 className="w-4 h-4" />
           </Button>
@@ -71,14 +71,14 @@ export default function DepartmentCard({
         department.contact_mobile) && (
         <div className="space-y-2 mb-4 pt-4 border-t border-white/[0.06]">
           {department.contact_name && (
-            <div className="flex items-center gap-2 text-sm text-gray-300">
-              <Users className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center gap-2 text-sm text-theme-tertiary">
+              <Users className="w-4 h-4 text-theme-tertiary" />
               <span>{department.contact_name}</span>
             </div>
           )}
           {department.contact_email && (
-            <div className="flex items-center gap-2 text-sm text-gray-300">
-              <Mail className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center gap-2 text-sm text-theme-tertiary">
+              <Mail className="w-4 h-4 text-theme-tertiary" />
               <a
                 href={`mailto:${department.contact_email}`}
                 className="text-[#D37E91] hover:underline"
@@ -88,8 +88,8 @@ export default function DepartmentCard({
             </div>
           )}
           {department.contact_phone && (
-            <div className="flex items-center gap-2 text-sm text-gray-300">
-              <Phone className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center gap-2 text-sm text-theme-tertiary">
+              <Phone className="w-4 h-4 text-theme-tertiary" />
               <a
                 href={`tel:${department.contact_phone}`}
                 className="text-[#D37E91] hover:underline"
@@ -99,8 +99,8 @@ export default function DepartmentCard({
             </div>
           )}
           {department.contact_mobile && (
-            <div className="flex items-center gap-2 text-sm text-gray-300">
-              <Phone className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center gap-2 text-sm text-theme-tertiary">
+              <Phone className="w-4 h-4 text-theme-tertiary" />
               <a
                 href={`tel:${department.contact_mobile}`}
                 className="text-[#D37E91] hover:underline"
@@ -116,25 +116,25 @@ export default function DepartmentCard({
       {(department.contact_details || department.metadata) && (
         <div className="pt-4 border-t border-white/[0.06]">
           {department.contact_details?.address && (
-            <p className="text-sm text-gray-400 mb-1">
-              <span className="text-gray-500">Address:</span> {department.contact_details.address}
+            <p className="text-sm text-theme-tertiary mb-1">
+              <span className="text-theme-tertiary">Address:</span> {department.contact_details.address}
             </p>
           )}
           {department.contact_details?.office_location && (
-            <p className="text-sm text-gray-400 mb-1">
-              <span className="text-gray-500">Location:</span>{' '}
+            <p className="text-sm text-theme-tertiary mb-1">
+              <span className="text-theme-tertiary">Location:</span>{' '}
               {department.contact_details.office_location}
             </p>
           )}
           {department.metadata?.budget_code && (
-            <p className="text-sm text-gray-400 mb-1">
-              <span className="text-gray-500">Budget Code:</span>{' '}
+            <p className="text-sm text-theme-tertiary mb-1">
+              <span className="text-theme-tertiary">Budget Code:</span>{' '}
               {department.metadata.budget_code}
             </p>
           )}
           {department.metadata?.head_count && (
-            <p className="text-sm text-gray-400">
-              <span className="text-gray-500">Head Count:</span> {department.metadata.head_count}
+            <p className="text-sm text-theme-tertiary">
+              <span className="text-theme-tertiary">Head Count:</span> {department.metadata.head_count}
             </p>
           )}
         </div>

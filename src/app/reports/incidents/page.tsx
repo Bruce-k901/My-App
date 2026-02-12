@@ -44,7 +44,7 @@ function Chart() {
 
   useEffect(() => {
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [companyId, severity, start, end]);
 
   const buckets: Bucket = useMemo(() => {
@@ -94,7 +94,7 @@ function Chart() {
       {loading ? (
         <div>Loading...</div>
       ) : sites.length === 0 ? (
-        <div className="text-gray-600">No incident data for selected filters.</div>
+        <div className="text-theme-secondary">No incident data for selected filters.</div>
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full border">

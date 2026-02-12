@@ -57,7 +57,7 @@ export function DashboardGrid({
         <h3 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-2">
           No widgets visible
         </h3>
-        <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mb-4 max-w-md">
+        <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-4 max-w-md">
           Click the settings icon to customize your dashboard and select which widgets to display.
         </p>
       </div>

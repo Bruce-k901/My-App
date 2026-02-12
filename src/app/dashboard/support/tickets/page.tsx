@@ -158,7 +158,7 @@ export default function TicketsPage() {
       case 'resolved':
         return <CheckCircle className="w-4 h-4 text-green-400" />;
       case 'closed':
-        return <XCircle className="w-4 h-4 text-gray-400" />;
+        return <XCircle className="w-4 h-4 text-theme-tertiary" />;
       default:
         return <Ticket className="w-4 h-4" />;
     }
@@ -175,19 +175,19 @@ export default function TicketsPage() {
       case 'low':
         return 'text-blue-400 bg-blue-500/20 border-blue-500/40';
       default:
-        return 'text-gray-400 bg-gray-500/20 border-gray-500/40';
+        return 'text-theme-tertiary bg-theme-surface-elevated0/20 border-gray-500/40';
     }
   };
 
   const getModuleColor = (module: string) => {
     const colors: Record<string, string> = {
-      checkly: 'text-[#D37E91] bg-[#D37E91]/25 border-[#D37E91]/40',
+      checkly: 'text-module-fg bg-module-fg/[0.25] border-module-fg/[0.40]',
       stockly: 'text-green-400 bg-green-500/20 border-green-500/40',
       teamly: 'text-blue-400 bg-blue-500/20 border-blue-500/40',
-      planly: 'text-teal-400 bg-teal-500/20 border-teal-500/40',
-      assetly: 'text-cyan-400 bg-cyan-500/20 border-cyan-500/40',
+      planly: 'text-module-fg bg-module-fg/20 border-module-fg/30',
+      assetly: 'text-module-fg bg-module-fg/20 border-module-fg/30',
       msgly: 'text-purple-400 bg-purple-500/20 border-purple-500/40',
-      general: 'text-gray-400 bg-gray-500/20 border-gray-500/40'
+      general: 'text-theme-tertiary bg-theme-surface-elevated0/20 border-gray-500/40'
     };
     return colors[module] || colors.general;
   };
@@ -197,8 +197,8 @@ export default function TicketsPage() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-white mb-2">Access Restricted</h2>
-          <p className="text-gray-400">Only administrators and owners can view support tickets.</p>
+          <h2 className="text-xl font-semibold text-theme-primary mb-2">Access Restricted</h2>
+          <p className="text-theme-tertiary">Only administrators and owners can view support tickets.</p>
         </div>
       </div>
     );
@@ -209,12 +209,12 @@ export default function TicketsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white mb-2">Support Tickets</h1>
-          <p className="text-gray-400 text-sm">Manage and track support requests from your team</p>
+          <h1 className="text-2xl font-semibold text-theme-primary mb-2">Support Tickets</h1>
+          <p className="text-theme-tertiary text-sm">Manage and track support requests from your team</p>
         </div>
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white hover:bg-white/[0.1] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary hover:bg-white/[0.1] transition-colors"
         >
           <Filter className="w-4 h-4" />
           Filters
@@ -228,26 +228,26 @@ export default function TicketsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Search */}
             <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-gray-300 mb-2">Search</label>
+              <label className="block text-sm font-medium text-theme-tertiary mb-2">Search</label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-tertiary" />
                 <input
                   type="text"
                   value={filters.search}
                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                   placeholder="Search tickets..."
-                  className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                  className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
                 />
               </div>
             </div>
 
             {/* Status */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
+              <label className="block text-sm font-medium text-theme-tertiary mb-2">Status</label>
               <select
                 value={filters.status}
                 onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
               >
                 <option value="all">All</option>
                 <option value="open">Open</option>
@@ -259,11 +259,11 @@ export default function TicketsPage() {
 
             {/* Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Type</label>
+              <label className="block text-sm font-medium text-theme-tertiary mb-2">Type</label>
               <select
                 value={filters.type}
                 onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
               >
                 <option value="all">All</option>
                 <option value="issue">Issue</option>
@@ -274,11 +274,11 @@ export default function TicketsPage() {
 
             {/* Module */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Module</label>
+              <label className="block text-sm font-medium text-theme-tertiary mb-2">Module</label>
               <select
                 value={filters.module}
                 onChange={(e) => setFilters({ ...filters, module: e.target.value })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
               >
                 <option value="all">All</option>
                 <option value="checkly">Checkly</option>
@@ -298,16 +298,16 @@ export default function TicketsPage() {
       {loading ? (
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91] mx-auto mb-4"></div>
-            <p className="text-gray-400">Loading tickets...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-module-fg mx-auto mb-4"></div>
+            <p className="text-theme-tertiary">Loading tickets...</p>
           </div>
         </div>
       ) : tickets.length === 0 ? (
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <Ticket className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-white mb-2">No tickets found</h2>
-            <p className="text-gray-400">No tickets match your current filters.</p>
+            <Ticket className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-theme-primary mb-2">No tickets found</h2>
+            <p className="text-theme-tertiary">No tickets match your current filters.</p>
           </div>
         </div>
       ) : (
@@ -320,12 +320,12 @@ export default function TicketsPage() {
                 onClick={() => setSelectedTicket(ticket)}
                 className={`p-4 bg-white/[0.03] border rounded-lg cursor-pointer transition-colors ${
                   selectedTicket?.id === ticket.id
-                    ? 'border-[#D37E91]/40 bg-[#D37E91]/15'
+                    ? 'border-module-fg/[0.40] bg-module-fg/[0.15]'
                     : 'border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.06]'
                 }`}
               >
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-medium text-white text-sm line-clamp-2">{ticket.title}</h3>
+                  <h3 className="font-medium text-theme-primary text-sm line-clamp-2">{ticket.title}</h3>
                   {getStatusIcon(ticket.status)}
                 </div>
                 <div className="flex items-center gap-2 flex-wrap mt-2">
@@ -336,13 +336,13 @@ export default function TicketsPage() {
                     {ticket.module}
                   </span>
                   {ticket.attachments && ticket.attachments.length > 0 && (
-                    <span className="flex items-center gap-1 text-xs text-gray-400">
+                    <span className="flex items-center gap-1 text-xs text-theme-tertiary">
                       <ImageIcon className="w-3 h-3" />
                       {ticket.attachments.length}
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
+                <div className="flex items-center gap-2 mt-2 text-xs text-theme-tertiary">
                   <Calendar className="w-3 h-3" />
                   {new Date(ticket.created_at).toLocaleDateString()}
                 </div>
@@ -357,7 +357,7 @@ export default function TicketsPage() {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h2 className="text-xl font-semibold text-white">{selectedTicket.title}</h2>
+                    <h2 className="text-xl font-semibold text-theme-primary">{selectedTicket.title}</h2>
                     {getStatusIcon(selectedTicket.status)}
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
@@ -367,7 +367,7 @@ export default function TicketsPage() {
                     <span className={`px-2 py-1 rounded text-xs border ${getModuleColor(selectedTicket.module)}`}>
                       {selectedTicket.module}
                     </span>
-                    <span className="px-2 py-1 rounded text-xs border border-white/20 text-white/60">
+                    <span className="px-2 py-1 rounded text-xs border border-white/20 text-theme-tertiary">
                       {selectedTicket.type}
                     </span>
                   </div>
@@ -376,11 +376,11 @@ export default function TicketsPage() {
 
               {/* Status Update */}
               <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-gray-300">Status:</label>
+                <label className="text-sm font-medium text-theme-tertiary">Status:</label>
                 <select
                   value={selectedTicket.status}
                   onChange={(e) => updateTicketStatus(selectedTicket.id, e.target.value)}
-                  className="px-3 py-1 bg-white/[0.06] border border-white/[0.1] rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                  className="px-3 py-1 bg-white/[0.06] border border-white/[0.1] rounded text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
                 >
                   <option value="open">Open</option>
                   <option value="in_progress">In Progress</option>
@@ -391,7 +391,7 @@ export default function TicketsPage() {
 
               {/* Description */}
               <div>
-                <h3 className="text-sm font-medium text-gray-300 mb-2">Description</h3>
+                <h3 className="text-sm font-medium text-theme-tertiary mb-2">Description</h3>
                 <div className="p-4 bg-white/[0.06] border border-white/[0.1] rounded-lg">
                   <p className="text-white/90 whitespace-pre-wrap">{selectedTicket.description}</p>
                 </div>
@@ -400,7 +400,7 @@ export default function TicketsPage() {
               {/* Attachments */}
               {selectedTicket.attachments && selectedTicket.attachments.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-300 mb-2">Attachments</h3>
+                  <h3 className="text-sm font-medium text-theme-tertiary mb-2">Attachments</h3>
                   <div className="space-y-2">
                     {selectedTicket.attachments.map((attachment) => (
                       <a
@@ -410,9 +410,9 @@ export default function TicketsPage() {
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 p-3 bg-white/[0.06] border border-white/[0.1] rounded-lg hover:bg-white/[0.1] transition-colors"
                       >
-                        <ImageIcon className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-white/80">{attachment.file_name}</span>
-                        <span className="text-xs text-gray-400 ml-auto">
+                        <ImageIcon className="w-4 h-4 text-theme-tertiary" />
+                        <span className="text-sm text-theme-secondary">{attachment.file_name}</span>
+                        <span className="text-xs text-theme-tertiary ml-auto">
                           {(attachment.file_size / 1024).toFixed(1)} KB
                         </span>
                       </a>
@@ -424,31 +424,31 @@ export default function TicketsPage() {
               {/* Metadata */}
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/[0.06]">
                 <div>
-                  <p className="text-xs text-gray-400 mb-1">Created By</p>
-                  <p className="text-sm text-white">
+                  <p className="text-xs text-theme-tertiary mb-1">Created By</p>
+                  <p className="text-sm text-theme-primary">
                     {selectedTicket.created_by_profile?.full_name || 'Unknown'}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 mb-1">Assigned To</p>
-                  <p className="text-sm text-white">
+                  <p className="text-xs text-theme-tertiary mb-1">Assigned To</p>
+                  <p className="text-sm text-theme-primary">
                     {selectedTicket.assigned_to_profile?.full_name || 'Unassigned'}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 mb-1">Created</p>
-                  <p className="text-sm text-white">
+                  <p className="text-xs text-theme-tertiary mb-1">Created</p>
+                  <p className="text-sm text-theme-primary">
                     {new Date(selectedTicket.created_at).toLocaleString()}
                   </p>
                 </div>
                 {selectedTicket.page_url && (
                   <div>
-                    <p className="text-xs text-gray-400 mb-1">Page URL</p>
+                    <p className="text-xs text-theme-tertiary mb-1">Page URL</p>
                     <a
                       href={selectedTicket.page_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-[#D37E91] hover:text-[#D37E91]"
+                      className="text-sm text-module-fg hover:text-module-fg"
                     >
                       View Page
                     </a>

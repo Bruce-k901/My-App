@@ -171,7 +171,7 @@ export default function RAReviewModal({
         <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-xl shadow-2xl p-8 border border-white/[0.08]">
           <div className="flex flex-col items-center gap-4">
             <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
-            <div className="text-neutral-400 text-sm">Loading Risk Assessment...</div>
+            <div className="text-theme-tertiary text-sm">Loading Risk Assessment...</div>
           </div>
         </div>
       </div>
@@ -183,8 +183,8 @@ export default function RAReviewModal({
     return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-xl shadow-2xl max-w-md w-full p-6 border border-white/[0.08]">
-          <h3 className="text-lg font-semibold text-white mb-4">Error Loading Risk Assessment</h3>
-          <p className="text-neutral-400 mb-6">{error}</p>
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">Error Loading Risk Assessment</h3>
+          <p className="text-theme-tertiary mb-6">{error}</p>
           <button
             onClick={onClose}
             className="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors"
@@ -205,7 +205,7 @@ export default function RAReviewModal({
       case 'high': return 'text-red-400 bg-red-500/20'
       case 'medium': return 'text-amber-400 bg-amber-500/20'
       case 'low': return 'text-green-400 bg-green-500/20'
-      default: return 'text-neutral-400 bg-neutral-500/20'
+      default: return 'text-theme-tertiary bg-neutral-500/20'
     }
   }
 
@@ -220,8 +220,8 @@ export default function RAReviewModal({
               <Shield className={`w-5 h-5 ${isOverdue ? 'text-red-400' : isUrgent ? 'text-amber-400' : 'text-orange-400'}`} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">Risk Assessment Review</h2>
-              <p className="text-sm text-neutral-400">{riskAssessment?.ref_code || 'No reference'}</p>
+              <h2 className="text-xl font-bold text-theme-primary">Risk Assessment Review</h2>
+              <p className="text-sm text-theme-tertiary">{riskAssessment?.ref_code || 'No reference'}</p>
             </div>
           </div>
           <button
@@ -229,7 +229,7 @@ export default function RAReviewModal({
             disabled={submitting}
             className="p-2 hover:bg-white/[0.06] rounded-lg transition-colors disabled:opacity-50"
           >
-            <X className="w-5 h-5 text-neutral-400" />
+            <X className="w-5 h-5 text-theme-tertiary" />
           </button>
         </div>
 
@@ -244,27 +244,27 @@ export default function RAReviewModal({
 
           {/* RA Info */}
           <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06]">
-            <h3 className="text-white font-semibold text-lg mb-2">{riskAssessment?.title || 'Untitled Risk Assessment'}</h3>
+            <h3 className="text-theme-primary font-semibold text-lg mb-2">{riskAssessment?.title || 'Untitled Risk Assessment'}</h3>
 
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div>
-                <div className="text-xs text-neutral-500 mb-1">Reference Code</div>
-                <div className="text-white font-medium">{riskAssessment?.ref_code || 'N/A'}</div>
+                <div className="text-xs text-theme-tertiary mb-1">Reference Code</div>
+                <div className="text-theme-primary font-medium">{riskAssessment?.ref_code || 'N/A'}</div>
               </div>
               <div>
-                <div className="text-xs text-neutral-500 mb-1">Risk Level</div>
+                <div className="text-xs text-theme-tertiary mb-1">Risk Level</div>
                 <span className={`inline-flex px-2 py-1 rounded text-xs font-medium ${getRiskLevelColor(riskAssessment?.risk_level)}`}>
                   {riskAssessment?.risk_level || 'Not assessed'}
                 </span>
               </div>
               <div>
-                <div className="text-xs text-neutral-500 mb-1">Review Due</div>
-                <div className={`font-medium ${isOverdue ? 'text-red-400' : isUrgent ? 'text-amber-400' : 'text-white'}`}>
+                <div className="text-xs text-theme-tertiary mb-1">Review Due</div>
+                <div className={`font-medium ${isOverdue ? 'text-red-400' : isUrgent ? 'text-amber-400' : 'text-theme-primary'}`}>
                   {reviewDate ? new Date(reviewDate).toLocaleDateString() : 'Not set'}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-neutral-500 mb-1">Status</div>
+                <div className="text-xs text-theme-tertiary mb-1">Status</div>
                 <div className={`font-medium ${isOverdue ? 'text-red-400' : isUrgent ? 'text-amber-400' : 'text-green-400'}`}>
                   {isOverdue ? 'OVERDUE' : daysUntilReview !== undefined ? `${daysUntilReview} days remaining` : 'Unknown'}
                 </div>
@@ -274,8 +274,8 @@ export default function RAReviewModal({
             {/* Hazard Type */}
             {riskAssessment?.hazard_type && (
               <div className="mt-4 pt-4 border-t border-white/[0.06]">
-                <div className="text-xs text-neutral-500 mb-1">Hazard Type</div>
-                <div className="flex items-center gap-2 text-white">
+                <div className="text-xs text-theme-tertiary mb-1">Hazard Type</div>
+                <div className="flex items-center gap-2 text-theme-primary">
                   <AlertTriangle className="w-4 h-4 text-amber-400" />
                   {riskAssessment.hazard_type}
                 </div>
@@ -285,7 +285,7 @@ export default function RAReviewModal({
             {riskAssessment?.file_path && (
               <button
                 onClick={handleViewRA}
-                className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-white rounded-lg transition-colors"
+                className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-theme-primary rounded-lg transition-colors"
               >
                 <ExternalLink className="w-4 h-4" />
                 View Risk Assessment Document
@@ -296,22 +296,22 @@ export default function RAReviewModal({
           {/* Description */}
           {riskAssessment?.description && (
             <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06]">
-              <h4 className="text-sm font-medium text-neutral-400 mb-2">Description</h4>
-              <p className="text-white text-sm whitespace-pre-wrap">{riskAssessment.description}</p>
+              <h4 className="text-sm font-medium text-theme-tertiary mb-2">Description</h4>
+              <p className="text-theme-primary text-sm whitespace-pre-wrap">{riskAssessment.description}</p>
             </div>
           )}
 
           {/* Controls */}
           {riskAssessment?.controls && (
             <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06]">
-              <h4 className="text-sm font-medium text-neutral-400 mb-2">Control Measures</h4>
-              <p className="text-white text-sm whitespace-pre-wrap">{riskAssessment.controls}</p>
+              <h4 className="text-sm font-medium text-theme-tertiary mb-2">Control Measures</h4>
+              <p className="text-theme-primary text-sm whitespace-pre-wrap">{riskAssessment.controls}</p>
             </div>
           )}
 
           {/* Review Form */}
           <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06]">
-            <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+            <h3 className="text-theme-primary font-semibold mb-4 flex items-center gap-2">
               <CheckCircle className="w-4 h-4 text-green-400" />
               Confirm Review
             </h3>
@@ -326,7 +326,7 @@ export default function RAReviewModal({
                   disabled={submitting}
                   className="mt-1 w-5 h-5 rounded border-neutral-600 bg-neutral-700 text-orange-500 focus:ring-orange-500 focus:ring-offset-0"
                 />
-                <span className="text-white text-sm group-hover:text-neutral-200">
+                <span className="text-theme-primary text-sm group-hover:text-neutral-200">
                   I confirm that I have reviewed this Risk Assessment and the identified hazards, controls, and risk levels are current and appropriate.
                 </span>
               </label>
@@ -340,37 +340,37 @@ export default function RAReviewModal({
                   disabled={submitting}
                   className="mt-1 w-5 h-5 rounded border-neutral-600 bg-neutral-700 text-amber-500 focus:ring-amber-500 focus:ring-offset-0"
                 />
-                <span className="text-white text-sm group-hover:text-neutral-200">
+                <span className="text-theme-primary text-sm group-hover:text-neutral-200">
                   <span className="text-amber-400">Flag for update:</span> This Risk Assessment requires changes or updates (will be marked as "Needs Update")
                 </span>
               </label>
 
               {/* Next Review Date */}
               <div>
-                <label className="block text-sm text-neutral-400 mb-2">Next Review Date</label>
+                <label className="block text-sm text-theme-tertiary mb-2">Next Review Date</label>
                 <input
                   type="date"
                   value={nextReviewDate}
                   onChange={(e) => setNextReviewDate(e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
                   disabled={submitting}
-                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
-                <p className="text-xs text-neutral-500 mt-1">
+                <p className="text-xs text-theme-tertiary mt-1">
                   Set the date for the next scheduled review (typically 1 year)
                 </p>
               </div>
 
               {/* Review Notes */}
               <div>
-                <label className="block text-sm text-neutral-400 mb-2">Review Notes (Optional)</label>
+                <label className="block text-sm text-theme-tertiary mb-2">Review Notes (Optional)</label>
                 <textarea
                   value={reviewNotes}
                   onChange={(e) => setReviewNotes(e.target.value)}
                   placeholder="Add any notes about this review, changes needed, etc..."
                   rows={3}
                   disabled={submitting}
-                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
+                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
                 />
               </div>
 
@@ -400,7 +400,7 @@ export default function RAReviewModal({
           <button
             onClick={onClose}
             disabled={submitting}
-            className="px-4 py-2 text-sm font-medium text-neutral-400 hover:text-white hover:bg-white/[0.06] rounded-lg transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-theme-tertiary hover:text-white hover:bg-white/[0.06] rounded-lg transition-colors disabled:opacity-50"
           >
             Cancel
           </button>

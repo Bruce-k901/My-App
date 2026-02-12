@@ -29,7 +29,7 @@ export function EHOCards({ data }: { data: ReportData | null }) {
           <EHOStatusTag status="valid" count={policies.valid} />
           <EHOStatusTag status="due_review" count={policies.due} />
           <EHOStatusTag status="expired" count={policies.expired} />
-          <span className="text-gray-500 dark:text-slate-400 text-sm ml-auto">Total: {policies.total}</span>
+ <span className="text-gray-500 dark:text-theme-tertiary text-sm ml-auto">Total: {policies.total}</span>
         </div>
       </EHOSection>
 
@@ -38,7 +38,7 @@ export function EHOCards({ data }: { data: ReportData | null }) {
           <EHOStatusTag status="valid" count={risks.valid} />
           <EHOStatusTag status="due_review" count={risks.due} />
           <EHOStatusTag status="expired" count={risks.expired} />
-          <span className="text-gray-500 dark:text-slate-400 text-sm ml-auto">Total: {risks.total}</span>
+ <span className="text-gray-500 dark:text-theme-tertiary text-sm ml-auto">Total: {risks.total}</span>
         </div>
       </EHOSection>
 
@@ -47,7 +47,7 @@ export function EHOCards({ data }: { data: ReportData | null }) {
           <EHOStatusTag status="valid" count={coshh.valid} />
           <EHOStatusTag status="due_review" count={coshh.due} />
           <EHOStatusTag status="expired" count={coshh.expired} />
-          <span className="text-gray-500 dark:text-slate-400 text-sm ml-auto">Total: {coshh.total}</span>
+ <span className="text-gray-500 dark:text-theme-tertiary text-sm ml-auto">Total: {coshh.total}</span>
         </div>
       </EHOSection>
     </div>

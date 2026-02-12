@@ -104,8 +104,8 @@ function StepCard({
         step.status === 'complete'
           ? 'bg-teamly/5 dark:bg-teamly/10 border-teamly/30'
           : isActive
-          ? 'bg-white dark:bg-white/5 border-teamly shadow-lg shadow-teamly/10'
-          : 'bg-gray-50 dark:bg-white/[0.02] border-gray-200 dark:border-white/10'
+          ? 'bg-theme-surface border-teamly shadow-lg shadow-teamly/10'
+          : 'bg-gray-50 dark:bg-white/[0.02] border-theme'
       )}
     >
       {/* Step Number Badge */}
@@ -116,7 +116,7 @@ function StepCard({
             ? 'bg-teamly text-white'
             : isActive
             ? 'bg-teamly text-white'
-            : 'bg-gray-200 dark:bg-white/20 text-gray-600 dark:text-white/60'
+            : 'bg-gray-200 dark:bg-white/20 text-theme-secondary'
         )}
       >
         {step.status === 'complete' ? (
@@ -130,9 +130,9 @@ function StepCard({
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <Icon className={cn('h-5 w-5', step.status === 'complete' ? 'text-teamly' : step.color)} />
-            <h3 className="font-semibold text-gray-900 dark:text-white">{step.name}</h3>
+            <h3 className="font-semibold text-theme-primary">{step.name}</h3>
           </div>
-          <p className="text-sm text-gray-600 dark:text-white/60 mb-2">{step.description}</p>
+          <p className="text-sm text-theme-secondary mb-2">{step.description}</p>
           <span
             className={cn(
               'text-sm font-medium',
@@ -140,7 +140,7 @@ function StepCard({
                 ? 'text-teamly'
                 : step.status === 'in_progress'
                 ? 'text-amber-600 dark:text-amber-400'
-                : 'text-gray-500 dark:text-white/50'
+                : 'text-theme-tertiary'
             )}
           >
             {step.status === 'complete'
@@ -170,10 +170,10 @@ function CompletionCelebration() {
       <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-teamly/10 mb-4">
         <PartyPopper className="h-8 w-8 text-teamly" />
       </div>
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      <h2 className="text-2xl font-bold text-theme-primary mb-2">
         You're All Set!
       </h2>
-      <p className="text-gray-600 dark:text-white/60 mb-6 max-w-md mx-auto">
+      <p className="text-theme-secondary mb-6 max-w-md mx-auto">
         Your business is fully configured. Head to the dashboard to start using Opsly.
       </p>
       <div className="flex items-center justify-center gap-4">
@@ -308,8 +308,8 @@ export default function BusinessSetupPage() {
       <div className="max-w-3xl mx-auto py-8 px-4">
         <div className="text-center py-12">
           <Rocket className="h-12 w-12 mx-auto text-teamly mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Welcome to Opsly</h2>
-          <p className="text-gray-600 dark:text-white/60 mb-6">Let's get your business set up. Start by adding your company details.</p>
+          <h2 className="text-xl font-bold text-theme-primary mb-2">Welcome to Opsly</h2>
+          <p className="text-theme-secondary mb-6">Let's get your business set up. Start by adding your company details.</p>
           <Button variant="secondary" onClick={() => router.push('/dashboard/business/details')}>
             Get Started
             <ArrowRight className="h-4 w-4 ml-2" />
@@ -333,11 +333,11 @@ export default function BusinessSetupPage() {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <Rocket className="h-7 w-7 text-teamly" />
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-2xl font-bold text-theme-primary">
             Getting Started
           </h1>
         </div>
-        <p className="text-gray-600 dark:text-white/60">
+        <p className="text-theme-secondary">
           Complete these steps to get the most out of Opsly. Each step links to the relevant page where you can configure things at your own pace.
         </p>
       </div>
@@ -345,16 +345,16 @@ export default function BusinessSetupPage() {
       {/* Progress Bar */}
       <Card className="p-4 mb-8">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-700 dark:text-white/80">
+          <span className="text-sm font-medium text-theme-secondary">
             Setup Progress
           </span>
           <span className="text-sm font-bold text-teamly">
             {completedSteps} of {totalSteps} complete
           </span>
         </div>
-        <div className="h-3 bg-gray-100 dark:bg-white/10 rounded-full overflow-hidden">
+        <div className="h-3 bg-theme-muted rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-teamly to-[#D37E91] rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-teamly to-module-fg rounded-full transition-all duration-500"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -369,7 +369,7 @@ export default function BusinessSetupPage() {
       {/* Completion Celebration */}
       {allComplete && (
         <Card className="mb-8 overflow-hidden">
-          <div className="bg-gradient-to-r from-teamly/10 to-[#D37E91]/5">
+          <div className="bg-gradient-to-r from-teamly/10 to-module-fg/[0.05]">
             <CompletionCelebration />
           </div>
         </Card>

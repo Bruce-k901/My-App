@@ -50,10 +50,10 @@ interface MatrixRow {
 }
 
 const STATUS_STYLES: Record<TrainingStatus, string> = {
-  current: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
+  current: "bg-module-fg/10 text-module-fg border border-module-fg/30",
   due_soon: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
   expired: "bg-red-500/10 text-red-400 border border-red-500/20",
-  missing: "bg-slate-500/10 text-slate-400 border border-slate-500/20",
+  missing: "bg-slate-500/10 text-theme-tertiary border border-slate-500/20",
   not_trained: "bg-rose-500/10 text-rose-400 border border-rose-500/20",
 };
 
@@ -472,7 +472,7 @@ function TrainingMatrixPageContent() {
     <div className="flex items-center gap-3">
       <button
         onClick={fetchMatrixData}
-        className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-3 py-2 text-sm text-white transition hover:bg-white/10"
+        className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-3 py-2 text-sm text-theme-primary transition hover:bg-white/10"
         disabled={loading}
       >
         <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
@@ -480,14 +480,14 @@ function TrainingMatrixPageContent() {
       </button>
       <button
         onClick={handleOpenRecordModal}
-        className="inline-flex items-center gap-2 rounded-lg border border-magenta-500 px-3 py-2 text-sm font-medium text-magenta-400 transition hover:bg-magenta-500/10 hover:shadow-[0_0_14px_rgba(211,126,145,0.35)]"
+        className="inline-flex items-center gap-2 rounded-lg border border-magenta-500 px-3 py-2 text-sm font-medium text-magenta-400 transition hover:bg-magenta-500/10 hover:shadow-module-glow"
       >
         <GraduationCap className="h-4 w-4" />
         Record Training
       </button>
       <button
         onClick={handleOpenBookingModal}
-        className="inline-flex items-center gap-2 rounded-lg border border-cyan-500/70 px-3 py-2 text-sm font-medium text-cyan-300 transition hover:bg-cyan-500/10 hover:shadow-[0_0_14px_rgba(34,211,238,0.35)]"
+        className="inline-flex items-center gap-2 rounded-lg border border-module-fg/30 px-3 py-2 text-sm font-medium text-cyan-300 transition hover:bg-module-fg/10 hover:shadow-module-glow"
       >
         <CalendarPlus className="h-4 w-4" />
         Book Training
@@ -496,11 +496,11 @@ function TrainingMatrixPageContent() {
   );
 
   const siteSelector = (
-    <div className="flex flex-wrap items-center gap-3 text-sm text-slate-300">
-      <label htmlFor="site-filter" className="text-slate-400">Filter by site</label>
+    <div className="flex flex-wrap items-center gap-3 text-sm text-theme-secondary">
+      <label htmlFor="site-filter" className="text-theme-tertiary">Filter by site</label>
       <select
         id="site-filter"
-        className="rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-magenta-500"
+        className="rounded-lg border border-white/10 bg-[rgb(var(--surface-elevated))] px-3 py-2 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-magenta-500"
         value={selectedSite}
         onChange={(e) => setSelectedSite(e.target.value as typeof selectedSite)}
       >
@@ -516,7 +516,7 @@ function TrainingMatrixPageContent() {
   if (authLoading) {
     return (
       <OrgContentWrapper title="Training Matrix">
-        <div className="flex items-center gap-3 text-slate-300">
+        <div className="flex items-center gap-3 text-theme-secondary">
           <Loader2 className="h-5 w-5 animate-spin" />
           Loading account…
         </div>
@@ -527,7 +527,7 @@ function TrainingMatrixPageContent() {
   if (!companyId) {
     return (
       <OrgContentWrapper title="Training Matrix">
-        <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+        <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-theme-secondary">
           Connect your company profile to manage staff training records.
         </div>
       </OrgContentWrapper>
@@ -553,12 +553,12 @@ function TrainingMatrixPageContent() {
       </section>
 
       {loading ? (
-        <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-6 text-slate-300">
+        <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-6 text-theme-secondary">
           <Loader2 className="h-5 w-5 animate-spin" />
           Loading training matrix…
         </div>
       ) : matrixRows.length === 0 ? (
-        <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-slate-300">
+        <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-theme-secondary">
           No team members found for this filter.
         </div>
       ) : (
@@ -582,25 +582,25 @@ function TrainingMatrixPageContent() {
               >
                 <header className="flex flex-col gap-1 md:flex-row md:items-start md:justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-white">{profile.full_name}</h3>
-                    <p className="text-sm text-slate-400">
+                    <h3 className="text-lg font-semibold text-theme-primary">{profile.full_name}</h3>
+                    <p className="text-sm text-theme-tertiary">
                       {profile.app_role || "Team Member"}
                       {profile.position_title ? ` • ${profile.position_title}` : ""}
                     </p>
                   </div>
-                  <div className="text-xs text-slate-400">
+                  <div className="text-xs text-theme-tertiary">
                     {profile.site_name && <p>Site: {profile.site_name}</p>}
                   </div>
                 </header>
 
-                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-300">
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-theme-secondary">
                   <StatusBadge status={overallStatus}>
                     {trainingStatusLabel(overallStatus, null)}
                   </StatusBadge>
                   {countsSummary
                     .filter(([status]) => status !== overallStatus)
                     .map(([status, count]) => (
-                      <span key={status} className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-slate-400">
+                      <span key={status} className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-theme-tertiary">
                         {count} {status.replace("_", " ")}
                       </span>
                     ))}
@@ -608,7 +608,7 @@ function TrainingMatrixPageContent() {
 
                 <button
                   onClick={() => toggleProfileExpansion(profile.id)}
-                  className="mt-3 inline-flex items-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-slate-200 transition hover:border-magenta-500/40 hover:text-magenta-200"
+                  className="mt-3 inline-flex items-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-theme-primary transition hover:border-magenta-500/40 hover:text-magenta-200"
                   type="button"
                 >
                   {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -623,27 +623,27 @@ function TrainingMatrixPageContent() {
                     return (
                       <div
                         key={course.course_id}
-                        className="rounded-lg border border-white/10 bg-[#0f1220] p-4 relative group"
+                        className="rounded-lg border border-white/10 bg-[rgb(var(--surface-elevated))] p-4 relative group"
                       >
                         <button
                           onClick={() => handleEditCourse(profile, course)}
                           className="absolute top-2 right-2 p-1.5 rounded-md border border-white/10 bg-white/5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-white/10 hover:border-magenta-500/40"
                           title="Edit training record"
                         >
-                          <Edit2 className="h-3.5 w-3.5 text-slate-400 hover:text-magenta-400" />
+                          <Edit2 className="h-3.5 w-3.5 text-theme-tertiary hover:text-magenta-400" />
                         </button>
                         <div className="flex items-center justify-between gap-3 pr-8">
-                          <h4 className="text-sm font-semibold text-white">{course.course_name}</h4>
+                          <h4 className="text-sm font-semibold text-theme-primary">{course.course_name}</h4>
                           <StatusBadge status={status}>{label}</StatusBadge>
                         </div>
                         <div className="mt-2 space-y-1">
                           {course.completed_at && (
-                            <p className="text-xs text-slate-400">
+                            <p className="text-xs text-theme-tertiary">
                               Completed: {formatDate(course.completed_at)}
                             </p>
                           )}
                           {course.expiry_date && (
-                            <p className="text-xs text-slate-400">
+                            <p className="text-xs text-theme-tertiary">
                               Expires: {formatDate(course.expiry_date)}
                             </p>
                           )}
@@ -694,12 +694,12 @@ function TrainingMatrixPageContent() {
 
           <form onSubmit={handleSaveBooking} className="flex flex-col gap-4">
             <div className="grid gap-4 md:grid-cols-2">
-              <label className="flex flex-col gap-2 text-sm text-slate-200">
+              <label className="flex flex-col gap-2 text-sm text-theme-primary">
                 Student
                 <select
                   value={bookingForm.userId}
                   onChange={(e) => setBookingForm(prev => ({ ...prev, userId: e.target.value }))}
-                  className="rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                  className="rounded-lg border border-white/10 bg-[rgb(var(--surface-elevated))] px-3 py-2 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-cyan-400"
                   required
                 >
                   <option value="" disabled>Select team member…</option>
@@ -709,68 +709,68 @@ function TrainingMatrixPageContent() {
                 </select>
               </label>
 
-              <label className="flex flex-col gap-2 text-sm text-slate-200">
+              <label className="flex flex-col gap-2 text-sm text-theme-primary">
                 Home site
                 <input
                   value={selectedBookingProfile?.site_name || "No home site recorded"}
                   readOnly
-                  className="rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-slate-200"
+                  className="rounded-lg border border-white/10 bg-[rgb(var(--surface-elevated))] px-3 py-2 text-sm text-theme-primary"
                 />
               </label>
 
-              <label className="flex flex-col gap-2 text-sm text-slate-200">
+              <label className="flex flex-col gap-2 text-sm text-theme-primary">
                 Course / Qualification
                 <input
                   type="text"
                   value={bookingForm.course}
                   onChange={(e) => setBookingForm(prev => ({ ...prev, course: e.target.value }))}
                   placeholder="e.g., First Aid at Work"
-                  className="rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                  className="rounded-lg border border-white/10 bg-[rgb(var(--surface-elevated))] px-3 py-2 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-cyan-400"
                   required
                 />
               </label>
 
-              <label className="flex flex-col gap-2 text-sm text-slate-200">
+              <label className="flex flex-col gap-2 text-sm text-theme-primary">
                 Level (optional)
                 <input
                   type="text"
                   value={bookingForm.level}
                   onChange={(e) => setBookingForm(prev => ({ ...prev, level: e.target.value }))}
                   placeholder="e.g., Level 2"
-                  className="rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                  className="rounded-lg border border-white/10 bg-[rgb(var(--surface-elevated))] px-3 py-2 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-cyan-400"
                 />
               </label>
 
-              <label className="flex flex-col gap-2 text-sm text-slate-200">
+              <label className="flex flex-col gap-2 text-sm text-theme-primary">
                 Training provider
                 <input
                   type="text"
                   value={bookingForm.provider}
                   onChange={(e) => setBookingForm(prev => ({ ...prev, provider: e.target.value }))}
                   placeholder="e.g., Red Cross Training"
-                  className="rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                  className="rounded-lg border border-white/10 bg-[rgb(var(--surface-elevated))] px-3 py-2 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-cyan-400"
                 />
               </label>
 
-              <label className="flex flex-col gap-2 text-sm text-slate-200">
+              <label className="flex flex-col gap-2 text-sm text-theme-primary">
                 Scheduled date
                 <input
                   type="date"
                   value={bookingForm.scheduledDate}
                   onChange={(e) => setBookingForm(prev => ({ ...prev, scheduledDate: e.target.value }))}
-                  className="rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                  className="rounded-lg border border-white/10 bg-[rgb(var(--surface-elevated))] px-3 py-2 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-cyan-400"
                 />
               </label>
             </div>
 
-            <label className="flex flex-col gap-2 text-sm text-slate-200">
+            <label className="flex flex-col gap-2 text-sm text-theme-primary">
               Notes (optional)
               <textarea
                 value={bookingForm.notes}
                 onChange={(e) => setBookingForm(prev => ({ ...prev, notes: e.target.value }))}
                 placeholder="Add agenda, prerequisites, or travel details"
                 rows={3}
-                className="rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                className="rounded-lg border border-white/10 bg-[rgb(var(--surface-elevated))] px-3 py-2 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-cyan-400"
               />
             </label>
 
@@ -778,14 +778,14 @@ function TrainingMatrixPageContent() {
               <button
                 type="button"
                 onClick={() => setIsBookingModalOpen(false)}
-                className="rounded-lg border border-white/15 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10"
+                className="rounded-lg border border-white/15 px-4 py-2 text-sm text-theme-primary transition hover:bg-white/10"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={bookingSaveLoading}
-                className="rounded-lg border border-cyan-500/70 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-500/20 disabled:opacity-60"
+                className="rounded-lg border border-module-fg/30 bg-module-fg/10 px-4 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-module-fg/10 disabled:opacity-60"
               >
                 {bookingSaveLoading ? "Saving…" : "Book Training"}
               </button>
@@ -800,8 +800,8 @@ function TrainingMatrixPageContent() {
 export default function TrainingMatrixPage() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-[#0B0D13]">
-        <div className="text-neutral-400">Loading training matrix...</div>
+      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--surface-elevated))]">
+        <div className="text-theme-tertiary">Loading training matrix...</div>
       </div>
     }>
       <TrainingMatrixPageContent />
@@ -819,15 +819,15 @@ function SummaryCard({
   tone: "default" | "success" | "warning" | "danger";
 }) {
   const toneStyles: Record<typeof tone, string> = {
-    default: "border-white/10 bg-white/5 text-slate-200",
-    success: "border-emerald-500/20 bg-emerald-500/10 text-emerald-200",
+    default: "border-white/10 bg-white/5 text-theme-primary",
+    success: "border-module-fg/30 bg-module-fg/10 text-emerald-200",
     warning: "border-amber-500/20 bg-amber-500/10 text-amber-100",
     danger: "border-rose-500/20 bg-rose-500/10 text-rose-100",
   };
 
   return (
     <div className={`rounded-xl border p-4 ${toneStyles[tone]}`}>
-      <p className="text-xs uppercase tracking-wide text-slate-400">{label}</p>
+      <p className="text-xs uppercase tracking-wide text-theme-tertiary">{label}</p>
       <p className="mt-2 text-2xl font-semibold">{value}</p>
     </div>
   );

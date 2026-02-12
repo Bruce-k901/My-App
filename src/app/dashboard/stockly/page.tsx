@@ -388,11 +388,11 @@ export default function StocklyDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-theme-primary mb-2 flex items-center gap-3">
               <Package className="w-8 h-8 text-module-fg" />
               Stockly
             </h1>
-            <p className="text-gray-600 dark:text-white/60 text-sm flex items-center gap-2 mt-1">
+            <p className="text-theme-secondary text-sm flex items-center gap-2 mt-1">
               <Clock className="w-4 h-4" />
               {new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
             </p>
@@ -498,12 +498,12 @@ export default function StocklyDashboard() {
         >
           <div className="flex items-center gap-2 mb-2">
             <TrendingDown className={`w-4 h-4 ${
-              stats.gpPercent && stats.gpPercent >= 70 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'
+              stats.gpPercent && stats.gpPercent >= 70 ? 'text-module-fg' : 'text-amber-600 dark:text-amber-400'
             }`} />
             <span className="text-[rgb(var(--text-tertiary))] text-xs">Latest GP</span>
           </div>
           <p className={`text-xl font-bold ${
-            stats.gpPercent && stats.gpPercent >= 70 ? 'text-emerald-600 dark:text-emerald-400' :
+            stats.gpPercent && stats.gpPercent >= 70 ? 'text-module-fg' :
             stats.gpPercent ? 'text-amber-600 dark:text-amber-400' : 'text-[rgb(var(--text-tertiary))]'
           }`}>
             {stats.gpPercent ? `${stats.gpPercent}%` : '-'}
@@ -523,7 +523,7 @@ export default function StocklyDashboard() {
             className="w-full pl-10 pr-4 py-3 bg-module-fg/[0.04] border border-module-fg/[0.12] rounded-lg text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] focus:outline-none focus:ring-2 focus:ring-module-fg/[0.25] focus:border-module-fg/[0.25]"
           />
           {searching && (
-            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-white/40 animate-spin" />
+            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary animate-spin" />
           )}
         </div>
         
@@ -533,15 +533,15 @@ export default function StocklyDashboard() {
               <Link
                 key={item.id}
                 href={`/dashboard/stockly/stock-items/${item.id}`}
-                className="flex items-center justify-between py-2 hover:bg-gray-50 dark:hover:bg-white/[0.02] px-2 rounded -mx-2"
+                className="flex items-center justify-between py-2 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02] px-2 rounded -mx-2"
               >
                 <div>
-                  <span className="text-gray-900 dark:text-white">{item.name}</span>
-                  <span className="text-gray-500 dark:text-white/40 text-sm ml-2">
+                  <span className="text-theme-primary">{item.name}</span>
+                  <span className="text-theme-tertiary text-sm ml-2">
                     {item.stock_levels?.[0]?.quantity || 0} {item.stock_unit}
                   </span>
                 </div>
-                <span className="text-gray-500 dark:text-white/40 text-sm">
+                <span className="text-theme-tertiary text-sm">
                   £{item.product_variants?.[0]?.unit_price?.toFixed(2) || '0.00'}
                 </span>
               </Link>

@@ -241,17 +241,17 @@ export default function AIKnowledgeBasePage() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-gray-50 dark:bg-[#0B0D13]">
+    <div className="w-full min-h-screen bg-theme-surface-elevated">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <Brain className="w-8 h-8 text-[#D37E91]" />
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            <Brain className="w-8 h-8 text-module-fg" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary">
               AI Knowledge Base
             </h1>
           </div>
-          <p className="text-gray-600 dark:text-white/60 text-sm sm:text-base">
+          <p className="text-theme-secondary text-sm sm:text-base">
             Manage the knowledge that powers the Ask AI assistant. Add feature documentation,
             compliance info, and troubleshooting guides.
           </p>
@@ -259,24 +259,24 @@ export default function AIKnowledgeBasePage() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
-            <div className="text-gray-600 dark:text-white/60 text-sm mb-1">Total Entries</div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">{entries.length}</div>
+          <div className="bg-theme-surface border border-theme rounded-xl p-4">
+            <div className="text-theme-secondary text-sm mb-1">Total Entries</div>
+            <div className="text-2xl font-bold text-theme-primary">{entries.length}</div>
           </div>
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
-            <div className="text-gray-600 dark:text-white/60 text-sm mb-1">Active</div>
+          <div className="bg-theme-surface border border-theme rounded-xl p-4">
+            <div className="text-theme-secondary text-sm mb-1">Active</div>
             <div className="text-2xl font-bold text-green-600 dark:text-green-400">
               {entries.filter((e) => e.is_active).length}
             </div>
           </div>
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
-            <div className="text-gray-600 dark:text-white/60 text-sm mb-1">Categories</div>
+          <div className="bg-theme-surface border border-theme rounded-xl p-4">
+            <div className="text-theme-secondary text-sm mb-1">Categories</div>
             <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
               {new Set(entries.map((e) => e.category)).size}
             </div>
           </div>
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
-            <div className="text-gray-600 dark:text-white/60 text-sm mb-1">App Features</div>
+          <div className="bg-theme-surface border border-theme rounded-xl p-4">
+            <div className="text-theme-secondary text-sm mb-1">App Features</div>
             <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
               {entries.filter((e) => e.category === "app_feature" || e.category === "app_help").length}
             </div>
@@ -284,17 +284,17 @@ export default function AIKnowledgeBasePage() {
         </div>
 
         {/* Filters & Actions */}
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4 mb-6">
+        <div className="bg-theme-surface border border-theme rounded-xl p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Search */}
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-tertiary" />
               <input
                 type="text"
                 placeholder="Search knowledge base..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50]"
               />
             </div>
 
@@ -302,7 +302,7 @@ export default function AIKnowledgeBasePage() {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+              className="px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50]"
             >
               <option value="">All Categories</option>
               {CATEGORIES.map((cat) => (
@@ -318,7 +318,7 @@ export default function AIKnowledgeBasePage() {
               className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
                 showInactive
                   ? "bg-yellow-500/20 border-yellow-500/50 text-yellow-600 dark:text-yellow-400"
-                  : "bg-gray-50 dark:bg-white/[0.06] border-gray-200 dark:border-white/[0.1] text-gray-600 dark:text-white/60"
+                  : "bg-gray-50 dark:bg-white/[0.06] border-theme text-theme-secondary"
               }`}
             >
               {showInactive ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -328,7 +328,7 @@ export default function AIKnowledgeBasePage() {
             {/* Refresh */}
             <button
               onClick={fetchEntries}
-              className="p-2 rounded-lg bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] text-gray-600 dark:text-white/60 hover:bg-gray-100 dark:hover:bg-white/[0.1] transition-colors"
+ className="p-2 rounded-lg bg-theme-surface-elevated border border-theme text-theme-secondary hover:bg-theme-muted transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
@@ -336,7 +336,7 @@ export default function AIKnowledgeBasePage() {
             {/* Add New */}
             <button
               onClick={openCreateForm}
-              className="flex items-center gap-2 px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/90 text-white rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-module-fg hover:bg-module-fg/[0.90] text-white rounded-lg transition-colors"
             >
               <Plus className="w-4 h-4" />
               <span className="text-sm">Add Entry</span>
@@ -346,14 +346,14 @@ export default function AIKnowledgeBasePage() {
 
         {/* Create/Edit Form */}
         {(isCreating || editingEntry) && (
-          <div className="bg-white dark:bg-white/[0.03] border border-[#D37E91]/30 rounded-xl p-6 mb-6">
+          <div className="bg-theme-surface border border-module-fg/[0.30] rounded-xl p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-theme-primary">
                 {editingEntry ? "Edit Entry" : "New Knowledge Entry"}
               </h2>
               <button
                 onClick={resetForm}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] text-gray-500 dark:text-white/60"
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] text-theme-tertiary"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -362,7 +362,7 @@ export default function AIKnowledgeBasePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Title */}
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Title *
                 </label>
                 <input
@@ -370,19 +370,19 @@ export default function AIKnowledgeBasePage() {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g., How to create a new checklist"
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50]"
                 />
               </div>
 
               {/* Category */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Category *
                 </label>
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50]"
                 >
                   {CATEGORIES.map((cat) => (
                     <option key={cat.value} value={cat.value}>
@@ -394,7 +394,7 @@ export default function AIKnowledgeBasePage() {
 
               {/* Subcategory */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Subcategory
                 </label>
                 <input
@@ -402,13 +402,13 @@ export default function AIKnowledgeBasePage() {
                   value={formData.subcategory}
                   onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
                   placeholder="e.g., Checkly, Temperature Logs"
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50]"
                 />
               </div>
 
               {/* Tags */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Tags (comma-separated)
                 </label>
                 <input
@@ -416,13 +416,13 @@ export default function AIKnowledgeBasePage() {
                   value={formData.tags}
                   onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
                   placeholder="e.g., checklist, tasks, compliance"
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50]"
                 />
               </div>
 
               {/* Source */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Source/Reference
                 </label>
                 <input
@@ -430,13 +430,13 @@ export default function AIKnowledgeBasePage() {
                   value={formData.source}
                   onChange={(e) => setFormData({ ...formData, source: e.target.value })}
                   placeholder="e.g., Internal docs, FSA guidelines"
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50]"
                 />
               </div>
 
               {/* Summary */}
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Summary (short description for search)
                 </label>
                 <input
@@ -444,13 +444,13 @@ export default function AIKnowledgeBasePage() {
                   value={formData.summary}
                   onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
                   placeholder="Brief one-line description"
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50]"
                 />
               </div>
 
               {/* Content */}
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Content * (detailed information the AI will use)
                 </label>
                 <textarea
@@ -458,23 +458,23 @@ export default function AIKnowledgeBasePage() {
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                   placeholder="Write detailed information here. This is what the AI will use to answer questions. Include step-by-step instructions, important notes, and any relevant details."
                   rows={8}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 resize-y"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] resize-y"
                 />
               </div>
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-white/[0.06]">
+            <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-theme">
               <button
                 onClick={resetForm}
-                className="px-4 py-2 text-gray-600 dark:text-white/60 hover:bg-gray-100 dark:hover:bg-white/[0.06] rounded-lg transition-colors"
+                className="px-4 py-2 text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06] rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/90 text-white rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-module-fg hover:bg-module-fg/[0.90] text-white rounded-lg transition-colors disabled:opacity-50"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 <span>{editingEntry ? "Update" : "Create"}</span>
@@ -484,23 +484,23 @@ export default function AIKnowledgeBasePage() {
         )}
 
         {/* Entries List */}
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
-          <div className="p-4 border-b border-gray-200 dark:border-white/[0.06]">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <div className="bg-theme-surface border border-theme rounded-xl overflow-hidden">
+          <div className="p-4 border-b border-theme">
+            <h2 className="text-lg font-semibold text-theme-primary">
               Knowledge Entries
             </h2>
           </div>
 
           {loading ? (
             <div className="p-12 text-center">
-              <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin mx-auto mb-4" />
-              <p className="text-gray-600 dark:text-white/60">Loading entries...</p>
+              <Loader2 className="w-8 h-8 text-module-fg animate-spin mx-auto mb-4" />
+              <p className="text-theme-secondary">Loading entries...</p>
             </div>
           ) : entries.length === 0 ? (
             <div className="p-12 text-center">
-              <Brain className="w-12 h-12 text-gray-400 dark:text-white/40 mx-auto mb-4" />
-              <p className="text-gray-600 dark:text-white/60 mb-2">No entries found</p>
-              <p className="text-sm text-gray-500 dark:text-white/40">
+              <Brain className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
+              <p className="text-theme-secondary mb-2">No entries found</p>
+              <p className="text-sm text-theme-tertiary">
                 {searchQuery || selectedCategory
                   ? "Try adjusting your filters"
                   : "Add your first knowledge entry to help the AI assistant"}
@@ -511,24 +511,24 @@ export default function AIKnowledgeBasePage() {
               {entries.map((entry) => (
                 <div
                   key={entry.id}
-                  className={`p-4 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors ${
+                  className={`p-4 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02] transition-colors ${
                     !entry.is_active ? "opacity-60" : ""
                   }`}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-medium text-gray-900 dark:text-white truncate">
+                        <h3 className="font-medium text-theme-primary truncate">
                           {entry.title}
                         </h3>
                         {!entry.is_active && (
-                          <span className="px-2 py-0.5 text-xs bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white/60 rounded">
+                          <span className="px-2 py-0.5 text-xs bg-gray-200 dark:bg-white/10 text-theme-secondary rounded">
                             Inactive
                           </span>
                         )}
                       </div>
                       <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className="px-2 py-0.5 text-xs bg-[#D37E91]/10 text-[#D37E91] rounded">
+                        <span className="px-2 py-0.5 text-xs bg-module-fg/[0.10] text-module-fg rounded">
                           {CATEGORIES.find((c) => c.value === entry.category)?.label || entry.category}
                         </span>
                         {entry.subcategory && (
@@ -539,18 +539,18 @@ export default function AIKnowledgeBasePage() {
                         {entry.tags.slice(0, 3).map((tag) => (
                           <span
                             key={tag}
-                            className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-white/[0.06] text-gray-600 dark:text-white/60 rounded"
+                            className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-white/[0.06] text-theme-secondary rounded"
                           >
                             {tag}
                           </span>
                         ))}
                         {entry.tags.length > 3 && (
-                          <span className="text-xs text-gray-500 dark:text-white/40">
+                          <span className="text-xs text-theme-tertiary">
                             +{entry.tags.length - 3} more
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600 dark:text-white/60 line-clamp-2">
+                      <p className="text-sm text-theme-secondary line-clamp-2">
                         {entry.summary || entry.content.substring(0, 150)}...
                       </p>
                     </div>
@@ -559,8 +559,8 @@ export default function AIKnowledgeBasePage() {
                         onClick={() => toggleActive(entry)}
                         className={`p-2 rounded-lg transition-colors ${
                           entry.is_active
-                            ? "text-green-600 hover:bg-green-100 dark:hover:bg-green-500/10"
-                            : "text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06]"
+                            ? "text-green-600 hover:bg-green-100 dark:hover:bg-module-fg/10"
+                            : "text-theme-tertiary hover:bg-gray-100 dark:hover:bg-white/[0.06]"
                         }`}
                         title={entry.is_active ? "Deactivate" : "Activate"}
                       >
@@ -568,7 +568,7 @@ export default function AIKnowledgeBasePage() {
                       </button>
                       <button
                         onClick={() => openEditForm(entry)}
-                        className="p-2 rounded-lg text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-500/10 transition-colors"
+                        className="p-2 rounded-lg text-blue-600 hover:bg-blue-100 dark:hover:bg-module-fg/10 transition-colors"
                         title="Edit"
                       >
                         <Edit2 className="w-4 h-4" />

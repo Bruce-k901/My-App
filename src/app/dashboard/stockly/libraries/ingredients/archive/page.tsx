@@ -86,13 +86,13 @@ export default function IngredientsArchivePage() {
       <div className="flex items-center gap-4">
         <Link
           href="/dashboard/stockly/libraries/ingredients"
-          className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+          className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-theme-tertiary hover:text-white transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">Archived Ingredients</h1>
-          <p className="text-white/60 text-sm mt-1">View and restore archived ingredients</p>
+          <h1 className="text-2xl font-bold text-theme-primary">Archived Ingredients</h1>
+          <p className="text-theme-tertiary text-sm mt-1">View and restore archived ingredients</p>
         </div>
       </div>
 
@@ -103,19 +103,19 @@ export default function IngredientsArchivePage() {
           placeholder="Search archived ingredients..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:border-emerald-500"
+          className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-tertiary focus:outline-none focus:border-emerald-500"
         />
-        <Archive className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+        <Archive className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary" />
       </div>
 
       {/* Ingredient List */}
       {filteredIngredients.length === 0 ? (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
           <Archive className="w-16 h-16 text-white/20 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-white mb-2">
+          <h3 className="text-xl font-semibold text-theme-primary mb-2">
             {ingredients.length === 0 ? 'No archived ingredients' : 'No matching ingredients'}
           </h3>
-          <p className="text-white/60">
+          <p className="text-theme-tertiary">
             {ingredients.length === 0 
               ? 'Archived ingredients will appear here'
               : 'Try adjusting your search'
@@ -128,20 +128,20 @@ export default function IngredientsArchivePage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-white/[0.06]">
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Name</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-white/60">Category</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-white/60">Actions</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-theme-tertiary">Name</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-theme-tertiary">Category</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-theme-tertiary">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredIngredients.map((ingredient) => (
                   <tr key={ingredient.id} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
-                    <td className="px-4 py-3 text-white font-medium">{ingredient.ingredient_name}</td>
-                    <td className="px-4 py-3 text-white/60 text-sm">{ingredient.category || '-'}</td>
+                    <td className="px-4 py-3 text-theme-primary font-medium">{ingredient.ingredient_name}</td>
+                    <td className="px-4 py-3 text-theme-tertiary text-sm">{ingredient.category || '-'}</td>
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => handleRestore(ingredient.id)}
-                        className="px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg transition-colors text-sm"
+                        className="px-3 py-1.5 bg-module-fg/10 hover:bg-module-fg/10 text-module-fg border border-module-fg/30 rounded-lg transition-colors text-sm"
                       >
                         Restore
                       </button>

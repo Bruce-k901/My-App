@@ -53,15 +53,15 @@ export default function CustomerTable({
     const baseClasses = "px-2 py-1 rounded-md text-xs font-medium border";
     switch (status) {
       case 'active':
-        return `${baseClasses} bg-emerald-500/10 text-emerald-500 border-emerald-500/20`;
+        return `${baseClasses} bg-module-fg/10 text-emerald-500 border-module-fg/30`;
       case 'paused':
         return `${baseClasses} bg-amber-500/10 text-amber-500 border-amber-500/20`;
       case 'pending':
         return `${baseClasses} bg-blue-500/10 text-blue-500 border-blue-500/20`;
       case 'archived':
-        return `${baseClasses} bg-gray-500/10 text-gray-400 border-gray-500/20`;
+        return `${baseClasses} bg-theme-surface-elevated0/10 text-theme-tertiary border-gray-500/20`;
       default:
-        return `${baseClasses} bg-white/10 text-white/60 border-white/20`;
+        return `${baseClasses} bg-white/10 text-theme-tertiary border-white/20`;
     }
   };
 
@@ -70,7 +70,7 @@ export default function CustomerTable({
       return (
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span className="text-sm text-emerald-400">Active</span>
+          <span className="text-sm text-module-fg">Active</span>
         </div>
       );
     } else if (customer.portal_invite_sent_at) {
@@ -82,7 +82,7 @@ export default function CustomerTable({
           </div>
           <button
             onClick={() => onResendInvite(customer)}
-            className="text-xs text-emerald-400 hover:text-emerald-300 underline"
+            className="text-xs text-module-fg hover:text-emerald-300 underline"
           >
             Resend
           </button>
@@ -91,8 +91,8 @@ export default function CustomerTable({
     } else {
       return (
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-gray-500"></span>
-          <span className="text-sm text-gray-400">Not invited</span>
+          <span className="w-2 h-2 rounded-full bg-theme-surface-elevated0"></span>
+          <span className="text-sm text-theme-tertiary">Not invited</span>
         </div>
       );
     }
@@ -132,7 +132,7 @@ export default function CustomerTable({
   if (loading) {
     return (
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
-        <div className="text-white/60">Loading customers...</div>
+        <div className="text-theme-tertiary">Loading customers...</div>
       </div>
     );
   }
@@ -140,8 +140,8 @@ export default function CustomerTable({
   if (customers.length === 0) {
     return (
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
-        <div className="text-white font-medium mb-2">No customers found</div>
-        <div className="text-white/60 text-sm">
+        <div className="text-theme-primary font-medium mb-2">No customers found</div>
+        <div className="text-theme-tertiary text-sm">
           {customers.length === 0
             ? 'Add your first wholesale customer to start taking orders'
             : 'Try adjusting your filters'}
@@ -156,11 +156,11 @@ export default function CustomerTable({
         <table className="min-w-full text-sm">
           <thead className="bg-white/[0.05] border-b border-white/[0.06]">
             <tr>
-              <th className="text-left px-4 py-3 font-semibold text-emerald-400">Customer</th>
-              <th className="text-left px-4 py-3 font-semibold text-emerald-400">Portal Access</th>
-              <th className="text-left px-4 py-3 font-semibold text-emerald-400">Orders (30d)</th>
-              <th className="text-left px-4 py-3 font-semibold text-emerald-400">Status</th>
-              <th className="text-right px-4 py-3 font-semibold text-emerald-400">Actions</th>
+              <th className="text-left px-4 py-3 font-semibold text-module-fg">Customer</th>
+              <th className="text-left px-4 py-3 font-semibold text-module-fg">Portal Access</th>
+              <th className="text-left px-4 py-3 font-semibold text-module-fg">Orders (30d)</th>
+              <th className="text-left px-4 py-3 font-semibold text-module-fg">Status</th>
+              <th className="text-right px-4 py-3 font-semibold text-module-fg">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/[0.06]">
@@ -172,26 +172,26 @@ export default function CustomerTable({
                 {/* Customer Info */}
                 <td className="px-4 py-4">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                      <span className="text-emerald-400 font-semibold text-sm">
+                    <div className="w-10 h-10 rounded-lg bg-module-fg/10 border border-module-fg/30 flex items-center justify-center flex-shrink-0">
+                      <span className="text-module-fg font-semibold text-sm">
                         {customer.business_name.charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-white">{customer.business_name}</div>
+                      <div className="font-medium text-theme-primary">{customer.business_name}</div>
                       {customer.contact_name && (
-                        <div className="text-sm text-white/60 mt-0.5">
+                        <div className="text-sm text-theme-tertiary mt-0.5">
                           {customer.contact_name}
                           {customer.email && (
                             <>
                               <span className="mx-1">•</span>
-                              <span className="text-white/40">{customer.email}</span>
+                              <span className="text-theme-tertiary">{customer.email}</span>
                             </>
                           )}
                         </div>
                       )}
                       {customer.postcode && (
-                        <div className="text-xs text-white/40 mt-1">
+                        <div className="text-xs text-theme-tertiary mt-1">
                           {customer.postcode}
                         </div>
                       )}
@@ -207,16 +207,16 @@ export default function CustomerTable({
                 {/* Orders */}
                 <td className="px-4 py-4">
                   <div className="flex flex-col gap-1">
-                    <div className="text-white font-medium">
+                    <div className="text-theme-primary font-medium">
                       {customer.orders_last_30_days || 0}
                     </div>
                     {customer.last_order_date && (
-                      <div className="text-xs text-white/40">
+                      <div className="text-xs text-theme-tertiary">
                         Last: {formatDate(customer.last_order_date)}
                       </div>
                     )}
                     {customer.has_standing_order && (
-                      <div className="flex items-center gap-1 text-xs text-emerald-400 mt-1">
+                      <div className="flex items-center gap-1 text-xs text-module-fg mt-1">
                         <span>🔄</span>
                         <span>Standing Order</span>
                       </div>
@@ -240,7 +240,7 @@ export default function CustomerTable({
                         className="p-2 rounded-md hover:bg-white/[0.08] transition-colors"
                         aria-label="Actions"
                       >
-                        <MoreVertical className="w-4 h-4 text-white/60" />
+                        <MoreVertical className="w-4 h-4 text-theme-tertiary" />
                       </button>
 
                       {openMenuId === customer.id && (
@@ -255,7 +255,7 @@ export default function CustomerTable({
                                 onView(customer);
                                 setOpenMenuId(null);
                               }}
-                              className="w-full text-left px-4 py-2 text-sm text-white hover:bg-white/[0.08] flex items-center gap-2"
+                              className="w-full text-left px-4 py-2 text-sm text-theme-primary hover:bg-white/[0.08] flex items-center gap-2"
                             >
                               <Eye className="w-4 h-4" />
                               View Details
@@ -265,14 +265,14 @@ export default function CustomerTable({
                                 onEdit(customer);
                                 setOpenMenuId(null);
                               }}
-                              className="w-full text-left px-4 py-2 text-sm text-white hover:bg-white/[0.08] flex items-center gap-2"
+                              className="w-full text-left px-4 py-2 text-sm text-theme-primary hover:bg-white/[0.08] flex items-center gap-2"
                             >
                               <Edit className="w-4 h-4" />
                               Edit
                             </button>
                             <Link
                               href={`/dashboard/stockly/orders?customer=${customer.id}`}
-                              className="w-full text-left px-4 py-2 text-sm text-white hover:bg-white/[0.08] flex items-center gap-2"
+                              className="w-full text-left px-4 py-2 text-sm text-theme-primary hover:bg-white/[0.08] flex items-center gap-2"
                               onClick={() => setOpenMenuId(null)}
                             >
                               <Package className="w-4 h-4" />
@@ -280,7 +280,7 @@ export default function CustomerTable({
                             </Link>
                             <Link
                               href={`/dashboard/stockly/production/customers/${customer.id}/pricing`}
-                              className="w-full text-left px-4 py-2 text-sm text-white hover:bg-white/[0.08] flex items-center gap-2"
+                              className="w-full text-left px-4 py-2 text-sm text-theme-primary hover:bg-white/[0.08] flex items-center gap-2"
                               onClick={() => setOpenMenuId(null)}
                             >
                               <DollarSign className="w-4 h-4" />
@@ -293,7 +293,7 @@ export default function CustomerTable({
                                   onResendInvite(customer);
                                   setOpenMenuId(null);
                                 }}
-                                className="w-full text-left px-4 py-2 text-sm text-white hover:bg-white/[0.08] flex items-center gap-2"
+                                className="w-full text-left px-4 py-2 text-sm text-theme-primary hover:bg-white/[0.08] flex items-center gap-2"
                               >
                                 <Mail className="w-4 h-4" />
                                 Resend Invite
@@ -318,7 +318,7 @@ export default function CustomerTable({
                                       onActivate(customer);
                                       setOpenMenuId(null);
                                     }}
-                                    className="w-full text-left px-4 py-2 text-sm text-emerald-400 hover:bg-white/[0.08] flex items-center gap-2"
+                                    className="w-full text-left px-4 py-2 text-sm text-module-fg hover:bg-white/[0.08] flex items-center gap-2"
                                   >
                                     <Play className="w-4 h-4" />
                                     Activate Customer
@@ -342,7 +342,7 @@ export default function CustomerTable({
                                   onActivate(customer);
                                   setOpenMenuId(null);
                                 }}
-                                className="w-full text-left px-4 py-2 text-sm text-emerald-400 hover:bg-white/[0.08] flex items-center gap-2"
+                                className="w-full text-left px-4 py-2 text-sm text-module-fg hover:bg-white/[0.08] flex items-center gap-2"
                               >
                                 <Play className="w-4 h-4" />
                                 Unarchive

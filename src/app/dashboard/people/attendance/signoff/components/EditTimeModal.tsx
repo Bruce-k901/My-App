@@ -104,9 +104,9 @@ export default function EditTimeModal({
 
   return (
     <div className="fixed inset-0 bg-black/30 dark:bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-[#171b2d] border border-gray-200 dark:border-white/[0.06] rounded-xl w-full max-w-md shadow-xl">
+      <div className="bg-white dark:bg-[#171b2d] border border-theme rounded-xl w-full max-w-md shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/[0.06]">
+        <div className="flex items-center justify-between p-4 border-b border-theme">
           <div className="flex items-center gap-2">
             <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             <h3 className="font-semibold">Edit Time Record</h3>
@@ -119,12 +119,12 @@ export default function EditTimeModal({
         {/* Content */}
         <div className="p-4 space-y-4">
           <div>
-            <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Staff Member</p>
+            <p className="text-sm text-theme-tertiary mb-1">Staff Member</p>
             <p className="font-medium">{record.staffName}</p>
           </div>
           
           <div>
-            <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Date</p>
+            <p className="text-sm text-theme-tertiary mb-1">Date</p>
             <p className="font-medium">
               {new Date(record.workDate).toLocaleDateString('en-GB', {
                 weekday: 'long',
@@ -136,7 +136,7 @@ export default function EditTimeModal({
           
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-gray-500 dark:text-white/60 mb-1">Clock In</label>
+              <label className="block text-sm text-theme-tertiary mb-1">Clock In</label>
               <TimePicker
                 value={clockIn}
                 onChange={(value) => setClockIn(value)}
@@ -144,7 +144,7 @@ export default function EditTimeModal({
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-500 dark:text-white/60 mb-1">Clock Out</label>
+              <label className="block text-sm text-theme-tertiary mb-1">Clock Out</label>
               <TimePicker
                 value={clockOut}
                 onChange={(value) => setClockOut(value)}
@@ -154,7 +154,7 @@ export default function EditTimeModal({
           </div>
           
           <div>
-            <label className="block text-sm text-gray-500 dark:text-white/60 mb-1">
+            <label className="block text-sm text-theme-tertiary mb-1">
               Reason for Adjustment <span className="text-red-600 dark:text-red-400">*</span>
             </label>
             <textarea
@@ -162,7 +162,7 @@ export default function EditTimeModal({
               onChange={(e) => setReason(e.target.value)}
               placeholder="e.g., Staff forgot to clock out, correcting to actual departure time"
               rows={3}
-              className="w-full bg-gray-50 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg px-3 py-2 resize-none"
+              className="w-full bg-theme-button border border-theme rounded-lg px-3 py-2 resize-none"
             />
           </div>
           
@@ -175,10 +175,10 @@ export default function EditTimeModal({
         </div>
         
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 dark:border-white/[0.06]">
+        <div className="flex items-center justify-end gap-3 p-4 border-t border-theme">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-gray-500 dark:text-white/60 hover:text-white transition-colors"
+            className="px-4 py-2 text-sm text-theme-tertiary hover:text-white transition-colors"
           >
             Cancel
           </button>

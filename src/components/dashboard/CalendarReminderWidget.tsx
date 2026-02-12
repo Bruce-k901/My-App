@@ -152,7 +152,7 @@ export default function CalendarReminderWidget() {
   const getReminderTypeIcon = (type: string) => {
     switch (type) {
       case 'service_booked':
-        return <Wrench className="w-4 h-4 text-cyan-400" />;
+        return <Wrench className="w-4 h-4 text-module-fg" />;
       case 'ppm_due':
         return <Clock className="w-4 h-4 text-yellow-400" />;
       default:
@@ -164,7 +164,7 @@ export default function CalendarReminderWidget() {
     return (
       <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Calendar className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+          <Calendar className="w-5 h-5 text-module-fg" />
           <h3 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">
             Upcoming Reminders
           </h3>
@@ -181,13 +181,13 @@ export default function CalendarReminderWidget() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+          <Calendar className="w-5 h-5 text-module-fg" />
           <h3 className="text-lg font-semibold text-[rgb(var(--text-primary))] dark:text-white">
             Upcoming Reminders
           </h3>
         </div>
         {reminders.length > 0 && (
-          <span className="text-xs bg-cyan-100 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 px-2 py-1 rounded-full">
+          <span className="text-xs bg-module-fg/10 text-cyan-700 dark:text-cyan-300 px-2 py-1 rounded-full">
             {reminders.length} upcoming
           </span>
         )}
@@ -197,17 +197,17 @@ export default function CalendarReminderWidget() {
       {reminders.length === 0 ? (
         <div className="text-center py-6">
           <div className="w-12 h-12 bg-gray-100 dark:bg-white/[0.05] rounded-full flex items-center justify-center mx-auto mb-3">
-            <Calendar className="w-6 h-6 text-gray-400 dark:text-white/40" />
+            <Calendar className="w-6 h-6 text-theme-tertiary" />
           </div>
-          <p className="text-sm text-gray-500 dark:text-white/60">No upcoming reminders</p>
-          <p className="text-xs text-gray-400 dark:text-white/40 mt-1">Service reminders will appear here</p>
+          <p className="text-sm text-theme-tertiary">No upcoming reminders</p>
+          <p className="text-xs text-theme-tertiary mt-1">Service reminders will appear here</p>
         </div>
       ) : (
         <div className="space-y-3">
           {reminders.map((reminder) => (
             <div
               key={reminder.id}
-              className="group flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors"
+              className="group flex items-start gap-3 p-3 rounded-lg bg-theme-button hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors"
             >
               <div className="mt-0.5">
                 {getReminderTypeIcon(reminder.reminder_type)}
@@ -218,10 +218,10 @@ export default function CalendarReminderWidget() {
                     {reminder.title}
                   </p>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-white/60 mt-0.5">
+                <p className="text-xs text-theme-tertiary mt-0.5">
                   {reminder.asset_name}
                 </p>
-                <p className="text-xs text-cyan-600 dark:text-cyan-400 mt-1">
+                <p className="text-xs text-module-fg mt-1">
                   {formatDate(reminder.reminder_date)}
                 </p>
               </div>
@@ -230,7 +230,7 @@ export default function CalendarReminderWidget() {
                 className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-200 dark:hover:bg-white/10 transition-all"
                 title="Dismiss reminder"
               >
-                <X className="w-4 h-4 text-gray-400 dark:text-white/40" />
+                <X className="w-4 h-4 text-theme-tertiary" />
               </button>
             </div>
           ))}
@@ -241,7 +241,7 @@ export default function CalendarReminderWidget() {
       {reminders.length > 0 && (
         <Link
           href="/dashboard/assets"
-          className="flex items-center justify-center gap-1 mt-4 pt-4 border-t border-gray-200 dark:border-white/[0.06] text-sm text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors"
+          className="flex items-center justify-center gap-1 mt-4 pt-4 border-t border-theme text-sm text-module-fg hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors"
         >
           View all assets
           <ChevronRight className="w-4 h-4" />

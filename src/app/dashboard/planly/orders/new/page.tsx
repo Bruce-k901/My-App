@@ -84,7 +84,7 @@ export default function NewOrderPage() {
 
   if (!siteId) {
     return (
-      <div className="container mx-auto py-6 text-center text-gray-500 dark:text-white/60">
+      <div className="container mx-auto py-6 text-center text-theme-tertiary">
         Please select a site
       </div>
     );
@@ -93,7 +93,7 @@ export default function NewOrderPage() {
   if (!weekStart) {
     return (
       <div className="container mx-auto py-6 flex items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-[#14B8A6]" />
+        <Loader2 className="h-6 w-6 animate-spin text-module-fg" />
       </div>
     );
   }
@@ -126,7 +126,7 @@ export default function NewOrderPage() {
           onClick={handleSave}
           disabled={!isDirty || isSaving || !customerId}
           size="sm"
-          className="bg-[#14B8A6] hover:bg-[#14B8A6]/90 text-white"
+          className="bg-module-fg hover:bg-module-fg/90 text-white"
         >
           {isSaving ? (
             <>
@@ -144,19 +144,19 @@ export default function NewOrderPage() {
 
       {/* Grid */}
       {!customerId ? (
-        <div className="rounded-lg border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] p-8 text-center">
-          <p className="text-gray-500 dark:text-white/60">
+        <div className="rounded-lg border border-theme bg-white dark:bg-white/[0.02] p-8 text-center">
+          <p className="text-theme-tertiary">
             Select a customer to start entering orders
           </p>
         </div>
       ) : isLoadingProducts ? (
-        <div className="rounded-lg border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] p-8 flex items-center justify-center">
-          <Loader2 className="h-5 w-5 animate-spin text-[#14B8A6]" />
-          <span className="ml-2 text-sm text-gray-500 dark:text-white/60">Loading products...</span>
+        <div className="rounded-lg border border-theme bg-white dark:bg-white/[0.02] p-8 flex items-center justify-center">
+          <Loader2 className="h-5 w-5 animate-spin text-module-fg" />
+          <span className="ml-2 text-sm text-theme-tertiary">Loading products...</span>
         </div>
       ) : products.length === 0 ? (
-        <div className="rounded-lg border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] p-8 text-center">
-          <p className="text-sm text-gray-500 dark:text-white/60">
+        <div className="rounded-lg border border-theme bg-white dark:bg-white/[0.02] p-8 text-center">
+          <p className="text-sm text-theme-tertiary">
             No products available. Please add products first.
           </p>
         </div>

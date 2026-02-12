@@ -184,16 +184,16 @@ export default function ConversationContentTabs({ conversationId }: Conversation
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-[#0B0D13] border-b border-gray-200 dark:border-white/[0.06] p-4">
-        <div className="text-gray-600 dark:text-white text-sm">Loading content...</div>
+      <div className="bg-white dark:bg-[#0B0D13] border-b border-theme p-4">
+        <div className="text-theme-secondary text-sm">Loading content...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-[#0B0D13] border-b border-gray-200 dark:border-white/[0.06]">
+    <div className="bg-white dark:bg-[#0B0D13] border-b border-theme">
       {/* Tabs */}
-      <div className="flex gap-1 p-1.5 sm:p-2 border-b border-gray-200 dark:border-white/[0.06] overflow-x-auto">
+      <div className="flex gap-1 p-1.5 sm:p-2 border-b border-theme overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -205,7 +205,7 @@ export default function ConversationContentTabs({ conversationId }: Conversation
                 flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg transition-all text-xs sm:text-sm font-medium flex-shrink-0
                 ${isActive
                   ? 'bg-transparent text-[#D37E91] border border-[#D37E91]'
-                  : 'text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white/80 hover:bg-gray-50 dark:hover:bg-white/[0.05]'
+                  : 'text-theme-secondary hover:text-theme-primary dark:hover:text-theme-secondary hover:bg-theme-hover'
                 }
               `}
             >
@@ -216,7 +216,7 @@ export default function ConversationContentTabs({ conversationId }: Conversation
                   text-xs px-1.5 sm:px-2 py-0.5 rounded-full
                   ${isActive
                     ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/30 text-[#D37E91] dark:text-[#D37E91]'
-                    : 'bg-gray-100 dark:bg-white/[0.1] text-gray-600 dark:text-white/60'
+                    : 'bg-theme-muted text-theme-secondary'
                   }
                 `}>
                   {tab.count}
@@ -233,19 +233,19 @@ export default function ConversationContentTabs({ conversationId }: Conversation
           <div className="flex-1 min-h-0 overflow-y-auto p-4">
             <div className="space-y-2">
               {files.length === 0 ? (
-                <div className="text-center py-8 text-gray-500 dark:text-white/40 text-sm">No files shared</div>
+                <div className="text-center py-8 text-theme-tertiary text-sm">No files shared</div>
               ) : (
                 files.map((file) => (
                 <div
                   key={file.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.03] transition-colors"
+                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.03] transition-colors"
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <FileText className="h-5 w-5 text-[#D37E91] flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900 dark:text-white truncate">{file.file_name || 'Unknown file'}</p>
+                      <p className="text-sm text-theme-primary truncate">{file.file_name || 'Unknown file'}</p>
                       {file.file_size && (
-                        <p className="text-xs text-gray-500 dark:text-white/40">
+                        <p className="text-xs text-theme-tertiary">
                           {(file.file_size / 1024).toFixed(1)} KB
                         </p>
                       )}
@@ -254,10 +254,10 @@ export default function ConversationContentTabs({ conversationId }: Conversation
                   {file.file_url && (
                     <button
                       onClick={() => handleDownload(file.file_url!, file.file_name || 'file')}
-                      className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.1] rounded-lg transition-colors"
+                      className="p-2 hover:bg-theme-muted rounded-lg transition-colors"
                       title="Download file"
                     >
-                      <Download className="h-4 w-4 text-gray-600 dark:text-white/60" />
+                      <Download className="h-4 w-4 text-theme-secondary" />
                     </button>
                   )}
                 </div>
@@ -270,7 +270,7 @@ export default function ConversationContentTabs({ conversationId }: Conversation
         {activeTab === 'images' && (
           <div className="h-full overflow-hidden flex flex-col">
             {images.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-gray-500 dark:text-white/40">
+              <div className="flex flex-col items-center justify-center h-full text-theme-tertiary">
                 <span className="text-4xl mb-2">🖼️</span>
                 <p className="text-sm">No images in this conversation</p>
               </div>
@@ -295,34 +295,34 @@ export default function ConversationContentTabs({ conversationId }: Conversation
           <div className="flex-1 min-h-0 overflow-y-auto p-4">
             <div className="space-y-2">
               {tasks.length === 0 ? (
-                <div className="text-center py-8 text-gray-500 dark:text-white/40 text-sm">No tasks created from messages</div>
+                <div className="text-center py-8 text-theme-tertiary text-sm">No tasks created from messages</div>
               ) : (
                 tasks.map((task) => (
                 <div
                   key={task.id}
-                  className="p-3 bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.03] transition cursor-pointer"
+                  className="p-3 bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.03] transition cursor-pointer"
                   onClick={() => {
                     window.location.href = `/dashboard/tasks?task=${task.id}`;
                   }}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                    <h4 className="text-sm font-medium text-theme-primary">
                       {task.title}
                     </h4>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${
                       task.status === 'todo' ? 'bg-yellow-50 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400' :
                       task.status === 'in_progress' ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400' :
                       task.status === 'completed' ? 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400' :
-                      'bg-gray-50 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400'
+'bg-gray-50 dark:bg-theme-surface-elevated0/20 text-theme-secondary'
                     }`}>
                       {task.status}
                     </span>
                   </div>
                   {task.description && (
-                    <p className="text-xs text-gray-600 dark:text-white/60 mb-2 line-clamp-2">{task.description}</p>
+                    <p className="text-xs text-theme-secondary mb-2 line-clamp-2">{task.description}</p>
                   )}
                   {task.due_date && (
-                    <p className="text-xs text-gray-500 dark:text-white/40 mb-2">
+                    <p className="text-xs text-theme-tertiary mb-2">
                       Due: {new Date(task.due_date).toLocaleDateString()}
                     </p>
                   )}

@@ -28,7 +28,7 @@ export default function MonthlySalesPage() {
   if (!siteId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
+        <div className="text-theme-tertiary">Please select a site</div>
       </div>
     );
   }
@@ -36,7 +36,7 @@ export default function MonthlySalesPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Loading monthly sales...</div>
+        <div className="text-theme-tertiary">Loading monthly sales...</div>
       </div>
     );
   }
@@ -54,15 +54,15 @@ export default function MonthlySalesPage() {
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Monthly Sales by Site</h1>
+        <h1 className="text-2xl font-bold text-theme-primary">Monthly Sales by Site</h1>
         <div className="flex items-center gap-4">
           <Button variant="outline" onClick={handlePrevMonth}>
             <ChevronLeft className="h-4 w-4 mr-2" />
             Previous Month
           </Button>
           <div className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5 text-[#14B8A6]" />
-            <span className="text-gray-900 dark:text-white font-medium">
+            <DollarSign className="h-5 w-5 text-module-fg" />
+            <span className="text-theme-primary font-medium">
               {format(currentDate, 'MMMM yyyy')}
             </span>
           </div>
@@ -77,29 +77,29 @@ export default function MonthlySalesPage() {
         {entries.map((entry) => (
           <Card key={entry.customer_id} className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{entry.customer_name}</h3>
+              <h3 className="text-lg font-semibold text-theme-primary">{entry.customer_name}</h3>
               <div className="text-right">
-                <div className="text-sm text-gray-500 dark:text-white/60">Gross Total</div>
-                <div className="text-xl font-bold text-gray-900 dark:text-white">£{entry.gross_total.toFixed(2)}</div>
+                <div className="text-sm text-theme-tertiary">Gross Total</div>
+                <div className="text-xl font-bold text-theme-primary">£{entry.gross_total.toFixed(2)}</div>
                 {entry.credits_total > 0 && (
                   <>
-                    <div className="text-sm text-gray-500 dark:text-white/60 mt-1">Credits</div>
+                    <div className="text-sm text-theme-tertiary mt-1">Credits</div>
                     <div className="text-lg font-semibold text-red-600 dark:text-red-400">-£{entry.credits_total.toFixed(2)}</div>
                   </>
                 )}
-                <div className="text-sm text-gray-500 dark:text-white/60 mt-2">Net Total</div>
-                <div className="text-2xl font-bold text-[#14B8A6]">£{entry.net_total.toFixed(2)}</div>
+                <div className="text-sm text-theme-tertiary mt-2">Net Total</div>
+                <div className="text-2xl font-bold text-module-fg">£{entry.net_total.toFixed(2)}</div>
               </div>
             </div>
 
-            <div className="border-t border-gray-200 dark:border-white/10 pt-4 mt-4">
+            <div className="border-t border-theme pt-4 mt-4">
               <div className="space-y-2">
                 {entry.products.map((product, idx) => (
                   <div key={idx} className="flex items-center justify-between text-sm">
-                    <div className="text-gray-900 dark:text-white">
+                    <div className="text-theme-primary">
                       {product.product_name} × {product.total_quantity}
                     </div>
-                    <div className="text-gray-500 dark:text-white/60">
+                    <div className="text-theme-tertiary">
                       £{product.unit_price.toFixed(2)} each • £{product.total_value.toFixed(2)} total
                     </div>
                   </div>
@@ -111,7 +111,7 @@ export default function MonthlySalesPage() {
 
         {entries.length === 0 && (
           <Card className="p-12 text-center">
-            <div className="text-gray-500 dark:text-white/60">
+            <div className="text-theme-tertiary">
               No sales data for {format(currentDate, 'MMMM yyyy')}
             </div>
           </Card>

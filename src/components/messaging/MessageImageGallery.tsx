@@ -64,7 +64,7 @@ export default function MessageImageGallery({ images }: MessageImageGalleryProps
                 />
                 
                 {/* Optional: Show sender name on hover */}
-                <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 opacity-0 group-hover:opacity-100 transition-opacity truncate">
+                <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-theme-primary text-xs p-1 opacity-0 group-hover:opacity-100 transition-opacity truncate">
                   {senderName}
                 </div>
               </div>
@@ -81,7 +81,7 @@ export default function MessageImageGallery({ images }: MessageImageGalleryProps
         >
           <button
             onClick={() => setSelectedImage(null)}
-            className="absolute top-4 right-4 text-white hover:text-gray-300 text-2xl z-10 p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="absolute top-4 right-4 text-theme-primary hover:text-theme-tertiary text-2xl z-10 p-2 hover:bg-white/10 rounded-lg transition-colors"
             aria-label="Close"
           >
             <X className="w-6 h-6" />

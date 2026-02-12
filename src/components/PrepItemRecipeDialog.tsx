@@ -354,7 +354,7 @@ export function PrepItemRecipeDialog({
         {isChecking ? (
           <>
             <DialogHeader>
-              <DialogTitle className="text-white">Checking for recipe...</DialogTitle>
+              <DialogTitle className="text-theme-primary">Checking for recipe...</DialogTitle>
             </DialogHeader>
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
@@ -364,33 +364,33 @@ export function PrepItemRecipeDialog({
           <>
             <DialogHeader>
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-500/10 rounded-lg">
+                <div className="p-2 bg-module-fg/10 rounded-lg">
                   <CheckCircle className="h-6 w-6 text-emerald-500" />
                 </div>
-                <DialogTitle className="text-white">Recipe Found</DialogTitle>
+                <DialogTitle className="text-theme-primary">Recipe Found</DialogTitle>
               </div>
-              <DialogDescription className="pt-4 text-white/60">
-                A recipe already exists for <strong className="text-white">{ingredientName}</strong>:
+              <DialogDescription className="pt-4 text-theme-tertiary">
+                A recipe already exists for <strong className="text-theme-primary">{ingredientName}</strong>:
               </DialogDescription>
               
               <div className="mt-4 p-4 bg-white/[0.03] rounded-lg border border-white/[0.06]">
                 <div className="text-sm space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-white/60">Name:</span>
-                    <span className="text-white font-medium">{existingRecipe.name}</span>
+                    <span className="text-theme-tertiary">Name:</span>
+                    <span className="text-theme-primary font-medium">{existingRecipe.name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/60">Code:</span>
-                    <span className="text-emerald-400 font-mono">{existingRecipe.code}</span>
+                    <span className="text-theme-tertiary">Code:</span>
+                    <span className="text-module-fg font-mono">{existingRecipe.code}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/60">Status:</span>
-                    <span className="capitalize text-white">{existingRecipe.recipe_status}</span>
+                    <span className="text-theme-tertiary">Status:</span>
+                    <span className="capitalize text-theme-primary">{existingRecipe.recipe_status}</span>
                   </div>
                 </div>
               </div>
 
-              <p className="mt-4 text-sm text-white/60">
+              <p className="mt-4 text-sm text-theme-tertiary">
                 Would you like to link this recipe to the ingredient?
               </p>
             </DialogHeader>
@@ -415,7 +415,7 @@ export function PrepItemRecipeDialog({
               <Button 
                 onClick={handleLinkExistingRecipe}
                 disabled={isCreating}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-module-fg hover:bg-module-fg/90 text-white"
               >
                 {isCreating ? (
                   <>
@@ -435,19 +435,19 @@ export function PrepItemRecipeDialog({
           <>
             <DialogHeader>
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-500/10 rounded-lg">
+                <div className="p-2 bg-module-fg/10 rounded-lg">
                   <Plus className="h-6 w-6 text-emerald-500" />
                 </div>
-                <DialogTitle className="text-white">Create Recipe</DialogTitle>
+                <DialogTitle className="text-theme-primary">Create Recipe</DialogTitle>
               </div>
-              <DialogDescription className="pt-4 text-white/60">
-                No recipe exists for <strong className="text-white">{ingredientName}</strong> yet.
+              <DialogDescription className="pt-4 text-theme-tertiary">
+                No recipe exists for <strong className="text-theme-primary">{ingredientName}</strong> yet.
               </DialogDescription>
               
-              <p className="mt-4 text-white/60">
+              <p className="mt-4 text-theme-tertiary">
                 Would you like to create a recipe placeholder? You can then:
               </p>
-              <ul className="mt-2 space-y-1 text-sm list-disc list-inside text-white/60">
+              <ul className="mt-2 space-y-1 text-sm list-disc list-inside text-theme-tertiary">
                 <li>Add ingredients to the recipe</li>
                 <li>Set yield quantities</li>
                 <li>Calculate costs automatically</li>
@@ -475,7 +475,7 @@ export function PrepItemRecipeDialog({
               <Button 
                 onClick={handleCreateRecipe}
                 disabled={isCreating}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-module-fg hover:bg-module-fg/90 text-white"
               >
                 {isCreating ? (
                   <>

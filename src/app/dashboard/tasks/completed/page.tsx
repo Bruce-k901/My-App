@@ -638,12 +638,12 @@ export default function CompletedTasksPage() {
   };
 
   return (
-    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#0f1220] text-[rgb(var(--text-primary))] dark:text-white border border-[rgb(var(--border))] dark:border-neutral-800 rounded-xl p-8">
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[rgb(var(--surface-elevated))] text-[rgb(var(--text-primary))] dark:text-white border border-[rgb(var(--border))] dark:border-neutral-800 rounded-xl p-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">Completed Tasks</h1>
-          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">View all completed and missed task records</p>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">View all completed and missed task records</p>
         </div>
 
         {/* Filter Toggle Button */}
@@ -652,14 +652,14 @@ export default function CompletedTasksPage() {
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
               showFilters || activeFilterCount > 0
-                ? 'bg-[#D37E91]/15 border-[#D37E91]/30 text-[#D37E91]'
+                ? 'bg-module-fg/15 border-module-fg/30 text-module-fg'
                 : 'bg-[rgb(var(--surface))] border-[rgb(var(--border))] text-[rgb(var(--text-secondary))] hover:border-[rgb(var(--border-hover))]'
             }`}
           >
             <Filter className="w-4 h-4" />
             <span>Filters</span>
             {activeFilterCount > 0 && (
-              <span className="bg-[#D37E91] text-white text-xs px-1.5 py-0.5 rounded-full">
+              <span className="bg-module-fg text-white text-xs px-1.5 py-0.5 rounded-full">
                 {activeFilterCount}
               </span>
             )}
@@ -674,13 +674,13 @@ export default function CompletedTasksPage() {
           <div className="flex flex-wrap gap-4">
             {/* Category Filter */}
             <div className="flex-1 min-w-[200px]">
-              <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">
+              <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">
                 Task Type
               </label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1f2e] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                className="w-full px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1f2e] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-module-fg/50"
               >
                 <option value="all">All Types</option>
                 {filterOptions.categories.map((category) => (
@@ -693,13 +693,13 @@ export default function CompletedTasksPage() {
 
             {/* Completed By Filter */}
             <div className="flex-1 min-w-[200px]">
-              <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">
+              <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">
                 Completed By
               </label>
               <select
                 value={selectedCompletedBy}
                 onChange={(e) => setSelectedCompletedBy(e.target.value)}
-                className="w-full px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1f2e] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                className="w-full px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1f2e] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-module-fg/50"
               >
                 <option value="all">All Users</option>
                 {filterOptions.users.map((user) => (
@@ -712,13 +712,13 @@ export default function CompletedTasksPage() {
 
             {/* Issues Filter */}
             <div className="flex-1 min-w-[200px]">
-              <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 mb-1">
+              <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">
                 Status
               </label>
               <select
                 value={selectedIssueFilter}
                 onChange={(e) => setSelectedIssueFilter(e.target.value)}
-                className="w-full px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1f2e] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                className="w-full px-3 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-[#1a1f2e] border border-[rgb(var(--border))] dark:border-white/[0.1] rounded-lg text-[rgb(var(--text-primary))] dark:text-white focus:outline-none focus:ring-2 focus:ring-module-fg/50"
               >
                 <option value="all">All Tasks</option>
                 <option value="with_issues">With Issues</option>
@@ -733,12 +733,12 @@ export default function CompletedTasksPage() {
           {/* Active Filters & Clear */}
           {activeFilterCount > 0 && (
             <div className="mt-3 flex items-center gap-2">
-              <span className="text-sm text-[rgb(var(--text-tertiary))] dark:text-white/40">
+              <span className="text-sm text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
                 Showing {filteredTasks.length} of {completedTasks.length} tasks
               </span>
               <button
                 onClick={clearFilters}
-                className="flex items-center gap-1 text-sm text-[#D37E91] hover:text-[#D37E91] transition-colors"
+                className="flex items-center gap-1 text-sm text-module-fg hover:text-module-fg transition-colors"
               >
                 <X className="w-3 h-3" />
                 Clear filters
@@ -750,7 +750,7 @@ export default function CompletedTasksPage() {
 
       {/* Debug Info - HIDDEN (removed per user request) */}
       {false && showDebugInfo && (
-        <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg">
+        <div className="mt-4 p-4 bg-theme-muted border border-theme rounded-lg">
           <p className="font-bold mb-2">Debug Info:</p>
           <p>Query Executed: Yes</p>
           <p>Tasks Found: {completedTasks.length}</p>
@@ -763,22 +763,22 @@ export default function CompletedTasksPage() {
       {/* Loading State */}
       {loading ? (
         <div className="mt-8 text-center py-12">
-          <Loader2 className="h-12 w-12 text-[#D37E91] mx-auto mb-4 animate-spin" />
-          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">Loading completed tasks...</p>
+          <Loader2 className="h-12 w-12 text-module-fg mx-auto mb-4 animate-spin" />
+          <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Loading completed tasks...</p>
         </div>
       ) : completedTasks.length === 0 ? (
         <div className="mt-8 text-center py-12">
           <AlertCircle className="h-12 w-12 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-4" />
-          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2">No completed tasks yet</p>
-          <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">Completed and missed tasks will appear here</p>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-2">No completed tasks yet</p>
+          <p className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm">Completed and missed tasks will appear here</p>
         </div>
       ) : filteredTasks.length === 0 ? (
         <div className="mt-8 text-center py-12">
           <Filter className="h-12 w-12 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-4" />
-          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2">No tasks match your filters</p>
+          <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-2">No tasks match your filters</p>
           <button
             onClick={clearFilters}
-            className="text-[#D37E91] hover:text-[#D37E91] text-sm transition-colors"
+            className="text-module-fg hover:text-module-fg text-sm transition-colors"
           >
             Clear all filters
           </button>

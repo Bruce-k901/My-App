@@ -124,7 +124,7 @@ export default function DashboardQuickStats() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-4 animate-pulse"
+            className="bg-theme-surface border border-theme rounded-xl p-4 animate-pulse"
           >
             <div className="h-4 bg-gray-200 dark:bg-white/10 rounded w-1/2 mb-3" />
             <div className="h-8 bg-gray-200 dark:bg-white/10 rounded w-1/3" />
@@ -143,7 +143,7 @@ export default function DashboardQuickStats() {
       {/* Today's Tasks */}
       <Link
         href="/dashboard/todays_tasks"
-        className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-all group"
+        className="bg-theme-surface border border-theme rounded-xl p-5 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-all group"
       >
         <div className="flex items-start justify-between mb-3">
           <div className="p-2 bg-[#D37E91]/10 dark:bg-[#D37E91]/15 rounded-lg group-hover:bg-[#D37E91]/20 dark:group-hover:bg-[#D37E91]/25 transition-colors">
@@ -158,13 +158,13 @@ export default function DashboardQuickStats() {
         <div className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-1">
           {stats.todayTasks}
         </div>
-        <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60">
+        <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
           Today's Tasks
         </div>
         {stats.todayTasks > 0 && (
-          <div className="mt-3 pt-3 border-t border-theme dark:border-white/[0.06]">
+          <div className="mt-3 pt-3 border-t border-theme">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-[rgb(var(--text-tertiary))] dark:text-white/40">
+              <span className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
                 {stats.completedTasks} completed
               </span>
               <span className="text-[#D37E91] dark:text-[#D37E91] font-medium">
@@ -184,7 +184,7 @@ export default function DashboardQuickStats() {
       {/* Pending Tasks */}
       <Link
         href="/dashboard/tasks/my-tasks"
-        className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-all group"
+        className="bg-theme-surface border border-theme rounded-xl p-5 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-all group"
       >
         <div className="flex items-start justify-between mb-3">
           <div className="p-2 bg-yellow-100 dark:bg-yellow-500/10 rounded-lg group-hover:bg-yellow-200 dark:group-hover:bg-yellow-500/20 transition-colors">
@@ -194,11 +194,11 @@ export default function DashboardQuickStats() {
         <div className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-1">
           {stats.pendingTasks}
         </div>
-        <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60">
+        <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
           Pending Tasks
         </div>
         {stats.pendingTasks > 0 && (
-          <div className="mt-3 text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40">
+          <div className="mt-3 text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
             {stats.pendingTasks === 1 ? '1 task' : `${stats.pendingTasks} tasks`} awaiting completion
           </div>
         )}
@@ -207,7 +207,7 @@ export default function DashboardQuickStats() {
       {/* Open Incidents */}
       <Link
         href="/dashboard/incidents"
-        className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-all group"
+        className="bg-theme-surface border border-theme rounded-xl p-5 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50 transition-all group"
       >
         <div className="flex items-start justify-between mb-3">
           <div className="p-2 bg-red-100 dark:bg-red-500/10 rounded-lg group-hover:bg-red-200 dark:group-hover:bg-red-500/20 transition-colors">
@@ -217,7 +217,7 @@ export default function DashboardQuickStats() {
         <div className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-1">
           {stats.openIncidents}
         </div>
-        <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60">
+        <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
           Open Incidents
         </div>
         {stats.openIncidents > 0 && (
@@ -228,7 +228,7 @@ export default function DashboardQuickStats() {
       </Link>
 
       {/* Compliance Score */}
-      <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-5">
+      <div className="bg-theme-surface border border-theme rounded-xl p-5">
         <div className="flex items-start justify-between mb-3">
           <div className="p-2 bg-green-100 dark:bg-green-500/10 rounded-lg">
             <ShieldCheck className="w-5 h-5 text-green-600 dark:text-green-400" />
@@ -239,12 +239,12 @@ export default function DashboardQuickStats() {
             <div className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-1">
               {stats.complianceScore}%
             </div>
-            <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mb-3">
+            <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-3">
               Compliance Score
             </div>
             <div className="flex items-center gap-1 text-xs">
               <TrendingUp className="w-3 h-3 text-green-600 dark:text-green-400" />
-              <span className="text-[rgb(var(--text-tertiary))] dark:text-white/40">
+              <span className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
                 Current site status
               </span>
             </div>
@@ -254,10 +254,10 @@ export default function DashboardQuickStats() {
             <div className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-1">
               --
             </div>
-            <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60">
+            <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
               Compliance Score
             </div>
-            <div className="mt-3 text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40">
+            <div className="mt-3 text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
               No data available
             </div>
           </>

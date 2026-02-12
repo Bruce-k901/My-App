@@ -71,7 +71,7 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
     return (
       <div className="space-y-2">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+          <h3 className="text-xs font-semibold text-theme-tertiary uppercase tracking-wider">
             Upcoming Tasks
           </h3>
         </div>
@@ -85,9 +85,9 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
   if (tasks.length === 0) {
     return (
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 text-center">
-        <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-2" />
-        <p className="text-sm font-medium text-white">All caught up!</p>
-        <p className="text-xs text-gray-500">No pending tasks for today</p>
+        <CheckCircle2 className="w-10 h-10 text-module-fg mx-auto mb-2" />
+        <p className="text-sm font-medium text-theme-primary">All caught up!</p>
+        <p className="text-xs text-theme-tertiary">No pending tasks for today</p>
       </div>
     );
   }
@@ -95,7 +95,7 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <h3 className="text-xs font-semibold text-theme-tertiary uppercase tracking-wider">
           Upcoming Tasks
         </h3>
         <button
@@ -125,10 +125,10 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
               {/* Status indicator */}
               <div className={cn(
                 "flex-shrink-0",
-                task.status === 'in_progress' ? 'text-blue-400' : 'text-gray-500'
+                task.status === 'in_progress' ? 'text-blue-400' : 'text-theme-tertiary'
               )}>
                 {task.status === 'completed' ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                  <CheckCircle2 className="w-5 h-5 text-module-fg" />
                 ) : (
                   <Circle className="w-5 h-5" />
                 )}
@@ -138,14 +138,14 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
               <div className="flex-1 min-w-0">
                 <p className={cn(
                   "text-sm font-medium truncate",
-                  task.is_critical ? "text-red-400" : "text-white"
+                  task.is_critical ? "text-red-400" : "text-theme-primary"
                 )}>
                   {task.title}
                 </p>
                 {task.due_time && (
                   <div className={cn(
                     "flex items-center gap-1 text-xs",
-                    isOverdue ? "text-red-400" : "text-gray-500"
+                    isOverdue ? "text-red-400" : "text-theme-tertiary"
                   )}>
                     <Clock className="w-3 h-3" />
                     <span>{task.due_time.slice(0, 5)}</span>
@@ -161,7 +161,7 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
                 </span>
               )}
 
-              <ChevronRight className="w-4 h-4 text-gray-500 flex-shrink-0" />
+              <ChevronRight className="w-4 h-4 text-theme-tertiary flex-shrink-0" />
             </button>
           );
         })}

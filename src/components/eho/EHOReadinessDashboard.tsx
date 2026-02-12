@@ -650,18 +650,18 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
 
   if (!siteId) {
     return (
-      <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-        <p className="text-gray-500 dark:text-white/60 text-center">Please select a site to view EHO readiness analysis</p>
+      <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-xl p-6">
+        <p className="text-theme-tertiary text-center">Please select a site to view EHO readiness analysis</p>
       </div>
     )
   }
 
   if (loading) {
     return (
-      <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+      <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-xl p-6">
         <div className="flex items-center justify-center py-8">
           <Loader2 className="w-6 h-6 text-[#D37E91] dark:text-[#D37E91] animate-spin" />
-          <span className="ml-3 text-gray-500 dark:text-white/60">Analyzing compliance readiness...</span>
+          <span className="ml-3 text-theme-tertiary">Analyzing compliance readiness...</span>
         </div>
       </div>
     )
@@ -680,15 +680,15 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
   return (
     <div className="space-y-4">
       {/* Incidents Summary Card */}
-      <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+      <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-[#D37E91]/10 dark:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91]">
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Incidents & Accidents</h3>
-              <p className="text-sm text-gray-500 dark:text-white/60">Track all incidents, complaints, and RIDDOR reports</p>
+              <h3 className="text-lg font-semibold text-theme-primary">Incidents & Accidents</h3>
+              <p className="text-sm text-theme-tertiary">Track all incidents, complaints, and RIDDOR reports</p>
             </div>
           </div>
           <Link
@@ -700,26 +700,26 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
           </Link>
         </div>
         <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white dark:bg-white/[0.05] rounded-lg p-3">
-            <div className="text-xs text-gray-500 dark:text-white/60 mb-1">Total Incidents</div>
-            <div className={`text-xl font-bold ${incidentCount === 0 ? 'text-gray-400 dark:text-white/40' : 'text-gray-900 dark:text-white'}`}>
+ <div className="bg-theme-surface ] rounded-lg p-3">
+            <div className="text-xs text-theme-tertiary mb-1">Total Incidents</div>
+            <div className={`text-xl font-bold ${incidentCount === 0 ? 'text-theme-tertiary' : 'text-theme-primary'}`}>
               {incidentCount === 0 ? 'None reported' : incidentCount}
             </div>
             {incidentCount === 0 && (
-              <div className="text-xs text-gray-400 dark:text-white/40 mt-1">This will be reflected in your readiness score</div>
+              <div className="text-xs text-theme-tertiary mt-1">This will be reflected in your readiness score</div>
             )}
           </div>
-          <div className="bg-white dark:bg-white/[0.05] rounded-lg p-3">
-            <div className="text-xs text-gray-500 dark:text-white/60 mb-1">RIDDOR Reportable</div>
-            <div className={`text-xl font-bold ${riddorCount === 0 ? 'text-gray-400 dark:text-white/40' : 'text-orange-600 dark:text-orange-400'}`}>
+ <div className="bg-theme-surface ] rounded-lg p-3">
+            <div className="text-xs text-theme-tertiary mb-1">RIDDOR Reportable</div>
+            <div className={`text-xl font-bold ${riddorCount === 0 ? 'text-theme-tertiary' : 'text-orange-600 dark:text-orange-400'}`}>
               {riddorCount === 0 ? 'None' : riddorCount}
             </div>
           </div>
-          <div className="bg-white dark:bg-white/[0.05] rounded-lg p-3">
-            <div className="text-xs text-gray-500 dark:text-white/60 mb-1">Status</div>
+ <div className="bg-theme-surface ] rounded-lg p-3">
+            <div className="text-xs text-theme-tertiary mb-1">Status</div>
             <div className={`text-sm font-medium ${
               incidentCount === 0
-                ? 'text-gray-400 dark:text-white/40'
+                ? 'text-theme-tertiary'
                 : 'text-green-600 dark:text-green-400'
             }`}>
               {incidentCount === 0
@@ -738,11 +738,11 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
         const overallRating = getStarRating(overallCompletion, expiringCount, expiredCount)
 
         return (
-          <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+          <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">EHO Readiness Analysis</h2>
-                <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
+                <h2 className="text-xl font-semibold text-theme-primary">EHO Readiness Analysis</h2>
+                <p className="text-sm text-theme-tertiary mt-1">
                   Comprehensive compliance checker - know exactly where you stand when an EHO arrives
                 </p>
               </div>
@@ -754,7 +754,7 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
                 }`}>
                   {overallCompletion}%
                 </div>
-                <div className="text-sm text-gray-500 dark:text-white/60">Complete</div>
+                <div className="text-sm text-theme-tertiary">Complete</div>
               </div>
             </div>
 
@@ -762,7 +762,7 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
             <div className={`rounded-xl p-5 mb-4 border ${overallRating.bgColor} ${overallRating.borderColor}`}>
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-wider mb-1">Estimated FHRS Paperwork Score</div>
+                  <div className="text-xs font-medium text-theme-tertiary uppercase tracking-wider mb-1">Estimated FHRS Paperwork Score</div>
                   <div className="flex items-center gap-3">
                     <StarDisplay rating={overallRating} size="lg" />
                     <span className={`text-lg font-bold ${overallRating.color}`}>{overallRating.stars}/5</span>
@@ -772,8 +772,8 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs text-gray-500 dark:text-white/50 mb-1">Based on</div>
-                  <div className="text-sm text-gray-700 dark:text-white/70">
+                  <div className="text-xs text-theme-tertiary mb-1">Based on</div>
+                  <div className="text-sm text-theme-secondary">
                     {completedRequirements}/{totalRequirements} requirements
                   </div>
                   {(expiringCount > 0 || expiredCount > 0) && (
@@ -788,16 +788,16 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white dark:bg-white/[0.05] rounded-lg p-3">
-                <div className="text-xs text-gray-500 dark:text-white/60 mb-1">Total Requirements</div>
-                <div className="text-xl font-bold text-gray-900 dark:text-white">{totalRequirements}</div>
+ <div className="bg-theme-surface ] rounded-lg p-3">
+                <div className="text-xs text-theme-tertiary mb-1">Total Requirements</div>
+                <div className="text-xl font-bold text-theme-primary">{totalRequirements}</div>
               </div>
-              <div className="bg-white dark:bg-white/[0.05] rounded-lg p-3">
-                <div className="text-xs text-gray-500 dark:text-white/60 mb-1">Completed</div>
+ <div className="bg-theme-surface ] rounded-lg p-3">
+                <div className="text-xs text-theme-tertiary mb-1">Completed</div>
                 <div className="text-xl font-bold text-green-600 dark:text-green-400">{completedRequirements}</div>
               </div>
-              <div className="bg-white dark:bg-white/[0.05] rounded-lg p-3">
-                <div className="text-xs text-gray-500 dark:text-white/60 mb-1">Missing</div>
+ <div className="bg-theme-surface ] rounded-lg p-3">
+                <div className="text-xs text-theme-tertiary mb-1">Missing</div>
                 <div className="text-xl font-bold text-red-600 dark:text-red-400">{missingRequirements}</div>
               </div>
             </div>
@@ -818,7 +818,7 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
           return (
             <div
               key={categoryGroup.category}
-              className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden"
+              className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-xl overflow-hidden"
             >
               <div className="flex items-center">
                 <button
@@ -834,8 +834,8 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
                       {categoryGroup.icon}
                     </div>
                     <div className="text-left">
-                      <div className="font-medium text-gray-900 dark:text-white">{categoryGroup.category}</div>
-                      <div className="text-sm text-gray-500 dark:text-white/60">
+                      <div className="font-medium text-theme-primary">{categoryGroup.category}</div>
+                      <div className="text-sm text-theme-tertiary">
                         {categoryGroup.requirements.filter(r => r.found && r.status !== 'expired').length} of {categoryGroup.requirements.length} requirements met
                         {expiringSoon.length > 0 && (
                           <span className="text-yellow-600 dark:text-yellow-400 ml-2">• {expiringSoon.length} expiring soon</span>
@@ -858,9 +858,9 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
                       {categoryGroup.completionRate}%
                     </div>
                     {isExpanded ? (
-                      <ChevronUp className="w-5 h-5 text-gray-400 dark:text-white/60" />
+                      <ChevronUp className="w-5 h-5 text-theme-tertiary" />
                     ) : (
-                      <ChevronDown className="w-5 h-5 text-gray-400 dark:text-white/60" />
+                      <ChevronDown className="w-5 h-5 text-theme-tertiary" />
                     )}
                   </div>
                 </button>
@@ -877,7 +877,7 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
               </div>
 
               {isExpanded && (
-                <div className="px-6 pb-4 pt-2 border-t border-gray-200 dark:border-white/[0.06] space-y-3">
+                <div className="px-6 pb-4 pt-2 border-t border-theme space-y-3">
                   {/* Requirements List */}
                   {categoryGroup.requirements.map((req) => (
                     <div
@@ -889,7 +889,7 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
                           ? 'bg-yellow-50 dark:bg-yellow-500/10 border-yellow-300 dark:border-yellow-500/30'
                           : req.status === 'expired'
                           ? 'bg-red-50 dark:bg-red-500/10 border-red-300 dark:border-red-500/30'
-                          : 'bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.1]'
+                          : 'bg-gray-50 dark:bg-white/[0.03] border-theme'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -905,10 +905,10 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
                               <XCircle className="w-4 h-4 text-red-300 dark:text-red-400/50 flex-shrink-0 mt-0.5" />
                             )}
                             <span className={`text-sm font-medium ${
-                              req.found && req.status === 'valid' ? 'text-gray-900 dark:text-white' :
+                              req.found && req.status === 'valid' ? 'text-theme-primary' :
                               req.status === 'expired' ? 'text-red-700 dark:text-red-300' :
                               req.status === 'expiring_soon' ? 'text-yellow-700 dark:text-yellow-300' :
-                              'text-gray-500 dark:text-white/60'
+                              'text-theme-tertiary'
                             }`}>
                               {req.name}
                             </span>
@@ -917,7 +917,7 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
                             )}
                           </div>
                           {req.foundDetails && (
-                            <div className="text-xs text-gray-500 dark:text-white/60 mt-1 ml-6">
+                            <div className="text-xs text-theme-tertiary mt-1 ml-6">
                               Found: {req.foundDetails}
                               {req.expiryDate && (
                                 <span className="ml-2">
@@ -936,7 +936,7 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
                         {REQUIREMENT_LINKS[req.id] && (
                           <Link
                             href={REQUIREMENT_LINKS[req.id].href}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap flex-shrink-0 transition-colors bg-gray-100 dark:bg-white/[0.06] hover:bg-gray-200 dark:hover:bg-white/[0.1] text-gray-700 dark:text-white/70 border border-gray-200 dark:border-white/[0.08]"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap flex-shrink-0 transition-colors bg-gray-100 dark:bg-white/[0.06] hover:bg-gray-200 dark:hover:bg-white/[0.1] text-theme-secondary border border-theme"
                           >
                             {REQUIREMENT_LINKS[req.id].label}
                             <ExternalLink className="w-3 h-3" />

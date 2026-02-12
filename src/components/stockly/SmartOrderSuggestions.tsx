@@ -279,7 +279,7 @@ export default function SmartOrderSuggestions({
                 {suggestions.some(s => s.selected) && (
                   <button
                     onClick={() => setSuggestions(prev => prev.map(s => ({ ...s, selected: false })))}
-                    className="text-sm text-white/40 hover:text-white/60"
+                    className="text-sm text-theme-tertiary hover:text-theme-tertiary"
                   >
                     Clear
                   </button>
@@ -301,12 +301,12 @@ export default function SmartOrderSuggestions({
                         ? 'bg-yellow-500 border-yellow-500' 
                         : 'border-yellow-500/40'
                     }`}>
-                      {suggestion.selected && <Check className="w-3 h-3 text-black" />}
+                      {suggestion.selected && <Check className="w-3 h-3 text-theme-primary" />}
                     </div>
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-white font-medium text-sm truncate">
+                        <span className="text-theme-primary font-medium text-sm truncate">
                           {suggestion.item_name}
                         </span>
                         {/* Badges */}
@@ -327,16 +327,16 @@ export default function SmartOrderSuggestions({
                           </span>
                         )}
                       </div>
-                      <p className="text-white/40 text-xs mt-0.5">
+                      <p className="text-theme-tertiary text-xs mt-0.5">
                         {suggestion.suggestion_reason}
                       </p>
                     </div>
                     
                     <div className="text-right">
-                      <p className="text-white font-medium">
+                      <p className="text-theme-primary font-medium">
                         £{suggestion.line_total.toFixed(2)}
                       </p>
-                      <p className="text-white/40 text-xs">
+                      <p className="text-theme-tertiary text-xs">
                         {suggestion.suggested_quantity} × £{suggestion.unit_price.toFixed(2)}
                       </p>
                     </div>
@@ -349,15 +349,15 @@ export default function SmartOrderSuggestions({
                 <div className="px-4 py-3 bg-yellow-500/10 border-t border-yellow-500/20">
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <p className="text-white/60 text-sm">
+                      <p className="text-theme-tertiary text-sm">
                         {suggestions.filter(s => s.selected).length} items selected
                       </p>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="text-white/40 text-xs">
+                        <span className="text-theme-tertiary text-xs">
                           Current: £{currentTotal.toFixed(2)}
                         </span>
-                        <span className="text-white/40">→</span>
-                        <span className={`text-sm font-medium ${wouldMeetMinimum ? 'text-green-400' : 'text-white'}`}>
+                        <span className="text-theme-tertiary">→</span>
+                        <span className={`text-sm font-medium ${wouldMeetMinimum ? 'text-green-400' : 'text-theme-primary'}`}>
                           New: £{newTotal.toFixed(2)}
                         </span>
                         {wouldMeetMinimum && (
@@ -367,7 +367,7 @@ export default function SmartOrderSuggestions({
                     </div>
                     <button
                       onClick={handleAddSelected}
-                      className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-medium rounded-lg transition-colors flex items-center gap-2"
+                      className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-theme-primary font-medium rounded-lg transition-colors flex items-center gap-2"
                     >
                       <Check className="w-4 h-4" />
                       Add £{selectedTotal.toFixed(2)}

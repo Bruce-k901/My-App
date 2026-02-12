@@ -51,13 +51,13 @@ export default function ForgotPasswordPage() {
           Reset your password
         </h1>
 
-        <p className="text-center text-gray-400 mb-8 text-sm">
+        <p className="text-center text-theme-tertiary mb-8 text-sm">
           Enter your work email and we’ll send a secure reset link.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-gray-400 text-sm mb-2">Email</label>
+            <label className="block text-theme-tertiary text-sm mb-2">Email</label>
             <input
               type="email"
               name="email"
@@ -65,7 +65,7 @@ export default function ForgotPasswordPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@company.com"
-              className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
+              className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300"
             />
           </div>
 
@@ -89,16 +89,16 @@ export default function ForgotPasswordPage() {
           <Link href="/login" className="text-magenta-400 hover:text-magenta-300 text-sm transition-colors">
             Back to login
           </Link>
-          <p className="text-slate-500 text-xs mt-4">
+          <p className="text-theme-tertiary text-xs mt-4">
             Didn’t receive the email? Check your spam folder.
           </p>
         </div>
 
-        <p className="mt-8 text-center text-xs text-gray-500">
+        <p className="mt-8 text-center text-xs text-theme-tertiary">
           By continuing, you agree to our {""}
-          <Link href="/terms" className="underline underline-offset-4 hover:text-gray-300">Terms</Link>
+          <Link href="/terms" className="underline underline-offset-4 hover:text-theme-tertiary">Terms</Link>
           {" "}and{" "}
-          <Link href="/privacy" className="underline underline-offset-4 hover:text-gray-300">Privacy Policy</Link>.
+          <Link href="/privacy" className="underline underline-offset-4 hover:text-theme-tertiary">Privacy Policy</Link>.
         </p>
       </GlassCard>
     </AuthLayout>

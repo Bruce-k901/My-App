@@ -32,7 +32,7 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
   
   if (!review) {
     return (
-      <div className="p-8 text-white">
+      <div className="p-8 text-theme-primary">
         <h1>Review not found</h1>
         <p>ID: {id}</p>
       </div>
@@ -60,10 +60,10 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
   // Check if user has access
   if (!isEmployee && !isManager) {
     return (
-      <div className="p-8 text-white">
+      <div className="p-8 text-theme-primary">
         <h1>Access Denied</h1>
         <p>You don't have permission to view this review.</p>
-        <p className="text-sm text-gray-500 dark:text-white/60 mt-2">
+        <p className="text-sm text-theme-tertiary mt-2">
           Review ID: {id}<br />
           Your Profile ID: {profile.id}<br />
           Employee ID: {review.employee_id}<br />

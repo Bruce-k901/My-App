@@ -123,7 +123,7 @@ export function SiteFilter() {
         }
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [sites, mounted]);
 
   const handleSiteSelect = (siteId: string | null) => {
@@ -181,7 +181,7 @@ export function SiteFilter() {
   if (isStaff && homeSiteId && selectedSite) {
     return (
       <div className="h-10 px-4 rounded-lg border flex items-center gap-2 min-w-[200px] bg-black/[0.03] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06]">
-        <MapPin className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-white/60" />
+        <MapPin className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
         <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium flex-1 text-left">{selectedSite.name}</span>
       </div>
     );
@@ -203,11 +203,11 @@ export function SiteFilter() {
         disabled={loading}
         suppressHydrationWarning
       >
-        <MapPin className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-white/60" />
+        <MapPin className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
         <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium flex-1 text-left truncate" suppressHydrationWarning>
           {loading ? "Loading..." : displayText}
         </span>
-        <ChevronDown className={`w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-white/60 transition-transform flex-shrink-0 ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown className={`w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary transition-transform flex-shrink-0 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {isOpen && mounted && buttonRect && createPortal(
@@ -238,14 +238,14 @@ export function SiteFilter() {
               onClick={() => handleSiteSelect(site.id)}
               className="w-full px-4 py-2 flex items-center gap-3 hover:bg-black/[0.05] dark:hover:bg-white/[0.06] transition-colors text-left"
             >
-              <MapPin className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-white/60" />
+              <MapPin className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
               <span className="flex-1 text-[rgb(var(--text-primary))] dark:text-white">{site.name}</span>
               {selectedSiteId === site.id && <Check className="w-4 h-4 text-[#D37E91]" />}
             </button>
           ))}
 
           {sites.length === 0 && !loading && (
-            <div className="px-4 py-2 text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm">
+            <div className="px-4 py-2 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm">
               No sites available
             </div>
           )}

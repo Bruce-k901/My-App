@@ -134,12 +134,12 @@ export function QuickEntryGrid({
   let globalRowIndex = 0;
 
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] overflow-hidden">
+    <div className="rounded-lg border border-theme bg-white dark:bg-white/[0.02] overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-50 dark:bg-white/[0.03] border-b border-gray-200 dark:border-white/[0.06]">
-              <th className="sticky left-0 z-10 bg-gray-50 dark:bg-neutral-900 w-44 px-2 py-1.5 text-left text-xs font-medium text-gray-700 dark:text-white/80">
+            <tr className="bg-gray-50 dark:bg-white/[0.03] border-b border-theme">
+              <th className="sticky left-0 z-10 bg-gray-50 dark:bg-neutral-900 w-44 px-2 py-1.5 text-left text-xs font-medium text-theme-secondary">
                 Product
               </th>
               {weekDates.map((date, index) => (
@@ -149,11 +149,11 @@ export function QuickEntryGrid({
                     'w-14 px-1 py-1.5 text-center font-medium',
                     index >= 5
                       ? 'text-[#14B8A6] bg-[#14B8A6]/5 dark:bg-[#14B8A6]/10'
-                      : 'text-gray-700 dark:text-white/80'
+                      : 'text-theme-secondary'
                   )}
                 >
                   <div className="text-xs">{dayNames[index]}</div>
-                  <div className="text-[10px] font-normal text-gray-500 dark:text-white/50">
+                  <div className="text-[10px] font-normal text-theme-tertiary">
                     {format(date, 'd')}
                   </div>
                 </th>
@@ -167,7 +167,7 @@ export function QuickEntryGrid({
                 <tr className="bg-gray-100/70 dark:bg-white/[0.04]">
                   <td
                     colSpan={8}
-                    className="px-2 py-1 text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-white/60"
+                    className="px-2 py-1 text-xs font-semibold uppercase tracking-wide text-theme-secondary"
                   >
                     {getGroupIcon(groupName)} {groupName}
                   </td>
@@ -179,10 +179,10 @@ export function QuickEntryGrid({
                   return (
                     <tr
                       key={product.id}
-                      className="border-t border-gray-100 dark:border-white/[0.04] hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors"
+                      className="border-t border-gray-100 dark:border-white/[0.04] hover:bg-theme-surface-elevated/50 dark:hover:bg-white/[0.01] transition-colors"
                     >
-                      <td className="sticky left-0 z-10 bg-white dark:bg-neutral-900 px-2 py-0.5 border-r border-gray-100 dark:border-white/[0.04]">
-                        <span className="text-sm text-gray-900 dark:text-white pl-3 truncate block">
+                      <td className="sticky left-0 z-10 bg-theme-surface px-2 py-0.5 border-r border-gray-100 dark:border-white/[0.04]">
+                        <span className="text-sm text-theme-primary pl-3 truncate block">
                           {product.name}
                         </span>
                       </td>

@@ -28,9 +28,9 @@ const MODULE_CONFIG: Record<TicketModule, {
   },
   stockly: {
     label: 'Stockly',
-    bgColor: 'bg-emerald-500/10',
-    textColor: 'text-emerald-600 dark:text-emerald-400',
-    borderColor: 'border-emerald-500/20',
+    bgColor: 'bg-module-fg/10',
+    textColor: 'text-module-fg',
+    borderColor: 'border-module-fg/30',
   },
   teamly: {
     label: 'Teamly',
@@ -46,20 +46,20 @@ const MODULE_CONFIG: Record<TicketModule, {
   },
   assetly: {
     label: 'Assetly',
-    bgColor: 'bg-cyan-500/10',
-    textColor: 'text-cyan-600 dark:text-cyan-400',
-    borderColor: 'border-cyan-500/20',
+    bgColor: 'bg-module-fg/10',
+    textColor: 'text-module-fg',
+    borderColor: 'border-module-fg/30',
   },
   msgly: {
     label: 'Msgly',
-    bgColor: 'bg-teal-500/10',
-    textColor: 'text-teal-600 dark:text-teal-400',
-    borderColor: 'border-teal-500/20',
+    bgColor: 'bg-module-fg/10',
+    textColor: 'text-module-fg',
+    borderColor: 'border-module-fg/30',
   },
   general: {
     label: 'General',
-    bgColor: 'bg-gray-500/10',
-    textColor: 'text-gray-600 dark:text-gray-400',
+    bgColor: 'bg-theme-surface-elevated0/10',
+    textColor: 'text-theme-secondary',
     borderColor: 'border-gray-500/20',
   },
 };

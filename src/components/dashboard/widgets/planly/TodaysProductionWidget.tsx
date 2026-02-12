@@ -122,7 +122,7 @@ export default function TodaysProductionWidget({ companyId, siteId }: WidgetProp
         </div>
       }
       badge={
-        <span className="text-xs font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">
+        <span className="text-xs font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
           {summary.completed}/{summary.total}
         </span>
       }
@@ -132,7 +132,7 @@ export default function TodaysProductionWidget({ companyId, siteId }: WidgetProp
         {/* Progress bar */}
         <div>
           <div className="flex items-center justify-between text-xs mb-1">
-            <span className="text-[rgb(var(--text-tertiary))] dark:text-white/40">
+            <span className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
               {summary.completed} completed
             </span>
             <span className={cn('font-medium', colors.text)}>{completionRate}%</span>
@@ -156,19 +156,19 @@ export default function TodaysProductionWidget({ companyId, siteId }: WidgetProp
               {task.status === 'completed' ? (
                 <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
               ) : (
-                <Circle className="w-4 h-4 text-gray-400 dark:text-white/30 flex-shrink-0" />
+                <Circle className="w-4 h-4 text-theme-tertiary/30 flex-shrink-0" />
               )}
               <span
                 className={cn(
                   'text-sm truncate flex-1',
                   task.status === 'completed'
-                    ? 'text-[rgb(var(--text-tertiary))] dark:text-white/40 line-through'
+                    ? 'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary line-through'
                     : 'text-[rgb(var(--text-primary))] dark:text-white'
                 )}
               >
                 {task.product_name}
               </span>
-              <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 flex-shrink-0">
+              <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary flex-shrink-0">
                 {task.quantity} {task.unit}
               </span>
             </Link>

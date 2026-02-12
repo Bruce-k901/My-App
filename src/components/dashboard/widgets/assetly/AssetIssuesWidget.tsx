@@ -140,7 +140,7 @@ export default function AssetIssuesWidget({ companyId, siteId }: WidgetProps) {
       case 'medium':
         return 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400';
       default:
-        return 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400';
+        return 'bg-theme-muted text-theme-secondary';
     }
   };
 
@@ -180,7 +180,7 @@ export default function AssetIssuesWidget({ companyId, siteId }: WidgetProps) {
                 <p className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white truncate">
                   {issue.asset_name}
                 </p>
-                <div className="flex items-center gap-2 text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40">
+                <div className="flex items-center gap-2 text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
                   <span>{issue.callout_type}</span>
                   <span>•</span>
                   <Clock className="w-3 h-3" />

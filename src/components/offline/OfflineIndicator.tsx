@@ -35,7 +35,7 @@ export function OfflineIndicator() {
         <div
           className={`
             ${!isOnline ? 'bg-orange-500/90' : 'bg-emerald-500/90'}
-            backdrop-blur-sm text-white px-4 py-2 rounded-full shadow-lg
+            backdrop-blur-sm text-theme-primary px-4 py-2 rounded-full shadow-lg
             flex items-center gap-2 text-sm font-medium
             border-2 ${!isOnline ? 'border-orange-300/30' : 'border-emerald-300/30'}
           `}
@@ -90,7 +90,7 @@ export function SyncSuccessToast({ onClose }: { onClose: () => void }) {
         </div>
         <button
           onClick={onClose}
-          className="ml-4 text-white/60 hover:text-white transition-colors"
+          className="ml-4 text-theme-tertiary hover:text-white transition-colors"
           aria-label="Close"
         >
           ×

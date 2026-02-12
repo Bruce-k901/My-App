@@ -70,7 +70,7 @@ export function DeliveryNotesHeader({
   return (
     <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
       {/* Title */}
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Delivery Notes</h1>
+      <h1 className="text-2xl font-bold text-theme-primary">Delivery Notes</h1>
 
       {/* Controls */}
       <div className="flex items-center gap-2 flex-wrap">
@@ -79,7 +79,7 @@ export function DeliveryNotesHeader({
           <Button
             variant="outline"
             onClick={() => onDateChange(safeNavigateDate(selectedDate, -1))}
-            className={`${smallBtnClass} border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 px-2`}
+            className={`${smallBtnClass} border-theme text-theme-secondary hover:bg-theme-hover px-2`}
             title="Previous day"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -90,7 +90,7 @@ export function DeliveryNotesHeader({
             <Button
               variant="outline"
               onClick={handleCalendarClick}
-              className={`${smallBtnClass} border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 px-2 rounded-r-none border-r-0`}
+              className={`${smallBtnClass} border-theme text-theme-secondary hover:bg-theme-hover px-2 rounded-r-none border-r-0`}
               title="Open calendar"
             >
               <Calendar className="h-4 w-4 text-[#14B8A6]" />
@@ -112,9 +112,9 @@ export function DeliveryNotesHeader({
               />
               <div
                 onClick={handleCalendarClick}
-                className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 dark:border-white/10 rounded-r-md bg-white dark:bg-white/[0.03] cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 h-9"
+                className="flex items-center gap-2 px-3 py-1.5 border border-theme rounded-r-md bg-theme-surface cursor-pointer hover:bg-theme-hover h-9"
               >
-                <span className="text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                <span className="text-sm font-medium text-theme-primary whitespace-nowrap">
                   {safeFormatDate(selectedDate, 'EEE, dd/MM/yyyy')}
                 </span>
               </div>
@@ -124,7 +124,7 @@ export function DeliveryNotesHeader({
           <Button
             variant="outline"
             onClick={() => onDateChange(safeNavigateDate(selectedDate, 1))}
-            className={`${smallBtnClass} border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 px-2`}
+            className={`${smallBtnClass} border-theme text-theme-secondary hover:bg-theme-hover px-2`}
             title="Next day"
           >
             <ChevronRight className="h-4 w-4" />
@@ -133,7 +133,7 @@ export function DeliveryNotesHeader({
           <Button
             variant="outline"
             onClick={() => onDateChange(format(new Date(), 'yyyy-MM-dd'))}
-            className={`${smallBtnClass} border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 ml-1`}
+            className={`${smallBtnClass} border-theme text-theme-secondary hover:bg-theme-hover ml-1`}
             title="Today"
           >
             Today
@@ -141,12 +141,12 @@ export function DeliveryNotesHeader({
         </div>
 
         {/* Note count */}
-        <span className="text-sm text-gray-500 dark:text-white/60 mx-2">
+        <span className="text-sm text-theme-tertiary mx-2">
           {noteCount} {noteCount === 1 ? 'note' : 'notes'}
         </span>
 
         {/* Paper size indicator */}
-        <div className="text-sm text-gray-500 dark:text-white/60 px-2 py-1 bg-gray-100 dark:bg-white/5 rounded">
+        <div className="text-sm text-theme-tertiary px-2 py-1 bg-gray-100 dark:bg-white/5 rounded">
           {paperSizeLabel}
         </div>
 
@@ -154,7 +154,7 @@ export function DeliveryNotesHeader({
         <Button
           variant="outline"
           onClick={onShowSettings}
-          className={`${smallBtnClass} border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5`}
+          className={`${smallBtnClass} border-theme text-theme-secondary hover:bg-theme-hover`}
           title="Print settings"
         >
           <Settings className="h-4 w-4" />

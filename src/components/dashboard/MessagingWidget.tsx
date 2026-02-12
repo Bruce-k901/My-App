@@ -37,10 +37,10 @@ export function MessagingWidget() {
       </div>
 
       {loading ? (
-        <p className="text-slate-500 text-sm">Loading...</p>
+        <p className="text-theme-tertiary text-sm">Loading...</p>
       ) : recentConversations.length === 0 ? (
         <div className="space-y-2">
-          <p className="text-slate-500 text-sm">No unread messages</p>
+          <p className="text-theme-tertiary text-sm">No unread messages</p>
           <button
             onClick={() => setMessagingOpen(true)}
             className="btn-gradient text-sm inline-block mt-2"
@@ -65,11 +65,11 @@ export function MessagingWidget() {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-white truncate">
+                    <div className="text-sm font-medium text-theme-primary truncate">
                       {name}
                     </div>
                     {conv.last_message && (
-                      <div className="text-xs text-slate-400 truncate mt-1">
+                      <div className="text-xs text-theme-tertiary truncate mt-1">
                         {conv.last_message.sender?.full_name || 'You'}: {conv.last_message.content}
                       </div>
                     )}

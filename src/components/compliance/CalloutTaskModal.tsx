@@ -260,7 +260,7 @@ export default function CalloutTaskModal({
         <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-xl shadow-2xl p-8 border border-white/[0.08]">
           <div className="flex flex-col items-center gap-4">
             <div className="w-8 h-8 border-2 border-rose-500 border-t-transparent rounded-full animate-spin" />
-            <div className="text-neutral-400 text-sm">Loading callout details...</div>
+            <div className="text-theme-tertiary text-sm">Loading callout details...</div>
           </div>
         </div>
       </div>
@@ -272,8 +272,8 @@ export default function CalloutTaskModal({
     return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-xl shadow-2xl max-w-md w-full p-6 border border-white/[0.08]">
-          <h3 className="text-lg font-semibold text-white mb-4">Error Loading Callout</h3>
-          <p className="text-neutral-400 mb-6">{error}</p>
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">Error Loading Callout</h3>
+          <p className="text-theme-tertiary mb-6">{error}</p>
           <button
             onClick={onClose}
             className="w-full px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg transition-colors"
@@ -290,7 +290,7 @@ export default function CalloutTaskModal({
       case 'ppm': return 'text-blue-400 bg-blue-500/20'
       case 'reactive': return 'text-rose-400 bg-rose-500/20'
       case 'warranty': return 'text-green-400 bg-green-500/20'
-      default: return 'text-neutral-400 bg-neutral-500/20'
+      default: return 'text-theme-tertiary bg-neutral-500/20'
     }
   }
 
@@ -309,12 +309,12 @@ export default function CalloutTaskModal({
               <Wrench className="w-5 h-5 text-rose-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">Callout Follow-up</h2>
+              <h2 className="text-xl font-bold text-theme-primary">Callout Follow-up</h2>
               <div className="flex items-center gap-2 mt-1">
                 <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${getCalloutTypeColor(callout?.callout_type)}`}>
                   {callout?.callout_type?.toUpperCase()}
                 </span>
-                <span className="text-sm text-neutral-400">
+                <span className="text-sm text-theme-tertiary">
                   {daysSinceCreated} days ago
                 </span>
               </div>
@@ -325,7 +325,7 @@ export default function CalloutTaskModal({
             disabled={submitting}
             className="p-2 hover:bg-white/[0.06] rounded-lg transition-colors disabled:opacity-50"
           >
-            <X className="w-5 h-5 text-neutral-400" />
+            <X className="w-5 h-5 text-theme-tertiary" />
           </button>
         </div>
 
@@ -344,10 +344,10 @@ export default function CalloutTaskModal({
               {/* Asset */}
               {asset && (
                 <div className="col-span-2">
-                  <div className="text-xs text-neutral-500 mb-1">Asset</div>
-                  <div className="text-white font-medium">{asset.name}</div>
+                  <div className="text-xs text-theme-tertiary mb-1">Asset</div>
+                  <div className="text-theme-primary font-medium">{asset.name}</div>
                   {asset.serial_number && (
-                    <div className="text-sm text-neutral-400">S/N: {asset.serial_number}</div>
+                    <div className="text-sm text-theme-tertiary">S/N: {asset.serial_number}</div>
                   )}
                 </div>
               )}
@@ -355,29 +355,29 @@ export default function CalloutTaskModal({
               {/* Fault Description */}
               {callout?.fault_description && (
                 <div className="col-span-2">
-                  <div className="text-xs text-neutral-500 mb-1">Fault Description</div>
-                  <div className="text-white text-sm">{callout.fault_description}</div>
+                  <div className="text-xs text-theme-tertiary mb-1">Fault Description</div>
+                  <div className="text-theme-primary text-sm">{callout.fault_description}</div>
                 </div>
               )}
 
               {/* Contractor */}
               {contractor && (
                 <div className="col-span-2 pt-3 border-t border-white/[0.06]">
-                  <div className="text-xs text-neutral-500 mb-2">Contractor</div>
+                  <div className="text-xs text-theme-tertiary mb-2">Contractor</div>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500 to-[#D37E91]/80 flex items-center justify-center text-white font-semibold">
                       {contractor.name?.charAt(0) || 'C'}
                     </div>
                     <div>
-                      <div className="text-white font-medium">{contractor.name}</div>
+                      <div className="text-theme-primary font-medium">{contractor.name}</div>
                       {contractor.contact_name && (
-                        <div className="text-sm text-neutral-400">{contractor.contact_name}</div>
+                        <div className="text-sm text-theme-tertiary">{contractor.contact_name}</div>
                       )}
                     </div>
                     {contractor.phone && (
                       <a
                         href={`tel:${contractor.phone}`}
-                        className="ml-auto flex items-center gap-2 px-3 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg text-sm text-white transition-colors"
+                        className="ml-auto flex items-center gap-2 px-3 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg text-sm text-theme-primary transition-colors"
                       >
                         <Phone className="w-4 h-4" />
                         Call
@@ -389,15 +389,15 @@ export default function CalloutTaskModal({
 
               {/* Created */}
               <div>
-                <div className="text-xs text-neutral-500 mb-1">Created</div>
-                <div className="text-white text-sm">
+                <div className="text-xs text-theme-tertiary mb-1">Created</div>
+                <div className="text-theme-primary text-sm">
                   {callout?.created_at ? new Date(callout.created_at).toLocaleDateString() : 'Unknown'}
                 </div>
               </div>
 
               {/* Current Status */}
               <div>
-                <div className="text-xs text-neutral-500 mb-1">Current Status</div>
+                <div className="text-xs text-theme-tertiary mb-1">Current Status</div>
                 <div className={`text-sm font-medium ${callout?.status === 'open' ? 'text-amber-400' : 'text-green-400'}`}>
                   {callout?.status === 'open' ? 'Open' : 'Closed'}
                 </div>
@@ -407,7 +407,7 @@ export default function CalloutTaskModal({
 
           {/* Status Update */}
           <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06]">
-            <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+            <h3 className="text-theme-primary font-semibold mb-4 flex items-center gap-2">
               <Clock className="w-4 h-4 text-rose-400" />
               Update Status
             </h3>
@@ -437,7 +437,7 @@ export default function CalloutTaskModal({
                         {option.label}
                       </span>
                     </div>
-                    <p className="text-sm text-neutral-400 mt-1">{option.description}</p>
+                    <p className="text-sm text-theme-tertiary mt-1">{option.description}</p>
                   </div>
                 </label>
               ))}
@@ -447,7 +447,7 @@ export default function CalloutTaskModal({
           {/* Repair Summary (for completed status) */}
           {selectedStatus === 'completed' && (
             <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06]">
-              <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+              <h3 className="text-theme-primary font-semibold mb-3 flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-green-400" />
                 Repair Summary
               </h3>
@@ -457,39 +457,39 @@ export default function CalloutTaskModal({
                 placeholder="Describe the work completed..."
                 rows={3}
                 disabled={submitting}
-                className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
+                className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
               />
             </div>
           )}
 
           {/* Notes & Document Upload */}
           <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06]">
-            <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-neutral-400" />
+            <h3 className="text-theme-primary font-semibold mb-3 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-theme-tertiary" />
               Notes & Documents
             </h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-neutral-400 mb-2">Update Notes (Optional)</label>
+                <label className="block text-sm text-theme-tertiary mb-2">Update Notes (Optional)</label>
                 <textarea
                   value={updateNotes}
                   onChange={(e) => setUpdateNotes(e.target.value)}
                   placeholder="Add any notes about this update..."
                   rows={2}
                   disabled={submitting}
-                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 resize-none"
+                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-neutral-400 mb-2">Upload Worksheet/Document (Optional)</label>
+                <label className="block text-sm text-theme-tertiary mb-2">Upload Worksheet/Document (Optional)</label>
                 <input
                   type="file"
                   onChange={handleFileSelect}
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                   disabled={submitting}
-                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
                 {selectedFile && (
                   <div className="mt-2 text-sm text-green-400">
@@ -525,7 +525,7 @@ export default function CalloutTaskModal({
           </button>
 
           {selectedStatus !== 'completed' && selectedStatus !== 'cancelled' && (
-            <p className="text-xs text-neutral-500 text-center">
+            <p className="text-xs text-theme-tertiary text-center">
               Task will remain open until callout is marked as Completed or Cancelled
             </p>
           )}
@@ -536,7 +536,7 @@ export default function CalloutTaskModal({
           <button
             onClick={onClose}
             disabled={submitting}
-            className="px-4 py-2 text-sm font-medium text-neutral-400 hover:text-white hover:bg-white/[0.06] rounded-lg transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-theme-tertiary hover:text-white hover:bg-white/[0.06] rounded-lg transition-colors disabled:opacity-50"
           >
             Cancel
           </button>

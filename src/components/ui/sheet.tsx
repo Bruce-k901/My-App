@@ -48,16 +48,16 @@ const SheetContent = React.forwardRef<
         "fixed z-50 gap-4 bg-white dark:bg-[#0B0D13] p-0 shadow-lg",
         "transition-all duration-500 ease-out",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
-        side === "right" && "inset-y-0 right-0 h-full border-l border-gray-200 dark:border-white/[0.1] data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:rounded-l-xl",
-        side === "left" && "inset-y-0 left-0 h-full border-r border-gray-200 dark:border-white/[0.1] data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:rounded-r-xl",
-        side === "top" && "inset-x-0 top-0 border-b border-gray-200 dark:border-white/[0.1] data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
-        side === "bottom" && "inset-x-0 bottom-0 border-t border-gray-200 dark:border-white/[0.1] data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+        side === "right" && "inset-y-0 right-0 h-full border-l border-theme data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:rounded-l-xl",
+        side === "left" && "inset-y-0 left-0 h-full border-r border-theme data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:rounded-r-xl",
+        side === "top" && "inset-x-0 top-0 border-b border-theme data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
+        side === "bottom" && "inset-x-0 bottom-0 border-t border-theme data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
         className
       )}
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-lg p-2 text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-[#0B0D13] disabled:pointer-events-none">
+      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-lg p-2 text-theme-secondary hover:text-theme-primary hover:bg-theme-muted transition-colors focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-[#0B0D13] disabled:pointer-events-none">
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
@@ -100,7 +100,7 @@ const SheetTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn("text-lg font-semibold text-gray-900 dark:text-white", className)}
+    className={cn("text-lg font-semibold text-theme-primary", className)}
     {...props}
   />
 ))
@@ -112,7 +112,7 @@ const SheetDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn("text-sm text-gray-600 dark:text-white/60", className)}
+    className={cn("text-sm text-theme-secondary", className)}
     {...props}
   />
 ))

@@ -23,11 +23,11 @@ export function AlertSettingsCard() {
 
   return (
     <div className="bg-white/[0.03] dark:bg-white/[0.03] border border-neutral-200 dark:border-white/[0.06] rounded-xl p-6">
-      <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2 flex items-center gap-2">
+      <h2 className="text-xl font-semibold text-theme-primary mb-2 flex items-center gap-2">
         <Bell className="w-5 h-5 text-[#D37E91]" />
         In-App Alerts
       </h2>
-      <p className="text-sm text-neutral-500 dark:text-white/50 mb-6">
+      <p className="text-sm text-theme-tertiary/50 mb-6">
         Configure sound and vibration alerts when the app is open.
         <span className="block mt-1 text-amber-600 dark:text-amber-400 text-xs">
           Note: Vibration only works on Android devices - iOS does not support web vibration.
@@ -40,8 +40,8 @@ export function AlertSettingsCard() {
           <div className="flex items-start gap-3">
             <Volume2 className="w-5 h-5 text-emerald-500 mt-0.5" />
             <div className="flex-1">
-              <p className="font-medium text-neutral-900 dark:text-white">Sound Alerts</p>
-              <p className="text-sm text-neutral-500 dark:text-white/60 mt-1">
+              <p className="font-medium text-theme-primary">Sound Alerts</p>
+              <p className="text-sm text-theme-tertiary mt-1">
                 Play sounds for tasks and messages
               </p>
             </div>
@@ -57,8 +57,8 @@ export function AlertSettingsCard() {
           <div className="flex items-start gap-3">
             <Vibrate className="w-5 h-5 text-blue-500 mt-0.5" />
             <div className="flex-1">
-              <p className="font-medium text-neutral-900 dark:text-white">Vibration</p>
-              <p className="text-sm text-neutral-500 dark:text-white/60 mt-1">
+              <p className="font-medium text-theme-primary">Vibration</p>
+              <p className="text-sm text-theme-tertiary mt-1">
                 Vibrate on alerts (Android only)
               </p>
             </div>
@@ -74,8 +74,8 @@ export function AlertSettingsCard() {
           <div className="flex items-start gap-3">
             <Clock className="w-5 h-5 text-amber-500 mt-0.5" />
             <div className="flex-1">
-              <p className="font-medium text-neutral-900 dark:text-white">Task Reminders</p>
-              <p className="text-sm text-neutral-500 dark:text-white/60 mt-1">
+              <p className="font-medium text-theme-primary">Task Reminders</p>
+              <p className="text-sm text-theme-tertiary mt-1">
                 Alert when tasks become due or overdue
               </p>
             </div>
@@ -91,8 +91,8 @@ export function AlertSettingsCard() {
           <div className="flex items-start gap-3">
             <MessageSquare className="w-5 h-5 text-[#D37E91] mt-0.5" />
             <div className="flex-1">
-              <p className="font-medium text-neutral-900 dark:text-white">Message Alerts</p>
-              <p className="text-sm text-neutral-500 dark:text-white/60 mt-1">
+              <p className="font-medium text-theme-primary">Message Alerts</p>
+              <p className="text-sm text-theme-tertiary mt-1">
                 Alert for new messages (Msgly)
               </p>
             </div>
@@ -104,7 +104,7 @@ export function AlertSettingsCard() {
         </div>
       </div>
 
-      <p className="text-xs text-neutral-400 dark:text-white/40 mt-4">
+      <p className="text-xs text-theme-tertiary mt-4">
         Settings are saved automatically and apply immediately.
       </p>
     </div>

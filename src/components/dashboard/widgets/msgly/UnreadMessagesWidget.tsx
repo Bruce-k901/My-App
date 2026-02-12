@@ -31,12 +31,12 @@ export default function UnreadMessagesWidget({ companyId, siteId }: WidgetProps)
             'text-4xl font-bold',
             unreadCount > 0
               ? 'text-amber-600 dark:text-amber-400'
-              : 'text-[rgb(var(--text-tertiary))] dark:text-white/40'
+              : 'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'
           )}
         >
           {unreadCount}
         </div>
-        <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mt-1">
+        <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mt-1">
           {unreadCount === 1 ? 'unread message' : 'unread messages'}
         </p>
 
@@ -51,7 +51,7 @@ export default function UnreadMessagesWidget({ companyId, siteId }: WidgetProps)
           </button>
           <button
             onClick={() => setMessagingOpen(true)}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-white/5 text-[rgb(var(--text-secondary))] dark:text-white/60 text-xs font-medium hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-white/5 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-xs font-medium hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
           >
             <Send className="w-3 h-3" />
             New Message

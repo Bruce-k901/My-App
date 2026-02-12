@@ -36,8 +36,8 @@ function getCardBorderClass(summary: SiteSummary): string {
 }
 
 function getScoreColor(score: number | null): string {
-  if (score == null) return 'text-gray-400 dark:text-white/30'
-  if (score >= 80) return 'text-emerald-600 dark:text-emerald-400'
+  if (score == null) return 'text-theme-tertiary/30'
+  if (score >= 80) return 'text-module-fg'
   if (score >= 50) return 'text-amber-600 dark:text-amber-400'
   return 'text-red-600 dark:text-red-400'
 }
@@ -140,30 +140,30 @@ export function AreaManagerModal({ open, onClose, areaId, areaName, companyId }:
             <div className="flex-1 overflow-y-auto space-y-4 pr-1">
               {/* Area-level summary */}
               <div className="grid grid-cols-4 gap-3">
-                <div className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-center">
+                <div className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-center">
                   <div className={`text-2xl font-bold ${getScoreColor(avgScore)}`}>
                     {avgScore != null ? `${Math.round(avgScore)}%` : '—'}
                   </div>
-                  <div className="text-[10px] text-gray-500 dark:text-white/40 mt-1">Avg Score</div>
+                  <div className="text-[10px] text-theme-tertiary mt-1">Avg Score</div>
                 </div>
-                <div className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-center">
+                <div className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-center">
                   <div className="text-2xl font-bold text-red-600 dark:text-red-400">{totalCritical}</div>
-                  <div className="text-[10px] text-gray-500 dark:text-white/40 mt-1">Critical</div>
+                  <div className="text-[10px] text-theme-tertiary mt-1">Critical</div>
                 </div>
-                <div className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-center">
+                <div className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-center">
                   <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{totalMedium}</div>
-                  <div className="text-[10px] text-gray-500 dark:text-white/40 mt-1">Medium</div>
+                  <div className="text-[10px] text-theme-tertiary mt-1">Medium</div>
                 </div>
-                <div className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-center">
-                  <div className="text-2xl font-bold text-gray-600 dark:text-gray-400">{totalLow}</div>
-                  <div className="text-[10px] text-gray-500 dark:text-white/40 mt-1">Low</div>
+                <div className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-center">
+                  <div className="text-2xl font-bold text-theme-secondary">{totalLow}</div>
+                  <div className="text-[10px] text-theme-tertiary mt-1">Low</div>
                 </div>
               </div>
 
               {/* Overall progress */}
               {totalItems > 0 && (
                 <div className="flex items-center gap-3">
-                  <span className="text-xs text-gray-500 dark:text-white/40">{totalResolved}/{totalItems} resolved</span>
+                  <span className="text-xs text-theme-tertiary">{totalResolved}/{totalItems} resolved</span>
                   <div className="flex-1">
                     <Progress
                       value={Math.round((totalResolved / totalItems) * 100)}
@@ -175,7 +175,7 @@ export function AreaManagerModal({ open, onClose, areaId, areaName, companyId }:
 
               {/* Site cards */}
               <div className="space-y-3">
-                <h3 className="text-sm font-medium text-gray-700 dark:text-white/60">{sites.length} Sites</h3>
+                <h3 className="text-sm font-medium text-theme-secondary/60">{sites.length} Sites</h3>
                 {sites.map(site => {
                   const sitePct = site.totalItems > 0 ? Math.round((site.completedItems / site.totalItems) * 100) : 0
                   return (
@@ -186,9 +186,9 @@ export function AreaManagerModal({ open, onClose, areaId, areaName, companyId }:
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <h4 className="text-sm font-medium text-gray-900 dark:text-white">{site.siteName}</h4>
+                          <h4 className="text-sm font-medium text-theme-primary">{site.siteName}</h4>
                           {site.managerName && (
-                            <p className="text-[10px] text-gray-500 dark:text-white/40">Manager: {site.managerName}</p>
+                            <p className="text-[10px] text-theme-tertiary">Manager: {site.managerName}</p>
                           )}
                         </div>
                         <span className={`text-lg font-bold ${getScoreColor(site.healthScore)}`}>
@@ -204,16 +204,16 @@ export function AreaManagerModal({ open, onClose, areaId, areaName, companyId }:
                           <span className="text-amber-600 dark:text-amber-400 font-medium">{site.mediumCount} medium</span>
                         )}
                         {site.lowCount > 0 && (
-                          <span className="text-gray-500 dark:text-gray-400">{site.lowCount} low</span>
+                          <span className="text-theme-tertiary">{site.lowCount} low</span>
                         )}
-                        <span className="ml-auto text-gray-400 dark:text-white/30">{sitePct}% resolved</span>
+                        <span className="ml-auto text-theme-tertiary/30">{sitePct}% resolved</span>
                       </div>
                     </button>
                   )
                 })}
 
                 {sites.length === 0 && (
-                  <div className="text-center py-8 text-gray-400 dark:text-white/30">
+                  <div className="text-center py-8 text-theme-tertiary/30">
                     No active sites in this area
                   </div>
                 )}

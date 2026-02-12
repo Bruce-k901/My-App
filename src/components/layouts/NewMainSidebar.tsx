@@ -485,10 +485,10 @@ const directLinks: SidebarLink[] = [
         <aside className="fixed left-0 top-0 h-screen w-64 bg-[#110F0D] border-r border-white/[0.1] flex flex-col z-50 lg:hidden overflow-y-auto overflow-x-hidden" suppressHydrationWarning>
           {/* Mobile Header */}
           <div className="flex items-center justify-between p-4 border-b border-white/[0.1]">
-            <h2 className="text-lg font-semibold text-white">Menu</h2>
+            <h2 className="text-lg font-semibold text-theme-primary">Menu</h2>
             <button
               onClick={onMobileClose}
-              className="p-2 rounded-lg hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors"
+              className="p-2 rounded-lg hover:bg-white/[0.08] text-theme-tertiary hover:text-white transition-colors"
               aria-label="Close menu"
             >
               <X className="w-5 h-5" />
@@ -508,7 +508,7 @@ const directLinks: SidebarLink[] = [
                 className={
                   pathname === "/dashboard/todays_tasks" || pathname.startsWith("/dashboard/todays_tasks")
                     ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-module-fg/25 text-module-fg font-medium"
-                    : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
+                    : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-theme-secondary hover:text-white hover:bg-white/[0.08]"
                 }
               >
                 <CheckSquare size={20} />
@@ -520,7 +520,7 @@ const directLinks: SidebarLink[] = [
                 className={
                   pathname === "/dashboard/incidents" || pathname.startsWith("/dashboard/incidents")
                     ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-module-fg/25 text-module-fg font-medium"
-                    : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
+                    : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-theme-secondary hover:text-white hover:bg-white/[0.08]"
                 }
               >
                 <AlertTriangle size={20} />
@@ -532,7 +532,7 @@ const directLinks: SidebarLink[] = [
                 className={
                   pathname === "/dashboard/logs/attendance" || pathname.startsWith("/dashboard/logs/attendance")
                     ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-module-fg/25 text-module-fg font-medium"
-                    : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
+                    : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-theme-secondary hover:text-white hover:bg-white/[0.08]"
                 }
               >
                 <Clock size={20} />
@@ -592,7 +592,7 @@ const directLinks: SidebarLink[] = [
                         className={
                           isActive
                             ? "block px-4 py-2.5 rounded-lg text-sm transition-colors cursor-pointer bg-module-fg/25 text-module-fg font-medium"
-                            : "block px-4 py-2.5 rounded-lg text-sm transition-colors cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
+                            : "block px-4 py-2.5 rounded-lg text-sm transition-colors cursor-pointer text-theme-secondary hover:text-white hover:bg-white/[0.08]"
                         }
                       >
                         {item.label}
@@ -684,7 +684,7 @@ function SidebarDirectLink({
   // CRITICAL: Must use static string, not template literal, to prevent hydration mismatch
   const staticClassName = isActive
     ? "relative group flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer bg-module-fg/20 text-module-fg shadow-[0_0_12px_rgb(var(--module-fg)/0.4)] border border-module-fg/30"
-    : "relative group flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white hover:bg-module-fg/[0.08] hover:shadow-[0_0_8px_rgb(var(--module-fg)/0.2)]";
+    : "relative group flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] hover:bg-module-fg/[0.08] hover:shadow-[0_0_8px_rgb(var(--module-fg)/0.2)]";
 
   if (onClick) {
     return (
@@ -768,7 +768,7 @@ function SidebarSectionItem({
   // Use static className to prevent hydration mismatch
   const buttonClassName = (isActive || isHovered)
     ? "relative flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer bg-module-fg/20 text-module-fg border border-module-fg/30 shadow-[0_0_12px_rgb(var(--module-fg)/0.4)]"
-    : "relative flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white hover:bg-module-fg/[0.08] hover:shadow-[0_0_8px_rgb(var(--module-fg)/0.2)]";
+    : "relative flex items-center justify-center w-14 h-14 rounded-xl flex-shrink-0 transition-all duration-200 cursor-pointer text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] hover:bg-module-fg/[0.08] hover:shadow-[0_0_8px_rgb(var(--module-fg)/0.2)]";
   
   return (
     <div
@@ -803,7 +803,7 @@ function MobileSidebarLink({
   // Use static className to prevent hydration mismatch
   const linkClassName = isActive
     ? "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer bg-module-fg/25 text-module-fg font-medium"
-    : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]";
+    : "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors cursor-pointer text-theme-secondary hover:text-white hover:bg-white/[0.08]";
 
   if (preventNavigation) {
     return (
@@ -889,7 +889,7 @@ function SidebarPopup({
                 className={
                   isActive
                     ? "block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer bg-module-fg/20 text-module-fg font-medium border-l-2 border-l-module-fg"
-                    : "block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer text-[rgb(var(--text-secondary))] dark:text-white/80 hover:text-[rgb(var(--text-primary))] dark:hover:text-white hover:bg-[rgb(var(--surface))] dark:hover:bg-white/[0.08] hover:pl-5"
+                    : "block px-4 py-2.5 rounded-lg text-sm transition-all duration-150 cursor-pointer text-[rgb(var(--text-secondary))] dark:text-theme-secondary hover:text-[rgb(var(--text-primary))] hover:bg-[rgb(var(--surface))] dark:hover:bg-white/[0.08] hover:pl-5"
                 }
               >
                 {item.label}

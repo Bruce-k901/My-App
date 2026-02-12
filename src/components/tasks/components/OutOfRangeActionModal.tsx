@@ -55,11 +55,11 @@ export function OutOfRangeActionModal({
         <div className="p-6 border-b border-white/[0.1]">
           <div className="flex items-center gap-3 mb-2">
             <AlertTriangle className="w-6 h-6 text-red-500" />
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="text-xl font-semibold text-theme-primary">
               Temperature Out of Range
             </h2>
           </div>
-          <p className="text-sm text-neutral-400">
+          <p className="text-sm text-theme-tertiary">
             Please select an action for each out-of-range temperature reading
           </p>
         </div>
@@ -72,10 +72,10 @@ export function OutOfRangeActionModal({
             return (
               <div key={asset.assetId} className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-4">
                 <div className="mb-3">
-                  <h3 className="text-sm font-semibold text-white mb-1">
+                  <h3 className="text-sm font-semibold text-theme-primary mb-1">
                     {asset.assetName}
                   </h3>
-                  <p className="text-xs text-neutral-400">
+                  <p className="text-xs text-theme-tertiary">
                     Recorded: <span className="text-red-400 font-medium">{asset.temperature}°C</span> | Expected: {asset.min}°C to {asset.max}°C
                   </p>
                 </div>
@@ -88,7 +88,7 @@ export function OutOfRangeActionModal({
                     className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
                       selectedAction === 'monitor'
                         ? 'bg-blue-500/20 border-blue-500 text-blue-400'
-                        : 'bg-white/[0.03] border-white/[0.1] text-neutral-300 hover:border-white/[0.2]'
+                        : 'bg-white/[0.03] border-white/[0.1] text-theme-tertiary hover:border-white/[0.2]'
                     }`}
                   >
                     <Clock className="w-5 h-5 flex-shrink-0" />
@@ -105,7 +105,7 @@ export function OutOfRangeActionModal({
                     className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
                       selectedAction === 'callout'
                         ? 'bg-red-500/20 border-red-500 text-red-400'
-                        : 'bg-white/[0.03] border-white/[0.1] text-neutral-300 hover:border-white/[0.2]'
+                        : 'bg-white/[0.03] border-white/[0.1] text-theme-tertiary hover:border-white/[0.2]'
                     }`}
                   >
                     <Phone className="w-5 h-5 flex-shrink-0" />
@@ -125,7 +125,7 @@ export function OutOfRangeActionModal({
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 text-sm text-neutral-400 hover:text-white transition-colors"
+            className="px-4 py-2 text-sm text-theme-tertiary hover:text-white transition-colors"
           >
             Cancel
           </button>
@@ -135,8 +135,8 @@ export function OutOfRangeActionModal({
             disabled={!allActionsSelected}
             className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
               allActionsSelected
-                ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                ? 'bg-module-fg hover:bg-module-fg/90 text-white'
+                : 'bg-gray-700 text-theme-tertiary cursor-not-allowed'
             }`}
           >
             Continue

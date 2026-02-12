@@ -212,19 +212,19 @@ export function ReviewPortal({ review, currentUserId, isEmployee, isManager }: R
   return (
     <div className="space-y-6">
       {/* Header with Tabs */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg">
-        <div className="flex items-center justify-between p-4 border-b border-white/[0.06]">
+      <div className="bg-theme-surface border border-theme rounded-lg">
+        <div className="flex items-center justify-between p-4 border-b border-theme">
           <div>
-            <h1 className="text-2xl font-bold text-white">{review.template?.name || 'Review'}</h1>
-            <p className="text-gray-500 dark:text-white/60 text-sm mt-1">
+            <h1 className="text-2xl font-bold text-theme-primary">{review.template?.name || 'Review'}</h1>
+            <p className="text-theme-tertiary text-sm mt-1">
               {review.employee?.full_name} • {new Date(review.created_at).toLocaleDateString()}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <span className={`px-3 py-1 rounded text-sm ${
-              review.status === 'completed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
-              review.status === 'in_meeting' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
-              'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+              review.status === 'completed' ? 'bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/30' :
+              review.status === 'in_meeting' ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30' :
+              'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-500/30'
             }`}>
               {review.status.replace('_', ' ')}
             </span>
@@ -232,7 +232,7 @@ export function ReviewPortal({ review, currentUserId, isEmployee, isManager }: R
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-white/[0.06]">
+        <div className="flex border-b border-theme">
           {[
             { id: 'form', label: 'Review Form', icon: FileText },
             { id: 'notes', label: 'Notes', icon: MessageSquare },
@@ -244,8 +244,8 @@ export function ReviewPortal({ review, currentUserId, isEmployee, isManager }: R
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-colors border-b-2 ${
                 activeTab === tab.id
-                  ? 'border-[#D37E91] text-[#D37E91]'
-                  : 'border-transparent text-gray-500 dark:text-white/60 hover:text-white'
+                  ? 'border-module-fg text-module-fg'
+                  : 'border-transparent text-theme-tertiary hover:text-theme-primary'
               }`}
             >
               <tab.icon className="h-4 w-4" />
@@ -264,8 +264,8 @@ export function ReviewPortal({ review, currentUserId, isEmployee, isManager }: R
               onClick={() => setViewMode('edit')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 viewMode === 'edit' 
-                  ? 'bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]' 
-                  : 'text-gray-500 dark:text-white/60 hover:text-white border border-white/[0.06]'
+                  ? 'bg-module-fg/20 text-module-fg border border-module-fg' 
+                  : 'text-theme-tertiary hover:text-theme-primary border border-theme'
               }`}
             >
               Edit Responses
@@ -274,8 +274,8 @@ export function ReviewPortal({ review, currentUserId, isEmployee, isManager }: R
               onClick={() => setViewMode('compare')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 viewMode === 'compare' 
-                  ? 'bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]' 
-                  : 'text-gray-500 dark:text-white/60 hover:text-white border border-white/[0.06]'
+                  ? 'bg-module-fg/20 text-module-fg border border-module-fg' 
+                  : 'text-theme-tertiary hover:text-theme-primary border border-theme'
               }`}
             >
               Compare & Discuss
@@ -357,11 +357,11 @@ function NotesTab({
     <div className="space-y-6">
       {/* Add Note Form */}
       {canEdit && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Add Note</h3>
+        <div className="bg-theme-surface border border-theme rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">Add Note</h3>
           <div className="space-y-4">
             <div>
-              <Label className="text-white mb-2">Note Phase</Label>
+              <Label className="text-theme-primary mb-2">Note Phase</Label>
               <div className="flex gap-2">
                 {(['before', 'during', 'after'] as NotePhase[]).map((phase) => (
                   <button
@@ -369,8 +369,8 @@ function NotesTab({
                     onClick={() => setNotePhase(phase)}
                     className={`px-4 py-2 rounded-lg text-sm transition-colors ${
                       notePhase === phase
-                        ? 'bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]'
-                        : 'bg-white/[0.05] text-gray-500 dark:text-white/60 border border-white/[0.06] hover:text-white'
+                        ? 'bg-module-fg/20 text-module-fg border border-module-fg'
+                        : 'bg-white/[0.05] text-theme-tertiary border border-theme hover:text-theme-primary'
                     }`}
                   >
                     {phase.charAt(0).toUpperCase() + phase.slice(1)} Review
@@ -379,19 +379,19 @@ function NotesTab({
               </div>
             </div>
             <div>
-              <Label className="text-white mb-2">Note</Label>
+              <Label className="text-theme-primary mb-2">Note</Label>
               <textarea
                 value={newNoteText}
                 onChange={(e) => setNewNoteText(e.target.value)}
                 placeholder="Add your note here..."
-                className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#D37E91] resize-none"
+                className="w-full px-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-theme-tertiary focus:outline-none focus:border-module-fg resize-none"
                 rows={4}
               />
             </div>
             <Button
               onClick={onAddNote}
               disabled={isPending || !newNoteText.trim()}
-              className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
+              className="bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow"
             >
               <Send className="h-4 w-4 mr-2" />
               {isPending ? 'Adding...' : 'Add Note'}
@@ -402,26 +402,26 @@ function NotesTab({
 
       {/* Notes by Phase */}
       {(['before', 'during', 'after'] as NotePhase[]).map((phase) => (
-        <div key={phase} className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">
+        <div key={phase} className="bg-theme-surface border border-theme rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">
             {phase.charAt(0).toUpperCase() + phase.slice(1)} Review Notes ({notes[phase].length})
           </h3>
           {notes[phase].length === 0 ? (
-            <p className="text-gray-500 dark:text-white/60 text-sm">No notes for this phase</p>
+            <p className="text-theme-tertiary text-sm">No notes for this phase</p>
           ) : (
             <div className="space-y-3">
               {notes[phase].map((note) => (
-                <div key={note.id} className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-4">
+                <div key={note.id} className="bg-theme-hover border border-theme rounded-lg p-4">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-gray-500 dark:text-white/60" />
-                      <span className="text-sm text-neutral-300">{note.author?.full_name || 'Unknown'}</span>
-                      <span className="text-xs text-neutral-500">
+                      <User className="h-4 w-4 text-theme-tertiary" />
+                      <span className="text-sm text-theme-tertiary">{note.author?.full_name || 'Unknown'}</span>
+                      <span className="text-xs text-theme-tertiary">
                         {new Date(note.created_at).toLocaleString()}
                       </span>
                     </div>
                   </div>
-                  <p className="text-white whitespace-pre-wrap">{note.note_text || note.content}</p>
+                  <p className="text-theme-primary whitespace-pre-wrap">{note.note_text || note.content}</p>
                 </div>
               ))}
             </div>
@@ -459,7 +459,7 @@ function FollowUpsTab({
         <div className="flex justify-end">
           <Button
             onClick={() => setShowForm(!showForm)}
-            className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
+            className="bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow"
           >
             <Plus className="h-4 w-4 mr-2" />
             Create Follow-up
@@ -468,16 +468,16 @@ function FollowUpsTab({
       )}
 
       {showForm && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6 space-y-4">
-          <h3 className="text-lg font-semibold text-white">Create Follow-up</h3>
+        <div className="bg-theme-surface border border-theme rounded-lg p-6 space-y-4">
+          <h3 className="text-lg font-semibold text-theme-primary">Create Follow-up</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label className="text-white">Type</Label>
+              <Label className="text-theme-primary">Type</Label>
               <select
                 value={followUpData.type}
                 onChange={(e) => setFollowUpData({ ...followUpData, type: e.target.value })}
-                className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
+                className="w-full px-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-module-fg"
               >
                 <option value="action">Action Item</option>
                 <option value="training">Training</option>
@@ -490,11 +490,11 @@ function FollowUpsTab({
             </div>
 
             <div>
-              <Label className="text-white">Priority</Label>
+              <Label className="text-theme-primary">Priority</Label>
               <select
                 value={followUpData.priority}
                 onChange={(e) => setFollowUpData({ ...followUpData, priority: e.target.value })}
-                className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
+                className="w-full px-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-module-fg"
               >
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
@@ -505,7 +505,7 @@ function FollowUpsTab({
           </div>
 
           <div>
-            <Label className="text-white">Title *</Label>
+            <Label className="text-theme-primary">Title *</Label>
             <Input
               value={followUpData.title}
               onChange={(e) => setFollowUpData({ ...followUpData, title: e.target.value })}
@@ -514,18 +514,18 @@ function FollowUpsTab({
           </div>
 
           <div>
-            <Label className="text-white">Description</Label>
+            <Label className="text-theme-primary">Description</Label>
             <textarea
               value={followUpData.description}
               onChange={(e) => setFollowUpData({ ...followUpData, description: e.target.value })}
               placeholder="Describe the follow-up action..."
-              className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#D37E91] resize-none"
+              className="w-full px-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-theme-tertiary focus:outline-none focus:border-module-fg resize-none"
               rows={4}
             />
           </div>
 
           <div>
-            <Label className="text-white">Due Date *</Label>
+            <Label className="text-theme-primary">Due Date *</Label>
             <Input
               type="date"
               value={followUpData.due_date}
@@ -538,7 +538,7 @@ function FollowUpsTab({
             <Button
               onClick={followUpData.type === 'review' ? onScheduleReview : onCreateFollowUp}
               disabled={isPending}
-              className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
+              className="bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow"
             >
               {isPending ? 'Creating...' : 'Create Follow-up'}
             </Button>
@@ -563,32 +563,32 @@ function FollowUpsTab({
       )}
 
       {/* Existing Follow-ups */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">Follow-up Items</h3>
+      <div className="bg-theme-surface border border-theme rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-theme-primary mb-4">Follow-up Items</h3>
         {review.follow_ups && review.follow_ups.length > 0 ? (
           <div className="space-y-3">
             {review.follow_ups.map((followUp: any) => (
-              <div key={followUp.id} className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-4">
+              <div key={followUp.id} className="bg-theme-hover border border-theme rounded-lg p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    <h4 className="text-white font-medium">{followUp.title}</h4>
-                    <p className="text-sm text-gray-500 dark:text-white/60 mt-1">{followUp.description}</p>
+                    <h4 className="text-theme-primary font-medium">{followUp.title}</h4>
+                    <p className="text-sm text-theme-tertiary mt-1">{followUp.description}</p>
                   </div>
                   <span className={`px-2 py-1 rounded text-xs ${
-                    followUp.priority === 'urgent' ? 'bg-red-500/20 text-red-400' :
-                    followUp.priority === 'high' ? 'bg-orange-500/20 text-orange-400' :
-                    followUp.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                    'bg-blue-500/20 text-blue-400'
+                    followUp.priority === 'urgent' ? 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400' :
+                    followUp.priority === 'high' ? 'bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400' :
+                    followUp.priority === 'medium' ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400' :
+                    'bg-module-fg/20 text-module-fg'
                   }`}>
                     {followUp.priority}
                   </span>
                 </div>
-                <div className="flex items-center gap-4 text-xs text-neutral-500 mt-2">
+                <div className="flex items-center gap-4 text-xs text-theme-tertiary mt-2">
                   <span className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     Due: {new Date(followUp.due_date).toLocaleDateString()}
                   </span>
-                  <span className="px-2 py-0.5 bg-white/[0.05] rounded">
+                  <span className="px-2 py-0.5 bg-theme-button rounded">
                     {followUp.type}
                   </span>
                 </div>
@@ -596,7 +596,7 @@ function FollowUpsTab({
             ))}
           </div>
         ) : (
-          <p className="text-gray-500 dark:text-white/60 text-sm">No follow-up items yet</p>
+          <p className="text-theme-tertiary text-sm">No follow-up items yet</p>
         )}
       </div>
     </div>
@@ -605,13 +605,13 @@ function FollowUpsTab({
 
 function CalendarTab({ review }: { review: ReviewWithDetails }) {
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6 space-y-4">
-      <h3 className="text-lg font-semibold text-white mb-4">Review Calendar</h3>
+    <div className="bg-theme-surface border border-theme rounded-lg p-6 space-y-4">
+      <h3 className="text-lg font-semibold text-theme-primary mb-4">Review Calendar</h3>
       
       <div className="space-y-4">
-        <div className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-4">
-          <h4 className="text-white font-medium mb-2">Scheduled Date</h4>
-          <p className="text-neutral-300">
+        <div className="bg-theme-hover border border-theme rounded-lg p-4">
+          <h4 className="text-theme-primary font-medium mb-2">Scheduled Date</h4>
+          <p className="text-theme-tertiary">
             {review.schedule_id ? (
               <span>Review scheduled for {new Date(review.created_at).toLocaleDateString()}</span>
             ) : (
@@ -621,17 +621,17 @@ function CalendarTab({ review }: { review: ReviewWithDetails }) {
         </div>
 
         {review.meeting_scheduled_at && (
-          <div className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-4">
-            <h4 className="text-white font-medium mb-2">Meeting Scheduled</h4>
-            <p className="text-neutral-300">
+          <div className="bg-theme-hover border border-theme rounded-lg p-4">
+            <h4 className="text-theme-primary font-medium mb-2">Meeting Scheduled</h4>
+            <p className="text-theme-tertiary">
               {new Date(review.meeting_scheduled_at).toLocaleString()}
             </p>
           </div>
         )}
 
-        <div className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-4">
-          <h4 className="text-white font-medium mb-2">Calendar Integration</h4>
-          <p className="text-gray-500 dark:text-white/60 text-sm">
+        <div className="bg-theme-hover border border-theme rounded-lg p-4">
+          <h4 className="text-theme-primary font-medium mb-2">Calendar Integration</h4>
+          <p className="text-theme-tertiary text-sm">
             This review appears on the team calendar. All scheduled reviews and review meetings 
             are automatically added to the calendar for visibility across the team.
           </p>

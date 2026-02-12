@@ -329,7 +329,7 @@ export default function TrainingPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 dark:border-blue-500" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-module-fg" />
       </div>
     );
   }
@@ -339,13 +339,13 @@ export default function TrainingPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Training & Certifications</h1>
-          <p className="text-gray-600 dark:text-white/70">Track compliance and certification expiry</p>
+          <h1 className="text-2xl font-bold text-theme-primary">Training & Certifications</h1>
+          <p className="text-theme-secondary">Track compliance and certification expiry</p>
         </div>
         <div className="flex gap-3">
           <Link
             href="/dashboard/people/training/record"
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg border-0 shadow-[0_0_12px_rgba(59,130,246,0.4)] dark:shadow-[0_0_12px_rgba(59,130,246,0.5)] hover:shadow-[0_0_16px_rgba(59,130,246,0.6)] dark:hover:shadow-[0_0_16px_rgba(59,130,246,0.7)] transition-all duration-200 ease-in-out font-medium"
+            className="flex items-center gap-2 px-4 py-2 bg-module-fg hover:bg-module-fg/90 text-white rounded-lg border-0 shadow-module-glow hover:shadow-module-glow transition-all duration-200 ease-in-out font-medium"
           >
             <Plus className="w-5 h-5" />
             Record Training
@@ -356,31 +356,31 @@ export default function TrainingPage() {
       {/* Overview Stats */}
       {effectiveOverview && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-            <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
+ <div className="bg-theme-surface border border-theme rounded-lg p-4">
+            <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
               <Users className="w-4 h-4" />
               Total Staff
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">{effectiveOverview.total_employees}</p>
+            <p className="text-2xl font-bold text-theme-primary">{effectiveOverview.total_employees}</p>
           </div>
-          <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-            <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
+ <div className="bg-theme-surface border border-theme rounded-lg p-4">
+            <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
               <CheckCircle className="w-4 h-4" />
               Fully Compliant
             </div>
             <p className="text-2xl font-bold text-green-600 dark:text-green-400">{effectiveOverview.fully_compliant}</p>
           </div>
-          <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-            <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
+ <div className="bg-theme-surface border border-theme rounded-lg p-4">
+            <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
               <Clock className="w-4 h-4" />
               Expiring (30d)
             </div>
-            <p className={`text-2xl font-bold ${effectiveOverview.expiring_30_days > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-gray-900 dark:text-white'}`}>
+            <p className={`text-2xl font-bold ${effectiveOverview.expiring_30_days > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-theme-primary'}`}>
               {effectiveOverview.expiring_30_days}
             </p>
           </div>
-          <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-            <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
+ <div className="bg-theme-surface border border-theme rounded-lg p-4">
+            <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
               <AlertTriangle className="w-4 h-4" />
               Expired
             </div>
@@ -394,7 +394,7 @@ export default function TrainingPage() {
       {/* Certifications from Profile Data */}
       {certStats.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Certifications</h2>
+          <h2 className="text-lg font-semibold text-theme-primary mb-3">Certifications</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {certStats.map((cert) => {
               const CertIcon = cert.icon;
@@ -403,15 +403,15 @@ export default function TrainingPage() {
                 <Link
                   key={cert.key}
                   href={`/dashboard/training?highlight=${cert.key}`}
-                  className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-blue-300 dark:hover:border-blue-500/50 transition-colors"
+ className="bg-theme-surface border border-theme rounded-lg p-4 hover:border-module-fg/30 transition-colors"
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-${cert.color}-100 dark:bg-${cert.color}-500/20`}>
                       <CertIcon className={`w-5 h-5 text-${cert.color}-600 dark:text-${cert.color}-400`} />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">{cert.label}</p>
-                      <p className="text-xs text-gray-500 dark:text-white/50">{cert.total} staff</p>
+                      <p className="text-sm font-medium text-theme-primary">{cert.label}</p>
+                      <p className="text-xs text-theme-tertiary">{cert.total} staff</p>
                     </div>
                   </div>
 
@@ -430,14 +430,14 @@ export default function TrainingPage() {
                       </span>
                     )}
                     {cert.missing > 0 && (
-                      <span className="flex items-center gap-1 text-gray-500 dark:text-white/50">
+                      <span className="flex items-center gap-1 text-theme-tertiary">
                         <AlertTriangle className="w-3 h-3" /> {cert.missing}
                       </span>
                     )}
-                    <span className="ml-auto font-semibold text-gray-900 dark:text-white">{complianceRate}%</span>
+                    <span className="ml-auto font-semibold text-theme-primary">{complianceRate}%</span>
                   </div>
 
-                  <div className="mt-2 w-full bg-gray-200 dark:bg-white/10 rounded-full h-1.5">
+                  <div className="mt-2 w-full bg-theme-muted rounded-full h-1.5">
                     <div
                       className={`h-1.5 rounded-full transition-all ${
                         complianceRate >= 90 ? 'bg-green-500' : complianceRate >= 70 ? 'bg-amber-500' : 'bg-red-500'
@@ -463,8 +463,8 @@ export default function TrainingPage() {
             {expiring.slice(0, 5).map((item) => (
               <div key={item.record_id} className="flex items-center justify-between text-sm">
                 <div>
-                  <span className="text-gray-900 dark:text-white">{item.employee_name}</span>
-                  <span className="text-gray-600 dark:text-white/70"> - {item.course_name}</span>
+                  <span className="text-theme-primary">{item.employee_name}</span>
+                  <span className="text-theme-secondary"> - {item.course_name}</span>
                 </div>
                 <span className={item.is_expired ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}>
                   {item.is_expired 
@@ -486,13 +486,13 @@ export default function TrainingPage() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-white/50" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary" />
           <input
             type="text"
             placeholder="Search courses..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-blue-300 dark:border-blue-500/50 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+            className="w-full pl-10 pr-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-module-fg/40 focus:border-module-fg/50 transition-colors"
           />
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2">
@@ -502,8 +502,8 @@ export default function TrainingPage() {
               onClick={() => setSelectedCategory(cat)}
               className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
                 selectedCategory === cat 
-                  ? 'bg-blue-50 dark:bg-blue-500/20 border border-blue-500 dark:border-blue-500 text-blue-700 dark:text-blue-300' 
-                  : 'bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/70 hover:text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05]'
+                  ? 'bg-module-fg/10 border border-module-fg text-module-fg'
+                  : 'bg-theme-surface border border-theme text-theme-secondary hover:text-theme-primary hover:bg-theme-hover'
               }`}
             >
               {cat === 'all' ? 'All Categories' : cat}
@@ -518,23 +518,23 @@ export default function TrainingPage() {
           <Link
             key={course.course_id}
             href={`/dashboard/people/training/course/${course.course_id}`}
-            className="block bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-blue-300 dark:hover:border-blue-500/50 hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
+ className="block bg-theme-surface border border-theme rounded-lg p-4 hover:border-module-fg/30 hover:bg-theme-hover transition-colors"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                  course.is_mandatory ? 'bg-red-500/20 dark:bg-red-500/20' : 'bg-blue-500/10 dark:bg-blue-500/20'
+                  course.is_mandatory ? 'bg-red-500/20' : 'bg-module-fg/10'
                 }`}>
-                  <GraduationCap className={`w-6 h-6 ${course.is_mandatory ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`} />
+                  <GraduationCap className={`w-6 h-6 ${course.is_mandatory ? 'text-red-600 dark:text-red-400' : 'text-module-fg'}`} />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="text-gray-900 dark:text-white font-medium">{course.course_name}</p>
+                    <p className="text-theme-primary font-medium">{course.course_name}</p>
                     {course.is_mandatory && (
                       <span className="px-2 py-0.5 bg-red-500/20 dark:bg-red-500/20 text-red-700 dark:text-red-400 text-xs rounded font-medium">Required</span>
                     )}
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-white/70">
+                  <div className="flex items-center gap-3 text-sm text-theme-secondary">
                     <span>{course.course_code}</span>
                     <span>•</span>
                     <span>{course.category}</span>
@@ -547,19 +547,19 @@ export default function TrainingPage() {
                 <div className="hidden md:flex items-center gap-4 text-sm">
                   <div className="text-center">
                     <p className="text-green-600 dark:text-green-400 font-medium">{course.completed_valid}</p>
-                    <p className="text-gray-500 dark:text-white/50 text-xs">Valid</p>
+                    <p className="text-theme-tertiary text-xs">Valid</p>
                   </div>
                   <div className="text-center">
-                    <p className={`font-medium ${course.expiring_30_days > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-gray-500 dark:text-white/50'}`}>
+                    <p className={`font-medium ${course.expiring_30_days > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-theme-tertiary'}`}>
                       {course.expiring_30_days}
                     </p>
-                    <p className="text-gray-500 dark:text-white/50 text-xs">Expiring</p>
+                    <p className="text-theme-tertiary text-xs">Expiring</p>
                   </div>
                   <div className="text-center">
-                    <p className={`font-medium ${course.expired > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-white/50'}`}>
+                    <p className={`font-medium ${course.expired > 0 ? 'text-red-600 dark:text-red-400' : 'text-theme-tertiary'}`}>
                       {course.expired}
                     </p>
-                    <p className="text-gray-500 dark:text-white/50 text-xs">Expired</p>
+                    <p className="text-theme-tertiary text-xs">Expired</p>
                   </div>
                 </div>
                 
@@ -568,10 +568,10 @@ export default function TrainingPage() {
                   <p className={`text-lg font-bold ${getComplianceColor(course.compliance_percentage || 0)}`}>
                     {course.compliance_percentage || 0}%
                   </p>
-                  <p className="text-gray-500 dark:text-white/50 text-xs">Compliance</p>
+                  <p className="text-theme-tertiary text-xs">Compliance</p>
                 </div>
                 
-                <ChevronRight className="w-5 h-5 text-gray-500 dark:text-white/50" />
+                <ChevronRight className="w-5 h-5 text-theme-tertiary" />
               </div>
             </div>
           </Link>
@@ -579,17 +579,17 @@ export default function TrainingPage() {
       </div>
 
       {filteredStats.length === 0 && (
-        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-12 text-center">
-          <GraduationCap className="w-12 h-12 text-gray-500 dark:text-white/50 mx-auto mb-4" />
-          <p className="text-gray-900 dark:text-white font-medium">No training courses configured</p>
-          <p className="text-gray-600 dark:text-white/70 text-sm mt-1">
+ <div className="bg-theme-surface border border-theme rounded-lg p-12 text-center">
+          <GraduationCap className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
+          <p className="text-theme-primary font-medium">No training courses configured</p>
+          <p className="text-theme-secondary text-sm mt-1">
             {certStats.length > 0
               ? 'Certificate data is shown above from employee profiles. Add training courses to track course-level compliance.'
               : 'Try adjusting your filters or add training courses to your system.'}
           </p>
           <Link
             href="/dashboard/people/training/matrix"
-            className="inline-flex items-center gap-2 mt-4 px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            className="inline-flex items-center gap-2 mt-4 px-4 py-2 text-sm text-module-fg hover:underline"
           >
             View Compliance Matrix <ChevronRight className="w-4 h-4" />
           </Link>

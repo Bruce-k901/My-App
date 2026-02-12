@@ -80,7 +80,7 @@ export default function LibraryPage() {
       case 'template': return 'text-green-400 bg-green-500/10 border-green-500/20';
       case 'guide': return 'text-purple-400 bg-purple-500/10 border-purple-500/20';
       case 'reference': return 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20';
-      default: return 'text-gray-400 bg-gray-500/10 border-gray-500/20';
+      default: return 'text-theme-tertiary bg-theme-surface-elevated0/10 border-gray-500/20';
     }
   };
 
@@ -105,26 +105,26 @@ export default function LibraryPage() {
       {/* Page Header */}
       <div className="bg-gradient-to-r from-magenta-600/20 to-blue-600/20 rounded-2xl p-6 border border-magenta-500/30">
         <h1 className="text-2xl font-semibold mb-2">Library</h1>
-        <p className="text-neutral-300 text-sm">Reference materials, guides, and resources</p>
+        <p className="text-theme-tertiary text-sm">Reference materials, guides, and resources</p>
       </div>
 
       {/* Controls */}
       <div className="flex items-center gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-tertiary w-4 h-4" />
           <input
             type="text"
             placeholder="Search library..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+            className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
           />
         </div>
         
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+          className="px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
         >
           <option value="all">All Types</option>
           {types.map(type => (
@@ -135,7 +135,7 @@ export default function LibraryPage() {
         <select
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
-          className="px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+          className="px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
         >
           <option value="all">All Categories</option>
           {categories.map(category => (
@@ -143,7 +143,7 @@ export default function LibraryPage() {
           ))}
         </select>
 
-        <button className="flex items-center gap-2 px-4 py-2 bg-[#D37E91]/25 border border-[#D37E91]/40 rounded-lg text-[#D37E91] hover:bg-[#D37E91]/35 transition-colors">
+        <button className="flex items-center gap-2 px-4 py-2 bg-module-fg/[0.25] border border-module-fg/[0.40] rounded-lg text-module-fg hover:bg-module-fg/[0.35] transition-colors">
           <Plus className="w-4 h-4" />
           Add Item
         </button>
@@ -153,16 +153,16 @@ export default function LibraryPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
           <div className="col-span-full text-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91] mx-auto"></div>
-            <p className="text-gray-400 mt-2">Loading library items...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-module-fg mx-auto"></div>
+            <p className="text-theme-tertiary mt-2">Loading library items...</p>
           </div>
         ) : filteredItems.length === 0 ? (
           <div className="col-span-full text-center py-12">
-            <div className="w-16 h-16 bg-gray-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <BookOpen className="w-8 h-8 text-gray-400" />
+            <div className="w-16 h-16 bg-theme-surface-elevated0/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <BookOpen className="w-8 h-8 text-theme-tertiary" />
             </div>
-            <h3 className="text-lg font-medium text-white mb-2">No library items found</h3>
-            <p className="text-gray-400">Add your first library item to get started</p>
+            <h3 className="text-lg font-medium text-theme-primary mb-2">No library items found</h3>
+            <p className="text-theme-tertiary">Add your first library item to get started</p>
           </div>
         ) : (
           filteredItems.map((item) => (
@@ -174,24 +174,24 @@ export default function LibraryPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     {getTypeIcon(item.type)}
-                    <h3 className="text-lg font-medium text-white">{item.title}</h3>
+                    <h3 className="text-lg font-medium text-theme-primary">{item.title}</h3>
                     {item.is_favorite && (
                       <Star className="w-4 h-4 text-yellow-400 fill-current" />
                     )}
                   </div>
-                  <p className="text-gray-400 text-sm mb-3">{item.description}</p>
+                  <p className="text-theme-tertiary text-sm mb-3">{item.description}</p>
                   <div className="flex items-center gap-2 mb-3">
                     <span className={`px-2 py-1 text-xs rounded-full border ${getTypeColor(item.type)}`}>
                       {item.type}
                     </span>
-                    <span className="px-2 py-1 text-xs bg-gray-500/10 text-gray-400 rounded-full border border-gray-500/20">
+                    <span className="px-2 py-1 text-xs bg-theme-surface-elevated0/10 text-theme-tertiary rounded-full border border-gray-500/20">
                       {item.category}
                     </span>
                   </div>
                   {item.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-3">
                       {item.tags.map((tag, index) => (
-                        <span key={index} className="px-2 py-1 text-xs bg-[#D37E91]/15 text-[#D37E91] rounded-full border border-[#D37E91]/20">
+                        <span key={index} className="px-2 py-1 text-xs bg-module-fg/[0.15] text-module-fg rounded-full border border-module-fg/[0.20]">
                           <Tag className="w-3 h-3 inline mr-1" />
                           {tag}
                         </span>
@@ -205,7 +205,7 @@ export default function LibraryPage() {
                     className={`p-2 transition-colors ${
                       item.is_favorite 
                         ? 'text-yellow-400 hover:text-yellow-300' 
-                        : 'text-gray-400 hover:text-yellow-400'
+                        : 'text-theme-tertiary hover:text-yellow-400'
                     }`}
                     title={item.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
                   >
@@ -213,7 +213,7 @@ export default function LibraryPage() {
                   </button>
                   <button
                     onClick={() => handleDownload(item)}
-                    className="p-2 text-gray-400 hover:text-white transition-colors"
+                    className="p-2 text-theme-tertiary hover:text-white transition-colors"
                     title="Download"
                   >
                     <Download className="w-4 h-4" />
@@ -221,7 +221,7 @@ export default function LibraryPage() {
                 </div>
               </div>
               
-              <div className="flex items-center justify-between text-sm text-gray-400">
+              <div className="flex items-center justify-between text-sm text-theme-tertiary">
                 <span>Updated {new Date(item.updated_at).toLocaleDateString()}</span>
                 <span className="text-xs">{item.type}</span>
               </div>

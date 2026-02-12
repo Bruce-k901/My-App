@@ -122,9 +122,9 @@ export default function TaskPerformanceSection({ companyId, siteId, dateRange }:
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
+      <div className="bg-theme-surface border border-theme rounded-xl p-8 flex items-center justify-center">
         <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
-        <span className="ml-3 text-gray-500 dark:text-white/60">Loading task performance...</span>
+        <span className="ml-3 text-theme-tertiary">Loading task performance...</span>
       </div>
     );
   }
@@ -142,9 +142,9 @@ export default function TaskPerformanceSection({ companyId, siteId, dateRange }:
       </div>
 
       {/* Completion Rate */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Overall Completion Rate</h3>
+          <h3 className="text-lg font-semibold text-theme-primary">Overall Completion Rate</h3>
           <span
             className={`text-3xl font-bold ${
               performance.completionRate >= 90
@@ -173,15 +173,15 @@ export default function TaskPerformanceSection({ companyId, siteId, dateRange }:
 
       {/* Category Breakdown */}
       {Object.keys(performance.byCategory).length > 0 && (
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Performance by Category</h3>
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">Performance by Category</h3>
           <div className="space-y-4">
             {Object.entries(performance.byCategory)
               .sort((a, b) => b[1].rate - a[1].rate)
               .map(([category, data]) => (
                 <div key={category}>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-gray-700 dark:text-white/80 font-medium">{category}</span>
+                    <span className="text-theme-secondary font-medium">{category}</span>
                     <span
                       className={`text-sm font-semibold ${
                         data.rate >= 90 ? "text-green-400" : data.rate >= 70 ? "text-yellow-400" : "text-red-400"
@@ -206,12 +206,12 @@ export default function TaskPerformanceSection({ companyId, siteId, dateRange }:
 
       {/* Trend */}
       {performance.trend.length > 0 && (
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Completion Trend</h3>
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">Completion Trend</h3>
           <div className="space-y-2">
             {performance.trend.slice(-14).map((day) => (
               <div key={day.date} className="flex items-center gap-4">
-                <span className="text-sm text-gray-500 dark:text-white/60 w-24">{format(new Date(day.date), "MMM dd")}</span>
+                <span className="text-sm text-theme-tertiary w-24">{format(new Date(day.date), "MMM dd")}</span>
                 <div className="flex-1 bg-gray-100 dark:bg-white/[0.05] rounded-full h-6 relative">
                   <div
                     className={`h-6 rounded-full ${
@@ -219,7 +219,7 @@ export default function TaskPerformanceSection({ companyId, siteId, dateRange }:
                     }`}
                     style={{ width: `${day.rate}%` }}
                   />
-                  <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white">
+                  <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-theme-primary">
                     {day.rate}% ({day.completed}/{day.total})
                   </span>
                 </div>

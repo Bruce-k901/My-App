@@ -43,7 +43,7 @@ export function PrintPreviewModal({
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06] bg-white/[0.03]">
           <div className="flex items-center gap-3">
             <Printer className="w-5 h-5 text-[#D37E91]" />
-            <h2 className="text-xl font-semibold text-white">Print Preview</h2>
+            <h2 className="text-xl font-semibold text-theme-primary">Print Preview</h2>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -58,27 +58,27 @@ export function PrintPreviewModal({
               className="p-2 hover:bg-white/[0.06] rounded-lg transition-colors"
               aria-label="Close"
             >
-              <X className="w-5 h-5 text-white" />
+              <X className="w-5 h-5 text-theme-primary" />
             </button>
           </div>
         </div>
 
         {/* Preview Content */}
         <div className="flex-1 overflow-auto bg-white p-8">
-          <div ref={contentRef} className="bg-white text-black">
+          <div ref={contentRef} className="bg-white text-theme-primary">
             {children}
           </div>
         </div>
 
         {/* Footer */}
         <div className="px-6 py-3 border-t border-white/[0.06] bg-white/[0.03] flex items-center justify-between">
-          <p className="text-sm text-white/60">
+          <p className="text-sm text-theme-tertiary">
             Review the preview above. Click Print to send to your printer.
           </p>
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-white/80 hover:text-white transition-colors"
+              className="px-4 py-2 text-theme-secondary hover:text-white transition-colors"
             >
               Cancel
             </button>

@@ -141,7 +141,7 @@ export default function CompanyDetailPage() {
   if (!company) {
     return (
       <div className="p-8">
-        <p className="text-white/60">Company not found</p>
+        <p className="text-theme-tertiary">Company not found</p>
       </div>
     );
   }
@@ -157,7 +157,7 @@ export default function CompanyDetailPage() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.push('/admin/companies')}
-            className="p-2 hover:bg-white/[0.1] rounded-lg text-white/60 hover:text-white transition-colors"
+            className="p-2 hover:bg-white/[0.1] rounded-lg text-theme-tertiary hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -165,8 +165,8 @@ export default function CompanyDetailPage() {
             <Building2 className="w-7 h-7 text-[#D37E91]" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-white">{company.name}</h1>
-            <p className="text-white/60 flex items-center gap-2 mt-1">
+            <h1 className="text-3xl font-bold text-theme-primary">{company.name}</h1>
+            <p className="text-theme-tertiary flex items-center gap-2 mt-1">
               <Calendar className="w-4 h-4" />
               Joined {company.created_at ? new Date(company.created_at).toLocaleDateString() : 'Unknown date'}
             </p>
@@ -186,56 +186,56 @@ export default function CompanyDetailPage() {
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <Users className="w-5 h-5 text-blue-400" />
-            <span className="text-white/60 text-sm">Users</span>
+            <span className="text-theme-tertiary text-sm">Users</span>
           </div>
-          <div className="text-2xl font-bold text-white">{users.length}</div>
+          <div className="text-2xl font-bold text-theme-primary">{users.length}</div>
         </div>
 
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <MapPin className="w-5 h-5 text-green-400" />
-            <span className="text-white/60 text-sm">Sites</span>
+            <span className="text-theme-tertiary text-sm">Sites</span>
           </div>
-          <div className="text-2xl font-bold text-white">{sites.length}</div>
+          <div className="text-2xl font-bold text-theme-primary">{sites.length}</div>
         </div>
 
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <ClipboardList className="w-5 h-5 text-purple-400" />
-            <span className="text-white/60 text-sm">Total Tasks</span>
+            <span className="text-theme-tertiary text-sm">Total Tasks</span>
           </div>
-          <div className="text-2xl font-bold text-white">{taskStats.total}</div>
+          <div className="text-2xl font-bold text-theme-primary">{taskStats.total}</div>
         </div>
 
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <CheckCircle2 className="w-5 h-5 text-green-400" />
-            <span className="text-white/60 text-sm">Completion Rate</span>
+            <span className="text-theme-tertiary text-sm">Completion Rate</span>
           </div>
-          <div className="text-2xl font-bold text-white">{completionRate}%</div>
+          <div className="text-2xl font-bold text-theme-primary">{completionRate}%</div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Users List */}
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-          <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-white/60" />
+          <h2 className="text-xl font-semibold text-theme-primary mb-4 flex items-center gap-2">
+            <Users className="w-5 h-5 text-theme-tertiary" />
             Users ({users.length})
           </h2>
           <div className="space-y-3 max-h-[400px] overflow-y-auto">
             {users.map(user => (
               <div key={user.id} className="flex items-center justify-between p-3 bg-white/[0.03] rounded-lg">
                 <div>
-                  <div className="text-white font-medium">{user.full_name || 'No name'}</div>
-                  <div className="text-white/40 text-sm flex items-center gap-1">
+                  <div className="text-theme-primary font-medium">{user.full_name || 'No name'}</div>
+                  <div className="text-theme-tertiary text-sm flex items-center gap-1">
                     <Mail className="w-3 h-3" />
                     {user.email}
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-white/60 text-sm capitalize">{user.app_role || 'User'}</div>
-                  <div className="text-white/40 text-xs">
+                  <div className="text-theme-tertiary text-sm capitalize">{user.app_role || 'User'}</div>
+                  <div className="text-theme-tertiary text-xs">
                     {user.last_login 
                       ? `Active ${new Date(user.last_login).toLocaleDateString()}`
                       : 'Never logged in'
@@ -245,7 +245,7 @@ export default function CompanyDetailPage() {
               </div>
             ))}
             {users.length === 0 && (
-              <p className="text-white/40 text-center py-4">No users found</p>
+              <p className="text-theme-tertiary text-center py-4">No users found</p>
             )}
           </div>
         </div>
@@ -254,46 +254,46 @@ export default function CompanyDetailPage() {
         <div className="space-y-6">
           {/* Sites */}
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-white/60" />
+            <h2 className="text-xl font-semibold text-theme-primary mb-4 flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-theme-tertiary" />
               Sites ({sites.length})
             </h2>
             <div className="space-y-2">
               {sites.map(site => (
-                <div key={site.id} className="p-3 bg-white/[0.03] rounded-lg text-white">
+                <div key={site.id} className="p-3 bg-white/[0.03] rounded-lg text-theme-primary">
                   {site.name}
                 </div>
               ))}
               {sites.length === 0 && (
-                <p className="text-white/40 text-center py-4">No sites found</p>
+                <p className="text-theme-tertiary text-center py-4">No sites found</p>
               )}
             </div>
           </div>
 
           {/* Task Breakdown */}
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">Task Breakdown</h2>
+            <h2 className="text-xl font-semibold text-theme-primary mb-4">Task Breakdown</h2>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-green-400">
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Completed</span>
                 </div>
-                <span className="text-white font-semibold">{taskStats.completed}</span>
+                <span className="text-theme-primary font-semibold">{taskStats.completed}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-yellow-400">
                   <Clock className="w-4 h-4" />
                   <span>Pending</span>
                 </div>
-                <span className="text-white font-semibold">{taskStats.pending}</span>
+                <span className="text-theme-primary font-semibold">{taskStats.pending}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-red-400">
                   <AlertTriangle className="w-4 h-4" />
                   <span>Missed</span>
                 </div>
-                <span className="text-white font-semibold">{taskStats.missed}</span>
+                <span className="text-theme-primary font-semibold">{taskStats.missed}</span>
               </div>
             </div>
           </div>

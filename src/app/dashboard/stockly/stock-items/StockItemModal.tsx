@@ -14,7 +14,7 @@ import { Plus, Save, Loader2 } from '@/components/ui/icons';
 
 // Section Header Component
 const SectionHeader = ({ children }: { children: React.ReactNode }) => (
-  <div className="text-xs font-semibold uppercase tracking-wide text-gray-400 border-b border-gray-700 pb-2 mb-4">
+  <div className="text-xs font-semibold uppercase tracking-wide text-theme-tertiary border-b border-gray-700 pb-2 mb-4">
     {children}
   </div>
 );
@@ -401,7 +401,7 @@ export default function StockItemModal({
         style={{ maxWidth: '1200px', width: '1200px' }}
       >
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-white">
+          <DialogTitle className="text-xl font-semibold text-theme-primary">
             {editingItem ? 'Edit Stock Item' : 'Add Stock Item'}
           </DialogTitle>
         </DialogHeader>
@@ -416,12 +416,12 @@ export default function StockItemModal({
                 <div className="space-y-4">
                   {/* Item Name */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       Item Name *
                     </label>
                     <Input
                       {...register('name')}
-                      className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-white px-3 py-2 placeholder:text-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-emerald-500/30"
+                      className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
                       placeholder="e.g., Chicken Breast"
                     />
                     {errors.name && (
@@ -432,10 +432,10 @@ export default function StockItemModal({
                   {/* Category + SKU Row */}
                   <div className="grid grid-cols-12 gap-3">
                     <div className="col-span-7">
-                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-theme-tertiary mb-1">
                         Category *
                       </label>
-                      <div className="[&_button]:hover:border-emerald-500/50 [&_button]:hover:shadow-[0_0_10px_rgba(16,185,129,0.25)] [&_button]:focus:border-emerald-500 [&_button]:focus:shadow-[0_0_14px_rgba(16,185,129,0.4)] [&_button[data-state=open]]:border-emerald-500 [&_button[data-state=open]]:shadow-[0_0_14px_rgba(16,185,129,0.4)]">
+                      <div className="[&_button]:hover:border-module-fg/30 [&_button]:hover:shadow-module-glow [&_button]:focus:border-emerald-500 [&_button]:focus:shadow-[0_0_14px_rgba(16,185,129,0.4)] [&_button[data-state=open]]:border-emerald-500 [&_button[data-state=open]]:shadow-[0_0_14px_rgba(16,185,129,0.4)]">
                         <Select
                           value={watch('category')}
                           onValueChange={(val) => setValue('category', val)}
@@ -448,12 +448,12 @@ export default function StockItemModal({
                       )}
                     </div>
                     <div className="col-span-5">
-                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-theme-tertiary mb-1">
                         SKU
                       </label>
                       <Input
                         {...register('sku')}
-                        className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-white px-3 py-2 placeholder:text-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-emerald-500/30"
+                        className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
                         placeholder="SKU code"
                       />
                     </div>
@@ -461,13 +461,13 @@ export default function StockItemModal({
 
                   {/* Description */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       Description
                     </label>
                     <textarea
                       {...register('description')}
                       rows={3}
-                      className="w-full h-24 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-white px-3 py-2 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-emerald-500/30 resize-none"
+                      className="w-full h-24 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30 resize-none"
                       placeholder="Item description"
                     />
                   </div>
@@ -481,7 +481,7 @@ export default function StockItemModal({
                         defaultChecked
                         className="w-4 h-4 rounded bg-gray-800/50 border-gray-700 text-emerald-500 focus:ring-emerald-500"
                       />
-                      <span className="text-sm text-gray-300">Purchasable from suppliers</span>
+                      <span className="text-sm text-theme-tertiary">Purchasable from suppliers</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
@@ -489,7 +489,7 @@ export default function StockItemModal({
                         {...register('is_prep_item')}
                         className="w-4 h-4 rounded bg-gray-800/50 border-gray-700 text-emerald-500 focus:ring-emerald-500"
                       />
-                      <span className="text-sm text-gray-300">Made in-house (prep item)</span>
+                      <span className="text-sm text-theme-tertiary">Made in-house (prep item)</span>
                     </label>
                   </div>
                 </div>
@@ -502,7 +502,7 @@ export default function StockItemModal({
                   {/* Pack Size + Pack Cost + Unit Cost Row */}
                   <div className="grid grid-cols-12 gap-3">
                     <div className="col-span-4">
-                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-theme-tertiary mb-1">
                         Pack Size {purchasable && !isPrepItem && '*'}
                       </label>
                       <Input
@@ -510,10 +510,10 @@ export default function StockItemModal({
                         type="number"
                         step="0.001"
                         disabled={isPrepItem}
-                        className={`h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-white px-3 py-2 placeholder:text-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                        className={`h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                           isPrepItem 
                             ? 'bg-gray-800/30 cursor-not-allowed opacity-50' 
-                            : 'hover:border-emerald-500/30'
+                            : 'hover:border-module-fg/30'
                         }`}
                         placeholder="e.g., 25"
                       />
@@ -522,7 +522,7 @@ export default function StockItemModal({
                       )}
                     </div>
                     <div className="col-span-4">
-                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-theme-tertiary mb-1">
                         Pack Cost {purchasable && !isPrepItem && '*'}
                       </label>
                       <Input
@@ -530,10 +530,10 @@ export default function StockItemModal({
                         type="number"
                         step="0.01"
                         disabled={isPrepItem}
-                        className={`h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-white px-3 py-2 placeholder:text-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                        className={`h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                           isPrepItem 
                             ? 'bg-gray-800/30 cursor-not-allowed opacity-50' 
-                            : 'hover:border-emerald-500/30'
+                            : 'hover:border-module-fg/30'
                         }`}
                         placeholder="e.g., 50.00"
                       />
@@ -542,14 +542,14 @@ export default function StockItemModal({
                       )}
                     </div>
                     <div className="col-span-4">
-                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-theme-tertiary mb-1">
                         Unit Cost (auto-calculated)
                       </label>
                       <Input
                         value={unitCostDisplay}
                         readOnly
                         disabled
-                        className="h-10 rounded-md bg-gray-800/30 border border-gray-700 text-sm italic text-gray-400 px-3 py-2 cursor-not-allowed placeholder:text-gray-500"
+                        className="h-10 rounded-md bg-gray-800/30 border border-gray-700 text-sm italic text-theme-tertiary px-3 py-2 cursor-not-allowed placeholder:text-theme-tertiary"
                         placeholder="Auto-calculated"
                       />
                     </div>
@@ -557,10 +557,10 @@ export default function StockItemModal({
 
                   {/* Costing Method */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
                       Costing Method
                     </label>
-                      <div className="[&_button]:hover:border-emerald-500/50 [&_button]:hover:shadow-[0_0_10px_rgba(16,185,129,0.25)] [&_button]:focus:border-emerald-500 [&_button]:focus:shadow-[0_0_14px_rgba(16,185,129,0.4)] [&_button[data-state=open]]:border-emerald-500 [&_button[data-state=open]]:shadow-[0_0_14px_rgba(16,185,129,0.4)]">
+                      <div className="[&_button]:hover:border-module-fg/30 [&_button]:hover:shadow-module-glow [&_button]:focus:border-emerald-500 [&_button]:focus:shadow-[0_0_14px_rgba(16,185,129,0.4)] [&_button[data-state=open]]:border-emerald-500 [&_button[data-state=open]]:shadow-[0_0_14px_rgba(16,185,129,0.4)]">
                         <Select
                           value={watch('costing_method')}
                           onValueChange={(val: any) => setValue('costing_method', val)}
@@ -587,16 +587,16 @@ export default function StockItemModal({
                       defaultChecked
                       className="w-4 h-4 rounded bg-gray-800/50 border-gray-700 text-emerald-500 focus:ring-emerald-500"
                     />
-                    <span className="text-sm text-gray-300">Track Stock</span>
+                    <span className="text-sm text-theme-tertiary">Track Stock</span>
                   </label>
 
                   {/* Base Unit + Par Level + Reorder Qty Row */}
                   <div className="grid grid-cols-12 gap-3">
                     <div className="col-span-4">
-                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-theme-tertiary mb-1">
                         Base Unit *
                       </label>
-                        <div className="[&_button]:hover:border-emerald-500/50 [&_button]:hover:shadow-[0_0_10px_rgba(16,185,129,0.25)] [&_button]:focus:border-emerald-500 [&_button]:focus:shadow-[0_0_14px_rgba(16,185,129,0.4)] [&_button[data-state=open]]:border-emerald-500 [&_button[data-state=open]]:shadow-[0_0_14px_rgba(16,185,129,0.4)]">
+                        <div className="[&_button]:hover:border-module-fg/30 [&_button]:hover:shadow-module-glow [&_button]:focus:border-emerald-500 [&_button]:focus:shadow-[0_0_14px_rgba(16,185,129,0.4)] [&_button[data-state=open]]:border-emerald-500 [&_button[data-state=open]]:shadow-[0_0_14px_rgba(16,185,129,0.4)]">
                           <Select
                             value={watch('base_unit')}
                             onValueChange={(val) => setValue('base_unit', val)}
@@ -611,26 +611,26 @@ export default function StockItemModal({
                     {watch('track_stock') && (
                       <>
                         <div className="col-span-4">
-                          <label className="block text-sm font-medium text-gray-300 mb-1">
+                          <label className="block text-sm font-medium text-theme-tertiary mb-1">
                             Par Level
                           </label>
                           <Input
                             {...register('par_level')}
                             type="number"
                             step="0.001"
-                            className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-white px-3 py-2 placeholder:text-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-emerald-500/30"
+                            className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
                             placeholder="Min level"
                           />
                         </div>
                         <div className="col-span-4">
-                          <label className="block text-sm font-medium text-gray-300 mb-1">
+                          <label className="block text-sm font-medium text-theme-tertiary mb-1">
                             Reorder Qty
                           </label>
                           <Input
                             {...register('reorder_qty')}
                             type="number"
                             step="0.001"
-                            className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-white px-3 py-2 placeholder:text-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-emerald-500/30"
+                            className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
                             placeholder="Reorder amount"
                           />
                         </div>
@@ -642,7 +642,7 @@ export default function StockItemModal({
                   {/* Yield % + Yield Notes Row */}
                   <div className="grid grid-cols-12 gap-3">
                     <div className="col-span-4">
-                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-theme-tertiary mb-1">
                         Yield %
                       </label>
                       <Input
@@ -651,17 +651,17 @@ export default function StockItemModal({
                         step="0.01"
                         min="1"
                         max="100"
-                        className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-white px-3 py-2 placeholder:text-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-emerald-500/30"
+                        className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
                         placeholder="100"
                       />
                     </div>
                     <div className="col-span-8">
-                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-theme-tertiary mb-1">
                         Yield Notes
                       </label>
                       <Input
                         {...register('yield_notes')}
-                        className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-white px-3 py-2 placeholder:text-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-emerald-500/30"
+                        className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
                         placeholder="Notes about yield calculation"
                       />
                     </div>
@@ -683,7 +683,7 @@ export default function StockItemModal({
                         {...register(`allergen_${allergen.key}` as any)}
                         className="w-4 h-4 rounded bg-gray-800/50 border-gray-700 text-emerald-500 focus:ring-emerald-500"
                       />
-                      <span className="text-sm text-gray-300">{allergen.label}</span>
+                      <span className="text-sm text-theme-tertiary">{allergen.label}</span>
                     </label>
                   ))}
                 </div>
@@ -696,7 +696,7 @@ export default function StockItemModal({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="min-w-[160px] h-11 bg-white/[0.03] backdrop-blur-md border border-emerald-500 text-emerald-400 font-medium hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] hover:border-emerald-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:border-emerald-500 flex items-center justify-center gap-2"
+              className="min-w-[160px] h-11 bg-white/[0.03] backdrop-blur-md border border-emerald-500 text-module-fg font-medium hover:shadow-module-glow hover:border-emerald-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:border-emerald-500 flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -720,7 +720,7 @@ export default function StockItemModal({
               variant="outline"
               onClick={onClose}
               disabled={isSubmitting}
-              className="min-w-[160px] h-11 border-gray-700 text-gray-300 hover:bg-gray-800/50 hover:border-gray-600 transition-all duration-200 disabled:opacity-50"
+              className="min-w-[160px] h-11 border-gray-700 text-theme-tertiary hover:bg-gray-800/50 hover:border-gray-600 transition-all duration-200 disabled:opacity-50"
             >
               Cancel
             </Button>

@@ -64,20 +64,20 @@ export function MonitorCalloutModal({
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-[#1a1d2e] border border-gray-200 dark:border-neutral-800 rounded-lg p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-yellow-500 dark:text-yellow-400" />
             Monitor/Callout Required
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            className="text-theme-secondary hover:text-theme-primary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="mb-4">
-          <p className="text-gray-900 dark:text-white/80 text-sm mb-2">{getTriggerMessage()}</p>
+          <p className="text-theme-primary/80 text-sm mb-2">{getTriggerMessage()}</p>
           {contractorType && (
             <p className="text-[#D37E91] dark:text-[#D37E91] text-sm">
               Contractor Type: {contractorType.replace('_', ' ')}
@@ -91,9 +91,9 @@ export function MonitorCalloutModal({
               type="checkbox"
               checked={monitor}
               onChange={(e) => setMonitor(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-white/[0.05] text-[#D37E91] focus:ring-[#D37E91]"
+ className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-theme-surface ] text-[#D37E91] focus:ring-[#D37E91]"
             />
-            <span className="text-gray-900 dark:text-white">Monitor - Track this issue for follow-up</span>
+            <span className="text-theme-primary">Monitor - Track this issue for follow-up</span>
           </label>
 
           <label className="flex items-center gap-3 cursor-pointer">
@@ -101,23 +101,23 @@ export function MonitorCalloutModal({
               type="checkbox"
               checked={callout}
               onChange={(e) => setCallout(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-white dark:bg-white/[0.05] text-[#D37E91] focus:ring-[#D37E91]"
+ className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-theme-surface ] text-[#D37E91] focus:ring-[#D37E91]"
             />
-            <span className="text-gray-900 dark:text-white">
+            <span className="text-theme-primary">
               Callout - Request contractor visit
               {contractorType && ` (${contractorType.replace('_', ' ')})`}
             </span>
           </label>
 
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+            <label className="block text-sm font-medium text-theme-primary mb-2">
               Notes (optional)
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any additional notes about the issue..."
-              className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91] min-h-[100px]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91] min-h-[100px]"
             />
           </div>
         </div>

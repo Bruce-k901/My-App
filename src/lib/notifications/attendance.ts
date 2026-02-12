@@ -97,10 +97,12 @@ export async function clockIn(
     }
 
     // Create attendance log
+    const clockInTime = new Date().toISOString();
     const insertData = {
       profile_id: user.id,
       company_id: profile.company_id,
       site_id: siteId,
+      clock_in_time: clockInTime,
       shift_status: "on_shift" as const,
       shift_notes: notes ||
         (location ? `Location: ${location.lat}, ${location.lng}` : null),
@@ -117,6 +119,25 @@ export async function clockIn(
     if (error) {
       console.error("❌ Error clocking in:", error);
       return { success: false, error: error.message };
+    }
+
+    // Also create a time_entries record so TimeClock UI stays in sync
+    const { error: timeEntryError } = await supabase
+      .from("time_entries")
+      .insert({
+        profile_id: user.id,
+        company_id: profile.company_id,
+        site_id: siteId,
+        clock_in: clockInTime,
+        status: "active",
+        entry_type: "shift",
+        clock_in_location: location
+          ? { lat: location.lat, lng: location.lng, accuracy: location.accuracy }
+          : null,
+      });
+
+    if (timeEntryError) {
+      console.error("⚠️ Error creating time_entries record (non-fatal):", timeEntryError);
     }
 
     console.log("✅ Clock-in successful:", attendanceLog);
@@ -166,15 +187,25 @@ export async function clockOut(
     }
 
     if (!activeLog) {
-      // Debug: Check if there are ANY attendance logs for this user
-      const { data: allLogs } = await supabase
-        .from("staff_attendance")
-        .select("id, clock_in_time, clock_out_time, site_id")
+      // No active staff_attendance record — clean up any orphaned time_entries
+      // so the TimeClock UI resets properly
+      const { data: orphans } = await supabase
+        .from("time_entries")
+        .update({
+          clock_out: new Date().toISOString(),
+          status: "completed",
+          notes: "Auto-closed: no matching active shift in staff_attendance",
+        })
         .eq("profile_id", user.id)
-        .order("clock_in_time", { ascending: false })
-        .limit(5);
+        .eq("status", "active")
+        .is("clock_out", null)
+        .select("id");
 
-      console.log("📋 All attendance logs for user:", allLogs);
+      if (orphans && orphans.length > 0) {
+        console.log(`Cleaned up ${orphans.length} orphaned time_entries on clock-out`);
+        return { success: true };
+      }
+
       return {
         success: false,
         error: "No active clock-in found. Please clock in first.",
@@ -185,11 +216,12 @@ export async function clockOut(
 
     // Update clock-out time and shift status
     // Note: total_hours will be auto-calculated by database trigger
+    const clockOutTime = new Date().toISOString();
     const { error: updateError } = await supabase
       .from("staff_attendance")
       .update({
-        clock_out_time: new Date().toISOString(),
-        shift_status: "off_shift", // ✅ Explicitly set to 'off_shift' (not 'clocked_out')
+        clock_out_time: clockOutTime,
+        shift_status: "off_shift",
         shift_notes: notes || null,
       })
       .eq("id", activeLog.id);
@@ -197,6 +229,27 @@ export async function clockOut(
     if (updateError) {
       console.error("Error clocking out:", updateError);
       return { success: false, error: updateError.message };
+    }
+
+    // Also close any active time_entries records for this user
+    const clockInTime = new Date(activeLog.clock_in_time);
+    const grossHours = (new Date(clockOutTime).getTime() - clockInTime.getTime()) / (1000 * 60 * 60);
+
+    const { error: timeEntryError } = await supabase
+      .from("time_entries")
+      .update({
+        clock_out: clockOutTime,
+        status: "completed",
+        gross_hours: Math.round(grossHours * 100) / 100,
+        net_hours: Math.round(grossHours * 100) / 100,
+        notes: notes || null,
+      })
+      .eq("profile_id", user.id)
+      .eq("status", "active")
+      .is("clock_out", null);
+
+    if (timeEntryError) {
+      console.error("⚠️ Error closing time_entries record (non-fatal):", timeEntryError);
     }
 
     return { success: true };

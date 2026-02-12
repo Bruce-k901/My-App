@@ -41,22 +41,22 @@ export function StepEditor({
   onDelete,
 }: StepEditorProps) {
   return (
-    <div className="space-y-4 pt-3 border-t border-gray-200 dark:border-white/[0.06]">
+    <div className="space-y-4 pt-3 border-t border-theme">
       {/* Step Name */}
       <div>
-        <Label className="text-gray-500 dark:text-white/60 text-xs">Step Name</Label>
+        <Label className="text-theme-tertiary text-xs">Step Name</Label>
         <Input
           value={stage.name}
           onChange={(e) => onUpdate('name', e.target.value)}
           placeholder="e.g., Mix dough, First prove, Bake"
-          className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30"
+          className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-disabled"
         />
       </div>
 
       {/* Groups Row */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label className="text-gray-500 dark:text-white/60 text-xs flex items-center gap-1 mb-1">
+          <Label className="text-theme-tertiary text-xs flex items-center gap-1 mb-1">
             <Flame className="h-3 w-3 text-orange-500 dark:text-orange-400" />
             Oven Groups
           </Label>
@@ -68,7 +68,7 @@ export function StepEditor({
           />
         </div>
         <div>
-          <Label className="text-gray-500 dark:text-white/60 text-xs flex items-center gap-1 mb-1">
+          <Label className="text-theme-tertiary text-xs flex items-center gap-1 mb-1">
             <Package className="h-3 w-3 text-blue-500 dark:text-blue-400" />
             Delivery Routes
           </Label>
@@ -84,12 +84,12 @@ export function StepEditor({
       {/* Time & Overnight Row */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label className="text-gray-500 dark:text-white/60 text-xs">Time Constraint</Label>
+          <Label className="text-theme-tertiary text-xs">Time Constraint</Label>
           <Input
             type="time"
             value={stage.time_constraint || ''}
             onChange={(e) => onUpdate('time_constraint', e.target.value || null)}
-            className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+            className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
           />
         </div>
         <div className="flex items-end">
@@ -98,22 +98,22 @@ export function StepEditor({
               type="checkbox"
               checked={stage.is_overnight}
               onChange={(e) => onUpdate('is_overnight', e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 dark:border-white/20 text-[#14B8A6] focus:ring-[#14B8A6] bg-white dark:bg-white/[0.03]"
+              className="w-4 h-4 rounded border-gray-300 dark:border-white/20 text-[#14B8A6] focus:ring-[#14B8A6] bg-theme-surface"
             />
-            <span className="text-sm text-gray-700 dark:text-white/80">Overnight step</span>
+            <span className="text-sm text-theme-secondary">Overnight step</span>
           </label>
         </div>
       </div>
 
       {/* Instructions */}
       <div>
-        <Label className="text-gray-500 dark:text-white/60 text-xs">Instructions / Notes</Label>
+        <Label className="text-theme-tertiary text-xs">Instructions / Notes</Label>
         <Textarea
           value={stage.instructions || ''}
           onChange={(e) => onUpdate('instructions', e.target.value)}
           placeholder="Optional instructions..."
           rows={2}
-          className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30"
+          className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-disabled"
         />
       </div>
 

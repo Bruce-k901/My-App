@@ -75,6 +75,23 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    // User is NOT on shift — clean up any orphaned time_entries that are still 'active'
+    // This prevents the TimeClock from showing stale "124h" elapsed times
+    const { error: cleanupError } = await supabase
+      .from('time_entries')
+      .update({
+        status: 'completed',
+        clock_out: new Date().toISOString(),
+        notes: 'Auto-closed: no matching active shift in staff_attendance',
+      })
+      .eq('profile_id', profile.id)
+      .eq('status', 'active')
+      .is('clock_out', null);
+
+    if (cleanupError) {
+      console.error('Error cleaning up orphaned time_entries (non-fatal):', cleanupError);
+    }
+
     return NextResponse.json({
       onShift: false,
       shift: null,

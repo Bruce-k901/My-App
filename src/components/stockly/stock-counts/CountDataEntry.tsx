@@ -548,10 +548,10 @@ export default function CountDataEntry({
   return (
     <div className="space-y-6">
       {/* Library Tabs - Always Visible and Prominent */}
-      <div className="bg-white dark:bg-white/[0.03] border-2 border-emerald-500/50 dark:border-emerald-500/30 rounded-lg p-4 shadow-lg">
+      <div className="bg-theme-surface border-2 border-module-fg/30 dark:border-module-fg/30 rounded-lg p-4 shadow-lg">
         <div className="mb-3">
-          <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">Select Library to Count</h3>
-          <p className="text-xs text-gray-600 dark:text-white/60">Choose a library to enter count data</p>
+          <h3 className="text-base font-bold text-theme-primary mb-1">Select Library to Count</h3>
+          <p className="text-xs text-theme-secondary">Choose a library to enter count data</p>
         </div>
         <div className="flex flex-wrap gap-3">
           {libraryStats.length > 0 ? (
@@ -565,7 +565,7 @@ export default function CountDataEntry({
                 className={`px-5 py-3 rounded-lg text-sm font-semibold transition-all min-w-[140px] ${
                   selectedLibrary === stat.type
                     ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30 ring-2 ring-emerald-400'
-                    : 'bg-gray-100 dark:bg-white/[0.05] text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-white/10 border-2 border-gray-300 dark:border-white/10'
+                    : 'bg-gray-100 dark:bg-white/[0.05] text-theme-secondary hover:bg-gray-200 dark:hover:bg-white/10 border-2 border-theme'
                 }`}
               >
                 {stat.name} ({stat.counted}/{stat.total})
@@ -586,7 +586,7 @@ export default function CountDataEntry({
                   className={`px-5 py-3 rounded-lg text-sm font-semibold transition-all min-w-[140px] ${
                     selectedLibrary === libType
                       ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30 ring-2 ring-emerald-400'
-                      : 'bg-gray-100 dark:bg-white/[0.05] text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-white/10 border-2 border-gray-300 dark:border-white/10'
+                      : 'bg-gray-100 dark:bg-white/[0.05] text-theme-secondary hover:bg-gray-200 dark:hover:bg-white/10 border-2 border-theme'
                   }`}
                 >
                   {getLibraryName(libType)} ({libCounted}/{libItems.length})
@@ -598,7 +598,7 @@ export default function CountDataEntry({
               ⚠️ No library types found in items. Check that items have library_type set.
             </div>
           ) : (
-            <div className="px-4 py-2 text-sm text-gray-500 dark:text-white/60 italic">
+            <div className="px-4 py-2 text-sm text-theme-tertiary italic">
               No items found for selected libraries
             </div>
           )}
@@ -618,7 +618,7 @@ export default function CountDataEntry({
               disabled={savingLibrary !== null}
               loading={savingLibrary !== null}
               variant="primary"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg"
+              className="bg-module-fg hover:bg-module-fg/90 text-white shadow-lg"
               size="lg"
             >
               <Save className="h-5 w-5 mr-2" />
@@ -650,7 +650,7 @@ export default function CountDataEntry({
             </div>
           </div>
           <div className="flex items-center gap-4 text-sm">
-            <span className="text-gray-600 dark:text-white/60 font-medium">
+            <span className="text-theme-secondary font-medium">
               Overall Progress:
             </span>
             <span className="text-emerald-700 dark:text-emerald-300 font-bold text-base">
@@ -684,21 +684,21 @@ export default function CountDataEntry({
           return (
           <div key={libType} className="space-y-3">
             {/* Table for this library */}
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg overflow-hidden">
+            <div className="bg-theme-surface border border-theme rounded-lg overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 dark:bg-white/[0.05] border-b border-gray-200 dark:border-white/[0.06]">
+                  <thead className="bg-theme-button border-b border-theme">
                     <tr>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <th className="px-4 py-3 text-left text-sm font-medium text-theme-secondary">
                         Item Name
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <th className="px-4 py-3 text-right text-sm font-medium text-theme-secondary">
                         Expected
                       </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300 w-48">
+                      <th className="px-4 py-3 text-left text-sm font-medium text-theme-secondary w-48">
                         Count
                       </th>
-                      <th className="px-4 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-300 w-16">
+                      <th className="px-4 py-3 text-center text-sm font-medium text-theme-secondary w-16">
                         Status
                       </th>
                     </tr>
@@ -706,7 +706,7 @@ export default function CountDataEntry({
                   <tbody className="divide-y divide-gray-200 dark:divide-white/[0.06]">
                     {libItems.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                        <td colSpan={4} className="px-4 py-8 text-center text-theme-tertiary">
                           No items found
                         </td>
                       </tr>
@@ -724,29 +724,29 @@ export default function CountDataEntry({
                         return (
                           <tr 
                             key={item.id}
-                            className={`hover:bg-gray-50 dark:hover:bg-white/[0.02] ${
+                            className={`hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02] ${
                               isCounted ? 'bg-emerald-50/50 dark:bg-emerald-500/5' : ''
                             }`}
                           >
                             <td className="px-4 py-3">
                               <div className="flex flex-col gap-1">
-                                <span className="text-gray-900 dark:text-white font-medium">
+                                <span className="text-theme-primary font-medium">
                                   {ingredientName}
                                 </span>
                                 {(item.ingredient as any)?.supplier && (
-                                  <span className="text-xs text-gray-500 dark:text-white/40">
+                                  <span className="text-xs text-theme-tertiary">
                                     Supplier: {(item.ingredient as any)?.supplier}
                                   </span>
                                 )}
                                 {(item.ingredient as any)?.pack_size && (
-                                  <span className="text-xs text-gray-500 dark:text-white/40">
+                                  <span className="text-xs text-theme-tertiary">
                                     Case Size: {(item.ingredient as any)?.pack_size}
                                   </span>
                                 )}
                               </div>
                             </td>
                             <td className="px-4 py-3 text-right">
-                              <span className="text-gray-600 dark:text-white/60 text-sm">
+                              <span className="text-theme-secondary text-sm">
                                 {item.theoretical_closing || 0} {item.unit_of_measurement || ''}
                               </span>
                             </td>
@@ -794,19 +794,19 @@ export default function CountDataEntry({
                                   placeholder="Press Enter to continue..."
                                   autoComplete="off"
                                   disabled={saving === item.id}
-                                  className="bg-white dark:bg-white/[0.05] border-gray-200 dark:border-white/10 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 disabled:opacity-50"
+ className="bg-theme-surface ] border-theme text-theme-primary focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 disabled:opacity-50"
                                 />
-                                <span className="text-gray-500 dark:text-white/40 text-sm whitespace-nowrap">
+                                <span className="text-theme-tertiary text-sm whitespace-nowrap">
                                   {item.unit_of_measurement || ''}
                                 </span>
                               </div>
                             </td>
                             <td className="px-4 py-3 text-center">
                               {isCounted && (
-                                <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
+                                <CheckCircle className="h-5 w-5 text-module-fg mx-auto" />
                               )}
                               {saving === item.id && (
-                                <Loader2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 animate-spin mx-auto" />
+                                <Loader2 className="h-5 w-5 text-module-fg animate-spin mx-auto" />
                               )}
                             </td>
                           </tr>
@@ -828,7 +828,7 @@ export default function CountDataEntry({
                 }).length === 0}
                 loading={savingLibrary === libTypeTyped}
                 variant="primary"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-module-fg hover:bg-module-fg/90 text-white"
               >
                 <Save className="h-4 w-4 mr-2" />
                 Save {getLibraryName(libTypeTyped)} Counts
@@ -853,7 +853,7 @@ export default function CountDataEntry({
       {/* Instructions */}
       <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-lg p-4">
         <p className="text-sm text-blue-700 dark:text-blue-400">
-          <strong>Tip:</strong> Select a library tab above to focus on counting items from that library. Use <kbd className="px-1.5 py-0.5 bg-white dark:bg-white/10 border border-gray-300 dark:border-white/20 rounded text-xs text-gray-700 dark:text-gray-300">Tab</kbd> or <kbd className="px-1.5 py-0.5 bg-white dark:bg-white/10 border border-gray-300 dark:border-white/20 rounded text-xs text-gray-700 dark:text-gray-300">Enter</kbd> to move to the next item. Click the "Save" button at the bottom of each library section when you're ready to save your counts.
+          <strong>Tip:</strong> Select a library tab above to focus on counting items from that library. Use <kbd className="px-1.5 py-0.5 bg-white dark:bg-white/10 border border-gray-300 dark:border-white/20 rounded text-xs text-theme-secondary">Tab</kbd> or <kbd className="px-1.5 py-0.5 bg-white dark:bg-white/10 border border-gray-300 dark:border-white/20 rounded text-xs text-theme-secondary">Enter</kbd> to move to the next item. Click the "Save" button at the bottom of each library section when you're ready to save your counts.
         </p>
       </div>
 
@@ -863,7 +863,7 @@ export default function CountDataEntry({
           {/* Back to Top Button */}
           <Button
             onClick={handleScrollToTop}
-            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 rounded-full px-4 py-3 flex items-center justify-center w-12 h-12"
+            className="bg-module-fg hover:bg-module-fg/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 rounded-full px-4 py-3 flex items-center justify-center w-12 h-12"
             title="Scroll to top of page"
           >
             <ArrowUp className="h-5 w-5" />
@@ -877,7 +877,7 @@ export default function CountDataEntry({
               return value && !isNaN(parseFloat(value));
             }).length === 0}
             loading={savingLibrary === selectedLibrary}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 rounded-full px-6 py-3 flex items-center gap-2"
+            className="bg-module-fg hover:bg-module-fg/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 rounded-full px-6 py-3 flex items-center gap-2"
             title="Save progress and move to next empty line"
           >
             <Save className="h-5 w-5" />

@@ -83,7 +83,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-white/60">Loading ticket...</div>
+        <div className="text-theme-tertiary">Loading ticket...</div>
       </div>
     );
   }
@@ -109,7 +109,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
       {/* Back button */}
       <Link
         href="/admin/tickets"
-        className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors"
+        className="inline-flex items-center gap-2 text-theme-tertiary hover:text-white transition-colors"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -121,26 +121,26 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-white mb-2">
+            <h1 className="text-2xl font-bold text-theme-primary mb-2">
               {ticket.title}
             </h1>
             <div className="flex flex-wrap items-center gap-2">
               <TicketTypeBadge type={ticket.type} />
               <TicketModuleBadge module={ticket.module} />
-              <span className="text-sm text-white/60">
+              <span className="text-sm text-theme-tertiary">
                 {ticket.company?.name}
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-white/60">Ticket #{ticket.id.substring(0, 8)}</span>
+            <span className="text-sm text-theme-tertiary">Ticket #{ticket.id.substring(0, 8)}</span>
           </div>
         </div>
 
         {/* Status and Priority */}
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
               Status
             </label>
             <TicketStatusDropdown
@@ -149,7 +149,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
               Priority
             </label>
             <TicketPriorityDropdown
@@ -162,26 +162,26 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
         {/* Meta info */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
-            <span className="text-white/60">Created by:</span>
-            <div className="font-medium text-white">
+            <span className="text-theme-tertiary">Created by:</span>
+            <div className="font-medium text-theme-primary">
               {ticket.created_by_profile?.full_name || 'Unknown'}
             </div>
           </div>
           <div>
-            <span className="text-white/60">Assigned to:</span>
-            <div className="font-medium text-white">
+            <span className="text-theme-tertiary">Assigned to:</span>
+            <div className="font-medium text-theme-primary">
               {ticket.assigned_to_profile?.full_name || 'Unassigned'}
             </div>
           </div>
           <div>
-            <span className="text-white/60">Created:</span>
-            <div className="font-medium text-white">
+            <span className="text-theme-tertiary">Created:</span>
+            <div className="font-medium text-theme-primary">
               {formatDistanceToNow(new Date(ticket.created_at), { addSuffix: true })}
             </div>
           </div>
           <div>
-            <span className="text-white/60">Site:</span>
-            <div className="font-medium text-white">
+            <span className="text-theme-tertiary">Site:</span>
+            <div className="font-medium text-theme-primary">
               {ticket.site?.name || 'N/A'}
             </div>
           </div>
@@ -190,7 +190,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
         {/* Page URL */}
         {ticket.page_url && (
           <div className="mt-4 pt-4 border-t border-white/[0.06]">
-            <span className="text-sm text-white/60">Page URL:</span>
+            <span className="text-sm text-theme-tertiary">Page URL:</span>
             <a
               href={ticket.page_url}
               target="_blank"
@@ -205,13 +205,13 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
 
       {/* Original Description */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-white mb-3">Description</h2>
-        <p className="text-white/80 whitespace-pre-wrap">{ticket.description}</p>
+        <h2 className="text-lg font-semibold text-theme-primary mb-3">Description</h2>
+        <p className="text-theme-secondary whitespace-pre-wrap">{ticket.description}</p>
 
         {/* Initial attachments (screenshots) */}
         {ticket.attachments && ticket.attachments.length > 0 && (
           <div className="mt-4 pt-4 border-t border-white/[0.06]">
-            <h3 className="text-sm font-medium text-white/80 mb-2">Attachments:</h3>
+            <h3 className="text-sm font-medium text-theme-secondary mb-2">Attachments:</h3>
             <div className="flex flex-wrap gap-2">
               {ticket.attachments.map((attachment) => (
                 <a
@@ -219,7 +219,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
                   href={`/api/attachments/${attachment.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.06] border border-white/[0.06] text-sm text-white/80 hover:bg-white/[0.09] transition-colors"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.06] border border-white/[0.06] text-sm text-theme-secondary hover:bg-white/[0.09] transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -239,7 +239,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
 
       {/* Conversation Thread */}
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">
+        <h2 className="text-lg font-semibold text-theme-primary mb-4">
           Conversation ({ticket.comment_count})
         </h2>
         <TicketCommentThread

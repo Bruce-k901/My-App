@@ -68,12 +68,12 @@ export function MoreSheet() {
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 pb-4 border-b border-white/10">
-          <h2 className="text-lg font-semibold text-white">Quick Access</h2>
+          <h2 className="text-lg font-semibold text-theme-primary">Quick Access</h2>
           <button
             onClick={closeMoreSheet}
             className="p-2 -mr-2 rounded-full hover:bg-white/10 transition-colors"
           >
-            <X size={20} className="text-gray-400" />
+            <X size={20} className="text-theme-tertiary" />
           </button>
         </div>
 
@@ -83,7 +83,7 @@ export function MoreSheet() {
 
             {/* Quick Actions */}
             <section>
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+              <h3 className="text-xs font-semibold text-theme-tertiary uppercase tracking-wider mb-3">
                 Priority Actions
               </h3>
               <QuickActionsGrid section="quick" />
@@ -99,10 +99,10 @@ export function MoreSheet() {
                   >
                     <module.icon size={14} style={{ color: module.color }} />
                   </div>
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <h3 className="text-xs font-semibold text-theme-tertiary uppercase tracking-wider">
                     {module.label}
                   </h3>
-                  <span className="text-xs text-gray-600">
+                  <span className="text-xs text-theme-secondary">
                     {module.subtitle}
                   </span>
                 </div>
@@ -112,7 +112,7 @@ export function MoreSheet() {
 
             {/* Settings */}
             <section className="pt-2 border-t border-white/10">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+              <h3 className="text-xs font-semibold text-theme-tertiary uppercase tracking-wider mb-3">
                 Settings
               </h3>
               <QuickActionsGrid section="settings" />

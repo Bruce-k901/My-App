@@ -18,7 +18,7 @@ export function WidgetSkeleton({ size = 'medium', className }: WidgetSkeletonPro
   return (
     <div
       className={cn(
-        'bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-4',
+        'bg-theme-surface border border-theme rounded-xl p-4',
         heightClass,
         'animate-pulse',
         className

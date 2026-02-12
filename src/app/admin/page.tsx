@@ -455,7 +455,7 @@ export default function AdminDashboardPage() {
   }
 
   function getEHOScoreColor(score: number | null): string {
-    if (score === null) return 'text-gray-400';
+    if (score === null) return 'text-theme-tertiary';
     if (score >= 80) return 'text-green-400';
     if (score >= 60) return 'text-yellow-400';
     if (score >= 40) return 'text-orange-400';
@@ -463,7 +463,7 @@ export default function AdminDashboardPage() {
   }
 
   function getEHOScoreBg(score: number | null): string {
-    if (score === null) return 'bg-gray-500/10';
+    if (score === null) return 'bg-theme-surface-elevated0/10';
     if (score >= 80) return 'bg-green-500/10';
     if (score >= 60) return 'bg-yellow-500/10';
     if (score >= 40) return 'bg-orange-500/10';
@@ -512,10 +512,10 @@ export default function AdminDashboardPage() {
       {/* Header with Refresh */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Platform Overview</h1>
-          <p className="text-white/60">Monitor all Opsly customers and platform health</p>
+          <h1 className="text-3xl font-bold text-theme-primary mb-2">Platform Overview</h1>
+          <p className="text-theme-tertiary">Monitor all Opsly customers and platform health</p>
           {lastFetch && (
-            <p className="text-xs text-white/40 mt-1">
+            <p className="text-xs text-theme-tertiary mt-1">
               Last updated: {lastFetch.toLocaleTimeString()}
             </p>
           )}
@@ -523,7 +523,7 @@ export default function AdminDashboardPage() {
         <button
           onClick={handleRefresh}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg transition-all duration-200 ease-in-out disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           Refresh
@@ -534,16 +534,16 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link
           href="/admin/health-check-test"
-          className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/[0.06] rounded-xl hover:bg-white/[0.05] hover:border-emerald-500/30 transition-all group"
+          className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/[0.06] rounded-xl hover:bg-white/[0.05] hover:border-module-fg/30 transition-all group"
         >
-          <div className="p-3 bg-emerald-500/10 rounded-lg">
-            <HeartPulse className="w-6 h-6 text-emerald-400" />
+          <div className="p-3 bg-module-fg/10 rounded-lg">
+            <HeartPulse className="w-6 h-6 text-module-fg" />
           </div>
           <div className="flex-1">
-            <div className="text-white font-semibold group-hover:text-emerald-400 transition-colors">Health Check Test</div>
-            <div className="text-xs text-white/50">Reports, calendar tasks, delegation & AI fix testing</div>
+            <div className="text-theme-primary font-semibold group-hover:text-module-fg transition-colors">Health Check Test</div>
+            <div className="text-xs text-theme-tertiary">Reports, calendar tasks, delegation & AI fix testing</div>
           </div>
-          <ArrowRight className="w-4 h-4 text-white/30 group-hover:text-emerald-400 transition-colors" />
+          <ArrowRight className="w-4 h-4 text-theme-disabled group-hover:text-module-fg transition-colors" />
         </Link>
       </div>
 
@@ -561,8 +561,8 @@ export default function AdminDashboardPage() {
               </span>
             )}
           </div>
-          <div className="text-3xl font-bold text-white mb-1">{stats.total_companies}</div>
-          <div className="text-sm text-white/60">Total Companies</div>
+          <div className="text-3xl font-bold text-theme-primary mb-1">{stats.total_companies}</div>
+          <div className="text-sm text-theme-tertiary">Total Companies</div>
         </div>
 
         {/* Total Users */}
@@ -577,8 +577,8 @@ export default function AdminDashboardPage() {
               </span>
             )}
           </div>
-          <div className="text-3xl font-bold text-white mb-1">{stats.total_users}</div>
-          <div className="text-sm text-white/60">Total Users</div>
+          <div className="text-3xl font-bold text-theme-primary mb-1">{stats.total_users}</div>
+          <div className="text-sm text-theme-tertiary">Total Users</div>
         </div>
 
         {/* Pending Tasks */}
@@ -593,8 +593,8 @@ export default function AdminDashboardPage() {
               </span>
             )}
           </div>
-          <div className="text-3xl font-bold text-white mb-1">{stats.pending_tasks}</div>
-          <div className="text-sm text-white/60">Pending Tasks</div>
+          <div className="text-3xl font-bold text-theme-primary mb-1">{stats.pending_tasks}</div>
+          <div className="text-sm text-theme-tertiary">Pending Tasks</div>
           {stats && stats.missed_tasks > 0 && (
             <div className="text-xs text-red-400 mt-1">{stats.missed_tasks} overdue</div>
           )}
@@ -607,24 +607,24 @@ export default function AdminDashboardPage() {
               <AlertCircle className="w-6 h-6 text-red-400" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-white mb-1">{stats.missed_tasks}</div>
-          <div className="text-sm text-white/60">Missed Tasks</div>
+          <div className="text-3xl font-bold text-theme-primary mb-1">{stats.missed_tasks}</div>
+          <div className="text-sm text-theme-tertiary">Missed Tasks</div>
         </div>
       </div>
 
       {/* Secondary Stats Row - 6 Compact Cards */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-white">Platform Metrics</h2>
+        <h2 className="text-xl font-semibold text-theme-primary">Platform Metrics</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {/* Active SOPs */}
           <Link href="/admin/companies" className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors group">
             <div className="flex items-center gap-2 mb-3">
               <FileText className="w-4 h-4 text-purple-400" />
-              <span className="text-xs text-white/60 font-medium">Active SOPs</span>
+              <span className="text-xs text-theme-tertiary font-medium">Active SOPs</span>
             </div>
-            <div className="text-2xl font-bold text-white mb-1">{stats.active_sops}</div>
+            <div className="text-2xl font-bold text-theme-primary mb-1">{stats.active_sops}</div>
             {stats && stats.total_sops > stats.active_sops && (
-              <div className="text-xs text-white/40">{stats.total_sops} total</div>
+              <div className="text-xs text-theme-tertiary">{stats.total_sops} total</div>
             )}
           </Link>
 
@@ -632,9 +632,9 @@ export default function AdminDashboardPage() {
           <Link href="/admin/companies" className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors group">
             <div className="flex items-center gap-2 mb-3">
               <ShieldAlert className="w-4 h-4 text-orange-400" />
-              <span className="text-xs text-white/60 font-medium">Risk Assessments</span>
+              <span className="text-xs text-theme-tertiary font-medium">Risk Assessments</span>
             </div>
-            <div className="text-2xl font-bold text-white mb-1">{stats.total_risk_assessments}</div>
+            <div className="text-2xl font-bold text-theme-primary mb-1">{stats.total_risk_assessments}</div>
             {stats && stats.overdue_risk_assessments > 0 && (
               <div className="text-xs text-red-400 font-medium">{stats.overdue_risk_assessments} overdue</div>
             )}
@@ -643,10 +643,10 @@ export default function AdminDashboardPage() {
           {/* Assets */}
           <Link href="/admin/companies" className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors group">
             <div className="flex items-center gap-2 mb-3">
-              <Wrench className="w-4 h-4 text-cyan-400" />
-              <span className="text-xs text-white/60 font-medium">Assets</span>
+              <Wrench className="w-4 h-4 text-module-fg" />
+              <span className="text-xs text-theme-tertiary font-medium">Assets</span>
             </div>
-            <div className="text-2xl font-bold text-white mb-1">{stats.total_assets}</div>
+            <div className="text-2xl font-bold text-theme-primary mb-1">{stats.total_assets}</div>
             {stats && stats.overdue_service_assets > 0 && (
               <div className="text-xs text-red-400 font-medium">{stats.overdue_service_assets} need service</div>
             )}
@@ -656,9 +656,9 @@ export default function AdminDashboardPage() {
           <Link href="/admin/companies" className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors group">
             <div className="flex items-center gap-2 mb-3">
               <MessageSquare className="w-4 h-4 text-green-400" />
-              <span className="text-xs text-white/60 font-medium">Messages</span>
+              <span className="text-xs text-theme-tertiary font-medium">Messages</span>
             </div>
-            <div className="text-2xl font-bold text-white mb-1">{stats.total_messages}</div>
+            <div className="text-2xl font-bold text-theme-primary mb-1">{stats.total_messages}</div>
             {stats && stats.messages_today > 0 && (
               <div className="text-xs text-green-400">{stats.messages_today} today</div>
             )}
@@ -668,9 +668,9 @@ export default function AdminDashboardPage() {
           <Link href="/admin/companies" className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors group">
             <div className="flex items-center gap-2 mb-3">
               <Phone className="w-4 h-4 text-red-400" />
-              <span className="text-xs text-white/60 font-medium">Callouts</span>
+              <span className="text-xs text-theme-tertiary font-medium">Callouts</span>
             </div>
-            <div className="text-2xl font-bold text-white mb-1">{stats.total_callouts}</div>
+            <div className="text-2xl font-bold text-theme-primary mb-1">{stats.total_callouts}</div>
             {stats && stats.open_callouts > 0 && (
               <div className="text-xs text-yellow-400 font-medium">{stats.open_callouts} open</div>
             )}
@@ -679,65 +679,65 @@ export default function AdminDashboardPage() {
           {/* Sites */}
           <Link href="/admin/companies" className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors group">
             <div className="flex items-center gap-2 mb-3">
-              <Building2 className="w-4 h-4 text-indigo-400" />
-              <span className="text-xs text-white/60 font-medium">Sites</span>
+              <Building2 className="w-4 h-4 text-module-fg" />
+              <span className="text-xs text-theme-tertiary font-medium">Sites</span>
             </div>
-            <div className="text-2xl font-bold text-white mb-1">{stats.total_sites}</div>
+            <div className="text-2xl font-bold text-theme-primary mb-1">{stats.total_sites}</div>
           </Link>
         </div>
       </div>
 
       {/* Additional Stats Section */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-white">Additional Statistics</h2>
+        <h2 className="text-xl font-semibold text-theme-primary">Additional Statistics</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
-              <div className="text-xs text-white/50 mb-1 font-medium">Total Tasks</div>
-              <div className="text-xl font-semibold text-white">{stats.total_tasks}</div>
+              <div className="text-xs text-theme-tertiary mb-1 font-medium">Total Tasks</div>
+              <div className="text-xl font-semibold text-theme-primary">{stats.total_tasks}</div>
             </div>
             <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
-              <div className="text-xs text-white/50 mb-1 font-medium">Active Tasks</div>
+              <div className="text-xs text-theme-tertiary mb-1 font-medium">Active Tasks</div>
               <div className="text-xl font-semibold text-blue-400">{stats.active_tasks}</div>
             </div>
             <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
-              <div className="text-xs text-white/50 mb-1 font-medium">Completed Tasks</div>
+              <div className="text-xs text-theme-tertiary mb-1 font-medium">Completed Tasks</div>
               <div className="text-xl font-semibold text-green-400">{stats.completed_tasks}</div>
             </div>
             <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
-              <div className="text-xs text-white/50 mb-1 font-medium">Completions Today</div>
-              <div className="text-xl font-semibold text-white">{stats.completions_today}</div>
+              <div className="text-xs text-theme-tertiary mb-1 font-medium">Completions Today</div>
+              <div className="text-xl font-semibold text-theme-primary">{stats.completions_today}</div>
             </div>
             <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
-              <div className="text-xs text-white/50 mb-1 font-medium">Library Templates</div>
-              <div className="text-xl font-semibold text-white">{stats.library_templates}</div>
+              <div className="text-xs text-theme-tertiary mb-1 font-medium">Library Templates</div>
+              <div className="text-xl font-semibold text-theme-primary">{stats.library_templates}</div>
             </div>
             <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
-              <div className="text-xs text-white/50 mb-1 font-medium">Custom Templates</div>
-              <div className="text-xl font-semibold text-white">{stats.custom_templates}</div>
+              <div className="text-xs text-theme-tertiary mb-1 font-medium">Custom Templates</div>
+              <div className="text-xl font-semibold text-theme-primary">{stats.custom_templates}</div>
             </div>
             <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
-              <div className="text-xs text-white/50 mb-1 font-medium">Active Users (Week)</div>
-              <div className="text-xl font-semibold text-white">{stats.active_users_this_week}</div>
+              <div className="text-xs text-theme-tertiary mb-1 font-medium">Active Users (Week)</div>
+              <div className="text-xl font-semibold text-theme-primary">{stats.active_users_this_week}</div>
             </div>
             <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
-              <div className="text-xs text-white/50 mb-1 font-medium">Messages (Week)</div>
-              <div className="text-xl font-semibold text-white">{stats.messages_this_week}</div>
+              <div className="text-xs text-theme-tertiary mb-1 font-medium">Messages (Week)</div>
+              <div className="text-xl font-semibold text-theme-primary">{stats.messages_this_week}</div>
             </div>
             <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
-              <div className="text-xs text-white/50 mb-1 font-medium">Callouts (Week)</div>
-              <div className="text-xl font-semibold text-white">{stats.callouts_this_week}</div>
+              <div className="text-xs text-theme-tertiary mb-1 font-medium">Callouts (Week)</div>
+              <div className="text-xl font-semibold text-theme-primary">{stats.callouts_this_week}</div>
             </div>
             <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
-              <div className="text-xs text-white/50 mb-1 font-medium">Active RAs</div>
-              <div className="text-xl font-semibold text-white">{stats.active_risk_assessments}</div>
+              <div className="text-xs text-theme-tertiary mb-1 font-medium">Active RAs</div>
+              <div className="text-xl font-semibold text-theme-primary">{stats.active_risk_assessments}</div>
             </div>
             <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
-              <div className="text-xs text-white/50 mb-1 font-medium">Active Assets</div>
-              <div className="text-xl font-semibold text-white">{stats.active_assets}</div>
+              <div className="text-xs text-theme-tertiary mb-1 font-medium">Active Assets</div>
+              <div className="text-xl font-semibold text-theme-primary">{stats.active_assets}</div>
             </div>
             <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
-              <div className="text-xs text-white/50 mb-1 font-medium">Message Channels</div>
-              <div className="text-xl font-semibold text-white">{stats.total_channels}</div>
+              <div className="text-xs text-theme-tertiary mb-1 font-medium">Message Channels</div>
+              <div className="text-xl font-semibold text-theme-primary">{stats.total_channels}</div>
             </div>
           </div>
       </div>
@@ -750,8 +750,8 @@ export default function AdminDashboardPage() {
               <Award className="w-6 h-6 text-[#D37E91]" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-white">EHO Readiness Scores</h2>
-              <p className="text-sm text-white/60">Companies ranked by compliance readiness (lowest first)</p>
+              <h2 className="text-xl font-semibold text-theme-primary">EHO Readiness Scores</h2>
+              <p className="text-sm text-theme-tertiary">Companies ranked by compliance readiness (lowest first)</p>
             </div>
           </div>
           <Link 
@@ -766,24 +766,24 @@ export default function AdminDashboardPage() {
         <div className="flex items-center gap-4 mb-6 text-xs">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded bg-green-500/20 border border-green-500/40"></div>
-            <span className="text-white/60">80+ Excellent</span>
+            <span className="text-theme-tertiary">80+ Excellent</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded bg-yellow-500/20 border border-yellow-500/40"></div>
-            <span className="text-white/60">60-79 Good</span>
+            <span className="text-theme-tertiary">60-79 Good</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded bg-orange-500/20 border border-orange-500/40"></div>
-            <span className="text-white/60">40-59 Needs Improvement</span>
+            <span className="text-theme-tertiary">40-59 Needs Improvement</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded bg-red-500/20 border border-red-500/40"></div>
-            <span className="text-white/60">0-39 Critical</span>
+            <span className="text-theme-tertiary">0-39 Critical</span>
           </div>
         </div>
 
         {companiesWithEHO.length === 0 ? (
-          <p className="text-white/60 text-center py-8">No companies yet</p>
+          <p className="text-theme-tertiary text-center py-8">No companies yet</p>
         ) : (
           <div className="space-y-3">
             {companiesWithEHO.map((company) => (
@@ -798,12 +798,12 @@ export default function AdminDashboardPage() {
                     <span className={`text-xl font-bold ${getEHOScoreColor(company.eho_score)}`}>
                       {company.eho_score !== null ? company.eho_score : '—'}
                     </span>
-                    <span className="text-[10px] text-white/50 font-medium">EHO</span>
+                    <span className="text-[10px] text-theme-tertiary font-medium">EHO</span>
                   </div>
                   
                   <div>
-                    <h3 className="text-white font-semibold group-hover:text-[#D37E91] transition-colors">{company.name}</h3>
-                    <p className="text-white/60 text-sm">
+                    <h3 className="text-theme-primary font-semibold group-hover:text-[#D37E91] transition-colors">{company.name}</h3>
+                    <p className="text-theme-tertiary text-sm">
                       {company.user_count} users • {company.site_count} sites
                     </p>
                   </div>
@@ -813,26 +813,26 @@ export default function AdminDashboardPage() {
                   {/* Score Breakdown */}
                   <div className="hidden lg:flex items-center gap-6 text-xs">
                     <div className="text-center">
-                      <div className="text-white/40 mb-1 font-medium">Tasks</div>
+                      <div className="text-theme-tertiary mb-1 font-medium">Tasks</div>
                       <div className={`font-semibold ${getEHOScoreColor(company.task_completion_score)}`}>
                         {company.task_completion_score ?? '—'}%
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-white/40 mb-1 font-medium">SOPs</div>
-                      <div className="text-white font-semibold">{company.sop_count}</div>
+                      <div className="text-theme-tertiary mb-1 font-medium">SOPs</div>
+                      <div className="text-theme-primary font-semibold">{company.sop_count}</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-white/40 mb-1 font-medium">RAs</div>
-                      <div className="text-white font-semibold">{company.ra_count}</div>
+                      <div className="text-theme-tertiary mb-1 font-medium">RAs</div>
+                      <div className="text-theme-primary font-semibold">{company.ra_count}</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-white/40 mb-1 font-medium">Assets</div>
-                      <div className="text-white font-semibold">{company.asset_count}</div>
+                      <div className="text-theme-tertiary mb-1 font-medium">Assets</div>
+                      <div className="text-theme-primary font-semibold">{company.asset_count}</div>
                     </div>
                   </div>
 
-                  <div className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg text-sm transition-all duration-200 ease-in-out">
+                  <div className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-module-glow rounded-lg text-sm transition-all duration-200 ease-in-out">
                     View Details
                   </div>
                 </div>

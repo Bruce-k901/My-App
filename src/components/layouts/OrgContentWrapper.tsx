@@ -16,7 +16,7 @@ export default function OrgContentWrapper({ title, actions, search, children, su
     <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 px-6 pb-10" suppressHydrationWarning={suppressHydrationWarning ?? true}>
       {/* Title + Actions + Company Selector - Always render structure */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">{title}</h2>
+        <h2 className="text-2xl font-semibold text-theme-primary">{title}</h2>
         <div className="flex flex-wrap items-center gap-3">
           {showCompanySelector && (
             <CompanySelector 

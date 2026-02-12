@@ -37,7 +37,7 @@ export function ActionPrompt({
       mt-2 p-3 rounded-lg border transition-all
       ${confidence === 'high' 
         ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-300 dark:border-blue-500/30' 
-        : 'bg-gray-50 dark:bg-white/[0.05] border-gray-200 dark:border-white/[0.1]'
+        : 'bg-theme-button border-theme'
       }
     `}>
       <div className="flex items-start gap-3">
@@ -50,13 +50,13 @@ export function ActionPrompt({
         `}>
           <Lightbulb className={`
             h-4 w-4
-            ${confidence === 'high' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-white/60'}
+            ${confidence === 'high' ? 'text-blue-600 dark:text-blue-400' : 'text-theme-secondary'}
           `} />
         </div>
         <div className="flex-1 min-w-0">
           <p className={`
             text-sm font-medium mb-2
-            ${confidence === 'high' ? 'text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-white/80'}
+            ${confidence === 'high' ? 'text-blue-700 dark:text-blue-300' : 'text-theme-secondary'}
           `}>
             {getSuggestionText()}
           </p>
@@ -76,7 +76,7 @@ export function ActionPrompt({
             </button>
             <button
               onClick={onDismiss}
-              className="px-3 py-1.5 text-sm text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white/80 transition-colors"
+              className="px-3 py-1.5 text-sm text-theme-secondary hover:text-theme-primary dark:hover:text-theme-secondary transition-colors"
             >
               Dismiss
             </button>
@@ -84,9 +84,9 @@ export function ActionPrompt({
         </div>
         <button
           onClick={onDismiss}
-          className="p-1 hover:bg-gray-100 dark:hover:bg-white/[0.1] rounded transition-colors flex-shrink-0"
+          className="p-1 hover:bg-theme-muted rounded transition-colors flex-shrink-0"
         >
-          <X className="h-3 w-3 text-gray-600 dark:text-white/60" />
+          <X className="h-3 w-3 text-theme-secondary" />
         </button>
       </div>
     </div>

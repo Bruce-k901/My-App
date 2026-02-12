@@ -126,13 +126,13 @@ export function OrderEntryForm({ siteId }: OrderEntryFormProps) {
       )}
 
       {/* Customer & Date Selection */}
-      <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Order Details</h2>
+      <Card className="p-6 bg-white dark:bg-white/[0.02] border-theme">
+        <h2 className="text-lg font-semibold text-theme-primary mb-4">Order Details</h2>
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Customer Selector */}
             <div className="space-y-2">
-              <Label className="text-gray-700 dark:text-white/80">Customer</Label>
+              <Label className="text-theme-secondary">Customer</Label>
               <CustomerSelector
                 siteId={siteId}
                 value={customerId}
@@ -145,7 +145,7 @@ export function OrderEntryForm({ siteId }: OrderEntryFormProps) {
 
             {/* Delivery Date */}
             <div className="space-y-2">
-              <Label className="text-gray-700 dark:text-white/80">Delivery Date</Label>
+              <Label className="text-theme-secondary">Delivery Date</Label>
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-[#14B8A6]" />
                 <Input
@@ -153,7 +153,7 @@ export function OrderEntryForm({ siteId }: OrderEntryFormProps) {
                   value={deliveryDate}
                   onChange={(e) => setDeliveryDate(e.target.value)}
                   min={format(new Date(), 'yyyy-MM-dd')}
-                  className="bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white flex-1"
+                  className="bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary flex-1"
                 />
               </div>
             </div>
@@ -161,25 +161,25 @@ export function OrderEntryForm({ siteId }: OrderEntryFormProps) {
 
           {/* Notes */}
           <div className="space-y-2">
-            <Label className="text-gray-700 dark:text-white/80">Order Notes (optional)</Label>
+            <Label className="text-theme-secondary">Order Notes (optional)</Label>
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any special instructions..."
-              className="bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40"
+              className="bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary"
             />
           </div>
         </div>
       </Card>
 
       {/* Product Lines */}
-      <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
+      <Card className="p-6 bg-white dark:bg-white/[0.02] border-theme">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Products</h2>
+          <h2 className="text-lg font-semibold text-theme-primary">Products</h2>
           <Button
             variant="outline"
             onClick={handleAddLine}
-            className="h-9 px-3 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.06]"
+            className="h-9 px-3 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06]"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Product
@@ -187,7 +187,7 @@ export function OrderEntryForm({ siteId }: OrderEntryFormProps) {
         </div>
         <div className="space-y-3">
           {orderLines.length === 0 ? (
-            <div className="text-center py-8 text-gray-400 dark:text-white/40">
+            <div className="text-center py-8 text-theme-tertiary">
               <p>No products added yet</p>
               <Button
                 variant="ghost"
@@ -227,7 +227,7 @@ export function OrderEntryForm({ siteId }: OrderEntryFormProps) {
         <Button
           variant="outline"
           onClick={() => router.back()}
-          className="bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.06]"
+          className="bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06]"
         >
           Cancel
         </Button>

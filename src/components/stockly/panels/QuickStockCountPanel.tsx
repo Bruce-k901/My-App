@@ -249,7 +249,7 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
       <div className="p-4 border-b border-white/10">
         <div className="relative">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-tertiary" />
             <input
               ref={searchInputRef}
               type="text"
@@ -264,7 +264,7 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
                 }
               }}
               placeholder="Search and add items..."
-              className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-magenta-500 transition-colors"
+              className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-magenta-500 transition-colors"
             />
           </div>
 
@@ -280,8 +280,8 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
                   onClick={() => addLine(item)}
                   className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-white/5 transition-colors text-left first:rounded-t-lg last:rounded-b-lg"
                 >
-                  <span className="text-white text-sm font-medium">{item.name}</span>
-                  <span className="text-white/40 text-xs">
+                  <span className="text-theme-primary text-sm font-medium">{item.name}</span>
+                  <span className="text-theme-tertiary text-xs">
                     {item.expected_quantity} {item.stock_unit}
                   </span>
                 </button>
@@ -294,7 +294,7 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
               ref={searchResultsRef}
               className="absolute z-50 w-full mt-1 bg-[#1a1a2e] border border-white/10 rounded-lg shadow-xl p-4 text-center"
             >
-              <p className="text-white/40 text-sm">No items found</p>
+              <p className="text-theme-tertiary text-sm">No items found</p>
             </div>
           )}
         </div>
@@ -307,8 +307,8 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
           {countedLines.length > 0 && (
             <div className="grid grid-cols-3 gap-2">
               <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-2.5 text-center">
-                <p className="text-white/40 text-[10px] uppercase tracking-wide mb-0.5">Counted</p>
-                <p className="text-lg font-bold text-white">{countedLines.length}</p>
+                <p className="text-theme-tertiary text-[10px] uppercase tracking-wide mb-0.5">Counted</p>
+                <p className="text-lg font-bold text-theme-primary">{countedLines.length}</p>
               </div>
               <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-2.5 text-center">
                 <p className="text-red-400/60 text-[10px] uppercase tracking-wide mb-0.5">Shrinkage</p>
@@ -325,13 +325,13 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
           {lines.length === 0 ? (
             <div className="border border-dashed border-white/10 rounded-lg p-12 text-center">
               <ClipboardList className="w-12 h-12 text-white/20 mx-auto mb-3" />
-              <p className="text-white/40 text-sm mb-1">No items to count</p>
-              <p className="text-white/30 text-xs">Search above to add items for spot check</p>
+              <p className="text-theme-tertiary text-sm mb-1">No items to count</p>
+              <p className="text-theme-disabled text-xs">Search above to add items for spot check</p>
             </div>
           ) : (
             <div className="space-y-2">
               {/* Table header for larger screens */}
-              <div className="hidden md:grid md:grid-cols-12 gap-2 px-3 py-2 text-xs text-white/40 uppercase tracking-wide border-b border-white/10">
+              <div className="hidden md:grid md:grid-cols-12 gap-2 px-3 py-2 text-xs text-theme-tertiary uppercase tracking-wide border-b border-white/10">
                 <div className="col-span-4">Item</div>
                 <div className="col-span-2 text-right">Expected</div>
                 <div className="col-span-2 text-right">Counted</div>
@@ -349,14 +349,14 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
                   <div className="md:hidden space-y-2">
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
-                        <p className="text-white font-medium text-sm truncate">{line.name}</p>
-                        <p className="text-white/40 text-xs mt-0.5">
+                        <p className="text-theme-primary font-medium text-sm truncate">{line.name}</p>
+                        <p className="text-theme-tertiary text-xs mt-0.5">
                           Expected: {line.expected} {line.unit}
                         </p>
                       </div>
                       <button
                         onClick={() => removeLine(idx)}
-                        className="ml-2 p-1 text-white/40 hover:text-red-400 transition-colors flex-shrink-0"
+                        className="ml-2 p-1 text-theme-tertiary hover:text-red-400 transition-colors flex-shrink-0"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -364,14 +364,14 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
                     
                     <div className="flex items-center gap-2">
                       <div className="flex-1">
-                        <label className="text-xs text-white/40 mb-1 block">Actual Count</label>
+                        <label className="text-xs text-theme-tertiary mb-1 block">Actual Count</label>
                         <input
                           type="number"
                           step="0.01"
                           value={line.counted ?? ''}
                           onChange={(e) => updateLine(idx, e.target.value ? parseFloat(e.target.value) : null)}
                           placeholder="Enter..."
-                          className="w-full px-2.5 py-1.5 bg-white/5 border border-white/10 rounded text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-magenta-500"
+                          className="w-full px-2.5 py-1.5 bg-white/5 border border-white/10 rounded text-theme-primary text-sm placeholder:text-theme-disabled focus:outline-none focus:border-magenta-500"
                         />
                       </div>
                       
@@ -383,18 +383,18 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
                             ) : line.variance > 0 ? (
                               <TrendingUp className="w-3.5 h-3.5 text-green-400" />
                             ) : (
-                              <Minus className="w-3.5 h-3.5 text-white/40" />
+                              <Minus className="w-3.5 h-3.5 text-theme-tertiary" />
                             )}
                             <span className={`text-sm font-semibold ${
                               line.variance < 0 ? 'text-red-400' : 
-                              line.variance > 0 ? 'text-green-400' : 'text-white/40'
+                              line.variance > 0 ? 'text-green-400' : 'text-theme-tertiary'
                             }`}>
                               {line.variance > 0 ? '+' : ''}{line.variance}
                             </span>
                           </div>
                           <p className={`text-xs ${
                             line.variance_value < 0 ? 'text-red-400' : 
-                            line.variance_value > 0 ? 'text-green-400' : 'text-white/40'
+                            line.variance_value > 0 ? 'text-green-400' : 'text-theme-tertiary'
                           }`}>
                             {line.variance_value >= 0 ? '+' : ''}£{line.variance_value.toFixed(2)}
                           </p>
@@ -408,13 +408,13 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
                     <div className="col-span-4 flex items-center gap-2 min-w-0">
                       <button
                         onClick={() => removeLine(idx)}
-                        className="p-1 text-white/40 hover:text-red-400 transition-colors flex-shrink-0"
+                        className="p-1 text-theme-tertiary hover:text-red-400 transition-colors flex-shrink-0"
                       >
                         <X className="w-4 h-4" />
                       </button>
-                      <p className="text-white font-medium text-sm truncate">{line.name}</p>
+                      <p className="text-theme-primary font-medium text-sm truncate">{line.name}</p>
                     </div>
-                    <div className="col-span-2 text-right text-white/60 text-sm">
+                    <div className="col-span-2 text-right text-theme-tertiary text-sm">
                       {line.expected} {line.unit}
                     </div>
                     <div className="col-span-2">
@@ -424,7 +424,7 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
                         value={line.counted ?? ''}
                         onChange={(e) => updateLine(idx, e.target.value ? parseFloat(e.target.value) : null)}
                         placeholder="Enter..."
-                        className="w-full px-2.5 py-1.5 bg-white/5 border border-white/10 rounded text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-magenta-500"
+                        className="w-full px-2.5 py-1.5 bg-white/5 border border-white/10 rounded text-theme-primary text-sm placeholder:text-theme-disabled focus:outline-none focus:border-magenta-500"
                       />
                     </div>
                     {line.counted !== null ? (
@@ -436,11 +436,11 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
                             ) : line.variance > 0 ? (
                               <TrendingUp className="w-3.5 h-3.5 text-green-400" />
                             ) : (
-                              <Minus className="w-3.5 h-3.5 text-white/40" />
+                              <Minus className="w-3.5 h-3.5 text-theme-tertiary" />
                             )}
                             <span className={`text-sm font-semibold ${
                               line.variance < 0 ? 'text-red-400' : 
-                              line.variance > 0 ? 'text-green-400' : 'text-white/40'
+                              line.variance > 0 ? 'text-green-400' : 'text-theme-tertiary'
                             }`}>
                               {line.variance > 0 ? '+' : ''}{line.variance}
                             </span>
@@ -448,13 +448,13 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
                         </div>
                         <div className={`col-span-2 text-right text-sm font-medium ${
                           line.variance_value < 0 ? 'text-red-400' : 
-                          line.variance_value > 0 ? 'text-green-400' : 'text-white/40'
+                          line.variance_value > 0 ? 'text-green-400' : 'text-theme-tertiary'
                         }`}>
                           {line.variance_value >= 0 ? '+' : ''}£{line.variance_value.toFixed(2)}
                         </div>
                       </>
                     ) : (
-                      <div className="col-span-4 text-right text-white/30 text-xs">—</div>
+                      <div className="col-span-4 text-right text-theme-disabled text-xs">—</div>
                     )}
                   </div>
                 </div>
@@ -465,13 +465,13 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
           {/* Notes */}
           {lines.length > 0 && (
             <div>
-              <label className="block text-xs font-medium text-white/60 mb-1.5">Notes</label>
+              <label className="block text-xs font-medium text-theme-tertiary mb-1.5">Notes</label>
               <input
                 type="text"
                 value={countNotes}
                 onChange={(e) => setCountNotes(e.target.value)}
                 placeholder="Reason for spot check..."
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-magenta-500"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary text-sm placeholder:text-theme-disabled focus:outline-none focus:border-magenta-500"
               />
             </div>
           )}
@@ -494,14 +494,14 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
                   )}
                   <span className={`text-xs font-medium ${
                     totalVariance < 0 ? 'text-red-400' : 
-                    totalVariance > 0 ? 'text-green-400' : 'text-white/60'
+                    totalVariance > 0 ? 'text-green-400' : 'text-theme-tertiary'
                   }`}>
                     Total Variance Value
                   </span>
                 </div>
                 <p className={`text-xl font-bold ${
                   totalVariance < 0 ? 'text-red-400' : 
-                  totalVariance > 0 ? 'text-green-400' : 'text-white'
+                  totalVariance > 0 ? 'text-green-400' : 'text-theme-primary'
                 }`}>
                   {totalVariance >= 0 ? '+' : ''}£{totalVariance.toFixed(2)}
                 </p>
@@ -515,7 +515,7 @@ export default function QuickStockCountPanel({ onComplete, onCancel }: QuickStoc
       <div className="p-4 border-t border-white/10 flex items-center gap-3 bg-[#0B0D13]/50 backdrop-blur-sm">
         <button
           onClick={onCancel}
-          className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors text-sm font-medium"
+          className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-theme-primary rounded-lg transition-colors text-sm font-medium"
         >
           Cancel
         </button>

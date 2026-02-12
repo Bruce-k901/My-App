@@ -46,7 +46,7 @@ export default function MyTicketDetailPage({ params }: { params: Promise<{ id: s
   if (isLoading) {
     return (
       <div className="p-6 flex items-center justify-center min-h-screen">
-        <div className="text-gray-600 dark:text-gray-400">Loading ticket...</div>
+        <div className="text-theme-secondary">Loading ticket...</div>
       </div>
     );
   }
@@ -72,7 +72,7 @@ export default function MyTicketDetailPage({ params }: { params: Promise<{ id: s
       {/* Back button */}
       <Link
         href="/dashboard/support/my-tickets"
-        className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+        className="inline-flex items-center gap-2 text-theme-secondary hover:text-theme-primary transition-colors"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -81,10 +81,10 @@ export default function MyTicketDetailPage({ params }: { params: Promise<{ id: s
       </Link>
 
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-theme p-6">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-2xl font-bold text-theme-primary mb-2">
               {ticket.title}
             </h1>
             <div className="flex flex-wrap items-center gap-2">
@@ -99,20 +99,20 @@ export default function MyTicketDetailPage({ params }: { params: Promise<{ id: s
         {/* Meta info */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
           <div>
-            <span className="text-gray-600 dark:text-gray-400">Assigned to:</span>
-            <div className="font-medium text-gray-900 dark:text-white">
+            <span className="text-theme-secondary">Assigned to:</span>
+            <div className="font-medium text-theme-primary">
               {ticket.assigned_to_profile?.full_name || 'Support Team'}
             </div>
           </div>
           <div>
-            <span className="text-gray-600 dark:text-gray-400">Created:</span>
-            <div className="font-medium text-gray-900 dark:text-white">
+            <span className="text-theme-secondary">Created:</span>
+            <div className="font-medium text-theme-primary">
               {formatDistanceToNow(new Date(ticket.created_at), { addSuffix: true })}
             </div>
           </div>
           <div>
-            <span className="text-gray-600 dark:text-gray-400">Site:</span>
-            <div className="font-medium text-gray-900 dark:text-white">
+            <span className="text-theme-secondary">Site:</span>
+            <div className="font-medium text-theme-primary">
               {ticket.site?.name || 'N/A'}
             </div>
           </div>
@@ -120,8 +120,8 @@ export default function MyTicketDetailPage({ params }: { params: Promise<{ id: s
 
         {/* Page URL */}
         {ticket.page_url && (
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <span className="text-sm text-gray-600 dark:text-gray-400">Page URL:</span>
+          <div className="mt-4 pt-4 border-t border-theme">
+            <span className="text-sm text-theme-secondary">Page URL:</span>
             <a
               href={ticket.page_url}
               target="_blank"
@@ -135,14 +135,14 @@ export default function MyTicketDetailPage({ params }: { params: Promise<{ id: s
       </div>
 
       {/* Original Description */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Description</h2>
-        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{ticket.description}</p>
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-theme p-6">
+        <h2 className="text-lg font-semibold text-theme-primary mb-3">Description</h2>
+        <p className="text-theme-secondary whitespace-pre-wrap">{ticket.description}</p>
 
         {/* Initial attachments (screenshots) */}
         {ticket.attachments && ticket.attachments.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Attachments:</h3>
+          <div className="mt-4 pt-4 border-t border-theme">
+            <h3 className="text-sm font-medium text-theme-secondary mb-2">Attachments:</h3>
             <div className="flex flex-wrap gap-2">
               {ticket.attachments.map((attachment) => (
                 <a
@@ -150,7 +150,7 @@ export default function MyTicketDetailPage({ params }: { params: Promise<{ id: s
                   href={`/api/attachments/${attachment.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-sm text-theme-secondary hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -169,8 +169,8 @@ export default function MyTicketDetailPage({ params }: { params: Promise<{ id: s
       </div>
 
       {/* Conversation Thread */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-theme p-6">
+        <h2 className="text-lg font-semibold text-theme-primary mb-4">
           Conversation ({ticket.comment_count})
         </h2>
         <TicketCommentThread

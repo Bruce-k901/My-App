@@ -29,7 +29,7 @@ export default function StockCountCard({ count, onUpdate }: StockCountCardProps)
     switch (count.status) {
       case 'draft':
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-600/20 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600/40 text-sm">
+ <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-600/20 text-theme-secondary border border-gray-200 dark:border-gray-600/40 text-sm">
             <FileText className="h-3 w-3 mr-1" />
             Draft
           </span>
@@ -58,7 +58,7 @@ export default function StockCountCard({ count, onUpdate }: StockCountCardProps)
         );
       case 'completed':
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-50 dark:bg-gray-600/20 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600/40 text-sm">
+ <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-50 dark:bg-gray-600/20 text-theme-secondary border border-gray-200 dark:border-gray-600/40 text-sm">
             <CheckCircle className="h-3 w-3 mr-1" />
             Completed
           </span>
@@ -72,14 +72,14 @@ export default function StockCountCard({ count, onUpdate }: StockCountCardProps)
         );
       case 'approved':
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/40 text-sm">
+          <span className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-600/20 text-module-fg border border-module-fg/30 text-sm">
             <CheckCircle className="h-3 w-3 mr-1" />
             Approved
           </span>
         );
       case 'finalized':
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/40 text-sm">
+          <span className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-600/20 text-module-fg border border-module-fg/30 text-sm">
             <CheckCircle className="h-3 w-3 mr-1" />
             Finalized
           </span>
@@ -93,7 +93,7 @@ export default function StockCountCard({ count, onUpdate }: StockCountCardProps)
         );
       default:
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-600/20 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600/40 text-sm">
+ <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-600/20 text-theme-secondary border border-gray-200 dark:border-gray-600/40 text-sm">
             {count.status}
           </span>
         );
@@ -158,23 +158,23 @@ export default function StockCountCard({ count, onUpdate }: StockCountCardProps)
   return (
     <div 
       onClick={handleClick}
-      className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6 hover:border-emerald-600 dark:hover:border-emerald-500/50 transition-all duration-200 cursor-pointer"
+      className="bg-theme-surface border border-theme rounded-xl p-6 hover:border-emerald-600 dark:hover:border-module-fg/30 transition-all duration-200 cursor-pointer"
     >
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         {/* Left side - main info */}
         <div className="flex-1">
           <div className="flex items-start gap-3 mb-3">
             <div className="flex-1">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-xl font-semibold text-theme-primary mb-2">
                 {count.name}
               </h3>
               {getStatusBadge()}
             </div>
           </div>
           
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-white/60">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-theme-secondary">
             <div className="flex items-center">
-              <Calendar className="h-4 w-4 mr-2 text-gray-500 dark:text-white/40" />
+              <Calendar className="h-4 w-4 mr-2 text-theme-tertiary" />
               {new Date(count.count_date).toLocaleDateString('en-GB', {
                 day: 'numeric',
                 month: 'short',
@@ -183,7 +183,7 @@ export default function StockCountCard({ count, onUpdate }: StockCountCardProps)
             </div>
             
             <div className="flex items-center">
-              <FileText className="h-4 w-4 mr-2 text-gray-500 dark:text-white/40" />
+              <FileText className="h-4 w-4 mr-2 text-theme-tertiary" />
               {count.total_items > 0 
                 ? `${count.items_counted || 0}/${count.total_items} items`
                 : 'No items'}
@@ -199,10 +199,10 @@ export default function StockCountCard({ count, onUpdate }: StockCountCardProps)
             {count.status !== 'draft' && (
               <div className={`flex items-center font-medium ${
                 !count.total_variance_value || isNaN(count.total_variance_value)
-                  ? 'text-gray-600 dark:text-gray-400'
+                  ? 'text-theme-secondary'
                   : count.total_variance_value < 0 
                     ? 'text-red-600 dark:text-red-400' 
-                    : 'text-emerald-600 dark:text-emerald-400'
+                    : 'text-module-fg'
               }`}>
                 {!count.total_variance_value || isNaN(count.total_variance_value)
                   ? '£0.00'
@@ -214,11 +214,11 @@ export default function StockCountCard({ count, onUpdate }: StockCountCardProps)
           {/* Progress bar for active counts */}
           {count.status === 'active' && count.total_items > 0 && (
             <div className="mt-4">
-              <div className="flex justify-between items-center text-sm text-gray-600 dark:text-white/60 mb-2">
+              <div className="flex justify-between items-center text-sm text-theme-secondary mb-2">
                 <span>Progress</span>
                 <span>{getProgressPercentage()}%</span>
               </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div className="w-full bg-theme-muted-strong rounded-full h-2">
                 <div 
                   className="bg-emerald-600 dark:bg-emerald-500 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${getProgressPercentage()}%` }}
@@ -244,7 +244,7 @@ export default function StockCountCard({ count, onUpdate }: StockCountCardProps)
           <Button
             variant="ghost"
             onClick={handleClick}
-            className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-600/10"
+            className="text-module-fg hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-module-fg/10"
           >
             View Details
             <ChevronRight className="ml-2 h-4 w-4" />

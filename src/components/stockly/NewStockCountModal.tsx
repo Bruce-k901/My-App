@@ -364,13 +364,13 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0f1220] border-neutral-800">
         <DialogHeader>
-          <DialogTitle className="text-white text-xl font-semibold">Start New Stock Count</DialogTitle>
+          <DialogTitle className="text-theme-primary text-xl font-semibold">Start New Stock Count</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 mt-4">
           {/* Count Type */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-3">Count Type</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-3">Count Type</label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
                 { value: 'full', label: 'Full', desc: 'All items' },
@@ -385,11 +385,11 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
                   className={`p-4 rounded-lg border-2 transition-all ${
                     formData.count_type === type.value
                       ? 'border-[#D37E91] bg-[#D37E91]/10'
-                      : 'border-neutral-700 bg-white/[0.03] hover:border-neutral-600'
+                      : 'border-theme bg-white/[0.03] hover:border-neutral-600'
                   }`}
                 >
-                  <div className="text-white font-medium mb-1">{type.label}</div>
-                  <div className="text-xs text-slate-400">{type.desc}</div>
+                  <div className="text-theme-primary font-medium mb-1">{type.label}</div>
+                  <div className="text-xs text-theme-tertiary">{type.desc}</div>
                 </button>
               ))}
             </div>
@@ -397,7 +397,7 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
 
           {/* Count Date */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Count Date</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-2">Count Date</label>
             <Input
               type="date"
               value={formData.count_date}
@@ -408,10 +408,10 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
           {/* Categories (if partial) */}
           {formData.count_type === 'partial' && (
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Categories</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-2">Categories</label>
               <div className="bg-white/[0.03] border border-neutral-800 rounded-lg p-4 max-h-48 overflow-y-auto">
                 {categories.length === 0 ? (
-                  <p className="text-slate-400 text-sm">No categories available</p>
+                  <p className="text-theme-tertiary text-sm">No categories available</p>
                 ) : (
                   <div className="space-y-2">
                     {categories.map((category) => (
@@ -425,7 +425,7 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
                           onChange={() => toggleCategory(category.id)}
                           className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-[#D37E91] focus:ring-[#D37E91]"
                         />
-                        <span className="text-white text-sm">{category.name}</span>
+                        <span className="text-theme-primary text-sm">{category.name}</span>
                       </label>
                     ))}
                   </div>
@@ -437,10 +437,10 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
           {/* Storage Areas (if partial or rolling) */}
           {(formData.count_type === 'partial' || formData.count_type === 'rolling') && (
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Storage Areas</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-2">Storage Areas</label>
               <div className="bg-white/[0.03] border border-neutral-800 rounded-lg p-4 max-h-48 overflow-y-auto">
                 {storageAreas.length === 0 ? (
-                  <p className="text-slate-400 text-sm">No storage areas available</p>
+                  <p className="text-theme-tertiary text-sm">No storage areas available</p>
                 ) : (
                   <div className="space-y-2">
                     {storageAreas.map((area) => (
@@ -454,9 +454,9 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
                           onChange={() => toggleStorageArea(area.id)}
                           className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-[#D37E91] focus:ring-[#D37E91]"
                         />
-                        <span className="text-white text-sm">{area.name}</span>
+                        <span className="text-theme-primary text-sm">{area.name}</span>
                         {area.area_type && (
-                          <span className="text-xs text-slate-400 ml-auto">({area.area_type})</span>
+                          <span className="text-xs text-theme-tertiary ml-auto">({area.area_type})</span>
                         )}
                       </label>
                     ))}
@@ -468,12 +468,12 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Notes (Optional)</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-2">Notes (Optional)</label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               rows={3}
-              className="w-full px-3 py-2 bg-white/[0.03] border border-neutral-800 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+              className="w-full px-3 py-2 bg-white/[0.03] border border-neutral-800 rounded-lg text-theme-primary placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
               placeholder="Optional notes about this count..."
             />
           </div>

@@ -94,16 +94,16 @@ export default function SiteGMManager({ site, companyId, onSaved }: SiteGMManage
       {currentGM && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-3 bg-neutral-800/50 rounded-lg">
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Current GM</label>
-            <div className="text-sm text-white">{currentGM.full_name || "No GM assigned"}</div>
+            <label className="block text-xs text-theme-tertiary mb-1">Current GM</label>
+            <div className="text-sm text-theme-primary">{currentGM.full_name || "No GM assigned"}</div>
           </div>
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Phone</label>
-            <div className="text-sm text-white">{currentGM.phone || "No phone"}</div>
+            <label className="block text-xs text-theme-tertiary mb-1">Phone</label>
+            <div className="text-sm text-theme-primary">{currentGM.phone || "No phone"}</div>
           </div>
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Email</label>
-            <div className="text-sm text-white">{currentGM.email || "No email"}</div>
+            <label className="block text-xs text-theme-tertiary mb-1">Email</label>
+            <div className="text-sm text-theme-primary">{currentGM.email || "No email"}</div>
           </div>
         </div>
       )}
@@ -111,15 +111,15 @@ export default function SiteGMManager({ site, companyId, onSaved }: SiteGMManage
       {/* GM Selection and Save */}
       <div className="flex items-end gap-3">
         <div className="flex-1">
-          <label className="block text-sm text-gray-400 mb-1">General Manager</label>
+          <label className="block text-sm text-theme-tertiary mb-1">General Manager</label>
           <select
-            className="bg-neutral-800 text-white border border-neutral-700 w-full rounded-md text-sm p-2 focus:outline-none focus:ring-2 focus:ring-magenta-500 hover:border-magenta-400 transition-colors"
+            className="bg-neutral-800 text-theme-primary border border-theme w-full rounded-md text-sm p-2 focus:outline-none focus:ring-2 focus:ring-magenta-500 hover:border-magenta-400 transition-colors"
             value={selectedGM?.id || ""}
             onChange={(e) =>
               setSelectedGM(gmList.find((gm) => gm.id === e.target.value) || null)
             }
           >
-            <option value="" className="bg-neutral-800 text-white">Select a manager</option>
+            <option value="" className="bg-neutral-800 text-theme-primary">Select a manager</option>
             {gmList.map((gm) => (
               <option key={gm.id} value={gm.id} className="bg-neutral-800 text-white hover:bg-magenta-500">
                 {gm.full_name}

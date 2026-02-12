@@ -170,7 +170,7 @@ export default function AbsenceAlertsWidget({ companyId, siteId }: WidgetProps) 
                   {absence.leave_type}
                 </span>
               </div>
-              <div className="flex items-center gap-1 text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 ml-2 flex-shrink-0">
+              <div className="flex items-center gap-1 text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary ml-2 flex-shrink-0">
                 <Calendar className="w-3 h-3" />
                 {formatDateRange(absence.start_date, absence.end_date)}
               </div>

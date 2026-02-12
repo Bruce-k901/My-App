@@ -143,7 +143,7 @@ export default function DepartmentTree({
           {hasChildren && (
             <button
               onClick={() => toggleExpand(node.department.id)}
-              className="absolute z-10 w-6 h-6 flex items-center justify-center rounded-md bg-[#0B0D13] border border-white/[0.1] hover:border-[#D37E91]/50 text-gray-400 hover:text-[#D37E91] transition-colors shadow-lg"
+              className="absolute z-10 w-6 h-6 flex items-center justify-center rounded-md bg-[#0B0D13] border border-white/[0.1] hover:border-[#D37E91]/50 text-theme-tertiary hover:text-[#D37E91] transition-colors shadow-lg"
               style={{
                 left: `${indent + 16}px`,
                 top: '1.5rem',
@@ -207,7 +207,7 @@ export default function DepartmentTree({
   if (filteredTree.length === 0) {
     return (
       <div className="text-center py-12 bg-white/[0.03] border border-white/[0.06] rounded-lg">
-        <p className="text-gray-400">
+        <p className="text-theme-tertiary">
           {searchQuery ? 'No departments found matching your search' : 'No departments yet'}
         </p>
       </div>

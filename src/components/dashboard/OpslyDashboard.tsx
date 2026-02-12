@@ -48,7 +48,7 @@ export function OpslyDashboard({ variant }: OpslyDashboardProps) {
           onClick={() => setSidebarOpen(true)}
           className="fixed bottom-20 right-4 w-12 h-12 bg-teamly rounded-full flex items-center justify-center shadow-lg z-30"
         >
-          <Menu className="w-5 h-5 text-white" />
+          <Menu className="w-5 h-5 text-theme-primary" />
         </button>
 
         {/* Mobile sidebar overlay */}

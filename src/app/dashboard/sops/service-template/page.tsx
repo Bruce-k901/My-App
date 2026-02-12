@@ -167,60 +167,60 @@ export default function ServiceSOPTemplatePage() {
 
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 rounded-2xl p-6 border border-blue-500/30">
-        <h1 className="text-3xl font-bold text-white mb-2">Service (FOH) SOP Template</h1>
-        <p className="text-neutral-300 text-sm">
+        <h1 className="text-3xl font-bold text-theme-primary mb-2">Service (FOH) SOP Template</h1>
+        <p className="text-theme-tertiary text-sm">
           Front of house service standards and guest interaction procedures
         </p>
       </div>
 
       {/* SOP DETAILS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">SOP Details</h2>
         
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">SOP Title *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">SOP Title *</label>
             <input 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., Lunch Service Standard"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Reference Code (Auto)</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Reference Code (Auto)</label>
             <input 
               value={refCode}
               readOnly
-              className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-neutral-400"
+              className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-theme-tertiary"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Version *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Version *</label>
             <input 
               value={version}
               onChange={(e) => setVersion(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Author *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Author *</label>
             <input 
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Status *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Status *</label>
             <select 
               value={status} 
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
             >
               <option value="Draft">Draft</option>
               <option value="Published">Published</option>
@@ -229,11 +229,11 @@ export default function ServiceSOPTemplatePage() {
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Estimated Time</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Estimated Time</label>
             <input 
               value={estimatedTime}
               onChange={(e) => setEstimatedTime(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., 30 minutes"
             />
           </div>
@@ -241,9 +241,9 @@ export default function ServiceSOPTemplatePage() {
       </section>
 
       {/* SERVICE STANDARDS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Service Standards</h2>
-        <p className="text-xs text-neutral-400 mb-4">
+        <p className="text-xs text-theme-tertiary mb-4">
           Define core service principles and expected behaviors
         </p>
 
@@ -251,20 +251,20 @@ export default function ServiceSOPTemplatePage() {
           {serviceStandards.map((std, index) => (
             <div key={std.id} className="grid grid-cols-12 gap-2 items-end">
               <div className="col-span-4">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Standard</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Standard</label>}
                 <input
                   value={std.standard}
                   onChange={(e) => setServiceStandards(serviceStandards.map(s => s.id === std.id ? { ...s, standard: e.target.value } : s))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Greeting"
                 />
               </div>
               <div className="col-span-7">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Description</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Description</label>}
                 <input
                   value={std.description}
                   onChange={(e) => setServiceStandards(serviceStandards.map(s => s.id === std.id ? { ...s, description: e.target.value } : s))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="Expected behavior..."
                 />
               </div>
@@ -302,7 +302,7 @@ export default function ServiceSOPTemplatePage() {
         </button>
         <button
           onClick={() => showToast({ title: 'Export', description: 'PDF export coming soon', type: 'info' })}
-          className="px-6 py-3 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-white font-medium flex items-center gap-2"
+          className="px-6 py-3 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-theme-primary font-medium flex items-center gap-2"
         >
           <Download size={20} />
           Export PDF

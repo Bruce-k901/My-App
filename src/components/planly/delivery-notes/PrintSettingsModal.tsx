@@ -70,7 +70,7 @@ export function PrintSettingsModal({
         <div className="space-y-6 py-4">
           {/* Paper Size */}
           <div className="space-y-3">
-            <label className="text-sm font-medium text-gray-700 dark:text-white">
+            <label className="text-sm font-medium text-theme-secondary">
               Paper Size
             </label>
             <div className="space-y-2">
@@ -82,7 +82,7 @@ export function PrintSettingsModal({
                   onChange={() => handlePaperSizeChange('A4')}
                   className="w-4 h-4 text-[#14B8A6] focus:ring-[#14B8A6]"
                 />
-                <span className="text-sm text-gray-600 dark:text-white/80">
+                <span className="text-sm text-theme-secondary">
                   A4 (4 notes per sheet)
                 </span>
               </label>
@@ -94,7 +94,7 @@ export function PrintSettingsModal({
                   onChange={() => handlePaperSizeChange('A5')}
                   className="w-4 h-4 text-[#14B8A6] focus:ring-[#14B8A6]"
                 />
-                <span className="text-sm text-gray-600 dark:text-white/80">
+                <span className="text-sm text-theme-secondary">
                   A5 (2 notes per sheet)
                 </span>
               </label>
@@ -106,7 +106,7 @@ export function PrintSettingsModal({
                   onChange={() => handlePaperSizeChange('custom')}
                   className="w-4 h-4 text-[#14B8A6] focus:ring-[#14B8A6]"
                 />
-                <span className="text-sm text-gray-600 dark:text-white/80">
+                <span className="text-sm text-theme-secondary">
                   Custom
                 </span>
               </label>
@@ -116,7 +116,7 @@ export function PrintSettingsModal({
             {localSettings.paperSize === 'custom' && (
               <div className="pl-7 space-y-3 pt-2">
                 <div className="flex items-center gap-2">
-                  <label className="text-xs text-gray-500 dark:text-white/60 w-16">Width:</label>
+                  <label className="text-xs text-theme-tertiary w-16">Width:</label>
                   <Input
                     type="number"
                     value={localSettings.customWidth || 210}
@@ -128,10 +128,10 @@ export function PrintSettingsModal({
                     min={100}
                     max={500}
                   />
-                  <span className="text-xs text-gray-500 dark:text-white/60">mm</span>
+                  <span className="text-xs text-theme-tertiary">mm</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <label className="text-xs text-gray-500 dark:text-white/60 w-16">Height:</label>
+                  <label className="text-xs text-theme-tertiary w-16">Height:</label>
                   <Input
                     type="number"
                     value={localSettings.customHeight || 297}
@@ -143,23 +143,23 @@ export function PrintSettingsModal({
                     min={100}
                     max={500}
                   />
-                  <span className="text-xs text-gray-500 dark:text-white/60">mm</span>
+                  <span className="text-xs text-theme-tertiary">mm</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <label className="text-xs text-gray-500 dark:text-white/60 w-16">Notes:</label>
+                  <label className="text-xs text-theme-tertiary w-16">Notes:</label>
                   <select
                     value={localSettings.notesPerPage}
                     onChange={(e) => setLocalSettings(prev => ({
                       ...prev,
                       notesPerPage: parseInt(e.target.value) as 1 | 2 | 4,
                     }))}
-                    className="w-20 h-8 text-sm rounded border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white"
+                    className="w-20 h-8 text-sm rounded border border-theme bg-theme-surface text-theme-primary"
                   >
                     <option value={1}>1</option>
                     <option value={2}>2</option>
                     <option value={4}>4</option>
                   </select>
-                  <span className="text-xs text-gray-500 dark:text-white/60">per page</span>
+                  <span className="text-xs text-theme-tertiary">per page</span>
                 </div>
               </div>
             )}
@@ -167,7 +167,7 @@ export function PrintSettingsModal({
 
           {/* Print Options */}
           <div className="space-y-3">
-            <label className="text-sm font-medium text-gray-700 dark:text-white">
+            <label className="text-sm font-medium text-theme-secondary">
               Print Options
             </label>
             <div className="space-y-2">
@@ -181,7 +181,7 @@ export function PrintSettingsModal({
                   }))}
                   className="w-4 h-4 rounded text-[#14B8A6] focus:ring-[#14B8A6]"
                 />
-                <span className="text-sm text-gray-600 dark:text-white/80">
+                <span className="text-sm text-theme-secondary">
                   Show cutting markers
                 </span>
               </label>
@@ -195,7 +195,7 @@ export function PrintSettingsModal({
                   }))}
                   className="w-4 h-4 rounded text-[#14B8A6] focus:ring-[#14B8A6]"
                 />
-                <span className="text-sm text-gray-600 dark:text-white/80">
+                <span className="text-sm text-theme-secondary">
                   Show all products (include items with no quantity)
                 </span>
               </label>

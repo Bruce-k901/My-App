@@ -138,29 +138,29 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
     <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-transparent shadow-sm dark:shadow-none">
       {/* Calendar Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
+        <h2 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
+          <Calendar className="h-5 w-5 text-module-fg" />
           {currentDate ? currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : ""}
         </h2>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigateMonth('prev')}
-            className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            className="p-2 text-theme-tertiary hover:text-theme-primary hover:bg-theme-hover rounded-lg transition-colors"
             disabled={loading}
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
           <button
             onClick={() => setCurrentDate(new Date())}
-            className="px-3 py-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            className="px-3 py-1 text-sm text-theme-tertiary hover:text-theme-primary hover:bg-theme-hover rounded-lg transition-colors"
             disabled={loading}
           >
             Today
           </button>
           <button
             onClick={() => navigateMonth('next')}
-            className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            className="p-2 text-theme-tertiary hover:text-theme-primary hover:bg-theme-hover rounded-lg transition-colors"
             disabled={loading}
           >
             <ChevronRight className="h-4 w-4" />
@@ -187,7 +187,7 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
         <div className="grid grid-cols-7 gap-1">
           {/* Day Headers */}
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="p-3 text-center text-sm font-medium text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+            <div key={day} className="p-3 text-center text-sm font-medium text-theme-tertiary border-b border-theme">
               {day}
             </div>
           ))}
@@ -203,22 +203,22 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
           return (
             <div
               key={index}
-              className={`min-h-[100px] p-2 border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
-                isCurrentMonthDay ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900'
+              className={`min-h-[100px] p-2 border border-theme cursor-pointer transition-all duration-200 ${
+                isCurrentMonthDay ? 'bg-white dark:bg-gray-800' : 'bg-theme-surface'
               } ${isTodayDate ? 'ring-2 ring-cyan-500' : ''} ${
                 isHovered ? 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600' : ''
-              } ${dayAssets.length === 0 ? 'hover:bg-gray-100 dark:hover:bg-gray-700' : ''}`}
+              } ${dayAssets.length === 0 ? 'hover:bg-theme-hover' : ''}`}
               onClick={() => handleDayClick(date, dayAssets)}
               onMouseEnter={() => setHoveredDay(dateKey)}
               onMouseLeave={() => setHoveredDay(null)}
             >
               {/* Date Number */}
               <div className={`text-sm font-medium mb-2 flex items-center justify-between ${
-                isCurrentMonthDay ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'
-              } ${isTodayDate ? 'text-cyan-600 dark:text-cyan-400' : ''}`}>
+                isCurrentMonthDay ? 'text-theme-primary' : 'text-theme-tertiary'
+              } ${isTodayDate ? 'text-module-fg' : ''}`}>
                 <span>{date.getDate()}</span>
                 {dayAssets.length === 0 && isHovered && isCurrentMonthDay && (
-                  <Plus className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
+                  <Plus className="h-3 w-3 text-module-fg" />
                 )}
               </div>
 
@@ -243,14 +243,14 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
                       title={`${cleanAsset.name} - ${cleanAsset.site_name} (${status})`}
                     >
                       <div className="truncate font-medium">{cleanAsset.name}</div>
-                      <div className="truncate text-gray-500 dark:text-gray-400">{cleanAsset.site_name}</div>
+                      <div className="truncate text-theme-tertiary">{cleanAsset.site_name}</div>
                     </div>
                   );
                 })}
 
                 {/* Show more indicator */}
                 {dayAssets.length > 3 && (
-                  <div className="text-xs text-gray-500 dark:text-gray-400 text-center py-1 hover:text-gray-900 dark:hover:text-white transition-colors">
+                  <div className="text-xs text-theme-tertiary text-center py-1 hover:text-theme-primary transition-colors">
                     +{dayAssets.length - 3} more
                   </div>
                 )}
@@ -263,22 +263,22 @@ export function PPMCalendar({ onAssetClick, onRefresh }: PPMCalendarProps) {
       )}
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="flex flex-wrap gap-4 mt-6 pt-4 border-t border-theme">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded" style={{ backgroundColor: '#22C55E' }}></div>
-          <span className="text-gray-600 dark:text-gray-400">Completed</span>
+          <span className="text-theme-secondary">Completed</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded" style={{ backgroundColor: '#EF4444' }}></div>
-          <span className="text-gray-600 dark:text-gray-400">Overdue</span>
+          <span className="text-theme-secondary">Overdue</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded" style={{ backgroundColor: '#F59E0B' }}></div>
-          <span className="text-gray-600 dark:text-gray-400">Due Soon</span>
+          <span className="text-theme-secondary">Due Soon</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded" style={{ backgroundColor: '#6B7280' }}></div>
-          <span className="text-gray-600 dark:text-gray-400">Upcoming</span>
+          <span className="text-theme-secondary">Upcoming</span>
         </div>
       </div>
 

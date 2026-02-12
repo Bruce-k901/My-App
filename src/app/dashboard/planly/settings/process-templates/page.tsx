@@ -12,14 +12,14 @@ import { ProcessTemplate, ProcessStage } from '@/types/planly';
 
 function StageCard({ stage, dayNumber }: { stage: ProcessStage; dayNumber: number }) {
   return (
-    <div className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10">
-      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 dark:bg-white/10 text-xs font-medium text-gray-600 dark:text-white/60">
+    <div className="flex items-start gap-3 p-3 bg-theme-button rounded-lg border border-theme">
+      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 dark:bg-white/10 text-xs font-medium text-theme-secondary">
         {stage.sequence}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-gray-900 dark:text-white font-medium">{stage.name}</div>
+        <div className="text-theme-primary font-medium">{stage.name}</div>
         {stage.instructions && (
-          <p className="text-sm text-gray-500 dark:text-white/50 mt-1">{stage.instructions}</p>
+          <p className="text-sm text-theme-tertiary mt-1">{stage.instructions}</p>
         )}
         <div className="flex flex-wrap gap-2 mt-2">
           {stage.bake_group && (
@@ -35,7 +35,7 @@ function StageCard({ stage, dayNumber }: { stage: ProcessStage; dayNumber: numbe
             </span>
           )}
           {stage.time_constraint && (
-            <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-white/60">
+            <span className="text-xs px-2 py-1 rounded bg-theme-muted text-theme-secondary">
               Start: {stage.time_constraint}
             </span>
           )}
@@ -65,13 +65,13 @@ function DaySection({
     <div className="space-y-2">
       <div className="flex items-center gap-2">
         <Calendar className="h-4 w-4 text-cyan-500" />
-        <h4 className="font-medium text-gray-900 dark:text-white">
+        <h4 className="font-medium text-theme-primary">
           Day {dayNumber}
           {isDeliveryDay && (
-            <span className="ml-2 text-xs text-cyan-600 dark:text-cyan-400">(Delivery)</span>
+            <span className="ml-2 text-xs text-module-fg">(Delivery)</span>
           )}
         </h4>
-        <span className="text-xs text-gray-400 dark:text-white/40">
+        <span className="text-xs text-theme-tertiary">
           {stages.length} {stages.length === 1 ? 'stage' : 'stages'}
         </span>
       </div>
@@ -94,7 +94,7 @@ function TemplateCardContent({ templateId }: { templateId: string }) {
 
   if (totalDays === 0) {
     return (
-      <div className="text-center py-6 text-gray-400 dark:text-white/40">
+      <div className="text-center py-6 text-theme-tertiary">
         No stages defined yet
       </div>
     );
@@ -169,25 +169,25 @@ function TemplateCard({
     <Card className="p-0 overflow-hidden">
       {/* Header - Always Visible */}
       <div
-        className="p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+        className="p-4 cursor-pointer hover:bg-theme-hover transition-colors"
         onClick={onToggle}
       >
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-cyan-500/10 dark:bg-cyan-500/20">
-              <RefreshCw className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-module-fg/10 dark:bg-module-fg/20">
+              <RefreshCw className="h-4 w-4 text-module-fg" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-gray-900 dark:text-white">{template.name}</h3>
+                <h3 className="font-semibold text-theme-primary">{template.name}</h3>
                 {template.is_master && (
-                  <span className="text-xs px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+                  <span className="text-xs px-2 py-0.5 rounded bg-module-fg/10 text-module-fg border border-module-fg/30">
                     Master
                   </span>
                 )}
               </div>
               {template.description && (
-                <p className="text-sm text-gray-500 dark:text-white/50 mt-0.5">
+                <p className="text-sm text-theme-tertiary mt-0.5">
                   {template.description}
                 </p>
               )}
@@ -200,7 +200,7 @@ function TemplateCard({
                 e.stopPropagation();
                 onEdit(template.id);
               }}
-              className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+              className="p-2 rounded-lg text-theme-tertiary hover:text-theme-secondary hover:bg-theme-muted transition-colors"
             >
               <Edit2 className="h-4 w-4" />
             </button>
@@ -209,20 +209,20 @@ function TemplateCard({
                 e.stopPropagation();
                 onDelete(template.id);
               }}
-              className="p-2 rounded-lg text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+              className="p-2 rounded-lg text-theme-tertiary hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
             >
               <Trash2 className="h-4 w-4" />
             </button>
             {isExpanded ? (
-              <ChevronDown className="h-5 w-5 text-gray-400" />
+              <ChevronDown className="h-5 w-5 text-theme-tertiary" />
             ) : (
-              <ChevronRight className="h-5 w-5 text-gray-400" />
+              <ChevronRight className="h-5 w-5 text-theme-tertiary" />
             )}
           </div>
         </div>
 
         {/* Summary Info */}
-        <div className="mt-3 flex items-center gap-4 text-sm text-gray-500 dark:text-white/50">
+        <div className="mt-3 flex items-center gap-4 text-sm text-theme-tertiary">
           <span>
             {totalDays} {totalDays === 1 ? 'day' : 'days'}
           </span>
@@ -233,13 +233,13 @@ function TemplateCard({
 
         {/* Day Summary (Collapsed) */}
         {!isExpanded && stageCount > 0 && (
-          <div className="mt-2 text-sm text-gray-400 dark:text-white/40 truncate">{getDaySummary()}</div>
+          <div className="mt-2 text-sm text-theme-tertiary truncate">{getDaySummary()}</div>
         )}
       </div>
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="px-4 pb-4 border-t border-gray-200 dark:border-white/10">
+        <div className="px-4 pb-4 border-t border-theme">
           <div className="pt-4">
             <TemplateCardContent templateId={template.id} />
           </div>
@@ -278,7 +278,7 @@ export default function ProcessTemplatesPage() {
   if (!siteId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
+        <div className="text-theme-tertiary">Please select a site</div>
       </div>
     );
   }
@@ -286,8 +286,8 @@ export default function ProcessTemplatesPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-6 w-6 animate-spin text-gray-400 dark:text-white/40 mr-2" />
-        <span className="text-gray-500 dark:text-white/60">Loading process templates...</span>
+        <Loader2 className="h-6 w-6 animate-spin text-theme-tertiary mr-2" />
+        <span className="text-theme-tertiary">Loading process templates...</span>
       </div>
     );
   }
@@ -307,8 +307,8 @@ export default function ProcessTemplatesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Production Timeline</h1>
-          <p className="text-gray-500 dark:text-white/50 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-theme-primary">Production Timeline</h1>
+          <p className="text-theme-tertiary text-sm mt-1">
             Define your multi-day production workflows. The production plan uses this to tell you what to do and when.
           </p>
         </div>
@@ -320,9 +320,9 @@ export default function ProcessTemplatesPage() {
 
       {/* Empty State */}
       {templatesList.length === 0 && (
-        <div className="text-center py-12 bg-gray-50 dark:bg-white/5 rounded-lg border border-dashed border-gray-200 dark:border-white/10">
+        <div className="text-center py-12 bg-theme-button rounded-lg border border-dashed border-theme">
           <RefreshCw className="h-12 w-12 mx-auto text-gray-300 dark:text-white/20 mb-4" />
-          <p className="text-gray-400 dark:text-white/40 mb-4">No process templates yet</p>
+          <p className="text-theme-tertiary mb-4">No process templates yet</p>
           <Button onClick={handleCreate} variant="outline">
             <Plus className="h-4 w-4 mr-2" />
             Create First Template

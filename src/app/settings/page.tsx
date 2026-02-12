@@ -24,14 +24,14 @@ function SettingsInner() {
     <section className="px-4 sm:px-6 py-6 sm:py-8 max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">Settings</h1>
-        <p className="text-sm text-neutral-500 dark:text-white/50 mt-1">
+        <h1 className="text-2xl font-semibold text-theme-primary">Settings</h1>
+        <p className="text-sm text-theme-tertiary/50 mt-1">
           Personalise your experience — changes are saved automatically.
         </p>
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 mb-8 overflow-x-auto no-scrollbar border-b border-gray-200 dark:border-white/[0.06]">
+      <div className="flex gap-1 mb-8 overflow-x-auto no-scrollbar border-b border-theme">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -39,7 +39,7 @@ function SettingsInner() {
             className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px
               ${activeTab === id
                 ? 'border-[#D37E91] text-[#D37E91]'
-                : 'border-transparent text-neutral-500 dark:text-white/50 hover:text-neutral-700 dark:hover:text-white/80 hover:border-gray-300 dark:hover:border-white/20'
+                : 'border-transparent text-theme-tertiary/50 hover:text-theme-secondary dark:hover:text-theme-secondary hover:border-gray-300 dark:hover:border-white/20'
               }`}
           >
             <Icon className="w-4 h-4" />
@@ -57,7 +57,7 @@ function SettingsInner() {
       </div>
 
       {/* PWA Install — always at the bottom */}
-      <div className="mt-10 pt-8 border-t border-gray-200 dark:border-white/[0.06]">
+      <div className="mt-10 pt-8 border-t border-theme">
         <PWAInstallSection />
       </div>
     </section>

@@ -107,8 +107,8 @@ export default function ApplicationConfirmationPage() {
     return (
       <div className="min-h-screen bg-[#0A0B0F] flex items-center justify-center p-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-2">Application Not Found</h1>
-          <p className="text-white/60">We couldn't find your application details.</p>
+          <h1 className="text-2xl font-bold text-theme-primary mb-2">Application Not Found</h1>
+          <p className="text-theme-tertiary">We couldn't find your application details.</p>
         </div>
       </div>
     )
@@ -122,10 +122,10 @@ export default function ApplicationConfirmationPage() {
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-500/10 border-2 border-green-500/30 mb-6">
             <CheckCircle2 className="w-10 h-10 text-green-400" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-3">
+          <h1 className="text-3xl font-bold text-theme-primary mb-3">
             Application Submitted!
           </h1>
-          <p className="text-white/70 text-lg">
+          <p className="text-theme-secondary text-lg">
             Thank you for applying, {application.candidates?.full_name}
           </p>
         </div>
@@ -133,43 +133,43 @@ export default function ApplicationConfirmationPage() {
         {/* Application Details */}
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 space-y-6">
           <div>
-            <h2 className="text-lg font-semibold text-white mb-4">Application Details</h2>
+            <h2 className="text-lg font-semibold text-theme-primary mb-4">Application Details</h2>
             
             <div className="space-y-4">
               {application.jobs.companies?.name && (
                 <div className="flex items-start gap-3">
-                  <Building2 className="w-5 h-5 text-white/40 mt-0.5 flex-shrink-0" />
+                  <Building2 className="w-5 h-5 text-theme-tertiary mt-0.5 flex-shrink-0" />
                   <div>
-                    <div className="text-xs text-white/50">Company</div>
-                    <div className="text-white font-medium">{application.jobs.companies.name}</div>
+                    <div className="text-xs text-theme-tertiary">Company</div>
+                    <div className="text-theme-primary font-medium">{application.jobs.companies.name}</div>
                   </div>
                 </div>
               )}
 
               <div className="flex items-start gap-3">
-                <Briefcase className="w-5 h-5 text-white/40 mt-0.5 flex-shrink-0" />
+                <Briefcase className="w-5 h-5 text-theme-tertiary mt-0.5 flex-shrink-0" />
                 <div>
-                  <div className="text-xs text-white/50">Position</div>
-                  <div className="text-white font-medium">{application.jobs.title}</div>
+                  <div className="text-xs text-theme-tertiary">Position</div>
+                  <div className="text-theme-primary font-medium">{application.jobs.title}</div>
                   {application.jobs.department && (
-                    <div className="text-white/60 text-sm">{application.jobs.department}</div>
+                    <div className="text-theme-tertiary text-sm">{application.jobs.department}</div>
                   )}
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <Mail className="w-5 h-5 text-white/40 mt-0.5 flex-shrink-0" />
+                <Mail className="w-5 h-5 text-theme-tertiary mt-0.5 flex-shrink-0" />
                 <div>
-                  <div className="text-xs text-white/50">Email Confirmation Sent To</div>
-                  <div className="text-white font-medium">{application.candidates?.email}</div>
+                  <div className="text-xs text-theme-tertiary">Email Confirmation Sent To</div>
+                  <div className="text-theme-primary font-medium">{application.candidates?.email}</div>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <Calendar className="w-5 h-5 text-white/40 mt-0.5 flex-shrink-0" />
+                <Calendar className="w-5 h-5 text-theme-tertiary mt-0.5 flex-shrink-0" />
                 <div>
-                  <div className="text-xs text-white/50">Submitted On</div>
-                  <div className="text-white font-medium">
+                  <div className="text-xs text-theme-tertiary">Submitted On</div>
+                  <div className="text-theme-primary font-medium">
                     {new Date(application.applied_at).toLocaleDateString('en-GB', {
                       day: 'numeric',
                       month: 'long',
@@ -184,8 +184,8 @@ export default function ApplicationConfirmationPage() {
           </div>
 
           <div className="pt-6 border-t border-white/[0.06]">
-            <h3 className="text-white font-semibold mb-3">What happens next?</h3>
-            <ul className="space-y-2 text-white/70 text-sm">
+            <h3 className="text-theme-primary font-semibold mb-3">What happens next?</h3>
+            <ul className="space-y-2 text-theme-secondary text-sm">
               <li className="flex items-start gap-2">
                 <span className="text-[#D37E91] mt-1">•</span>
                 <span>You'll receive a confirmation email shortly</span>
@@ -206,7 +206,7 @@ export default function ApplicationConfirmationPage() {
           </div>
 
           <div className="pt-6 border-t border-white/[0.06] text-center">
-            <p className="text-white/60 text-sm mb-4">
+            <p className="text-theme-tertiary text-sm mb-4">
               Good luck with your application!
             </p>
             <Link

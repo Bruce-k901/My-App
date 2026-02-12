@@ -40,7 +40,7 @@ export default function ManagerDashboard() {
       <MessagingWidget />
 
       <Widget title="EHO Compliance Pack">
-        <p className="text-slate-300 text-sm mb-3">
+        <p className="text-theme-secondary text-sm mb-3">
           One click, full compliance export for your site and date range.
         </p>
         <Link href="/compliance/eho-pack" className="btn-gradient text-sm inline-block">
@@ -52,13 +52,13 @@ export default function ManagerDashboard() {
         {summary.length === 0 ? (
           <Empty text="No tasks for today across your managed site(s)." />
         ) : (
-          <ul className="text-sm text-slate-300 space-y-2">
+          <ul className="text-sm text-theme-secondary space-y-2">
             {summary.map((s) => {
               const pct = s.total ? Math.round((s.completed / s.total) * 100) : 0;
               return (
                 <li key={s.site_id} className="flex justify-between">
                   <span>Site {s.site_id.slice(0, 8)}…</span>
-                  <span className="text-slate-500">{pct}%</span>
+                  <span className="text-theme-tertiary">{pct}%</span>
                 </li>
               );
             })}
@@ -70,11 +70,11 @@ export default function ManagerDashboard() {
         {tasks.length === 0 ? (
           <Empty text="No team tasks found for this period." />
         ) : (
-          <ul className="text-sm text-slate-300 space-y-2">
+          <ul className="text-sm text-theme-secondary space-y-2">
             {tasks.slice(0, 6).map((t: any) => (
               <li key={t.id} className="flex justify-between">
                 <span>{t.name ?? t.title ?? `Task #${t.id}`}</span>
-                <span className="text-slate-500">{t.status ?? "open"}</span>
+                <span className="text-theme-tertiary">{t.status ?? "open"}</span>
               </li>
             ))}
           </ul>
@@ -85,11 +85,11 @@ export default function ManagerDashboard() {
         {assets.length === 0 ? (
           <Empty text="No assets registered for your site(s)." />
         ) : (
-          <ul className="text-sm text-slate-300 space-y-2">
+          <ul className="text-sm text-theme-secondary space-y-2">
             {assets.slice(0, 6).map((a: any) => (
               <li key={a.id} className="flex justify-between">
                 <span>{a.name ?? `Asset #${a.id}`}</span>
-                <span className="text-slate-500">{a.status ?? "unknown"}</span>
+                <span className="text-theme-tertiary">{a.status ?? "unknown"}</span>
               </li>
             ))}
           </ul>
@@ -100,11 +100,11 @@ export default function ManagerDashboard() {
         {incidents.length === 0 ? (
           <Empty text="No open incidents." />
         ) : (
-          <ul className="text-sm text-slate-300 space-y-2">
+          <ul className="text-sm text-theme-secondary space-y-2">
             {incidents.slice(0, 6).map((i: any) => (
               <li key={i.id} className="flex justify-between">
                 <span>{i.type ?? `Incident #${i.id}`}</span>
-                <span className="text-slate-500">{i.status ?? "open"}</span>
+                <span className="text-theme-tertiary">{i.status ?? "open"}</span>
               </li>
             ))}
           </ul>
@@ -124,13 +124,13 @@ function Widget({ title, children }: { title: string; children: React.ReactNode 
 }
 
 function Empty({ text }: { text: string }) {
-  return <p className="text-slate-500 text-sm">{text}</p>;
+  return <p className="text-theme-tertiary text-sm">{text}</p>;
 }
 
 function Loading() {
   return (
     <div className="min-h-[40vh] flex items-center justify-center">
-      <p className="text-slate-400">Loading dashboard…</p>
+      <p className="text-theme-tertiary">Loading dashboard…</p>
     </div>
   );
 }
@@ -138,7 +138,7 @@ function Loading() {
 function SetupPrompt() {
   return (
     <div className="md:col-span-2 rounded-xl border border-neutral-800 bg-[#141823] p-4">
-      <p className="text-slate-300 text-sm">
+      <p className="text-theme-secondary text-sm">
         No site assigned to your account yet. Assign users to a site to enable task and incident
         visibility.
       </p>

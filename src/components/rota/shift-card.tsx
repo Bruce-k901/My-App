@@ -42,8 +42,8 @@ export function ShiftCard({
       ref={setNodeRef}
       className={`group relative rounded border-l-2 transition-all ${
         shift.profile_id
-          ? 'bg-gray-100 dark:bg-neutral-800 border-[#D37E91]'
-          : 'bg-gray-50 dark:bg-neutral-800/50 border-dashed border-gray-300 dark:border-neutral-500'
+          ? 'bg-theme-muted border-[#D37E91]'
+          : 'bg-theme-button/50 border-dashed border-gray-300 dark:border-neutral-500'
       } ${
         !shift.profile_id && isOver ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/10 border-[#D37E91]' : ''
       }`}
@@ -61,24 +61,24 @@ export function ShiftCard({
             onClick={() => setShowMenu(!showMenu)}
             className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded transition-opacity"
           >
-            <MoreHorizontal className="w-3 h-3 text-gray-500 dark:text-white/60" />
+            <MoreHorizontal className="w-3 h-3 text-theme-tertiary" />
           </button>
         </div>
         
         {/* Assigned Person or Role */}
         {shift.profile_id ? (
-          <p className="text-gray-900 dark:text-white truncate mt-1 text-xs">
+          <p className="text-theme-primary truncate mt-1 text-xs">
             {shift.profile_name}
           </p>
         ) : (
-          <p className="text-gray-400 dark:text-neutral-500 italic mt-1 text-xs">
+ <p className="text-gray-400 dark:text-theme-tertiary italic mt-1 text-xs">
             {shift.role_required || 'Unassigned'}
           </p>
         )}
 
         {/* Menu Dropdown */}
         {showMenu && (
-          <div className="absolute right-0 top-full mt-1 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded shadow-lg z-20 py-1 min-w-[100px]">
+          <div className="absolute right-0 top-full mt-1 bg-theme-surface border border-theme rounded shadow-lg z-20 py-1 min-w-[100px]">
             {shift.profile_id && onUnassign && (
               <button
                 onClick={() => { onUnassign(); setShowMenu(false); }}

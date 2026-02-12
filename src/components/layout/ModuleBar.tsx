@@ -48,6 +48,8 @@ interface Module {
   moduleKey: ModuleKey;
   disabled?: boolean;
   badge?: string;
+  /** Extra path prefixes that belong to this module (for active-state matching) */
+  extraPaths?: string[];
 }
 
 const modules: Module[] = [
@@ -56,24 +58,28 @@ const modules: Module[] = [
     href: "/dashboard/tasks",
     icon: CheckSquare,
     moduleKey: "checkly",
+    extraPaths: ["/dashboard/todays_tasks", "/dashboard/checklists", "/dashboard/incidents", "/dashboard/sops", "/dashboard/risk-assessments", "/dashboard/logs"],
   },
   {
     name: "Stockly",
     href: "/dashboard/stockly",
     icon: Package,
     moduleKey: "stockly",
+    extraPaths: ["/dashboard/reports/stockly"],
   },
   {
     name: "Teamly",
     href: "/dashboard/people",
     icon: Users,
     moduleKey: "teamly",
+    extraPaths: ["/dashboard/courses"],
   },
   {
     name: "Assetly",
     href: "/dashboard/assets",
     icon: Wrench,
     moduleKey: "assetly",
+    extraPaths: ["/dashboard/ppm"],
   },
   {
     name: "Planly",
@@ -91,15 +97,18 @@ export function ModuleBar() {
   return (
     <div
       className={cn(
-        "h-14 border-b px-6 flex items-center justify-between fixed top-16 left-0 right-0 z-30 print:hidden",
+        "h-14 border-b px-6 flex items-center fixed top-16 left-0 right-0 z-30 print:hidden",
         "bg-[rgb(var(--module-bg-tint))] border-module-fg/[0.18]"
       )}
     >
+      <div className="flex-1" />
       <div className="flex items-center gap-2 overflow-x-auto">
         {modules.map((module) => {
           const Icon = module.icon;
-          const isActive =
-            pathname === module.href || pathname.startsWith(module.href + "/");
+          const allPaths = [module.href, ...(module.extraPaths || [])];
+          const isActive = allPaths.some(
+            (p) => pathname === p || pathname.startsWith(p + "/")
+          );
           const color = isDark
             ? MODULE_HEX[module.moduleKey].light
             : MODULE_HEX[module.moduleKey].dark;
@@ -113,7 +122,7 @@ export function ModuleBar() {
                 <Icon className="w-5 h-5" style={{ color }} />
                 <span className={cn(
                   "text-sm font-medium",
-                  isDark ? "text-white/40" : "text-[#999]"
+                  isDark ? "text-theme-tertiary" : "text-[#999]"
                 )}>
                   {module.name}
                 </span>
@@ -134,13 +143,13 @@ export function ModuleBar() {
                 "flex items-center gap-2 px-4 py-2 rounded-lg transition-all relative",
                 isActive
                   ? "bg-module-fg/[0.06]"
-                  : "hover:bg-module-fg/[0.04]"
+                  : "hover:bg-module-fg/[0.04] group"
               )}
             >
               <Icon
                 className={cn(
-                  "w-5 h-5",
-                  !isActive && (isDark ? "text-white/40" : "text-[#999]")
+                  "w-5 h-5 transition-colors",
+                  !isActive && (isDark ? "text-theme-tertiary group-hover:text-theme-tertiary" : "text-[#999] group-hover:text-[#666]")
                 )}
                 style={{
                   color: isActive ? color : undefined
@@ -148,8 +157,9 @@ export function ModuleBar() {
               />
               <span
                 className={cn(
-                  "text-sm font-medium",
-                  !isActive && (isDark ? "text-white/40" : "text-[#999]")
+                  "text-sm transition-colors",
+                  isActive ? "font-semibold" : "font-medium",
+                  !isActive && (isDark ? "text-theme-tertiary group-hover:text-theme-tertiary" : "text-[#999] group-hover:text-[#666]")
                 )}
                 style={isActive ? { color } : undefined}
               >
@@ -169,9 +179,10 @@ export function ModuleBar() {
 
       {/* Bottom border tint — uses active module colour */}
       {(() => {
-        const activeModule = modules.find(
-          (m) => pathname === m.href || pathname.startsWith(m.href + "/")
-        );
+        const activeModule = modules.find((m) => {
+          const paths = [m.href, ...(m.extraPaths || [])];
+          return paths.some((p) => pathname === p || pathname.startsWith(p + "/"));
+        });
         if (activeModule) {
           const borderColor = isDark
             ? MODULE_HEX[activeModule.moduleKey].light
@@ -186,7 +197,7 @@ export function ModuleBar() {
       })()}
 
       {/* Clock In Button */}
-      <div className="flex-shrink-0 ml-4">
+      <div className="flex-1 flex justify-end">
         <ClockInButton />
       </div>
     </div>

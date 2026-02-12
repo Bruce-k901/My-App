@@ -281,16 +281,16 @@ export function ProductModal({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-4xl max-h-[90vh] bg-white dark:bg-neutral-900 rounded-xl shadow-xl overflow-hidden">
+      <div className="relative w-full max-w-4xl max-h-[90vh] bg-theme-surface rounded-xl shadow-xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-white/10">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-theme">
           <div className="flex items-center gap-3">
             <Package className="h-5 w-5 text-[#14B8A6]" />
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-theme-primary">
                 {isEditing ? 'Edit Product' : 'Add Product'}
               </h2>
-              <p className="text-sm text-gray-500 dark:text-white/60">
+              <p className="text-sm text-theme-tertiary">
                 {isEditing
                   ? 'Update product settings for wholesale ordering'
                   : 'Add a product to your wholesale portal'
@@ -301,7 +301,7 @@ export function ProductModal({
           <button
             type="button"
             onClick={handleClose}
-            className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+            className="p-2 rounded-lg text-theme-tertiary hover:text-theme-secondary/40 hover:bg-theme-muted transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -319,33 +319,33 @@ export function ProductModal({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
             {/* Card 1: Product Details */}
-            <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10">
+            <div className="p-4 bg-theme-button rounded-lg border border-theme">
               <div className="flex items-center gap-2 mb-4">
                 <Package className="h-4 w-4 text-[#14B8A6]" />
-                <h3 className="font-medium text-gray-900 dark:text-white">Product Details</h3>
+                <h3 className="font-medium text-theme-primary">Product Details</h3>
               </div>
               <div className="space-y-4">
                 {/* Product Selector (only for new) */}
                 {!isEditing ? (
                   <div className="space-y-2">
-                    <Label className="text-gray-700 dark:text-white/80">Product *</Label>
+                    <Label className="text-theme-secondary">Product *</Label>
                     <div className="relative mb-2">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-white/40" />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-theme-tertiary" />
                       <Input
                         type="text"
                         placeholder="Search products..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10 bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                        className="pl-10 bg-theme-surface border-theme text-theme-primary"
                       />
                     </div>
-                    <div className="border border-gray-200 dark:border-white/10 rounded-lg max-h-32 overflow-y-auto">
+                    <div className="border border-theme rounded-lg max-h-32 overflow-y-auto">
                       {loadingProducts ? (
                         <div className="flex items-center justify-center py-4">
-                          <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+                          <Loader2 className="h-5 w-5 animate-spin text-theme-tertiary" />
                         </div>
                       ) : filteredProducts.length === 0 ? (
-                        <div className="text-center py-4 text-gray-500 dark:text-white/50 text-sm">
+                        <div className="text-center py-4 text-theme-tertiary text-sm">
                           {searchQuery ? 'No products match' : 'No available products'}
                         </div>
                       ) : (
@@ -358,13 +358,13 @@ export function ProductModal({
                               setStocklyProductName(product.name || `Product ${product.id.slice(0, 8)}`);
                             }}
                             className={cn(
-                              'w-full flex items-center justify-between px-3 py-2 text-left border-b border-gray-100 dark:border-white/5 last:border-0 transition-colors text-sm',
+                              'w-full flex items-center justify-between px-3 py-2 text-left border-b border-theme last:border-0 transition-colors text-sm',
                               stocklyProductId === product.id
                                 ? 'bg-[#14B8A6]/10 dark:bg-[#14B8A6]/20'
-                                : 'hover:bg-gray-50 dark:hover:bg-white/[0.03]'
+                                : 'hover:bg-theme-surface-elevated dark:hover:bg-white/[0.03]'
                             )}
                           >
-                            <span className="font-medium text-gray-900 dark:text-white">
+                            <span className="font-medium text-theme-primary">
                               {product.name || `Product ${product.id.slice(0, 8)}`}
                             </span>
                             {stocklyProductId === product.id && (
@@ -378,7 +378,7 @@ export function ProductModal({
                       <div className="p-3 bg-[#14B8A6]/10 dark:bg-[#14B8A6]/20 rounded-lg border border-[#14B8A6]/30">
                         <div className="flex items-center gap-2">
                           <Package className="h-4 w-4 text-[#14B8A6]" />
-                          <span className="font-medium text-gray-900 dark:text-white">
+                          <span className="font-medium text-theme-primary">
                             {stocklyProductName || 'Product Selected'}
                           </span>
                         </div>
@@ -387,9 +387,9 @@ export function ProductModal({
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Label className="text-gray-700 dark:text-white/80">Product</Label>
-                    <div className="p-3 bg-white dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10">
-                      <span className="font-medium text-gray-900 dark:text-white">
+                    <Label className="text-theme-secondary">Product</Label>
+                    <div className="p-3 bg-theme-surface rounded-lg border border-theme">
+                      <span className="font-medium text-theme-primary">
                         {stocklyProductName || 'Unknown Product'}
                       </span>
                     </div>
@@ -398,11 +398,11 @@ export function ProductModal({
 
                 {/* Category */}
                 <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-white/80">Category</Label>
+                  <Label className="text-theme-secondary">Category</Label>
                   <select
                     value={categoryId}
                     onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                    className="w-full px-3 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary text-sm"
                   >
                     <option value="">No category</option>
                     {(categories || []).map((cat: any) => (
@@ -413,30 +413,30 @@ export function ProductModal({
 
                 {/* Description */}
                 <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-white/80">Description</Label>
+                  <Label className="text-theme-secondary">Description</Label>
                   <Textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Marketing description for customers..."
                     rows={2}
-                    className="bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                    className="bg-theme-surface border-theme text-theme-primary text-sm"
                   />
                 </div>
               </div>
             </div>
 
             {/* Card 2: Production Settings */}
-            <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10">
+            <div className="p-4 bg-theme-button rounded-lg border border-theme">
               <div className="flex items-center gap-2 mb-4">
                 <Settings className="h-4 w-4 text-[#14B8A6]" />
-                <h3 className="font-medium text-gray-900 dark:text-white">Production Settings</h3>
+                <h3 className="font-medium text-theme-primary">Production Settings</h3>
               </div>
               <div className="space-y-4">
                 {/* Processing Group (Essential) */}
                 <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-white/80">
+                  <Label className="text-theme-secondary">
                     Processing Group
-                    {processingGroupsLoading && <span className="ml-2 text-xs text-gray-400">(loading...)</span>}
+                    {processingGroupsLoading && <span className="ml-2 text-xs text-theme-tertiary">(loading...)</span>}
                     {!processingGroupsLoading && processingGroups.length === 0 && (
                       <span className="ml-2 text-xs text-amber-500">(none configured)</span>
                     )}
@@ -444,7 +444,7 @@ export function ProductModal({
                   <select
                     value={processingGroupId}
                     onChange={(e) => setProcessingGroupId(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                    className="w-full px-3 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary text-sm"
                     disabled={processingGroupsLoading}
                   >
                     <option value="">
@@ -461,7 +461,7 @@ export function ProductModal({
                       </option>
                     ))}
                   </select>
-                  <p className="text-xs text-gray-500 dark:text-white/40">
+                  <p className="text-xs text-theme-tertiary">
                     Links this product to a dough/prep recipe for batch calculations
                     {processingGroups.length === 0 && !processingGroupsLoading && (
                       <span className="text-amber-500"> — Create groups in Settings → Dough & Prep</span>
@@ -471,7 +471,7 @@ export function ProductModal({
 
                 {/* Base Prep Per Unit (Essential) */}
                 <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-white/80">Base Prep/Unit (g)</Label>
+                  <Label className="text-theme-secondary">Base Prep/Unit (g)</Label>
                   <Input
                     type="number"
                     step="0.1"
@@ -479,20 +479,20 @@ export function ProductModal({
                     value={basePrepGramsPerUnit}
                     onChange={(e) => setBasePrepGramsPerUnit(e.target.value)}
                     placeholder="e.g., 80"
-                    className="bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                    className="bg-theme-surface border-theme text-theme-primary text-sm"
                   />
-                  <p className="text-xs text-gray-500 dark:text-white/40">
+                  <p className="text-xs text-theme-tertiary">
                     Grams of dough/prep needed per finished unit
                   </p>
                 </div>
 
                 {/* Bake Group (Essential) */}
                 <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-white/80">Bake Group</Label>
+                  <Label className="text-theme-secondary">Bake Group</Label>
                   <select
                     value={bakeGroupId}
                     onChange={(e) => setBakeGroupId(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                    className="w-full px-3 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary text-sm"
                   >
                     <option value="">No bake group</option>
                     {(bakeGroups || []).map((g: any) => (
@@ -503,13 +503,13 @@ export function ProductModal({
 
                 {/* Items/Tray (Essential) */}
                 <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-white/80">Items/Tray</Label>
+                  <Label className="text-theme-secondary">Items/Tray</Label>
                   <Input
                     type="number"
                     min="1"
                     value={itemsPerTray}
                     onChange={(e) => setItemsPerTray(e.target.value)}
-                    className="w-24 bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                    className="w-24 bg-theme-surface border-theme text-theme-primary text-sm"
                   />
                 </div>
 
@@ -517,7 +517,7 @@ export function ProductModal({
                 <button
                   type="button"
                   onClick={() => setShowAdvanced(!showAdvanced)}
-                  className="flex items-center gap-2 text-sm text-gray-500 dark:text-white/50 hover:text-gray-700 dark:hover:text-white/70 transition-colors"
+                  className="flex items-center gap-2 text-sm text-theme-tertiary hover:text-theme-secondary dark:hover:text-theme-secondary transition-colors"
                 >
                   {showAdvanced ? (
                     <ChevronUp className="h-4 w-4" />
@@ -529,14 +529,14 @@ export function ProductModal({
 
                 {/* Advanced Settings (Collapsed by default) */}
                 {showAdvanced && (
-                  <div className="space-y-4 pt-2 border-t border-gray-200 dark:border-white/10">
+                  <div className="space-y-4 pt-2 border-t border-theme">
                     {/* Process Template */}
                     <div className="space-y-2">
-                      <Label className="text-gray-700 dark:text-white/80">Process Template</Label>
+                      <Label className="text-theme-secondary">Process Template</Label>
                       <select
                         value={processTemplateId}
                         onChange={(e) => setProcessTemplateId(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                        className="w-full px-3 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary text-sm"
                       >
                         <option value="">No template</option>
                         {(processTemplates || []).map((t: any) => (
@@ -548,11 +548,11 @@ export function ProductModal({
                     {/* Equipment Type & Items */}
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
-                        <Label className="text-gray-700 dark:text-white/80">Equipment Type</Label>
+                        <Label className="text-theme-secondary">Equipment Type</Label>
                         <select
                           value={equipmentTypeId}
                           onChange={(e) => setEquipmentTypeId(e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                          className="w-full px-3 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary text-sm"
                         >
                           <option value="">None</option>
                           {equipmentTypes.map((t) => (
@@ -561,28 +561,28 @@ export function ProductModal({
                         </select>
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-gray-700 dark:text-white/80">Items/Equipment</Label>
+                        <Label className="text-theme-secondary">Items/Equipment</Label>
                         <Input
                           type="number"
                           min="1"
                           value={itemsPerEquipment}
                           onChange={(e) => setItemsPerEquipment(e.target.value)}
                           placeholder="Default"
-                          className="bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                          className="bg-theme-surface border-theme text-theme-primary text-sm"
                         />
                       </div>
                     </div>
 
                     {/* Display Order */}
                     <div className="space-y-2">
-                      <Label className="text-gray-700 dark:text-white/80">Display Order</Label>
+                      <Label className="text-theme-secondary">Display Order</Label>
                       <Input
                         type="number"
                         min="0"
                         value={displayOrder}
                         onChange={(e) => setDisplayOrder(e.target.value)}
                         placeholder="e.g., 10"
-                        className="w-24 bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                        className="w-24 bg-theme-surface border-theme text-theme-primary text-sm"
                       />
                     </div>
                   </div>
@@ -591,16 +591,16 @@ export function ProductModal({
             </div>
 
             {/* Card 3: Shipping & Display */}
-            <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10">
+            <div className="p-4 bg-theme-button rounded-lg border border-theme">
               <div className="flex items-center gap-2 mb-4">
                 <Truck className="h-4 w-4 text-[#14B8A6]" />
-                <h3 className="font-medium text-gray-900 dark:text-white">Shipping & Display</h3>
+                <h3 className="font-medium text-theme-primary">Shipping & Display</h3>
               </div>
               <div className="space-y-4">
                 {/* Default Ship State */}
                 <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-white/80">Default Ship State</Label>
-                  <div className="flex rounded-lg border border-gray-200 dark:border-white/10 overflow-hidden">
+                  <Label className="text-theme-secondary">Default Ship State</Label>
+                  <div className="flex rounded-lg border border-theme overflow-hidden">
                     <button
                       type="button"
                       onClick={() => setDefaultShipState('baked')}
@@ -608,7 +608,7 @@ export function ProductModal({
                         'flex-1 flex items-center justify-center gap-2 py-2 px-3 text-sm font-medium transition-colors',
                         defaultShipState === 'baked'
                           ? 'bg-[#14B8A6] text-white'
-                          : 'bg-white dark:bg-white/5 text-gray-600 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/10'
+                          : 'bg-theme-surface text-theme-secondary hover:bg-theme-surface-elevated dark:hover:bg-white/10'
                       )}
                     >
                       <Truck className="h-4 w-4" />
@@ -621,7 +621,7 @@ export function ProductModal({
                         'flex-1 flex items-center justify-center gap-2 py-2 px-3 text-sm font-medium transition-colors',
                         defaultShipState === 'frozen'
                           ? 'bg-[#14B8A6] text-white'
-                          : 'bg-white dark:bg-white/5 text-gray-600 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/10'
+                          : 'bg-theme-surface text-theme-secondary hover:bg-theme-surface-elevated dark:hover:bg-white/10'
                       )}
                     >
                       <Snowflake className="h-4 w-4" />
@@ -631,44 +631,44 @@ export function ProductModal({
                 </div>
 
                 {/* Can Ship Frozen */}
-                <label className="flex items-center justify-between p-3 bg-white dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10 cursor-pointer">
+                <label className="flex items-center justify-between p-3 bg-theme-surface rounded-lg border border-theme cursor-pointer">
                   <div className="flex items-center gap-2">
                     <Snowflake className="h-4 w-4 text-blue-500" />
-                    <span className="text-sm text-gray-900 dark:text-white">Can Ship Frozen</span>
+                    <span className="text-sm text-theme-primary">Can Ship Frozen</span>
                   </div>
                   <input
                     type="checkbox"
                     checked={canShipFrozen}
                     onChange={(e) => setCanShipFrozen(e.target.checked)}
-                    className="w-5 h-5 rounded bg-white dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
+                    className="w-5 h-5 rounded bg-theme-surface border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
                   />
                 </label>
 
                 {/* Show New Badge */}
-                <label className="flex items-center justify-between p-3 bg-white dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10 cursor-pointer">
+                <label className="flex items-center justify-between p-3 bg-theme-surface rounded-lg border border-theme cursor-pointer">
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-4 w-4 text-amber-500" />
-                    <span className="text-sm text-gray-900 dark:text-white">Show "New!" Badge</span>
+                    <span className="text-sm text-theme-primary">Show "New!" Badge</span>
                   </div>
                   <input
                     type="checkbox"
                     checked={isNew}
                     onChange={(e) => setIsNew(e.target.checked)}
-                    className="w-5 h-5 rounded bg-white dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
+                    className="w-5 h-5 rounded bg-theme-surface border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
                   />
                 </label>
 
                 {/* Pause Ordering */}
-                <label className="flex items-center justify-between p-3 bg-white dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10 cursor-pointer">
+                <label className="flex items-center justify-between p-3 bg-theme-surface rounded-lg border border-theme cursor-pointer">
                   <div className="flex items-center gap-2">
                     <PauseCircle className="h-4 w-4 text-orange-500" />
-                    <span className="text-sm text-gray-900 dark:text-white">Pause Ordering</span>
+                    <span className="text-sm text-theme-primary">Pause Ordering</span>
                   </div>
                   <input
                     type="checkbox"
                     checked={isPaused}
                     onChange={(e) => setIsPaused(e.target.checked)}
-                    className="w-5 h-5 rounded bg-white dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
+                    className="w-5 h-5 rounded bg-theme-surface border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
                   />
                 </label>
 
@@ -683,15 +683,15 @@ export function ProductModal({
             </div>
 
             {/* Card 4: Pricing */}
-            <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10">
+            <div className="p-4 bg-theme-button rounded-lg border border-theme">
               <div className="flex items-center gap-2 mb-4">
                 <DollarSign className="h-4 w-4 text-[#14B8A6]" />
-                <h3 className="font-medium text-gray-900 dark:text-white">Pricing</h3>
+                <h3 className="font-medium text-theme-primary">Pricing</h3>
               </div>
               <div className="space-y-4">
                 {/* List Price */}
                 <div className="space-y-2">
-                  <Label className="text-gray-700 dark:text-white/80">List Price (£)</Label>
+                  <Label className="text-theme-secondary">List Price (£)</Label>
                   <Input
                     type="number"
                     step="0.01"
@@ -699,28 +699,28 @@ export function ProductModal({
                     value={listPrice}
                     onChange={(e) => setListPrice(e.target.value)}
                     placeholder="0.00"
-                    className="bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                    className="bg-theme-surface border-theme text-theme-primary text-sm"
                   />
-                  <p className="text-xs text-gray-500 dark:text-white/40">
+                  <p className="text-xs text-theme-tertiary">
                     {isEditing ? 'Update the default list price' : 'Default price. Customer prices can be set later.'}
                   </p>
                 </div>
 
                 {/* VAT Toggle */}
-                <label className="flex items-center justify-between p-3 bg-white dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10 cursor-pointer">
-                  <span className="text-sm text-gray-900 dark:text-white">VAT Applicable</span>
+                <label className="flex items-center justify-between p-3 bg-theme-surface rounded-lg border border-theme cursor-pointer">
+                  <span className="text-sm text-theme-primary">VAT Applicable</span>
                   <input
                     type="checkbox"
                     checked={isVatable}
                     onChange={(e) => setIsVatable(e.target.checked)}
-                    className="w-5 h-5 rounded bg-white dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
+                    className="w-5 h-5 rounded bg-theme-surface border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
                   />
                 </label>
 
                 {/* VAT Rate */}
                 {isVatable && (
                   <div className="space-y-2">
-                    <Label className="text-gray-700 dark:text-white/80">VAT Rate (%)</Label>
+                    <Label className="text-theme-secondary">VAT Rate (%)</Label>
                     <Input
                       type="number"
                       step="0.1"
@@ -728,7 +728,7 @@ export function ProductModal({
                       max="100"
                       value={vatRate}
                       onChange={(e) => setVatRate(e.target.value)}
-                      className="w-24 bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white text-sm"
+                      className="w-24 bg-theme-surface border-theme text-theme-primary text-sm"
                     />
                   </div>
                 )}
@@ -738,12 +738,12 @@ export function ProductModal({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/[0.02]">
+        <div className="flex justify-end gap-3 px-6 py-4 border-t border-theme bg-gray-50 dark:bg-white/[0.02]">
           <Button
             type="button"
             variant="outline"
             onClick={handleClose}
-            className="bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/[0.06]"
+            className="bg-theme-surface border-theme text-theme-secondary hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06]"
           >
             Cancel
           </Button>

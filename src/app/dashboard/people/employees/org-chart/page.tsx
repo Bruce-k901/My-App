@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
-import { Building2, Users, ChevronDown, ChevronRight, MapPin, User, Briefcase, UserCog } from '@/components/ui/icons';
+import { Building2, Users, ChevronDown, ChevronRight, MapPin, User, Briefcase, UserCog, X } from '@/components/ui/icons';
 import { toast } from 'sonner';
 
 interface Employee {
@@ -68,6 +68,12 @@ export default function OrgChartPage() {
   const [expandedAreas, setExpandedAreas] = useState<Set<string>>(new Set());
   const [expandedSites, setExpandedSites] = useState<Set<string>>(new Set());
   const [expandedDepartments, setExpandedDepartments] = useState<Set<string>>(new Set());
+  const [assigningSiteId, setAssigningSiteId] = useState<string | null>(null);
+  const [assigning, setAssigning] = useState(false);
+
+  const canManage = ['admin', 'owner', 'general_manager', 'area_manager', 'regional_manager'].includes(
+    profile?.app_role?.toLowerCase() || ''
+  );
 
   useEffect(() => {
     if (profile?.company_id) {
@@ -298,20 +304,41 @@ export default function OrgChartPage() {
     });
   }
 
+  async function handleAssignSite(siteId: string, areaId: string) {
+    if (!areaId) return;
+    setAssigning(true);
+    try {
+      const { error } = await supabase
+        .from('sites')
+        .update({ area_id: areaId })
+        .eq('id', siteId);
+
+      if (error) throw error;
+      toast.success('Site assigned to area successfully');
+      setAssigningSiteId(null);
+      loadOrgStructure();
+    } catch (error) {
+      console.error('Error assigning site:', error);
+      toast.error('Failed to assign site');
+    } finally {
+      setAssigning(false);
+    }
+  }
+
   function renderEmployee(employee: Employee, level: number = 0) {
     const marginLeft = level * 16;
     return (
       <div
         key={employee.id}
-        className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-white/[0.02] rounded-lg border border-gray-200 dark:border-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/[0.04] transition-colors"
+        className="flex items-center gap-3 p-2 bg-theme-surface border border-theme rounded-lg hover:bg-theme-hover transition-colors"
         style={{ marginLeft: `${marginLeft}px` }}
       >
-        <User className="w-4 h-4 text-gray-400 dark:text-white/60 flex-shrink-0" />
+        <User className="w-4 h-4 text-theme-tertiary flex-shrink-0" />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{employee.full_name}</p>
-          <p className="text-xs text-gray-500 dark:text-white/50 truncate">{employee.app_role}</p>
+          <p className="text-sm font-medium text-theme-primary truncate">{employee.full_name}</p>
+          <p className="text-xs text-theme-tertiary truncate">{employee.app_role}</p>
         </div>
-        <span className="text-xs text-gray-600 dark:text-white/70 truncate">{employee.email}</span>
+        <span className="text-xs text-theme-secondary truncate">{employee.email}</span>
       </div>
     );
   }
@@ -326,17 +353,17 @@ export default function OrgChartPage() {
       <div className="mb-4">
         <button
           onClick={() => toggleDepartment(sectionKey)}
-          className="flex items-center gap-3 w-full p-3 bg-blue-50 dark:bg-gradient-to-r dark:from-purple-500/10 dark:to-[#D37E91]/10 border border-blue-200 dark:border-purple-500/20 rounded-lg hover:border-blue-300 dark:hover:border-purple-500/40 transition-colors"
+          className="flex items-center gap-3 w-full p-3 bg-module-fg/[0.05] border border-module-fg/15 rounded-lg hover:border-module-fg/30 transition-colors"
         >
           {isExpanded ? (
-            <ChevronDown className="w-5 h-5 text-blue-600 dark:text-purple-400 flex-shrink-0" />
+            <ChevronDown className="w-5 h-5 text-module-fg flex-shrink-0" />
           ) : (
-            <ChevronRight className="w-5 h-5 text-blue-600 dark:text-purple-400 flex-shrink-0" />
+            <ChevronRight className="w-5 h-5 text-module-fg flex-shrink-0" />
           )}
           {icon}
           <div className="flex-1 text-left">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{title}</h3>
-            <p className="text-xs text-gray-600 dark:text-white/70">{employees.length} person(s)</p>
+            <h3 className="text-sm font-semibold text-theme-primary">{title}</h3>
+            <p className="text-xs text-theme-secondary">{employees.length} person(s)</p>
           </div>
         </button>
         
@@ -353,8 +380,8 @@ export default function OrgChartPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-white/70">Loading organizational structure...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-module-fg mx-auto mb-4"></div>
+          <p className="text-theme-secondary">Loading organizational structure...</p>
         </div>
       </div>
     );
@@ -364,94 +391,94 @@ export default function OrgChartPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Organizational Chart</h1>
-        <p className="text-gray-600 dark:text-white/70">
+        <h1 className="text-2xl font-bold text-theme-primary mb-2">Organizational Chart</h1>
+        <p className="text-theme-secondary">
           Complete view of your company's hierarchical structure
         </p>
       </div>
 
       {/* Company Level */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 shadow-sm dark:shadow-none">
+      <div className="bg-theme-surface border border-theme rounded-lg p-6 shadow-sm dark:shadow-none">
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-500/20 dark:to-[#D37E91]/25 flex items-center justify-center">
-            <Building2 className="w-6 h-6 text-blue-600 dark:text-purple-400" />
+          <div className="w-12 h-12 rounded-full bg-module-fg/10 flex items-center justify-center">
+            <Building2 className="w-6 h-6 text-module-fg" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-theme-primary">
               {profile?.companies?.name || 'Company'}
             </h2>
-            <p className="text-sm text-gray-600 dark:text-white/70">Complete Organizational Structure</p>
+            <p className="text-sm text-theme-secondary">Complete Organizational Structure</p>
           </div>
         </div>
 
         {/* Executive Team */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Briefcase className="w-5 h-5 text-blue-600 dark:text-purple-400" />
+          <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+            <Briefcase className="w-5 h-5 text-module-fg" />
             Executive Leadership
           </h3>
           <div className="space-y-2">
-            {renderExecutiveSection('CEO / Owner', <User className="w-5 h-5 text-purple-400" />, executives.ceo)}
-            {renderExecutiveSection('Managing Director', <User className="w-5 h-5 text-blue-400" />, executives.md)}
-            {renderExecutiveSection('Chief Operating Officer (COO)', <UserCog className="w-5 h-5 text-green-400" />, executives.coo)}
-            {renderExecutiveSection('Chief Financial Officer (CFO)', <UserCog className="w-5 h-5 text-yellow-400" />, executives.cfo)}
-            {renderExecutiveSection('HR Manager', <Users className="w-5 h-5 text-[#D37E91]" />, executives.hr_manager)}
-            {renderExecutiveSection('Operations Manager', <Briefcase className="w-5 h-5 text-orange-400" />, executives.operations_manager)}
-            {renderExecutiveSection('Finance Manager', <Briefcase className="w-5 h-5 text-cyan-400" />, executives.finance_manager)}
+            {renderExecutiveSection('CEO / Owner', <User className="w-5 h-5 text-module-fg" />, executives.ceo)}
+            {renderExecutiveSection('Managing Director', <User className="w-5 h-5 text-module-fg" />, executives.md)}
+            {renderExecutiveSection('Chief Operating Officer (COO)', <UserCog className="w-5 h-5 text-module-fg" />, executives.coo)}
+            {renderExecutiveSection('Chief Financial Officer (CFO)', <UserCog className="w-5 h-5 text-module-fg" />, executives.cfo)}
+            {renderExecutiveSection('HR Manager', <Users className="w-5 h-5 text-module-fg" />, executives.hr_manager)}
+            {renderExecutiveSection('Operations Manager', <Briefcase className="w-5 h-5 text-module-fg" />, executives.operations_manager)}
+            {renderExecutiveSection('Finance Manager', <Briefcase className="w-5 h-5 text-module-fg" />, executives.finance_manager)}
           </div>
         </div>
 
         {/* Regional Managers */}
         {executives.regional_manager && executives.regional_manager.length > 0 && (
           <div className="mb-6">
-            {renderExecutiveSection('Regional Managers', <MapPin className="w-5 h-5 text-blue-400" />, executives.regional_manager)}
+            {renderExecutiveSection('Regional Managers', <MapPin className="w-5 h-5 text-module-fg" />, executives.regional_manager)}
           </div>
         )}
 
         {/* Area Managers */}
         {executives.area_manager && executives.area_manager.length > 0 && (
           <div className="mb-6">
-            {renderExecutiveSection('Area Managers', <Building2 className="w-5 h-5 text-green-400" />, executives.area_manager)}
+            {renderExecutiveSection('Area Managers', <Building2 className="w-5 h-5 text-module-fg" />, executives.area_manager)}
           </div>
         )}
 
         {/* Head Office Staff */}
         {headOfficeStaff.length > 0 && (
           <div className="mb-6">
-            {renderExecutiveSection('Head Office Staff', <Building2 className="w-5 h-5 text-gray-500 dark:text-white/60" />, headOfficeStaff)}
+            {renderExecutiveSection('Head Office Staff', <Building2 className="w-5 h-5 text-theme-tertiary" />, headOfficeStaff)}
           </div>
         )}
 
         {/* Regions & Sites */}
         {regions.length > 0 && (
           <div className="mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-module-fg" />
               Regional Structure
             </h3>
             <div className="space-y-4">
               {regions.map((region) => (
                 <div key={region.id} className="ml-4">
                   {/* Region */}
-                  <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-lg p-4">
+                  <div className="bg-module-fg/[0.04] border border-module-fg/15 rounded-lg p-4">
                     <button
                       onClick={() => toggleRegion(region.id)}
                       className="w-full flex items-center gap-3 text-left"
                     >
                       {expandedRegions.has(region.id) ? (
-                        <ChevronDown className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                        <ChevronDown className="w-5 h-5 text-module-fg flex-shrink-0" />
                       ) : (
-                        <ChevronRight className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                        <ChevronRight className="w-5 h-5 text-module-fg flex-shrink-0" />
                       )}
-                      <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                      <MapPin className="w-5 h-5 text-module-fg flex-shrink-0" />
                       <div className="flex-1">
-                        <h3 className="text-base font-semibold text-gray-900 dark:text-white">{region.name}</h3>
+                        <h3 className="text-base font-semibold text-theme-primary">{region.name}</h3>
                         {region.manager_name && (
-                          <p className="text-sm text-blue-600 dark:text-blue-300">
+                          <p className="text-sm text-theme-secondary">
                             Regional Manager: {region.manager_name}
                           </p>
                         )}
-                        <p className="text-xs text-gray-600 dark:text-white/70">
+                        <p className="text-xs text-theme-secondary">
                           {region.areas.length} area(s) • {region.areas.reduce((acc, a) => acc + a.sites.reduce((sum, s) => sum + s.employee_count, 0), 0)} employees
                         </p>
                       </div>
@@ -461,25 +488,25 @@ export default function OrgChartPage() {
                     {expandedRegions.has(region.id) && region.areas.length > 0 && (
                       <div className="ml-8 mt-4 space-y-3">
                         {region.areas.map((area) => (
-                          <div key={area.id} className="bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 rounded-lg p-3">
+                          <div key={area.id} className="bg-module-fg/[0.05] border border-module-fg/15 rounded-lg p-3">
                             <button
                               onClick={() => toggleArea(area.id)}
                               className="w-full flex items-center gap-3 text-left"
                             >
                               {expandedAreas.has(area.id) ? (
-                                <ChevronDown className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                                <ChevronDown className="w-4 h-4 text-module-fg flex-shrink-0" />
                               ) : (
-                                <ChevronRight className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                                <ChevronRight className="w-4 h-4 text-module-fg flex-shrink-0" />
                               )}
-                              <Building2 className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                              <Building2 className="w-4 h-4 text-module-fg flex-shrink-0" />
                               <div className="flex-1">
-                                <h4 className="text-sm font-medium text-gray-900 dark:text-white">{area.name}</h4>
+                                <h4 className="text-sm font-medium text-theme-primary">{area.name}</h4>
                                 {area.manager_name && (
-                                  <p className="text-xs text-green-600 dark:text-green-300">
+                                  <p className="text-xs text-theme-secondary">
                                     Area Manager: {area.manager_name}
                                   </p>
                                 )}
-                                <p className="text-xs text-gray-600 dark:text-white/70">
+                                <p className="text-xs text-theme-secondary">
                                   {area.sites.length} site(s) • {area.sites.reduce((sum, s) => sum + s.employee_count, 0)} employees
                                 </p>
                               </div>
@@ -489,27 +516,27 @@ export default function OrgChartPage() {
                             {expandedAreas.has(area.id) && area.sites.length > 0 && (
                               <div className="ml-6 mt-3 space-y-2">
                                 {area.sites.map((site) => (
-                                  <div key={site.id} className="bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 rounded-lg p-3">
+                                  <div key={site.id} className="bg-module-fg/[0.03] border border-module-fg/10 rounded-lg p-3">
                                     <button
                                       onClick={() => toggleSite(site.id)}
                                       className="w-full flex items-center gap-3 text-left"
                                     >
                                       {expandedSites.has(site.id) ? (
-                                        <ChevronDown className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+                                        <ChevronDown className="w-4 h-4 text-module-fg flex-shrink-0" />
                                       ) : (
-                                        <ChevronRight className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+                                        <ChevronRight className="w-4 h-4 text-module-fg flex-shrink-0" />
                                       )}
-                                      <Building2 className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+                                      <Building2 className="w-4 h-4 text-module-fg flex-shrink-0" />
                                       <div className="flex-1">
-                                        <h5 className="text-sm font-medium text-gray-900 dark:text-white">{site.name}</h5>
+                                        <h5 className="text-sm font-medium text-theme-primary">{site.name}</h5>
                                         {site.manager_name && (
-                                          <p className="text-xs text-purple-600 dark:text-purple-300">
+                                          <p className="text-xs text-theme-secondary">
                                             Site Manager: {site.manager_name}
                                           </p>
                                         )}
                                         <div className="flex items-center gap-1 mt-1">
-                                          <Users className="w-3 h-3 text-gray-400 dark:text-white/60" />
-                                          <span className="text-xs text-gray-600 dark:text-white/70">
+                                          <Users className="w-3 h-3 text-theme-tertiary" />
+                                          <span className="text-xs text-theme-secondary">
                                             {site.employee_count} employee(s)
                                           </span>
                                         </div>
@@ -540,37 +567,81 @@ export default function OrgChartPage() {
         {/* Unassigned Sites */}
         {sites.length > 0 && (
           <div className="mt-6">
-            <h3 className="text-sm font-medium text-gray-600 dark:text-white/70 mb-3">
+            <h3 className="text-sm font-medium text-theme-secondary mb-3">
               Sites Not Assigned to Areas
             </h3>
             <div className="ml-4 space-y-2">
               {sites.map((site) => (
-                <div key={site.id} className="bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 rounded-lg p-3">
-                  <button
-                    onClick={() => toggleSite(site.id)}
-                    className="w-full flex items-center gap-3 text-left"
-                  >
-                    {expandedSites.has(site.id) ? (
-                      <ChevronDown className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
-                    ) : (
-                      <ChevronRight className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
-                    )}
-                    <Building2 className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
-                    <div className="flex-1">
-                      <h5 className="text-sm font-medium text-gray-900 dark:text-white">{site.name}</h5>
-                      {site.manager_name && (
-                        <p className="text-xs text-purple-600 dark:text-purple-300">
-                          Manager: {site.manager_name}
-                        </p>
+                <div key={site.id} className="bg-module-fg/[0.03] border border-module-fg/10 rounded-lg p-3">
+                  <div className="flex items-start gap-3">
+                    <button
+                      onClick={() => toggleSite(site.id)}
+                      className="flex items-center gap-3 flex-1 text-left"
+                    >
+                      {expandedSites.has(site.id) ? (
+                        <ChevronDown className="w-4 h-4 text-module-fg flex-shrink-0" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4 text-module-fg flex-shrink-0" />
                       )}
-                      <div className="flex items-center gap-1 mt-1">
-                        <Users className="w-3 h-3 text-gray-400 dark:text-white/60" />
-                        <span className="text-xs text-gray-600 dark:text-white/70">
-                          {site.employee_count} employee(s)
-                        </span>
+                      <Building2 className="w-4 h-4 text-module-fg flex-shrink-0" />
+                      <div className="flex-1">
+                        <h5 className="text-sm font-medium text-theme-primary">{site.name}</h5>
+                        {site.manager_name && (
+                          <p className="text-xs text-theme-secondary">
+                            Manager: {site.manager_name}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-1 mt-1">
+                          <Users className="w-3 h-3 text-theme-tertiary" />
+                          <span className="text-xs text-theme-secondary">
+                            {site.employee_count} employee(s)
+                          </span>
+                        </div>
                       </div>
+                    </button>
+
+                    {/* Assign button */}
+                    {canManage && regions.length > 0 && assigningSiteId !== site.id && (
+                      <button
+                        onClick={() => setAssigningSiteId(site.id)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-module-fg bg-module-fg/10 rounded-lg hover:bg-module-fg/20 transition-colors flex-shrink-0"
+                      >
+                        <MapPin className="w-3.5 h-3.5" />
+                        Assign
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Inline area assignment dropdown */}
+                  {assigningSiteId === site.id && (
+                    <div className="ml-11 mt-2 flex items-center gap-2">
+                      <select
+                        autoFocus
+                        disabled={assigning}
+                        defaultValue=""
+                        onChange={(e) => handleAssignSite(site.id, e.target.value)}
+                        className="pl-3 pr-10 py-1.5 text-sm bg-theme-surface border border-module-fg/20 rounded-lg text-theme-primary focus:border-module-fg focus:ring-1 focus:ring-module-fg"
+                      >
+                        <option value="" disabled>Select area...</option>
+                        {regions.map((region) => (
+                          <optgroup key={region.id} label={region.name}>
+                            {region.areas.map((area) => (
+                              <option key={area.id} value={area.id}>
+                                {area.name}
+                              </option>
+                            ))}
+                          </optgroup>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() => setAssigningSiteId(null)}
+                        className="p-1.5 text-theme-tertiary hover:text-theme-primary rounded transition-colors"
+                        title="Cancel"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
                     </div>
-                  </button>
+                  )}
 
                   {/* Employees at site */}
                   {expandedSites.has(site.id) && site.employees.length > 0 && (

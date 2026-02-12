@@ -134,7 +134,7 @@ export default function ConfirmCoursePage() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#0B0D13]">
-        <div className="flex items-center gap-3 text-slate-300">
+        <div className="flex items-center gap-3 text-theme-secondary">
           <Loader2 className="h-5 w-5 animate-spin" />
           Loading assignment details...
         </div>
@@ -166,22 +166,22 @@ export default function ConfirmCoursePage() {
         <div className="mb-6">
           <Link 
             href="/dashboard" 
-            className="text-sm text-slate-400 hover:text-white transition-colors"
+            className="text-sm text-theme-tertiary hover:text-white transition-colors"
           >
             ← Back to Dashboard
           </Link>
         </div>
 
         <div className="rounded-xl border border-white/10 bg-white/5 p-6">
-          <h1 className="text-2xl font-bold text-white mb-2">Confirm Course Enrollment</h1>
-          <p className="text-slate-400 mb-6">Please confirm your details to begin the course</p>
+          <h1 className="text-2xl font-bold text-theme-primary mb-2">Confirm Course Enrollment</h1>
+          <p className="text-theme-tertiary mb-6">Please confirm your details to begin the course</p>
 
           <div className="mb-6 rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
-            <h2 className="font-semibold text-white mb-2">{course.name}</h2>
+            <h2 className="font-semibold text-theme-primary mb-2">{course.name}</h2>
             {course.description && (
-              <p className="text-sm text-slate-300 mb-3">{course.description}</p>
+              <p className="text-sm text-theme-secondary mb-3">{course.description}</p>
             )}
-            <div className="flex flex-wrap gap-4 text-sm text-slate-400">
+            <div className="flex flex-wrap gap-4 text-sm text-theme-tertiary">
               {durationHours && <span>Duration: ~{durationHours} hours</span>}
               {assignment.deadline_date && (
                 <span>Deadline: {new Date(assignment.deadline_date).toLocaleDateString('en-GB')}</span>
@@ -191,7 +191,7 @@ export default function ConfirmCoursePage() {
 
           <form onSubmit={handleConfirm} className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="name" className="block text-sm font-medium text-theme-secondary mb-2">
                 Your Name <span className="text-red-400">*</span>
               </label>
               <input
@@ -207,7 +207,7 @@ export default function ConfirmCoursePage() {
 
             {sites.length > 0 && (
               <div>
-                <label htmlFor="site" className="block text-sm font-medium text-slate-300 mb-2">
+                <label htmlFor="site" className="block text-sm font-medium text-theme-secondary mb-2">
                   Your Site
                 </label>
                 <select
@@ -249,7 +249,7 @@ export default function ConfirmCoursePage() {
                 onClick={() => router.push('/dashboard')}
                 variant="outline"
                 disabled={submitting}
-                className="flex-1 border-neutral-600 text-neutral-300 hover:bg-neutral-800"
+                className="flex-1 border-neutral-600 text-theme-tertiary hover:bg-neutral-800"
               >
                 Cancel
               </Button>

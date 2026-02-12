@@ -96,7 +96,7 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, isVisible }:
               type="button"
               onClick={(e) => handleKeyClick(num.toString(), e)}
               onTouchEnd={(e) => handleKeyClick(num.toString(), e)}
-              className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
+              className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
             >
               {num}
             </button>
@@ -109,7 +109,7 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, isVisible }:
               type="button"
               onClick={(e) => handleKeyClick(num.toString(), e)}
               onTouchEnd={(e) => handleKeyClick(num.toString(), e)}
-              className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
+              className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
             >
               {num}
             </button>
@@ -122,7 +122,7 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, isVisible }:
               type="button"
               onClick={(e) => handleKeyClick(num.toString(), e)}
               onTouchEnd={(e) => handleKeyClick(num.toString(), e)}
-              className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
+              className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
             >
               {num}
             </button>
@@ -133,7 +133,7 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, isVisible }:
             type="button"
             onClick={(e) => handleKeyClick('-', e)}
             onTouchEnd={(e) => handleKeyClick('-', e)}
-            className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
+            className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
           >
             −
           </button>
@@ -141,7 +141,7 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, isVisible }:
             type="button"
             onClick={(e) => handleKeyClick('0', e)}
             onTouchEnd={(e) => handleKeyClick('0', e)}
-            className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
+            className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
           >
             0
           </button>
@@ -149,7 +149,7 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, isVisible }:
             type="button"
             onClick={(e) => handleKeyClick('.', e)}
             onTouchEnd={(e) => handleKeyClick('.', e)}
-            className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
+            className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
           >
             .
           </button>
@@ -161,7 +161,7 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, isVisible }:
             type="button"
             onClick={(e) => handleBackspace(e)}
             onTouchEnd={(e) => handleBackspace(e)}
-            className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white text-sm font-medium active:bg-white/[0.08] transition-colors touch-manipulation flex items-center justify-center"
+            className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-sm font-medium active:bg-white/[0.08] transition-colors touch-manipulation flex items-center justify-center"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

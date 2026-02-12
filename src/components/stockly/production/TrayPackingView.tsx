@@ -166,21 +166,21 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-semibold text-white">
+            <h2 className="text-lg font-semibold text-theme-primary">
               Tray Packing - {stream.charAt(0).toUpperCase() + stream.slice(1)}
             </h2>
-            <p className="text-white/50 text-sm mt-1">
+            <p className="text-theme-tertiary text-sm mt-1">
               {formatDate(date)}
             </p>
           </div>
         </div>
         <div className="text-center py-12">
           <AlertCircle className="w-12 h-12 text-amber-400/60 mx-auto mb-4" />
-          <p className="text-white font-medium mb-2">Supplier Setup Required</p>
-          <p className="text-white/60 text-sm">
+          <p className="text-theme-primary font-medium mb-2">Supplier Setup Required</p>
+          <p className="text-theme-tertiary text-sm">
             No active supplier found for your company
           </p>
-          <p className="text-white/40 text-sm mt-2">
+          <p className="text-theme-tertiary text-sm mt-2">
             Please configure a supplier in Production Settings before using tray packing
           </p>
         </div>
@@ -193,18 +193,18 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-semibold text-white">
+            <h2 className="text-lg font-semibold text-theme-primary">
               Tray Packing - {stream.charAt(0).toUpperCase() + stream.slice(1)}
             </h2>
-            <p className="text-white/50 text-sm mt-1">
+            <p className="text-theme-tertiary text-sm mt-1">
               {formatDate(date)}
             </p>
           </div>
         </div>
         <div className="text-center py-12">
           <Package className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <p className="text-white/60">No tray assignments for this date</p>
-          <p className="text-white/40 text-sm mt-2">
+          <p className="text-theme-tertiary">No tray assignments for this date</p>
+          <p className="text-theme-tertiary text-sm mt-2">
             Generate a production plan first to create tray assignments
           </p>
         </div>
@@ -216,10 +216,10 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
     <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-lg font-semibold text-white">
+          <h2 className="text-lg font-semibold text-theme-primary">
             Tray Packing - {stream.charAt(0).toUpperCase() + stream.slice(1)}
           </h2>
-          <p className="text-white/50 text-sm mt-1">
+          <p className="text-theme-tertiary text-sm mt-1">
             {formatDate(date)} - {data.total_trays} trays
           </p>
         </div>
@@ -253,18 +253,18 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-white/[0.06]">
-              <th className="sticky left-0 z-10 bg-[#0B0D13] px-4 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider border-r border-white/[0.06]">
+              <th className="sticky left-0 z-10 bg-[#0B0D13] px-4 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider border-r border-white/[0.06]">
                 Product
               </th>
               {trayNumbers.map(trayNum => (
                 <th
                   key={trayNum}
-                  className="px-3 py-3 text-center text-xs font-medium text-white/60 uppercase tracking-wider min-w-[60px]"
+                  className="px-3 py-3 text-center text-xs font-medium text-theme-tertiary uppercase tracking-wider min-w-[60px]"
                 >
                   Tray {trayNum}
                 </th>
               ))}
-              <th className="px-4 py-3 text-center text-xs font-medium text-white/60 uppercase tracking-wider border-l border-white/[0.06]">
+              <th className="px-4 py-3 text-center text-xs font-medium text-theme-tertiary uppercase tracking-wider border-l border-white/[0.06]">
                 Total
               </th>
             </tr>
@@ -276,7 +276,7 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
               return (
                 <tr key={productName} className="hover:bg-white/[0.02] transition-colors">
                   <td className="sticky left-0 z-10 bg-[#0B0D13] px-4 py-3 border-r border-white/[0.06]">
-                    <div className="text-white font-medium">{productName}</div>
+                    <div className="text-theme-primary font-medium">{productName}</div>
                   </td>
                   {trayNumbers.map(trayNum => {
                     const assignment = getTrayAssignment(productName, trayNum);
@@ -290,8 +290,8 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
                             ? utilization >= 90 
                               ? 'bg-green-500/10 text-green-400 font-medium' 
                               : utilization >= 70
-                              ? 'text-white font-medium'
-                              : 'text-white/60'
+                              ? 'text-theme-primary font-medium'
+                              : 'text-theme-tertiary'
                             : 'text-white/10'
                         }`}
                       >
@@ -308,7 +308,7 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
                       </td>
                     );
                   })}
-                  <td className="px-4 py-3 text-center text-white font-bold border-l border-white/[0.06]">
+                  <td className="px-4 py-3 text-center text-theme-primary font-bold border-l border-white/[0.06]">
                     {total}
                   </td>
                 </tr>
@@ -317,7 +317,7 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
             
             {/* Totals Row */}
             <tr className="bg-white/[0.05] border-t-2 border-white/[0.1] font-semibold">
-              <td className="sticky left-0 z-10 bg-white/[0.05] px-4 py-3 text-white font-bold border-r border-white/[0.06]">
+              <td className="sticky left-0 z-10 bg-white/[0.05] px-4 py-3 text-theme-primary font-bold border-r border-white/[0.06]">
                 Utilization
               </td>
               {trayNumbers.map(trayNum => {
@@ -330,7 +330,7 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
                         ? 'text-green-400' 
                         : utilization >= 70
                         ? 'text-amber-400'
-                        : 'text-white/40'
+                        : 'text-theme-tertiary'
                     }`}
                   >
                     {utilization > 0 ? `${Math.round(utilization)}%` : '-'}
@@ -346,16 +346,16 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
       {/* Summary Stats */}
       <div className="mt-6 grid grid-cols-4 gap-4">
         <div className="bg-white/5 rounded-lg p-3">
-          <p className="text-white/60 text-xs mb-1">Total Trays</p>
-          <p className="text-white font-semibold">{data.total_trays}</p>
+          <p className="text-theme-tertiary text-xs mb-1">Total Trays</p>
+          <p className="text-theme-primary font-semibold">{data.total_trays}</p>
         </div>
         <div className="bg-white/5 rounded-lg p-3">
-          <p className="text-white/60 text-xs mb-1">Products</p>
-          <p className="text-white font-semibold">{products.length}</p>
+          <p className="text-theme-tertiary text-xs mb-1">Products</p>
+          <p className="text-theme-primary font-semibold">{products.length}</p>
         </div>
         <div className="bg-white/5 rounded-lg p-3">
-          <p className="text-white/60 text-xs mb-1">Avg Utilization</p>
-          <p className="text-white font-semibold">
+          <p className="text-theme-tertiary text-xs mb-1">Avg Utilization</p>
+          <p className="text-theme-primary font-semibold">
             {data.tray_assignments.length > 0
               ? Math.round(
                   data.tray_assignments.reduce((sum, a) => sum + a.utilization, 0) /
@@ -365,8 +365,8 @@ export default function TrayPackingView({ date, stream = 'wholesale' }: TrayPack
           </p>
         </div>
         <div className="bg-white/5 rounded-lg p-3">
-          <p className="text-white/60 text-xs mb-1">Total Items</p>
-          <p className="text-white font-semibold">
+          <p className="text-theme-tertiary text-xs mb-1">Total Items</p>
+          <p className="text-theme-primary font-semibold">
             {data.tray_assignments.reduce((sum, a) => sum + a.quantity, 0)}
           </p>
         </div>

@@ -139,12 +139,12 @@ export default function OrderBookGrid({ date, data, loading }: OrderBookGridProp
   if (!data || data.customers.length === 0) {
     return (
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">
+        <h2 className="text-lg font-semibold text-theme-primary mb-4">
           Order Book - {formatDate(date)}
         </h2>
         <div className="text-center py-12">
           <Package className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <p className="text-white/60">No orders scheduled for this date</p>
+          <p className="text-theme-tertiary">No orders scheduled for this date</p>
         </div>
       </div>
     );
@@ -153,7 +153,7 @@ export default function OrderBookGrid({ date, data, loading }: OrderBookGridProp
   return (
     <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-white">
+        <h2 className="text-lg font-semibold text-theme-primary">
           Order Book - {formatDate(date)}
         </h2>
         <div className="flex items-center gap-2">
@@ -178,24 +178,24 @@ export default function OrderBookGrid({ date, data, loading }: OrderBookGridProp
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-white/[0.06]">
-              <th className="sticky left-0 z-10 bg-[#0B0D13] px-4 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider border-r border-white/[0.06]">
+              <th className="sticky left-0 z-10 bg-[#0B0D13] px-4 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider border-r border-white/[0.06]">
                 Customer
               </th>
               {data.products.map((product) => (
                 <th
                   key={product.id}
-                  className="px-4 py-3 text-center text-xs font-medium text-white/60 uppercase tracking-wider min-w-[100px]"
+                  className="px-4 py-3 text-center text-xs font-medium text-theme-tertiary uppercase tracking-wider min-w-[100px]"
                 >
                   <div className="flex flex-col">
                     <span>{product.name}</span>
-                    <span className="text-white/40 text-[10px] mt-1">{product.unit}</span>
+                    <span className="text-theme-tertiary text-[10px] mt-1">{product.unit}</span>
                   </div>
                 </th>
               ))}
-              <th className="px-4 py-3 text-center text-xs font-medium text-white/60 uppercase tracking-wider">
+              <th className="px-4 py-3 text-center text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                 Total
               </th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-white/60 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                 Value
               </th>
             </tr>
@@ -214,10 +214,10 @@ export default function OrderBookGrid({ date, data, loading }: OrderBookGridProp
                       onClick={() => setExpandedCustomer(isExpanded ? null : customer.id)}
                       className="text-left group"
                     >
-                      <div className="text-white font-medium group-hover:text-[#D37E91] transition-colors">
+                      <div className="text-theme-primary font-medium group-hover:text-[#D37E91] transition-colors">
                         {customer.businessName}
                       </div>
-                      <div className="text-white/40 text-xs mt-1">
+                      <div className="text-theme-tertiary text-xs mt-1">
                         {customer.deliveryTime}
                       </div>
                     </button>
@@ -228,17 +228,17 @@ export default function OrderBookGrid({ date, data, loading }: OrderBookGridProp
                       <td
                         key={product.id}
                         className={`px-4 py-3 text-center ${
-                          quantity !== null ? 'text-white font-medium' : 'text-white/20'
+                          quantity !== null ? 'text-theme-primary font-medium' : 'text-white/20'
                         }`}
                       >
                         {quantity !== null ? quantity : '-'}
                       </td>
                     );
                   })}
-                  <td className="px-4 py-3 text-center text-white font-medium">
+                  <td className="px-4 py-3 text-center text-theme-primary font-medium">
                     {customer.totalItems}
                   </td>
-                  <td className="px-4 py-3 text-right text-white font-medium">
+                  <td className="px-4 py-3 text-right text-theme-primary font-medium">
                     {formatCurrency(customer.orderValue)}
                   </td>
                 </tr>
@@ -247,25 +247,25 @@ export default function OrderBookGrid({ date, data, loading }: OrderBookGridProp
             
             {/* Totals Row */}
             <tr className="bg-white/[0.05] border-t-2 border-white/[0.1] font-semibold">
-              <td className="sticky left-0 z-10 bg-white/[0.05] px-4 py-3 text-white font-bold border-r border-white/[0.06]">
+              <td className="sticky left-0 z-10 bg-white/[0.05] px-4 py-3 text-theme-primary font-bold border-r border-white/[0.06]">
                 TOTAL
               </td>
               {data.products.map((product) => (
-                <td key={product.id} className="px-4 py-3 text-center text-white">
+                <td key={product.id} className="px-4 py-3 text-center text-theme-primary">
                   <div className="flex flex-col items-center">
                     <span>{product.totalQty}</span>
                     {product.batchCount > 0 && (
-                      <span className="text-white/60 text-xs mt-1">
+                      <span className="text-theme-tertiary text-xs mt-1">
                         ({product.batchCount} {product.batchCount === 1 ? 'batch' : 'batches'})
                       </span>
                     )}
                   </div>
                 </td>
               ))}
-              <td className="px-4 py-3 text-center text-white font-bold">
+              <td className="px-4 py-3 text-center text-theme-primary font-bold">
                 {data.grandTotal.items}
               </td>
-              <td className="px-4 py-3 text-right text-white font-bold">
+              <td className="px-4 py-3 text-right text-theme-primary font-bold">
                 {formatCurrency(data.grandTotal.value)}
               </td>
             </tr>

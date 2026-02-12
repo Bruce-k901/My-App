@@ -151,7 +151,7 @@ const TemperatureSparkline: React.FC<TemperatureSparklineProps> = ({
   if (typeof minTemp !== 'number' || typeof maxTemp !== 'number' || isNaN(minTemp) || isNaN(maxTemp)) {
     return (
       <div
-        className="flex items-center justify-center text-xs text-slate-400"
+        className="flex items-center justify-center text-xs text-theme-tertiary"
         style={{ width, height }}
       >
         Invalid range
@@ -172,7 +172,7 @@ const TemperatureSparkline: React.FC<TemperatureSparklineProps> = ({
   if (!assetId) {
     return (
       <div 
-        className="flex items-center justify-center text-xs text-slate-400"
+        className="flex items-center justify-center text-xs text-theme-tertiary"
         style={{ width, height }}
       >
         No asset
@@ -184,7 +184,7 @@ const TemperatureSparkline: React.FC<TemperatureSparklineProps> = ({
   if (!loading && readings.length === 0) {
     return (
       <div 
-        className="flex items-center justify-center text-xs text-slate-400"
+        className="flex items-center justify-center text-xs text-theme-tertiary"
         style={{ width, height }}
       >
         No data
@@ -288,7 +288,7 @@ const TemperatureSparkline: React.FC<TemperatureSparklineProps> = ({
       </svg>
       
       {/* Tooltip on hover */}
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-theme-primary text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
         {`Last ${readings.length} reading${readings.length !== 1 ? 's' : ''}: ${points.filter(p => p.isInRange).length} in range`}
       </div>
     </div>

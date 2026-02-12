@@ -359,35 +359,35 @@ export function CustomerComplaintModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4">
-      <div className="bg-white dark:bg-[#14161c] border border-gray-200 dark:border-white/[0.1] rounded-xl shadow-2xl w-full max-w-3xl lg:max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-white dark:bg-[#14161c] border border-theme rounded-xl shadow-2xl w-full max-w-3xl lg:max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-white/[0.1]">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-theme">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-red-50 dark:bg-red-500/20 rounded-lg">
               <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Customer Complaint</h2>
-              <p className="text-sm text-gray-600 dark:text-white/60">Log and track customer complaints</p>
+              <h2 className="text-2xl font-bold text-theme-primary">Customer Complaint</h2>
+              <p className="text-sm text-theme-secondary">Log and track customer complaints</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.1] rounded-lg transition-colors"
+            className="p-2 hover:bg-theme-muted rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-gray-600 dark:text-white/60" />
+            <X className="w-5 h-5 text-theme-secondary" />
           </button>
         </div>
 
         {/* Progress Steps */}
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-white/[0.1] bg-gray-50 dark:bg-white/[0.02]">
+        <div className="px-6 py-4 border-b border-theme bg-gray-50 dark:bg-white/[0.02]">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setActiveSection('details')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
                 activeSection === 'details'
                   ? 'bg-[#D37E91]/20 dark:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91]'
-                  : 'text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white/80'
+                  : 'text-theme-secondary hover:text-theme-primary dark:hover:text-theme-secondary'
               }`}
             >
               <FileText className="w-4 h-4" />
@@ -401,8 +401,8 @@ export function CustomerComplaintModal({
                 activeSection === 'followup'
                   ? 'bg-[#D37E91]/20 dark:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91]'
                   : canProceedToFollowUp
-                  ? 'text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white/80'
-                  : 'text-gray-400 dark:text-white/30 cursor-not-allowed'
+                  ? 'text-theme-secondary hover:text-theme-primary dark:hover:text-theme-secondary'
+                  : 'text-theme-tertiary/30 cursor-not-allowed'
               }`}
             >
               <CheckCircle2 className="w-4 h-4" />
@@ -416,8 +416,8 @@ export function CustomerComplaintModal({
                 activeSection === 'review'
                   ? 'bg-[#D37E91]/20 dark:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91]'
                   : canProceedToReview
-                  ? 'text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white/80'
-                  : 'text-gray-400 dark:text-white/30 cursor-not-allowed'
+                  ? 'text-theme-secondary hover:text-theme-primary dark:hover:text-theme-secondary'
+                  : 'text-theme-tertiary/30 cursor-not-allowed'
               }`}
             >
               <MessageSquare className="w-4 h-4" />
@@ -431,61 +431,61 @@ export function CustomerComplaintModal({
           {activeSection === 'details' && (
             <div className="space-y-6">
               {/* Customer Information */}
-              <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
                   <User className="w-5 h-5 text-[#D37E91] dark:text-[#D37E91]" />
                   Customer Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Customer Name *
                     </label>
                     <input
                       type="text"
                       value={formData.customer_name}
                       onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       placeholder="Enter customer name"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Customer Email
                     </label>
                     <input
                       type="email"
                       value={formData.customer_email}
                       onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       placeholder="customer@example.com"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Customer Phone
                     </label>
                     <input
                       type="tel"
                       value={formData.customer_phone}
                       onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       placeholder="+44 123 456 7890"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Visit Date *
                     </label>
                     <input
                       type="date"
                       value={formData.visit_date}
                       onChange={(e) => setFormData({ ...formData, visit_date: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Visit Time (approx.)
                     </label>
                     <TimePicker
@@ -495,20 +495,20 @@ export function CustomerComplaintModal({
                     />
                   </div>
                 </div>
-                <p className="text-xs text-gray-600 dark:text-white/50 mt-3">
+                <p className="text-xs text-theme-secondary/50 mt-3">
                   * At least one contact method (name, email, or phone) is required
                 </p>
               </div>
 
               {/* Complaint Details */}
-              <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
                   <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
                   Complaint Details
                 </h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Site *
                     </label>
                     <SiteSelector
@@ -519,7 +519,7 @@ export function CustomerComplaintModal({
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Complaint Category *
                     </label>
                     <Select
@@ -533,44 +533,44 @@ export function CustomerComplaintModal({
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Complaint Title *
                     </label>
                     <input
                       type="text"
                       value={formData.complaint_title}
                       onChange={(e) => setFormData({ ...formData, complaint_title: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       placeholder="Brief summary of the complaint"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Complaint Description *
                     </label>
                     <textarea
                       value={formData.complaint_description}
                       onChange={(e) => setFormData({ ...formData, complaint_description: e.target.value })}
                       rows={5}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none"
                       placeholder="Provide detailed description of the complaint..."
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                      <label className="block text-sm font-medium text-theme-secondary mb-2">
                         Location in Venue
                       </label>
                       <input
                         type="text"
                         value={formData.location_in_venue}
                         onChange={(e) => setFormData({ ...formData, location_in_venue: e.target.value })}
-                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         placeholder="e.g., Table 12, Bar area, Restroom"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                      <label className="block text-sm font-medium text-theme-secondary mb-2">
                         Severity *
                       </label>
                       <Select
@@ -588,46 +588,46 @@ export function CustomerComplaintModal({
               </div>
 
               {/* Immediate Response */}
-              <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
                   <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
                   Immediate Response Taken
                 </h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       What immediate action was taken? *
                     </label>
                     <textarea
                       value={formData.immediate_response}
                       onChange={(e) => setFormData({ ...formData, immediate_response: e.target.value })}
                       rows={4}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none"
                       placeholder="Describe what immediate action was taken when the complaint was received..."
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                      <label className="block text-sm font-medium text-theme-secondary mb-2">
                         Response Taken By
                       </label>
                       <input
                         type="text"
                         value={formData.response_taken_by}
                         onChange={(e) => setFormData({ ...formData, response_taken_by: e.target.value })}
-                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         placeholder="Staff member name"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                      <label className="block text-sm font-medium text-theme-secondary mb-2">
                         Response Date
                       </label>
                       <input
                         type="date"
                         value={formData.response_date}
                         onChange={(e) => setFormData({ ...formData, response_date: e.target.value })}
-                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       />
                     </div>
                   </div>
@@ -635,8 +635,8 @@ export function CustomerComplaintModal({
               </div>
 
               {/* Photo Evidence */}
-              <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Photo Evidence</h3>
+              <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-theme-primary mb-4">Photo Evidence</h3>
                 <PhotoEvidenceFeature
                   photos={formData.photos}
                   onPhotosChange={(photos) => setFormData({ ...formData, photos })}
@@ -648,12 +648,12 @@ export function CustomerComplaintModal({
           {activeSection === 'followup' && (
             <div className="space-y-6">
               {/* Follow-up Actions */}
-              <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
                   Follow-up Actions
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-white/60 mb-4">
+                <p className="text-sm text-theme-secondary mb-4">
                   Select the follow-up actions that should be taken. Tasks will be automatically created for each selected action.
                 </p>
                 <div className="space-y-3">
@@ -663,7 +663,7 @@ export function CustomerComplaintModal({
                       className={`p-4 rounded-lg border cursor-pointer transition-colors ${
                         formData.followUpActions.includes(action.id)
                           ? 'bg-[#D37E91]/20 dark:bg-[#D37E91]/25 border-[#D37E91]/40 dark:border-[#D37E91]/40'
-                          : 'bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.1] hover:bg-gray-50 dark:hover:bg-white/[0.05]'
+                          : 'bg-theme-surface border-theme hover:bg-theme-hover'
                       }`}
                       onClick={() => {
                         const updated = formData.followUpActions.includes(action.id)
@@ -680,8 +680,8 @@ export function CustomerComplaintModal({
                           className="mt-1 w-4 h-4 text-[#D37E91] dark:text-[#D37E91] rounded focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-900 dark:text-white">{action.label}</h4>
-                          <p className="text-sm text-gray-600 dark:text-white/60 mt-1">{action.description}</p>
+                          <h4 className="font-medium text-theme-primary">{action.label}</h4>
+                          <p className="text-sm text-theme-secondary mt-1">{action.description}</p>
                           {formData.followUpActions.includes(action.id) && (
                             <textarea
                               value={formData.followUpActionDetails[action.id] || ''}
@@ -695,7 +695,7 @@ export function CustomerComplaintModal({
                                 });
                               }}
                               rows={2}
-                              className="w-full mt-2 px-3 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none text-sm"
+ className="w-full mt-2 px-3 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none text-sm"
                               placeholder="Add additional details or notes..."
                               onClick={(e) => e.stopPropagation()}
                             />
@@ -707,25 +707,25 @@ export function CustomerComplaintModal({
                 </div>
                 <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Follow-up Deadline
                     </label>
                     <input
                       type="date"
                       value={formData.follow_up_deadline}
                       onChange={(e) => setFormData({ ...formData, follow_up_deadline: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Assigned To
                     </label>
                     <input
                       type="text"
                       value={formData.assigned_to}
                       onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       placeholder="Manager or staff member"
                     />
                   </div>
@@ -767,7 +767,7 @@ export function CustomerComplaintModal({
                             type="text"
                             value={formData.reported_to}
                             onChange={(e) => setFormData({ ...formData, reported_to: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-yellow-300 dark:border-yellow-500/30 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-yellow-300 dark:border-yellow-500/30 text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500"
                             placeholder="e.g., Environmental Health Officer"
                           />
                         </div>
@@ -780,7 +780,7 @@ export function CustomerComplaintModal({
                               type="date"
                               value={formData.reported_date}
                               onChange={(e) => setFormData({ ...formData, reported_date: e.target.value })}
-                              className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-yellow-300 dark:border-yellow-500/30 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-yellow-300 dark:border-yellow-500/30 text-theme-primary focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500"
                             />
                           </div>
                           <div>
@@ -791,7 +791,7 @@ export function CustomerComplaintModal({
                               type="text"
                               value={formData.report_reference}
                               onChange={(e) => setFormData({ ...formData, report_reference: e.target.value })}
-                              className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-yellow-300 dark:border-yellow-500/30 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-yellow-300 dark:border-yellow-500/30 text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500"
                               placeholder="Reference number if available"
                             />
                           </div>
@@ -807,8 +807,8 @@ export function CustomerComplaintModal({
           {activeSection === 'review' && (
             <div className="space-y-6">
               {/* Resolution Tracking */}
-              <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Resolution Tracking</h3>
+              <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-theme-primary mb-4">Resolution Tracking</h3>
                 <div className="space-y-4">
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
@@ -817,30 +817,30 @@ export function CustomerComplaintModal({
                       onChange={(e) => setFormData({ ...formData, resolved: e.target.checked })}
                       className="w-4 h-4 text-[#D37E91] dark:text-[#D37E91] rounded focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                     />
-                    <span className="text-gray-900 dark:text-white">Complaint has been resolved</span>
+                    <span className="text-theme-primary">Complaint has been resolved</span>
                   </label>
                   {formData.resolved && (
                     <>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                        <label className="block text-sm font-medium text-theme-secondary mb-2">
                           Resolution Date
                         </label>
                         <input
                           type="date"
                           value={formData.resolution_date}
                           onChange={(e) => setFormData({ ...formData, resolution_date: e.target.value })}
-                          className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                        <label className="block text-sm font-medium text-theme-secondary mb-2">
                           Resolution Details
                         </label>
                         <textarea
                           value={formData.resolution_details}
                           onChange={(e) => setFormData({ ...formData, resolution_details: e.target.value })}
                           rows={4}
-                          className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none"
                           placeholder="Describe how the complaint was resolved..."
                         />
                       </div>
@@ -851,7 +851,7 @@ export function CustomerComplaintModal({
                           onChange={(e) => setFormData({ ...formData, customer_satisfied: e.target.checked })}
                           className="w-4 h-4 text-[#D37E91] dark:text-[#D37E91] rounded focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
-                        <span className="text-gray-900 dark:text-white">Customer satisfied with resolution</span>
+                        <span className="text-theme-primary">Customer satisfied with resolution</span>
                       </label>
                     </>
                   )}
@@ -859,26 +859,26 @@ export function CustomerComplaintModal({
               </div>
 
               {/* Summary */}
-              <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Complaint Summary</h3>
+              <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-theme-primary mb-4">Complaint Summary</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-white/60">Customer:</span>
-                    <span className="text-gray-900 dark:text-white">{formData.customer_name || 'Not provided'}</span>
+                    <span className="text-theme-secondary">Customer:</span>
+                    <span className="text-theme-primary">{formData.customer_name || 'Not provided'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-white/60">Category:</span>
-                    <span className="text-gray-900 dark:text-white">
+                    <span className="text-theme-secondary">Category:</span>
+                    <span className="text-theme-primary">
                       {COMPLAINT_CATEGORIES.find(c => c.value === formData.complaint_category)?.label || 'Not selected'}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-white/60">Severity:</span>
-                    <span className="text-gray-900 dark:text-white capitalize">{formData.severity}</span>
+                    <span className="text-theme-secondary">Severity:</span>
+                    <span className="text-theme-primary capitalize">{formData.severity}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-white/60">Follow-up Actions:</span>
-                    <span className="text-gray-900 dark:text-white">{formData.followUpActions.length} selected</span>
+                    <span className="text-theme-secondary">Follow-up Actions:</span>
+                    <span className="text-theme-primary">{formData.followUpActions.length} selected</span>
                   </div>
                   {formData.reportable && (
                     <div className="flex justify-between">
@@ -893,7 +893,7 @@ export function CustomerComplaintModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t border-gray-200 dark:border-white/[0.1] bg-gray-50 dark:bg-white/[0.02]">
+        <div className="flex items-center justify-between p-6 border-t border-theme bg-gray-50 dark:bg-white/[0.02]">
           <div className="flex gap-2">
             {activeSection !== 'details' && (
               <Button

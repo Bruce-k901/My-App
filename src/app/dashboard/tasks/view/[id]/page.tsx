@@ -139,10 +139,10 @@ export default function TaskDetailPage() {
   if (loading) {
     return (
       <div className="flex flex-col w-full items-center">
-        <div className="w-full max-w-[1280px] px-6 md:px-8 lg:px-12 flex flex-col gap-6 text-white py-8">
+        <div className="w-full max-w-[1280px] px-6 md:px-8 lg:px-12 flex flex-col gap-6 text-theme-primary py-8">
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin mr-3" />
-            <span className="text-white/60">Loading task details...</span>
+            <Loader2 className="w-8 h-8 text-module-fg animate-spin mr-3" />
+            <span className="text-theme-tertiary">Loading task details...</span>
           </div>
         </div>
       </div>
@@ -152,14 +152,14 @@ export default function TaskDetailPage() {
   if (error || !task) {
     return (
       <div className="flex flex-col w-full items-center">
-        <div className="w-full max-w-[1280px] px-6 md:px-8 lg:px-12 flex flex-col gap-6 text-white py-8">
+        <div className="w-full max-w-[1280px] px-6 md:px-8 lg:px-12 flex flex-col gap-6 text-theme-primary py-8">
           <div className="bg-red-500/10 border border-red-500/40 rounded-xl p-6 text-center">
             <AlertTriangle className="w-16 h-16 text-red-400/50 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">Error Loading Task</h3>
-            <p className="text-white/60 mb-6">{error || 'Task not found'}</p>
+            <h3 className="text-xl font-semibold text-theme-primary mb-2">Error Loading Task</h3>
+            <p className="text-theme-tertiary mb-6">{error || 'Task not found'}</p>
             <button
               onClick={() => router.back()}
-              className="px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200"
+              className="px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200"
             >
               Go Back
             </button>
@@ -177,7 +177,7 @@ export default function TaskDetailPage() {
 
   return (
     <div className="flex flex-col w-full items-center">
-      <div className="w-full max-w-[1280px] px-6 md:px-8 lg:px-12 flex flex-col gap-6 text-white py-8">
+      <div className="w-full max-w-[1280px] px-6 md:px-8 lg:px-12 flex flex-col gap-6 text-theme-primary py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-2">
           <button
@@ -187,15 +187,15 @@ export default function TaskDetailPage() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-white">{taskName}</h1>
-            <p className="text-white/60 mt-1">
+            <h1 className="text-3xl font-bold text-theme-primary">{taskName}</h1>
+            <p className="text-theme-tertiary mt-1">
               {template?.category || 'General'} • {template?.is_critical ? 'Critical' : 'Standard'} Task
             </p>
           </div>
           {!isCompleted && (
             <button
               onClick={() => setShowCompletionModal(true)}
-              className="px-6 py-3 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] font-semibold rounded-lg transition-all duration-200 flex items-center gap-2"
+              className="px-6 py-3 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] font-semibold rounded-lg transition-all duration-200 flex items-center gap-2"
             >
               <CheckCircle2 className="w-5 h-5" />
               Complete Task
@@ -221,10 +221,10 @@ export default function TaskDetailPage() {
                 <Clock className="w-6 h-6 text-yellow-400" />
               )}
               <div>
-                <div className="font-semibold text-white">
+                <div className="font-semibold text-theme-primary">
                   {isCompleted ? 'Completed' : isOverdue ? 'Overdue' : 'Pending'}
                 </div>
-                <div className="text-sm text-white/60">
+                <div className="text-sm text-theme-tertiary">
                   {isCompleted && latestCompletion
                     ? `Completed ${formatDistanceToNow(new Date(latestCompletion.completed_at), { addSuffix: true })}`
                     : `Due: ${format(new Date(task.due_date), 'dd MMM yyyy')}${task.due_time ? ` at ${task.due_time}` : ''}`
@@ -249,11 +249,11 @@ export default function TaskDetailPage() {
                 onClick={() => toggleSection('details')}
                 className="w-full flex items-center justify-between mb-4"
               >
-                <h2 className="text-xl font-semibold text-white">Task Details</h2>
+                <h2 className="text-xl font-semibold text-theme-primary">Task Details</h2>
                 {expandedSections.has('details') ? (
-                  <ChevronUp className="w-5 h-5 text-white/60" />
+                  <ChevronUp className="w-5 h-5 text-theme-tertiary" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-white/60" />
+                  <ChevronDown className="w-5 h-5 text-theme-tertiary" />
                 )}
               </button>
 
@@ -261,18 +261,18 @@ export default function TaskDetailPage() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <div className="text-sm text-white/60 mb-1">Due Date</div>
-                      <div className="text-white flex items-center gap-2">
+                      <div className="text-sm text-theme-tertiary mb-1">Due Date</div>
+                      <div className="text-theme-primary flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
                         {format(new Date(task.due_date), 'dd MMM yyyy')}
                         {task.due_time && (
-                          <span className="text-white/60">at {task.due_time}</span>
+                          <span className="text-theme-tertiary">at {task.due_time}</span>
                         )}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-white/60 mb-1">Status</div>
-                      <div className="text-white flex items-center gap-2">
+                      <div className="text-sm text-theme-tertiary mb-1">Status</div>
+                      <div className="text-theme-primary flex items-center gap-2">
                         <CheckCircle2 className={`w-4 h-4 ${
                           isCompleted ? 'text-green-400' : isOverdue ? 'text-red-400' : 'text-yellow-400'
                         }`} />
@@ -281,28 +281,28 @@ export default function TaskDetailPage() {
                     </div>
                     {task.daypart && (
                       <div>
-                        <div className="text-sm text-white/60 mb-1">Daypart</div>
-                        <div className="text-white capitalize">{task.daypart}</div>
+                        <div className="text-sm text-theme-tertiary mb-1">Daypart</div>
+                        <div className="text-theme-primary capitalize">{task.daypart}</div>
                       </div>
                     )}
                     {task.priority && (
                       <div>
-                        <div className="text-sm text-white/60 mb-1">Priority</div>
-                        <div className="text-white capitalize">{task.priority}</div>
+                        <div className="text-sm text-theme-tertiary mb-1">Priority</div>
+                        <div className="text-theme-primary capitalize">{task.priority}</div>
                       </div>
                     )}
                     {template?.category && (
                       <div>
-                        <div className="text-sm text-white/60 mb-1">Category</div>
-                        <div className="text-white">{template.category}</div>
+                        <div className="text-sm text-theme-tertiary mb-1">Category</div>
+                        <div className="text-theme-primary">{template.category}</div>
                       </div>
                     )}
                   </div>
 
                   {task.template_notes && (
                     <div>
-                      <div className="text-sm text-white/60 mb-2">Task Notes</div>
-                      <div className="text-white bg-white/[0.05] rounded-lg p-3">
+                      <div className="text-sm text-theme-tertiary mb-2">Task Notes</div>
+                      <div className="text-theme-primary bg-white/[0.05] rounded-lg p-3">
                         {task.template_notes}
                       </div>
                     </div>
@@ -310,8 +310,8 @@ export default function TaskDetailPage() {
 
                   {task.template?.description && (
                     <div>
-                      <div className="text-sm text-white/60 mb-2">Description</div>
-                      <div className="text-white/80 bg-white/[0.05] rounded-lg p-3">
+                      <div className="text-sm text-theme-tertiary mb-2">Description</div>
+                      <div className="text-theme-secondary bg-white/[0.05] rounded-lg p-3">
                         {task.template.description}
                       </div>
                     </div>
@@ -327,13 +327,13 @@ export default function TaskDetailPage() {
                   onClick={() => toggleSection('history')}
                   className="w-full flex items-center justify-between mb-4"
                 >
-                  <h2 className="text-xl font-semibold text-white">
+                  <h2 className="text-xl font-semibold text-theme-primary">
                     Completion History ({completionRecords.length})
                   </h2>
                   {expandedSections.has('history') ? (
-                    <ChevronUp className="w-5 h-5 text-white/60" />
+                    <ChevronUp className="w-5 h-5 text-theme-tertiary" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-white/60" />
+                    <ChevronDown className="w-5 h-5 text-theme-tertiary" />
                   )}
                 </button>
 
@@ -350,7 +350,7 @@ export default function TaskDetailPage() {
             {/* Latest Completion Details */}
             {latestCompletion && (
               <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-                <h2 className="text-xl font-semibold text-white mb-4">Latest Completion Details</h2>
+                <h2 className="text-xl font-semibold text-theme-primary mb-4">Latest Completion Details</h2>
                 <CompletionDetails record={latestCompletion} task={task} />
               </div>
             )}
@@ -362,13 +362,13 @@ export default function TaskDetailPage() {
                   onClick={() => toggleSection('waste')}
                   className="w-full flex items-center justify-between mb-4"
                 >
-                  <h2 className="text-xl font-semibold text-white">
+                  <h2 className="text-xl font-semibold text-theme-primary">
                     Waste Generated ({linkedWaste.length})
                   </h2>
                   {expandedSections.has('waste') ? (
-                    <ChevronUp className="w-5 h-5 text-white/60" />
+                    <ChevronUp className="w-5 h-5 text-theme-tertiary" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-white/60" />
+                    <ChevronDown className="w-5 h-5 text-theme-tertiary" />
                   )}
                 </button>
 
@@ -384,7 +384,7 @@ export default function TaskDetailPage() {
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
                               <AlertTriangle className="w-5 h-5 text-orange-400" />
-                              <span className="font-semibold text-white">
+                              <span className="font-semibold text-theme-primary">
                                 Waste Record #{ref.target_id.slice(0, 8)}
                               </span>
                               {ref.link_type && (
@@ -393,16 +393,16 @@ export default function TaskDetailPage() {
                                 </span>
                               )}
                             </div>
-                            <div className="text-sm text-white/60">
+                            <div className="text-sm text-theme-tertiary">
                               Linked: {format(new Date(ref.created_at), 'dd MMM yyyy HH:mm')}
                             </div>
                             {ref.metadata && Object.keys(ref.metadata).length > 0 && (
-                              <div className="text-xs text-white/40 mt-2">
+                              <div className="text-xs text-theme-tertiary mt-2">
                                 {ref.metadata.cost && `Cost: £${ref.metadata.cost.toFixed(2)}`}
                               </div>
                             )}
                           </div>
-                          <ExternalLink className="w-4 h-4 text-white/40" />
+                          <ExternalLink className="w-4 h-4 text-theme-tertiary" />
                         </div>
                       </Link>
                     ))}
@@ -416,36 +416,36 @@ export default function TaskDetailPage() {
           <div className="space-y-6">
             {/* Quick Info */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Quick Info</h3>
+              <h3 className="text-lg font-semibold text-theme-primary mb-4">Quick Info</h3>
               <div className="space-y-3">
                 {task.template?.category && (
                   <div className="flex items-center gap-2">
-                    <Tag className="w-4 h-4 text-white/60" />
-                    <span className="text-sm text-white/60">Category:</span>
-                    <span className="text-sm text-white">{task.template.category}</span>
+                    <Tag className="w-4 h-4 text-theme-tertiary" />
+                    <span className="text-sm text-theme-tertiary">Category:</span>
+                    <span className="text-sm text-theme-primary">{task.template.category}</span>
                   </div>
                 )}
                 {latestCompletion?.profiles?.full_name && (
                   <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-white/60" />
-                    <span className="text-sm text-white/60">Last completed by:</span>
-                    <span className="text-sm text-white">{latestCompletion.profiles.full_name}</span>
+                    <User className="w-4 h-4 text-theme-tertiary" />
+                    <span className="text-sm text-theme-tertiary">Last completed by:</span>
+                    <span className="text-sm text-theme-primary">{latestCompletion.profiles.full_name}</span>
                   </div>
                 )}
                 {latestCompletion?.duration_seconds && (
                   <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-white/60" />
-                    <span className="text-sm text-white/60">Duration:</span>
-                    <span className="text-sm text-white">
+                    <Clock className="w-4 h-4 text-theme-tertiary" />
+                    <span className="text-sm text-theme-tertiary">Duration:</span>
+                    <span className="text-sm text-theme-primary">
                       {Math.floor(latestCompletion.duration_seconds / 60)} minutes
                     </span>
                   </div>
                 )}
                 {latestCompletion?.evidence_attachments?.length > 0 && (
                   <div className="flex items-center gap-2">
-                    <Camera className="w-4 h-4 text-white/60" />
-                    <span className="text-sm text-white/60">Evidence:</span>
-                    <span className="text-sm text-white">
+                    <Camera className="w-4 h-4 text-theme-tertiary" />
+                    <span className="text-sm text-theme-tertiary">Evidence:</span>
+                    <span className="text-sm text-theme-primary">
                       {latestCompletion.evidence_attachments.length} file(s)
                     </span>
                   </div>
@@ -456,22 +456,22 @@ export default function TaskDetailPage() {
             {/* Template Info */}
             {template && (
               <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Template Info</h3>
+                <h3 className="text-lg font-semibold text-theme-primary mb-4">Template Info</h3>
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="text-white/60">Frequency:</span>
-                    <span className="text-white ml-2 capitalize">{template.frequency || 'N/A'}</span>
+                    <span className="text-theme-tertiary">Frequency:</span>
+                    <span className="text-theme-primary ml-2 capitalize">{template.frequency || 'N/A'}</span>
                   </div>
                   {template.role_required && (
                     <div>
-                      <span className="text-white/60">Role Required:</span>
-                      <span className="text-white ml-2 capitalize">{template.role_required}</span>
+                      <span className="text-theme-tertiary">Role Required:</span>
+                      <span className="text-theme-primary ml-2 capitalize">{template.role_required}</span>
                     </div>
                   )}
                   {template.compliance_standard && (
                     <div>
-                      <span className="text-white/60">Compliance:</span>
-                      <span className="text-white ml-2">{template.compliance_standard}</span>
+                      <span className="text-theme-tertiary">Compliance:</span>
+                      <span className="text-theme-primary ml-2">{template.compliance_standard}</span>
                     </div>
                   )}
                 </div>
@@ -500,7 +500,7 @@ export default function TaskDetailPage() {
           <div className="relative max-w-4xl max-h-full">
             <button
               onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-lg text-white z-10"
+              className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-lg text-theme-primary z-10"
             >
               <X className="w-6 h-6" />
             </button>
@@ -531,7 +531,7 @@ function CompletionRecordCard({
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <CheckCircle2 className="w-5 h-5 text-green-400" />
-            <span className="font-semibold text-white">
+            <span className="font-semibold text-theme-primary">
               {format(new Date(record.completed_at), 'dd MMM yyyy HH:mm')}
             </span>
             {record.flagged && (
@@ -540,7 +540,7 @@ function CompletionRecordCard({
               </span>
             )}
           </div>
-          <div className="text-sm text-white/60 mb-2">
+          <div className="text-sm text-theme-tertiary mb-2">
             Completed by: {record.profiles?.full_name || 'Unknown'}
             {record.duration_seconds && (
               <span className="ml-3">
@@ -559,9 +559,9 @@ function CompletionRecordCard({
           className="p-1 hover:bg-white/10 rounded"
         >
           {expanded ? (
-            <ChevronUp className="w-5 h-5 text-white/60" />
+            <ChevronUp className="w-5 h-5 text-theme-tertiary" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-white/60" />
+            <ChevronDown className="w-5 h-5 text-theme-tertiary" />
           )}
         </button>
       </div>
@@ -595,7 +595,7 @@ function CompletionDetails({
       {/* Equipment & Temperatures */}
       {equipmentList.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+          <h4 className="text-sm font-semibold text-theme-primary mb-2 flex items-center gap-2">
             <Thermometer className="w-4 h-4" />
             Equipment & Temperature Readings
           </h4>
@@ -603,7 +603,7 @@ function CompletionDetails({
             {equipmentList.map((eq: any, idx: number) => (
               <div key={idx} className="bg-white/[0.05] rounded-lg p-3 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-white font-medium">
+                  <span className="text-theme-primary font-medium">
                     {eq.asset_name || eq.name || `Equipment ${idx + 1}`}
                   </span>
                   {eq.temperature !== undefined && eq.temperature !== null && (
@@ -615,7 +615,7 @@ function CompletionDetails({
                   )}
                 </div>
                 {eq.status && (
-                  <div className="text-xs text-white/60 mt-1">
+                  <div className="text-xs text-theme-tertiary mt-1">
                     Status: <span className="capitalize">{eq.status}</span>
                   </div>
                 )}
@@ -628,7 +628,7 @@ function CompletionDetails({
       {/* Checklist Items */}
       {checklistItems.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+          <h4 className="text-sm font-semibold text-theme-primary mb-2 flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4" />
             Checklist Items
           </h4>
@@ -640,7 +640,7 @@ function CompletionDetails({
                 ) : (
                   <X className="w-4 h-4 text-red-400" />
                 )}
-                <span className="text-white/80">{item.label || item.name || `Item ${idx + 1}`}</span>
+                <span className="text-theme-secondary">{item.label || item.name || `Item ${idx + 1}`}</span>
               </div>
             ))}
           </div>
@@ -650,7 +650,7 @@ function CompletionDetails({
       {/* Yes/No Checklist */}
       {yesNoItems.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-white mb-2">Yes/No Checklist</h4>
+          <h4 className="text-sm font-semibold text-theme-primary mb-2">Yes/No Checklist</h4>
           <div className="space-y-1">
             {yesNoItems.map((item: any, idx: number) => (
               <div key={idx} className="flex items-center gap-2 text-sm">
@@ -659,7 +659,7 @@ function CompletionDetails({
                 ) : (
                   <X className="w-4 h-4 text-red-400" />
                 )}
-                <span className="text-white/80">{item.label || item.question || `Question ${idx + 1}`}</span>
+                <span className="text-theme-secondary">{item.label || item.question || `Question ${idx + 1}`}</span>
               </div>
             ))}
           </div>
@@ -669,11 +669,11 @@ function CompletionDetails({
       {/* Notes */}
       {completionData.notes && (
         <div>
-          <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+          <h4 className="text-sm font-semibold text-theme-primary mb-2 flex items-center gap-2">
             <FileText className="w-4 h-4" />
             Notes
           </h4>
-          <div className="bg-white/[0.05] rounded-lg p-3 text-sm text-white/80">
+          <div className="bg-white/[0.05] rounded-lg p-3 text-sm text-theme-secondary">
             {completionData.notes}
           </div>
         </div>
@@ -682,7 +682,7 @@ function CompletionDetails({
       {/* Evidence Attachments */}
       {record.evidence_attachments && record.evidence_attachments.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+          <h4 className="text-sm font-semibold text-theme-primary mb-2 flex items-center gap-2">
             <Camera className="w-4 h-4" />
             Evidence ({record.evidence_attachments.length})
           </h4>
@@ -699,7 +699,7 @@ function CompletionDetails({
                   className="w-full h-full object-cover group-hover:opacity-80 transition-opacity"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                  <ExternalLink className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ExternalLink className="w-6 h-6 text-theme-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
             ))}
@@ -716,7 +716,7 @@ function CompletionDetails({
           <div className="relative max-w-4xl max-h-full">
             <button
               onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-lg text-white z-10"
+              className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-lg text-theme-primary z-10"
             >
               <X className="w-6 h-6" />
             </button>

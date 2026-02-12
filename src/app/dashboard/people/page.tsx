@@ -38,7 +38,6 @@ interface QuickAction {
   label: string;
   href: string;
   icon: React.ElementType;
-  color: string;
 }
 
 interface Alert {
@@ -377,17 +376,17 @@ export default function TeamlyDashboard() {
   };
 
   const quickActions: QuickAction[] = [
-    { label: 'Add Employee', href: '/dashboard/people/directory/new', icon: UserPlus, color: 'from-green-500 to-emerald-600' },
-    { label: 'Request Leave', href: '/dashboard/people/leave/request', icon: CalendarDays, color: 'from-blue-500 to-cyan-600' },
-    { label: 'View Schedule', href: '/dashboard/people/schedule', icon: Calendar, color: 'from-purple-500 to-violet-600' },
-    { label: 'Record Training', href: '/dashboard/people/training/record', icon: GraduationCap, color: 'from-amber-500 to-orange-600' },
+    { label: 'Add Employee', href: '/dashboard/people/directory/new', icon: UserPlus },
+    { label: 'Request Leave', href: '/dashboard/people/leave/request', icon: CalendarDays },
+    { label: 'View Schedule', href: '/dashboard/people/schedule', icon: Calendar },
+    { label: 'Record Training', href: '/dashboard/people/training/record', icon: GraduationCap },
   ];
 
   const managerActions: QuickAction[] = [
-    { label: 'Approve Leave', href: '/dashboard/people/leave', icon: CheckCircle, color: 'from-green-500 to-emerald-600' },
-    { label: 'View Timesheets', href: '/dashboard/people/attendance/signoff', icon: Clock, color: 'from-blue-500 to-cyan-600' },
-    { label: 'Post Job', href: '/dashboard/people/recruitment/jobs/new', icon: Briefcase, color: 'from-purple-500 to-violet-600' },
-    { label: 'Start Onboarding', href: '/dashboard/people/onboarding', icon: UserPlus, color: 'from-[#D37E91] to-[#D37E91]/80' },
+    { label: 'Approve Leave', href: '/dashboard/people/leave', icon: CheckCircle },
+    { label: 'View Timesheets', href: '/dashboard/people/attendance/signoff', icon: Clock },
+    { label: 'Post Job', href: '/dashboard/people/recruitment/jobs/new', icon: Briefcase },
+    { label: 'Start Onboarding', href: '/dashboard/people/onboarding', icon: UserPlus },
   ];
 
   const getAlerts = (): Alert[] => {
@@ -426,7 +425,7 @@ export default function TeamlyDashboard() {
   if (loading && !profile) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-module-fg" />
       </div>
     );
   }
@@ -435,8 +434,8 @@ export default function TeamlyDashboard() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">People Dashboard</h1>
-          <p className="text-gray-600 dark:text-white/70 mt-2">
+          <h1 className="text-2xl font-bold text-theme-primary">People Dashboard</h1>
+          <p className="text-theme-secondary mt-2">
             Your profile is not linked to a company. Please contact an administrator to get access.
           </p>
         </div>
@@ -445,10 +444,10 @@ export default function TeamlyDashboard() {
             <AlertTriangle className="w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
             <div>
               <h3 className="font-semibold text-yellow-600 dark:text-yellow-400 mb-2">Account Setup Required</h3>
-              <p className="text-gray-600 dark:text-white/70 text-sm mb-4">
+              <p className="text-theme-secondary text-sm mb-4">
                 Your account needs to be linked to a company before you can access the People dashboard.
               </p>
-              <div className="text-sm text-gray-600 dark:text-white/70">
+              <div className="text-sm text-theme-secondary">
                 <p><strong>Profile ID:</strong> {profile?.id || 'Not loaded'}</p>
                 <p><strong>Email:</strong> {profile?.email || 'Not loaded'}</p>
                 <p><strong>Company ID:</strong> {profile?.company_id || 'Not set'}</p>
@@ -466,8 +465,8 @@ export default function TeamlyDashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">People Dashboard</h1>
-        <p className="text-gray-600 dark:text-white/70">
+        <h1 className="text-2xl font-bold text-theme-primary">People Dashboard</h1>
+        <p className="text-theme-secondary">
           Welcome back, {profile?.full_name?.split(' ')[0]}. Here's what's happening with your team.
         </p>
       </div>
@@ -479,25 +478,13 @@ export default function TeamlyDashboard() {
             <Link
               key={index}
               href={alert.href || '#'}
-              className={`flex items-center gap-3 p-4 rounded-lg border transition-colors ${
-                alert.type === 'warning'
-                  ? 'bg-yellow-100 dark:bg-yellow-500/10 border-yellow-200 dark:border-yellow-500/20 hover:border-yellow-300 dark:hover:border-yellow-500/30'
-                  : alert.type === 'info'
-                  ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 hover:border-blue-300 dark:hover:border-blue-500/30'
-                  : 'bg-green-100 dark:bg-green-500/10 border-green-200 dark:border-green-500/20 hover:border-green-300 dark:hover:border-green-500/30'
-              }`}
+              className="flex items-center gap-3 p-4 rounded-lg border bg-module-fg/[0.06] border-module-fg/20 hover:border-module-fg/40 transition-colors group"
             >
-              <AlertTriangle className={`w-5 h-5 flex-shrink-0 ${
-                alert.type === 'warning' ? 'text-yellow-600 dark:text-yellow-400' :
-                alert.type === 'info' ? 'text-blue-600 dark:text-blue-400' : 'text-green-600 dark:text-green-400'
-              }`} />
-              <span className={`flex-1 ${
-                alert.type === 'warning' ? 'text-yellow-600 dark:text-yellow-400' :
-                alert.type === 'info' ? 'text-blue-600 dark:text-blue-400' : 'text-green-600 dark:text-green-400'
-              }`}>
+              <AlertTriangle className="w-5 h-5 flex-shrink-0 text-module-fg" />
+              <span className="flex-1 text-module-fg font-medium">
                 {alert.message}
               </span>
-              <ArrowRight className="w-4 h-4 text-gray-500 dark:text-white/50" />
+              <ArrowRight className="w-4 h-4 text-module-fg/50 group-hover:text-module-fg transition-colors" />
             </Link>
           ))}
         </div>
@@ -507,56 +494,56 @@ export default function TeamlyDashboard() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Link 
           href="/dashboard/people/employees"
-          className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors shadow-sm dark:shadow-none"
+          className="bg-theme-surface border border-theme rounded-lg p-4 hover:border-module-fg/[0.50] transition-colors shadow-sm dark:shadow-none"
         >
-          <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
+          <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
             <Users className="w-4 h-4" />
             Total Employees
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.active_employees || 0}</p>
-          <p className="text-xs text-gray-500 dark:text-white/50 mt-1">
+          <p className="text-2xl font-bold text-theme-primary">{stats?.active_employees || 0}</p>
+          <p className="text-xs text-theme-tertiary mt-1">
             {stats?.total_employees || 0} total records
           </p>
         </Link>
 
         <Link 
           href="/dashboard/people/leave"
-          className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors shadow-sm dark:shadow-none"
+          className="bg-theme-surface border border-theme rounded-lg p-4 hover:border-module-fg/[0.50] transition-colors shadow-sm dark:shadow-none"
         >
-          <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
+          <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
             <CalendarDays className="w-4 h-4" />
             On Leave Today
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.on_leave_today || 0}</p>
-          <p className="text-xs text-gray-500 dark:text-white/50 mt-1">
+          <p className="text-2xl font-bold text-theme-primary">{stats?.on_leave_today || 0}</p>
+          <p className="text-xs text-theme-tertiary mt-1">
             {stats?.pending_leave_requests || 0} pending requests
           </p>
         </Link>
 
         <Link 
           href="/dashboard/people/training"
-          className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors shadow-sm dark:shadow-none"
+          className="bg-theme-surface border border-theme rounded-lg p-4 hover:border-module-fg/[0.50] transition-colors shadow-sm dark:shadow-none"
         >
-          <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
+          <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
             <GraduationCap className="w-4 h-4" />
             Training
           </div>
-          <p className={`text-2xl font-bold ${stats?.expiring_training ? 'text-yellow-600 dark:text-yellow-400' : 'text-gray-900 dark:text-white'}`}>
+          <p className={`text-2xl font-bold ${stats?.expiring_training ? 'text-yellow-600 dark:text-yellow-400' : 'text-theme-primary'}`}>
             {stats?.expiring_training || 0}
           </p>
-          <p className="text-xs text-gray-500 dark:text-white/50 mt-1">expiring in 30 days</p>
+          <p className="text-xs text-theme-tertiary mt-1">expiring in 30 days</p>
         </Link>
 
         <Link 
           href="/dashboard/people/recruitment"
-          className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors shadow-sm dark:shadow-none"
+          className="bg-theme-surface border border-theme rounded-lg p-4 hover:border-module-fg/[0.50] transition-colors shadow-sm dark:shadow-none"
         >
-          <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm mb-1">
+          <div className="flex items-center gap-2 text-theme-secondary text-sm mb-1">
             <Briefcase className="w-4 h-4" />
             Open Positions
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.open_jobs || 0}</p>
-          <p className="text-xs text-gray-500 dark:text-white/50 mt-1">
+          <p className="text-2xl font-bold text-theme-primary">{stats?.open_jobs || 0}</p>
+          <p className="text-xs text-theme-tertiary mt-1">
             {stats?.pending_applications || 0} new applicants
           </p>
         </Link>
@@ -565,19 +552,19 @@ export default function TeamlyDashboard() {
       {/* Quick Actions */}
       <div className="grid md:grid-cols-2 gap-6">
         {/* Employee Quick Actions */}
-        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 shadow-sm dark:shadow-none">
-          <h2 className="font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+        <div className="bg-theme-surface border border-theme rounded-lg p-4 shadow-sm dark:shadow-none">
+          <h2 className="font-semibold text-theme-primary mb-4">Quick Actions</h2>
           <div className="grid grid-cols-2 gap-3">
             {quickActions.map((action) => (
               <Link
                 key={action.href}
                 href={action.href}
-                className="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-white/[0.03] rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
+                className="flex flex-col items-center gap-2 p-4 bg-module-fg/[0.04] dark:bg-white/[0.03] rounded-lg hover:bg-module-fg/[0.08] dark:hover:bg-white/[0.05] transition-colors group"
               >
-                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${action.color} flex items-center justify-center`}>
-                  <action.icon className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 rounded-lg bg-module-fg/10 flex items-center justify-center group-hover:bg-module-fg/20 transition-colors">
+                  <action.icon className="w-5 h-5 text-module-fg" />
                 </div>
-                <span className="text-sm text-gray-600 dark:text-white/70 text-center">{action.label}</span>
+                <span className="text-sm text-theme-secondary text-center">{action.label}</span>
               </Link>
             ))}
           </div>
@@ -585,19 +572,19 @@ export default function TeamlyDashboard() {
 
         {/* Manager Quick Actions */}
         {isManager && (
-          <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 shadow-sm dark:shadow-none">
-            <h2 className="font-semibold text-gray-900 dark:text-white mb-4">Manager Actions</h2>
+          <div className="bg-theme-surface border border-theme rounded-lg p-4 shadow-sm dark:shadow-none">
+            <h2 className="font-semibold text-theme-primary mb-4">Manager Actions</h2>
             <div className="grid grid-cols-2 gap-3">
               {managerActions.map((action) => (
                 <Link
                   key={action.href}
                   href={action.href}
-                  className="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-white/[0.03] rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
+                  className="flex flex-col items-center gap-2 p-4 bg-module-fg/[0.04] dark:bg-white/[0.03] rounded-lg hover:bg-module-fg/[0.08] dark:hover:bg-white/[0.05] transition-colors group"
                 >
-                  <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${action.color} flex items-center justify-center`}>
-                    <action.icon className="w-5 h-5 text-white" />
+                  <div className="w-10 h-10 rounded-lg bg-module-fg/10 flex items-center justify-center group-hover:bg-module-fg/20 transition-colors">
+                    <action.icon className="w-5 h-5 text-module-fg" />
                   </div>
-                  <span className="text-sm text-gray-600 dark:text-white/70 text-center">{action.label}</span>
+                  <span className="text-sm text-theme-secondary text-center">{action.label}</span>
                 </Link>
               ))}
             </div>
@@ -608,10 +595,10 @@ export default function TeamlyDashboard() {
       {/* Bottom Grid */}
       <div className="grid md:grid-cols-3 gap-6">
         {/* Recent Joiners */}
-        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg shadow-sm dark:shadow-none">
-          <div className="p-4 border-b border-gray-200 dark:border-white/[0.06] flex items-center justify-between">
-            <h2 className="font-semibold text-gray-900 dark:text-white">Recent Joiners</h2>
-            <Link href="/dashboard/people/employees?sort=start_date" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+        <div className="bg-theme-surface border border-theme rounded-lg shadow-sm dark:shadow-none">
+          <div className="p-4 border-b border-theme flex items-center justify-between">
+            <h2 className="font-semibold text-theme-primary">Recent Joiners</h2>
+            <Link href="/dashboard/people/employees?sort=start_date" className="text-sm text-module-fg hover:text-module-fg/70">
               View all
             </Link>
           </div>
@@ -622,14 +609,14 @@ export default function TeamlyDashboard() {
                   <Link
                     key={joiner.id || joiner.profile_id}
                     href={`/dashboard/people/${joiner.id || joiner.profile_id}`}
-                    className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors group"
+                    className="flex items-center justify-between p-2 rounded-lg hover:bg-module-fg/[0.06] dark:hover:bg-white/[0.05] transition-colors group"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      <p className="text-sm font-medium text-theme-primary truncate group-hover:text-module-fg transition-colors">
                         {joiner.full_name || joiner.name || 'Unknown'}
                       </p>
                       {joiner.start_date && (
-                        <p className="text-xs text-gray-600 dark:text-white/70">
+                        <p className="text-xs text-theme-secondary">
                           Started {new Date(joiner.start_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                         </p>
                       )}
@@ -638,16 +625,16 @@ export default function TeamlyDashboard() {
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 dark:text-white/50 text-sm text-center py-4">No recent joiners</p>
+              <p className="text-theme-tertiary text-sm text-center py-4">No recent joiners</p>
             )}
           </div>
         </div>
 
         {/* Upcoming Birthdays */}
-        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg shadow-sm dark:shadow-none">
-          <div className="p-4 border-b border-gray-200 dark:border-white/[0.06] flex items-center justify-between">
-            <h2 className="font-semibold text-gray-900 dark:text-white">🎂 Birthdays</h2>
-            <span className="text-sm text-gray-500 dark:text-white/50">This week</span>
+        <div className="bg-theme-surface border border-theme rounded-lg shadow-sm dark:shadow-none">
+          <div className="p-4 border-b border-theme flex items-center justify-between">
+            <h2 className="font-semibold text-theme-primary">🎂 Birthdays</h2>
+            <span className="text-sm text-theme-tertiary">This week</span>
           </div>
           <div className="p-4">
             {birthdays.length > 0 ? (
@@ -663,13 +650,13 @@ export default function TeamlyDashboard() {
                     <Link
                       key={person.id || person.profile_id}
                       href={`/dashboard/people/${person.id || person.profile_id}`}
-                      className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors group"
+                      className="flex items-center justify-between p-2 rounded-lg hover:bg-module-fg/[0.06] dark:hover:bg-white/[0.05] transition-colors group"
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        <p className="text-sm font-medium text-theme-primary truncate group-hover:text-module-fg transition-colors">
                           {person.full_name || person.name || 'Unknown'}
                         </p>
-                        <p className="text-xs text-gray-600 dark:text-white/70">
+                        <p className="text-xs text-theme-secondary">
                           {isToday ? 'Today!' : birthdayStr}
                         </p>
                       </div>
@@ -678,16 +665,16 @@ export default function TeamlyDashboard() {
                 })}
               </div>
             ) : (
-              <p className="text-gray-500 dark:text-white/50 text-sm text-center py-4">No birthdays this week</p>
+              <p className="text-theme-tertiary text-sm text-center py-4">No birthdays this week</p>
             )}
           </div>
         </div>
 
         {/* Anniversaries */}
-        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg shadow-sm dark:shadow-none">
-          <div className="p-4 border-b border-gray-200 dark:border-white/[0.06] flex items-center justify-between">
-            <h2 className="font-semibold text-gray-900 dark:text-white">🎉 Anniversaries</h2>
-            <span className="text-sm text-gray-500 dark:text-white/50">This month</span>
+        <div className="bg-theme-surface border border-theme rounded-lg shadow-sm dark:shadow-none">
+          <div className="p-4 border-b border-theme flex items-center justify-between">
+            <h2 className="font-semibold text-theme-primary">🎉 Anniversaries</h2>
+            <span className="text-sm text-theme-tertiary">This month</span>
           </div>
           <div className="p-4">
             {anniversaries.length > 0 ? (
@@ -717,13 +704,13 @@ export default function TeamlyDashboard() {
                     <Link
                       key={person.id || person.profile_id}
                       href={`/dashboard/people/${person.id || person.profile_id}`}
-                      className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors group"
+                      className="flex items-center justify-between p-2 rounded-lg hover:bg-module-fg/[0.06] dark:hover:bg-white/[0.05] transition-colors group"
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        <p className="text-sm font-medium text-theme-primary truncate group-hover:text-module-fg transition-colors">
                           {person.full_name || person.name || 'Unknown'}
                         </p>
-                        <p className="text-xs text-gray-600 dark:text-white/70">
+                        <p className="text-xs text-theme-secondary">
                           {isToday ? `${yearsOfService} year${yearsOfService !== 1 ? 's' : ''} today!` : `${anniversaryStr} (${yearsOfService} year${yearsOfService !== 1 ? 's' : ''})`}
                         </p>
                       </div>
@@ -732,7 +719,7 @@ export default function TeamlyDashboard() {
                 })}
               </div>
             ) : (
-              <p className="text-gray-500 dark:text-white/50 text-sm text-center py-4">No anniversaries this month</p>
+              <p className="text-theme-tertiary text-sm text-center py-4">No anniversaries this month</p>
             )}
           </div>
         </div>
@@ -741,65 +728,59 @@ export default function TeamlyDashboard() {
       {/* Module Cards - Entry points to each section */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {[
-          { 
-            title: 'Leave Management', 
+          {
+            title: 'Leave Management',
             description: 'Request time off, view balances, team calendar',
             href: '/dashboard/people/leave',
             icon: CalendarDays,
-            color: 'from-blue-500 to-cyan-600'
           },
-          { 
-            title: 'Scheduling', 
+          {
+            title: 'Scheduling',
             description: 'View rotas, set availability, swap shifts',
             href: '/dashboard/people/schedule',
             icon: Calendar,
-            color: 'from-purple-500 to-violet-600'
           },
-          { 
-            title: 'Training & Certs', 
+          {
+            title: 'Training & Certs',
             description: 'Track training, compliance matrix, certifications',
             href: '/dashboard/people/training',
             icon: GraduationCap,
-            color: 'from-amber-500 to-orange-600'
           },
-          { 
-            title: 'Performance', 
+          {
+            title: 'Performance',
             description: 'Reviews, goals, 1:1 meetings',
             href: '/dashboard/people/reviews',
             icon: Target,
-            color: 'from-green-500 to-emerald-600'
           },
-          { 
-            title: 'Time & Attendance', 
+          {
+            title: 'Time & Attendance',
             description: 'Clock in/out, timesheets, hours worked',
             href: '/dashboard/people/attendance',
             icon: Clock,
-            color: 'from-rose-500 to-[#D37E91]/80'
           },
-          { 
-            title: 'Company Directory', 
+          {
+            title: 'Company Directory',
             description: 'Find colleagues, org chart, contact info',
             href: '/dashboard/people/employees',
             icon: Users,
-            color: 'from-teal-500 to-cyan-600'
           },
         ].map((module) => (
           <Link
             key={module.href}
             href={module.href}
-            className="group bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors shadow-sm dark:shadow-none"
+            className="group bg-theme-surface border border-theme rounded-lg p-4 hover:border-module-fg/[0.50] transition-colors shadow-sm dark:shadow-none"
           >
             <div className="flex items-start gap-4">
-              <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${module.color} flex items-center justify-center flex-shrink-0`}>
-                <module.icon className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 rounded-lg bg-module-fg/10 flex items-center justify-center flex-shrink-0 group-hover:bg-module-fg/20 transition-colors">
+                <module.icon className="w-6 h-6 text-module-fg" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h3 className="font-medium text-theme-primary group-hover:text-module-fg transition-colors">
                   {module.title}
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-white/50 mt-1">{module.description}</p>
+                <p className="text-sm text-theme-tertiary mt-1">{module.description}</p>
               </div>
-              <ArrowRight className="w-5 h-5 text-gray-500 dark:text-white/50 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0" />
+              <ArrowRight className="w-5 h-5 text-theme-tertiary group-hover:text-module-fg transition-colors flex-shrink-0" />
             </div>
           </Link>
         ))}

@@ -89,13 +89,13 @@ export default function LoginPage() {
   return (
     <AuthLayout>
       <GlassCard className="mx-4 sm:mx-6 md:mx-auto">
-        <h1 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-center text-white">
+        <h1 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-center text-theme-primary">
           Log in to Opsly
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
           <div>
-            <label className="block text-white/60 text-sm mb-2">Email</label>
+            <label className="block text-theme-tertiary text-sm mb-2">Email</label>
             <Input
               name="email"
               type="email"
@@ -109,7 +109,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-white/60 text-sm mb-2">Password</label>
+            <label className="block text-theme-tertiary text-sm mb-2">Password</label>
             <div className="relative">
               <Input
                 name="password"
@@ -124,7 +124,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white p-1"
+                className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-theme-tertiary hover:text-white p-1"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff size={18} className="sm:w-5 sm:h-5" /> : <Eye size={18} className="sm:w-5 sm:h-5" />}
@@ -146,18 +146,18 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <p className="text-center text-white/60 mt-5 sm:mt-6 text-xs sm:text-sm">
+        <p className="text-center text-theme-tertiary mt-5 sm:mt-6 text-xs sm:text-sm">
           Don't have an account?{" "}
           <Link href="/signup" className="text-magenta-400 hover:text-magenta-300 transition-colors">
             Sign up
           </Link>
         </p>
 
-        <p className="mt-6 sm:mt-8 text-center text-[10px] sm:text-xs text-white/40 leading-relaxed px-2">
+        <p className="mt-6 sm:mt-8 text-center text-[10px] sm:text-xs text-theme-tertiary leading-relaxed px-2">
           By continuing, you agree to our{" "}
-          <Link href="/terms" className="underline underline-offset-2 hover:text-gray-300">Terms</Link>
+          <Link href="/terms" className="underline underline-offset-2 hover:text-theme-tertiary">Terms</Link>
           {" "}and{" "}
-          <Link href="/privacy" className="underline underline-offset-2 hover:text-gray-300">Privacy Policy</Link>.
+          <Link href="/privacy" className="underline underline-offset-2 hover:text-theme-tertiary">Privacy Policy</Link>.
         </p>
       </GlassCard>
     </AuthLayout>

@@ -113,7 +113,7 @@ export default function UpcomingServiceWidget({ companyId, siteId }: WidgetProps
   const getDueDateColor = (days: number) => {
     if (days <= 3) return 'text-red-600 dark:text-red-400';
     if (days <= 7) return 'text-yellow-600 dark:text-yellow-400';
-    return 'text-[rgb(var(--text-tertiary))] dark:text-white/40';
+    return 'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary';
   };
 
   const formatDueDate = (days: number) => {
@@ -131,7 +131,7 @@ export default function UpcomingServiceWidget({ companyId, siteId }: WidgetProps
         </div>
       }
       badge={
-        <span className="text-xs font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">
+        <span className="text-xs font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
           Next 14 days
         </span>
       }
@@ -156,7 +156,7 @@ export default function UpcomingServiceWidget({ companyId, siteId }: WidgetProps
                 <p className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white truncate">
                   {service.asset_name}
                 </p>
-                <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 truncate">
+                <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary truncate">
                   {service.service_type}
                 </p>
               </div>

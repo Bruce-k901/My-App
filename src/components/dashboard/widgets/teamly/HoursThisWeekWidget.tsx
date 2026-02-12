@@ -74,7 +74,7 @@ export default function HoursThisWeekWidget({ companyId, siteId }: WidgetProps) 
             <div className="text-2xl font-bold text-[rgb(var(--text-primary))] dark:text-white">
               {summary.scheduledHours}h
             </div>
-            <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40">
+            <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
               Scheduled
             </div>
           </div>
@@ -87,7 +87,7 @@ export default function HoursThisWeekWidget({ companyId, siteId }: WidgetProps) 
             )}>
               {summary.workedHours}h
             </div>
-            <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40">
+            <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
               Worked
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function HoursThisWeekWidget({ companyId, siteId }: WidgetProps) 
         {/* Progress bar */}
         <div>
           <div className="flex items-center justify-between text-xs mb-1">
-            <span className="text-[rgb(var(--text-tertiary))] dark:text-white/40">
+            <span className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
               Utilization
             </span>
             <div className={cn(

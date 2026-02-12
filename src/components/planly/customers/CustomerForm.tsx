@@ -144,86 +144,86 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Basic Information */}
-        <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h2>
+        <Card className="p-6 bg-white dark:bg-white/[0.02] border-theme">
+          <h2 className="text-lg font-semibold text-theme-primary mb-4">Basic Information</h2>
           <div className="space-y-4">
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Customer Name *</Label>
+              <Label className="text-theme-secondary">Customer Name *</Label>
               <Input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., ABC Bakery"
-                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
                 required
               />
             </div>
 
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Contact Name</Label>
+              <Label className="text-theme-secondary">Contact Name</Label>
               <Input
                 type="text"
                 value={contactName}
                 onChange={(e) => setContactName(e.target.value)}
                 placeholder="Primary contact"
-                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
               />
             </div>
 
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Phone</Label>
+              <Label className="text-theme-secondary">Phone</Label>
               <Input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="Phone number"
-                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
               />
             </div>
 
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Email</Label>
+              <Label className="text-theme-secondary">Email</Label>
               <Input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@example.com"
-                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
               />
             </div>
 
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Address</Label>
+              <Label className="text-theme-secondary">Address</Label>
               <Textarea
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Delivery address"
-                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
                 rows={3}
               />
             </div>
 
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Postcode</Label>
+              <Label className="text-theme-secondary">Postcode</Label>
               <Input
                 type="text"
                 value={postcode}
                 onChange={(e) => setPostcode(e.target.value)}
                 placeholder="e.g., SW1A 1AA"
-                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
               />
             </div>
           </div>
         </Card>
 
         {/* Delivery Settings */}
-        <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Delivery Settings</h2>
+        <Card className="p-6 bg-white dark:bg-white/[0.02] border-theme">
+          <h2 className="text-lg font-semibold text-theme-primary mb-4">Delivery Settings</h2>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
               <div>
-                <span className="font-medium text-gray-900 dark:text-white">Requires Delivery</span>
-                <p className="text-sm text-gray-500 dark:text-white/60">Customer will appear on delivery schedule</p>
+                <span className="font-medium text-theme-primary">Requires Delivery</span>
+                <p className="text-sm text-theme-tertiary">Customer will appear on delivery schedule</p>
               </div>
               <Switch
                 checked={needsDelivery}
@@ -232,8 +232,8 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
             </div>
 
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Default Fulfillment</Label>
-              <div className="mt-2 flex rounded-lg overflow-hidden border border-gray-200 dark:border-white/[0.06]">
+              <Label className="text-theme-secondary">Default Fulfillment</Label>
+              <div className="mt-2 flex rounded-lg overflow-hidden border border-theme">
                 <button
                   type="button"
                   onClick={() => setDefaultFulfillment('delivery')}
@@ -241,7 +241,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                     'flex-1 px-4 py-2.5 text-sm font-medium transition-colors',
                     defaultFulfillment === 'delivery'
                       ? 'bg-[#14B8A6] text-white'
-                      : 'bg-gray-50 dark:bg-white/[0.03] text-gray-700 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/[0.06]'
+                      : 'bg-gray-50 dark:bg-white/[0.03] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06]'
                   )}
                 >
                   Delivery
@@ -250,10 +250,10 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                   type="button"
                   onClick={() => setDefaultFulfillment('collection')}
                   className={cn(
-                    'flex-1 px-4 py-2.5 text-sm font-medium transition-colors border-l border-gray-200 dark:border-white/[0.06]',
+                    'flex-1 px-4 py-2.5 text-sm font-medium transition-colors border-l border-theme',
                     defaultFulfillment === 'collection'
                       ? 'bg-[#14B8A6] text-white'
-                      : 'bg-gray-50 dark:bg-white/[0.03] text-gray-700 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/[0.06]'
+                      : 'bg-gray-50 dark:bg-white/[0.03] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06]'
                   )}
                 >
                   Collection
@@ -262,15 +262,15 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
             </div>
 
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Destination Group</Label>
+              <Label className="text-theme-secondary">Destination Group</Label>
               <select
                 value={destinationGroupId}
                 onChange={(e) => setDestinationGroupId(e.target.value)}
-                className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
               >
-                <option value="" className="bg-white dark:bg-neutral-900">No group</option>
+                <option value="" className="bg-theme-surface">No group</option>
                 {(destinationGroups || []).map((group: any) => (
-                  <option key={group.id} value={group.id} className="bg-white dark:bg-neutral-900">
+                  <option key={group.id} value={group.id} className="bg-theme-surface">
                     {group.name}
                   </option>
                 ))}
@@ -278,7 +278,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
             </div>
 
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Default Ship State</Label>
+              <Label className="text-theme-secondary">Default Ship State</Label>
               <div className="mt-2 flex gap-4">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -288,7 +288,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                     onChange={() => setDefaultShipState('baked')}
                     className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
                   />
-                  <span className="text-gray-900 dark:text-white">Baked (Fresh)</span>
+                  <span className="text-theme-primary">Baked (Fresh)</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -298,18 +298,18 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                     onChange={() => setDefaultShipState('frozen')}
                     className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
                   />
-                  <span className="text-gray-900 dark:text-white">Frozen</span>
+                  <span className="text-theme-primary">Frozen</span>
                 </label>
               </div>
             </div>
 
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Delivery Instructions</Label>
+              <Label className="text-theme-secondary">Delivery Instructions</Label>
               <Textarea
                 value={deliveryInstructions}
                 onChange={(e) => setDeliveryInstructions(e.target.value)}
                 placeholder="Special delivery instructions (e.g., use back entrance, call on arrival)..."
-                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
                 rows={3}
               />
             </div>
@@ -317,26 +317,26 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
         </Card>
 
         {/* Finance Settings */}
-        <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Finance Settings</h2>
+        <Card className="p-6 bg-white dark:bg-white/[0.02] border-theme">
+          <h2 className="text-lg font-semibold text-theme-primary mb-4">Finance Settings</h2>
           <div className="space-y-4">
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Payment Terms</Label>
+              <Label className="text-theme-secondary">Payment Terms</Label>
               <select
                 value={defaultPaymentTerms}
                 onChange={(e) => setDefaultPaymentTerms(e.target.value as PaymentTerms)}
-                className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
               >
-                <option value="prepaid" className="bg-white dark:bg-neutral-900">Prepaid</option>
-                <option value="net_7" className="bg-white dark:bg-neutral-900">Net 7</option>
-                <option value="net_14" className="bg-white dark:bg-neutral-900">Net 14</option>
-                <option value="net_30" className="bg-white dark:bg-neutral-900">Net 30</option>
-                <option value="net_60" className="bg-white dark:bg-neutral-900">Net 60</option>
+                <option value="prepaid" className="bg-theme-surface">Prepaid</option>
+                <option value="net_7" className="bg-theme-surface">Net 7</option>
+                <option value="net_14" className="bg-theme-surface">Net 14</option>
+                <option value="net_30" className="bg-theme-surface">Net 30</option>
+                <option value="net_60" className="bg-theme-surface">Net 60</option>
               </select>
             </div>
 
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Minimum Order Value (GBP)</Label>
+              <Label className="text-theme-secondary">Minimum Order Value (GBP)</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -344,12 +344,12 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                 value={minimumOrderValue}
                 onChange={(e) => setMinimumOrderValue(e.target.value)}
                 placeholder="0.00"
-                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
               />
             </div>
 
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Below Minimum Charge (GBP)</Label>
+              <Label className="text-theme-secondary">Below Minimum Charge (GBP)</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -357,52 +357,52 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                 value={belowMinimumCharge}
                 onChange={(e) => setBelowMinimumCharge(e.target.value)}
                 placeholder="0.00"
-                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
               />
             </div>
 
-            <h3 className="text-sm font-medium text-gray-900 dark:text-white pt-2">Finance Contact</h3>
+            <h3 className="text-sm font-medium text-theme-primary pt-2">Finance Contact</h3>
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Name</Label>
+              <Label className="text-theme-secondary">Name</Label>
               <Input
                 type="text"
                 value={financeContactName}
                 onChange={(e) => setFinanceContactName(e.target.value)}
                 placeholder="Accounts contact name"
-                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
               />
             </div>
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Email</Label>
+              <Label className="text-theme-secondary">Email</Label>
               <Input
                 type="email"
                 value={financeContactEmail}
                 onChange={(e) => setFinanceContactEmail(e.target.value)}
                 placeholder="accounts@example.com"
-                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
               />
             </div>
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Phone</Label>
+              <Label className="text-theme-secondary">Phone</Label>
               <Input
                 type="tel"
                 value={financeContactPhone}
                 onChange={(e) => setFinanceContactPhone(e.target.value)}
                 placeholder="Phone number"
-                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white"
+                className="mt-1 bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-primary"
               />
             </div>
           </div>
         </Card>
 
         {/* Options */}
-        <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Options</h2>
+        <Card className="p-6 bg-white dark:bg-white/[0.02] border-theme">
+          <h2 className="text-lg font-semibold text-theme-primary mb-4">Options</h2>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
               <div>
-                <span className="font-medium text-gray-900 dark:text-white">Ad-hoc Customer</span>
-                <p className="text-sm text-gray-500 dark:text-white/60">One-time or occasional orders only</p>
+                <span className="font-medium text-theme-primary">Ad-hoc Customer</span>
+                <p className="text-sm text-theme-tertiary">One-time or occasional orders only</p>
               </div>
               <Switch
                 checked={isAdHoc}
@@ -410,10 +410,10 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
               />
             </div>
 
-            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
               <div>
-                <span className="font-medium text-gray-900 dark:text-white">Frozen Only</span>
-                <p className="text-sm text-gray-500 dark:text-white/60">Customer can only receive frozen products</p>
+                <span className="font-medium text-theme-primary">Frozen Only</span>
+                <p className="text-sm text-theme-tertiary">Customer can only receive frozen products</p>
               </div>
               <Switch
                 checked={frozenOnly}
@@ -421,10 +421,10 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
               />
             </div>
 
-            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
               <div>
-                <span className="font-medium text-gray-900 dark:text-white">Active</span>
-                <p className="text-sm text-gray-500 dark:text-white/60">Customer can receive orders</p>
+                <span className="font-medium text-theme-primary">Active</span>
+                <p className="text-sm text-theme-tertiary">Customer can receive orders</p>
               </div>
               <Switch
                 checked={isActive}
@@ -432,10 +432,10 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
               />
             </div>
 
-            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme">
               <div>
-                <span className="font-medium text-gray-900 dark:text-white">Portal Access</span>
-                <p className="text-sm text-gray-500 dark:text-white/60">Allow customer to log in and place orders via portal</p>
+                <span className="font-medium text-theme-primary">Portal Access</span>
+                <p className="text-sm text-theme-tertiary">Allow customer to log in and place orders via portal</p>
               </div>
               <Switch
                 checked={portalEnabled}
@@ -448,13 +448,13 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
 
       {/* Portal Users (only in edit mode with portal enabled) */}
       {isEdit && portalEnabled && (
-        <Card className="p-6 bg-white dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]">
+        <Card className="p-6 bg-white dark:bg-white/[0.02] border-theme">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Globe className="h-5 w-5 text-[#14B8A6]" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Portal Users</h2>
+              <h2 className="text-lg font-semibold text-theme-primary">Portal Users</h2>
             </div>
-            <span className="text-sm text-gray-500 dark:text-white/60">
+            <span className="text-sm text-theme-tertiary">
               {portalUsers.length} user{portalUsers.length !== 1 ? 's' : ''}
             </span>
           </div>
@@ -490,27 +490,27 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
 
           {/* Add new user form */}
           {isAddingUser ? (
-            <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10">
-              <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Add Portal User</h4>
+            <div className="p-4 bg-theme-button rounded-lg border border-theme">
+              <h4 className="text-sm font-medium text-theme-primary mb-3">Add Portal User</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                 <div>
-                  <Label className="text-gray-700 dark:text-white/80 text-sm">Name</Label>
+                  <Label className="text-theme-secondary text-sm">Name</Label>
                   <Input
                     type="text"
                     value={newUserName}
                     onChange={(e) => setNewUserName(e.target.value)}
                     placeholder="User name"
-                    className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+                    className="mt-1 bg-theme-surface border-theme text-theme-primary"
                   />
                 </div>
                 <div>
-                  <Label className="text-gray-700 dark:text-white/80 text-sm">Email</Label>
+                  <Label className="text-theme-secondary text-sm">Email</Label>
                   <Input
                     type="email"
                     value={newUserEmail}
                     onChange={(e) => setNewUserEmail(e.target.value)}
                     placeholder="email@example.com"
-                    className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+                    className="mt-1 bg-theme-surface border-theme text-theme-primary"
                   />
                 </div>
               </div>
@@ -524,7 +524,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                     setNewUserName('');
                     setNewUserEmail('');
                   }}
-                  className="bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-700 dark:text-white"
+                  className="bg-theme-surface border-theme text-theme-secondary"
                 >
                   Cancel
                 </Button>
@@ -562,7 +562,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
               type="button"
               variant="outline"
               onClick={() => setIsAddingUser(true)}
-              className="w-full bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 border-dashed text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/10"
+              className="w-full bg-theme-surface border-theme border-dashed text-theme-secondary hover:text-theme-primary hover:bg-theme-surface-elevated dark:hover:bg-white/10"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Portal User
@@ -570,7 +570,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
           )}
 
           {portalUsers.length === 0 && !isAddingUser && (
-            <p className="mt-3 text-sm text-gray-500 dark:text-white/50 text-center">
+            <p className="mt-3 text-sm text-theme-tertiary text-center">
               No portal users yet. Add a user to allow them to log in and place orders.
             </p>
           )}
@@ -583,7 +583,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
           type="button"
           variant="outline"
           onClick={() => router.back()}
-          className="bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/[0.06]"
+          className="bg-theme-surface border-theme text-theme-secondary hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06]"
         >
           Cancel
         </Button>

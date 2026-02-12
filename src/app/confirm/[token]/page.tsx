@@ -192,7 +192,7 @@ export default function ConfirmationPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0f1117] to-[#1a1d24] flex items-center justify-center p-4">
-        <Loader2 className="w-8 h-8 text-white/40 animate-spin" />
+        <Loader2 className="w-8 h-8 text-theme-tertiary animate-spin" />
       </div>
     )
   }
@@ -202,8 +202,8 @@ export default function ConfirmationPage() {
       <div className="min-h-screen bg-gradient-to-br from-[#0f1117] to-[#1a1d24] flex items-center justify-center p-4">
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 max-w-md text-center">
           <XCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h1 className="text-white text-xl font-semibold mb-2">Invalid Link</h1>
-          <p className="text-white/60 text-sm">
+          <h1 className="text-theme-primary text-xl font-semibold mb-2">Invalid Link</h1>
+          <p className="text-theme-tertiary text-sm">
             This confirmation link is invalid or has expired.
           </p>
         </div>
@@ -216,13 +216,13 @@ export default function ConfirmationPage() {
       <div className="min-h-screen bg-gradient-to-br from-[#0f1117] to-[#1a1d24] flex items-center justify-center p-4">
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 max-w-md text-center">
           <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
-          <h1 className="text-white text-2xl font-semibold mb-2">Thank You!</h1>
-          <p className="text-white/70 mb-4">
+          <h1 className="text-theme-primary text-2xl font-semibold mb-2">Thank You!</h1>
+          <p className="text-theme-secondary mb-4">
             {action === 'confirm' && 'Your attendance has been confirmed.'}
             {action === 'decline' && 'We appreciate you letting us know.'}
             {action === 'reschedule' && 'We\'ll review your request and get back to you shortly.'}
           </p>
-          <p className="text-white/50 text-sm">
+          <p className="text-theme-tertiary text-sm">
             You can close this window.
           </p>
         </div>
@@ -239,12 +239,12 @@ export default function ConfirmationPage() {
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 max-w-2xl w-full">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-white text-2xl font-semibold mb-2">
+          <h1 className="text-theme-primary text-2xl font-semibold mb-2">
             {confirmationType === 'interview' && '📅 Interview Confirmation'}
             {confirmationType === 'trial' && '👨‍🍳 Trial Shift Confirmation'}
             {confirmationType === 'offer' && '🌟 Job Offer Response'}
           </h1>
-          <p className="text-white/60">
+          <p className="text-theme-tertiary">
             {(application.jobs as any)?.companies?.name || 'Company'}
           </p>
         </div>
@@ -253,17 +253,17 @@ export default function ConfirmationPage() {
         <div className="bg-white/[0.02] border border-white/[0.05] rounded-lg p-6 mb-6">
           <div className="grid gap-3">
             <div>
-              <span className="text-white/50 text-sm">Candidate:</span>
-              <div className="text-white font-medium">{(application.candidates as any)?.full_name || 'Candidate'}</div>
+              <span className="text-theme-tertiary text-sm">Candidate:</span>
+              <div className="text-theme-primary font-medium">{(application.candidates as any)?.full_name || 'Candidate'}</div>
             </div>
             <div>
-              <span className="text-white/50 text-sm">Position:</span>
-              <div className="text-white font-medium">{(application.jobs as any)?.title || 'Position'}</div>
+              <span className="text-theme-tertiary text-sm">Position:</span>
+              <div className="text-theme-primary font-medium">{(application.jobs as any)?.title || 'Position'}</div>
             </div>
             {scheduledAt && (
               <div>
-                <span className="text-white/50 text-sm">Scheduled:</span>
-                <div className="text-white font-medium">
+                <span className="text-theme-tertiary text-sm">Scheduled:</span>
+                <div className="text-theme-primary font-medium">
                   {new Date(scheduledAt).toLocaleString('en-GB', {
                     weekday: 'long',
                     day: 'numeric',
@@ -303,7 +303,7 @@ export default function ConfirmationPage() {
                 <div className="w-full border-t border-white/10"></div>
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="bg-[#1a1d24] px-4 text-white/40 uppercase tracking-wider">Or</span>
+                <span className="bg-[#1a1d24] px-4 text-theme-tertiary uppercase tracking-wider">Or</span>
               </div>
             </div>
             
@@ -344,7 +344,7 @@ export default function ConfirmationPage() {
               {confirmationType === 'offer' ? (
                 // For offer: request different start date
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Preferred Start Date *
                   </label>
                   <input
@@ -359,7 +359,7 @@ export default function ConfirmationPage() {
                 // For interview/trial: request different date and time
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-white/70 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Preferred Date *
                     </label>
                     <input
@@ -371,7 +371,7 @@ export default function ConfirmationPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-white/70 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Preferred Time *
                     </label>
                     <TimePicker
@@ -383,7 +383,7 @@ export default function ConfirmationPage() {
                 </div>
               )}
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   {confirmationType === 'offer' ? 'Reason for Different Start Date' : 'Reason for Rescheduling'}
                 </label>
                 <textarea
@@ -391,7 +391,7 @@ export default function ConfirmationPage() {
                   onChange={(e) => setReason(e.target.value)}
                   placeholder={confirmationType === 'offer' ? 'Why do you need a different start date?' : 'Please let us know why you need to reschedule...'}
                   rows={3}
-                  className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] resize-none"
+                  className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] resize-none"
                 />
               </div>
             </div>
@@ -400,7 +400,7 @@ export default function ConfirmationPage() {
           {/* Decline Reason */}
           {action === 'decline' && (
             <div className="border-t border-white/[0.06] pt-6">
-              <label className="block text-sm font-medium text-white/70 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Reason for Declining *
               </label>
               <textarea
@@ -408,7 +408,7 @@ export default function ConfirmationPage() {
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Please let us know why you need to decline..."
                 rows={3}
-                className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] resize-none"
+                className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] resize-none"
               />
             </div>
           )}

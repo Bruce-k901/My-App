@@ -111,7 +111,7 @@ export default function MissingOrdersWidget({ siteId, companyId }: MissingOrders
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full min-h-[200px]">
-        <div className="text-sm text-gray-500 dark:text-gray-400">
+        <div className="text-sm text-theme-tertiary">
           Loading missing orders...
         </div>
       </div>
@@ -121,7 +121,7 @@ export default function MissingOrdersWidget({ siteId, companyId }: MissingOrders
   if (!siteId || siteId === 'all') {
     return (
       <div className="flex items-center justify-center h-full min-h-[200px]">
-        <div className="text-sm text-gray-500 dark:text-gray-400">
+        <div className="text-sm text-theme-tertiary">
           Select a site to view missing orders
         </div>
       </div>
@@ -136,7 +136,7 @@ export default function MissingOrdersWidget({ siteId, companyId }: MissingOrders
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <AlertTriangle className="h-5 w-5 text-orange-500" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h3 className="text-lg font-semibold text-theme-primary">
             Missing Orders
           </h3>
           <Link
@@ -178,10 +178,10 @@ export default function MissingOrdersWidget({ siteId, companyId }: MissingOrders
                 />
               </svg>
             </div>
-            <p className="text-sm font-medium text-gray-900 dark:text-white">
+            <p className="text-sm font-medium text-theme-primary">
               All orders up to date
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs text-theme-tertiary mt-1">
               No missing orders for the next 7 days
             </p>
           </div>
@@ -194,11 +194,11 @@ export default function MissingOrdersWidget({ siteId, companyId }: MissingOrders
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
-                    <h4 className="font-medium text-gray-900 dark:text-white text-sm">
+                    <h4 className="font-medium text-theme-primary text-sm">
                       {missing.customer_name}
                     </h4>
                     {missing.customer_email && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                      <p className="text-xs text-theme-tertiary mt-0.5">
                         {missing.customer_email}
                       </p>
                     )}
@@ -215,7 +215,7 @@ export default function MissingOrdersWidget({ siteId, companyId }: MissingOrders
                       className="flex items-center gap-1 px-2 py-1 rounded bg-white dark:bg-gray-800 border border-orange-200 dark:border-orange-500/30 text-xs"
                     >
                       <Calendar className="h-3 w-3 text-orange-500" />
-                      <span className="text-gray-700 dark:text-gray-300">
+                      <span className="text-theme-secondary">
                         {format(parseISO(date), 'EEE, MMM d')}
                       </span>
                     </div>
@@ -229,8 +229,8 @@ export default function MissingOrdersWidget({ siteId, companyId }: MissingOrders
 
       {/* Footer */}
       {data?.checked_date_range && (
-        <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
-          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+        <div className="mt-4 pt-3 border-t border-theme">
+          <p className="text-xs text-theme-tertiary text-center">
             Checking {format(parseISO(data.checked_date_range.start), 'MMM d')} -{' '}
             {format(parseISO(data.checked_date_range.end), 'MMM d, yyyy')}
           </p>

@@ -21,17 +21,17 @@ export function HealthCheckProgress({ report }: HealthCheckProgressProps) {
       {/* Health Score */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-700 dark:text-white/70">Health Score</span>
-          <span className="text-2xl font-bold text-gray-900 dark:text-white">
+          <span className="text-sm font-medium text-theme-secondary">Health Score</span>
+          <span className="text-2xl font-bold text-theme-primary">
             {report.health_score != null ? `${Math.round(report.health_score)}%` : '—'}
           </span>
           {scoreDelta != null && scoreDelta !== 0 && (
-            <span className={`text-xs font-medium ${scoreDelta > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+            <span className={`text-xs font-medium ${scoreDelta > 0 ? 'text-module-fg' : 'text-red-600 dark:text-red-400'}`}>
               {scoreDelta > 0 ? '+' : ''}{scoreDelta.toFixed(1)}%
             </span>
           )}
         </div>
-        <span className="text-xs text-gray-500 dark:text-white/40">
+        <span className="text-xs text-theme-tertiary">
           {resolved} of {total} resolved
         </span>
       </div>
@@ -46,15 +46,15 @@ export function HealthCheckProgress({ report }: HealthCheckProgressProps) {
       <div className="flex gap-4 text-xs">
         <div className="flex items-center gap-1">
           <span className="w-2 h-2 rounded-full bg-red-500" />
-          <span className="text-gray-600 dark:text-white/50">{report.critical_count} critical</span>
+          <span className="text-theme-secondary/50">{report.critical_count} critical</span>
         </div>
         <div className="flex items-center gap-1">
           <span className="w-2 h-2 rounded-full bg-amber-500" />
-          <span className="text-gray-600 dark:text-white/50">{report.medium_count} medium</span>
+          <span className="text-theme-secondary/50">{report.medium_count} medium</span>
         </div>
         <div className="flex items-center gap-1">
           <span className="w-2 h-2 rounded-full bg-gray-400" />
-          <span className="text-gray-600 dark:text-white/50">{report.low_count} low</span>
+          <span className="text-theme-secondary/50">{report.low_count} low</span>
         </div>
       </div>
     </div>

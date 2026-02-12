@@ -29,14 +29,14 @@ export function Button({
 
   const variants = {
     primary: cn(
-      "bg-theme-button dark:bg-white/[0.06] border border-theme dark:border-white/[0.1] text-theme-primary dark:text-white",
-      "hover:bg-theme-button-hover dark:hover:bg-white/[0.12] hover:border-theme-hover dark:hover:border-white/[0.25]",
+ "bg-theme-button border border-theme text-theme-primary",
+ "hover:bg-theme-button-hover hover:border-theme-hover dark:hover:border-white/[0.25]",
       "shadow-[0_0_10px_rgba(211, 126, 145,0.15)] hover:shadow-[0_0_14px_rgba(211, 126, 145,0.25)]",
       "transition-all duration-150 ease-in-out backdrop-blur-md"
     ),
     ghost: cn(
-      "text-theme-primary dark:text-white bg-transparent border border-theme dark:border-white/[0.1]",
-      "hover:bg-theme-button dark:hover:bg-white/[0.05]"
+ "text-theme-primary bg-transparent border border-theme",
+ "hover:bg-theme-button"
     ),
     destructive: cn(
       "text-white bg-[#EF4444]/90 hover:bg-[#EF4444]",
@@ -48,8 +48,8 @@ export function Button({
       "transition-all duration-200 ease-in-out backdrop-blur-md"
     ),
     outline: cn(
-      "bg-transparent text-theme-primary dark:text-white border border-theme-hover dark:border-white/[0.2]",
-      "hover:border-[#D37E91]/50 hover:bg-theme-button dark:hover:bg-white/[0.05]",
+ "bg-transparent text-theme-primary border border-theme-hover",
+ "hover:border-[#D37E91]/50 hover:bg-theme-button",
       "transition-all duration-150 ease-in-out backdrop-blur-md"
     ),
   } as const;

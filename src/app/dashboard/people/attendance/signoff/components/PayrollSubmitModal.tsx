@@ -179,12 +179,12 @@ export default function PayrollSubmitModal({
   if (submitted) {
     return (
       <div className="fixed inset-0 bg-black/30 dark:bg-black/50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-white/[0.03] border border-green-200 dark:border-green-500/20 rounded-xl w-full max-w-md p-8 text-center">
+        <div className="bg-theme-surface border border-green-200 dark:border-green-500/20 rounded-xl w-full max-w-md p-8 text-center">
           <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <Lock className="w-8 h-8 text-green-600 dark:text-green-400" />
           </div>
           <h3 className="text-xl font-bold text-green-600 dark:text-green-400 mb-2">Payroll Submitted!</h3>
-          <p className="text-gray-500 dark:text-white/60">
+          <p className="text-theme-tertiary">
             Week of {new Date(weekData.weekStartDate).toLocaleDateString('en-GB', {
               day: 'numeric',
               month: 'long'
@@ -197,9 +197,9 @@ export default function PayrollSubmitModal({
 
   return (
     <div className="fixed inset-0 bg-black/30 dark:bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl w-full max-w-lg">
+      <div className="bg-theme-surface border border-theme rounded-xl w-full max-w-lg">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/[0.06]">
+        <div className="flex items-center justify-between p-4 border-b border-theme">
           <div className="flex items-center gap-2">
             <Send className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             <h3 className="font-semibold">Submit to Payroll</h3>
@@ -212,13 +212,13 @@ export default function PayrollSubmitModal({
         {/* Content */}
         <div className="p-4 space-y-4">
           {/* Week Info */}
-          <div className="bg-gray-50 dark:bg-white/[0.05] rounded-lg p-4">
+          <div className="bg-theme-button rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-gray-500 dark:text-white/60">Site</span>
+              <span className="text-theme-tertiary">Site</span>
               <span className="font-medium">{weekData.siteName}</span>
             </div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-gray-500 dark:text-white/60">Week</span>
+              <span className="text-theme-tertiary">Week</span>
               <span className="font-medium">
                 {new Date(weekData.weekStartDate).toLocaleDateString('en-GB', {
                   day: 'numeric',
@@ -231,11 +231,11 @@ export default function PayrollSubmitModal({
               </span>
             </div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-gray-500 dark:text-white/60">Total Staff</span>
+              <span className="text-theme-tertiary">Total Staff</span>
               <span className="font-medium">{weekData.totalCount}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-500 dark:text-white/60">Total Hours</span>
+              <span className="text-theme-tertiary">Total Hours</span>
               <span className="font-medium">{weekData.totalActualHours.toFixed(2)}h</span>
             </div>
           </div>
@@ -245,7 +245,7 @@ export default function PayrollSubmitModal({
             <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
             <div className="text-sm">
               <p className="text-amber-600 dark:text-amber-400 font-medium">This action cannot be undone</p>
-              <p className="text-gray-500 dark:text-white/60 mt-1">
+              <p className="text-theme-tertiary mt-1">
                 Once submitted, all attendance records for this week will be locked. 
                 You will not be able to make further adjustments.
               </p>
@@ -254,15 +254,15 @@ export default function PayrollSubmitModal({
           
           {/* Export Format */}
           <div>
-            <label className="block text-sm text-gray-500 dark:text-white/60 mb-2">Export Format</label>
+            <label className="block text-sm text-theme-tertiary mb-2">Export Format</label>
             <div className="flex gap-3">
               <button
                 onClick={() => setExportFormat('csv')}
                 className={`
                   flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border transition-colors
                   ${exportFormat === 'csv' 
-                    ? 'bg-blue-600 dark:bg-blue-500/20 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400' 
-                    : 'bg-gray-50 dark:bg-white/[0.05] border-gray-200 dark:border-white/[0.06] text-gray-500 dark:text-white/60 hover:border-gray-300 dark:hover:border-white/[0.1]'
+                    ? 'bg-blue-600 dark:bg-blue-500/20 border-module-fg text-module-fg' 
+                    : 'bg-theme-button border-theme text-theme-tertiary hover:border-gray-300 dark:hover:border-white/[0.1]'
                   }
                 `}
               >
@@ -274,8 +274,8 @@ export default function PayrollSubmitModal({
                 className={`
                   flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border transition-colors
                   ${exportFormat === 'json' 
-                    ? 'bg-blue-600 dark:bg-blue-500/20 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400' 
-                    : 'bg-gray-50 dark:bg-white/[0.05] border-gray-200 dark:border-white/[0.06] text-gray-500 dark:text-white/60 hover:border-gray-300 dark:hover:border-white/[0.1]'
+                    ? 'bg-blue-600 dark:bg-blue-500/20 border-module-fg text-module-fg' 
+                    : 'bg-theme-button border-theme text-theme-tertiary hover:border-gray-300 dark:hover:border-white/[0.1]'
                   }
                 `}
               >
@@ -287,8 +287,8 @@ export default function PayrollSubmitModal({
                 className={`
                   flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border transition-colors
                   ${exportFormat === 'none' 
-                    ? 'bg-blue-600 dark:bg-blue-500/20 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400' 
-                    : 'bg-gray-50 dark:bg-white/[0.05] border-gray-200 dark:border-white/[0.06] text-gray-500 dark:text-white/60 hover:border-gray-300 dark:hover:border-white/[0.1]'
+                    ? 'bg-blue-600 dark:bg-blue-500/20 border-module-fg text-module-fg' 
+                    : 'bg-theme-button border-theme text-theme-tertiary hover:border-gray-300 dark:hover:border-white/[0.1]'
                   }
                 `}
               >
@@ -299,15 +299,15 @@ export default function PayrollSubmitModal({
           
           {/* Notes */}
           <div>
-            <label className="block text-sm text-gray-500 dark:text-white/60 mb-1">
-              Notes <span className="text-gray-500 dark:text-white/50">(optional)</span>
+            <label className="block text-sm text-theme-tertiary mb-1">
+              Notes <span className="text-theme-tertiary">(optional)</span>
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any notes for payroll team..."
               rows={2}
-              className="w-full bg-gray-50 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg px-3 py-2 resize-none"
+              className="w-full bg-theme-button border border-theme rounded-lg px-3 py-2 resize-none"
             />
           </div>
           
@@ -320,17 +320,17 @@ export default function PayrollSubmitModal({
         </div>
         
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 dark:border-white/[0.06]">
+        <div className="flex items-center justify-end gap-3 p-4 border-t border-theme">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white transition-colors"
+            className="px-4 py-2 text-sm text-theme-tertiary hover:text-theme-secondary transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className="px-6 py-2 text-sm bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg disabled:opacity-50 flex items-center gap-2"
+            className="px-6 py-2 text-sm bg-module-fg hover:bg-module-fg/90 text-white rounded-lg disabled:opacity-50 flex items-center gap-2"
           >
             <Lock className="w-4 h-4" />
             {submitting ? 'Submitting...' : 'Lock & Submit'}

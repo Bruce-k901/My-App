@@ -49,7 +49,7 @@ function COSHHRiskAssessmentTemplateContent() {
     if (!assessmentDate && typeof window !== 'undefined') {
       setAssessmentDate(new Date().toISOString().split('T')[0]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []); // Only run once after mount
   const [reviewDate, setReviewDate] = useState("");
   const [status, setStatus] = useState("Draft");
@@ -368,51 +368,51 @@ function COSHHRiskAssessmentTemplateContent() {
   };
 
   if (loading) {
-    return <div className="text-gray-600 dark:text-neutral-400 text-center py-8">Loading...</div>;
+ return <div className="text-gray-600 dark:text-theme-tertiary text-center py-8">Loading...</div>;
   }
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6 bg-[rgb(var(--background))] dark:bg-neutral-900 min-h-screen">
       {/* Header */}
       <div className="bg-amber-50 dark:bg-gradient-to-r dark:from-amber-600/20 dark:to-orange-600/20 rounded-2xl p-6 border border-amber-200 dark:border-amber-500/30">
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">COSHH Risk Assessment</h1>
+        <h1 className="text-2xl font-semibold text-theme-primary mb-2">COSHH Risk Assessment</h1>
         <p className="text-gray-700 dark:text-neutral-300 text-sm">Control of Substances Hazardous to Health Regulations</p>
       </div>
 
       {/* Assessment Details */}
-      <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Assessment Details</h2>
+      <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-module-fg dark:text-magenta-400 mb-4">Assessment Details</h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Activity/Task Name *</label>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" />
+            <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
           </div>
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Reference Code (Auto)</label>
-            <input value={refCode} readOnly className="w-full bg-gray-50 dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-600 dark:text-neutral-400" />
+ <input value={refCode} readOnly className="w-full bg-gray-50 dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-600 dark:text-theme-tertiary"/>
           </div>
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Site/Location</label>
-            <select value={siteId} onChange={(e) => setSiteId(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white">
+            <select value={siteId} onChange={(e) => setSiteId(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary">
               <option value="">Select site...</option>
               {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Assessor Name *</label>
-            <input value={assessorName} onChange={(e) => setAssessorName(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" />
+            <input value={assessorName} onChange={(e) => setAssessorName(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
           </div>
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Assessment Date *</label>
-            <input type="date" value={assessmentDate} onChange={(e) => setAssessmentDate(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" />
+            <input type="date" value={assessmentDate} onChange={(e) => setAssessmentDate(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
           </div>
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Review Date (Auto)</label>
-            <input type="date" value={reviewDate} onChange={(e) => setReviewDate(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" />
+            <input type="date" value={reviewDate} onChange={(e) => setReviewDate(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
           </div>
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Status *</label>
-            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white">
+            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary">
               <option value="Draft">Draft</option>
               <option value="Published">Published</option>
               <option value="Under Review">Under Review</option>
@@ -423,8 +423,8 @@ function COSHHRiskAssessmentTemplateContent() {
       </section>
 
       {/* Chemical Details */}
-      <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Chemical Details</h2>
+      <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-module-fg dark:text-magenta-400 mb-4">Chemical Details</h2>
         <div className="space-y-4">
           {chemicals.map((chem, index) => {
             const selectedChemical = chemicalsLibrary.find(c => c.id === chem.chemical_id);
@@ -433,7 +433,7 @@ function COSHHRiskAssessmentTemplateContent() {
             return (
               <div key={chem.id} className="p-4 bg-gray-50 dark:bg-neutral-900/50 rounded-lg border border-gray-200 dark:border-neutral-600">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-semibold text-[#D37E91] dark:text-magenta-400">Chemical {index + 1}</span>
+                  <span className="text-sm font-semibold text-module-fg dark:text-magenta-400">Chemical {index + 1}</span>
                   <button onClick={() => setChemicals(chemicals.filter(c => c.id !== chem.id))} disabled={chemicals.length === 1} className="text-red-400 hover:text-red-300 disabled:opacity-30">
                     <Trash2 size={16} />
                   </button>
@@ -441,8 +441,8 @@ function COSHHRiskAssessmentTemplateContent() {
 
                 {/* Chemical selection */}
                 <div className="mb-3">
-                  <label className="block text-xs text-gray-600 dark:text-neutral-400 mb-1">Chemical Name</label>
-                  <select value={chem.chemical_id || ''} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, chemical_id: e.target.value || null } : c))} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm">
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Chemical Name</label>
+                  <select value={chem.chemical_id || ''} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, chemical_id: e.target.value || null } : c))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm">
                     <option value="">Select chemical...</option>
                     {chemicalsLibrary.map(c => <option key={c.id} value={c.id}>{c.product_name}</option>)}
                   </select>
@@ -450,11 +450,11 @@ function COSHHRiskAssessmentTemplateContent() {
 
                 {/* Auto-populated chemical info */}
                 {selectedChemical && (
-                  <div className="mb-3 p-3 bg-gray-50 dark:bg-neutral-800 rounded border border-gray-200 dark:border-neutral-600">
+                  <div className="mb-3 p-3 bg-theme-button rounded border border-gray-200 dark:border-neutral-600">
                     <div className="grid grid-cols-2 gap-2 text-xs mb-2">
                       <div>
-                        <span className="text-gray-600 dark:text-neutral-400">Manufacturer:</span>
-                        <span className="text-gray-900 dark:text-white ml-2">{selectedChemical.manufacturer || 'N/A'}</span>
+ <span className="text-gray-600 dark:text-theme-tertiary">Manufacturer:</span>
+                        <span className="text-theme-primary ml-2">{selectedChemical.manufacturer || 'N/A'}</span>
                       </div>
                       {coshhSheet ? (
                         <div className="flex items-center gap-2">
@@ -482,14 +482,14 @@ function COSHHRiskAssessmentTemplateContent() {
 
                     {selectedChemical.required_ppe && selectedChemical.required_ppe.length > 0 && (
                       <div className="mb-2">
-                        <span className="text-xs text-gray-600 dark:text-neutral-400">Required PPE:</span>
+ <span className="text-xs text-gray-600 dark:text-theme-tertiary">Required PPE:</span>
                         <span className="text-xs text-gray-700 dark:text-neutral-300 ml-2">{selectedChemical.required_ppe.join(', ')}</span>
                       </div>
                     )}
 
                     {selectedChemical.first_aid_instructions && (
                       <div className="mb-2">
-                        <span className="text-xs text-gray-600 dark:text-neutral-400">First Aid:</span>
+ <span className="text-xs text-gray-600 dark:text-theme-tertiary">First Aid:</span>
                         <span className="text-xs text-gray-700 dark:text-neutral-300 ml-2">{selectedChemical.first_aid_instructions}</span>
                       </div>
                     )}
@@ -499,40 +499,40 @@ function COSHHRiskAssessmentTemplateContent() {
                 {/* Usage details */}
                 <div className="grid grid-cols-2 gap-2 mb-2">
                   <div>
-                    <label className="block text-xs text-gray-600 dark:text-neutral-400 mb-1">How Used?</label>
-                    <select value={chem.howUsed} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, howUsed: e.target.value } : c))} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-gray-900 dark:text-white text-sm">
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">How Used?</label>
+                    <select value={chem.howUsed} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, howUsed: e.target.value } : c))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm">
                       <option value="">Select...</option>
                       {USAGE_METHODS.map(m => <option key={m} value={m}>{m}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-600 dark:text-neutral-400 mb-1">Frequency</label>
-                    <select value={chem.frequency} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, frequency: e.target.value } : c))} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-gray-900 dark:text-white text-sm">
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Frequency</label>
+                    <select value={chem.frequency} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, frequency: e.target.value } : c))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm">
                       <option value="">Select...</option>
                       {FREQUENCY_OPTIONS.map(f => <option key={f} value={f}>{f}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-600 dark:text-neutral-400 mb-1">Quantity</label>
-                    <input value={chem.quantity} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, quantity: e.target.value } : c))} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-gray-900 dark:text-white text-sm" />
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Quantity</label>
+                    <input value={chem.quantity} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, quantity: e.target.value } : c))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm" />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-600 dark:text-neutral-400 mb-1">Unit</label>
-                    <input value={chem.unit} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, unit: e.target.value } : c))} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-gray-900 dark:text-white text-sm" placeholder="ml, L, etc." />
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Unit</label>
+                    <input value={chem.unit} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, unit: e.target.value } : c))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm" placeholder="ml, L, etc." />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-600 dark:text-neutral-400 mb-1">Duration (min)</label>
-                    <input value={chem.duration} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, duration: e.target.value } : c))} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-gray-900 dark:text-white text-sm" />
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Duration (min)</label>
+                    <input value={chem.duration} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, duration: e.target.value } : c))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm" />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-600 dark:text-neutral-400 mb-1">Staff Exposed</label>
-                    <input type="number" value={chem.staffExposed} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, staffExposed: e.target.value } : c))} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-gray-900 dark:text-white text-sm" />
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Staff Exposed</label>
+                    <input type="number" value={chem.staffExposed} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, staffExposed: e.target.value } : c))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm" />
                   </div>
                 </div>
 
                 <div className="mb-2">
-                  <label className="block text-xs text-gray-600 dark:text-neutral-400 mb-1">Storage Location</label>
-                  <input value={chem.storageLocation} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, storageLocation: e.target.value } : c))} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-gray-900 dark:text-white text-sm" />
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Storage Location</label>
+                  <input value={chem.storageLocation} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, storageLocation: e.target.value } : c))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm" />
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -541,22 +541,22 @@ function COSHHRiskAssessmentTemplateContent() {
                 </div>
                 {chem.substitutionConsidered && (
                   <div className="mt-2">
-                    <label className="block text-xs text-gray-600 dark:text-neutral-400 mb-1">Substitution Notes</label>
-                    <textarea value={chem.substitutionNotes} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, substitutionNotes: e.target.value } : c))} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-gray-900 dark:text-white text-sm" rows={2} />
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Substitution Notes</label>
+                    <textarea value={chem.substitutionNotes} onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, substitutionNotes: e.target.value } : c))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm" rows={2} />
                   </div>
                 )}
               </div>
             );
           })}
         </div>
-        <button onClick={() => setChemicals([...chemicals, { id: Date.now(), chemical_id: "", howUsed: "", quantity: "", unit: "", frequency: "", duration: "", staffExposed: "", storageLocation: "", substitutionConsidered: false, substitutionNotes: "" }])} className="mt-3 flex items-center gap-2 px-4 py-2 bg-[#D37E91]/20 hover:bg-[#D37E91]/30 border border-[#D37E91]/40 rounded-lg text-[#D37E91] text-sm">
+        <button onClick={() => setChemicals([...chemicals, { id: Date.now(), chemical_id: "", howUsed: "", quantity: "", unit: "", frequency: "", duration: "", staffExposed: "", storageLocation: "", substitutionConsidered: false, substitutionNotes: "" }])} className="mt-3 flex items-center gap-2 px-4 py-2 bg-module-fg/20 hover:bg-module-fg/30 border border-module-fg/40 rounded-lg text-module-fg text-sm">
           <Plus size={16} /> Add Chemical
         </button>
       </section>
 
       {/* Exposure Routes */}
-      <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Exposure Routes</h2>
+      <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-module-fg dark:text-magenta-400 mb-4">Exposure Routes</h2>
         <div className="space-y-3">
           {Object.entries(exposureRoutes).map(([key, value]) => (
             <div key={key} className="flex items-start gap-3">
@@ -568,14 +568,14 @@ function COSHHRiskAssessmentTemplateContent() {
                     <select
                       value={value.severity}
                       onChange={(e) => setExposureRoutes({ ...exposureRoutes, [key]: { ...value, severity: e.target.value } })}
-                      className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-gray-900 dark:text-white text-sm"
+                      className="bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm"
                     >
                       {SEVERITY_LEVELS.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   )}
                 </div>
                 {value.enabled && (
-                  <textarea value={value.notes} onChange={(e) => setExposureRoutes({ ...exposureRoutes, [key]: { ...value, notes: e.target.value } })} className="w-full mt-1 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm" rows={2} placeholder="Notes..." />
+                  <textarea value={value.notes} onChange={(e) => setExposureRoutes({ ...exposureRoutes, [key]: { ...value, notes: e.target.value } })} className="w-full mt-1 bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm" rows={2} placeholder="Notes..." />
                 )}
               </div>
             </div>
@@ -584,76 +584,76 @@ function COSHHRiskAssessmentTemplateContent() {
       </section>
 
       {/* Control Measures */}
-      <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Control Measures</h2>
+      <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-module-fg dark:text-magenta-400 mb-4">Control Measures</h2>
         <div className="space-y-3">
           {controlMeasures.map((measure, index) => (
             <div key={measure.id} className="p-3 bg-gray-50 dark:bg-neutral-900/50 rounded-lg border border-gray-200 dark:border-neutral-600">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-[#D37E91] dark:text-magenta-400">Control {index + 1}</span>
+                <span className="text-sm font-semibold text-module-fg dark:text-magenta-400">Control {index + 1}</span>
                 <button onClick={() => setControlMeasures(controlMeasures.filter(m => m.id !== measure.id))} disabled={controlMeasures.length === 1} className="text-red-400 hover:text-red-300 disabled:opacity-30">
                   <Trash2 size={16} />
                 </button>
               </div>
               <div className="grid grid-cols-2 gap-2 mb-2">
                 <div>
-                  <label className="block text-xs text-gray-600 dark:text-neutral-400 mb-1">Control Type</label>
-                  <select value={measure.type} onChange={(e) => setControlMeasures(controlMeasures.map(m => m.id === measure.id ? { ...m, type: e.target.value } : m))} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-gray-900 dark:text-white text-sm">
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Control Type</label>
+                  <select value={measure.type} onChange={(e) => setControlMeasures(controlMeasures.map(m => m.id === measure.id ? { ...m, type: e.target.value } : m))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm">
                     <option value="">Select...</option>
                     {CONTROL_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 dark:text-neutral-400 mb-1">Effectiveness</label>
-                  <select value={measure.effectiveness} onChange={(e) => setControlMeasures(controlMeasures.map(m => m.id === measure.id ? { ...m, effectiveness: e.target.value } : m))} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-gray-900 dark:text-white text-sm">
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Effectiveness</label>
+                  <select value={measure.effectiveness} onChange={(e) => setControlMeasures(controlMeasures.map(m => m.id === measure.id ? { ...m, effectiveness: e.target.value } : m))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm">
                     {EFFECTIVENESS_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
                   </select>
                 </div>
               </div>
               <div className="mb-2">
-                <label className="block text-xs text-gray-600 dark:text-neutral-400 mb-1">Description</label>
-                <textarea value={measure.description} onChange={(e) => setControlMeasures(controlMeasures.map(m => m.id === measure.id ? { ...m, description: e.target.value } : m))} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-gray-900 dark:text-white text-sm" rows={2} />
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Description</label>
+                <textarea value={measure.description} onChange={(e) => setControlMeasures(controlMeasures.map(m => m.id === measure.id ? { ...m, description: e.target.value } : m))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm" rows={2} />
               </div>
               <div>
-                <label className="block text-xs text-gray-600 dark:text-neutral-400 mb-1">Review Date</label>
-                <input type="date" value={measure.reviewDate} onChange={(e) => setControlMeasures(controlMeasures.map(m => m.id === measure.id ? { ...m, reviewDate: e.target.value } : m))} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-gray-900 dark:text-white text-sm" />
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Review Date</label>
+                <input type="date" value={measure.reviewDate} onChange={(e) => setControlMeasures(controlMeasures.map(m => m.id === measure.id ? { ...m, reviewDate: e.target.value } : m))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm" />
               </div>
             </div>
           ))}
         </div>
-        <button onClick={() => setControlMeasures([...controlMeasures, { id: Date.now(), type: "", description: "", effectiveness: "Medium", reviewDate: "" }])} className="mt-3 flex items-center gap-2 px-4 py-2 bg-[#D37E91]/20 hover:bg-[#D37E91]/30 border border-[#D37E91]/40 rounded-lg text-[#D37E91] text-sm">
+        <button onClick={() => setControlMeasures([...controlMeasures, { id: Date.now(), type: "", description: "", effectiveness: "Medium", reviewDate: "" }])} className="mt-3 flex items-center gap-2 px-4 py-2 bg-module-fg/20 hover:bg-module-fg/30 border border-module-fg/40 rounded-lg text-module-fg text-sm">
           <Plus size={16} /> Add Control Measure
         </button>
       </section>
 
       {/* Risk Assessment */}
-      <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Overall Risk Assessment</h2>
+      <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-module-fg dark:text-magenta-400 mb-4">Overall Risk Assessment</h2>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Overall Risk Level</label>
-            <select value={overallRiskLevel} onChange={(e) => setOverallRiskLevel(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white">
+            <select value={overallRiskLevel} onChange={(e) => setOverallRiskLevel(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary">
               {RISK_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Risk Before Controls (1-5)</label>
-            <input type="number" min="1" max="5" value={riskBeforeControls} onChange={(e) => setRiskBeforeControls(parseInt(e.target.value))} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" />
+            <input type="number" min="1" max="5" value={riskBeforeControls} onChange={(e) => setRiskBeforeControls(parseInt(e.target.value))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
           </div>
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Risk After Controls (1-5)</label>
-            <input type="number" min="1" max="5" value={riskAfterControls} onChange={(e) => setRiskAfterControls(parseInt(e.target.value))} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" />
+            <input type="number" min="1" max="5" value={riskAfterControls} onChange={(e) => setRiskAfterControls(parseInt(e.target.value))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
           </div>
         </div>
         <div className="mt-3">
           <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Risk Assessment Notes</label>
-          <textarea value={riskNotes} onChange={(e) => setRiskNotes(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" rows={3} />
+          <textarea value={riskNotes} onChange={(e) => setRiskNotes(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" rows={3} />
         </div>
       </section>
 
       {/* Health Surveillance */}
-      <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Health Surveillance</h2>
+      <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-module-fg dark:text-magenta-400 mb-4">Health Surveillance</h2>
         <div className="flex items-center gap-2 mb-3">
           <input type="checkbox" checked={healthSurveillanceRequired} onChange={(e) => setHealthSurveillanceRequired(e.target.checked)} className="rounded" />
           <label className="text-sm text-gray-700 dark:text-neutral-300">Is health surveillance required?</label>
@@ -662,43 +662,43 @@ function COSHHRiskAssessmentTemplateContent() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Type of Monitoring</label>
-              <input value={monitoringType} onChange={(e) => setMonitoringType(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" />
+              <input value={monitoringType} onChange={(e) => setMonitoringType(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
             </div>
             <div>
               <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Frequency</label>
-              <input value={monitoringFrequency} onChange={(e) => setMonitoringFrequency(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" />
+              <input value={monitoringFrequency} onChange={(e) => setMonitoringFrequency(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
             </div>
             <div>
               <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Responsible Person</label>
-              <input value={surveillanceResponsible} onChange={(e) => setSurveillanceResponsible(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" />
+              <input value={surveillanceResponsible} onChange={(e) => setSurveillanceResponsible(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
             </div>
             <div>
               <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Last Completed</label>
-              <input type="date" value={lastSurveillanceDate} onChange={(e) => setLastSurveillanceDate(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" />
+              <input type="date" value={lastSurveillanceDate} onChange={(e) => setLastSurveillanceDate(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
             </div>
           </div>
         )}
       </section>
 
       {/* Emergency Procedures */}
-      <section className="bg-white dark:bg-neutral-800/50 rounded-xl p-6 border border-gray-200 dark:border-neutral-700">
-        <h2 className="text-xl font-semibold text-[#D37E91] dark:text-magenta-400 mb-4">Emergency Procedures</h2>
+      <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-module-fg dark:text-magenta-400 mb-4">Emergency Procedures</h2>
         <div className="space-y-3">
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Spill Kit Location</label>
-            <input value={spillKitLocation} onChange={(e) => setSpillKitLocation(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" />
+            <input value={spillKitLocation} onChange={(e) => setSpillKitLocation(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
           </div>
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Emergency Contacts</label>
-            <textarea value={emergencyContacts} onChange={(e) => setEmergencyContacts(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" rows={2} />
+            <textarea value={emergencyContacts} onChange={(e) => setEmergencyContacts(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" rows={2} />
           </div>
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Disposal Procedures</label>
-            <textarea value={disposalProcedures} onChange={(e) => setDisposalProcedures(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" rows={3} />
+            <textarea value={disposalProcedures} onChange={(e) => setDisposalProcedures(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" rows={3} />
           </div>
           <div>
             <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Environmental Considerations</label>
-            <textarea value={environmentalInfo} onChange={(e) => setEnvironmentalInfo(e.target.value)} className="w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white" rows={2} />
+            <textarea value={environmentalInfo} onChange={(e) => setEnvironmentalInfo(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" rows={2} />
           </div>
         </div>
       </section>
@@ -718,7 +718,7 @@ export default function COSHHRiskAssessmentTemplate() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center min-h-screen bg-neutral-900">
-        <div className="text-neutral-400">Loading COSHH template...</div>
+        <div className="text-theme-tertiary">Loading COSHH template...</div>
       </div>
     }>
       <COSHHRiskAssessmentTemplateContent />

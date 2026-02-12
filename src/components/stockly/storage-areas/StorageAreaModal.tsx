@@ -122,10 +122,10 @@ export default function StorageAreaModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl text-gray-900 dark:text-white">
+          <DialogTitle className="text-xl text-theme-primary">
             {editingArea ? 'Edit Storage Area' : 'Add Storage Area'}
           </DialogTitle>
-          <DialogDescription className="text-gray-600 dark:text-white/60">
+          <DialogDescription className="text-theme-secondary">
             {editingArea 
               ? 'Update the storage area details below'
               : 'Create a new physical storage location for stock counting'
@@ -136,7 +136,7 @@ export default function StorageAreaModal({
         <form onSubmit={handleSubmit} className="space-y-5 mt-4">
           {/* Name Field */}
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-sm font-medium text-gray-900 dark:text-white">
+            <Label htmlFor="name" className="text-sm font-medium text-theme-primary">
               Name <span className="text-red-600 dark:text-red-400">*</span>
             </Label>
             <Input
@@ -145,35 +145,35 @@ export default function StorageAreaModal({
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Main Cellar, Dry Store, Walk-in Fridge"
               required
-              className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:border-emerald-600 dark:focus:border-emerald-500 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 text-gray-900 dark:text-white"
+              className="bg-white dark:bg-gray-900 border-theme focus:border-emerald-600 dark:focus:border-emerald-500 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 text-theme-primary"
               autoFocus
             />
           </div>
 
           {/* Division Field */}
           <div className="space-y-2">
-            <Label htmlFor="division" className="text-sm font-medium text-gray-900 dark:text-white">
+            <Label htmlFor="division" className="text-sm font-medium text-theme-primary">
               Division
             </Label>
             <select
               id="division"
               value={divisionValue}
               onChange={(e) => setDivision(e.target.value || '__none__')}
-              className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 min-w-[180px] appearance-none cursor-pointer"
+              className="w-full bg-white dark:bg-gray-900 border border-theme rounded-lg px-4 py-2.5 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 min-w-[180px] appearance-none cursor-pointer"
             >
               <option value="__none__">None</option>
               {STORAGE_DIVISIONS.map((div) => (
                 <option key={div} value={div}>{div}</option>
               ))}
             </select>
-            <p className="text-xs text-gray-500 dark:text-white/50">
+            <p className="text-xs text-theme-tertiary">
               Optional: helps group areas for reporting
             </p>
           </div>
 
           {/* Description Field */}
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-sm font-medium text-gray-900 dark:text-white">
+            <Label htmlFor="description" className="text-sm font-medium text-theme-primary">
               Description
             </Label>
             <Textarea
@@ -181,7 +181,7 @@ export default function StorageAreaModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Optional notes about this storage area..."
-              className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus-visible:ring-emerald-500/50 dark:focus-visible:ring-emerald-500 focus-visible:border-emerald-600 dark:focus-visible:border-emerald-500 text-gray-900 dark:text-white"
+              className="bg-white dark:bg-gray-900 border-theme focus-visible:ring-emerald-500/50 dark:focus-visible:ring-emerald-500 focus-visible:border-emerald-600 dark:focus-visible:border-emerald-500 text-theme-primary"
               rows={3}
             />
           </div>
@@ -194,13 +194,13 @@ export default function StorageAreaModal({
           )}
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex justify-end gap-3 pt-4 border-t border-theme">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
               disabled={saving}
-              className="border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-white"
+              className="border-theme hover:bg-theme-hover text-theme-secondary"
             >
               Cancel
             </Button>

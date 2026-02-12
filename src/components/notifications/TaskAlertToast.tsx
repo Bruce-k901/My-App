@@ -167,7 +167,7 @@ export function TaskAlertToast({
         className={`mt-3 flex w-full items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-semibold transition-colors ${
           isOverdue
             ? 'bg-red-500/20 text-red-200 hover:bg-red-500/30'
-            : 'bg-blue-500/20 text-blue-200 hover:bg-blue-500/30'
+            : 'bg-blue-500/20 text-blue-200 hover:bg-module-fg/10'
         }`}
       >
         Go to Task

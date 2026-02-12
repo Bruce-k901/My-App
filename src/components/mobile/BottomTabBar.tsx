@@ -65,7 +65,7 @@ export function BottomTabBar() {
                 "min-w-[64px] touch-manipulation",
                 isActive
                   ? "text-[#FF6B9D]"
-                  : "text-gray-500 hover:text-gray-300"
+                  : "text-theme-tertiary hover:text-theme-tertiary"
               )}
             >
               <div className="relative">

@@ -319,12 +319,12 @@ export default function MyTasksPage() {
           <h2 className="text-xl font-semibold text-yellow-700 dark:text-yellow-400 mb-2">
             Company Setup Required
           </h2>
-          <p className="text-[rgb(var(--text-secondary))] dark:text-white/80 mb-4">
+          <p className="text-[rgb(var(--text-secondary))] dark:text-theme-secondary mb-4">
             Please complete your company setup before accessing this page.
           </p>
           <a 
             href="/dashboard/business" 
-            className="inline-block px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200"
+            className="inline-block px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200"
           >
             Go to Business Details
           </a>
@@ -341,9 +341,9 @@ export default function MyTasksPage() {
       'completed': 'bg-green-500/10 text-green-400 border-green-500/20',
       'overdue': 'bg-red-500/10 text-red-400 border-red-500/20',
       'failed': 'bg-red-500/10 text-red-400 border-red-500/20',
-      'skipped': 'bg-gray-500/10 text-gray-400 border-gray-500/20'
+      'skipped': 'bg-theme-surface-elevated0/10 text-theme-tertiary border-gray-500/20'
     };
-    return colors[status] || 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+    return colors[status] || 'bg-theme-surface-elevated0/10 text-theme-tertiary border-gray-500/20';
   };
 
   const getStatusIcon = (status) => {
@@ -366,7 +366,7 @@ export default function MyTasksPage() {
       'cleaning': 'bg-purple-500/10 text-purple-400',
       'compliance': 'bg-yellow-500/10 text-yellow-400'
     };
-    return colors[category] || 'bg-gray-500/10 text-gray-400';
+    return colors[category] || 'bg-theme-surface-elevated0/10 text-theme-tertiary';
   };
 
 
@@ -402,30 +402,30 @@ export default function MyTasksPage() {
         <h1 className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">
           My Tasks
           {selectedSiteId && sitesMap[selectedSiteId] && (
-            <span className="text-lg font-normal text-[rgb(var(--text-secondary))] dark:text-white/60 ml-2">
+            <span className="text-lg font-normal text-[rgb(var(--text-secondary))] dark:text-theme-tertiary ml-2">
               - {sitesMap[selectedSiteId].name}
             </span>
           )}
         </h1>
-        <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">View and manage task configurations for your home site</p>
+        <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">View and manage task configurations for your home site</p>
       </div>
 
       {/* Show Configurations */}
       {loadingConfigs ? (
             <div className="text-center py-12">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/15 mb-4">
-                <Loader2 className="w-8 h-8 text-[#D37E91] dark:text-[#D37E91] animate-spin" />
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-module-fg/10 dark:bg-module-fg/15 mb-4">
+                <Loader2 className="w-8 h-8 text-module-fg dark:text-module-fg animate-spin" />
               </div>
               <h3 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-2">Loading configurations...</h3>
             </div>
           ) : configs.length === 0 ? (
             <div className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-xl p-8">
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/15 mb-4">
-                  <CheckCircle className="w-8 h-8 text-[#D37E91] dark:text-[#D37E91]" />
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-module-fg/10 dark:bg-module-fg/15 mb-4">
+                  <CheckCircle className="w-8 h-8 text-module-fg dark:text-module-fg" />
                 </div>
                 <h2 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-2">No task configurations</h2>
-                <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 max-w-md mx-auto">
+                <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary max-w-md mx-auto">
                   Create task configurations from the Compliance or Templates pages to generate recurring tasks.
                 </p>
               </div>
@@ -439,7 +439,7 @@ export default function MyTasksPage() {
                 return (
                   <div
                     key={config.id}
-                    className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-lg p-5 hover:bg-gray-50 dark:hover:bg-white/[0.06] transition-colors"
+                    className="bg-[rgb(var(--surface-elevated))] dark:bg-white/[0.03] border border-[rgb(var(--border))] dark:border-white/[0.06] rounded-lg p-5 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06] transition-colors"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -454,7 +454,7 @@ export default function MyTasksPage() {
                           )}
                         </div>
 
-                        <div className="flex items-center gap-4 text-xs text-[rgb(var(--text-tertiary))] dark:text-white/50 mb-2">
+                        <div className="flex items-center gap-4 text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mb-2">
                           <div className="flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
                             <span>{getFrequencyLabel(config.frequency)}</span>
@@ -467,13 +467,13 @@ export default function MyTasksPage() {
                         </div>
 
                         {config.equipment_config && Array.isArray(config.equipment_config) && config.equipment_config.length > 0 && (
-                          <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 mt-2">
+                          <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mt-2">
                             <button
                               onClick={() => setExpandedEquipment(prev => ({
                                 ...prev,
                                 [config.id]: !prev[config.id]
                               }))}
-                              className="flex items-center gap-1 font-medium text-[rgb(var(--text-secondary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors mb-1"
+                              className="flex items-center gap-1 font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors mb-1"
                             >
                               {expandedEquipment[config.id] ? (
                                 <ChevronUp className="h-3 w-3" />
@@ -513,7 +513,7 @@ export default function MyTasksPage() {
                                     <div key={idx} className="ml-2">
                                       <span className="font-medium">{equipmentName}</span>
                                       {tempRangeStr && (
-                                        <span className="ml-2 text-[rgb(var(--text-tertiary))] dark:text-white/50">
+                                        <span className="ml-2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
                                           ({tempRangeStr})
                                         </span>
                                       )}
@@ -531,7 +531,7 @@ export default function MyTasksPage() {
                           onClick={() => {
                             setEditingConfig(config);
                           }}
-                          className="p-2 rounded-lg hover:bg-[rgb(var(--surface-elevated))] dark:hover:bg-white/10 text-[rgb(var(--text-tertiary))] dark:text-white/60"
+                          className="p-2 rounded-lg hover:bg-[rgb(var(--surface-elevated))] dark:hover:bg-white/10 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"
                           title="Edit Configuration"
                         >
                           <Edit2 className="h-4 w-4" />
@@ -593,7 +593,7 @@ export default function MyTasksPage() {
                   setEditingTemplate(null);
                   setEditingTemplateId(null);
                 }}
-                className="p-2 rounded-lg hover:bg-black/[0.05] dark:hover:bg-white/10 text-[rgb(var(--text-tertiary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+                className="p-2 rounded-lg hover:bg-black/[0.05] dark:hover:bg-white/10 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>

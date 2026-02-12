@@ -207,14 +207,14 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
   return (
     <div className="space-y-6">
       {/* Template Header */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
+      <div className="bg-theme-surface border border-theme rounded-lg p-6">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold text-white">{template.name}</h1>
+          <h1 className="text-2xl font-bold text-theme-primary">{template.name}</h1>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               onClick={() => router.push(`/dashboard/people/reviews/templates/${template.id}/preview`)}
-              className="bg-transparent border border-white/[0.06] text-white hover:bg-white/[0.05]"
+              className="bg-transparent border border-theme text-theme-primary hover:bg-theme-surface"
             >
               Preview
             </Button>
@@ -223,7 +223,7 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
                 toast.success('Template saved');
                 router.refresh();
               }}
-              className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
+              className="bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow"
             >
               <Save className="h-4 w-4 mr-2" />Save
             </Button>
@@ -232,14 +232,14 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
       </div>
 
       {/* About This Template Section */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
+      <div className="bg-theme-surface border border-theme rounded-lg p-6">
         <div className="flex items-start gap-3 mb-4">
           <span className="text-2xl">📋</span>
-          <h2 className="text-lg font-semibold text-white">ABOUT THIS TEMPLATE</h2>
+          <h2 className="text-lg font-semibold text-theme-primary">ABOUT THIS TEMPLATE</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <Label className="text-gray-500 dark:text-white/60 text-sm">When to use:</Label>
+            <Label className="text-theme-tertiary text-sm">When to use:</Label>
             <EditableField
               label=""
               value={template.rationale || 'End of probation period (typically 90 days)'}
@@ -254,7 +254,7 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
             />
           </div>
           <div>
-            <Label className="text-gray-500 dark:text-white/60 text-sm">Duration:</Label>
+            <Label className="text-theme-tertiary text-sm">Duration:</Label>
             <EditableField
               label=""
               value={`${template.recommended_duration_minutes || 45}-${(template.recommended_duration_minutes || 45) + 15} minutes`}
@@ -270,12 +270,12 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
           </div>
         </div>
         <div className="mb-4">
-          <Label className="text-gray-500 dark:text-white/60 text-sm">Participants:</Label>
-          <p className="text-white mt-1">Manager + Employee</p>
+          <Label className="text-theme-tertiary text-sm">Participants:</Label>
+          <p className="text-theme-primary mt-1">Manager + Employee</p>
         </div>
         {template.instructions && (
-          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
-            <p className="text-blue-300 text-sm">
+          <div className="bg-module-fg/10 border border-module-fg/30 rounded-lg p-3">
+            <p className="text-theme-secondary text-sm">
               💡 <strong>Tip:</strong> {template.instructions}
             </p>
           </div>
@@ -283,8 +283,8 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
       </div>
 
       {/* Template Header Fields - Collapsed by default */}
-      <details className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
-        <summary className="cursor-pointer text-sm text-gray-500 dark:text-white/60 hover:text-white">
+      <details className="bg-theme-surface border border-theme rounded-lg p-6">
+        <summary className="cursor-pointer text-sm text-theme-tertiary hover:text-theme-primary">
           Advanced Settings
         </summary>
         <div className="mt-4 space-y-4">
@@ -400,7 +400,7 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
       {/* Sections */}
       <div className="space-y-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-white">SECTIONS</h2>
+          <h2 className="text-lg font-semibold text-theme-primary">SECTIONS</h2>
         </div>
 
         {/* Section List */}
@@ -426,10 +426,10 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
         })}
 
         {/* Add Section Button */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
+        <div className="bg-theme-surface border border-theme rounded-lg p-6">
           <button
             onClick={() => setShowAddSectionMenu(!showAddSectionMenu)}
-            className="w-full flex items-center justify-center gap-2 py-3 text-[#D37E91] hover:bg-[#D37E91]/10 rounded-lg border border-[#D37E91]/30 transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-3 text-module-fg hover:bg-module-fg/10 rounded-lg border border-module-fg/30 transition-colors"
           >
             <Plus className="h-4 w-4" />
             Add Section
@@ -437,7 +437,7 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
 
           {showAddSectionMenu && (
             <div className="mt-4 space-y-3">
-              <p className="text-sm text-gray-500 dark:text-white/60 text-center">Choose who completes this section:</p>
+              <p className="text-sm text-theme-tertiary text-center">Choose who completes this section:</p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
                   { mode: 'both_answer', icon: '👥', label: 'Both Answer' },
@@ -451,10 +451,10 @@ export function EditableTemplateForm({ template: initialTemplate }: EditableTemp
                       handleAddSection(mode as any);
                       setShowAddSectionMenu(false);
                     }}
-                    className="p-4 bg-white/[0.05] border border-white/[0.06] rounded-lg hover:border-[#D37E91]/50 hover:bg-[#D37E91]/10 transition-colors text-center"
+                    className="p-4 bg-theme-surface border border-theme rounded-lg hover:border-module-fg/50 hover:bg-module-fg/10 transition-colors text-center"
                   >
                     <div className="text-2xl mb-2">{icon}</div>
-                    <div className="text-sm text-white">{label}</div>
+                    <div className="text-sm text-theme-primary">{label}</div>
                   </button>
                 ))}
               </div>
@@ -496,19 +496,19 @@ function EditableField({
   if (isEditing) {
     return (
       <div className="space-y-2">
-        <Label className="text-white">{label}</Label>
+        <Label className="text-theme-primary">{label}</Label>
         {type === 'textarea' ? (
           <textarea
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#D37E91] resize-none"
+            className="w-full px-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-theme-tertiary focus:outline-none focus:border-module-fg resize-none"
             rows={4}
           />
         ) : type === 'select' && options ? (
           <select
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
+            className="w-full px-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-module-fg"
           >
             {options.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -526,7 +526,7 @@ function EditableField({
             size="sm"
             onClick={() => onSave(field)}
             disabled={isPending}
-            className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
+            className="bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow"
           >
             <Save className="h-3 w-3 mr-1" />Save
           </Button>
@@ -548,17 +548,17 @@ function EditableField({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <Label className="text-white">{label}</Label>
+        <Label className="text-theme-primary">{label}</Label>
         <button
           onClick={() => onEdit(field, value)}
-          className="p-1.5 text-[#D37E91] hover:bg-[#D37E91]/10 rounded transition-colors border border-[#D37E91]/30 hover:border-[#D37E91]/50"
+          className="p-1.5 text-module-fg hover:bg-module-fg/10 rounded transition-colors border border-module-fg/30 hover:border-module-fg/50"
           title="Click to edit"
         >
           <Edit className="h-4 w-4" />
         </button>
       </div>
-      <div className="px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg">
-        <p className="text-neutral-300">{value || 'Not set'}</p>
+      <div className="px-4 py-2 bg-theme-surface border border-theme rounded-lg">
+        <p className="text-theme-tertiary">{value || 'Not set'}</p>
       </div>
     </div>
   );
@@ -584,14 +584,14 @@ function SectionGroup({
   isPending: boolean;
 }) {
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6 space-y-4">
+    <div className="bg-theme-surface border border-theme rounded-lg p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        <h3 className="text-lg font-semibold text-theme-primary">{title}</h3>
         <Button
           size="sm"
           onClick={() => onAddSection(completedBy)}
           disabled={isPending}
-          className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
+          className="bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Section
@@ -610,7 +610,7 @@ function SectionGroup({
           />
         ))
       ) : (
-        <div className="text-center py-8 text-gray-500 dark:text-white/60">
+        <div className="text-center py-8 text-theme-tertiary">
           <p>No sections yet. Click "Add Section" to get started.</p>
         </div>
       )}
@@ -663,25 +663,25 @@ function EditableSection({
   };
 
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg overflow-hidden">
+    <div className="bg-theme-surface border border-theme rounded-lg overflow-hidden">
       <div className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.05] text-sm font-medium text-white">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-theme-surface text-sm font-medium text-theme-primary">
                 {index + 1}
               </div>
-              <h3 className="font-medium text-white">{section.title}</h3>
+              <h3 className="font-medium text-theme-primary">{section.title}</h3>
             </div>
             <div className="ml-11 space-y-1">
-              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-white/60">
+              <div className="flex items-center gap-2 text-sm text-theme-tertiary">
                 <span>{modeInfo.icon}</span>
                 <span>{modeInfo.label}</span>
-                <span className="text-neutral-500">•</span>
+                <span className="text-theme-tertiary">•</span>
                 <span>{questionCount} questions</span>
               </div>
               {isSignOff && (
-                <p className="text-xs text-amber-400">
+                <p className="text-xs text-amber-600 dark:text-amber-400">
                   ⚠️ This section is legally required and cannot be removed
                 </p>
               )}
@@ -689,13 +689,13 @@ function EditableSection({
           </div>
           <div className="flex items-center gap-2">
             {isSignOff && (
-              <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-1 rounded border border-amber-500/30">
+              <span className="text-xs bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 px-2 py-1 rounded border border-amber-200 dark:border-amber-500/30">
                 🔒 Locked
               </span>
             )}
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="text-sm text-gray-500 dark:text-white/60 hover:text-white"
+              className="text-sm text-theme-tertiary hover:text-theme-primary"
             >
               {isExpanded ? 'Hide' : 'Edit'} ▾
             </button>
@@ -704,7 +704,7 @@ function EditableSection({
       </div>
       
       {isExpanded && (
-        <div className="px-4 pb-4 border-t border-white/[0.06] pt-4 space-y-4">
+        <div className="px-4 pb-4 border-t border-theme pt-4 space-y-4">
           <EditableField
             label="Section Title"
             value={section.title}
@@ -734,12 +734,12 @@ function EditableSection({
 
           <div className="space-y-3 mt-4">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-medium text-gray-500 dark:text-white/60">Questions</h4>
+              <h4 className="text-sm font-medium text-theme-tertiary">Questions</h4>
               <Button
                 size="sm"
                 onClick={() => onAddQuestion(section.id)}
                 disabled={isPending}
-                className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] text-xs"
+                className="bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow text-xs"
               >
                 <Plus className="h-3 w-3 mr-1" />
                 Add Question
@@ -756,7 +756,7 @@ function EditableSection({
                 />
               ))
             ) : (
-              <p className="text-sm text-neutral-500 italic">No questions yet. Click "Add Question" to add one.</p>
+              <p className="text-sm text-theme-tertiary italic">No questions yet. Click "Add Question" to add one.</p>
             )}
           </div>
         </div>
@@ -814,7 +814,7 @@ function EditableQuestion({
   const isRatingNumeric = question.question_type === 'rating_numeric';
 
   return (
-    <div className="pl-4 border-l-2 border-white/[0.06] space-y-2">
+    <div className="pl-4 border-l-2 border-theme space-y-2">
       <div className="flex items-start justify-between group">
         <div className="flex-1">
           <EditableField
@@ -829,7 +829,7 @@ function EditableQuestion({
             isPending={isPending}
             type="textarea"
           />
-          <p className="text-xs text-neutral-500 mt-1">
+          <p className="text-xs text-theme-tertiary mt-1">
             Type: {questionTypeLabels[question.question_type] || question.question_type}
           </p>
         </div>

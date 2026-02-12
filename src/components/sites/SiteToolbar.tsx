@@ -158,7 +158,7 @@ export default function SiteToolbar({
   return (
     <div className={inline ? "" : "mb-4"}>
       <div className={`flex items-center ${showTitle ? "justify-between" : "justify-end"} mb-6`}>
-        {showTitle && <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{title}</h1>}
+        {showTitle && <h1 className="text-2xl font-semibold text-theme-primary">{title}</h1>}
 
         <div className="flex items-center gap-3">
           {/* Add Site (magenta outline) - only show if onAddSite is provided */}
@@ -179,7 +179,7 @@ export default function SiteToolbar({
           {/* Download (soft glow border) */}
           <button
             onClick={handleDownload}
-            className="flex items-center justify-center w-10 h-10 rounded-md border border-gray-300 dark:border-white/12 bg-gray-50 dark:bg-white/[0.04] text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 dark:focus-visible:ring-white/20"
+            className="flex items-center justify-center w-10 h-10 rounded-md border border-gray-300 dark:border-white/12 bg-gray-50 dark:bg-white/[0.04] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 dark:focus-visible:ring-white/20"
             title="Download CSV"
           >
             <Download size={18} />
@@ -189,7 +189,7 @@ export default function SiteToolbar({
           <button
             onClick={handleUploadClick}
             disabled={uploading}
-            className="flex items-center justify-center w-10 h-10 rounded-md border border-gray-300 dark:border-white/12 bg-gray-50 dark:bg-white/[0.04] text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.08] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 dark:focus-visible:ring-white/20"
+            className="flex items-center justify-center w-10 h-10 rounded-md border border-gray-300 dark:border-white/12 bg-gray-50 dark:bg-white/[0.04] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.08] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 dark:focus-visible:ring-white/20"
             title="Upload CSV"
           >
             <Upload size={18} />
@@ -198,7 +198,7 @@ export default function SiteToolbar({
           {showBack && (
             <button
               onClick={() => router.push("/dashboard/business")}
-              className="flex items-center justify-center w-10 h-10 rounded-md bg-gray-50 dark:bg-white/[0.04] text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.08]"
+              className="flex items-center justify-center w-10 h-10 rounded-md bg-gray-50 dark:bg-white/[0.04] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.08]"
               title="Back"
             >
               ←

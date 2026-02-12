@@ -767,24 +767,24 @@ export default function CreateTaskModal({
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-[#0B0D13] border border-gray-200 dark:border-white/[0.06] rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col"
+        className="bg-white dark:bg-[#0B0D13] border border-theme rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-white/[0.06] flex-shrink-0">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+        <div className="flex items-center justify-between p-6 border-b border-theme flex-shrink-0">
+          <h2 className="text-xl font-semibold text-theme-primary">
             {isEditing ? 'Edit' : 'Create'} {activeType.charAt(0).toUpperCase() + activeType.slice(1)}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] text-theme-secondary hover:text-theme-primary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Type Tabs */}
-        <div className="flex gap-1.5 p-3 border-b border-gray-200 dark:border-white/[0.06] bg-gray-50 dark:bg-white/[0.02] flex-shrink-0">
+        <div className="flex gap-1.5 p-3 border-b border-theme bg-gray-50 dark:bg-white/[0.02] flex-shrink-0">
           {(['task', 'meeting', 'call', 'note', 'reminder'] as TaskType[]).map((type) => {
             const icons: Record<TaskType, any> = {
               task: CheckSquare,
@@ -803,11 +803,11 @@ export default function CreateTaskModal({
                 className={`flex-1 px-2 py-2 rounded-lg text-xs font-medium transition-all ${
                   isActive
                     ? 'bg-[#D37E91] text-white shadow-sm'
-                    : 'text-gray-500 dark:text-white/50 hover:text-gray-700 dark:hover:text-white/80 hover:bg-gray-100 dark:hover:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06]'
+                    : 'text-theme-tertiary hover:text-theme-secondary dark:hover:text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.05] border border-theme'
                 }`}
               >
                 <div className="flex items-center justify-center gap-1.5">
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-gray-400 dark:text-white/50'}`} />
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-theme-primary' : 'text-theme-tertiary'}`} />
                   <span className="capitalize hidden sm:inline">{type === 'task' ? 'Task' : type === 'meeting' ? 'Meeting' : type === 'call' ? 'Call' : type === 'reminder' ? 'Reminder' : 'Note'}</span>
                 </div>
               </button>
@@ -883,17 +883,17 @@ export default function CreateTaskModal({
         </div>
 
         {/* Footer */}
-        <div className="flex gap-3 p-6 border-t border-gray-200 dark:border-white/[0.06] flex-shrink-0">
+        <div className="flex gap-3 p-6 border-t border-theme flex-shrink-0">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 bg-gray-100 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] text-gray-700 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-white/[0.05] transition-colors text-sm font-medium"
+            className="flex-1 px-4 py-2 bg-gray-100 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] text-theme-secondary rounded-lg hover:bg-gray-200 dark:hover:bg-white/[0.05] transition-colors text-sm font-medium"
           >
             Cancel
           </button>
           <button
             onClick={handleCreate}
             disabled={loading || !canSubmit}
-            className="flex-1 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-module-glow transition-all duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading 
               ? (isEditing ? 'Updating...' : 'Creating...') 

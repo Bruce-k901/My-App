@@ -108,7 +108,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   if (isAdmin === null && pathname !== '/admin/login') {
     return (
       <div className="h-screen bg-[#0B0D13] flex items-center justify-center">
-        <div className="text-white/60">Verifying access...</div>
+        <div className="text-theme-tertiary">Verifying access...</div>
       </div>
     );
   }
@@ -140,8 +140,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <Shield className="w-5 h-5 text-[#D37E91]" />
             </div>
             <div>
-              <div className="text-white font-semibold">Opsly Admin</div>
-              <div className="text-white/40 text-xs">Platform Control</div>
+              <div className="text-theme-primary font-semibold">Opsly Admin</div>
+              <div className="text-theme-tertiary text-xs">Platform Control</div>
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   isActive
                     ? 'bg-[#D37E91]/10 text-[#D37E91] border border-[#D37E91]/20'
-                    : 'text-white/60 hover:bg-white/[0.06] hover:text-white'
+                    : 'text-theme-tertiary hover:bg-white/[0.06] hover:text-white'
                 }`}
               >
                 <item.icon className="w-5 h-5" />
@@ -180,14 +180,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="p-4 border-t border-white/[0.06] flex-shrink-0 space-y-1">
           <Link
             href="/dashboard"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-white/60 hover:bg-white/[0.06] hover:text-white w-full transition-colors"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-theme-tertiary hover:bg-white/[0.06] hover:text-white w-full transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             <span className="font-medium">Back to Dashboard</span>
           </Link>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-white/60 hover:bg-white/[0.06] hover:text-white w-full transition-colors"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-theme-tertiary hover:bg-white/[0.06] hover:text-white w-full transition-colors"
           >
             <LogOut className="w-5 h-5" />
             <span className="font-medium">Sign Out</span>

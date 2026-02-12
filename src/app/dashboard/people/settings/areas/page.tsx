@@ -86,7 +86,7 @@ export default function AreasAndRegionsPage() {
       // Load regions with their areas
       const { data: regionsData, error: regionsError } = await supabase
         .from('regions')
-        .select('id, name, regional_manager_id, manager_id')
+        .select('id, name, regional_manager_id')
         .eq('company_id', profile!.company_id)
         .order('name');
 
@@ -95,7 +95,7 @@ export default function AreasAndRegionsPage() {
       // Load areas
       const { data: areasData, error: areasError } = await supabase
         .from('areas')
-        .select('id, name, region_id, area_manager_id, manager_id')
+        .select('id, name, region_id, area_manager_id')
         .eq('company_id', profile!.company_id)
         .order('name');
 
@@ -197,7 +197,6 @@ export default function AreasAndRegionsPage() {
           .update({
             name: regionName,
             regional_manager_id: regionManagerId || null,
-            manager_id: regionManagerId || null, // Sync to manager_id for compatibility
           })
           .eq('id', editingRegion.id);
 
@@ -210,7 +209,6 @@ export default function AreasAndRegionsPage() {
           .insert({
             name: regionName,
             regional_manager_id: regionManagerId || null,
-            manager_id: regionManagerId || null, // Sync to manager_id for compatibility
             company_id: profile!.company_id,
           });
 
@@ -268,7 +266,6 @@ export default function AreasAndRegionsPage() {
           .update({
             name: areaName,
             area_manager_id: areaManagerId || null,
-            manager_id: areaManagerId || null, // Sync to manager_id for compatibility
           })
           .eq('id', editingArea.id);
 
@@ -282,7 +279,6 @@ export default function AreasAndRegionsPage() {
             name: areaName,
             region_id: selectedRegionId,
             area_manager_id: areaManagerId || null,
-            manager_id: areaManagerId || null, // Sync to manager_id for compatibility
             company_id: profile!.company_id,
           });
 
@@ -325,16 +321,14 @@ export default function AreasAndRegionsPage() {
   function openEditRegion(region: Region) {
     setEditingRegion(region);
     setRegionName(region.name);
-    // Check both manager_id and regional_manager_id for compatibility
-    setRegionManagerId(region.regional_manager_id || region.manager_id || '');
+    setRegionManagerId(region.regional_manager_id || '');
     setShowRegionModal(true);
   }
 
   function openEditArea(area: Area) {
     setEditingArea(area);
     setAreaName(area.name);
-    // Check both manager_id and area_manager_id for compatibility
-    setAreaManagerId(area.area_manager_id || area.manager_id || '');
+    setAreaManagerId(area.area_manager_id || '');
     setShowAreaModal(true);
   }
 
@@ -413,8 +407,8 @@ export default function AreasAndRegionsPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D37E91] mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-white/60">Loading regions and areas...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-module-fg mx-auto mb-4"></div>
+          <p className="text-theme-tertiary">Loading regions and areas...</p>
         </div>
       </div>
     );
@@ -426,15 +420,15 @@ export default function AreasAndRegionsPage() {
       <div>
         <Link
           href="/dashboard/people/settings"
-          className="inline-flex items-center gap-2 text-sm text-gray-900 dark:text-white/60 hover:text-gray-900 dark:hover:text-white mb-4"
+          className="inline-flex items-center gap-2 text-sm text-theme-primary/60 hover:text-theme-primary mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Settings
         </Link>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Areas & Regions</h1>
-            <p className="text-gray-500 dark:text-white/60">
+            <h1 className="text-2xl font-bold text-theme-primary mb-2">Areas & Regions</h1>
+            <p className="text-theme-tertiary">
               Organize your company by geographical regions and areas
             </p>
           </div>
@@ -448,7 +442,7 @@ export default function AreasAndRegionsPage() {
       {/* Regions List */}
       <div className="space-y-4">
         {regions.map((region) => (
-          <div key={region.id} className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6">
+          <div key={region.id} className="bg-theme-surface border border-theme rounded-lg p-6">
             {/* Region Header */}
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-start gap-3">
@@ -456,13 +450,13 @@ export default function AreasAndRegionsPage() {
                   <MapPin className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{region.name}</h3>
+                  <h3 className="text-lg font-semibold text-theme-primary">{region.name}</h3>
                   {region.manager_name && (
                     <p className="text-sm text-blue-300">
                       Regional Manager: {region.manager_name}
                     </p>
                   )}
-                  <p className="text-xs text-gray-500 dark:text-white/60 mt-1">
+                  <p className="text-xs text-theme-tertiary mt-1">
                     {region.areas?.length || 0} area(s)
                   </p>
                 </div>
@@ -470,13 +464,13 @@ export default function AreasAndRegionsPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => openEditRegion(region)}
-                  className="p-2 text-gray-500 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  className="p-2 text-theme-tertiary hover:text-theme-primary transition-colors"
                 >
                   <Edit2 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => deleteRegion(region.id)}
-                  className="p-2 text-gray-500 dark:text-white/60 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  className="p-2 text-theme-tertiary hover:text-red-600 dark:hover:text-red-400 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -492,13 +486,13 @@ export default function AreasAndRegionsPage() {
                       <div className="flex items-center gap-3">
                         <Building2 className="w-4 h-4 text-green-400" />
                         <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">{area.name}</p>
+                          <p className="text-sm font-medium text-theme-primary">{area.name}</p>
                           {area.manager_name && (
                             <p className="text-xs text-green-300">
                               Area Manager: {area.manager_name}
                             </p>
                           )}
-                          <p className="text-xs text-gray-500 dark:text-white/50">
+                          <p className="text-xs text-theme-tertiary">
                             {area.sites?.length || 0} site(s)
                           </p>
                         </div>
@@ -506,20 +500,20 @@ export default function AreasAndRegionsPage() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => openAssignSitesToArea(region.id, area.id)}
-                          className="px-2 py-1 text-xs bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 transition-colors"
+                          className="px-2 py-1 text-xs bg-green-500/20 text-green-400 rounded hover:bg-module-fg/10 transition-colors"
                         >
                           <Plus className="w-3 h-3 inline mr-1" />
                           Sites
                         </button>
                         <button
                           onClick={() => openEditArea(area)}
-                          className="p-1 text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white transition-colors"
+                          className="p-1 text-theme-tertiary hover:text-theme-primary transition-colors"
                         >
                           <Edit2 className="w-3 h-3" />
                         </button>
                         <button
                           onClick={() => deleteArea(area.id)}
-                          className="p-1 text-gray-500 dark:text-white/60 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                          className="p-1 text-theme-tertiary hover:text-red-600 dark:hover:text-red-400 transition-colors"
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>
@@ -535,7 +529,7 @@ export default function AreasAndRegionsPage() {
                             className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-white/[0.02] rounded text-xs"
                           >
                             <Building className="w-3 h-3 text-purple-400" />
-                            <span className="text-gray-900 dark:text-white">{site.name}</span>
+                            <span className="text-theme-primary">{site.name}</span>
                           </div>
                         ))}
                       </div>
@@ -544,7 +538,7 @@ export default function AreasAndRegionsPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500 dark:text-white/50 mb-3">No areas in this region yet</p>
+              <p className="text-sm text-theme-tertiary mb-3">No areas in this region yet</p>
             )}
 
             {/* Sites directly under region (no area) */}
@@ -560,7 +554,7 @@ export default function AreasAndRegionsPage() {
                       className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-white/[0.02] rounded text-xs"
                     >
                       <Building className="w-3 h-3 text-purple-400" />
-                      <span className="text-gray-900 dark:text-white">{site.name}</span>
+                      <span className="text-theme-primary">{site.name}</span>
                     </div>
                   ))}
                 </div>
@@ -589,9 +583,9 @@ export default function AreasAndRegionsPage() {
         ))}
 
         {regions.length === 0 && (
-          <div className="text-center py-12 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg">
-            <MapPin className="w-12 h-12 text-gray-500 dark:text-white/60 mx-auto mb-4" />
-            <p className="text-gray-500 dark:text-white/60 mb-4">No regions defined yet</p>
+          <div className="text-center py-12 bg-theme-surface border border-theme rounded-lg">
+            <MapPin className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
+            <p className="text-theme-tertiary mb-4">No regions defined yet</p>
             <Button onClick={() => setShowRegionModal(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Create Your First Region
@@ -603,9 +597,9 @@ export default function AreasAndRegionsPage() {
       {/* Region Modal */}
       {showRegionModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-50 dark:bg-[#0B0D13] border border-gray-200 dark:border-white/[0.06] rounded-lg max-w-md w-full p-6">
+          <div className="bg-white dark:bg-theme-surface-elevated border border-theme rounded-lg max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-semibold text-theme-primary">
                 {editingRegion ? 'Edit Region' : 'Add Region'}
               </h2>
               <button
@@ -615,7 +609,7 @@ export default function AreasAndRegionsPage() {
                   setRegionName('');
                   setRegionManagerId('');
                 }}
-                className="text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white"
+                className="text-theme-tertiary hover:text-theme-primary"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -623,26 +617,26 @@ export default function AreasAndRegionsPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Region Name *
                 </label>
                 <input
                   type="text"
                   value={regionName}
                   onChange={(e) => setRegionName(e.target.value)}
-                  className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white"
+ className="w-full px-3 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary"
                   placeholder="e.g., North Region"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Regional Manager (Optional)
                 </label>
                 <select
                   value={regionManagerId}
                   onChange={(e) => setRegionManagerId(e.target.value)}
-                  className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white"
+ className="w-full px-3 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary"
                 >
                   <option value="">No manager assigned</option>
                   {managers.map((manager) => (
@@ -678,9 +672,9 @@ export default function AreasAndRegionsPage() {
       {/* Area Modal */}
       {showAreaModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-50 dark:bg-[#0B0D13] border border-gray-200 dark:border-white/[0.06] rounded-lg max-w-md w-full p-6">
+          <div className="bg-white dark:bg-theme-surface-elevated border border-theme rounded-lg max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-semibold text-theme-primary">
                 {editingArea ? 'Edit Area' : 'Add Area'}
               </h2>
               <button
@@ -691,7 +685,7 @@ export default function AreasAndRegionsPage() {
                   setAreaManagerId('');
                   setSelectedRegionId('');
                 }}
-                className="text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white"
+                className="text-theme-tertiary hover:text-theme-primary"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -700,13 +694,13 @@ export default function AreasAndRegionsPage() {
             <div className="space-y-4">
               {!editingArea && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Region *
                   </label>
                   <select
                     value={selectedRegionId}
                     onChange={(e) => setSelectedRegionId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white"
+ className="w-full px-3 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary"
                   >
                     <option value="">Select a region</option>
                     {regions.map((region) => (
@@ -719,26 +713,26 @@ export default function AreasAndRegionsPage() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Area Name *
                 </label>
                 <input
                   type="text"
                   value={areaName}
                   onChange={(e) => setAreaName(e.target.value)}
-                  className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white"
+ className="w-full px-3 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary"
                   placeholder="e.g., Manchester Area"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Area Manager (Optional)
                 </label>
                 <select
                   value={areaManagerId}
                   onChange={(e) => setAreaManagerId(e.target.value)}
-                  className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white"
+ className="w-full px-3 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary"
                 >
                   <option value="">No manager assigned</option>
                   {managers.map((manager) => (
@@ -775,9 +769,9 @@ export default function AreasAndRegionsPage() {
       {/* Site Assignment Modal */}
       {showSiteAssignModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-50 dark:bg-[#0B0D13] border border-gray-200 dark:border-white/[0.06] rounded-lg max-w-md w-full p-6 max-h-[80vh] overflow-y-auto">
+          <div className="bg-white dark:bg-theme-surface-elevated border border-theme rounded-lg max-w-md w-full p-6 max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-semibold text-theme-primary">
                 Assign Sites {assignmentType === 'area' ? 'to Area' : 'to Region'}
               </h2>
               <button
@@ -787,7 +781,7 @@ export default function AreasAndRegionsPage() {
                   setSelectedRegionId('');
                   setSelectedAreaId('');
                 }}
-                className="text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white"
+                className="text-theme-tertiary hover:text-theme-primary"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -804,13 +798,13 @@ export default function AreasAndRegionsPage() {
 
               {assignmentType === 'area' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Area *
                   </label>
                   <select
                     value={selectedAreaId}
                     onChange={(e) => setSelectedAreaId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white"
+ className="w-full px-3 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary"
                   >
                     <option value="">Select an area</option>
                     {regions
@@ -825,12 +819,12 @@ export default function AreasAndRegionsPage() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Select Sites *
                 </label>
-                <div className="space-y-2 max-h-64 overflow-y-auto border border-gray-200 dark:border-white/[0.06] rounded-lg p-2">
+                <div className="space-y-2 max-h-64 overflow-y-auto border border-theme rounded-lg p-2">
                   {sites.length === 0 ? (
-                    <p className="text-sm text-gray-500 dark:text-white/50 text-center py-4">
+                    <p className="text-sm text-theme-tertiary text-center py-4">
                       No sites available
                     </p>
                   ) : (
@@ -847,7 +841,7 @@ export default function AreasAndRegionsPage() {
                         />
                         <Building className="w-4 h-4 text-purple-400" />
                         <div className="flex-1">
-                          <p className="text-sm text-gray-900 dark:text-white">{site.name}</p>
+                          <p className="text-sm text-theme-primary">{site.name}</p>
                         </div>
                         {site.area_id && (
                           <span className="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded">
@@ -858,7 +852,7 @@ export default function AreasAndRegionsPage() {
                     ))
                   )}
                 </div>
-                <p className="text-xs text-gray-500 dark:text-white/50 mt-2">
+                <p className="text-xs text-theme-tertiary mt-2">
                   {selectedSiteIds.length} site(s) selected
                 </p>
               </div>

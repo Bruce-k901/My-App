@@ -60,7 +60,7 @@ export function KPIHeroSection({ variant }: KPIHeroSectionProps) {
       sparkline: kpi.complianceScore.sparkline,
       status: kpi.complianceScore.status,
       color: kpi.complianceScore.status === 'good'
-        ? 'text-emerald-400'
+        ? 'text-module-fg'
         : kpi.complianceScore.status === 'warning'
         ? 'text-blue-400'
         : 'text-teamly',
@@ -80,7 +80,7 @@ export function KPIHeroSection({ variant }: KPIHeroSectionProps) {
       trend: kpi.openIncidents.trend,
       sparkline: kpi.openIncidents.sparkline,
       status: kpi.openIncidents.status,
-      color: kpi.openIncidents.value > 0 ? 'text-teamly' : 'text-emerald-400',
+      color: kpi.openIncidents.value > 0 ? 'text-teamly' : 'text-module-fg',
       accentHex: kpi.openIncidents.value > 0 ? '#F472B6' : '#34D399',
       href: '/dashboard/incidents',
       icon: AlertTriangle,

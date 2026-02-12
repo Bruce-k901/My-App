@@ -65,7 +65,7 @@ export default function PlanlyReportsPage() {
       <ReportPageHeader title="Planly Reports" subtitle="Production output, order fulfillment, and customer analysis" />
       <ReportFiltersBar />
 
-      <div className="flex gap-1 sm:gap-2 border-b border-gray-200 dark:border-white/[0.1] overflow-x-auto">
+      <div className="flex gap-1 sm:gap-2 border-b border-theme overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -73,7 +73,7 @@ export default function PlanlyReportsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-2 sm:px-3 md:px-4 py-2 sm:py-3 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
-                activeTab === tab.id ? "border-orange-500 text-orange-400" : "border-transparent text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white/80"
+                activeTab === tab.id ? "border-orange-500 text-orange-400" : "border-transparent text-theme-tertiary hover:text-theme-secondary dark:hover:text-theme-secondary"
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -189,9 +189,9 @@ function ProductionSection({
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
+      <div className="bg-theme-surface border border-theme rounded-xl p-8 flex items-center justify-center">
         <Loader2 className="w-6 h-6 text-orange-400 animate-spin" />
-        <span className="ml-3 text-gray-500 dark:text-white/60">Loading production data...</span>
+        <span className="ml-3 text-theme-tertiary">Loading production data...</span>
       </div>
     );
   }
@@ -208,9 +208,9 @@ function ProductionSection({
       </div>
 
       {/* Completion Rate */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Fulfilment Rate</h3>
+          <h3 className="text-lg font-semibold text-theme-primary">Fulfilment Rate</h3>
           <span className={`text-3xl font-bold ${data.completionRate >= 90 ? "text-green-400" : data.completionRate >= 70 ? "text-yellow-400" : "text-red-400"}`}>
             {data.completionRate}%
           </span>
@@ -225,20 +225,20 @@ function ProductionSection({
 
       {/* Daily Breakdown */}
       {data.daily.length > 0 && (
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Daily Delivery Schedule</h3>
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">Daily Delivery Schedule</h3>
           <div className="space-y-2">
             {data.daily.slice(-14).map((day) => {
               const rate = day.total > 0 ? Math.round((day.fulfilled / day.total) * 100) : 0;
               return (
                 <div key={day.date} className="flex items-center gap-4">
-                  <span className="text-sm text-gray-500 dark:text-white/60 w-24">{format(new Date(day.date), "MMM dd")}</span>
+                  <span className="text-sm text-theme-tertiary w-24">{format(new Date(day.date), "MMM dd")}</span>
                   <div className="flex-1 bg-gray-100 dark:bg-white/[0.05] rounded-full h-6 relative">
                     <div
                       className={`h-6 rounded-full ${rate >= 90 ? "bg-green-500" : rate >= 70 ? "bg-yellow-500" : "bg-orange-500"}`}
                       style={{ width: `${rate}%` }}
                     />
-                    <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white">
+                    <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-theme-primary">
                       {day.fulfilled}/{day.total}
                     </span>
                   </div>
@@ -317,9 +317,9 @@ function OrdersSection({
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
+      <div className="bg-theme-surface border border-theme rounded-xl p-8 flex items-center justify-center">
         <Loader2 className="w-6 h-6 text-orange-400 animate-spin" />
-        <span className="ml-3 text-gray-500 dark:text-white/60">Loading order data...</span>
+        <span className="ml-3 text-theme-tertiary">Loading order data...</span>
       </div>
     );
   }
@@ -341,8 +341,8 @@ function OrdersSection({
 
       {/* Status Breakdown */}
       {data.total > 0 && (
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Order Status Pipeline</h3>
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">Order Status Pipeline</h3>
           <div className="flex gap-2 h-8">
             {[
               { label: "Pending", count: data.pending, color: "bg-yellow-500" },
@@ -354,7 +354,7 @@ function OrdersSection({
               .map((s) => (
                 <div
                   key={s.label}
-                  className={`${s.color} rounded-md flex items-center justify-center text-xs font-medium text-white px-2`}
+                  className={`${s.color} rounded-md flex items-center justify-center text-xs font-medium text-theme-primary px-2`}
                   style={{ width: `${(s.count / data.total) * 100}%`, minWidth: "40px" }}
                 >
                   {s.label} ({s.count})
@@ -415,9 +415,9 @@ function CustomerSection({ companyId, siteId }: { companyId: string; siteId: str
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
+      <div className="bg-theme-surface border border-theme rounded-xl p-8 flex items-center justify-center">
         <Loader2 className="w-6 h-6 text-orange-400 animate-spin" />
-        <span className="ml-3 text-gray-500 dark:text-white/60">Loading customer data...</span>
+        <span className="ml-3 text-theme-tertiary">Loading customer data...</span>
       </div>
     );
   }
@@ -431,14 +431,14 @@ function CustomerSection({ companyId, siteId }: { companyId: string; siteId: str
 
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top Customers by Revenue</h3>
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-theme-primary mb-4">Top Customers by Revenue</h3>
         <div className="space-y-3">
           {data.slice(0, 15).map((customer) => (
             <div key={customer.name} className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
-                <span className="text-gray-700 dark:text-white/80 truncate block">{customer.name}</span>
-                <span className="text-xs text-gray-400 dark:text-white/40">{customer.orderCount} orders</span>
+                <span className="text-theme-secondary truncate block">{customer.name}</span>
+                <span className="text-xs text-theme-tertiary">{customer.orderCount} orders</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-32 bg-gray-100 dark:bg-white/[0.05] rounded-full h-2">
@@ -447,7 +447,7 @@ function CustomerSection({ companyId, siteId }: { companyId: string; siteId: str
                     style={{ width: `${(customer.totalSpend / maxSpend) * 100}%` }}
                   />
                 </div>
-                <span className="text-gray-900 dark:text-white font-semibold w-20 text-right">{fmtGBP(customer.totalSpend)}</span>
+                <span className="text-theme-primary font-semibold w-20 text-right">{fmtGBP(customer.totalSpend)}</span>
               </div>
             </div>
           ))}

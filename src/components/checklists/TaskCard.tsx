@@ -150,7 +150,7 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
     if (timingStatus === 'pending') return 'border-yellow-500/50 dark:border-yellow-500/50 bg-yellow-500/10 dark:bg-yellow-500/10'
     
     if (isCritical) return 'border-orange-500/50 dark:border-orange-500/50 bg-orange-500/10 dark:bg-orange-500/10'
-    return 'border-[rgb(var(--border))] dark:border-neutral-700 hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50'
+    return 'border-[rgb(var(--border))] dark:border-theme hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50'
   }
 
   const getStatusIcon = () => {
@@ -166,7 +166,7 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
     if (timingStatus === 'pending') return <Clock className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
     
     if (isCritical) return <AlertCircle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-    return <Clock className="h-5 w-5 text-[rgb(var(--text-tertiary))] dark:text-neutral-400" />
+ return <Clock className="h-5 w-5 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"/>
   }
   
   const getTimingStatusLabel = () => {
@@ -183,11 +183,11 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
     return task.template.evidence_types.map((type, index) => {
       switch (type) {
         case 'photo':
-          return <Camera key={index} className="h-3 w-3 text-[rgb(var(--text-tertiary))] dark:text-neutral-400" />
+ return <Camera key={index} className="h-3 w-3 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"/>
         case 'temperature':
-          return <Thermometer key={index} className="h-3 w-3 text-[rgb(var(--text-tertiary))] dark:text-neutral-400" />
+ return <Thermometer key={index} className="h-3 w-3 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"/>
         case 'text_note':
-          return <FileText key={index} className="h-3 w-3 text-[rgb(var(--text-tertiary))] dark:text-neutral-400" />
+ return <FileText key={index} className="h-3 w-3 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"/>
         default:
           return null
       }
@@ -205,7 +205,7 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
   return (
     <div
       onClick={handleCardClick}
-      className={`bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 backdrop-blur-sm border border-[rgb(var(--border))] dark:border-neutral-700 rounded-lg p-4 cursor-pointer transition-all hover:shadow-lg relative ${getStatusColor()}`}
+      className={`bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 backdrop-blur-sm border border-[rgb(var(--border))] dark:border-theme rounded-lg p-4 cursor-pointer transition-all hover:shadow-lg relative ${getStatusColor()}`}
     >
       {showDetailLink && (
         <Link
@@ -214,7 +214,7 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
           className="absolute top-3 right-3 p-1.5 hover:bg-black/[0.05] dark:hover:bg-white/10 rounded-lg transition-colors z-10"
           title="View task details"
         >
-          <ExternalLink className="w-4 h-4 text-[rgb(var(--text-tertiary))] dark:text-white/60 hover:text-[rgb(var(--text-primary))] dark:hover:text-white" />
+          <ExternalLink className="w-4 h-4 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))]" />
         </Link>
       )}
       <div className="flex items-start justify-between mb-3 pr-8">
@@ -236,7 +236,7 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
       </div>
 
       <div className="space-y-2">
-        <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-400 line-clamp-2">
+ <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary line-clamp-2">
           {task.custom_instructions || task.template?.description || 'No description available'}
         </p>
 
@@ -245,7 +245,7 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
           <Link
             href={genericTaskLink}
             onClick={(e) => e.stopPropagation()}
-            className="inline-flex items-center gap-2 px-3 py-2 bg-blue-500/10 dark:bg-blue-500/10 border border-blue-500/30 dark:border-blue-500/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-500/20 dark:hover:bg-blue-500/20 transition-colors text-xs font-medium"
+            className="inline-flex items-center gap-2 px-3 py-2 bg-blue-500/10 dark:bg-blue-500/10 border border-blue-500/30 dark:border-blue-500/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-module-fg/10 dark:hover:bg-module-fg/10 transition-colors text-xs font-medium"
           >
             <ArrowRight className="w-3 h-3" />
             {(task.task_data?.source_type === 'certificate_expiry' || task.task_data?.source_type === 'training_certificate') && 'View Training Details'}
@@ -265,7 +265,7 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
           </div>
         )}
 
-        <div className="flex items-center justify-between text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-500">
+ <div className="flex items-center justify-between text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
             <span>{task.due_time || 'Anytime'}</span>
@@ -273,7 +273,7 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
         </div>
 
         {task.template?.compliance_standard && (
-          <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-neutral-500">
+ <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
             {task.template.compliance_standard}
           </div>
         )}

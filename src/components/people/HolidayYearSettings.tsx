@@ -131,26 +131,26 @@ export default function HolidayYearSettings() {
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-        <p className="text-gray-500 dark:text-white/60 text-sm">Loading holiday year settings...</p>
+      <div className="bg-theme-surface border border-theme rounded-lg p-4">
+        <p className="text-theme-tertiary text-sm">Loading holiday year settings...</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+    <div className="bg-theme-surface border border-theme rounded-lg p-4">
       <div className="flex items-center gap-2 mb-4">
         <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-        <h3 className="text-gray-900 dark:text-white font-medium">Holiday Year Start Date</h3>
+        <h3 className="text-theme-primary font-medium">Holiday Year Start Date</h3>
       </div>
       
-      <p className="text-gray-600 dark:text-white/70 text-sm mb-4">
+      <p className="text-theme-secondary text-sm mb-4">
         Set when your company's holiday/leave year starts. This affects how holiday entitlement is accrued throughout the year.
       </p>
 
       <div className="flex items-center gap-4 mb-4">
         <div className="flex-1">
-          <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Month</label>
+          <label className="block text-sm text-theme-secondary mb-2">Month</label>
           <select
             value={holidayYearMonth}
             onChange={(e) => {
@@ -162,7 +162,7 @@ export default function HolidayYearSettings() {
                 setHolidayYearDay(maxDays);
               }
             }}
-            className="w-full px-3 py-2 pr-8 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 pr-8 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
               <option key={month} value={month}>
@@ -173,11 +173,11 @@ export default function HolidayYearSettings() {
         </div>
 
         <div className="flex-1">
-          <label className="block text-sm text-gray-700 dark:text-white/80 mb-2">Day</label>
+          <label className="block text-sm text-theme-secondary mb-2">Day</label>
           <select
             value={holidayYearDay}
             onChange={(e) => setHolidayYearDay(parseInt(e.target.value))}
-            className="w-full px-3 py-2 pr-8 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 pr-8 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             {Array.from({ length: getDaysInMonth(holidayYearMonth) }, (_, i) => i + 1).map(day => (
               <option key={day} value={day}>
@@ -200,7 +200,7 @@ export default function HolidayYearSettings() {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] border border-gray-300 dark:border-white/[0.1] text-gray-600 hover:text-gray-900 dark:text-white/60 dark:hover:text-white rounded-lg transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] border border-theme text-theme-secondary hover:text-theme-primary/60 rounded-lg transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Save className="w-4 h-4" />
         {saving ? 'Saving...' : 'Save Holiday Year Settings'}

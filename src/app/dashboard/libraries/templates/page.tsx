@@ -46,7 +46,7 @@ const LIBRARY_TEMPLATES: LibraryTemplate[] = [
     description: 'Cleaning chemicals and hazardous substances with safety data',
     tableName: 'chemicals_library',
     icon: Droplets,
-    color: 'from-purple-500/20 to-[#D37E91]/25',
+    color: 'from-purple-500/20 to-module-fg/[0.25]',
     borderColor: 'border-purple-500/30',
     fields: ['product_name', 'manufacturer', 'use_case', 'hazard_symbols', 'dilution_ratio', 'contact_time', 'required_ppe', 'coshh_sheet_url', 'supplier', 'unit_cost', 'pack_size', 'storage_requirements', 'linked_risks', 'first_aid_instructions', 'environmental_info', 'notes'],
     csvHeaders: ['product_name', 'manufacturer', 'use_case', 'hazard_symbols', 'dilution_ratio', 'contact_time', 'required_ppe', 'coshh_sheet_url', 'supplier', 'unit_cost', 'pack_size', 'storage_requirements', 'linked_risks', 'first_aid_instructions', 'environmental_info', 'notes']
@@ -80,7 +80,7 @@ const LIBRARY_TEMPLATES: LibraryTemplate[] = [
     tableName: 'glassware_library',
     icon: Wine,
     color: 'from-indigo-500/20 to-violet-500/20',
-    borderColor: 'border-indigo-500/30',
+    borderColor: 'border-module-fg/30',
     fields: ['item_name', 'category', 'capacity_ml', 'material', 'shape_style', 'recommended_for', 'supplier', 'unit_cost', 'pack_size', 'dishwasher_safe', 'breakage_rate', 'storage_location', 'reorder_level', 'notes'],
     csvHeaders: ['item_name', 'category', 'capacity_ml', 'material', 'shape_style', 'recommended_for', 'supplier', 'unit_cost', 'pack_size', 'dishwasher_safe', 'breakage_rate', 'storage_location', 'reorder_level', 'notes']
   },
@@ -91,7 +91,7 @@ const LIBRARY_TEMPLATES: LibraryTemplate[] = [
     tableName: 'packaging_library',
     icon: ShoppingBag,
     color: 'from-teal-500/20 to-cyan-500/20',
-    borderColor: 'border-teal-500/30',
+    borderColor: 'border-module-fg/30',
     fields: ['item_name', 'category', 'material', 'capacity_size', 'eco_friendly', 'compostable', 'recyclable', 'hot_food_suitable', 'microwave_safe', 'leak_proof', 'color_finish', 'supplier', 'pack_cost', 'pack_size', 'dimensions', 'usage_context', 'reorder_level', 'notes'],
     csvHeaders: ['item_name', 'category', 'material', 'capacity_size', 'eco_friendly', 'compostable', 'recyclable', 'hot_food_suitable', 'microwave_safe', 'leak_proof', 'color_finish', 'supplier', 'pack_cost', 'pack_size', 'dimensions', 'usage_context', 'reorder_level', 'notes']
   },
@@ -101,7 +101,7 @@ const LIBRARY_TEMPLATES: LibraryTemplate[] = [
     description: 'Plates, bowls, utensils, and serving tools',
     tableName: 'equipment_library',
     icon: UtensilsCrossed,
-    color: 'from-rose-500/20 to-[#D37E91]/25',
+    color: 'from-rose-500/20 to-module-fg/[0.25]',
     borderColor: 'border-rose-500/30',
     fields: ['item_name', 'category', 'material', 'size_dimensions', 'shape', 'use_case', 'color_finish', 'dishwasher_safe', 'oven_safe', 'supplier', 'brand', 'color_coding', 'unit_cost', 'storage_location', 'notes'],
     csvHeaders: ['item_name', 'category', 'material', 'size_dimensions', 'shape', 'use_case', 'color_finish', 'dishwasher_safe', 'oven_safe', 'supplier', 'brand', 'color_coding', 'unit_cost', 'storage_location', 'notes']
@@ -189,23 +189,23 @@ export default function LibraryTemplatesPage() {
 
 
   return (
-    <div className="bg-[#0f1220] text-white border border-neutral-800 rounded-xl p-4 sm:p-6 lg:p-8">
+    <div className="bg-[rgb(var(--surface-elevated))] text-theme-primary border border-neutral-800 rounded-xl p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Library Templates</h1>
-        <p className="text-white/60 text-sm sm:text-base">Open a template to add items one by one or upload a CSV file. Build out your library and save when ready.</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary mb-2">Library Templates</h1>
+        <p className="text-theme-tertiary text-sm sm:text-base">Open a template to add items one by one or upload a CSV file. Build out your library and save when ready.</p>
       </div>
 
       {/* Search */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-tertiary w-4 h-4" />
           <input
             type="text"
             placeholder="Search library templates..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+            className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-module-fg/[0.40]"
           />
         </div>
       </div>
@@ -222,11 +222,11 @@ export default function LibraryTemplatesPage() {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3 flex-1">
                   <div className={`p-2 rounded-lg bg-gradient-to-br ${template.color}`}>
-                    <Icon className="w-5 h-5 text-white" />
+                    <Icon className="w-5 h-5 text-theme-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-white mb-1">{template.name}</h3>
-                    <p className="text-white/60 text-sm line-clamp-2">{template.description}</p>
+                    <h3 className="text-lg font-semibold text-theme-primary mb-1">{template.name}</h3>
+                    <p className="text-theme-tertiary text-sm line-clamp-2">{template.description}</p>
                   </div>
                 </div>
               </div>
@@ -250,7 +250,7 @@ export default function LibraryTemplatesPage() {
                 </button>
                 <button
                   onClick={() => handleDownloadCSV(template)}
-                  className="px-3 py-2 bg-blue-500/20 border border-blue-500/40 rounded-lg text-blue-400 hover:bg-blue-500/30 transition-colors"
+                  className="px-3 py-2 bg-blue-500/20 border border-blue-500/40 rounded-lg text-blue-400 hover:bg-module-fg/10 transition-colors"
                   title="Download blank template"
                 >
                   <Download className="h-4 w-4" />
@@ -265,10 +265,10 @@ export default function LibraryTemplatesPage() {
       {filteredTemplates.length === 0 && (
         <div className="mt-8 text-center py-12">
           <FileText className="h-12 w-12 text-white/20 mx-auto mb-4" />
-          <p className="text-white/60 mb-2">No templates match your search</p>
+          <p className="text-theme-tertiary mb-2">No templates match your search</p>
           <button
             onClick={() => setSearchQuery('')}
-            className="text-[#D37E91] hover:text-[#D37E91] text-sm mt-2"
+            className="text-module-fg hover:text-module-fg text-sm mt-2"
           >
             Clear search
           </button>

@@ -183,7 +183,7 @@ const DEFAULT_TEMPLATES: ShiftTemplate[] = [
 ];
 
 const FALLBACK_SECTIONS: RotaSection[] = [
-  { id: 'fallback-foh', name: 'FOH', color: '#D37E91', sort_order: 1 },
+  { id: 'fallback-foh', name: 'FOH', color: 'rgb(var(--module-fg))', sort_order: 1 },
   { id: 'fallback-boh', name: 'BOH', color: '#22c55e', sort_order: 2 },
   { id: 'fallback-bar', name: 'Bar', color: '#3b82f6', sort_order: 3 },
   { id: 'fallback-res', name: 'Reservations', color: '#f59e0b', sort_order: 4 },
@@ -224,7 +224,7 @@ function AddShiftModal({
   const [breakMins, setBreakMins] = useState(30);
   const [selectedStaff, setSelectedStaff] = useState<string>(initialStaffId || '');
   const [selectedSectionId, setSelectedSectionId] = useState<string>(sectionsEnabled ? (initialSectionId || '') : '');
-  const [color, setColor] = useState('#D37E91');
+  const [color, setColor] = useState('rgb(var(--module-fg))');
 
   useEffect(() => {
     if (initialStaffId) setSelectedStaff(initialStaffId);
@@ -246,22 +246,22 @@ function AddShiftModal({
 
   return (
     <div className="fixed inset-0 bg-black/30 dark:bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white dark:bg-[#171b2d] rounded-lg border border-gray-200 dark:border-white/[0.1] w-full max-w-2xl shadow-xl" onClick={e => e.stopPropagation()}>
+      <div className="bg-theme-surface rounded-lg border border-theme w-full max-w-2xl shadow-xl" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/[0.06]">
+        <div className="flex items-center justify-between p-4 border-b border-theme">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Add Shift</h3>
-            <p className="text-sm text-gray-500 dark:text-white/60">{date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+            <h3 className="text-lg font-semibold text-theme-primary">Add Shift</h3>
+            <p className="text-sm text-theme-tertiary">{date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white dark:bg-neutral-800 rounded-lg">
-            <X className="w-5 h-5 text-gray-500 dark:text-white/60" />
+          <button onClick={onClose} className="p-2 hover:bg-theme-surface rounded-lg">
+            <X className="w-5 h-5 text-theme-tertiary" />
           </button>
         </div>
 
         <div className="p-4 space-y-4">
           {/* Quick Templates */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-white/80 mb-2">Quick Select Template</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-2">Quick Select Template</label>
             <div className="grid grid-cols-3 gap-2">
               {templates.map(t => (
                 <button
@@ -269,15 +269,15 @@ function AddShiftModal({
                   onClick={() => applyTemplate(t)}
                   className={`p-2 rounded-lg border text-left transition-all ${
                     selectedTemplate?.id === t.id 
-                      ? 'border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-500/10' 
-                      : 'border-gray-300 dark:border-neutral-700 hover:border-neutral-600'
+                      ? 'border-module-fg bg-module-fg/10'
+                      : 'border-theme hover:border-neutral-600'
                   }`}
                 >
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-6 rounded" style={{ backgroundColor: t.color }} />
                     <div>
-                      <p className="text-xs font-medium text-gray-900 dark:text-white">{t.short_name}</p>
-                      <p className="text-[10px] text-gray-500 dark:text-white/50">{formatTime(t.start_time)}-{formatTime(t.end_time)}</p>
+                      <p className="text-xs font-medium text-theme-primary">{t.short_name}</p>
+                      <p className="text-[10px] text-theme-tertiary">{formatTime(t.start_time)}-{formatTime(t.end_time)}</p>
                     </div>
                   </div>
                 </button>
@@ -288,7 +288,7 @@ function AddShiftModal({
           {/* Custom Times */}
           <div className="grid grid-cols-3 gap-4">
             <div className="min-w-0">
-              <label className="block text-xs text-gray-500 dark:text-white/60 mb-1">Start Time</label>
+              <label className="block text-xs text-theme-tertiary mb-1">Start Time</label>
               <TimePicker
                 value={startTime}
                 onChange={(value) => { setStartTime(value); setSelectedTemplate(null); }}
@@ -296,7 +296,7 @@ function AddShiftModal({
               />
             </div>
             <div className="min-w-0">
-              <label className="block text-xs text-gray-500 dark:text-white/60 mb-1">End Time</label>
+              <label className="block text-xs text-theme-tertiary mb-1">End Time</label>
               <TimePicker
                 value={endTime}
                 onChange={(value) => { setEndTime(value); setSelectedTemplate(null); }}
@@ -304,7 +304,7 @@ function AddShiftModal({
               />
             </div>
             <div className="min-w-0">
-              <label className="block text-xs text-gray-500 dark:text-white/60 mb-1">Break (mins)</label>
+              <label className="block text-xs text-theme-tertiary mb-1">Break (mins)</label>
               <input
                 type="number"
                 min="0"
@@ -315,26 +315,26 @@ function AddShiftModal({
                   const val = parseInt(e.target.value) || 0;
                   setBreakMins(Math.max(0, Math.min(480, val)));
                 }}
-                className="w-full px-3 py-2 bg-white dark:bg-neutral-800 border-2 border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:border-[#D37E91] dark:focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors"
+                className="w-full px-3 py-2 bg-theme-surface border-2 border-theme rounded-lg text-theme-primary text-sm font-medium focus:outline-none focus:border-module-fg dark:focus:border-module-fg focus:ring-2 focus:ring-module-fg/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors"
               />
             </div>
           </div>
 
           {/* Assign Staff */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-white/80 mb-2">
-              Assign Staff Member {selectedStaff && <span className="text-blue-600 dark:text-blue-400">✓</span>}
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
+              Assign Staff Member {selectedStaff && <span className="text-module-fg">✓</span>}
             </label>
 
             {lockStaff ? (
-              <div className="px-3 py-2 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white text-sm">
+              <div className="px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm">
                 {staffMember?.full_name || 'Selected staff'}
               </div>
             ) : (
               <select
                 value={selectedStaff}
                 onChange={(e) => setSelectedStaff(e.target.value)}
-                className="w-full px-3 py-2 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400"
+                className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary focus:border-module-fg focus:ring-1 focus:ring-module-fg"
               >
                 <option value="">Leave Open (unassigned)</option>
                 {staff.map(s => (
@@ -346,7 +346,7 @@ function AddShiftModal({
             )}
 
             {selectedStaff && staffMember && (
-              <p className="text-xs text-gray-500 dark:text-white/60 mt-1">
+              <p className="text-xs text-theme-tertiary mt-1">
                 Selected: {staffMember.full_name} • Cost: £{estimatedCost.toFixed(2)} for {netHours}h
               </p>
             )}
@@ -355,11 +355,11 @@ function AddShiftModal({
           {/* Section */}
           {(sectionsEnabled || sections.length > 0) ? (
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-600 dark:text-white/80 mb-2">Section</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-2">Section</label>
               <select
                 value={selectedSectionId}
                 onChange={(e) => setSelectedSectionId(e.target.value)}
-                className="w-full px-3 py-2 pr-8 bg-white dark:bg-neutral-800 border-2 border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91] dark:focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors appearance-none cursor-pointer"
+                className="w-full px-3 py-2 pr-8 bg-theme-surface border-2 border-theme rounded-lg text-theme-primary focus:outline-none focus:border-module-fg dark:focus:border-module-fg focus:ring-2 focus:ring-module-fg/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors appearance-none cursor-pointer"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
                   backgroundRepeat: 'no-repeat',
@@ -378,20 +378,20 @@ function AddShiftModal({
               </select>
             </div>
           ) : (
-            <div className="text-xs text-gray-500 dark:text-white/50">
+            <div className="text-xs text-theme-tertiary">
               Sections are not enabled in the database yet. Apply the `rota_sections` migration to turn this on.
             </div>
           )}
 
           {/* Summary */}
-          <div className="bg-white dark:bg-neutral-800/50 rounded-lg p-3 flex items-center justify-between">
+          <div className="bg-theme-surface/50 rounded-lg p-3 flex items-center justify-between">
             <div className="flex items-center gap-4 text-sm">
-              <span className="text-gray-500 dark:text-white/60">
+              <span className="text-theme-tertiary">
                 <Clock className="w-4 h-4 inline mr-1" />
                 {netHours}h net
               </span>
               {estimatedCost > 0 && (
-                <span className="text-gray-500 dark:text-white/60">
+                <span className="text-theme-tertiary">
                   <PoundSterling className="w-4 h-4 inline mr-1" />
                   £{estimatedCost.toFixed(2)}
                 </span>
@@ -401,7 +401,7 @@ function AddShiftModal({
               className="w-6 h-6 rounded cursor-pointer border border-neutral-600"
               style={{ backgroundColor: color }}
               onClick={() => {
-                const colors = ['#D37E91', '#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
+                const colors = ['rgb(var(--module-fg))', '#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
                 const idx = colors.indexOf(color);
                 setColor(colors[(idx + 1) % colors.length]);
               }}
@@ -411,13 +411,13 @@ function AddShiftModal({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 p-4 border-t border-gray-200 dark:border-white/[0.06]">
+        <div className="flex justify-end gap-3 p-4 border-t border-theme">
           <button 
             onClick={(e) => {
               e.stopPropagation();
               onClose();
             }} 
-            className="px-4 py-2 bg-white dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-lg text-gray-900 dark:text-white"
+            className="px-4 py-2 bg-theme-surface hover:bg-theme-hover rounded-lg text-theme-primary"
           >
             Cancel
           </button>
@@ -436,7 +436,7 @@ function AddShiftModal({
                 section_id: sectionsEnabled ? (selectedSectionId || null) : null,
               });
             }}
-            className="px-4 py-2 !bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent"
+            className="px-4 py-2 !bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent"
           >
             Add Shift
           </button>
@@ -481,18 +481,18 @@ function EditShiftModal({
 
   return (
     <div className="fixed inset-0 bg-black/30 dark:bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white dark:bg-[#171b2d] rounded-lg border border-gray-200 dark:border-white/[0.1] w-full max-w-2xl shadow-xl" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/[0.06]">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Edit Shift</h3>
-          <button onClick={onClose} className="p-2 hover:bg-white dark:bg-neutral-800 rounded-lg">
-            <X className="w-5 h-5 text-gray-500 dark:text-white/60" />
+      <div className="bg-theme-surface rounded-lg border border-theme w-full max-w-2xl shadow-xl" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-4 border-b border-theme">
+          <h3 className="text-lg font-semibold text-theme-primary">Edit Shift</h3>
+          <button onClick={onClose} className="p-2 hover:bg-theme-surface rounded-lg">
+            <X className="w-5 h-5 text-theme-tertiary" />
           </button>
         </div>
 
         <div className="p-4 space-y-4">
           <div className="grid grid-cols-3 gap-4">
             <div className="min-w-0">
-              <label className="block text-xs text-gray-500 dark:text-white/60 mb-1">Start Time</label>
+              <label className="block text-xs text-theme-tertiary mb-1">Start Time</label>
               <TimePicker
                 value={startTime}
                 onChange={(value) => setStartTime(value)}
@@ -500,7 +500,7 @@ function EditShiftModal({
               />
             </div>
             <div className="min-w-0">
-              <label className="block text-xs text-gray-500 dark:text-white/60 mb-1">End Time</label>
+              <label className="block text-xs text-theme-tertiary mb-1">End Time</label>
               <TimePicker
                 value={endTime}
                 onChange={(value) => setEndTime(value)}
@@ -508,7 +508,7 @@ function EditShiftModal({
               />
             </div>
             <div className="min-w-0">
-              <label className="block text-xs text-gray-500 dark:text-white/60 mb-1">Break (mins)</label>
+              <label className="block text-xs text-theme-tertiary mb-1">Break (mins)</label>
               <input
                 type="number"
                 min="0"
@@ -519,17 +519,17 @@ function EditShiftModal({
                   const val = parseInt(e.target.value) || 0;
                   setBreakMins(Math.max(0, Math.min(480, val)));
                 }}
-                className="w-full px-3 py-2 bg-white dark:bg-neutral-800 border-2 border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:border-[#D37E91] dark:focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors"
+                className="w-full px-3 py-2 bg-theme-surface border-2 border-theme rounded-lg text-theme-primary text-sm font-medium focus:outline-none focus:border-module-fg dark:focus:border-module-fg focus:ring-2 focus:ring-module-fg/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-white/80 mb-2">Assigned To</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-2">Assigned To</label>
             <select
               value={selectedStaff}
               onChange={(e) => setSelectedStaff(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400"
+              className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary focus:border-module-fg focus:ring-1 focus:ring-module-fg"
             >
               <option value="">Unassigned</option>
               {staff.map(s => (
@@ -540,11 +540,11 @@ function EditShiftModal({
 
           {(sectionsEnabled || sections.length > 0) && (
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-600 dark:text-white/80 mb-2">Section</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-2">Section</label>
               <select
                 value={selectedSectionId}
                 onChange={(e) => setSelectedSectionId(e.target.value)}
-                className="w-full px-3 py-2 pr-8 bg-white dark:bg-neutral-800 border-2 border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-[#D37E91] dark:focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors appearance-none cursor-pointer"
+                className="w-full px-3 py-2 pr-8 bg-theme-surface border-2 border-theme rounded-lg text-theme-primary focus:outline-none focus:border-module-fg dark:focus:border-module-fg focus:ring-2 focus:ring-module-fg/20 shadow-sm hover:border-gray-400 dark:hover:border-neutral-600 transition-colors appearance-none cursor-pointer"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
                   backgroundRepeat: 'no-repeat',
@@ -564,14 +564,14 @@ function EditShiftModal({
             </div>
           )}
 
-          <div className="bg-white dark:bg-neutral-800/50 rounded-lg p-3 flex items-center justify-between">
+          <div className="bg-theme-surface/50 rounded-lg p-3 flex items-center justify-between">
             <div className="flex items-center gap-4 text-sm">
-              <span className="text-gray-500 dark:text-white/60">
+              <span className="text-theme-tertiary">
                 <Clock className="w-4 h-4 inline mr-1" />
                 {netHours}h net
               </span>
               {estimatedCost > 0 && (
-                <span className="text-gray-500 dark:text-white/60">
+                <span className="text-theme-tertiary">
                   <PoundSterling className="w-4 h-4 inline mr-1" />
                   £{estimatedCost.toFixed(2)}
                 </span>
@@ -580,7 +580,7 @@ function EditShiftModal({
           </div>
         </div>
 
-        <div className="flex justify-between p-4 border-t border-gray-200 dark:border-neutral-800">
+        <div className="flex justify-between p-4 border-t border-theme">
           <button 
             onClick={(e) => {
               e.stopPropagation();
@@ -596,7 +596,7 @@ function EditShiftModal({
                 e.stopPropagation();
                 onClose();
               }} 
-              className="px-4 py-2 bg-white dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-lg text-gray-900 dark:text-white"
+              className="px-4 py-2 bg-theme-surface hover:bg-theme-hover rounded-lg text-theme-primary"
             >
               Cancel
             </button>
@@ -616,7 +616,7 @@ function EditShiftModal({
                   estimated_cost: Math.round(estimatedCost * 100),
                 });
               }}
-              className="px-4 py-2 !bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent"
+              className="px-4 py-2 !bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent"
             >
               Save
             </button>
@@ -667,7 +667,7 @@ function DroppableDayCell({
           onClick();
         }
       }}
-      className={`${className} ${isOver ? 'bg-[#D37E91]/20 border-blue-600 dark:border-blue-400' : ''}`}
+      className={`${className} ${isOver ? 'bg-module-fg/[0.20] border-module-fg' : ''}`}
     >
       {children}
     </div>
@@ -723,7 +723,7 @@ function SortableStaffRow({
   return (
     <div ref={setNodeRef} style={style} className="grid grid-cols-[240px_80px_repeat(7,minmax(0,1fr))]">
       {/* Name cell */}
-      <div className="px-3 py-1.5 border-r border-gray-200 dark:border-white/[0.06] bg-gray-50 dark:bg-white/[0.02]">
+      <div className="px-3 py-1.5 border-r border-theme bg-theme-surface-elevated">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
@@ -731,7 +731,7 @@ function SortableStaffRow({
                 <button
                   {...attributes}
                   {...listeners}
-                  className="cursor-grab active:cursor-grabbing text-gray-500 dark:text-white/50 hover:text-gray-900 dark:text-white p-1"
+                  className="cursor-grab active:cursor-grabbing text-theme-tertiary hover:text-theme-primary p-1"
                   title="Drag to reorder"
                 >
                   <Grip className="w-4 h-4" />
@@ -740,14 +740,14 @@ function SortableStaffRow({
               <div className="min-w-0">
                 <Link
                   href={`/dashboard/people/${person.id}`}
-                  className="block text-sm font-semibold text-gray-900 dark:text-white truncate hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  className="block text-sm font-semibold text-theme-primary truncate hover:text-module-fg transition-colors"
                   onClick={(e) => e.stopPropagation()}
                   title="View employee profile"
                 >
                   {person.full_name}
                 </Link>
                 {person.position_title && (
-                  <div className="text-[11px] text-gray-500 dark:text-white/50 truncate mt-0.5">{person.position_title}</div>
+                  <div className="text-[11px] text-theme-tertiary truncate mt-0.5">{person.position_title}</div>
                 )}
                 {person.isBorrowed && person.borrowedFromSiteName && (
                   <div className="flex items-center gap-1 mt-1">
@@ -763,8 +763,8 @@ function SortableStaffRow({
       </div>
 
       {/* Hours column */}
-      <div className="px-2 py-1.5 border-r border-gray-200 dark:border-white/[0.06] bg-gray-50 dark:bg-white/[0.02] flex items-center justify-center">
-        <div className="text-[11px] text-gray-600 dark:text-white/80 font-medium text-center">
+      <div className="px-2 py-1.5 border-r border-theme bg-theme-surface-elevated flex items-center justify-center">
+        <div className="text-[11px] text-theme-secondary font-medium text-center">
           {weeklyHours.toFixed(1)}h{contracted ? `/${contracted}h` : ''}
         </div>
       </div>
@@ -790,12 +790,12 @@ function SortableStaffRow({
                 onAddShift(person.id, new Date(ds));
               }
             }}
-            className={`px-2 py-1.5 border-r border-gray-200 dark:border-white/[0.06] text-left min-h-[52px] relative ${
+            className={`px-2 py-1.5 border-r border-theme text-left min-h-[52px] relative ${
               isClosed 
                 ? 'bg-red-50 dark:bg-red-500/10 opacity-60 cursor-not-allowed' 
                 : isOnLeave
                   ? 'bg-blue-50 dark:bg-blue-500/15 border-l-4 border-l-blue-500 dark:border-l-blue-400'
-                  : 'hover:bg-gray-50 dark:hover:bg-white/[0.05]'
+                  : 'hover:bg-theme-hover'
             }`}
             title={isOnLeave ? 'On leave' : isClosed ? 'Site closed' : undefined}
           >
@@ -811,7 +811,7 @@ function SortableStaffRow({
                   />
                 ))}
                 {personShifts.length === 0 && (
-                  <div className={`text-[10px] ${isOnLeave ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-gray-600 dark:text-white/70'}`}>
+                  <div className={`text-[10px] ${isOnLeave ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-theme-secondary'}`}>
                     {isOnLeave ? '🏖️ Leave' : '+'}
                   </div>
                 )}
@@ -865,7 +865,7 @@ function SortableShift({
         className={`px-2 py-0.5 rounded-md group/shift cursor-pointer ${
           shift.isFromOtherSite
             ? 'bg-blue-500/20 border-2 border-blue-500 hover:border-blue-400'
-            : 'bg-white dark:bg-neutral-800/60 border border-gray-300 dark:border-neutral-700 hover:border-neutral-600'
+            : 'bg-theme-surface/60 border border-theme hover:border-neutral-600'
         }`}
         onClick={(e) => {
           e.stopPropagation();
@@ -874,7 +874,7 @@ function SortableShift({
         }}
       >
       <div className="w-full text-left pr-20">
-        <div className={`text-[10px] font-medium ${shift.isFromOtherSite ? 'text-blue-400' : 'text-gray-900 dark:text-white'}`}>
+        <div className={`text-[10px] font-medium ${shift.isFromOtherSite ? 'text-blue-400' : 'text-theme-primary'}`}>
           {formatTime(shift.start_time)}–{formatTime(shift.end_time)}
           {shift.isFromOtherSite && shift.otherSiteName && (
             <span className="ml-1 inline-flex items-center gap-0.5 text-[9px] px-1 py-0.5 bg-blue-500/30 text-blue-100 rounded font-semibold border border-blue-400">
@@ -893,7 +893,7 @@ function SortableShift({
         </div>
       </div>
       {/* Quick actions - always visible */}
-      <div className="absolute top-0.5 right-0.5 flex gap-0.5 bg-gray-50 dark:bg-neutral-900/90 rounded border border-gray-300 dark:border-neutral-700/50">
+      <div className="absolute top-0.5 right-0.5 flex gap-0.5 bg-theme-surface rounded border border-theme">
         <button
           type="button"
           {...attributes}
@@ -901,7 +901,7 @@ function SortableShift({
           onClick={(e) => {
             e.stopPropagation();
           }}
-          className="p-1 rounded hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-600 dark:text-white/80 hover:text-gray-900 dark:text-white transition-colors cursor-grab active:cursor-grabbing"
+          className="p-1 rounded hover:bg-theme-hover text-theme-secondary hover:text-theme-primary transition-colors cursor-grab active:cursor-grabbing"
           title="Drag to move shift"
         >
           <Grip className="w-3 h-3" />
@@ -912,7 +912,7 @@ function SortableShift({
             e.stopPropagation();
             onCopy(shift.id, shift.shift_date);
           }}
-          className="p-1 rounded hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-600 dark:text-white/80 hover:text-gray-900 dark:text-white transition-colors"
+          className="p-1 rounded hover:bg-theme-hover text-theme-secondary hover:text-theme-primary transition-colors"
           title="Duplicate on same day"
         >
           <Copy className="w-3 h-3" />
@@ -923,14 +923,14 @@ function SortableShift({
             e.stopPropagation();
             onSetCopyingShift(shift);
           }}
-          className="p-1 rounded hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-600 dark:text-white/80 hover:text-blue-600 dark:text-blue-400 transition-colors"
+          className="p-1 rounded hover:bg-theme-hover text-theme-secondary hover:text-module-fg transition-colors"
           title="Copy to other days"
         >
           <ChevronDown className="w-3 h-3" />
         </button>
       </div>
       {/* Shift length below */}
-      <div className={`text-[9px] mt-0.5 ${shift.isFromOtherSite ? 'text-blue-300' : 'text-gray-500 dark:text-white/50'}`}>
+      <div className={`text-[9px] mt-0.5 ${shift.isFromOtherSite ? 'text-blue-300' : 'text-theme-tertiary'}`}>
         {getShiftNetHours(shift).toFixed(1)}h
       </div>
     </div>
@@ -1001,16 +1001,16 @@ function ForecastModal({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-gray-50 dark:bg-neutral-900 rounded-xl border border-gray-300 dark:border-neutral-700 w-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-neutral-800">
+      <div className="bg-theme-surface rounded-xl border border-theme w-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-4 border-b border-theme">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Weekly forecast</h3>
-            <p className="text-sm text-gray-500 dark:text-white/60">
+            <h3 className="text-lg font-semibold text-theme-primary">Weekly forecast</h3>
+            <p className="text-sm text-theme-tertiary">
               Choose one: {mode === 'hours' ? 'target hours' : 'predicted sales'}.
             </p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white dark:bg-neutral-800 rounded-lg">
-            <X className="w-5 h-5 text-gray-500 dark:text-white/60" />
+          <button onClick={onClose} className="p-2 hover:bg-theme-surface rounded-lg">
+            <X className="w-5 h-5 text-theme-tertiary" />
           </button>
         </div>
 
@@ -1021,8 +1021,8 @@ function ForecastModal({
               onClick={() => setMode('hours')}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 mode === 'hours'
-                  ? 'bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400'
-                  : 'bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white'
+                  ? 'bg-transparent border border-module-fg text-module-fg'
+                  : 'bg-theme-surface-elevated border border-theme text-theme-tertiary hover:text-theme-primary'
               }`}
             >
               Target hours
@@ -1032,8 +1032,8 @@ function ForecastModal({
               onClick={() => setMode('sales')}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 mode === 'sales'
-                  ? 'bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400'
-                  : 'bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white'
+                  ? 'bg-transparent border border-module-fg text-module-fg'
+                  : 'bg-theme-surface-elevated border border-theme text-theme-tertiary hover:text-theme-primary'
               }`}
             >
               Predicted sales
@@ -1048,7 +1048,7 @@ function ForecastModal({
                 }
                 setDraft(next);
               }}
-              className="ml-auto text-[11px] font-semibold text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white"
+              className="ml-auto text-[11px] font-semibold text-theme-tertiary hover:text-theme-primary"
             >
               Clear week
             </button>
@@ -1058,15 +1058,15 @@ function ForecastModal({
             {weekDays.map((d) => {
               const ds = d.toISOString().split('T')[0];
               return (
-                <div key={ds} className="bg-white dark:bg-neutral-800/50 border border-gray-300 dark:border-neutral-700 rounded-lg p-2">
-                  <div className="text-[11px] text-gray-500 dark:text-white/60 mb-1">
+                <div key={ds} className="bg-theme-surface/50 border border-theme rounded-lg p-2">
+                  <div className="text-[11px] text-theme-tertiary mb-1">
                     {d.toLocaleDateString('en-GB', { weekday: 'short' })} {d.getDate()}
                   </div>
                   <input
                     value={draft[ds] || ''}
                     inputMode={mode === 'hours' ? 'decimal' : 'numeric'}
                     onChange={(e) => setDraft((prev) => ({ ...prev, [ds]: e.target.value }))}
-                    className="w-full px-2 py-1 bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded text-sm text-gray-900 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400"
+                    className="w-full px-2 py-1 bg-theme-surface border border-theme rounded text-sm text-theme-primary focus:border-module-fg focus:ring-1 focus:ring-module-fg"
                     placeholder={mode === 'hours' ? '0' : '0'}
                   />
                 </div>
@@ -1075,15 +1075,15 @@ function ForecastModal({
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 p-4 border-t border-gray-200 dark:border-white/[0.06]">
-          <button onClick={onClose} className="px-4 py-2 bg-white dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-lg text-gray-900 dark:text-white">
+        <div className="flex justify-end gap-3 p-4 border-t border-theme">
+          <button onClick={onClose} className="px-4 py-2 bg-theme-surface hover:bg-theme-hover rounded-lg text-theme-primary">
             Cancel
           </button>
           <button
             type="button"
             disabled={saving}
             onClick={handleSave}
-            className="px-4 py-2 !bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent disabled:opacity-50"
+            className="px-4 py-2 !bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent disabled:opacity-50"
           >
             {saving ? 'Saving…' : 'Save'}
           </button>
@@ -1131,8 +1131,8 @@ function ShiftCard({
       <div
         className={`relative w-full px-2.5 py-2 rounded-lg border-l-[3px] text-left transition-colors ${
           shift.isFromOtherSite 
-            ? 'bg-blue-500/20 hover:bg-blue-500/25 border-2 border-blue-500'
-            : 'bg-white dark:bg-neutral-800/70 hover:bg-white dark:bg-neutral-800 border border-transparent'
+            ? 'bg-blue-500/20 hover:bg-module-fg/10 border-2 border-blue-500'
+            : 'bg-theme-surface/70 hover:bg-theme-surface border border-transparent'
         }`}
         style={{ borderLeftColor: shift.isFromOtherSite ? '#3b82f6' : shift.color }}
       >
@@ -1145,7 +1145,7 @@ function ShiftCard({
             e.preventDefault();
             setShowActionsMenu((v) => !v);
           }}
-          className="absolute top-1.5 right-1.5 p-1 rounded-md hover:bg-gray-50 dark:bg-neutral-900/40 text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white transition-colors"
+          className="absolute top-1.5 right-1.5 p-1 rounded-md hover:bg-theme-surface/40 text-theme-tertiary hover:text-theme-primary transition-colors"
           title="Actions"
         >
           <ChevronDown className="w-4 h-4" />
@@ -1163,8 +1163,8 @@ function ShiftCard({
               shift.isFromOtherSite
                 ? 'text-blue-400'
                 : shift.profile_id 
-                  ? 'text-gray-900 dark:text-white' 
-                  : (shift.role_required?.includes('TRIAL') ? 'text-[#D37E91]' : 'text-amber-300')
+                  ? 'text-theme-primary' 
+                  : (shift.role_required?.includes('TRIAL') ? 'text-module-fg' : 'text-amber-300')
             }`}>
               {(() => {
                 const displayText = shift.profile_id 
@@ -1188,7 +1188,7 @@ function ShiftCard({
           </div>
           <div className="mt-0.5 text-[10px]">
             <div className="flex items-center gap-1.5">
-              <span className={`font-medium ${shift.isFromOtherSite ? 'text-blue-300' : 'text-gray-600 dark:text-white/80'}`}>
+              <span className={`font-medium ${shift.isFromOtherSite ? 'text-blue-300' : 'text-theme-secondary'}`}>
                 {formatTime(shift.start_time)}–{formatTime(shift.end_time)}
               </span>
               {shift.isFromOtherSite && shift.otherSiteName && (
@@ -1210,7 +1210,7 @@ function ShiftCard({
         </button>
 
         {/* Hours bottom-right */}
-        <div className="absolute bottom-0.5 right-1.5 text-[9px] text-gray-500 dark:text-white/50 font-medium">
+        <div className="absolute bottom-0.5 right-1.5 text-[9px] text-theme-tertiary font-medium">
           {getShiftNetHours(shift).toFixed(1)}h
         </div>
 
@@ -1223,7 +1223,7 @@ function ShiftCard({
               e.preventDefault();
               setShowAssignMenu(!showAssignMenu);
             }}
-            className="mt-1 text-[10px] font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-600 dark:text-blue-400/80"
+            className="mt-1 text-[10px] font-semibold text-module-fg hover:text-module-fg/80"
             title="Assign staff"
           >
             Assign
@@ -1248,7 +1248,7 @@ function ShiftCard({
               }}
             />
             <div
-              className="fixed bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg shadow-xl min-w-[180px] overflow-hidden"
+              className="fixed bg-theme-surface border border-theme rounded-lg shadow-xl min-w-[180px] overflow-hidden"
               style={{ zIndex: 9999, top: rect.bottom + 6, left: Math.max(8, rect.right - 180) }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -1260,7 +1260,7 @@ function ShiftCard({
                   setShowActionsMenu(false);
                   onClick();
                 }}
-                className="w-full px-3 py-2 text-left text-xs text-gray-900 dark:text-white hover:bg-white dark:bg-neutral-800 transition-colors"
+                className="w-full px-3 py-2 text-left text-xs text-theme-primary hover:bg-theme-surface transition-colors"
               >
                 Edit
               </button>
@@ -1274,7 +1274,7 @@ function ShiftCard({
                     setShowActionsMenu(false);
                     onDuplicate();
                   }}
-                  className="w-full px-3 py-2 text-left text-xs text-blue-600 dark:text-blue-400 hover:bg-white dark:bg-neutral-800 transition-colors"
+                  className="w-full px-3 py-2 text-left text-xs text-module-fg hover:bg-theme-surface transition-colors"
                 >
                   Duplicate (same day)
                 </button>
@@ -1289,7 +1289,7 @@ function ShiftCard({
                     setShowActionsMenu(false);
                     onCopyTo();
                   }}
-                  className="w-full px-3 py-2 text-left text-xs text-gray-900 dark:text-white hover:bg-white dark:bg-neutral-800 transition-colors"
+                  className="w-full px-3 py-2 text-left text-xs text-theme-primary hover:bg-theme-surface transition-colors"
                 >
                   Copy to…
                 </button>
@@ -1304,7 +1304,7 @@ function ShiftCard({
                     setShowActionsMenu(false);
                     setShowAssignMenu(true);
                   }}
-                  className="w-full px-3 py-2 text-left text-xs text-gray-900 dark:text-white hover:bg-white dark:bg-neutral-800 transition-colors"
+                  className="w-full px-3 py-2 text-left text-xs text-theme-primary hover:bg-theme-surface transition-colors"
                 >
                   Assign…
                 </button>
@@ -1326,10 +1326,10 @@ function ShiftCard({
             }}
           />
           <div 
-            className="absolute top-full left-0 right-0 mt-1 bg-gray-50 dark:bg-neutral-900 border border-gray-300 dark:border-neutral-700 rounded-lg shadow-xl z-30 max-h-48 overflow-y-auto"
+            className="absolute top-full left-0 right-0 mt-1 bg-theme-surface border border-theme rounded-lg shadow-xl z-30 max-h-48 overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="px-2 py-1 text-[10px] text-gray-500 dark:text-white/50 border-b border-gray-200 dark:border-neutral-800">Assign to:</div>
+            <div className="px-2 py-1 text-[10px] text-theme-tertiary border-b border-theme">Assign to:</div>
             {staff.map(s => (
               <button
                 key={s.id}
@@ -1342,15 +1342,15 @@ function ShiftCard({
                   }
                   setShowAssignMenu(false);
                 }}
-                className="w-full px-3 py-2 text-left text-xs text-gray-600 dark:text-white/80 hover:bg-white dark:bg-neutral-800 flex items-center gap-2 transition-colors"
+                className="w-full px-3 py-2 text-left text-xs text-theme-secondary hover:bg-theme-surface flex items-center gap-2 transition-colors"
               >
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-600 dark:from-blue-400 to-blue-500 flex items-center justify-center text-gray-900 dark:text-white text-[8px] font-medium flex-shrink-0">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-600 dark:from-blue-400 to-blue-500 flex items-center justify-center text-theme-primary text-[8px] font-medium flex-shrink-0">
                   {s.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-gray-900 dark:text-white font-medium truncate">{s.full_name}</div>
+                  <div className="text-theme-primary font-medium truncate">{s.full_name}</div>
                   {s.position_title && (
-                    <div className="text-[10px] text-gray-500 dark:text-white/50 truncate">{s.position_title}</div>
+                    <div className="text-[10px] text-theme-tertiary truncate">{s.position_title}</div>
                   )}
                 </div>
               </button>
@@ -1382,7 +1382,7 @@ function ManageSectionsModal({
   onReload: () => Promise<void>;
 }) {
   const [name, setName] = useState('');
-  const [color, setColor] = useState('#D37E91');
+  const [color, setColor] = useState('rgb(var(--module-fg))');
   const [saving, setSaving] = useState(false);
 
   const handleCreate = async () => {
@@ -1437,14 +1437,14 @@ function ManageSectionsModal({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-gray-50 dark:bg-neutral-900 rounded-xl border border-gray-300 dark:border-neutral-700 w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-neutral-800">
+      <div className="bg-theme-surface rounded-xl border border-theme w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-4 border-b border-theme">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Rota Sections</h3>
-            <p className="text-sm text-gray-500 dark:text-white/60">Create sections like FOH / BOH / Bar and group shifts.</p>
+            <h3 className="text-lg font-semibold text-theme-primary">Rota Sections</h3>
+            <p className="text-sm text-theme-tertiary">Create sections like FOH / BOH / Bar and group shifts.</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white dark:bg-neutral-800 rounded-lg">
-            <X className="w-5 h-5 text-gray-500 dark:text-white/60" />
+          <button onClick={onClose} className="p-2 hover:bg-theme-surface rounded-lg">
+            <X className="w-5 h-5 text-theme-tertiary" />
           </button>
         </div>
 
@@ -1454,23 +1454,23 @@ function ManageSectionsModal({
               Sections aren’t enabled in your database yet. Run the migration `supabase/migrations/20251212000001_rota_sections.sql` then refresh.
             </div>
           )}
-          <div className="bg-white dark:bg-neutral-800/50 rounded-lg p-3">
-            <p className="text-xs text-gray-500 dark:text-white/60 mb-2">Add section</p>
+          <div className="bg-theme-surface/50 rounded-lg p-3">
+            <p className="text-xs text-theme-tertiary mb-2">Add section</p>
             <div className="flex gap-2">
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. FOH"
-                className="flex-1 px-3 py-2 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
+                className="flex-1 px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-module-fg focus:ring-1 focus:ring-module-fg transition-colors"
               />
               <button
                 type="button"
                 onClick={() => {
-                  const colors = ['#D37E91', '#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#64748b'];
+                  const colors = ['rgb(var(--module-fg))', '#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#64748b'];
                   const idx = colors.indexOf(color);
                   setColor(colors[(idx + 1) % colors.length]);
                 }}
-                className="w-10 h-10 rounded-lg border border-gray-300 dark:border-neutral-700"
+                className="w-10 h-10 rounded-lg border border-theme"
                 style={{ backgroundColor: color }}
                 title="Click to change color"
               />
@@ -1478,7 +1478,7 @@ function ManageSectionsModal({
                 type="button"
                 disabled={!sectionsEnabled || saving || !name.trim()}
                 onClick={handleCreate}
-                className="px-4 py-2 !bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent disabled:opacity-50"
+                className="px-4 py-2 !bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent disabled:opacity-50"
               >
                 Add
               </button>
@@ -1490,12 +1490,12 @@ function ManageSectionsModal({
               .slice()
               .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
               .map((s) => (
-                <div key={s.id} className="flex items-center justify-between p-3 bg-white dark:bg-neutral-800 rounded-lg border border-gray-300 dark:border-neutral-700">
+                <div key={s.id} className="flex items-center justify-between p-3 bg-theme-surface rounded-lg border border-theme">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-2 h-6 rounded" style={{ backgroundColor: s.color }} />
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{s.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-white/50">Order: {s.sort_order ?? 0}</p>
+                      <p className="text-sm font-medium text-theme-primary truncate">{s.name}</p>
+                      <p className="text-xs text-theme-tertiary">Order: {s.sort_order ?? 0}</p>
                     </div>
                   </div>
                   <button
@@ -1510,13 +1510,13 @@ function ManageSectionsModal({
               ))}
 
             {sections.length === 0 && (
-              <p className="text-sm text-gray-500 dark:text-white/50 text-center py-8">No sections yet</p>
+              <p className="text-sm text-theme-tertiary text-center py-8">No sections yet</p>
             )}
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 p-4 border-t border-gray-200 dark:border-white/[0.06]">
-          <button onClick={onClose} className="px-4 py-2 bg-white dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-lg text-gray-900 dark:text-white">
+        <div className="flex justify-end gap-3 p-4 border-t border-theme">
+          <button onClick={onClose} className="px-4 py-2 bg-theme-surface hover:bg-theme-hover rounded-lg text-theme-primary">
             Close
           </button>
         </div>
@@ -1548,11 +1548,11 @@ function CopyShiftModal({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-gray-50 dark:bg-neutral-900 rounded-xl border border-gray-300 dark:border-neutral-700 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-neutral-800">
+      <div className="bg-theme-surface rounded-xl border border-theme w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-4 border-b border-theme">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Copy shift to…</h3>
-            <div className="text-sm text-gray-500 dark:text-white/60">
+            <h3 className="text-lg font-semibold text-theme-primary">Copy shift to…</h3>
+            <div className="text-sm text-theme-tertiary">
               <div className="flex items-center gap-2">
                 <span>{shift.profile_name || 'Open shift'} • {formatTime(shift.start_time)}–{formatTime(shift.end_time)}</span>
                 {shift.isFromOtherSite && shift.otherSiteName && (
@@ -1563,26 +1563,26 @@ function CopyShiftModal({
               </div>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white dark:bg-neutral-800 rounded-lg">
-            <X className="w-5 h-5 text-gray-500 dark:text-white/60" />
+          <button onClick={onClose} className="p-2 hover:bg-theme-surface rounded-lg">
+            <X className="w-5 h-5 text-theme-tertiary" />
           </button>
         </div>
 
         <div className="p-4 space-y-2">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-gray-500 dark:text-white/50">Select days</span>
+            <span className="text-xs text-theme-tertiary">Select days</span>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setSelectedDates(weekDays.map((d) => d.toISOString().split('T')[0]))}
-                className="text-[10px] font-semibold text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white"
+                className="text-[10px] font-semibold text-theme-tertiary hover:text-theme-primary"
               >
                 All
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedDates([])}
-                className="text-[10px] font-semibold text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white"
+                className="text-[10px] font-semibold text-theme-tertiary hover:text-theme-primary"
               >
                 Clear
               </button>
@@ -1596,35 +1596,35 @@ function CopyShiftModal({
             return (
               <label
                 key={ds}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-white dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-900 dark:text-white text-sm transition-colors cursor-pointer"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-theme-surface hover:bg-theme-hover text-theme-primary text-sm transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <input
                     type="checkbox"
                     checked={checked}
                     onChange={() => toggleDate(ds)}
-                    className="w-4 h-4 rounded border-neutral-600 bg-gray-50 dark:bg-neutral-900 text-blue-600 dark:text-blue-400 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-0"
+                    className="w-4 h-4 rounded border-neutral-600 bg-theme-surface text-module-fg focus:ring-module-fg focus:ring-offset-0"
                   />
                   <span>
                     {d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}
                   </span>
                 </div>
-                {isSame && <span className="text-[10px] text-gray-500 dark:text-white/60">Same day</span>}
+                {isSame && <span className="text-[10px] text-theme-tertiary">Same day</span>}
               </label>
             );
           })}
         </div>
 
-        <div className="flex justify-end gap-3 p-4 border-t border-gray-200 dark:border-white/[0.06]">
+        <div className="flex justify-end gap-3 p-4 border-t border-theme">
           <button
             type="button"
             disabled={selectedDates.length === 0}
             onClick={() => onCopyToDates(selectedDates)}
-            className="px-4 py-2 !bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent disabled:opacity-50"
+            className="px-4 py-2 !bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out hover:!bg-transparent disabled:opacity-50"
           >
             Copy ({selectedDates.length})
           </button>
-          <button onClick={onClose} className="px-4 py-2 bg-white dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-lg text-gray-900 dark:text-white">
+          <button onClick={onClose} className="px-4 py-2 bg-theme-surface hover:bg-theme-hover rounded-lg text-theme-primary">
             Cancel
           </button>
         </div>
@@ -1648,14 +1648,14 @@ function InsertDividerModal({
 }) {
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-gray-50 dark:bg-neutral-900 rounded-xl border border-gray-300 dark:border-neutral-700 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-neutral-800">
+      <div className="bg-theme-surface rounded-xl border border-theme w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-4 border-b border-theme">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Insert divider</h3>
-            <p className="text-sm text-gray-500 dark:text-white/60">Choose a section label to insert into the roster.</p>
+            <h3 className="text-lg font-semibold text-theme-primary">Insert divider</h3>
+            <p className="text-sm text-theme-tertiary">Choose a section label to insert into the roster.</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white dark:bg-neutral-800 rounded-lg">
-            <X className="w-5 h-5 text-gray-500 dark:text-white/60" />
+          <button onClick={onClose} className="p-2 hover:bg-theme-surface rounded-lg">
+            <X className="w-5 h-5 text-theme-tertiary" />
           </button>
         </div>
 
@@ -1668,24 +1668,24 @@ function InsertDividerModal({
                 key={s.id}
                 type="button"
                 onClick={() => onSelect(s)}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-white dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-900 dark:text-white text-sm transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-theme-surface hover:bg-theme-hover text-theme-primary text-sm transition-colors"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-2 h-6 rounded" style={{ backgroundColor: s.color }} />
                   <span className="truncate">{s.name}</span>
                 </div>
-                <span className="text-[10px] text-gray-500 dark:text-white/50">Insert</span>
+                <span className="text-[10px] text-theme-tertiary">Insert</span>
               </button>
             ))}
           {sections.length === 0 && (
-            <div className="text-sm text-gray-500 dark:text-white/50 text-center py-8">
+            <div className="text-sm text-theme-tertiary text-center py-8">
               No sections yet. Create them first via the Sections button.
             </div>
           )}
         </div>
 
-        <div className="flex justify-end gap-3 p-4 border-t border-gray-200 dark:border-white/[0.06]">
-          <button onClick={onClose} className="px-4 py-2 bg-white dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded-lg text-gray-900 dark:text-white">
+        <div className="flex justify-end gap-3 p-4 border-t border-theme">
+          <button onClick={onClose} className="px-4 py-2 bg-theme-surface hover:bg-theme-hover rounded-lg text-theme-primary">
             Cancel
           </button>
         </div>
@@ -2707,7 +2707,7 @@ export default function RotaBuilderPage() {
           const mapped: RotaSection[] = (sectionsData || []).map((s: any) => ({
             id: s.id,
             name: s.name,
-            color: s.color || '#D37E91',
+            color: s.color || 'rgb(var(--module-fg))',
             sort_order: s.sort_order || 0,
           }));
           if (!mountedRef.current) return;
@@ -2933,7 +2933,7 @@ export default function RotaBuilderPage() {
       result.push({
         id: section.id,
         name: section.name,
-        color: section.color || '#D37E91',
+        color: section.color || 'rgb(var(--module-fg))',
         roleGroups,
       });
     }
@@ -3974,7 +3974,7 @@ export default function RotaBuilderPage() {
   if (loading && !rota) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-module-fg" />
       </div>
     );
   }
@@ -3985,8 +3985,8 @@ export default function RotaBuilderPage() {
         <div className="text-center">
           <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
           <p className="text-red-400 mb-2">Error loading rota</p>
-          <p className="text-gray-500 dark:text-white/50 text-sm">{error}</p>
-          <button onClick={loadData} className="mt-4 px-4 py-2 bg-white dark:bg-neutral-800 rounded-lg text-gray-900 dark:text-white">
+          <p className="text-theme-tertiary text-sm">{error}</p>
+          <button onClick={loadData} className="mt-4 px-4 py-2 bg-theme-surface rounded-lg text-theme-primary">
             Retry
           </button>
         </div>
@@ -4082,7 +4082,7 @@ export default function RotaBuilderPage() {
               <select
                 value={selectedSite || ''}
                 onChange={(e) => setSelectedSite(e.target.value)}
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-sm"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-theme-primary text-sm"
               >
                 {sites.map(site => (
                   <option key={site.id} value={site.id}>{site.name}</option>
@@ -4097,15 +4097,15 @@ export default function RotaBuilderPage() {
               onClick={goToPrevDay}
               className="p-2 rounded-full bg-white/5 active:bg-white/10"
             >
-              <ChevronLeft className="w-5 h-5 text-white" />
+              <ChevronLeft className="w-5 h-5 text-theme-primary" />
             </button>
 
             <div className="flex-1 text-center">
               <button onClick={goToToday} className="inline-flex flex-col items-center">
-                <span className={`text-lg font-semibold ${isToday ? 'text-purple-400' : 'text-white'}`}>
+                <span className={`text-lg font-semibold ${isToday ? 'text-purple-400' : 'text-theme-primary'}`}>
                   {mobileSelectedDay.toLocaleDateString('en-GB', { weekday: 'long' })}
                 </span>
-                <span className="text-sm text-white/60">
+                <span className="text-sm text-theme-tertiary">
                   {mobileSelectedDay.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </span>
               </button>
@@ -4115,12 +4115,12 @@ export default function RotaBuilderPage() {
               onClick={goToNextDay}
               className="p-2 rounded-full bg-white/5 active:bg-white/10"
             >
-              <ChevronRight className="w-5 h-5 text-white" />
+              <ChevronRight className="w-5 h-5 text-theme-primary" />
             </button>
           </div>
 
           {/* Day Summary */}
-          <div className="px-4 pb-3 flex items-center gap-4 text-xs text-white/60">
+          <div className="px-4 pb-3 flex items-center gap-4 text-xs text-theme-tertiary">
             <div className="flex items-center gap-1">
               <Users className="w-3.5 h-3.5" />
               <span>{assignedShifts.length} staff</span>
@@ -4147,19 +4147,19 @@ export default function RotaBuilderPage() {
           {isClosed ? (
             <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-center">
               <div className="text-red-400 text-lg font-semibold mb-1">🔒 Closed</div>
-              <p className="text-white/60 text-sm">This location is closed on this day</p>
+              <p className="text-theme-tertiary text-sm">This location is closed on this day</p>
             </div>
           ) : dayShifts.length === 0 ? (
             <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
-              <div className="text-white/40 text-lg mb-1">No shifts scheduled</div>
-              <p className="text-white/30 text-sm">No shifts have been added for this day yet</p>
+              <div className="text-theme-tertiary text-lg mb-1">No shifts scheduled</div>
+              <p className="text-theme-disabled text-sm">No shifts have been added for this day yet</p>
             </div>
           ) : (
             <>
               {/* Assigned Shifts */}
               {assignedShifts.length > 0 && (
                 <div>
-                  <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">Scheduled Staff</h3>
+                  <h3 className="text-xs font-semibold text-theme-tertiary uppercase tracking-wider mb-3">Scheduled Staff</h3>
                   <div className="space-y-2">
                     {assignedShifts
                       .sort((a, b) => a.start_time.localeCompare(b.start_time))
@@ -4181,7 +4181,7 @@ export default function RotaBuilderPage() {
                             {/* Color indicator */}
                             <div
                               className="w-1 h-12 rounded-full flex-shrink-0"
-                              style={{ backgroundColor: shift.section_color || shift.color || '#D37E91' }}
+                              style={{ backgroundColor: shift.section_color || shift.color || 'rgb(var(--module-fg))' }}
                             />
 
                             {/* Avatar */}
@@ -4193,7 +4193,7 @@ export default function RotaBuilderPage() {
                                   className="w-10 h-10 rounded-full object-cover"
                                 />
                               ) : (
-                                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/60 text-sm font-medium">
+                                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-theme-tertiary text-sm font-medium">
                                   {staffMember?.full_name?.charAt(0) || '?'}
                                 </div>
                               )}
@@ -4202,7 +4202,7 @@ export default function RotaBuilderPage() {
                             {/* Info */}
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className="font-medium text-white truncate">
+                                <span className="font-medium text-theme-primary truncate">
                                   {staffMember?.full_name || shift.profile_name || 'Unknown'}
                                 </span>
                                 {isOnLeave && (
@@ -4216,22 +4216,22 @@ export default function RotaBuilderPage() {
                                   </span>
                                 )}
                               </div>
-                              <div className="text-sm text-white/60">
+                              <div className="text-sm text-theme-tertiary">
                                 {staffMember?.position_title && (
                                   <span className="mr-2">{staffMember.position_title}</span>
                                 )}
                                 {shift.section_name && (
-                                  <span className="text-white/40">• {shift.section_name}</span>
+                                  <span className="text-theme-tertiary">• {shift.section_name}</span>
                                 )}
                               </div>
                             </div>
 
                             {/* Time */}
                             <div className="text-right flex-shrink-0">
-                              <div className="text-white font-medium text-sm">
+                              <div className="text-theme-primary font-medium text-sm">
                                 {formatTime(shift.start_time)} - {formatTime(shift.end_time)}
                               </div>
-                              <div className="text-white/50 text-xs">
+                              <div className="text-theme-tertiary text-xs">
                                 {hours}h
                                 {shift.break_minutes > 0 && ` (${shift.break_minutes}m break)`}
                               </div>
@@ -4276,17 +4276,17 @@ export default function RotaBuilderPage() {
                             {/* Info */}
                             <div className="flex-1 min-w-0">
                               <div className="font-medium text-orange-400">Open Shift</div>
-                              <div className="text-sm text-white/60">
+                              <div className="text-sm text-theme-tertiary">
                                 {shift.role_required || shift.section_name || 'Any role'}
                               </div>
                             </div>
 
                             {/* Time */}
                             <div className="text-right flex-shrink-0">
-                              <div className="text-white font-medium text-sm">
+                              <div className="text-theme-primary font-medium text-sm">
                                 {formatTime(shift.start_time)} - {formatTime(shift.end_time)}
                               </div>
-                              <div className="text-white/50 text-xs">
+                              <div className="text-theme-tertiary text-xs">
                                 {hours}h
                               </div>
                             </div>
@@ -4319,14 +4319,14 @@ export default function RotaBuilderPage() {
                       : 'bg-white/5 border border-transparent'
                   }`}
                 >
-                  <div className={`text-[10px] uppercase ${isSelected ? 'text-purple-400' : dayIsToday ? 'text-blue-400' : 'text-white/50'}`}>
+                  <div className={`text-[10px] uppercase ${isSelected ? 'text-module-fg' : dayIsToday ? 'text-module-fg' : 'text-theme-tertiary'}`}>
                     {day.toLocaleDateString('en-GB', { weekday: 'short' })}
                   </div>
-                  <div className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-white/80'}`}>
+                  <div className={`text-sm font-medium ${isSelected ? 'text-theme-primary' : 'text-theme-secondary'}`}>
                     {day.getDate()}
                   </div>
                   {dayShiftCount > 0 && (
-                    <div className={`text-[9px] ${isSelected ? 'text-purple-300' : 'text-white/40'}`}>
+                    <div className={`text-[9px] ${isSelected ? 'text-purple-300' : 'text-theme-tertiary'}`}>
                       {dayShiftCount}
                     </div>
                   )}
@@ -4385,12 +4385,12 @@ export default function RotaBuilderPage() {
             max-height: none !important;
           }
 
-          .rota-print-root .bg-gray-50 dark:bg-neutral-900\\/50,
+          .rota-print-root .bg-theme-surface\\/50,
           .rota-print-root .bg-neutral-950,
-          .rota-print-root .bg-white dark:bg-neutral-800,
-          .rota-print-root .bg-white dark:bg-neutral-800\\/80,
-          .rota-print-root .bg-white dark:bg-neutral-800\\/50,
-          .rota-print-root .bg-gray-50 dark:bg-neutral-900 {
+          .rota-print-root .bg-theme-surface,
+          .rota-print-root .bg-theme-surface\\/80,
+          .rota-print-root .bg-theme-surface\\/50,
+          .rota-print-root .bg-theme-surface {
             background: transparent !important;
           }
 
@@ -4450,13 +4450,13 @@ export default function RotaBuilderPage() {
         }
       `}</style>
       {/* Header */}
-      <div className="flex items-center justify-between gap-4 pb-3 border-b border-gray-200 dark:border-white/[0.06] mb-3 bg-white dark:bg-[#0f1220] px-4 py-3 -mx-4 -mt-4 rounded-t-lg">
+      <div className="flex items-center justify-between gap-4 pb-3 border-b border-theme mb-3 bg-theme-surface-elevated px-4 py-3 -mx-4 -mt-4 sticky top-[112px] z-20 rounded-t-lg">
         <div className="flex items-center gap-3">
           {sites.length > 0 && (
             <select
               value={selectedSite || ''}
               onChange={(e) => setSelectedSite(e.target.value)}
-              className="no-print px-3 py-1.5 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white"
+              className="no-print px-3 py-1.5 bg-theme-surface border border-theme rounded-lg text-theme-primary"
             >
               {sites.map(site => (
                 <option key={site.id} value={site.id}>{site.name}</option>
@@ -4475,38 +4475,38 @@ export default function RotaBuilderPage() {
 
         {/* Week Nav */}
         <div className="no-print flex items-center gap-2">
-          <button onClick={goToPreviousWeek} className="p-2 bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/[0.08] border border-gray-200 dark:border-white/[0.06] rounded-lg transition-colors">
-            <ChevronLeft className="w-4 h-4 text-gray-900 dark:text-white" />
+ <button onClick={goToPreviousWeek} className="p-2 bg-theme-surface hover:bg-theme-hover border border-theme rounded-lg transition-colors">
+            <ChevronLeft className="w-4 h-4 text-theme-primary" />
           </button>
-          <div className="px-4 py-2 bg-blue-50 dark:bg-blue-500/20 border border-blue-200 dark:border-blue-500/20 text-blue-600 dark:text-blue-400 rounded-lg font-medium min-w-[180px] text-center shadow-sm dark:shadow-none">
+          <div className="px-4 py-2 bg-module-fg/10 border border-module-fg/20 text-module-fg rounded-lg font-medium min-w-[180px] text-center shadow-sm dark:shadow-none">
             <Calendar className="w-4 h-4 inline mr-2" />
             {formatWeekRange()}
           </div>
-          <button onClick={goToNextWeek} className="p-2 bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/[0.08] border border-gray-200 dark:border-white/[0.06] rounded-lg transition-colors">
-            <ChevronRight className="w-4 h-4 text-gray-900 dark:text-white" />
+ <button onClick={goToNextWeek} className="p-2 bg-theme-surface hover:bg-theme-hover border border-theme rounded-lg transition-colors">
+            <ChevronRight className="w-4 h-4 text-theme-primary" />
           </button>
         </div>
 
         {/* Actions */}
         <div className="no-print flex items-center gap-2">
-          <button onClick={handleCopyLastWeek} className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/[0.08] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white transition-colors">
+ <button onClick={handleCopyLastWeek} className="flex items-center gap-2 px-3 py-2 bg-theme-surface hover:bg-theme-hover border border-theme rounded-lg text-theme-primary transition-colors">
             <Copy className="w-4 h-4" />
             Copy Week
           </button>
           <button
             type="button"
             onClick={() => setShowForecastModal(true)}
-            className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/[0.08] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white transition-colors"
+ className="flex items-center gap-2 px-3 py-2 bg-theme-surface hover:bg-theme-hover border border-theme rounded-lg text-theme-primary transition-colors"
             title="Forecast"
           >
             <TrendingUp className="w-4 h-4" />
             Forecast
           </button>
-          <div className="flex items-center bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg overflow-hidden shadow-sm dark:shadow-none">
+ <div className="flex items-center bg-theme-surface border border-theme rounded-lg overflow-hidden shadow-sm dark:shadow-none">
             <button
               type="button"
               onClick={() => setViewMode('people')}
-              className={`px-3 py-2 text-sm transition-colors ${viewMode === 'people' ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 font-medium' : 'text-gray-600 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/[0.08]'}`}
+              className={`px-3 py-2 text-sm transition-colors ${viewMode === 'people' ? 'text-module-fg bg-module-fg/10 font-medium' : 'text-theme-secondary hover:bg-theme-hover'}`}
               title="People view"
             >
               People
@@ -4514,7 +4514,7 @@ export default function RotaBuilderPage() {
             <button
               type="button"
               onClick={() => setViewMode('sections')}
-              className={`px-3 py-2 text-sm transition-colors ${viewMode === 'sections' ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 font-medium' : 'text-gray-600 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/[0.08]'}`}
+              className={`px-3 py-2 text-sm transition-colors ${viewMode === 'sections' ? 'text-module-fg bg-module-fg/10 font-medium' : 'text-theme-secondary hover:bg-theme-hover'}`}
               title="Sections view"
             >
               Sections
@@ -4526,7 +4526,7 @@ export default function RotaBuilderPage() {
             <button
               type="button"
               onClick={() => setActionsMenuOpen((v) => !v)}
-              className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors shadow-sm dark:shadow-none"
+ className="flex items-center gap-2 px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary hover:bg-theme-hover transition-colors shadow-sm dark:shadow-none"
               aria-haspopup="menu"
               aria-expanded={actionsMenuOpen}
               title="Actions"
@@ -4538,11 +4538,11 @@ export default function RotaBuilderPage() {
             {actionsMenuOpen && (
               <div
                 role="menu"
-                className="absolute right-0 mt-2 w-64 rounded-lg border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-[#171b2d] shadow-xl overflow-hidden z-50"
+                className="absolute right-0 mt-2 w-64 rounded-lg border border-theme bg-theme-surface shadow-xl overflow-hidden z-50"
               >
-                <div className="px-3 py-2 text-[11px] text-gray-500 dark:text-white/60 border-b border-gray-200 dark:border-white/[0.06]">
+                <div className="px-3 py-2 text-[11px] text-theme-tertiary border-b border-theme">
                   Status:{' '}
-                  <span className="text-neutral-200">
+                  <span className="text-theme-primary">
                     {rota?.status === 'pending_approval'
                       ? 'Ready for approval'
                       : rota?.status === 'approved'
@@ -4561,7 +4561,7 @@ export default function RotaBuilderPage() {
                     handleDownloadPDF();
                   }}
                   disabled={isGeneratingPDF}
-                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors disabled:opacity-50"
+                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-theme-primary hover:bg-theme-hover transition-colors disabled:opacity-50"
                 >
                   <span className="flex items-center gap-2">
                     {isGeneratingPDF ? (
@@ -4582,14 +4582,14 @@ export default function RotaBuilderPage() {
                       notifyTeamAboutOpenShifts();
                     }}
                     disabled={notifyingOpenShifts || openShifts === 0}
-                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-white/[0.06] disabled:opacity-50"
+                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-module-fg hover:bg-theme-hover disabled:opacity-50"
                     title={openShifts === 0 ? 'No open shifts' : 'Notify staff about open shifts'}
                   >
                     <span className="flex items-center gap-2">
                       <Bell className="w-4 h-4" />
                       {notifyingOpenShifts ? 'Notifying…' : 'Notify open shifts'}
                     </span>
-                    {openShifts > 0 && <span className="text-[11px] text-gray-500 dark:text-white/60">{openShifts}</span>}
+                    {openShifts > 0 && <span className="text-[11px] text-theme-tertiary">{openShifts}</span>}
                   </button>
                 )}
 
@@ -4602,7 +4602,7 @@ export default function RotaBuilderPage() {
                       submitForApproval();
                     }}
                     disabled={submittingForApproval}
-                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-white/[0.06] disabled:opacity-50"
+                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-module-fg hover:bg-theme-hover disabled:opacity-50"
                     title="Send to Owner / Area Manager / Ops Manager for approval"
                   >
                     <span className="flex items-center gap-2">
@@ -4621,7 +4621,7 @@ export default function RotaBuilderPage() {
                       approveCurrentRota();
                     }}
                     disabled={approvingRota}
-                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-white/[0.06] disabled:opacity-50"
+                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-module-fg hover:bg-theme-hover disabled:opacity-50"
                   >
                     <span className="flex items-center gap-2">
                       <Check className="w-4 h-4" />
@@ -4639,7 +4639,7 @@ export default function RotaBuilderPage() {
                       publishCurrentRota();
                     }}
                     disabled={publishingRota}
-                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-white/[0.06] disabled:opacity-50"
+                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-module-fg hover:bg-theme-hover disabled:opacity-50"
                   >
                     <span className="flex items-center gap-2">
                       <Send className="w-4 h-4" />
@@ -4656,15 +4656,15 @@ export default function RotaBuilderPage() {
       {/* Main Content */}
       <div className="flex-1 flex gap-3 min-h-0">
         {/* Week Grid */}
-        <div className="rota-week-grid flex-1 bg-white dark:bg-white/[0.03] rounded-lg border border-gray-200 dark:border-white/[0.06] flex flex-col overflow-hidden shadow-sm dark:shadow-none">
+        <div className="rota-week-grid flex-1 bg-theme-surface rounded-lg border border-theme flex flex-col overflow-hidden shadow-sm dark:shadow-none">
           {viewMode === 'people' ? (
             <div className="flex-1 overflow-auto">
               <div className="min-w-[1060px]">
                 {/* Sticky header: days + weekly forecast inputs */}
-                <div className="sticky top-0 z-10 bg-gray-50 dark:bg-white/[0.05] border-b border-gray-200 dark:border-white/[0.06]">
-                  <div className="grid grid-cols-[240px_80px_repeat(7,minmax(0,1fr))] divide-x divide-gray-200 dark:divide-white/[0.06]">
-                    <div className="px-3 py-2 text-xs font-semibold text-gray-700 dark:text-white/80">Team</div>
-                    <div className="px-3 py-2 text-xs font-semibold text-gray-700 dark:text-white/80 text-center">Hours</div>
+                <div className="sticky top-0 z-10 bg-theme-button border-b border-theme">
+                  <div className="grid grid-cols-[240px_80px_repeat(7,minmax(0,1fr))] divide-x divide-theme">
+                    <div className="px-3 py-2 text-xs font-semibold text-theme-secondary">Team</div>
+                    <div className="px-3 py-2 text-xs font-semibold text-theme-secondary text-center">Hours</div>
                     {weekDays.map((d) => {
                       const ds = d.toISOString().split('T')[0];
                       const isToday = d.toDateString() === new Date().toDateString();
@@ -4677,12 +4677,12 @@ export default function RotaBuilderPage() {
                             ? `£${(f.predicted_revenue / 100).toFixed(0)}`
                             : '';
                       return (
-                        <div key={ds} className={`px-3 py-2 ${isToday ? 'bg-blue-50 dark:bg-blue-500/10' : isClosed ? 'bg-red-50 dark:bg-red-500/10' : ''}`}>
-                          <div className={`text-xs font-medium ${isToday ? 'text-blue-600 dark:text-blue-400' : isClosed ? 'text-red-600 dark:text-red-400' : 'text-gray-700 dark:text-white/80'}`}>
+                        <div key={ds} className={`px-3 py-2 ${isToday ? 'bg-module-fg/[0.08]' : isClosed ? 'bg-red-50 dark:bg-red-500/10' : ''}`}>
+                          <div className={`text-xs font-medium ${isToday ? 'text-module-fg' : isClosed ? 'text-red-600 dark:text-red-400' : 'text-theme-secondary'}`}>
                             {d.toLocaleDateString('en-GB', { weekday: 'short' })} {d.getDate()}
                             {isClosed && <span className="ml-1 text-[10px]">🔒</span>}
                           </div>
-                          {summary && !isClosed && <div className="text-[10px] text-gray-600 dark:text-white/60 mt-1">{summary}</div>}
+                          {summary && !isClosed && <div className="text-[10px] text-theme-secondary mt-1">{summary}</div>}
                           {isClosed && <div className="text-[10px] text-red-600 dark:text-red-400 mt-1">Closed</div>}
                         </div>
                       );
@@ -4710,22 +4710,22 @@ export default function RotaBuilderPage() {
                       .map((item) => `staff-${item.staffId}`)}
                     strategy={verticalListSortingStrategy}
                   >
-                    <div className="divide-y divide-gray-200 dark:divide-white/[0.06]">
+                    <div className="divide-y divide-theme">
                       {rosterItemsForPeopleView.map((item, idx) => {
                     if (item.type === 'divider') {
                       return (
                         <div key={`div-${item.sectionId}-${idx}`} className="grid grid-cols-[240px_80px_repeat(7,minmax(0,1fr))]">
-                          <div className="col-span-9 px-3 py-2 bg-neutral-950/30 border-b border-gray-200 dark:border-neutral-800 relative">
+                          <div className="col-span-9 px-3 py-2 bg-theme-button border-b border-theme relative">
                             <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: item.color }} />
                             <div className="flex items-center justify-between">
-                              <div className="text-sm font-semibold text-gray-900 dark:text-white/90 pl-2">{item.name}</div>
+                              <div className="text-sm font-semibold text-theme-primary/90 pl-2">{item.name}</div>
                               {sectionsEnabled && canManageRota && (
                                 <div className="flex items-center gap-2">
                                   <button
                                     type="button"
                                     onClick={() => moveRosterItem(idx, 'up')}
                                     disabled={idx === 0}
-                                    className="text-[10px] text-gray-500 dark:text-white/50 hover:text-gray-900 dark:text-white disabled:opacity-30"
+                                    className="text-[10px] text-theme-tertiary hover:text-theme-primary disabled:opacity-30"
                                     title="Move divider up"
                                   >
                                     ↑
@@ -4734,7 +4734,7 @@ export default function RotaBuilderPage() {
                                     type="button"
                                     onClick={() => moveRosterItem(idx, 'down')}
                                     disabled={idx === rosterItemsForPeopleView.length - 1}
-                                    className="text-[10px] text-gray-500 dark:text-white/50 hover:text-gray-900 dark:text-white disabled:opacity-30"
+                                    className="text-[10px] text-theme-tertiary hover:text-theme-primary disabled:opacity-30"
                                     title="Move divider down"
                                   >
                                     ↓
@@ -4742,7 +4742,7 @@ export default function RotaBuilderPage() {
                                   <button
                                     type="button"
                                     onClick={() => removeDividerFromRoster(idx)}
-                                    className="text-[10px] text-gray-500 dark:text-white/50 hover:text-gray-900 dark:text-white"
+                                    className="text-[10px] text-theme-tertiary hover:text-theme-primary"
                                     title="Remove divider"
                                   >
                                     ✕
@@ -4788,11 +4788,11 @@ export default function RotaBuilderPage() {
                 </SortableContext>
 
                 {/* Open shifts row (excluding trials) */}
-                <div className="grid grid-cols-[240px_80px_repeat(7,minmax(0,1fr))] bg-neutral-950/10">
-                    <div className="px-3 py-2 border-r border-gray-200 dark:border-neutral-800 text-sm font-semibold text-amber-300">
+                <div className="grid grid-cols-[240px_80px_repeat(7,minmax(0,1fr))] bg-module-fg/[0.06]">
+                    <div className="px-3 py-2 border-r border-theme text-sm font-semibold text-module-fg">
                       Open shifts
                     </div>
-                    <div className="px-2 py-2 border-r border-gray-200 dark:border-neutral-800">
+                    <div className="px-2 py-2 border-r border-theme">
                     </div>
                     {weekDays.map((d) => {
                       const ds = d.toISOString().split('T')[0];
@@ -4815,10 +4815,10 @@ export default function RotaBuilderPage() {
                               setAddingShiftDate(new Date(ds));
                             }
                           }}
-                          className={`px-2 py-2 border-r border-gray-200 dark:border-neutral-800 text-left min-h-[64px] ${
-                            isClosed 
-                              ? 'bg-red-500/5 opacity-60 cursor-not-allowed' 
-                              : 'hover:bg-gray-50 dark:bg-neutral-900/30'
+                          className={`px-2 py-2 border-r border-theme text-left min-h-[64px] ${
+                            isClosed
+                              ? 'bg-red-500/5 opacity-60 cursor-not-allowed'
+                              : 'hover:bg-module-fg/[0.04]'
                           }`}
                         >
                           <SortableContext items={open.map((s) => `shift-${s.id}`)}>
@@ -4832,7 +4832,7 @@ export default function RotaBuilderPage() {
                                   onSetCopyingShift={setCopyingShift}
                                 />
                               ))}
-                              {open.length === 0 && <div className="text-[10px] text-neutral-700">+</div>}
+                              {open.length === 0 && <div className="text-[10px] text-theme-secondary">+</div>}
                             </div>
                           </SortableContext>
                         </DroppableDayCell>
@@ -4841,11 +4841,11 @@ export default function RotaBuilderPage() {
                 </div>
 
                 {/* Trial shifts row */}
-                <div className="grid grid-cols-[240px_80px_repeat(7,minmax(0,1fr))] bg-[#D37E91]/10">
-                    <div className="px-3 py-2 border-r border-gray-200 dark:border-neutral-800 text-sm font-semibold text-[#D37E91] flex items-center gap-2">
+                <div className="grid grid-cols-[240px_80px_repeat(7,minmax(0,1fr))] bg-module-fg/[0.10]">
+                    <div className="px-3 py-2 border-r border-theme text-sm font-semibold text-module-fg flex items-center gap-2">
                       🎯 Trial Shifts
                     </div>
-                    <div className="px-2 py-2 border-r border-gray-200 dark:border-neutral-800">
+                    <div className="px-2 py-2 border-r border-theme">
                     </div>
                     {weekDays.map((d) => {
                       const ds = d.toISOString().split('T')[0];
@@ -4864,7 +4864,7 @@ export default function RotaBuilderPage() {
                           onClick={() => {
                             // Don't allow adding shifts to trial row
                           }}
-                          className={`px-2 py-2 border-r border-gray-200 dark:border-neutral-800 text-left min-h-[64px] ${
+                          className={`px-2 py-2 border-r border-theme text-left min-h-[64px] ${
                             isClosed ? 'bg-red-500/5 opacity-60' : ''
                           }`}
                         >
@@ -4888,10 +4888,10 @@ export default function RotaBuilderPage() {
                 </DndContext>
 
                 {/* Day totals footer (keeps header clean) */}
-                <div className="sticky bottom-0 z-10 bg-neutral-950/20 border-t border-gray-200 dark:border-neutral-800">
-                  <div className="grid grid-cols-[240px_80px_repeat(7,minmax(0,1fr))] divide-x divide-gray-200 dark:divide-neutral-800">
-                    <div className="px-3 py-2 text-[11px] font-semibold text-gray-500 dark:text-white/50">Totals</div>
-                    <div className="px-3 py-2 text-[11px] font-semibold text-gray-500 dark:text-white/50 text-center">—</div>
+                <div className="sticky bottom-0 z-10 bg-theme-button border-t border-theme">
+                  <div className="grid grid-cols-[240px_80px_repeat(7,minmax(0,1fr))] divide-x divide-theme">
+                    <div className="px-3 py-2 text-xs font-bold text-theme-secondary">Totals</div>
+                    <div className="px-3 py-2 text-xs font-bold text-theme-secondary text-center">—</div>
                     {weekDays.map((d) => {
                       const ds = d.toISOString().split('T')[0];
                       const isClosed = isDateClosed(ds);
@@ -4899,10 +4899,10 @@ export default function RotaBuilderPage() {
                       const labourPct = a.revenuePence > 0 ? (a.costPence / a.revenuePence) * 100 : null;
                       return (
                         <div key={`totals-${ds}`} className={`px-3 py-2 ${isClosed ? 'bg-red-500/5 opacity-60' : ''}`}>
-                          <div className={`text-[11px] font-semibold ${isClosed ? 'text-red-400' : 'text-gray-900 dark:text-white/90'}`}>
+                          <div className={`text-xs font-bold ${isClosed ? 'text-red-400' : 'text-theme-primary'}`}>
                             £{(a.costPence / 100).toFixed(0)}
                           </div>
-                          <div className={`text-[10px] mt-0.5 ${isClosed ? 'text-red-400/70' : 'text-gray-500 dark:text-white/50'}`}>
+                          <div className={`text-[11px] mt-0.5 font-medium ${isClosed ? 'text-red-400/70' : 'text-theme-secondary'}`}>
                             {a.hours.toFixed(1)}h{labourPct !== null ? ` • ${labourPct.toFixed(1)}%` : ''}
                           </div>
                         </div>
@@ -4915,7 +4915,7 @@ export default function RotaBuilderPage() {
             ) : (
               <div className="flex flex-col h-full overflow-hidden">
                 {/* Header row: Days */}
-                <div className="grid grid-cols-7 divide-x divide-gray-200 dark:divide-neutral-800 border-b border-gray-200 dark:border-neutral-800 flex-shrink-0">
+                <div className="grid grid-cols-7 divide-x divide-theme border-b border-theme flex-shrink-0">
                 {weekDays.map((date) => {
                   const dateStr = date.toISOString().split('T')[0];
                   const isClosed = isDateClosed(dateStr);
@@ -4937,14 +4937,14 @@ export default function RotaBuilderPage() {
                       : null;
 
                   return (
-                    <div key={dateStr} className={`${isToday ? 'bg-[#D37E91]/5' : isClosed ? 'bg-red-500/5' : ''} ${isWeekend ? 'bg-neutral-950/30' : ''}`}>
-                      <div className={`p-2 ${isToday ? 'bg-blue-50 dark:bg-blue-500/10' : isClosed ? 'bg-red-500/10' : ''}`}>
+                    <div key={dateStr} className={`${isToday ? 'bg-module-fg/[0.05]' : isClosed ? 'bg-red-500/5' : ''} ${isWeekend ? 'bg-theme-button' : ''}`}>
+                      <div className={`p-2 ${isToday ? 'bg-module-fg/[0.08]' : isClosed ? 'bg-red-500/10' : ''}`}>
                         <div className="flex items-center justify-between mb-1">
                           <div>
-                            <span className={`text-xs ${isToday ? 'text-blue-600 dark:text-blue-400' : isClosed ? 'text-red-400' : 'text-gray-500 dark:text-white/50'}`}>
+                            <span className={`text-xs ${isToday ? 'text-module-fg' : isClosed ? 'text-red-400' : 'text-theme-tertiary'}`}>
                               {date.toLocaleDateString('en-GB', { weekday: 'short' })}
                             </span>
-                            <span className={`text-lg font-bold ml-1 ${isToday ? 'text-blue-600 dark:text-blue-400' : isClosed ? 'text-red-400' : 'text-gray-900 dark:text-white'}`}>
+                            <span className={`text-lg font-bold ml-1 ${isToday ? 'text-module-fg' : isClosed ? 'text-red-400' : 'text-theme-primary'}`}>
                               {date.getDate()}
                               {isClosed && <span className="ml-1 text-xs">🔒</span>}
                             </span>
@@ -4956,7 +4956,7 @@ export default function RotaBuilderPage() {
                                   handleCopyDay(copyingDayFrom, dateStr);
                                   setCopyingDayFrom(null);
                                 }}
-                                className="px-2 py-1 text-[10px] font-semibold border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:bg-blue-500/10 transition-colors"
+                                className="px-2 py-1 text-[10px] font-semibold border border-module-fg text-module-fg rounded-md hover:bg-module-fg/10 transition-colors"
                                 title="Paste copied day"
                               >
                                 Paste
@@ -4968,7 +4968,7 @@ export default function RotaBuilderPage() {
                                     e.stopPropagation();
                                     setCopyingDayFrom(dateStr);
                                   }}
-                                  className="p-1 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded text-gray-500 dark:text-white/60 hover:text-blue-600 dark:text-blue-400"
+                                  className="p-1 hover:bg-theme-hover rounded text-theme-tertiary hover:text-module-fg"
                                   title="Copy day"
                                 >
                                   <Copy className="w-3.5 h-3.5" />
@@ -4982,7 +4982,7 @@ export default function RotaBuilderPage() {
                                 setAddingShiftStaffId(null);
                                 setAddingShiftDate(date);
                               }}
-                              className="p-1 hover:bg-gray-200 dark:hover:bg-neutral-700 rounded text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white"
+                              className="p-1 hover:bg-theme-hover rounded text-theme-tertiary hover:text-theme-primary"
                               title="Add shift"
                             >
                               <Plus className="w-4 h-4" />
@@ -4994,17 +4994,17 @@ export default function RotaBuilderPage() {
                           Day stats moved to bottom footer row to keep the header clean.
                           (Hours, cost, labour %, open shifts)
                         */}
-                        {summary && <div className="mt-1 text-[10px] text-gray-500 dark:text-white/50">{summary}</div>}
+                        {summary && <div className="mt-1 text-[10px] text-theme-tertiary">{summary}</div>}
 
                         {copyingDayFrom === dateStr && (
-                          <div className="mt-2 w-full p-2 border border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-500/10 rounded-lg text-blue-600 dark:text-blue-400 text-xs font-medium text-center">
+                          <div className="mt-2 w-full p-2 border border-module-fg bg-module-fg/10 rounded-lg text-module-fg text-xs font-medium text-center">
                             Copying… click Paste on another day
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setCopyingDayFrom(null);
                               }}
-                              className="ml-2 text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white"
+                              className="ml-2 text-theme-tertiary hover:text-theme-primary"
                               title="Cancel copy"
                             >
                               <X className="w-3 h-3 inline" />
@@ -5018,7 +5018,7 @@ export default function RotaBuilderPage() {
               </div>
 
               {/* Day totals footer (sections view) */}
-              <div className="grid grid-cols-7 divide-x divide-gray-200 dark:divide-neutral-800 border-t border-gray-200 dark:border-neutral-800 bg-neutral-950/20 flex-shrink-0">
+              <div className="grid grid-cols-7 divide-x divide-theme border-t border-theme bg-theme-button flex-shrink-0">
                 {weekDays.map((date) => {
                   const ds = date.toISOString().split('T')[0];
                   const isClosed = isDateClosed(ds);
@@ -5027,10 +5027,10 @@ export default function RotaBuilderPage() {
                   const labourPct = a.revenuePence > 0 ? (a.costPence / a.revenuePence) * 100 : null;
                   return (
                     <div key={`footer-${ds}`} className={`p-2 ${isClosed ? 'bg-red-500/5 opacity-60' : ''}`}>
-                      <div className={`text-[11px] font-semibold ${isClosed ? 'text-red-400' : 'text-gray-900 dark:text-white/90'}`}>
+                      <div className={`text-xs font-bold ${isClosed ? 'text-red-400' : 'text-theme-primary'}`}>
                         £{(a.costPence / 100).toFixed(0)}
                       </div>
-                      <div className={`text-[10px] mt-0.5 ${isClosed ? 'text-red-400/70' : 'text-gray-500 dark:text-white/50'}`}>
+                      <div className={`text-[11px] mt-0.5 font-medium ${isClosed ? 'text-red-400/70' : 'text-theme-secondary'}`}>
                         {a.hours.toFixed(1)}h{labourPct !== null ? ` • ${labourPct.toFixed(1)}%` : ''}
                         {openCount > 0 ? ` • ${openCount} open` : ''}
                       </div>
@@ -5042,14 +5042,14 @@ export default function RotaBuilderPage() {
               {/* Body: section rows */}
               <div className="flex-1 overflow-y-auto">
                 {sectionsEnabled && sectionedGrid ? (
-                  <div className="grid grid-cols-7 divide-x divide-gray-200 dark:divide-neutral-800">
+                  <div className="grid grid-cols-7 divide-x divide-theme">
                     {sectionedGrid.sections.map((sec) => (
                       <div key={sec.id} className="col-span-7">
                         {/* Section divider: full width bar */}
-                        <div className="col-span-7 relative px-3 py-2 bg-neutral-950/40 border-b border-gray-200 dark:border-neutral-800">
+                        <div className="col-span-7 relative px-3 py-2 bg-theme-button border-b border-theme">
                           <div className="absolute inset-x-0 top-0 h-1" style={{ backgroundColor: sec.color }} />
                           <div className="flex items-center justify-between">
-                            <div className="text-xs font-semibold text-gray-900 dark:text-white/90 tracking-wide">
+                            <div className="text-xs font-semibold text-theme-primary/90 tracking-wide">
                               {sec.name}
                             </div>
                           </div>
@@ -5059,11 +5059,11 @@ export default function RotaBuilderPage() {
                         <div className="grid grid-cols-7">
                           {sec.roleGroups.map((rg) => (
                             <div key={rg.role} className="col-span-7">
-                              <div className="col-span-7 px-3 py-1.5 bg-gray-50 dark:bg-neutral-900/30 border-b border-gray-200 dark:border-neutral-800 text-[11px] text-gray-600 dark:text-white/80 font-medium">
+                              <div className="col-span-7 px-3 py-1.5 bg-theme-surface/30 border-b border-theme text-[11px] text-theme-secondary font-medium">
                                 {rg.role}
                               </div>
 
-                              <div className="grid grid-cols-7 divide-x divide-gray-200 dark:divide-neutral-800">
+                              <div className="grid grid-cols-7 divide-x divide-theme">
                                 {sectionedGrid.weekDateStrings.map((ds) => (
                                   <div key={`${sec.id}-${rg.role}-${ds}`} className="p-2 min-h-[110px]">
                                     <div className="space-y-2">
@@ -5090,7 +5090,7 @@ export default function RotaBuilderPage() {
                   </div>
                 ) : (
                   /* Fallback: original day-column layout (no sections) */
-                  <div className="grid grid-cols-7 divide-x divide-gray-200 dark:divide-neutral-800">
+                  <div className="grid grid-cols-7 divide-x divide-theme">
                     {weekDays.map((date) => {
                       const dateStr = date.toISOString().split('T')[0];
                       const dayShifts = shifts.filter(s => s.shift_date === dateStr);
@@ -5104,7 +5104,7 @@ export default function RotaBuilderPage() {
                                 setAddingShiftStaffId(null);
                                 setAddingShiftDate(date);
                               }}
-                              className="w-full h-24 flex flex-col items-center justify-center gap-1 text-neutral-600 hover:text-gray-500 dark:text-white/60 border border-dashed border-gray-300 dark:border-neutral-700/50 rounded-lg hover:border-neutral-600 transition-colors"
+                              className="w-full h-24 flex flex-col items-center justify-center gap-1 text-theme-secondary hover:text-theme-tertiary border border-dashed border-theme rounded-lg hover:border-module-fg/30 transition-colors"
                             >
                               <Plus className="w-5 h-5" />
                               <span className="text-xs">Add shift</span>
@@ -5137,11 +5137,11 @@ export default function RotaBuilderPage() {
           )}
 
           {/* Stats Footer */}
-          <div className="flex items-center gap-6 px-4 py-3 bg-gray-50 dark:bg-white/[0.05] border-t border-gray-200 dark:border-white/[0.06]">
+          <div className="flex items-center gap-6 px-4 py-3 bg-theme-button border-t border-theme">
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-gray-600 dark:text-white/70" />
-              <span className="text-gray-700 dark:text-white/80">Total Hours:</span>
-              <span className="text-gray-900 dark:text-white font-bold">{totalHours.toFixed(1)}h</span>
+              <Clock className="w-4 h-4 text-theme-secondary" />
+              <span className="text-theme-secondary">Total Hours:</span>
+              <span className="text-theme-primary font-bold">{totalHours.toFixed(1)}h</span>
               {totalTargetHours > 0 && (
                 <>
                   {totalTargetHours > 1000 ? (
@@ -5165,31 +5165,31 @@ export default function RotaBuilderPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              <PoundSterling className="w-4 h-4 text-gray-600 dark:text-white/70" />
-              <span className="text-gray-700 dark:text-white/80">Labour Cost:</span>
-              <span className="text-gray-900 dark:text-white font-bold">£{(totalCost / 100).toFixed(2)}</span>
+              <PoundSterling className="w-4 h-4 text-theme-secondary" />
+              <span className="text-theme-secondary">Labour Cost:</span>
+              <span className="text-theme-primary font-bold">£{(totalCost / 100).toFixed(2)}</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-gray-600 dark:text-white/70" />
-              <span className="text-gray-700 dark:text-white/80">Forecast Sales:</span>
-              <span className="text-gray-900 dark:text-white font-bold">
+              <TrendingUp className="w-4 h-4 text-theme-secondary" />
+              <span className="text-theme-secondary">Forecast Sales:</span>
+              <span className="text-theme-primary font-bold">
                 {totalForecastRevenue > 0 ? `£${(totalForecastRevenue / 100).toFixed(0)}` : '—'}
               </span>
             </div>
 
             <div className="flex items-center gap-2">
-              <Target className="w-4 h-4 text-gray-600 dark:text-white/70" />
-              <span className="text-gray-700 dark:text-white/80">Labour %:</span>
-              <span className="text-gray-900 dark:text-white font-bold">
+              <Target className="w-4 h-4 text-theme-secondary" />
+              <span className="text-theme-secondary">Labour %:</span>
+              <span className="text-theme-primary font-bold">
                 {totalLabourPct !== null ? `${totalLabourPct.toFixed(1)}%` : '—'}
               </span>
             </div>
 
             <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-gray-600 dark:text-white/70" />
-              <span className="text-gray-700 dark:text-white/80">Staff:</span>
-              <span className="text-gray-900 dark:text-white font-bold">
+              <Users className="w-4 h-4 text-theme-secondary" />
+              <span className="text-theme-secondary">Staff:</span>
+              <span className="text-theme-primary font-bold">
                 {new Set(shifts.filter(s => s.profile_id).map(s => s.profile_id)).size}
               </span>
             </div>

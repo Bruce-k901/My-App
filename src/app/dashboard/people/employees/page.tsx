@@ -945,15 +945,15 @@ export default function EmployeesPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <span className="px-2 py-0.5 bg-green-500/20 text-green-400 rounded text-xs">Active</span>;
+        return <span className="px-2 py-0.5 bg-green-600/15 dark:bg-green-500/20 text-green-700 dark:text-green-400 rounded text-xs font-medium">Active</span>;
       case 'onboarding':
-        return <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded text-xs">Onboarding</span>;
+        return <span className="px-2 py-0.5 bg-blue-600/15 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 rounded text-xs font-medium">Onboarding</span>;
       case 'offboarding':
-        return <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded text-xs">Offboarding</span>;
+        return <span className="px-2 py-0.5 bg-amber-600/15 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 rounded text-xs font-medium">Offboarding</span>;
       case 'inactive':
-        return <span className="px-2 py-0.5 bg-theme-button text-theme-secondary rounded text-xs">Inactive</span>;
+        return <span className="px-2 py-0.5 bg-theme-button text-theme-secondary rounded text-xs font-medium">Inactive</span>;
       default:
-        return <span className="px-2 py-0.5 bg-theme-button text-theme-secondary rounded text-xs">{status}</span>;
+        return <span className="px-2 py-0.5 bg-theme-button text-theme-secondary rounded text-xs font-medium">{status}</span>;
     }
   };
 
@@ -966,7 +966,7 @@ export default function EmployeesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-module-fg" />
       </div>
     );
   }
@@ -976,10 +976,10 @@ export default function EmployeesPage() {
       {/* Header - Simplified on mobile */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-theme-primary dark:text-white">
+ <h1 className="text-2xl font-bold text-theme-primary">
             {isMobile ? 'Staff Directory' : 'Employees'}
           </h1>
-          <p className="text-theme-secondary dark:text-gray-400">
+ <p className="text-theme-secondary dark:text-theme-tertiary">
             {stats.active} active{!isMobile && stats.onboarding > 0 && `, ${stats.onboarding} onboarding`}
           </p>
         </div>
@@ -994,7 +994,7 @@ export default function EmployeesPage() {
             {/* Add Head Office / Executive Button */}
             <button
               onClick={() => setShowExecutiveModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-purple-500 dark:border-purple-500 text-purple-600 dark:text-purple-400 hover:shadow-[0_0_12px_rgba(168,85,247,0.5)] dark:hover:shadow-[0_0_12px_rgba(168,85,247,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
+              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow dark:hover:shadow-module-glow rounded-lg font-medium transition-all duration-200 ease-in-out"
             >
               <Briefcase className="w-5 h-5" />
               <span className="hidden sm:inline">Add Head Office</span>
@@ -1004,7 +1004,7 @@ export default function EmployeesPage() {
             {/* Add Site Employee Button */}
             <Link
               href="/dashboard/people/directory/new"
-              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out"
+              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow dark:hover:shadow-module-glow rounded-lg font-medium transition-all duration-200 ease-in-out"
             >
               <Plus className="w-5 h-5" />
               <span className="hidden sm:inline">Add Site Employee</span>
@@ -1017,13 +1017,13 @@ export default function EmployeesPage() {
       {/* Filters - Search only on mobile */}
       <div className="flex flex-wrap gap-4">
         <div className={`relative ${isMobile ? 'w-full' : 'flex-1 max-w-md'}`}>
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary dark:text-gray-400" />
+ <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary dark:text-theme-tertiary"/>
           <input
             type="text"
             placeholder="Search employees..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-theme-surface-elevated dark:bg-white/5 border border-theme dark:border-white/10 rounded-xl text-theme-primary dark:text-white placeholder-theme-tertiary dark:placeholder-gray-500 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-500"
+ className="w-full pl-10 pr-4 py-3 bg-theme-surface-elevated border border-theme rounded-xl text-theme-primary placeholder-theme-tertiary dark:placeholder-gray-500 focus:border-module-fg focus:ring-1 focus:ring-module-fg"
           />
         </div>
 
@@ -1033,7 +1033,7 @@ export default function EmployeesPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary"
+              className="pl-4 pr-10 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary"
             >
               <option value="">All Statuses</option>
               <option value="active">Active</option>
@@ -1046,7 +1046,7 @@ export default function EmployeesPage() {
               <select
                 value={departmentFilter}
                 onChange={(e) => setDepartmentFilter(e.target.value)}
-                className="px-4 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary"
+                className="pl-4 pr-10 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary"
               >
                 <option value="">All Departments</option>
                 {departments.map(dept => (
@@ -1055,15 +1055,15 @@ export default function EmployeesPage() {
               </select>
             )}
 
-            {siteNames.length > 0 && (
+            {sites.length > 0 && (
               <select
                 value={siteFilter}
                 onChange={(e) => setSiteFilter(e.target.value)}
-                className="px-4 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary"
+                className="pl-4 pr-10 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary"
               >
                 <option value="">All Sites</option>
-                {siteNames.map(site => (
-                  <option key={site} value={site!}>{site}</option>
+                {sites.map(site => (
+                  <option key={site.id} value={site.name}>{site.name}</option>
                 ))}
               </select>
             )}
@@ -1072,7 +1072,7 @@ export default function EmployeesPage() {
       </div>
 
       {/* Results Count */}
-      <p className="text-theme-tertiary dark:text-gray-400 text-sm">
+ <p className="text-theme-tertiary dark:text-theme-tertiary text-sm">
         Showing {filteredEmployees.length} of {employees.length} employees
       </p>
 
@@ -1086,11 +1086,11 @@ export default function EmployeesPage() {
           return (
             <div
               key={employee.id}
-              className={`bg-theme-button dark:bg-white/[0.03] border border-theme dark:border-white/10 rounded-xl p-4 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors group relative ${isExpanded && !isMobile ? 'md:col-span-2 lg:col-span-3' : ''}`}
+ className={`bg-theme-button border border-theme rounded-xl p-4 hover:border-module-fg/50 transition-colors group relative ${isExpanded && !isMobile ? 'md:col-span-2 lg:col-span-3' : ''}`}
             >
-              {/* Edit Button, Add to Rota Button, and Expand Button - Positioned absolutely */}
+              {/* Edit Button and Expand Button - Positioned absolutely */}
               {!editingEmployee && (
-                <div 
+                <div
                   className="absolute top-2 right-2 z-10 flex items-center gap-2"
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -1099,35 +1099,10 @@ export default function EmployeesPage() {
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      if (!employee.home_site) {
-                        alert('Please set the employee\'s home site before adding them to the rota. You can edit the employee details to set the home site.');
-                        return;
-                      }
-                      const params = new URLSearchParams();
-                      params.set('site', employee.home_site);
-                      params.set('employee', employee.id);
-                      router.push(`/dashboard/people/schedule?${params.toString()}`);
-                    }}
-                    disabled={!employee.home_site}
-                    className={`p-1.5 rounded-lg transition-all cursor-pointer active:scale-95 shadow-lg ${
-                      employee.home_site
-                        ? 'bg-theme-surface-elevated dark:bg-theme-surface-elevated hover:bg-theme-button-hover text-theme-primary hover:text-blue-600 dark:hover:text-blue-400 hover:shadow-[0_0_8px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_8px_rgba(59,130,246,0.7)]'
-                        : 'bg-theme-button text-theme-tertiary cursor-not-allowed'
-                    }`}
-                    title={!employee.home_site ? 'Please set home site first' : 'Add to Rota'}
-                  >
-                    <Calendar className="w-4 h-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      // Use fullData if available (when expanded), otherwise use employee
                       const employeeToEdit = expandedEmployeeData.get(employee.id) || employee;
                       handleEdit(employeeToEdit);
                     }}
-                    className="p-1.5 bg-theme-surface-elevated dark:bg-theme-surface-elevated hover:bg-theme-button-hover rounded-lg text-theme-primary hover:text-blue-600 dark:hover:text-blue-400 transition-all cursor-pointer active:scale-95 shadow-lg hover:shadow-[0_0_8px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_8px_rgba(59,130,246,0.7)]"
+                    className="p-1.5 bg-theme-surface-elevated hover:bg-theme-button-hover rounded-lg text-theme-primary hover:text-module-fg transition-all cursor-pointer active:scale-95 shadow-lg hover:shadow-module-glow"
                     title="Edit Employee"
                   >
                     <Pencil className="w-4 h-4" />
@@ -1139,7 +1114,7 @@ export default function EmployeesPage() {
                       e.preventDefault();
                       handleToggleExpand(employee.id);
                     }}
-                    className="p-1.5 bg-theme-surface-elevated dark:bg-theme-surface-elevated hover:bg-theme-button-hover rounded-lg text-theme-primary hover:text-blue-600 dark:hover:text-blue-400 transition-all cursor-pointer active:scale-95"
+                    className="p-1.5 bg-theme-surface-elevated hover:bg-theme-button-hover rounded-lg text-theme-primary hover:text-module-fg transition-all cursor-pointer active:scale-95"
                     title={isExpanded ? "Collapse" : "Expand"}
                   >
                     {isExpanded ? (
@@ -1170,7 +1145,7 @@ export default function EmployeesPage() {
                 className={`cursor-pointer ${isExpanded ? 'pr-20' : 'pr-20'}`}
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-500 dark:to-blue-600 flex items-center justify-center text-white font-medium flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-module-fg flex items-center justify-center text-white font-medium flex-shrink-0">
                     {employee.avatar_url ? (
                       <img src={employee.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
                     ) : (
@@ -1180,7 +1155,7 @@ export default function EmployeesPage() {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-theme-primary font-medium truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      <p className="text-theme-primary font-medium truncate group-hover:text-module-fg transition-colors">
                         {employee.full_name}
                       </p>
                       {getStatusBadge(employee.status)}
@@ -1188,7 +1163,7 @@ export default function EmployeesPage() {
                         <Link
                           href={`/dashboard/people/onboarding?employeeId=${employee.id}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="px-2 py-0.5 bg-blue-500/15 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400 rounded text-xs hover:bg-blue-500/25 dark:hover:bg-blue-500/25"
+                          className="px-2 py-0.5 bg-module-fg/15 text-module-fg rounded text-xs hover:bg-module-fg/25"
                           title="Go to onboarding"
                         >
                           Go to onboarding
@@ -1231,7 +1206,7 @@ export default function EmployeesPage() {
                       disabled={!employee.home_site}
                       className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm transition-all border ${
                         employee.home_site
-                          ? 'bg-blue-500/20 dark:bg-blue-500/20 hover:bg-blue-500/30 dark:hover:bg-blue-500/30 text-blue-600 dark:text-blue-400 border-blue-500/30 dark:border-blue-500/30'
+                          ? 'bg-module-fg/15 hover:bg-module-fg/25 text-module-fg border-module-fg/30'
                           : 'bg-theme-button text-theme-tertiary border-theme cursor-not-allowed'
                       }`}
                       title={!employee.home_site ? 'Please set home site first' : 'Add to Rota'}
@@ -1266,7 +1241,7 @@ export default function EmployeesPage() {
                 <div className="mt-4 pt-4 border-t border-theme" onClick={(e) => e.stopPropagation()}>
                   {isLoadingData ? (
                     <div className="flex items-center justify-center py-8">
-                      <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+                      <Loader2 className="w-6 h-6 animate-spin text-module-fg" />
                       <span className="ml-2 text-theme-secondary">Loading details...</span>
                     </div>
                   ) : fullData ? (
@@ -1324,7 +1299,7 @@ export default function EmployeesPage() {
               setDepartmentFilter('');
               setSiteFilter('');
             }}
-            className="mt-4 px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            className="mt-4 px-4 py-2 text-sm text-module-fg hover:underline"
           >
             Clear all filters
           </button>
@@ -1459,7 +1434,7 @@ function ExpandedEmployeeView({
             disabled={!employee.home_site}
             className={`px-3 py-1.5 bg-transparent border rounded-lg text-sm transition-all flex items-center gap-1 ${
               employee.home_site
-                ? 'border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)]'
+                ? 'border-module-fg text-module-fg hover:shadow-module-glow dark:hover:shadow-module-glow'
                 : 'border-theme text-theme-tertiary cursor-not-allowed opacity-50'
             }`}
             title={!employee.home_site ? 'Please set home site first' : 'Add to Rota'}
@@ -1469,7 +1444,7 @@ function ExpandedEmployeeView({
           </button>
           <button
             onClick={onEdit}
-            className="px-3 py-1.5 bg-transparent border border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg text-sm transition-all"
+            className="px-3 py-1.5 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow dark:hover:shadow-module-glow rounded-lg text-sm transition-all"
           >
             <Pencil className="w-4 h-4 inline mr-1" />
             Edit
@@ -1495,7 +1470,7 @@ function ExpandedEmployeeView({
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex items-center gap-2 px-4 py-2 rounded-t-lg text-sm font-medium whitespace-nowrap transition-colors ${
                 activeTab === tab.id
-                  ? 'bg-theme-surface-elevated dark:bg-theme-surface-elevated text-theme-primary border-b-2 border-blue-500 dark:border-blue-500'
+                  ? 'bg-theme-surface-elevated dark:bg-theme-surface-elevated text-theme-primary border-b-2 border-module-fg'
                   : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-button-hover'
               }`}
             >
@@ -1511,7 +1486,7 @@ function ExpandedEmployeeView({
         {activeTab === 'personal' && (
           <div className="p-4 space-y-4">
             <h4 className="text-md font-semibold text-theme-primary mb-4 flex items-center gap-2">
-              <User className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+              <User className="w-4 h-4 text-module-fg" />
               Personal Information
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1570,7 +1545,7 @@ function ExpandedEmployeeView({
         {activeTab === 'employment' && (
           <div className="p-4 space-y-4">
             <h4 className="text-md font-semibold text-theme-primary mb-4 flex items-center gap-2">
-              <Briefcase className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+              <Briefcase className="w-4 h-4 text-module-fg" />
               Employment Details
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1595,8 +1570,8 @@ function ExpandedEmployeeView({
               />
               {onOpenSiteAssignments && (
                 <div className="md:col-span-2 pt-4 border-t border-white/[0.1]">
-                  <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mb-3">
-                    <p className="text-xs text-blue-300 mb-2">
+                  <div className="bg-module-fg/10 border border-module-fg/30 rounded-lg p-3 mb-3">
+                    <p className="text-xs text-module-fg mb-2">
                       <strong>Multi-Site Assignment:</strong> Allow this employee to work at other sites
                     </p>
                   </div>
@@ -1609,12 +1584,12 @@ function ExpandedEmployeeView({
                         console.error('onOpenSiteAssignments is not defined');
                       }
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-transparent border-2 border-blue-500 text-blue-400 hover:bg-blue-500/10 hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg transition-all font-medium"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-transparent border-2 border-module-fg text-module-fg hover:bg-module-fg/10 hover:shadow-module-glow rounded-lg transition-all font-medium"
                   >
                     <MapPin className="w-5 h-5" />
                     Manage Site Assignments
                   </button>
-                  <p className="text-xs text-neutral-500 mt-2 text-center">
+                  <p className="text-xs text-theme-tertiary mt-2 text-center">
                     Allow this employee to work at other sites during specified date ranges
                   </p>
                 </div>
@@ -1662,7 +1637,7 @@ function ExpandedEmployeeView({
         {activeTab === 'compliance' && (
           <div className="p-4 space-y-4">
             <h4 className="text-md font-semibold text-theme-primary mb-4 flex items-center gap-2">
-              <Shield className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+              <Shield className="w-4 h-4 text-module-fg" />
               Compliance & Right to Work
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1704,7 +1679,7 @@ function ExpandedEmployeeView({
         {activeTab === 'banking' && (
           <div className="p-4 space-y-4">
             <h4 className="text-md font-semibold text-theme-primary mb-4 flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+              <CreditCard className="w-4 h-4 text-module-fg" />
               Bank Details
             </h4>
             <p className="text-sm text-theme-secondary mb-4">
@@ -1722,20 +1697,20 @@ function ExpandedEmployeeView({
         {activeTab === 'leave' && (
           <div className="p-4 space-y-4">
             <h4 className="text-md font-semibold text-theme-primary mb-4 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+              <Calendar className="w-4 h-4 text-module-fg" />
               Leave Allowance
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InfoRow label="Annual Leave Allowance (days)" value={employee.annual_leave_allowance?.toString() || '28'} fieldName="annual_leave_allowance" employeeId={employee.id} onUpdate={onUpdate} type="number" />
             </div>
-            <p className="text-xs text-gray-500 dark:text-white/60 mt-2">UK statutory minimum is 28 days (including bank holidays)</p>
+            <p className="text-xs text-theme-tertiary mt-2">UK statutory minimum is 28 days (including bank holidays)</p>
           </div>
         )}
 
         {activeTab === 'pay' && (
           <div className="p-4 space-y-4">
             <h4 className="text-md font-semibold text-theme-primary mb-4 flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+              <CreditCard className="w-4 h-4 text-module-fg" />
               Pay & Tax Details
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1763,7 +1738,7 @@ function ExpandedEmployeeView({
         {activeTab === 'training' && (
           <div className="p-4 space-y-4">
             <h4 className="text-md font-semibold text-theme-primary mb-4 flex items-center gap-2">
-              <GraduationCap className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+              <GraduationCap className="w-4 h-4 text-module-fg" />
               Training & Certifications
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1951,7 +1926,7 @@ function InfoRow({
           status === 'success' ? 'text-green-400' :
           status === 'warning' ? 'text-amber-400' :
           status === 'error' ? 'text-red-400' :
-          'text-white'
+          'text-theme-primary'
         }`}>
           {value}
         </span>
@@ -1961,7 +1936,7 @@ function InfoRow({
 
   return (
     <div className="flex justify-between items-center py-2 border-b border-theme group">
-      <span className="text-gray-500 dark:text-white/60 text-sm">{label}</span>
+      <span className="text-theme-tertiary text-sm">{label}</span>
       <div className="flex items-center gap-2 flex-1 justify-end">
         {isEditing ? (
           <>
@@ -1969,7 +1944,7 @@ function InfoRow({
               <select
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                 autoFocus
               >
                 <option value="">Not set</option>
@@ -1981,7 +1956,7 @@ function InfoRow({
               <select
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                 autoFocus
               >
                 <option value="">Not set</option>
@@ -1993,7 +1968,7 @@ function InfoRow({
                 type="date"
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                 autoFocus
               />
             ) : type === 'number' ? (
@@ -2001,14 +1976,14 @@ function InfoRow({
                 type="number"
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                 autoFocus
               />
             ) : type === 'textarea' ? (
               <textarea
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                 rows={2}
                 autoFocus
               />
@@ -2017,7 +1992,7 @@ function InfoRow({
                 type="text"
                 value={editValue || ''}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSave();
@@ -2028,7 +2003,7 @@ function InfoRow({
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-2 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded disabled:opacity-50"
+              className="px-2 py-1 bg-module-fg hover:bg-module-fg/90 text-white text-xs rounded disabled:opacity-50"
             >
               {saving ? '...' : '✓'}
             </button>
@@ -2046,13 +2021,13 @@ function InfoRow({
               status === 'success' ? 'text-green-400' :
               status === 'warning' ? 'text-amber-400' :
               status === 'error' ? 'text-red-400' :
-              'text-white'
+              'text-theme-primary'
             }`}>
               {value}
             </span>
             <button
               onClick={() => setIsEditing(true)}
-              className="opacity-0 group-hover:opacity-100 px-2 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs transition-opacity"
+              className="opacity-0 group-hover:opacity-100 px-2 py-1 text-module-fg hover:text-module-fg text-xs transition-opacity"
               title="Edit"
             >
               <Edit className="w-3 h-3" />
@@ -2169,7 +2144,7 @@ function EditEmployeeModal({
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-sm font-medium whitespace-nowrap transition-colors ${
                   activeTab === tab.id
-                    ? 'bg-theme-surface-elevated dark:bg-theme-surface-elevated text-theme-primary border-b-2 border-blue-500 dark:border-blue-500'
+                    ? 'bg-theme-surface-elevated dark:bg-theme-surface-elevated text-theme-primary border-b-2 border-module-fg'
                     : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-button-hover'
                 }`}
               >
@@ -2185,7 +2160,7 @@ function EditEmployeeModal({
           {activeTab === 'personal' && (
             <div className="space-y-8">
               <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
-                <User className="w-5 h-5 text-blue-500 dark:text-blue-400" />
+                <User className="w-5 h-5 text-module-fg" />
                 Personal Information
               </h2>
               
@@ -2200,7 +2175,7 @@ function EditEmployeeModal({
                     value={formData.full_name || ''}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2214,7 +2189,7 @@ function EditEmployeeModal({
                     value={formData.email || ''}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2227,7 +2202,7 @@ function EditEmployeeModal({
                     name="phone_number"
                     value={formData.phone_number || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2240,7 +2215,7 @@ function EditEmployeeModal({
                     name="date_of_birth"
                     value={formData.date_of_birth || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2252,7 +2227,7 @@ function EditEmployeeModal({
                     name="gender"
                     value={formData.gender || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   >
                     <option value="">Select...</option>
                     <option value="male">Male</option>
@@ -2272,7 +2247,7 @@ function EditEmployeeModal({
                     name="nationality"
                     value={formData.nationality || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
               </div>
@@ -2290,7 +2265,7 @@ function EditEmployeeModal({
                       name="address_line_1"
                       value={formData.address_line_1 || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                     />
                   </div>
                   
@@ -2303,7 +2278,7 @@ function EditEmployeeModal({
                       name="address_line_2"
                       value={formData.address_line_2 || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                     />
                   </div>
                   
@@ -2316,7 +2291,7 @@ function EditEmployeeModal({
                       name="city"
                       value={formData.city || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                     />
                   </div>
                   
@@ -2329,7 +2304,7 @@ function EditEmployeeModal({
                       name="county"
                       value={formData.county || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                     />
                   </div>
                   
@@ -2342,7 +2317,7 @@ function EditEmployeeModal({
                       name="postcode"
                       value={formData.postcode || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                     />
                   </div>
                   
@@ -2355,7 +2330,7 @@ function EditEmployeeModal({
                       name="country"
                       value={formData.country || 'United Kingdom'}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                     />
                   </div>
                 </div>
@@ -2368,7 +2343,7 @@ function EditEmployeeModal({
                   <button
                     type="button"
                     onClick={addEmergencyContact}
-                    className="flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                    className="flex items-center gap-1 text-sm text-module-fg hover:text-module-fg"
                   >
                     <Plus className="w-4 h-4" />
                     Add Contact
@@ -2383,7 +2358,7 @@ function EditEmployeeModal({
                         type="text"
                         value={contact.name}
                         onChange={(e) => handleEmergencyContactChange(index, 'name', e.target.value)}
-                        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                       />
                     </div>
                     <div>
@@ -2393,7 +2368,7 @@ function EditEmployeeModal({
                         value={contact.relationship}
                         onChange={(e) => handleEmergencyContactChange(index, 'relationship', e.target.value)}
                         placeholder="e.g., Spouse, Parent"
-                        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                       />
                     </div>
                     <div>
@@ -2402,7 +2377,7 @@ function EditEmployeeModal({
                         type="tel"
                         value={contact.phone}
                         onChange={(e) => handleEmergencyContactChange(index, 'phone', e.target.value)}
-                        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                       />
                     </div>
                     <div className="flex items-end gap-2">
@@ -2412,7 +2387,7 @@ function EditEmployeeModal({
                           type="email"
                           value={contact.email || ''}
                           onChange={(e) => handleEmergencyContactChange(index, 'email', e.target.value)}
-                          className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                          className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                         />
                       </div>
                       {emergencyContacts.length > 1 && (
@@ -2434,7 +2409,7 @@ function EditEmployeeModal({
           {activeTab === 'employment' && (
             <div className="space-y-8">
               <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
-                <Briefcase className="w-5 h-5 text-blue-500 dark:text-blue-400" />
+                <Briefcase className="w-5 h-5 text-module-fg" />
                 Employment Details
               </h2>
               
@@ -2449,7 +2424,7 @@ function EditEmployeeModal({
                     value={formData.employee_number || ''}
                     onChange={handleChange}
                     placeholder="e.g., EMP001"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2462,7 +2437,7 @@ function EditEmployeeModal({
                     name="position_title"
                     value={formData.position_title || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2475,7 +2450,7 @@ function EditEmployeeModal({
                     name="department"
                     value={formData.department || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2487,7 +2462,7 @@ function EditEmployeeModal({
                     name="app_role"
                     value={formData.app_role || 'Staff'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   >
                     <option value="Staff">Staff</option>
                     <option value="Manager">Manager</option>
@@ -2504,7 +2479,7 @@ function EditEmployeeModal({
                     name="home_site"
                     value={formData.home_site || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   >
                     <option value="">Select site...</option>
                     {sites.map(site => (
@@ -2517,7 +2492,7 @@ function EditEmployeeModal({
                   <button
                     onClick={() => onOpenSiteAssignments(employee)}
                     type="button"
-                    className="flex items-center gap-2 px-4 py-2 bg-transparent border border-blue-500 text-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg transition-all"
+                    className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all"
                   >
                     <MapPin className="w-4 h-4" />
                     Manage Site Assignments
@@ -2535,7 +2510,7 @@ function EditEmployeeModal({
                     name="reports_to"
                     value={formData.reports_to || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   >
                     <option value="">Select manager...</option>
                     {managers.map(manager => (
@@ -2552,7 +2527,7 @@ function EditEmployeeModal({
                     name="boh_foh"
                     value={formData.boh_foh || 'FOH'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   >
                     <option value="FOH">Front of House</option>
                     <option value="BOH">Back of House</option>
@@ -2569,7 +2544,7 @@ function EditEmployeeModal({
                     name="start_date"
                     value={formData.start_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2582,7 +2557,7 @@ function EditEmployeeModal({
                     name="probation_end_date"
                     value={formData.probation_end_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2594,7 +2569,7 @@ function EditEmployeeModal({
                     name="contract_type"
                     value={formData.contract_type || 'permanent'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   >
                     <option value="permanent">Permanent</option>
                     <option value="fixed_term">Fixed Term</option>
@@ -2616,7 +2591,7 @@ function EditEmployeeModal({
                     value={formData.contracted_hours || ''}
                     onChange={handleChange}
                     step="0.5"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2630,7 +2605,7 @@ function EditEmployeeModal({
                     value={formData.hourly_rate || ''}
                     onChange={handleChange}
                     step="0.01"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2644,7 +2619,7 @@ function EditEmployeeModal({
                     value={formData.salary || ''}
                     onChange={handleChange}
                     step="100"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2656,7 +2631,7 @@ function EditEmployeeModal({
                     name="pay_frequency"
                     value={formData.pay_frequency || 'monthly'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   >
                     <option value="weekly">Weekly</option>
                     <option value="fortnightly">Fortnightly</option>
@@ -2675,7 +2650,7 @@ function EditEmployeeModal({
                     value={formData.notice_period_weeks || '1'}
                     onChange={handleChange}
                     min="1"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
               </div>
@@ -2685,7 +2660,7 @@ function EditEmployeeModal({
           {activeTab === 'compliance' && (
             <div className="space-y-8">
               <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
-                <Shield className="w-5 h-5 text-blue-500 dark:text-blue-400" />
+                <Shield className="w-5 h-5 text-module-fg" />
                 Compliance & Right to Work
               </h2>
               
@@ -2700,7 +2675,7 @@ function EditEmployeeModal({
                     value={formData.national_insurance_number || ''}
                     onChange={handleChange}
                     placeholder="e.g., AB123456C"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-theme-hover dark:border-theme-hover rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors uppercase"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-theme-hover dark:border-theme-hover rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors uppercase"
                   />
                 </div>
                 
@@ -2712,7 +2687,7 @@ function EditEmployeeModal({
                     name="right_to_work_status"
                     value={formData.right_to_work_status || 'pending'}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   >
                     <option value="pending">Pending Verification</option>
                     <option value="verified">Verified</option>
@@ -2729,7 +2704,7 @@ function EditEmployeeModal({
                     name="right_to_work_document_type"
                     value={formData.right_to_work_document_type || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   >
                     <option value="">Select...</option>
                     <option value="passport">UK/EU Passport</option>
@@ -2750,7 +2725,7 @@ function EditEmployeeModal({
                     value={formData.right_to_work_document_number || ''}
                     onChange={handleChange}
                     placeholder="e.g., passport number, share code"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2763,7 +2738,7 @@ function EditEmployeeModal({
                     name="right_to_work_expiry"
                     value={formData.right_to_work_expiry || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                   <p className="text-xs text-theme-secondary mt-1">Leave blank if no expiry (e.g., British citizen)</p>
                 </div>
@@ -2781,7 +2756,7 @@ function EditEmployeeModal({
                       name="dbs_status"
                       value={formData.dbs_status || 'not_required'}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                     >
                       <option value="not_required">Not Required</option>
                       <option value="pending">Pending</option>
@@ -2799,7 +2774,7 @@ function EditEmployeeModal({
                       name="dbs_certificate_number"
                       value={formData.dbs_certificate_number || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                     />
                   </div>
                   
@@ -2812,7 +2787,7 @@ function EditEmployeeModal({
                       name="dbs_check_date"
                       value={formData.dbs_check_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                     />
                   </div>
                 </div>
@@ -2823,7 +2798,7 @@ function EditEmployeeModal({
           {activeTab === 'banking' && (
             <div className="space-y-8">
               <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
-                <CreditCard className="w-5 h-5 text-blue-500 dark:text-blue-400" />
+                <CreditCard className="w-5 h-5 text-module-fg" />
                 Bank Details
               </h2>
               <p className="text-sm text-theme-secondary">
@@ -2840,7 +2815,7 @@ function EditEmployeeModal({
                     name="bank_name"
                     value={formData.bank_name || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2853,7 +2828,7 @@ function EditEmployeeModal({
                     name="bank_account_name"
                     value={formData.bank_account_name || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2867,7 +2842,7 @@ function EditEmployeeModal({
                     value={formData.bank_sort_code || ''}
                     onChange={handleChange}
                     placeholder="XX-XX-XX"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -2882,7 +2857,7 @@ function EditEmployeeModal({
                     onChange={handleChange}
                     placeholder="8 digits"
                     maxLength={8}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
               </div>
@@ -2892,7 +2867,7 @@ function EditEmployeeModal({
           {activeTab === 'leave' && (
             <div className="space-y-8">
               <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
-                <Calendar className="w-5 h-5 text-blue-500 dark:text-blue-400" />
+                <Calendar className="w-5 h-5 text-module-fg" />
                 Leave Allowance
               </h2>
               
@@ -2907,9 +2882,9 @@ function EditEmployeeModal({
                     value={formData.annual_leave_allowance || '28'}
                     onChange={handleChange}
                     step="0.5"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
-                  <p className="text-xs text-gray-500 dark:text-white/60 mt-1">UK statutory minimum is 28 days (including bank holidays)</p>
+                  <p className="text-xs text-theme-tertiary mt-1">UK statutory minimum is 28 days (including bank holidays)</p>
                 </div>
               </div>
             </div>
@@ -2918,7 +2893,7 @@ function EditEmployeeModal({
           {activeTab === 'pay' && (
             <div className="space-y-8">
               <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
-                <CreditCard className="w-5 h-5 text-blue-500 dark:text-blue-400" />
+                <CreditCard className="w-5 h-5 text-module-fg" />
                 Pay & Tax Details
               </h2>
               
@@ -2933,7 +2908,7 @@ function EditEmployeeModal({
                     value={formData.tax_code || ''}
                     onChange={handleChange}
                     placeholder="e.g., 1257L"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-theme-hover dark:border-theme-hover rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors uppercase"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-theme-hover dark:border-theme-hover rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors uppercase"
                   />
                 </div>
                 
@@ -2950,7 +2925,7 @@ function EditEmployeeModal({
                         const checked = e.target.checked;
                         updateField('student_loan', checked);
                       }}
-                      className="w-4 h-4 text-blue-500 dark:text-blue-400 bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-blue-500 dark:focus:ring-blue-500"
+                      className="w-4 h-4 text-module-fg bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-module-fg"
                     />
                     <span className="text-sm text-theme-secondary">Has student loan</span>
                   </div>
@@ -2965,7 +2940,7 @@ function EditEmployeeModal({
                       name="student_loan_plan"
                       value={formData.student_loan_plan || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                     >
                       <option value="">Select plan...</option>
                       <option value="plan_1">Plan 1</option>
@@ -2989,9 +2964,9 @@ function EditEmployeeModal({
                         const checked = e.target.checked;
                         updateField('pension_enrolled', checked);
                       }}
-                      className="w-4 h-4 text-blue-500 dark:text-blue-400 bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-blue-500 dark:focus:ring-blue-500"
+                      className="w-4 h-4 text-module-fg bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-module-fg"
                     />
-                    <span className="text-sm text-neutral-300">Enrolled in pension</span>
+                    <span className="text-sm text-theme-tertiary">Enrolled in pension</span>
                   </div>
                 </div>
                 
@@ -3008,7 +2983,7 @@ function EditEmployeeModal({
                       step="0.1"
                       min="0"
                       max="100"
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                     />
                   </div>
                 )}
@@ -3026,9 +3001,9 @@ function EditEmployeeModal({
                         const checked = e.target.checked;
                         updateField('p45_received', checked);
                       }}
-                      className="w-4 h-4 text-blue-500 dark:text-blue-400 bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-blue-500 dark:focus:ring-blue-500"
+                      className="w-4 h-4 text-module-fg bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-module-fg"
                     />
-                    <span className="text-sm text-neutral-300">P45 received</span>
+                    <span className="text-sm text-theme-tertiary">P45 received</span>
                   </div>
                 </div>
                 
@@ -3041,7 +3016,7 @@ function EditEmployeeModal({
                     name="p45_date"
                     value={formData.p45_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -3055,7 +3030,7 @@ function EditEmployeeModal({
                     value={formData.p45_reference || ''}
                     onChange={handleChange}
                     placeholder="P45 reference number"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
               </div>
@@ -3065,7 +3040,7 @@ function EditEmployeeModal({
           {activeTab === 'training' && (
             <div className="space-y-8">
               <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
-                <GraduationCap className="w-5 h-5 text-blue-500 dark:text-blue-400" />
+                <GraduationCap className="w-5 h-5 text-module-fg" />
                 Training & Certifications
               </h2>
               
@@ -3078,7 +3053,7 @@ function EditEmployeeModal({
                     name="food_safety_level"
                     value={formData.food_safety_level || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   >
                     <option value="">Select level...</option>
                     <option value="2">Level 2</option>
@@ -3097,7 +3072,7 @@ function EditEmployeeModal({
                     name="food_safety_expiry_date"
                     value={formData.food_safety_expiry_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -3109,7 +3084,7 @@ function EditEmployeeModal({
                     name="h_and_s_level"
                     value={formData.h_and_s_level || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   >
                     <option value="">Select level...</option>
                     <option value="2">Level 2</option>
@@ -3127,7 +3102,7 @@ function EditEmployeeModal({
                     name="h_and_s_expiry_date"
                     value={formData.h_and_s_expiry_date || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                   />
                 </div>
                 
@@ -3144,9 +3119,9 @@ function EditEmployeeModal({
                         const checked = e.target.checked;
                         updateField('fire_marshal_trained', checked);
                       }}
-                      className="w-4 h-4 text-blue-500 dark:text-blue-400 bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-blue-500 dark:focus:ring-blue-500"
+                      className="w-4 h-4 text-module-fg bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-module-fg"
                     />
-                    <span className="text-sm text-neutral-300">Fire marshal trained</span>
+                    <span className="text-sm text-theme-tertiary">Fire marshal trained</span>
                   </div>
                 </div>
                 
@@ -3160,7 +3135,7 @@ function EditEmployeeModal({
                       name="fire_marshal_expiry_date"
                       value={formData.fire_marshal_expiry_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                     />
                   </div>
                 )}
@@ -3178,9 +3153,9 @@ function EditEmployeeModal({
                         const checked = e.target.checked;
                         updateField('first_aid_trained', checked);
                       }}
-                      className="w-4 h-4 text-blue-500 dark:text-blue-400 bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-blue-500 dark:focus:ring-blue-500"
+                      className="w-4 h-4 text-module-fg bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-module-fg"
                     />
-                    <span className="text-sm text-neutral-300">First aid trained</span>
+                    <span className="text-sm text-theme-tertiary">First aid trained</span>
                   </div>
                 </div>
                 
@@ -3194,7 +3169,7 @@ function EditEmployeeModal({
                       name="first_aid_expiry_date"
                       value={formData.first_aid_expiry_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                     />
                   </div>
                 )}
@@ -3212,9 +3187,9 @@ function EditEmployeeModal({
                         const checked = e.target.checked;
                         updateField('cossh_trained', checked);
                       }}
-                      className="w-4 h-4 text-blue-500 dark:text-blue-400 bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-blue-500 dark:focus:ring-blue-500"
+                      className="w-4 h-4 text-module-fg bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-module-fg"
                     />
-                    <span className="text-sm text-neutral-300">COSSH trained</span>
+                    <span className="text-sm text-theme-tertiary">COSSH trained</span>
                   </div>
                 </div>
                 
@@ -3228,7 +3203,7 @@ function EditEmployeeModal({
                       name="cossh_expiry_date"
                       value={formData.cossh_expiry_date || ''}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 transition-colors"
+                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
                     />
                   </div>
                 )}
@@ -3248,7 +3223,7 @@ function EditEmployeeModal({
           <button
             onClick={onSave}
             disabled={saving}
-            className="px-4 py-2 bg-transparent border border-blue-500 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_12px_rgba(59,130,246,0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow dark:hover:shadow-module-glow rounded-lg font-medium transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {saving ? (
               <>
@@ -3282,12 +3257,12 @@ function SimpleFormField({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-neutral-300 mb-1.5">{label}</label>
+      <label className="block text-sm font-medium text-theme-tertiary mb-1.5">{label}</label>
       <input
         type={type}
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary text-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-500/20 transition-colors"
+        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary text-sm focus:outline-none focus:border-module-fg focus:ring-2 focus:ring-module-fg/20 transition-colors"
       />
     </div>
   );
@@ -3307,11 +3282,11 @@ function SimpleFormSelect({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-neutral-300 mb-1.5">{label}</label>
+      <label className="block text-sm font-medium text-theme-tertiary mb-1.5">{label}</label>
       <select
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-blue-300 dark:border-blue-500/50 rounded-lg text-theme-primary text-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-500/20 transition-colors"
+        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary text-sm focus:outline-none focus:border-module-fg focus:ring-2 focus:ring-module-fg/20 transition-colors"
       >
         {options.map(opt => (
           <option key={opt.value} value={opt.value}>{opt.label}</option>

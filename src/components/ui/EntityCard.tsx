@@ -14,7 +14,7 @@ export default function EntityCard({
   return (
     <div 
       className="
-        bg-white dark:bg-white/[0.05] border border-module-fg/[0.12] rounded-xl p-2 md:p-3
+ bg-theme-surface ] border border-module-fg/[0.12] rounded-xl p-2 md:p-3
         transition-all duration-150 ease-in-out
         hover:shadow-module-glow
       "
@@ -31,7 +31,7 @@ export default function EntityCard({
         </div>
       </div>
 
-      {children && <div className="px-2 md:px-4 pb-2 md:pb-3 border-t border-gray-200 dark:border-white/[0.1]">{children}</div>}
+      {children && <div className="px-2 md:px-4 pb-2 md:pb-3 border-t border-theme">{children}</div>}
     </div>
   );
 }

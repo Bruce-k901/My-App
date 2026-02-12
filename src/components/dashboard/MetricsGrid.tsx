@@ -130,17 +130,17 @@ export function MetricsGrid({ tenantId, siteId }: Props) {
         <div className="flex items-start justify-between mb-4">
           <div>
             <h3 className="text-2xl font-semibold text-[rgb(var(--text-primary))] dark:text-white">Compliance score</h3>
-            <p className="text-xs text-[rgb(var(--text-secondary))] dark:text-slate-400">
+ <p className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
               {siteId ? "Latest reading for this site" : "Estate-wide average score"}
             </p>
           </div>
           <div className="text-right">
-            {latestScoreDate && <p className="text-xs text-[rgb(var(--text-secondary))] dark:text-slate-400">As of {latestScoreDate}</p>}
-            <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-slate-500">Range: last {data?.range.days ?? 30} days</p>
+ {latestScoreDate && <p className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">As of {latestScoreDate}</p>}
+ <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">Range: last {data?.range.days ?? 30} days</p>
           </div>
         </div>
         {isLoading ? (
-          <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-slate-400">Loading compliance data…</div>
+ <div className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Loading compliance data…</div>
         ) : error ? (
           <div className="text-sm text-red-400">
             Failed to load compliance summary: {error.message}
@@ -148,20 +148,20 @@ export function MetricsGrid({ tenantId, siteId }: Props) {
         ) : (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <div className="text-xl text-[rgb(var(--text-secondary))] dark:text-slate-400">Score</div>
+ <div className="text-xl text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Score</div>
               <div className="text-5xl font-semibold text-[rgb(var(--text-primary))] dark:text-white">
                 {siteId
                   ? formatPercent(latestSite?.score ?? null)
                   : formatPercent(tenantOverview?.average_score ?? null)}
               </div>
-              <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-slate-500 mt-1">
+ <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mt-1">
                 {siteId
                   ? "Weighted score for this site."
                   : "Average across estate. Click into a site for detail."}
               </div>
             </div>
             <div className="flex-1">
-              <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-slate-500 mb-1">Score history</div>
+ <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mb-1">Score history</div>
               <div className="flex items-end gap-1 h-16">
                 {siteHistory.length ? (
                   siteHistory.slice(-14).map((entry) => (
@@ -173,7 +173,7 @@ export function MetricsGrid({ tenantId, siteId }: Props) {
                     />
                   ))
                 ) : (
-                  <div className="text-sm text-[rgb(var(--text-tertiary))] dark:text-slate-500">
+ <div className="text-sm text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
                     {siteId
                       ? "No history for this site yet."
                       : "Switch to a site to view history."}
@@ -183,15 +183,15 @@ export function MetricsGrid({ tenantId, siteId }: Props) {
             </div>
           </div>
         )}
-        <div className="mt-6 grid grid-cols-2 gap-3 text-sm text-[rgb(var(--text-primary))] dark:text-slate-300">
+        <div className="mt-6 grid grid-cols-2 gap-3 text-sm text-[rgb(var(--text-primary))] dark:text-theme-secondary">
           <div className="rounded border border-[rgb(var(--border))] dark:border-white/10 p-3">
-            <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-slate-500 mb-1">Highest score</p>
+ <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mb-1">Highest score</p>
             <p className="text-lg font-semibold">
               {formatPercent(tenantOverview?.highest_score ?? null)}
             </p>
           </div>
           <div className="rounded border border-[rgb(var(--border))] dark:border-white/10 p-3">
-            <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-slate-500 mb-1">Lowest score</p>
+ <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mb-1">Lowest score</p>
             <p className="text-lg font-semibold">
               {formatPercent(tenantOverview?.lowest_score ?? null)}
             </p>
@@ -203,7 +203,7 @@ export function MetricsGrid({ tenantId, siteId }: Props) {
         <h3 className="text-2xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-3">
           {siteId ? "Today's risk drivers" : "Estate-wide open actions"}
         </h3>
-        <ul className="space-y-3 text-sm text-[rgb(var(--text-primary))] dark:text-slate-300">
+        <ul className="space-y-3 text-sm text-[rgb(var(--text-primary))] dark:text-theme-secondary">
           <li className="flex items-center justify-between">
             <span>Critical incidents</span>
             <span className="text-[rgb(var(--text-primary))] dark:text-slate-100 font-semibold">
@@ -233,7 +233,7 @@ export function MetricsGrid({ tenantId, siteId }: Props) {
             </>
           )}
           {!siteId && (
-            <li className="text-xs text-[rgb(var(--text-tertiary))] dark:text-slate-500">
+ <li className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
               Switch to a site to see individual checklist & temperature breach breakdowns.
             </li>
           )}
@@ -243,7 +243,7 @@ export function MetricsGrid({ tenantId, siteId }: Props) {
       <div className="bg-[rgb(var(--surface))] dark:bg-white/[0.05] border border-[rgb(var(--border-hover))] dark:border-white/[0.1] rounded-xl p-4 md:p-5 lg:col-span-2">
         <h3 className="text-2xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-3">Sites ranked by latest score</h3>
         {tenantSites.length === 0 ? (
-          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-slate-400">No score data available yet.</p>
+ <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">No score data available yet.</p>
         ) : (
           <div className="space-y-2 text-sm">
             {tenantSites
@@ -251,18 +251,18 @@ export function MetricsGrid({ tenantId, siteId }: Props) {
               .map((site) => (
                 <div key={site.site_id} className="rounded border border-[rgb(var(--border))] dark:border-white/10 p-3">
                   <div className="flex items-center justify-between">
-                    <div className="text-[rgb(var(--text-primary))] dark:text-slate-300 font-medium">
+                    <div className="text-[rgb(var(--text-primary))] dark:text-theme-secondary font-medium">
                       {site.site_name || site.site_id || 'Unknown Site'}
                     </div>
                     <div className="text-[rgb(var(--text-primary))] dark:text-slate-100 font-semibold">
                       {formatPercent(site.score ?? null)}
                     </div>
                   </div>
-                  <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-[rgb(var(--text-tertiary))] dark:text-slate-500">
+ <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
                     {Object.entries(STATUS_LABELS).map(([key, label]) => (
                       <div key={key}>
-                        <div className="uppercase tracking-wide text-[10px] text-[rgb(var(--text-tertiary))] dark:text-slate-500">{label}</div>
-                        <div className="text-[rgb(var(--text-primary))] dark:text-slate-300">
+ <div className="uppercase tracking-wide text-[10px] text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">{label}</div>
+                        <div className="text-[rgb(var(--text-primary))] dark:text-theme-secondary">
                           {formatNumber((site.breakdown as any)?.[key] ?? null, "0")}
                         </div>
                       </div>
@@ -279,7 +279,7 @@ export function MetricsGrid({ tenantId, siteId }: Props) {
           <h3 className="text-2xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-3">Site score history</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead className="bg-black/5 dark:bg-white/5 text-[rgb(var(--text-secondary))] dark:text-slate-400">
+ <thead className="bg-black/5 dark:bg-white/5 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
                 <tr>
                   <th className="p-2 text-left">Date</th>
                   <th className="p-2 text-left">Score</th>
@@ -291,7 +291,7 @@ export function MetricsGrid({ tenantId, siteId }: Props) {
               </thead>
               <tbody>
                 {siteHistory.map((entry) => (
-                  <tr key={entry.score_date} className="border-t border-[rgb(var(--border))] dark:border-white/10 text-[rgb(var(--text-primary))] dark:text-slate-200">
+                  <tr key={entry.score_date} className="border-t border-[rgb(var(--border))] dark:border-white/10 text-[rgb(var(--text-primary))] dark:text-theme-primary">
                     <td className="p-2">{format(new Date(entry.score_date), "dd MMM yyyy")}</td>
                     <td className="p-2">{formatPercent(entry.score)}</td>
                     <td className="p-2">{entry.open_critical_incidents}</td>

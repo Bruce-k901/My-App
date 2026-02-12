@@ -60,7 +60,7 @@ export function OfflineAssistantBanner() {
  */
 export function AssistantInputDisabled() {
   return (
-    <div className="flex items-center justify-center gap-2 px-4 py-3 bg-neutral-100 dark:bg-neutral-800 rounded-lg text-sm text-neutral-600 dark:text-neutral-400">
+    <div className="flex items-center justify-center gap-2 px-4 py-3 bg-neutral-100 dark:bg-neutral-800 rounded-lg text-sm text-theme-secondary">
       <WifiOff className="w-4 h-4" />
       <span>Assistant requires internet connection</span>
     </div>

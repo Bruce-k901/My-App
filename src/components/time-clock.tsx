@@ -21,7 +21,11 @@ export function TimeClock({ profileId, siteId, onStatusChange }: TimeClockProps)
   const { clockIn, clockOut, isProcessing } = useOfflineAttendance();
 
   useEffect(() => {
-    fetchStatus();
+    // First trigger a status check via the API to clean up any orphaned time_entries,
+    // then fetch the (now-clean) status from the RPC
+    fetch('/api/attendance/status')
+      .catch(() => {})
+      .finally(() => fetchStatus());
     const interval = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(interval);
   }, [profileId]);
@@ -167,36 +171,36 @@ export function TimeClock({ profileId, siteId, onStatusChange }: TimeClockProps)
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 animate-pulse shadow-sm dark:shadow-none">
+      <div className="bg-theme-surface border border-theme rounded-lg p-6 animate-pulse shadow-sm dark:shadow-none">
         <div className="h-24" />
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 shadow-sm dark:shadow-none">
+    <div className="bg-theme-surface border border-theme rounded-lg p-6 shadow-sm dark:shadow-none">
       {/* Current Time */}
       <div className="text-center mb-6">
-        <p className="text-4xl font-bold text-gray-900 dark:text-white font-mono">
+        <p className="text-4xl font-bold text-theme-primary font-mono">
           {currentTime.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
         </p>
-        <p className="text-gray-500 dark:text-white/60 text-sm">
+        <p className="text-theme-tertiary text-sm">
           {currentTime.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
       </div>
 
       {/* Status Display */}
       {status?.is_clocked_in && (
-        <div className="bg-gray-100 dark:bg-white/[0.05] rounded-lg p-4 mb-6">
+        <div className="bg-theme-button rounded-lg p-4 mb-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-gray-500 dark:text-white/60 text-sm">Time worked</span>
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">{getElapsedTime()}</span>
+            <span className="text-theme-tertiary text-sm">Time worked</span>
+            <span className="text-2xl font-bold text-theme-primary">{getElapsedTime()}</span>
           </div>
 
           {status.break_minutes > 0 && (
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500 dark:text-white/60">Break taken</span>
-              <span className="text-gray-700 dark:text-white/80">{status.break_minutes} min</span>
+              <span className="text-theme-tertiary">Break taken</span>
+              <span className="text-theme-secondary">{status.break_minutes} min</span>
             </div>
           )}
 
@@ -285,7 +289,7 @@ export function TimeClock({ profileId, siteId, onStatusChange }: TimeClockProps)
 
       {/* Location indicator */}
       {location && (
-        <div className="mt-4 flex items-center justify-center gap-1 text-xs text-gray-500 dark:text-white/50">
+        <div className="mt-4 flex items-center justify-center gap-1 text-xs text-theme-tertiary">
           <MapPin className="w-3 h-3" />
           Location tracked
         </div>

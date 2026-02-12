@@ -17,17 +17,17 @@ const SEVERITY_STYLES = {
     dot: 'bg-amber-500',
   },
   low: {
-    badge: 'bg-gray-500/20 border-gray-500/30 text-gray-600 dark:text-gray-400',
+    badge: 'bg-theme-surface-elevated0/20 border-gray-500/30 text-theme-secondary',
     dot: 'bg-gray-400',
   },
 } as const
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  pending: { label: 'Pending', color: 'text-gray-500 dark:text-white/40' },
+  pending: { label: 'Pending', color: 'text-theme-tertiary' },
   in_progress: { label: 'In Progress', color: 'text-blue-600 dark:text-blue-400' },
   delegated: { label: 'Delegated', color: 'text-purple-600 dark:text-purple-400' },
-  resolved: { label: 'Resolved', color: 'text-emerald-600 dark:text-emerald-400' },
-  ignored: { label: 'Ignored', color: 'text-gray-400 dark:text-white/30' },
+  resolved: { label: 'Resolved', color: 'text-module-fg' },
+  ignored: { label: 'Ignored', color: 'text-theme-tertiary/30' },
   escalated: { label: 'Escalated', color: 'text-red-600 dark:text-red-400' },
   ai_fixed: { label: 'AI Fixed', color: 'text-purple-600 dark:text-purple-400' },
 }
@@ -58,17 +58,17 @@ export function HealthCheckItemCard({ item, onFix, onIgnore, onDelegate }: ItemC
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] p-4 space-y-3">
+    <div className="rounded-lg border border-theme bg-white dark:bg-white/[0.02] p-4 space-y-3">
       {/* Header row */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span className={`w-2 h-2 rounded-full shrink-0 ${severity.dot}`} />
-            <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+            <h4 className="text-sm font-medium text-theme-primary truncate">
               {item.record_name || item.title}
             </h4>
           </div>
-          <p className="text-xs text-gray-500 dark:text-white/40 line-clamp-2">{item.description}</p>
+          <p className="text-xs text-theme-tertiary line-clamp-2">{item.description}</p>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
@@ -90,7 +90,7 @@ export function HealthCheckItemCard({ item, onFix, onIgnore, onDelegate }: ItemC
       </div>
 
       {/* Field info */}
-      <div className="text-xs text-gray-400 dark:text-white/30">
+      <div className="text-xs text-theme-tertiary/30">
         <span className="font-medium">{item.field_label || item.field_name}</span>
         {item.current_value != null && (
           <span> — current: <code className="bg-gray-100 dark:bg-white/[0.05] px-1 rounded">{String(item.current_value)}</code></span>

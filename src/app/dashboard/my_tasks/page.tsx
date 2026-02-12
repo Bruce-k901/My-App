@@ -194,11 +194,11 @@ export default function MyTasksPage() {
   };
 
   return (
-    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[#0f1220] text-[rgb(var(--text-primary))] dark:text-white border border-[rgb(var(--border))] dark:border-neutral-800 rounded-xl p-4 sm:p-6 lg:p-8">
+    <div className="bg-[rgb(var(--surface-elevated))] dark:bg-[rgb(var(--surface-elevated))] text-[rgb(var(--text-primary))] dark:text-white border border-[rgb(var(--border))] dark:border-neutral-800 rounded-xl p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white mb-2">My Tasks</h1>
-        <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm sm:text-base">
+        <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm sm:text-base">
           Configure recurring tasks. These configurations generate daily, weekly, or monthly task instances.
         </p>
       </div>
@@ -206,14 +206,14 @@ export default function MyTasksPage() {
       {/* Loading State */}
       {loading ? (
         <div className="mt-8 text-center py-12">
-          <Loader2 className="h-12 w-12 text-[#D37E91] mx-auto mb-4 animate-spin" />
-          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60">Loading configurations...</p>
+          <Loader2 className="h-12 w-12 text-module-fg mx-auto mb-4 animate-spin" />
+          <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Loading configurations...</p>
         </div>
       ) : configs.length === 0 ? (
         <div className="mt-8 text-center py-12">
           <AlertCircle className="h-12 w-12 text-[rgb(var(--text-tertiary))] dark:text-white/20 mx-auto mb-4" />
-          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2">No task configurations yet</p>
-          <p className="text-[rgb(var(--text-tertiary))] dark:text-white/40 text-sm">
+          <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-2">No task configurations yet</p>
+          <p className="text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm">
             Create configurations from Compliance or Templates pages to generate recurring tasks
           </p>
         </div>
@@ -242,7 +242,7 @@ export default function MyTasksPage() {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-4 text-xs text-[rgb(var(--text-tertiary))] dark:text-white/50 mb-2">
+                    <div className="flex items-center gap-4 text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mb-2">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
                         <span>{getFrequencyLabel(config.frequency)}</span>
@@ -255,7 +255,7 @@ export default function MyTasksPage() {
                     </div>
 
                     {config.equipment_config && Array.isArray(config.equipment_config) && config.equipment_config.length > 0 && (
-                      <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 mt-2">
+                      <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mt-2">
                         Equipment: {config.equipment_config.map((eq: any) => eq.nickname || eq.equipment).join(', ')}
                       </div>
                     )}
@@ -264,7 +264,7 @@ export default function MyTasksPage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleEditConfig(config)}
-                      className="p-2 rounded-lg hover:bg-[rgb(var(--surface-elevated))] dark:hover:bg-white/10 text-[rgb(var(--text-tertiary))] dark:text-white/60"
+                      className="p-2 rounded-lg hover:bg-[rgb(var(--surface-elevated))] dark:hover:bg-white/10 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"
                       title="Edit Configuration"
                     >
                       <Edit2 className="h-4 w-4" />

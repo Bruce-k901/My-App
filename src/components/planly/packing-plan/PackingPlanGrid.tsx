@@ -69,21 +69,21 @@ export function PackingPlanGrid({
       <div className="overflow-x-auto print:overflow-visible">
         <table className="border-collapse text-sm" style={{ tableLayout: 'auto' }}>
           <thead>
-            <tr className="bg-gray-100 dark:bg-zinc-800">
-              <th className="border border-gray-200 dark:border-zinc-700 px-3 py-2 text-left font-medium text-gray-700 dark:text-zinc-300 sticky left-0 bg-gray-100 dark:bg-zinc-800 z-10 w-[200px] min-w-[200px] max-w-[200px] align-bottom">
+            <tr className="bg-theme-muted">
+              <th className="border border-theme px-3 py-2 text-left font-medium text-theme-secondary sticky left-0 bg-theme-muted z-10 w-[200px] min-w-[200px] max-w-[200px] align-bottom">
                 <span className="vertical-text">Customer</span>
               </th>
               {products.map((product) => (
                 <th
                   key={product.id}
-                  className="border border-gray-200 dark:border-zinc-700 px-1 py-2 text-center font-medium text-gray-700 dark:text-zinc-300 w-[80px] min-w-[80px] align-bottom"
+                  className="border border-theme px-1 py-2 text-center font-medium text-theme-secondary w-[80px] min-w-[80px] align-bottom"
                 >
                   <span className="vertical-text" title={product.name}>
                     {product.name}
                   </span>
                 </th>
               ))}
-              <th className="border border-gray-200 dark:border-zinc-700 px-2 py-2 text-center font-bold text-gray-700 dark:text-zinc-300 w-[80px] min-w-[80px] align-bottom bg-gray-200 dark:bg-zinc-700">
+              <th className="border border-theme px-2 py-2 text-center font-bold text-theme-secondary w-[80px] min-w-[80px] align-bottom bg-theme-muted-strong">
                 <span className="vertical-text">Total</span>
               </th>
             </tr>
@@ -95,13 +95,13 @@ export function PackingPlanGrid({
                 <tr
                   key={customer.id}
                   className={cn(
-                    'hover:bg-gray-50 dark:hover:bg-zinc-800/50',
+                    'hover:bg-theme-hover',
                     rowIndex % 2 === 0
-                      ? 'bg-white dark:bg-zinc-900'
-                      : 'bg-gray-50/50 dark:bg-zinc-900/50'
+                      ? 'bg-theme-surface'
+                      : 'bg-theme-surface'
                   )}
                 >
-                  <td className="border border-gray-200 dark:border-zinc-700 px-3 py-2 font-medium text-gray-900 dark:text-white sticky left-0 bg-inherit z-10 w-[200px] min-w-[200px] max-w-[200px] truncate">
+                  <td className="border border-theme px-3 py-2 font-medium text-theme-primary sticky left-0 bg-inherit z-10 w-[200px] min-w-[200px] max-w-[200px] truncate">
                     {customer.name}
                   </td>
                   {products.map((product) => {
@@ -110,13 +110,13 @@ export function PackingPlanGrid({
                     return (
                       <td
                         key={product.id}
-                        className="border border-gray-200 dark:border-zinc-700 px-2 py-2 text-center text-gray-900 dark:text-zinc-100"
+                        className="border border-theme px-2 py-2 text-center text-theme-primary"
                       >
                         {quantity || ''}
                       </td>
                     );
                   })}
-                  <td className="border border-gray-200 dark:border-zinc-700 px-2 py-2 text-center font-bold text-gray-900 dark:text-white bg-gray-100 dark:bg-zinc-800">
+                  <td className="border border-theme px-2 py-2 text-center font-bold text-theme-primary bg-theme-muted">
                     {customerTotal || ''}
                   </td>
                 </tr>
@@ -124,8 +124,8 @@ export function PackingPlanGrid({
             })}
           </tbody>
           <tfoot>
-            <tr className="bg-gray-200 dark:bg-zinc-700 font-bold">
-              <td className="border border-gray-300 dark:border-zinc-600 px-3 py-2 font-bold text-gray-900 dark:text-white sticky left-0 bg-gray-200 dark:bg-zinc-700 z-10 w-[200px] min-w-[200px] max-w-[200px]">
+            <tr className="bg-theme-muted-strong font-bold">
+              <td className="border border-theme px-3 py-2 font-bold text-theme-primary sticky left-0 bg-theme-muted-strong z-10 w-[200px] min-w-[200px] max-w-[200px]">
                 Total
               </td>
               {products.map((product) => {
@@ -133,13 +133,13 @@ export function PackingPlanGrid({
                 return (
                   <td
                     key={product.id}
-                    className="border border-gray-300 dark:border-zinc-600 px-2 py-2 text-center text-gray-900 dark:text-white"
+                    className="border border-theme px-2 py-2 text-center text-theme-primary"
                   >
                     {productTotal || ''}
                   </td>
                 );
               })}
-              <td className="border border-gray-300 dark:border-zinc-600 px-2 py-2 text-center font-bold text-gray-900 dark:text-white bg-gray-300 dark:bg-zinc-600">
+              <td className="border border-theme px-2 py-2 text-center font-bold text-theme-primary bg-theme-muted-strong">
                 {grandTotal}
               </td>
             </tr>
@@ -154,21 +154,21 @@ export function PackingPlanGrid({
     <div className="overflow-x-auto print:overflow-visible">
       <table className="border-collapse text-sm" style={{ tableLayout: 'auto' }}>
         <thead>
-          <tr className="bg-gray-100 dark:bg-zinc-800">
-            <th className="border border-gray-200 dark:border-zinc-700 px-3 py-2 text-left font-medium text-gray-700 dark:text-zinc-300 sticky left-0 bg-gray-100 dark:bg-zinc-800 z-10 w-[200px] min-w-[200px] max-w-[200px] align-bottom">
+          <tr className="bg-theme-muted">
+            <th className="border border-theme px-3 py-2 text-left font-medium text-theme-secondary sticky left-0 bg-theme-muted z-10 w-[200px] min-w-[200px] max-w-[200px] align-bottom">
               <span className="vertical-text">Product</span>
             </th>
             {customers.map((customer) => (
               <th
                 key={customer.id}
-                className="border border-gray-200 dark:border-zinc-700 px-1 py-2 text-center font-medium text-gray-700 dark:text-zinc-300 w-[80px] min-w-[80px] align-bottom"
+                className="border border-theme px-1 py-2 text-center font-medium text-theme-secondary w-[80px] min-w-[80px] align-bottom"
               >
                 <span className="vertical-text" title={customer.name}>
                   {customer.name}
                 </span>
               </th>
             ))}
-            <th className="border border-gray-200 dark:border-zinc-700 px-2 py-2 text-center font-bold text-gray-700 dark:text-zinc-300 w-[80px] min-w-[80px] align-bottom bg-gray-200 dark:bg-zinc-700">
+            <th className="border border-theme px-2 py-2 text-center font-bold text-theme-secondary w-[80px] min-w-[80px] align-bottom bg-theme-muted-strong">
               <span className="vertical-text">Total</span>
             </th>
           </tr>
@@ -180,10 +180,10 @@ export function PackingPlanGrid({
               <Fragment key={group.id}>
                 {/* Group Header Row - only show if multiple groups */}
                 {showGroupHeader && (
-                  <tr className="group-header bg-gray-200/70 dark:bg-zinc-700/50">
+                  <tr className="group-header bg-theme-muted">
                     <td
                       colSpan={customers.length + 2}
-                      className="border border-gray-300 dark:border-zinc-600 px-3 py-2 font-semibold text-gray-800 dark:text-white uppercase tracking-wide text-xs"
+                      className="border border-theme px-3 py-2 font-semibold text-theme-primary uppercase tracking-wide text-xs"
                     >
                       {group.icon || '📦'} {group.name}
                     </td>
@@ -197,13 +197,13 @@ export function PackingPlanGrid({
                     <tr
                       key={product.id}
                       className={cn(
-                        'hover:bg-gray-50 dark:hover:bg-zinc-800/50',
+                        'hover:bg-theme-hover',
                         productIndex % 2 === 0
-                          ? 'bg-white dark:bg-zinc-900'
-                          : 'bg-gray-50/50 dark:bg-zinc-900/50'
+                          ? 'bg-theme-surface'
+                          : 'bg-theme-surface'
                       )}
                     >
-                      <td className="border border-gray-200 dark:border-zinc-700 px-3 py-2 font-medium text-gray-900 dark:text-white sticky left-0 bg-inherit z-10 w-[200px] min-w-[200px] max-w-[200px] truncate">
+                      <td className="border border-theme px-3 py-2 font-medium text-theme-primary sticky left-0 bg-inherit z-10 w-[200px] min-w-[200px] max-w-[200px] truncate">
                         {product.name}
                       </td>
                       {customers.map((customer) => {
@@ -212,13 +212,13 @@ export function PackingPlanGrid({
                         return (
                           <td
                             key={customer.id}
-                            className="border border-gray-200 dark:border-zinc-700 px-2 py-2 text-center text-gray-900 dark:text-zinc-100"
+                            className="border border-theme px-2 py-2 text-center text-theme-primary"
                           >
                             {quantity || ''}
                           </td>
                         );
                       })}
-                      <td className="border border-gray-200 dark:border-zinc-700 px-2 py-2 text-center font-bold text-gray-900 dark:text-white bg-gray-100 dark:bg-zinc-800">
+                      <td className="border border-theme px-2 py-2 text-center font-bold text-theme-primary bg-theme-muted">
                         {productTotal || ''}
                       </td>
                     </tr>
@@ -229,8 +229,8 @@ export function PackingPlanGrid({
           })}
         </tbody>
         <tfoot>
-          <tr className="bg-gray-200 dark:bg-zinc-700 font-bold">
-            <td className="border border-gray-300 dark:border-zinc-600 px-3 py-2 font-bold text-gray-900 dark:text-white sticky left-0 bg-gray-200 dark:bg-zinc-700 z-10 w-[200px] min-w-[200px] max-w-[200px]">
+          <tr className="bg-theme-muted-strong font-bold">
+            <td className="border border-theme px-3 py-2 font-bold text-theme-primary sticky left-0 bg-theme-muted-strong z-10 w-[200px] min-w-[200px] max-w-[200px]">
               Total
             </td>
             {customers.map((customer) => {
@@ -238,13 +238,13 @@ export function PackingPlanGrid({
               return (
                 <td
                   key={customer.id}
-                  className="border border-gray-300 dark:border-zinc-600 px-2 py-2 text-center text-gray-900 dark:text-white"
+                  className="border border-theme px-2 py-2 text-center text-theme-primary"
                 >
                   {customerTotal || ''}
                 </td>
               );
             })}
-            <td className="border border-gray-300 dark:border-zinc-600 px-2 py-2 text-center font-bold text-gray-900 dark:text-white bg-gray-300 dark:bg-zinc-600">
+            <td className="border border-theme px-2 py-2 text-center font-bold text-theme-primary bg-theme-muted-strong">
               {grandTotal}
             </td>
           </tr>

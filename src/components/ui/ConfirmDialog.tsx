@@ -35,7 +35,7 @@ export default function ConfirmDialog({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-gray-900 dark:text-white flex items-center gap-2">
+          <DialogTitle className="text-theme-primary flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-orange-400" />
             {title}
           </DialogTitle>
@@ -43,9 +43,9 @@ export default function ConfirmDialog({
         
         <div className="py-4">
           {typeof description === 'string' ? (
-            <p className="text-gray-600 dark:text-white/60">{description}</p>
+            <p className="text-theme-secondary">{description}</p>
           ) : (
-            <div className="text-gray-600 dark:text-white/60">{description}</div>
+            <div className="text-theme-secondary">{description}</div>
           )}
         </div>
         
@@ -53,7 +53,7 @@ export default function ConfirmDialog({
           <Button
             onClick={onClose}
             variant="outline"
-            className="border-gray-300 dark:border-white/[0.12] text-gray-600 dark:text-white/60 hover:bg-gray-100 dark:hover:bg-white/[0.05]"
+            className="border-gray-300 dark:border-white/[0.12] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.05]"
           >
             {cancelText}
           </Button>

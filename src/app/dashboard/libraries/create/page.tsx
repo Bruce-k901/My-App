@@ -432,17 +432,17 @@ export default function CreateLibraryPage() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-2 h-8 bg-[#D37E91] rounded-full"></div>
+            <div className="w-2 h-8 bg-module-fg rounded-full"></div>
             <div>
-              <h1 className="text-lg font-semibold text-white">Create Custom Library</h1>
-              <p className="text-sm text-neutral-400">Design a new library with custom fields</p>
+              <h1 className="text-lg font-semibold text-theme-primary">Create Custom Library</h1>
+              <p className="text-sm text-theme-tertiary">Design a new library with custom fields</p>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowPreview(!showPreview)}
-            className="px-4 py-2 border border-neutral-600 hover:border-neutral-500 rounded-lg text-white hover:bg-white/5 transition flex items-center gap-2"
+            className="px-4 py-2 border border-neutral-600 hover:border-neutral-500 rounded-lg text-theme-primary hover:bg-white/5 transition flex items-center gap-2"
           >
             <Eye size={16} />
             {showPreview ? 'Hide' : 'Show'} SQL Preview
@@ -452,73 +452,73 @@ export default function CreateLibraryPage() {
 
       {/* Instructions */}
       <div className="bg-gradient-to-r from-magenta-500/10 to-blue-500/10 border border-magenta-500/30 rounded-xl p-6">
-        <h2 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+        <h2 className="text-lg font-semibold text-theme-primary mb-3 flex items-center gap-2">
           <span className="text-magenta-400">📚</span> How It Works
         </h2>
-        <div className="space-y-3 text-sm text-neutral-300">
+        <div className="space-y-3 text-sm text-theme-tertiary">
           <div className="flex gap-3">
             <span className="flex-shrink-0 w-6 h-6 rounded-full bg-magenta-500/20 text-magenta-400 flex items-center justify-center text-xs font-semibold">1</span>
             <p>
-              <strong className="text-white">Design your library:</strong> Give it a name and add fields. Use presets for common fields like prices, pack sizes, and suppliers.
+              <strong className="text-theme-primary">Design your library:</strong> Give it a name and add fields. Use presets for common fields like prices, pack sizes, and suppliers.
             </p>
           </div>
           <div className="flex gap-3">
             <span className="flex-shrink-0 w-6 h-6 rounded-full bg-magenta-500/20 text-magenta-400 flex items-center justify-center text-xs font-semibold">2</span>
             <p>
-              <strong className="text-white">Configure fields:</strong> Set field types, mark required fields, and choose which ones appear in the main table view.
+              <strong className="text-theme-primary">Configure fields:</strong> Set field types, mark required fields, and choose which ones appear in the main table view.
             </p>
           </div>
           <div className="flex gap-3">
             <span className="flex-shrink-0 w-6 h-6 rounded-full bg-magenta-500/20 text-magenta-400 flex items-center justify-center text-xs font-semibold">3</span>
             <p>
-              <strong className="text-white">Submit your request:</strong> Review the generated SQL (optional) and submit. Checkly will review your request.
+              <strong className="text-theme-primary">Submit your request:</strong> Review the generated SQL (optional) and submit. Checkly will review your request.
             </p>
           </div>
         </div>
       </div>
 
       {/* Basic Information */}
-      <div className="bg-neutral-800/50 rounded-xl border border-neutral-700 p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">Basic Information</h2>
+      <div className="bg-neutral-800/50 rounded-xl border border-theme p-6">
+        <h2 className="text-lg font-semibold text-theme-primary mb-4">Basic Information</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Library Name *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Library Name *</label>
             <input
               type="text"
               value={libraryName}
               onChange={(e) => setLibraryName(e.target.value)}
               placeholder="e.g., Equipment Spares"
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-4 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-4 py-2 text-theme-primary"
             />
             {libraryName && (
-              <p className="text-xs text-neutral-500 mt-1">
+              <p className="text-xs text-theme-tertiary mt-1">
                 Table name: <code className="bg-neutral-900 px-1 rounded">{generateTableName()}</code>
               </p>
             )}
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Description</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe what this library will be used for..."
               rows={3}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-4 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-4 py-2 text-theme-primary"
             />
           </div>
         </div>
       </div>
 
       {/* Field Presets */}
-      <div className="bg-neutral-800/50 rounded-xl border border-neutral-700 p-6">
+      <div className="bg-neutral-800/50 rounded-xl border border-theme p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-semibold text-white">Quick Add Fields</h2>
-            <p className="text-sm text-neutral-400 mt-1">Add common fields with one click</p>
+            <h2 className="text-lg font-semibold text-theme-primary">Quick Add Fields</h2>
+            <p className="text-sm text-theme-tertiary mt-1">Add common fields with one click</p>
           </div>
           <button
             onClick={() => setShowPresets(!showPresets)}
-            className="text-sm text-neutral-400 hover:text-white"
+            className="text-sm text-theme-tertiary hover:text-white"
           >
             {showPresets ? 'Hide' : 'Show'} Presets
           </button>
@@ -532,18 +532,18 @@ export default function CreateLibraryPage() {
                 <button
                   key={index}
                   onClick={() => addPresetFields(preset)}
-                  className="bg-neutral-900/50 border border-neutral-700 rounded-lg p-4 hover:bg-neutral-900 hover:border-magenta-500/40 transition-all text-left group"
+                  className="bg-neutral-900/50 border border-theme rounded-lg p-4 hover:bg-neutral-900 hover:border-magenta-500/40 transition-all text-left group"
                 >
                   <div className="flex items-start gap-3">
                     <div className="p-2 bg-magenta-500/10 rounded-lg group-hover:bg-magenta-500/20 transition-colors">
                       <Icon className="w-5 h-5 text-magenta-400" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-semibold text-white mb-1">{preset.name}</h3>
-                      <p className="text-xs text-neutral-400">{preset.description}</p>
+                      <h3 className="text-sm font-semibold text-theme-primary mb-1">{preset.name}</h3>
+                      <p className="text-xs text-theme-tertiary">{preset.description}</p>
                       <div className="mt-2 flex flex-wrap gap-1">
                         {preset.fields.map((field, idx) => (
-                          <span key={idx} className="text-xs px-2 py-0.5 bg-neutral-800 rounded text-neutral-400">
+                          <span key={idx} className="text-xs px-2 py-0.5 bg-neutral-800 rounded text-theme-tertiary">
                             {field.name}
                           </span>
                         ))}
@@ -558,15 +558,15 @@ export default function CreateLibraryPage() {
       </div>
 
       {/* Fields Builder */}
-      <div className="bg-neutral-800/50 rounded-xl border border-neutral-700 p-6">
+      <div className="bg-neutral-800/50 rounded-xl border border-theme p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-semibold text-white">Fields</h2>
-            <p className="text-sm text-neutral-400 mt-1">{fields.length} field{fields.length !== 1 ? 's' : ''} configured</p>
+            <h2 className="text-lg font-semibold text-theme-primary">Fields</h2>
+            <p className="text-sm text-theme-tertiary mt-1">{fields.length} field{fields.length !== 1 ? 's' : ''} configured</p>
           </div>
           <button
             onClick={addField}
-            className="px-3 py-1.5 border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-[0_0_14px_rgba(233,0,126,0.55)] transition rounded-lg flex items-center gap-2 text-sm"
+            className="px-3 py-1.5 border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-module-glow transition rounded-lg flex items-center gap-2 text-sm"
           >
             <Plus size={16} />
             Add Custom Field
@@ -577,9 +577,9 @@ export default function CreateLibraryPage() {
           {fields.map((field, index) => {
             const FieldTypeIcon = FIELD_TYPES.find(t => t.value === field.type)?.icon || FileText;
             return (
-              <div key={field.id} className="bg-neutral-900/50 border border-neutral-700 rounded-lg p-4">
+              <div key={field.id} className="bg-neutral-900/50 border border-theme rounded-lg p-4">
                 <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2 text-neutral-400 text-sm">
+                  <div className="flex items-center gap-2 text-theme-tertiary text-sm">
                     <GripVertical size={16} />
                     <FieldTypeIcon size={16} className="text-magenta-400" />
                     <span>Field {index + 1}</span>
@@ -602,33 +602,33 @@ export default function CreateLibraryPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Field Name *</label>
+                    <label className="block text-xs text-theme-tertiary mb-1">Field Name *</label>
                     <input
                       type="text"
                       value={field.name}
                       onChange={(e) => updateField(field.id, { name: e.target.value })}
                       placeholder="e.g., Part Number"
-                      className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-white text-sm"
+                      className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-theme-primary text-sm"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Column Name</label>
+                    <label className="block text-xs text-theme-tertiary mb-1">Column Name</label>
                     <input
                       type="text"
                       value={field.column}
                       onChange={(e) => updateField(field.id, { column: sanitizeColumnName(e.target.value) })}
                       placeholder="Auto-generated"
-                      className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-white text-sm"
+                      className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-theme-primary text-sm"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Type *</label>
+                    <label className="block text-xs text-theme-tertiary mb-1">Type *</label>
                     <select
                       value={field.type}
                       onChange={(e) => updateField(field.id, { type: e.target.value })}
-                      className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-white text-sm"
+                      className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-theme-primary text-sm"
                     >
                       {FIELD_TYPES.map(type => (
                         <option key={type.value} value={type.value}>{type.label}</option>
@@ -637,9 +637,9 @@ export default function CreateLibraryPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Options</label>
+                    <label className="block text-xs text-theme-tertiary mb-1">Options</label>
                     <div className="flex items-center gap-4">
-                      <label className="flex items-center gap-2 text-xs text-neutral-300 cursor-pointer">
+                      <label className="flex items-center gap-2 text-xs text-theme-tertiary cursor-pointer">
                         <CheckboxCustom
                           checked={field.required}
                           onChange={(checked) => updateField(field.id, { required: checked })}
@@ -647,7 +647,7 @@ export default function CreateLibraryPage() {
                         />
                         Required
                       </label>
-                      <label className="flex items-center gap-2 text-xs text-neutral-300 cursor-pointer">
+                      <label className="flex items-center gap-2 text-xs text-theme-tertiary cursor-pointer">
                         <CheckboxCustom
                           checked={field.main_table}
                           onChange={(checked) => updateField(field.id, { main_table: checked })}
@@ -660,7 +660,7 @@ export default function CreateLibraryPage() {
 
                   {field.type === 'CATEGORY' && (
                     <div className="md:col-span-2 lg:col-span-4">
-                      <label className="block text-xs text-neutral-400 mb-1">Category Options (one per line)</label>
+                      <label className="block text-xs text-theme-tertiary mb-1">Category Options (one per line)</label>
                       <textarea
                         value={field.category_options?.join('\n') || ''}
                         onChange={(e) => updateField(field.id, {
@@ -668,7 +668,7 @@ export default function CreateLibraryPage() {
                         })}
                         placeholder="Option 1&#10;Option 2&#10;Option 3"
                         rows={3}
-                        className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-white text-sm"
+                        className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-theme-primary text-sm"
                       />
                     </div>
                   )}
@@ -676,21 +676,21 @@ export default function CreateLibraryPage() {
                   {(field.type === 'INTEGER' || field.type === 'NUMERIC') && (
                     <>
                       <div>
-                        <label className="block text-xs text-neutral-400 mb-1">Min Value</label>
+                        <label className="block text-xs text-theme-tertiary mb-1">Min Value</label>
                         <input
                           type="number"
                           value={field.min || ''}
                           onChange={(e) => updateField(field.id, { min: e.target.value ? parseFloat(e.target.value) : undefined })}
-                          className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-white text-sm"
+                          className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-theme-primary text-sm"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-neutral-400 mb-1">Max Value</label>
+                        <label className="block text-xs text-theme-tertiary mb-1">Max Value</label>
                         <input
                           type="number"
                           value={field.max || ''}
                           onChange={(e) => updateField(field.id, { max: e.target.value ? parseFloat(e.target.value) : undefined })}
-                          className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-white text-sm"
+                          className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-theme-primary text-sm"
                         />
                       </div>
                     </>
@@ -698,24 +698,24 @@ export default function CreateLibraryPage() {
 
                   {field.type !== 'BOOLEAN' && field.type !== 'DATE' && field.type !== 'TIMESTAMP' && (
                     <div className="md:col-span-2 lg:col-span-4">
-                      <label className="block text-xs text-neutral-400 mb-1">Default Value</label>
+                      <label className="block text-xs text-theme-tertiary mb-1">Default Value</label>
                       <input
                         type="text"
                         value={field.default_value}
                         onChange={(e) => updateField(field.id, { default_value: e.target.value })}
                         placeholder="Optional"
-                        className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-white text-sm"
+                        className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-theme-primary text-sm"
                       />
                     </div>
                   )}
 
                   {field.type === 'BOOLEAN' && (
                     <div>
-                      <label className="block text-xs text-neutral-400 mb-1">Default Value</label>
+                      <label className="block text-xs text-theme-tertiary mb-1">Default Value</label>
                       <select
                         value={field.default_value}
                         onChange={(e) => updateField(field.id, { default_value: e.target.value })}
-                        className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-white text-sm"
+                        className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-1.5 text-theme-primary text-sm"
                       >
                         <option value="">No default</option>
                         <option value="true">True</option>
@@ -732,9 +732,9 @@ export default function CreateLibraryPage() {
 
       {/* SQL Preview */}
       {showPreview && (
-        <div className="bg-neutral-800/50 rounded-xl border border-neutral-700 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Generated SQL Preview</h2>
-          <pre className="bg-neutral-900 border border-neutral-700 rounded-lg p-4 overflow-x-auto text-xs text-neutral-300 font-mono">
+        <div className="bg-neutral-800/50 rounded-xl border border-theme p-6">
+          <h2 className="text-lg font-semibold text-theme-primary mb-4">Generated SQL Preview</h2>
+          <pre className="bg-neutral-900 border border-theme rounded-lg p-4 overflow-x-auto text-xs text-theme-tertiary font-mono">
             {generateSQL() || 'Enter library name and add fields to see SQL preview'}
           </pre>
         </div>
@@ -746,11 +746,11 @@ export default function CreateLibraryPage() {
           <Send size={16} />
           What happens after you submit?
         </h3>
-        <div className="space-y-2 text-sm text-neutral-300">
-          <p>1. <strong className="text-white">Request sent to Checkly:</strong> Your library request will be automatically sent to the Checkly team for review.</p>
-          <p>2. <strong className="text-white">Review process:</strong> Checkly will review your request, verify the SQL, and ensure it meets requirements.</p>
-          <p>3. <strong className="text-white">You'll be notified:</strong> You'll receive notifications when your request is approved, deployed, or if any changes are needed.</p>
-          <p>4. <strong className="text-white">Library goes live:</strong> Once deployed, your custom library will be available for use immediately.</p>
+        <div className="space-y-2 text-sm text-theme-tertiary">
+          <p>1. <strong className="text-theme-primary">Request sent to Checkly:</strong> Your library request will be automatically sent to the Checkly team for review.</p>
+          <p>2. <strong className="text-theme-primary">Review process:</strong> Checkly will review your request, verify the SQL, and ensure it meets requirements.</p>
+          <p>3. <strong className="text-theme-primary">You'll be notified:</strong> You'll receive notifications when your request is approved, deployed, or if any changes are needed.</p>
+          <p>4. <strong className="text-theme-primary">Library goes live:</strong> Once deployed, your custom library will be available for use immediately.</p>
         </div>
       </div>
 
@@ -758,14 +758,14 @@ export default function CreateLibraryPage() {
       <div className="flex items-center justify-end gap-4">
         <button
           onClick={() => router.back()}
-          className="px-4 py-2 border border-neutral-600 hover:border-neutral-500 rounded-lg text-white hover:bg-white/5 transition"
+          className="px-4 py-2 border border-neutral-600 hover:border-neutral-500 rounded-lg text-theme-primary hover:bg-white/5 transition"
         >
           Cancel
         </button>
         <button
           onClick={handleSubmit}
           disabled={loading || !libraryName.trim() || fields.filter(f => f.name && f.column).length === 0}
-          className="px-6 py-2 border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-[0_0_14px_rgba(233,0,126,0.55)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:border-magenta-500/60 transition rounded-lg flex items-center gap-2"
+          className="px-6 py-2 border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-module-glow disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:border-magenta-500/60 transition rounded-lg flex items-center gap-2"
         >
           {loading ? (
             <>
@@ -784,22 +784,22 @@ export default function CreateLibraryPage() {
       {/* Confirmation Modal */}
       {showSubmitConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-neutral-800 border border-neutral-700 rounded-xl p-6 max-w-md w-full">
+          <div className="bg-neutral-800 border border-theme rounded-xl p-6 max-w-md w-full">
             <div className="flex items-start gap-4 mb-4">
               <div className="p-3 bg-blue-500/20 rounded-lg">
                 <Send className="w-6 h-6 text-blue-400" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-white mb-2">Send Request to Checkly?</h3>
-                <p className="text-sm text-neutral-400 mb-4">
+                <h3 className="text-lg font-semibold text-theme-primary mb-2">Send Request to Checkly?</h3>
+                <p className="text-sm text-theme-tertiary mb-4">
                   Your library request will be sent to the Checkly team for review. They will:
                 </p>
-                <ul className="text-sm text-neutral-300 space-y-1 mb-4 list-disc list-inside">
+                <ul className="text-sm text-theme-tertiary space-y-1 mb-4 list-disc list-inside">
                   <li>Review your library design and SQL</li>
                   <li>Create the database table manually</li>
                   <li>Notify you when it's ready to use</li>
                 </ul>
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-theme-tertiary">
                   You can track the status of your request in "My Library Requests".
                 </p>
               </div>
@@ -807,13 +807,13 @@ export default function CreateLibraryPage() {
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={() => setShowSubmitConfirm(false)}
-                className="px-4 py-2 border border-neutral-600 hover:border-neutral-500 rounded-lg text-white hover:bg-white/5 transition"
+                className="px-4 py-2 border border-neutral-600 hover:border-neutral-500 rounded-lg text-theme-primary hover:bg-white/5 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmSubmit}
-                className="px-6 py-2 border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-[0_0_14px_rgba(233,0,126,0.55)] transition rounded-lg flex items-center gap-2"
+                className="px-6 py-2 border border-magenta-500/60 text-magenta-400 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-magenta-400 hover:shadow-module-glow transition rounded-lg flex items-center gap-2"
               >
                 <Send size={16} />
                 Send Request

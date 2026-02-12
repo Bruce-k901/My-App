@@ -297,13 +297,13 @@ export function FoodPoisoningIncidentModal({
                 <UtensilsCrossed className="w-6 h-6 text-orange-600 dark:text-orange-400" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Food Poisoning Incident Report</h2>
-                <p className="text-sm text-gray-600 dark:text-white/60">Complete investigation form and guide for food poisoning incidents</p>
+                <h2 className="text-2xl font-bold text-theme-primary">Food Poisoning Incident Report</h2>
+                <p className="text-sm text-theme-secondary">Complete investigation form and guide for food poisoning incidents</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg"
+              className="text-theme-tertiary hover:text-theme-primary transition-colors p-2 hover:bg-theme-muted rounded-lg"
             >
               <X className="w-5 h-5" />
             </button>
@@ -313,7 +313,7 @@ export function FoodPoisoningIncidentModal({
           <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-lg p-4 mb-6">
             <div className="flex items-start gap-3">
               <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-              <div className="flex-1 text-sm text-gray-800 dark:text-white/80">
+              <div className="flex-1 text-sm text-theme-primary/80">
                 <p className="font-semibold text-blue-700 dark:text-blue-400 mb-1">Investigation Guide</p>
                 <p>This form will create a comprehensive investigation task. Complete as much information as possible to help identify the cause and prevent recurrence.</p>
               </div>
@@ -325,25 +325,25 @@ export function FoodPoisoningIncidentModal({
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-full bg-orange-50 dark:bg-orange-500/20 flex items-center justify-center text-orange-600 dark:text-orange-400 font-bold text-sm">1</div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Basic Information</h3>
+                <h3 className="text-lg font-semibold text-theme-primary">Basic Information</h3>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Incident Date <span className="text-red-600 dark:text-red-400">*</span>
                   </label>
                   <input
                     type="date"
                     value={formData.incident_date}
                     onChange={(e) => setFormData({ ...formData, incident_date: e.target.value })}
-                    className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Site <span className="text-red-600 dark:text-red-400">*</span>
                   </label>
                   <SiteSelector
@@ -354,7 +354,7 @@ export function FoodPoisoningIncidentModal({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Customer Name <span className="text-red-600 dark:text-red-400">*</span>
                   </label>
                   <input
@@ -362,7 +362,7 @@ export function FoodPoisoningIncidentModal({
                     value={formData.reported_by_customer}
                     onChange={(e) => setFormData({ ...formData, reported_by_customer: e.target.value })}
                     placeholder="Full name of customer"
-                    className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                     required
                   />
                 </div>
@@ -385,7 +385,7 @@ export function FoodPoisoningIncidentModal({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Customer Email
                   </label>
                   <input
@@ -393,12 +393,12 @@ export function FoodPoisoningIncidentModal({
                     value={formData.customer_email}
                     onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
                     placeholder="customer@email.com"
-                    className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Customer Phone
                   </label>
                   <input
@@ -406,7 +406,7 @@ export function FoodPoisoningIncidentModal({
                     value={formData.customer_phone}
                     onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })}
                     placeholder="+44 7700 900000"
-                    className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                   />
                 </div>
               </div>
@@ -423,18 +423,18 @@ export function FoodPoisoningIncidentModal({
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-full bg-orange-50 dark:bg-orange-500/20 flex items-center justify-center text-orange-600 dark:text-orange-400 font-bold text-sm">2</div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Symptoms</h3>
+                <h3 className="text-lg font-semibold text-theme-primary">Symptoms</h3>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-3">
+                <label className="block text-sm font-medium text-theme-secondary mb-3">
                   Symptoms Reported <span className="text-red-600 dark:text-red-400">*</span>
                 </label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {SYMPTOM_OPTIONS.map((symptom) => (
                     <div
                       key={symptom.id}
-                      className="flex items-start gap-3 p-3 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.1] rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
+                      className="flex items-start gap-3 p-3 bg-theme-surface border border-theme rounded-lg hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
                       onClick={() => handleSymptomToggle(symptom.id)}
                     >
                       <CheckboxCustom
@@ -443,9 +443,9 @@ export function FoodPoisoningIncidentModal({
                         size={20}
                       />
                       <div className="flex-1">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">{symptom.label}</div>
+                        <div className="text-sm font-medium text-theme-primary">{symptom.label}</div>
                         {symptom.helpText && (
-                          <div className="text-xs text-gray-600 dark:text-white/50 mt-0.5">{symptom.helpText}</div>
+                          <div className="text-xs text-theme-secondary/50 mt-0.5">{symptom.helpText}</div>
                         )}
                       </div>
                     </div>
@@ -471,21 +471,21 @@ export function FoodPoisoningIncidentModal({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Exact Symptom Start Date & Time
                   </label>
                   <input
                     type="datetime-local"
                     value={formData.symptom_start_datetime}
                     onChange={(e) => setFormData({ ...formData, symptom_start_datetime: e.target.value })}
-                    className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-3">Hospital Treatment Required?</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-3">Hospital Treatment Required?</label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
@@ -493,7 +493,7 @@ export function FoodPoisoningIncidentModal({
                       className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
                         formData.hospital_treatment === 'pass'
                           ? 'bg-green-50 dark:bg-green-500/20 border-green-200 dark:border-green-500/50 text-green-700 dark:text-green-400'
-                          : 'bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/[0.06]'
+                          : 'bg-theme-surface border-theme text-theme-secondary/60 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06]'
                       }`}
                     >
                       No
@@ -504,7 +504,7 @@ export function FoodPoisoningIncidentModal({
                       className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
                         formData.hospital_treatment === 'fail'
                           ? 'bg-red-50 dark:bg-red-500/20 border-red-200 dark:border-red-500/50 text-red-700 dark:text-red-400'
-                          : 'bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/[0.06]'
+                          : 'bg-theme-surface border-theme text-theme-secondary/60 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06]'
                       }`}
                     >
                       Yes
@@ -513,7 +513,7 @@ export function FoodPoisoningIncidentModal({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-3">Stool Sample Available?</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-3">Stool Sample Available?</label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
@@ -521,7 +521,7 @@ export function FoodPoisoningIncidentModal({
                       className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
                         formData.stool_sample_available === 'fail'
                           ? 'bg-red-50 dark:bg-red-500/20 border-red-200 dark:border-red-500/50 text-red-700 dark:text-red-400'
-                          : 'bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/[0.06]'
+                          : 'bg-theme-surface border-theme text-theme-secondary/60 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06]'
                       }`}
                     >
                       No
@@ -532,7 +532,7 @@ export function FoodPoisoningIncidentModal({
                       className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
                         formData.stool_sample_available === 'pass'
                           ? 'bg-green-50 dark:bg-green-500/20 border-green-200 dark:border-green-500/50 text-green-700 dark:text-green-400'
-                          : 'bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/[0.06]'
+                          : 'bg-theme-surface border-theme text-theme-secondary/60 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06]'
                       }`}
                     >
                       Yes
@@ -546,11 +546,11 @@ export function FoodPoisoningIncidentModal({
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-full bg-orange-50 dark:bg-orange-500/20 flex items-center justify-center text-orange-600 dark:text-orange-400 font-bold text-sm">3</div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Food Investigation</h3>
+                <h3 className="text-lg font-semibold text-theme-primary">Food Investigation</h3>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Menu Items Consumed <span className="text-red-600 dark:text-red-400">*</span>
                 </label>
                 <textarea
@@ -558,26 +558,26 @@ export function FoodPoisoningIncidentModal({
                   onChange={(e) => setFormData({ ...formData, menu_items_consumed: e.target.value })}
                   placeholder="List all menu items and dishes the customer consumed. Include specific dishes, ingredients, and preparation details (e.g., 'Chicken Caesar Salad - contained raw egg in dressing, cooked chicken, fresh lettuce. Consumed at 7:30pm')."
                   rows={3}
-                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">
                     Meal Time
                   </label>
                   <input
                     type="datetime-local"
                     value={formData.meal_time}
                     onChange={(e) => setFormData({ ...formData, meal_time: e.target.value })}
-                    className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-3">Other People Affected?</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-3">Other People Affected?</label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
@@ -585,7 +585,7 @@ export function FoodPoisoningIncidentModal({
                       className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
                         formData.other_affected_persons === 'pass'
                           ? 'bg-green-50 dark:bg-green-500/20 border-green-200 dark:border-green-500/50 text-green-700 dark:text-green-400'
-                          : 'bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/[0.06]'
+                          : 'bg-theme-surface border-theme text-theme-secondary/60 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06]'
                       }`}
                     >
                       No
@@ -596,7 +596,7 @@ export function FoodPoisoningIncidentModal({
                       className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
                         formData.other_affected_persons === 'fail'
                           ? 'bg-red-50 dark:bg-red-500/20 border-red-200 dark:border-red-500/50 text-red-700 dark:text-red-400'
-                          : 'bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/[0.06]'
+                          : 'bg-theme-surface border-theme text-theme-secondary/60 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06]'
                       }`}
                     >
                       Yes
@@ -606,7 +606,7 @@ export function FoodPoisoningIncidentModal({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Other Food Consumed (Last 24 Hours)
                 </label>
                 <textarea
@@ -614,12 +614,12 @@ export function FoodPoisoningIncidentModal({
                   onChange={(e) => setFormData({ ...formData, food_consumed_24h: e.target.value })}
                   placeholder="List any other food or drinks consumed in the 24 hours before symptoms started. This helps identify if the issue came from your establishment or elsewhere."
                   rows={2}
-                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Unaffected Persons Comparison
                 </label>
                 <textarea
@@ -627,7 +627,7 @@ export function FoodPoisoningIncidentModal({
                   onChange={(e) => setFormData({ ...formData, unaffected_comparison: e.target.value })}
                   placeholder="List people who ate similar items but did not get sick. This helps identify the specific cause (e.g., 'Table 12 had same chicken salad - no issues. Table 14 had vegetarian option - no issues.')"
                   rows={2}
-                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                 />
               </div>
             </div>
@@ -636,12 +636,12 @@ export function FoodPoisoningIncidentModal({
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-full bg-orange-50 dark:bg-orange-500/20 flex items-center justify-center text-orange-600 dark:text-orange-400 font-bold text-sm">4</div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Evidence & Immediate Actions</h3>
+                <h3 className="text-lg font-semibold text-theme-primary">Evidence & Immediate Actions</h3>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-3">Food Samples Preserved?</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-3">Food Samples Preserved?</label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
@@ -649,7 +649,7 @@ export function FoodPoisoningIncidentModal({
                       className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
                         formData.samples_preserved === 'fail'
                           ? 'bg-red-50 dark:bg-red-500/20 border-red-200 dark:border-red-500/50 text-red-700 dark:text-red-400'
-                          : 'bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/[0.06]'
+                          : 'bg-theme-surface border-theme text-theme-secondary/60 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06]'
                       }`}
                     >
                       No
@@ -660,7 +660,7 @@ export function FoodPoisoningIncidentModal({
                       className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
                         formData.samples_preserved === 'pass'
                           ? 'bg-green-50 dark:bg-green-500/20 border-green-200 dark:border-green-500/50 text-green-700 dark:text-green-400'
-                          : 'bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/[0.06]'
+                          : 'bg-theme-surface border-theme text-theme-secondary/60 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06]'
                       }`}
                     >
                       Yes
@@ -669,7 +669,7 @@ export function FoodPoisoningIncidentModal({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white mb-3">Environmental Health Notified?</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-3">Environmental Health Notified?</label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
@@ -677,7 +677,7 @@ export function FoodPoisoningIncidentModal({
                       className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
                         formData.eho_notified === 'fail'
                           ? 'bg-red-50 dark:bg-red-500/20 border-red-200 dark:border-red-500/50 text-red-700 dark:text-red-400'
-                          : 'bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/[0.06]'
+                          : 'bg-theme-surface border-theme text-theme-secondary/60 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06]'
                       }`}
                     >
                       No
@@ -688,7 +688,7 @@ export function FoodPoisoningIncidentModal({
                       className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
                         formData.eho_notified === 'pass'
                           ? 'bg-green-50 dark:bg-green-500/20 border-green-200 dark:border-green-500/50 text-green-700 dark:text-green-400'
-                          : 'bg-white dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/[0.06]'
+                          : 'bg-theme-surface border-theme text-theme-secondary/60 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06]'
                       }`}
                     >
                       Yes
@@ -698,13 +698,13 @@ export function FoodPoisoningIncidentModal({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">Immediate Corrective Actions Taken</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">Immediate Corrective Actions Taken</label>
                 <textarea
                   value={formData.immediate_corrective_actions}
                   onChange={(e) => setFormData({ ...formData, immediate_corrective_actions: e.target.value })}
                   placeholder="What immediate actions have been taken to prevent further incidents? (e.g., 'Removed suspect batch from service, increased temperature monitoring, staff retraining on specific procedure...')"
                   rows={3}
-                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                 />
               </div>
             </div>
@@ -713,7 +713,7 @@ export function FoodPoisoningIncidentModal({
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-full bg-orange-50 dark:bg-orange-500/20 flex items-center justify-center text-orange-600 dark:text-orange-400 font-bold text-sm">5</div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Customer Management</h3>
+                <h3 className="text-lg font-semibold text-theme-primary">Customer Management</h3>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -754,11 +754,11 @@ export function FoodPoisoningIncidentModal({
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-full bg-orange-50 dark:bg-orange-500/20 flex items-center justify-center text-orange-600 dark:text-orange-400 font-bold text-sm">6</div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Additional Notes</h3>
+                <h3 className="text-lg font-semibold text-theme-primary">Additional Notes</h3>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   Additional Information or Notes
                 </label>
                 <textarea
@@ -766,14 +766,14 @@ export function FoodPoisoningIncidentModal({
                   onChange={(e) => setFormData({ ...formData, additional_notes: e.target.value })}
                   placeholder="Any additional relevant information, context, or notes about the incident..."
                   rows={4}
-                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                 />
               </div>
             </div>
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-white/10">
+          <div className="flex items-center justify-between mt-6 pt-4 border-t border-theme">
             <Button
               onClick={onClose}
               variant="outline"

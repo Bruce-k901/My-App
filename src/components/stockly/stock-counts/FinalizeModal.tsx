@@ -77,13 +77,13 @@ export default function FinalizeModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-white dark:bg-[#0B0D13] border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white max-w-md">
+      <DialogContent className="bg-white dark:bg-[#0B0D13] border-theme text-theme-primary max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+            <CheckCircle className="h-5 w-5 text-module-fg" />
             Finalize Stock Count?
           </DialogTitle>
-          <DialogDescription className="text-gray-600 dark:text-gray-400">
+          <DialogDescription className="text-theme-secondary">
             This will adjust your inventory levels
           </DialogDescription>
         </DialogHeader>
@@ -110,23 +110,23 @@ export default function FinalizeModal({
           )}
 
           {count.status === 'approved' && (
-            <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-600/30 rounded-lg p-4">
-              <h4 className="font-medium text-gray-900 dark:text-white mb-2">What will happen:</h4>
-              <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+            <div className="bg-emerald-50 dark:bg-emerald-600/10 border border-module-fg/30 rounded-lg p-4">
+              <h4 className="font-medium text-theme-primary mb-2">What will happen:</h4>
+              <ul className="space-y-2 text-sm text-theme-secondary">
                 <li className="flex items-start gap-2">
-                  <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">•</span>
+                  <span className="text-module-fg mt-0.5">•</span>
                   <span>All stock levels will be updated to match counted quantities</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">•</span>
+                  <span className="text-module-fg mt-0.5">•</span>
                   <span>Variance records will be saved for reporting</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">•</span>
+                  <span className="text-module-fg mt-0.5">•</span>
                   <span>Stock adjustment transactions will be created</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-emerald-600 dark:text-emerald-400 mt-0.5">•</span>
+                  <span className="text-module-fg mt-0.5">•</span>
                   <span>Count status will change to "Finalized"</span>
                 </li>
               </ul>
@@ -138,7 +138,7 @@ export default function FinalizeModal({
               <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
               <div>
                 <h4 className="font-medium text-amber-700 dark:text-amber-400 mb-1">Important</h4>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
+                <p className="text-sm text-theme-secondary">
                   After finalization, you can still lock the count to make it permanent. 
                   Review the variance report carefully before proceeding.
                 </p>
@@ -149,18 +149,18 @@ export default function FinalizeModal({
           {/* Summary */}
           <div className="bg-gray-50 dark:bg-white/[0.03] rounded-lg p-4 space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Items to adjust:</span>
-              <span className="text-gray-900 dark:text-white font-medium">{count.items_counted}</span>
+              <span className="text-theme-secondary">Items to adjust:</span>
+              <span className="text-theme-primary font-medium">{count.items_counted}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Items with variance:</span>
-              <span className="text-gray-900 dark:text-white font-medium">{count.variance_count}</span>
+              <span className="text-theme-secondary">Items with variance:</span>
+              <span className="text-theme-primary font-medium">{count.variance_count}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Total variance value:</span>
+              <span className="text-theme-secondary">Total variance value:</span>
               <span className={`font-medium ${
                 count.total_variance_value < 0 ? 'text-red-600 dark:text-red-400' : 
-                count.total_variance_value > 0 ? 'text-emerald-600 dark:text-green-400' : 'text-gray-900 dark:text-white'
+                count.total_variance_value > 0 ? 'text-module-fg dark:text-green-400' : 'text-theme-primary'
               }`}>
                 {count.total_variance_value < 0 ? '-' : count.total_variance_value > 0 ? '+' : ''}
                 £{Math.abs(count.total_variance_value).toFixed(2)}
@@ -176,12 +176,12 @@ export default function FinalizeModal({
           )}
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-white/[0.06]">
+          <div className="flex justify-end gap-3 pt-4 border-t border-theme">
             <Button
               variant="outline"
               onClick={onClose}
               disabled={finalizing}
-              className="border-gray-300 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10"
+              className="border-gray-300 dark:border-white/[0.06] text-theme-secondary hover:bg-theme-muted"
             >
               Cancel
             </Button>

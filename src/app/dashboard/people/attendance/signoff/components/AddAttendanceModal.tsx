@@ -150,9 +150,9 @@ export default function AddAttendanceModal({
   
   return (
     <div className="fixed inset-0 bg-black/30 dark:bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-[#171b2d] border border-gray-200 dark:border-white/[0.06] rounded-xl w-full max-w-md shadow-xl">
+      <div className="bg-white dark:bg-[#171b2d] border border-theme rounded-xl w-full max-w-md shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/[0.06]">
+        <div className="flex items-center justify-between p-4 border-b border-theme">
           <div className="flex items-center gap-2">
             <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             <h3 className="font-semibold">Add Attendance Record</h3>
@@ -166,7 +166,7 @@ export default function AddAttendanceModal({
         <div className="p-4 space-y-4">
           {/* Date Display */}
           <div>
-            <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Date</p>
+            <p className="text-sm text-theme-tertiary mb-1">Date</p>
             <p className="font-medium">
               {new Date(date).toLocaleDateString('en-GB', {
                 weekday: 'long',
@@ -180,9 +180,9 @@ export default function AddAttendanceModal({
           {/* Staff Selection */}
           {staffId ? (
             <div>
-              <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Staff Member</p>
-              <div className="flex items-center gap-2 bg-gray-50 dark:bg-white/[0.05] rounded-lg p-3">
-                <User className="w-4 h-4 text-gray-500 dark:text-white/60" />
+              <p className="text-sm text-theme-tertiary mb-1">Staff Member</p>
+              <div className="flex items-center gap-2 bg-theme-button rounded-lg p-3">
+                <User className="w-4 h-4 text-theme-tertiary" />
                 <span className="font-medium">
                   {selectedStaff?.full_name || 'Loading...'}
                 </span>
@@ -190,13 +190,13 @@ export default function AddAttendanceModal({
             </div>
           ) : (
             <div>
-              <label className="block text-sm text-gray-500 dark:text-white/60 mb-1">
+              <label className="block text-sm text-theme-tertiary mb-1">
                 Staff Member <span className="text-red-600 dark:text-red-400">*</span>
               </label>
               <select
                 value={selectedStaffId}
                 onChange={(e) => setSelectedStaffId(e.target.value)}
-                className="w-full bg-gray-50 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg px-3 py-2 text-gray-900 dark:text-white"
+                className="w-full bg-theme-button border border-theme rounded-lg px-3 py-2 text-theme-primary"
               >
                 <option value="">Select staff member...</option>
                 {staffList.map(staff => (
@@ -211,7 +211,7 @@ export default function AddAttendanceModal({
           {/* Time Inputs */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-gray-500 dark:text-white/60 mb-1">Clock In</label>
+              <label className="block text-sm text-theme-tertiary mb-1">Clock In</label>
               <TimePicker
                 value={clockIn}
                 onChange={(value) => setClockIn(value)}
@@ -219,7 +219,7 @@ export default function AddAttendanceModal({
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-500 dark:text-white/60 mb-1">Clock Out</label>
+              <label className="block text-sm text-theme-tertiary mb-1">Clock Out</label>
               <TimePicker
                 value={clockOut}
                 onChange={(value) => setClockOut(value)}
@@ -230,8 +230,8 @@ export default function AddAttendanceModal({
           
           {/* Calculated hours display */}
           {clockIn && clockOut && (
-            <div className="bg-gray-50 dark:bg-white/[0.05] rounded-lg p-3 text-center">
-              <span className="text-gray-500 dark:text-white/60">Total Hours: </span>
+            <div className="bg-theme-button rounded-lg p-3 text-center">
+              <span className="text-theme-tertiary">Total Hours: </span>
               <span className="font-bold text-blue-600 dark:text-blue-400">
                 {(() => {
                   const start = new Date(`2000-01-01T${clockIn}`);
@@ -245,7 +245,7 @@ export default function AddAttendanceModal({
           
           {/* Reason (required) */}
           <div>
-            <label className="block text-sm text-gray-500 dark:text-white/60 mb-1">
+            <label className="block text-sm text-theme-tertiary mb-1">
               Reason for Manual Entry <span className="text-red-600 dark:text-red-400">*</span>
             </label>
             <textarea
@@ -253,21 +253,21 @@ export default function AddAttendanceModal({
               onChange={(e) => setReason(e.target.value)}
               placeholder="e.g., Staff forgot to clock in, adding based on manager observation"
               rows={2}
-              className="w-full bg-gray-50 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg px-3 py-2 resize-none"
+              className="w-full bg-theme-button border border-theme rounded-lg px-3 py-2 resize-none"
             />
           </div>
           
           {/* Shift Notes (optional) */}
           <div>
-            <label className="block text-sm text-gray-500 dark:text-white/60 mb-1">
-              Shift Notes <span className="text-gray-500 dark:text-white/50">(optional)</span>
+            <label className="block text-sm text-theme-tertiary mb-1">
+              Shift Notes <span className="text-theme-tertiary">(optional)</span>
             </label>
             <input
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any notes about this shift..."
-              className="w-full bg-gray-50 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg px-3 py-2"
+              className="w-full bg-theme-button border border-theme rounded-lg px-3 py-2"
             />
           </div>
           
@@ -280,10 +280,10 @@ export default function AddAttendanceModal({
         </div>
         
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 dark:border-white/[0.06]">
+        <div className="flex items-center justify-end gap-3 p-4 border-t border-theme">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white transition-colors"
+            className="px-4 py-2 text-sm text-theme-tertiary hover:text-theme-primary transition-colors"
           >
             Cancel
           </button>

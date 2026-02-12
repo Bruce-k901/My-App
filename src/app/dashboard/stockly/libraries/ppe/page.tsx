@@ -380,22 +380,22 @@ export default function PPELibraryPage() {
   });
 
   return (
-    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+    <div className="w-full bg-theme-surface-elevated min-h-screen">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-              <Package className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+            <h1 className="text-3xl font-bold text-theme-primary mb-2 flex items-center gap-3">
+              <Package className="w-8 h-8 text-module-fg" />
               PPE Library
             </h1>
-            <p className="text-sm text-gray-600 dark:text-white/60">Manage personal protective equipment</p>
+            <p className="text-sm text-theme-secondary">Manage personal protective equipment</p>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={handleUploadClick} className="px-4 py-2 bg-white dark:bg-white/[0.05] border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2">
+ <button onClick={handleUploadClick} className="px-4 py-2 bg-theme-surface ] border border-module-fg text-module-fg hover:bg-module-fg/10 hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2">
               <Upload size={16} />
               Upload CSV
             </button>
-            <button onClick={handleDownloadCSV} className="px-4 py-2 bg-white dark:bg-white/[0.05] border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2">
+ <button onClick={handleDownloadCSV} className="px-4 py-2 bg-theme-surface ] border border-module-fg text-module-fg hover:bg-module-fg/10 hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2">
               <Download size={16} />
               Download CSV
             </button>
@@ -429,7 +429,7 @@ export default function PPELibraryPage() {
                 setNewRowIds(prev => new Set(prev).add(tempId));
               }}
               aria-label="Add PPE"
-              className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-emerald-600 dark:border-emerald-500/60 text-emerald-600 dark:text-emerald-400 bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-[0_0_14px_rgba(16,185,129,0.7)] transition"
+ className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-emerald-600 dark:border-module-fg/30 text-module-fg bg-theme-surface ] hover:bg-theme-muted hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-module-glow transition"
             >
               <Plus size={18} />
               <span className="sr-only">Add PPE</span>
@@ -437,22 +437,22 @@ export default function PPELibraryPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+        <div className="bg-theme-surface border border-theme rounded-xl p-4">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-white/40" size={20} />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-tertiary" size={20} />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search PPE items..."
-                className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg pl-10 pr-4 py-2.5 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
+ className="w-full bg-theme-surface ] border border-theme rounded-lg pl-10 pr-4 py-2.5 text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
               />
             </div>
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
-              className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 min-w-[180px] appearance-none cursor-pointer"
+ className="bg-theme-surface ] border border-theme rounded-lg px-4 py-2.5 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 min-w-[180px] appearance-none cursor-pointer"
             >
               <option value="all">All Categories</option>
               {PPE_CATEGORIES.map(cat => (
@@ -463,20 +463,20 @@ export default function PPELibraryPage() {
         </div>
 
         {loading ? (
-          <div className="text-gray-600 dark:text-white/60 text-center py-8">Loading PPE...</div>
+          <div className="text-theme-secondary text-center py-8">Loading PPE...</div>
         ) : filteredItems.length === 0 ? (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 text-center">
-            <p className="text-gray-600 dark:text-white/60">No PPE items found.</p>
+          <div className="bg-theme-surface border border-theme rounded-xl p-8 text-center">
+            <p className="text-theme-secondary">No PPE items found.</p>
           </div>
         ) : (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
+          <div className="bg-theme-surface border border-theme rounded-xl overflow-hidden">
             <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-white/[0.05] border-b border-gray-200 dark:border-white/[0.06]">
+              <thead className="bg-theme-button border-b border-theme">
                 <tr>
                   <th className="w-10 px-2" aria-label="Expand" />
-                  <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-emerald-400 text-[0.95rem]">Item Name</th>
-                  <th className="text-left px-2 py-3 font-semibold text-gray-900 dark:text-emerald-400 text-[0.95rem]">Category</th>
-                  <th className="text-left px-2 py-3 font-semibold text-gray-900 dark:text-emerald-400 text-[0.95rem]">Reorder Level</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-module-fg text-[0.95rem]">Item Name</th>
+                  <th className="text-left px-2 py-3 font-semibold text-gray-900 dark:text-module-fg text-[0.95rem]">Category</th>
+                  <th className="text-left px-2 py-3 font-semibold text-gray-900 dark:text-module-fg text-[0.95rem]">Reorder Level</th>
                 </tr>
               </thead>
               <tbody>
@@ -484,27 +484,27 @@ export default function PPELibraryPage() {
                   const expanded = expandedRows.has(item.id);
                   return (
                     <React.Fragment key={item.id}>
-                      <tr className="border-b border-gray-100 dark:border-white/[0.05] hover:bg-gray-50 dark:hover:bg-white/[0.02] bg-white dark:bg-transparent">
+                      <tr className="border-b border-theme hover:bg-gray-50 dark:hover:bg-white/[0.02] bg-white dark:bg-transparent">
                         <td className="px-2 py-3 align-top">
-                          <button aria-label={expanded ? 'Collapse' : 'Expand'} onClick={() => toggleRow(item.id)} className="p-1 rounded hover:bg-gray-100 dark:hover:bg-white/[0.05] text-gray-600 dark:text-white/60">
+                          <button aria-label={expanded ? 'Collapse' : 'Expand'} onClick={() => toggleRow(item.id)} className="p-1 rounded hover:bg-gray-100 dark:hover:bg-white/[0.05] text-theme-secondary">
                             {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                           </button>
                         </td>
                         <td className="px-4 py-3">
                           {editingRowId === item.id ? (
-                            <input className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.item_name ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, item_name: e.target.value }))} />
+ <input className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.item_name ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, item_name: e.target.value }))} />
                           ) : (
                             <div className="flex items-center gap-2">
-                              <span className="text-gray-900 dark:text-white font-medium">{item.item_name}</span>
+                              <span className="text-theme-primary font-medium">{item.item_name}</span>
                               {item.supplier && (
-                                <span className="text-gray-500 dark:text-white/40 text-sm">• {item.supplier}</span>
+                                <span className="text-theme-tertiary text-sm">• {item.supplier}</span>
                               )}
                             </div>
                           )}
                         </td>
-                      <td className="px-2 py-3 text-gray-700 dark:text-white/80 text-sm whitespace-nowrap">
+                      <td className="px-2 py-3 text-theme-secondary text-sm whitespace-nowrap">
                         {editingRowId === item.id ? (
-                          <select className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.category ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, category: e.target.value }))}>
+ <select className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.category ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, category: e.target.value }))}>
                             <option value="">Select...</option>
                             {PPE_CATEGORIES.map(cat => (<option key={cat} value={cat}>{cat}</option>))}
                           </select>
@@ -512,125 +512,125 @@ export default function PPELibraryPage() {
                           item.category || '-'
                         )}
                       </td>
-                      <td className="px-2 py-3 text-gray-700 dark:text-white/80 text-sm whitespace-nowrap">
+                      <td className="px-2 py-3 text-theme-secondary text-sm whitespace-nowrap">
                         {editingRowId === item.id ? (
-                          <input type="number" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.reorder_level ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_level: e.target.value }))} />
+ <input type="number"className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.reorder_level ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_level: e.target.value }))} />
                         ) : (
                           item.reorder_level ?? '-'
                         )}
                       </td>
                     </tr>
                     {expanded && (
-                      <tr className="border-t border-gray-200 dark:border-white/[0.06]">
+                      <tr className="border-t border-theme">
                         <td colSpan={4} className="px-4 py-4 bg-gray-50 dark:bg-white/[0.02]">
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Standard/Compliance</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Standard/Compliance</div>
                               {editingRowId === item.id ? (
-                                <input className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.standard_compliance ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, standard_compliance: e.target.value }))} />
+ <input className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.standard_compliance ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, standard_compliance: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.standard_compliance || '-'}</div>
+                                <div className="text-sm text-theme-primary font-medium">{item.standard_compliance || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Size Options</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Size Options</div>
                               {editingRowId === item.id ? (
-                                <input className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" placeholder="Comma or semicolon separated" value={(rowDraft?.size_options || []).join(', ')} onChange={(e) => setRowDraft((d: any) => ({ ...d, size_options: e.target.value.split(/[,;]/).map(s => s.trim()).filter(Boolean) }))} />
+ <input className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"placeholder="Comma or semicolon separated"value={(rowDraft?.size_options || []).join(',')} onChange={(e) => setRowDraft((d: any) => ({ ...d, size_options: e.target.value.split(/[,;]/).map(s => s.trim()).filter(Boolean) }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{(item.size_options || []).join(', ') || '-'}</div>
+                                <div className="text-sm text-theme-primary font-medium">{(item.size_options || []).join(', ') || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Supplier</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Supplier</div>
                               {editingRowId === item.id ? (
-                                <input className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.supplier ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, supplier: e.target.value }))} />
+ <input className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.supplier ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, supplier: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.supplier || '-'}</div>
+                                <div className="text-sm text-theme-primary font-medium">{item.supplier || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Unit Cost</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Unit Cost</div>
                               {editingRowId === item.id ? (
-                                <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.unit_cost ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, unit_cost: e.target.value }))} />
+ <input type="number"step="0.01"className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.unit_cost ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, unit_cost: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.unit_cost ? `£${item.unit_cost}` : '-'}</div>
+                                <div className="text-sm text-theme-primary font-medium">{item.unit_cost ? `£${item.unit_cost}` : '-'}</div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Linked Risks</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Linked Risks</div>
                               {editingRowId === item.id ? (
-                                <input className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" placeholder="Comma or semicolon separated" value={(rowDraft?.linked_risks || []).join(', ')} onChange={(e) => setRowDraft((d: any) => ({ ...d, linked_risks: e.target.value.split(/[,;]/).map(s => s.trim()).filter(Boolean) }))} />
+ <input className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"placeholder="Comma or semicolon separated"value={(rowDraft?.linked_risks || []).join(',')} onChange={(e) => setRowDraft((d: any) => ({ ...d, linked_risks: e.target.value.split(/[,;]/).map(s => s.trim()).filter(Boolean) }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{(item.linked_risks || []).join(', ') || '-'}</div>
+                                <div className="text-sm text-theme-primary font-medium">{(item.linked_risks || []).join(', ') || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 md:col-span-2 lg:col-span-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Cleaning/Replacement Interval</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Cleaning/Replacement Interval</div>
                               {editingRowId === item.id ? (
-                                <input className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.cleaning_replacement_interval ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, cleaning_replacement_interval: e.target.value }))} />
+ <input className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.cleaning_replacement_interval ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, cleaning_replacement_interval: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.cleaning_replacement_interval || '-'}</div>
+                                <div className="text-sm text-theme-primary font-medium">{item.cleaning_replacement_interval || '-'}</div>
                               )}
                             </div>
                             
                             {/* Stockly Fields Section */}
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 md:col-span-2 lg:col-span-3">
-                              <div className="text-xs font-semibold text-gray-700 dark:text-white/80 mb-2 uppercase">Stock Management</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs font-semibold text-theme-secondary mb-2 uppercase">Stock Management</div>
                               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                                 <div className="flex items-center gap-2">
                                   {editingRowId === item.id ? (
                                     <label className="flex items-center gap-2 cursor-pointer">
-                                      <input type="checkbox" checked={rowDraft?.track_stock ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, track_stock: e.target.checked }))} style={{ accentColor: '#10B981' }} className="w-4 h-4 rounded border-emerald-500/50 bg-white dark:bg-neutral-900 text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500" />
-                                      <span className="text-xs text-gray-600 dark:text-white/60">Track Stock</span>
+                                      <input type="checkbox" checked={rowDraft?.track_stock ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, track_stock: e.target.checked }))} style={{ accentColor: '#10B981' }} className="w-4 h-4 rounded border-module-fg/30 bg-theme-surface text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500" />
+                                      <span className="text-xs text-theme-secondary">Track Stock</span>
                                     </label>
                                   ) : (
                                     <label className="flex items-center gap-2">
-                                      <input type="checkbox" checked={item.track_stock ?? false} disabled className="w-4 h-4 rounded border-emerald-500/50 bg-white dark:bg-neutral-900" />
-                                      <span className="text-xs text-gray-600 dark:text-white/60">Track Stock</span>
+                                      <input type="checkbox" checked={item.track_stock ?? false} disabled className="w-4 h-4 rounded border-module-fg/30 bg-theme-surface" />
+                                      <span className="text-xs text-theme-secondary">Track Stock</span>
                                     </label>
                                   )}
                                 </div>
                               </div>
                             </div>
                             
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">SKU</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">SKU</div>
                               {editingRowId === item.id ? (
-                                <input className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.sku ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, sku: e.target.value }))} />
+ <input className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.sku ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, sku: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.sku || '-'}</div>
+                                <div className="text-sm text-theme-primary font-medium">{item.sku || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Current Stock</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Current Stock</div>
                               {editingRowId === item.id ? (
-                                <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.current_stock ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, current_stock: e.target.value }))} />
+ <input type="number"step="0.01"className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.current_stock ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, current_stock: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.current_stock != null ? item.current_stock : '0'}</div>
+                                <div className="text-sm text-theme-primary font-medium">{item.current_stock != null ? item.current_stock : '0'}</div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Par Level</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Par Level</div>
                               {editingRowId === item.id ? (
-                                <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.par_level ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, par_level: e.target.value }))} />
+ <input type="number"step="0.01"className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.par_level ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, par_level: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.par_level != null ? item.par_level : '-'}</div>
+                                <div className="text-sm text-theme-primary font-medium">{item.par_level != null ? item.par_level : '-'}</div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Reorder Point</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Reorder Point</div>
                               {editingRowId === item.id ? (
-                                <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.reorder_point ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_point: e.target.value }))} />
+ <input type="number"step="0.01"className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.reorder_point ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_point: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.reorder_point != null ? item.reorder_point : '-'}</div>
+                                <div className="text-sm text-theme-primary font-medium">{item.reorder_point != null ? item.reorder_point : '-'}</div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Reorder Qty</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Reorder Qty</div>
                               {editingRowId === item.id ? (
-                                <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.reorder_qty ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_qty: e.target.value }))} />
+ <input type="number"step="0.01"className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.reorder_qty ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_qty: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.reorder_qty != null ? item.reorder_qty : '-'}</div>
+                                <div className="text-sm text-theme-primary font-medium">{item.reorder_qty != null ? item.reorder_qty : '-'}</div>
                               )}
                             </div>
                             {item.low_stock_alert && (
@@ -639,40 +639,40 @@ export default function PPELibraryPage() {
                               </div>
                             )}
                             {item.stock_value != null && item.stock_value > 0 && (
-                              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                                <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Stock Value</div>
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">£{item.stock_value.toFixed(2)}</div>
+                              <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                                <div className="text-xs text-theme-tertiary mb-1">Stock Value</div>
+                                <div className="text-sm text-theme-primary font-medium">£{item.stock_value.toFixed(2)}</div>
                               </div>
                             )}
                             
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 md:col-span-2 lg:col-span-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Notes</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Notes</div>
                               {editingRowId === item.id ? (
-                                <textarea className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white min-h-[80px] focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.notes ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, notes: e.target.value }))} />
+ <textarea className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary min-h-[80px] focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.notes ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, notes: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">{item.notes || '-'}</div>
+                                <div className="text-sm text-theme-primary whitespace-pre-wrap">{item.notes || '-'}</div>
                               )}
                             </div>
                           </div>
                           <div className="flex items-center gap-2 mt-4">
                             {editingRowId === item.id ? (
                               <>
-                                <button onClick={() => saveRow(item.id)} className="px-3 py-2 rounded-lg border border-emerald-600 dark:border-emerald-500/60 text-emerald-600 dark:text-emerald-400 bg-white dark:bg-white/[0.05] hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:shadow-[0_0_14px_rgba(16,185,129,0.7)] transition flex items-center gap-2">
+ <button onClick={() => saveRow(item.id)} className="px-3 py-2 rounded-lg border border-emerald-600 dark:border-module-fg/30 text-module-fg bg-theme-surface ] hover:bg-module-fg/10 hover:shadow-module-glow transition flex items-center gap-2">
                                   <Save size={16} />
                                   <span>Save</span>
                                 </button>
-                                <button onClick={() => cancelEdit(item.id)} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 text-gray-700 dark:text-white bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 transition flex items-center gap-2">
+ <button onClick={() => cancelEdit(item.id)} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 text-theme-secondary bg-theme-surface ] hover:bg-theme-muted transition flex items-center gap-2">
                                   <X size={16} />
                                   <span>Cancel</span>
                                 </button>
                               </>
                             ) : (
                               <>
-                                <button aria-label="Edit PPE" onClick={() => handleEdit(item)} className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-emerald-600 dark:border-emerald-500/60 text-emerald-600 dark:text-emerald-400 bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 hover:shadow-[0_0_14px_rgba(16,185,129,0.7)] transition">
+ <button aria-label="Edit PPE"onClick={() => handleEdit(item)} className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-emerald-600 dark:border-module-fg/30 text-module-fg bg-theme-surface ] hover:bg-theme-muted hover:shadow-module-glow transition">
                                   <Edit size={16} />
                                   <span className="sr-only">Edit</span>
                                 </button>
-                                <button aria-label="Delete PPE" onClick={() => handleDelete(item.id)} className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-red-600 dark:border-red-500/60 text-red-600 dark:text-red-400 bg-white dark:bg-white/[0.05] hover:bg-red-50 dark:hover:bg-red-500/10 hover:shadow-[0_0_14px_rgba(239,68,68,0.55)] transition">
+ <button aria-label="Delete PPE"onClick={() => handleDelete(item.id)} className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-red-600 dark:border-red-500/60 text-red-600 dark:text-red-400 bg-theme-surface ] hover:bg-red-50 dark:hover:bg-red-500/10 hover:shadow-module-glow transition">
                                   <Trash2 size={16} />
                                   <span className="sr-only">Delete</span>
                                 </button>

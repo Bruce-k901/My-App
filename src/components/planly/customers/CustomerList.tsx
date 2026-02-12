@@ -49,7 +49,7 @@ export function CustomerList({ siteId }: CustomerListProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Loading customers...</div>
+        <div className="text-theme-tertiary">Loading customers...</div>
       </div>
     );
   }
@@ -73,8 +73,8 @@ export function CustomerList({ siteId }: CustomerListProps) {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Customers</h1>
-          <p className="text-sm text-gray-500 dark:text-white/60">
+          <h1 className="text-2xl font-bold text-theme-primary">Customers</h1>
+          <p className="text-sm text-theme-tertiary">
             Manage your customer list and delivery information
           </p>
         </div>
@@ -87,7 +87,7 @@ export function CustomerList({ siteId }: CustomerListProps) {
             className={cn(
               showArchived
                 ? 'bg-[#14B8A6] hover:bg-[#0D9488] text-white'
-                : 'border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5'
+                : 'border-theme text-theme-secondary hover:bg-theme-hover'
             )}
           >
             <Archive className="w-4 h-4 mr-2" />
@@ -98,7 +98,7 @@ export function CustomerList({ siteId }: CustomerListProps) {
           <Button
             variant="outline"
             onClick={() => setIsBulkUploadOpen(true)}
-            className="border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5"
+            className="border-theme text-theme-secondary hover:bg-theme-hover"
           >
             <Upload className="w-4 h-4 mr-2" />
             Bulk Upload
@@ -116,13 +116,13 @@ export function CustomerList({ siteId }: CustomerListProps) {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-white/40" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-theme-tertiary" />
         <Input
           type="text"
           placeholder="Search customers..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40"
+          className="pl-10 bg-theme-surface border-theme text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary"
         />
       </div>
 
@@ -141,8 +141,8 @@ export function CustomerList({ siteId }: CustomerListProps) {
       </div>
 
       {filteredCustomers.length === 0 && (
-        <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg p-12 text-center">
-          <div className="text-gray-500 dark:text-white/60">
+        <div className="bg-theme-surface border border-theme rounded-lg p-12 text-center">
+          <div className="text-theme-tertiary">
             {searchQuery ? 'No customers match your search' : 'No customers yet'}
           </div>
         </div>
@@ -322,24 +322,24 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
     <>
       <div
         className={cn(
-          'bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg transition-all',
+          'bg-theme-surface border border-theme rounded-lg transition-all',
           isArchived && 'opacity-60 bg-gray-50 dark:bg-white/[0.02]',
           isExpanded && 'ring-2 ring-[#14B8A6]'
         )}
       >
         {/* Collapsed Row */}
         <div
-          className="p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
+          className="p-4 cursor-pointer hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02] transition-colors"
           onClick={onToggle}
         >
           <div className="flex items-center justify-between">
             {/* Customer Info Grid */}
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 lg:gap-4">
               <div>
-                <p className="font-medium text-gray-900 dark:text-white flex items-center gap-2 flex-wrap">
+                <p className="font-medium text-theme-primary flex items-center gap-2 flex-wrap">
                   {customer.name}
                   {isArchived && (
-                    <span className="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-white/50">
+                    <span className="text-xs px-2 py-0.5 rounded bg-theme-muted text-theme-tertiary">
                       Archived
                     </span>
                   )}
@@ -350,19 +350,19 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                     </span>
                   )}
                 </p>
-                <p className="text-sm text-gray-500 dark:text-white/60">
+                <p className="text-sm text-theme-tertiary">
                   {customer.contact_name || '—'}
                 </p>
               </div>
 
               <div className="hidden sm:block">
-                <p className="text-sm text-gray-700 dark:text-white/80">{customer.address || '—'}</p>
-                <p className="text-sm text-gray-500 dark:text-white/60">{customer.postcode || '—'}</p>
+                <p className="text-sm text-theme-secondary">{customer.address || '—'}</p>
+                <p className="text-sm text-theme-tertiary">{customer.postcode || '—'}</p>
               </div>
 
               <div className="hidden lg:block">
-                <p className="text-sm text-gray-700 dark:text-white/80">{customer.email || '—'}</p>
-                <p className="text-sm text-gray-500 dark:text-white/60">{customer.phone || '—'}</p>
+                <p className="text-sm text-theme-secondary">{customer.email || '—'}</p>
+                <p className="text-sm text-theme-tertiary">{customer.phone || '—'}</p>
               </div>
 
               <div className="hidden lg:block">
@@ -387,14 +387,14 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                     <Link
                       href="/dashboard/planly/delivery-schedule"
                       onClick={(e) => e.stopPropagation()}
-                      className="text-xs px-2 py-0.5 rounded bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-500/20 flex items-center gap-1 hover:bg-teal-100 dark:hover:bg-teal-500/20 transition-colors"
+                      className="text-xs px-2 py-0.5 rounded bg-teal-50 dark:bg-module-fg/10 text-module-fg border border-teal-200 dark:border-module-fg/30 flex items-center gap-1 hover:bg-teal-100 dark:hover:bg-module-fg/10 transition-colors"
                     >
                       <Truck className="w-3 h-3" />
                       Delivery
                     </Link>
                   )}
                   {!(customer.needs_delivery ?? true) && (
-                    <span className="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-white/50">
+                    <span className="text-xs px-2 py-0.5 rounded bg-theme-muted text-theme-tertiary">
                       Collection
                     </span>
                   )}
@@ -403,7 +403,7 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
 
               <div className="hidden lg:block text-right">
                 {customer.minimum_order_value && customer.minimum_order_value > 0 && (
-                  <p className="text-sm font-medium text-gray-700 dark:text-white/80">
+                  <p className="text-sm font-medium text-theme-secondary">
                     Min: £{customer.minimum_order_value.toFixed(2)}
                   </p>
                 )}
@@ -413,9 +413,9 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
             {/* Chevron */}
             <div className="ml-4 flex-shrink-0">
               {isExpanded ? (
-                <ChevronUp className="w-5 h-5 text-gray-400 dark:text-white/40" />
+                <ChevronUp className="w-5 h-5 text-theme-tertiary" />
               ) : (
-                <ChevronDown className="w-5 h-5 text-gray-400 dark:text-white/40" />
+                <ChevronDown className="w-5 h-5 text-theme-tertiary" />
               )}
             </div>
           </div>
@@ -423,7 +423,7 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
 
         {/* Expanded Content */}
         {isExpanded && (
-          <div className="border-t border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/[0.02] p-4">
+          <div className="border-t border-theme bg-gray-50/50 dark:bg-white/[0.02] p-4">
             {isEditing ? (
               <EditCustomerForm
                 data={formData}
@@ -438,37 +438,37 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                 {/* Details Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div>
-                    <p className="text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-wide mb-1">
+                    <p className="text-xs font-medium text-theme-tertiary uppercase tracking-wide mb-1">
                       Delivery Notes
                     </p>
-                    <p className="text-sm text-gray-700 dark:text-white/80">
+                    <p className="text-sm text-theme-secondary">
                       {(customer as any).notes || 'No delivery notes'}
                     </p>
                   </div>
 
                   <div>
-                    <p className="text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-wide mb-1">
+                    <p className="text-xs font-medium text-theme-tertiary uppercase tracking-wide mb-1">
                       Default Ship State
                     </p>
-                    <span className="inline-block text-xs px-2 py-1 rounded bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-white/80 capitalize">
+                    <span className="inline-block text-xs px-2 py-1 rounded bg-theme-muted text-theme-secondary capitalize">
                       {customer.default_ship_state || 'baked'}
                     </span>
                   </div>
 
                   <div>
-                    <p className="text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-wide mb-1">
+                    <p className="text-xs font-medium text-theme-tertiary uppercase tracking-wide mb-1">
                       Order Settings
                     </p>
                     <div className="space-y-1">
                       {customer.minimum_order_value && customer.minimum_order_value > 0 ? (
-                        <p className="text-sm text-gray-700 dark:text-white/80">
+                        <p className="text-sm text-theme-secondary">
                           Min order: £{customer.minimum_order_value.toFixed(2)}
                         </p>
                       ) : (
-                        <p className="text-sm text-gray-400 dark:text-white/40">No minimum order</p>
+                        <p className="text-sm text-theme-tertiary">No minimum order</p>
                       )}
                       {customer.below_minimum_delivery_charge && customer.below_minimum_delivery_charge > 0 && (
-                        <p className="text-sm text-gray-700 dark:text-white/80">
+                        <p className="text-sm text-theme-secondary">
                           Below min fee: £{customer.below_minimum_delivery_charge.toFixed(2)}
                         </p>
                       )}
@@ -477,14 +477,14 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                 </div>
 
                 {/* Delivery Status Section */}
-                <div className="border-t border-gray-200 dark:border-white/10 pt-4">
-                  <p className="text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-wide mb-2">
+                <div className="border-t border-theme pt-4">
+                  <p className="text-xs font-medium text-theme-tertiary uppercase tracking-wide mb-2">
                     Delivery Status
                   </p>
                   <div className="flex items-center gap-4">
                     {(customer.needs_delivery ?? true) ? (
                       <div className="flex items-center gap-2">
-                        <span className="text-xs px-2 py-1 rounded bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-500/20 flex items-center gap-1">
+                        <span className="text-xs px-2 py-1 rounded bg-teal-50 dark:bg-module-fg/10 text-module-fg border border-teal-200 dark:border-module-fg/30 flex items-center gap-1">
                           <Truck className="w-3 h-3" />
                           Requires Delivery
                         </span>
@@ -497,7 +497,7 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                         </Link>
                       </div>
                     ) : (
-                      <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-white/50">
+                      <span className="text-xs px-2 py-1 rounded bg-theme-muted text-theme-tertiary">
                         Collection Only
                       </span>
                     )}
@@ -505,8 +505,8 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                 </div>
 
                 {/* Portal Status Section */}
-                <div className="border-t border-gray-200 dark:border-white/10 pt-4">
-                  <p className="text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-wide mb-2">
+                <div className="border-t border-theme pt-4">
+                  <p className="text-xs font-medium text-theme-tertiary uppercase tracking-wide mb-2">
                     Customer Portal Access
                   </p>
                   <div className="flex items-center gap-4">
@@ -517,7 +517,7 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                           Portal Enabled
                         </span>
                         {(customer as any).portal_last_login && (
-                          <span className="text-xs text-gray-500 dark:text-white/50">
+                          <span className="text-xs text-theme-tertiary">
                             Last login: {new Date((customer as any).portal_last_login).toLocaleDateString()}
                           </span>
                         )}
@@ -527,12 +527,12 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                         <span className="text-xs px-2 py-1 rounded bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20">
                           Invited {new Date((customer as any).portal_invited_at).toLocaleDateString()}
                         </span>
-                        <span className="text-xs text-gray-500 dark:text-white/50">
+                        <span className="text-xs text-theme-tertiary">
                           Waiting for customer to activate
                         </span>
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-400 dark:text-white/40">
+                      <span className="text-sm text-theme-tertiary">
                         Not invited to portal
                       </span>
                     )}
@@ -540,7 +540,7 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-white/10">
+                <div className="flex items-center justify-between pt-4 border-t border-theme">
                   <div className="flex gap-2 flex-wrap">
                     <Button
                       variant="outline"
@@ -549,7 +549,7 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                         e.stopPropagation();
                         setIsEditing(true);
                       }}
-                      className="border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5"
+                      className="border-theme text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/5"
                     >
                       <Pencil className="w-4 h-4 mr-2" />
                       Edit
@@ -565,7 +565,7 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                           setShowInviteDialog(true);
                         }}
                         disabled={!customer.email}
-                        className="border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5"
+                        className="border-theme text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/5"
                       >
                         <Mail className="w-4 h-4 mr-2" />
                         {hasBeenInvited ? 'Resend Invite' : 'Invite to Portal'}
@@ -581,7 +581,7 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                           e.stopPropagation();
                           handleDisablePortal();
                         }}
-                        className="border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5"
+                        className="border-theme text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/5"
                       >
                         <Lock className="w-4 h-4 mr-2" />
                         Disable Portal
@@ -596,7 +596,7 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                         handleArchive();
                       }}
                       disabled={isArchiving}
-                      className="border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5"
+                      className="border-theme text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/5"
                     >
                       <Archive className="w-4 h-4 mr-2" />
                       {isArchived ? 'Unarchive' : 'Archive'}
@@ -695,27 +695,27 @@ function EditCustomerForm({
       {/* Row 1: Basic Info */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="name" className="text-gray-700 dark:text-white/80">
+          <Label htmlFor="name" className="text-theme-secondary">
             Customer Name *
           </Label>
           <Input
             id="name"
             value={data.name}
             onChange={(e) => onChange({ ...data, name: e.target.value })}
-            className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+            className="mt-1 bg-theme-surface border-theme text-theme-primary"
             required
           />
         </div>
 
         <div>
-          <Label htmlFor="contact_name" className="text-gray-700 dark:text-white/80">
+          <Label htmlFor="contact_name" className="text-theme-secondary">
             Contact Name
           </Label>
           <Input
             id="contact_name"
             value={data.contact_name || ''}
             onChange={(e) => onChange({ ...data, contact_name: e.target.value })}
-            className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+            className="mt-1 bg-theme-surface border-theme text-theme-primary"
           />
         </div>
       </div>
@@ -723,27 +723,27 @@ function EditCustomerForm({
       {/* Row 2: Address */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="address" className="text-gray-700 dark:text-white/80">
+          <Label htmlFor="address" className="text-theme-secondary">
             Address *
           </Label>
           <Input
             id="address"
             value={data.address || ''}
             onChange={(e) => onChange({ ...data, address: e.target.value })}
-            className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+            className="mt-1 bg-theme-surface border-theme text-theme-primary"
             required
           />
         </div>
 
         <div>
-          <Label htmlFor="postcode" className="text-gray-700 dark:text-white/80">
+          <Label htmlFor="postcode" className="text-theme-secondary">
             Postcode *
           </Label>
           <Input
             id="postcode"
             value={data.postcode || ''}
             onChange={(e) => onChange({ ...data, postcode: e.target.value })}
-            className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+            className="mt-1 bg-theme-surface border-theme text-theme-primary"
             required
           />
         </div>
@@ -752,7 +752,7 @@ function EditCustomerForm({
       {/* Row 3: Contact Details */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="email" className="text-gray-700 dark:text-white/80">
+          <Label htmlFor="email" className="text-theme-secondary">
             Email
           </Label>
           <Input
@@ -760,19 +760,19 @@ function EditCustomerForm({
             type="email"
             value={data.email || ''}
             onChange={(e) => onChange({ ...data, email: e.target.value })}
-            className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+            className="mt-1 bg-theme-surface border-theme text-theme-primary"
           />
         </div>
 
         <div>
-          <Label htmlFor="phone" className="text-gray-700 dark:text-white/80">
+          <Label htmlFor="phone" className="text-theme-secondary">
             Phone
           </Label>
           <Input
             id="phone"
             value={data.phone || ''}
             onChange={(e) => onChange({ ...data, phone: e.target.value })}
-            className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+            className="mt-1 bg-theme-surface border-theme text-theme-primary"
           />
         </div>
       </div>
@@ -780,7 +780,7 @@ function EditCustomerForm({
       {/* Row 4: Destination & Ship State */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="destination_group" className="text-gray-700 dark:text-white/80">
+          <Label htmlFor="destination_group" className="text-theme-secondary">
             Destination Group
           </Label>
           <StyledSelect
@@ -800,7 +800,7 @@ function EditCustomerForm({
         </div>
 
         <div>
-          <Label htmlFor="ship_state" className="text-gray-700 dark:text-white/80">
+          <Label htmlFor="ship_state" className="text-theme-secondary">
             Default Ship State
           </Label>
           <StyledSelect
@@ -819,7 +819,7 @@ function EditCustomerForm({
       {/* Row 5: Order Settings */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="minimum_order" className="text-gray-700 dark:text-white/80">
+          <Label htmlFor="minimum_order" className="text-theme-secondary">
             Minimum Order Value (£)
           </Label>
           <Input
@@ -835,12 +835,12 @@ function EditCustomerForm({
               })
             }
             placeholder="0.00"
-            className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+            className="mt-1 bg-theme-surface border-theme text-theme-primary"
           />
         </div>
 
         <div>
-          <Label htmlFor="below_min_charge" className="text-gray-700 dark:text-white/80">
+          <Label htmlFor="below_min_charge" className="text-theme-secondary">
             Below Minimum Delivery Charge (£)
           </Label>
           <Input
@@ -856,9 +856,9 @@ function EditCustomerForm({
               })
             }
             placeholder="0.00"
-            className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+            className="mt-1 bg-theme-surface border-theme text-theme-primary"
           />
-          <p className="text-xs text-gray-500 dark:text-white/50 mt-1">
+          <p className="text-xs text-theme-tertiary mt-1">
             Charge applied when order is below minimum
           </p>
         </div>
@@ -866,7 +866,7 @@ function EditCustomerForm({
 
       {/* Delivery Notes */}
       <div>
-        <Label htmlFor="notes" className="text-gray-700 dark:text-white/80">
+        <Label htmlFor="notes" className="text-theme-secondary">
           Delivery Notes
         </Label>
         <Textarea
@@ -875,7 +875,7 @@ function EditCustomerForm({
           onChange={(e) => onChange({ ...data, notes: e.target.value } as any)}
           placeholder="Keys provided, code is 1234..."
           rows={3}
-          className="mt-1 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40"
+          className="mt-1 bg-theme-surface border-theme text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary"
         />
       </div>
 
@@ -887,7 +887,7 @@ function EditCustomerForm({
             checked={data.is_ad_hoc}
             onCheckedChange={(checked) => onChange({ ...data, is_ad_hoc: checked as boolean })}
           />
-          <Label htmlFor="is_ad_hoc" className="text-sm text-gray-700 dark:text-white/80">
+          <Label htmlFor="is_ad_hoc" className="text-sm text-theme-secondary">
             Ad-hoc customer (not on regular delivery schedule)
           </Label>
         </div>
@@ -898,7 +898,7 @@ function EditCustomerForm({
             checked={data.frozen_only}
             onCheckedChange={(checked) => onChange({ ...data, frozen_only: checked as boolean })}
           />
-          <Label htmlFor="frozen_only" className="text-sm text-gray-700 dark:text-white/80">
+          <Label htmlFor="frozen_only" className="text-sm text-theme-secondary">
             Frozen only (this customer only receives frozen products)
           </Label>
         </div>
@@ -909,7 +909,7 @@ function EditCustomerForm({
             checked={data.needs_delivery ?? true}
             onCheckedChange={(checked) => onChange({ ...data, needs_delivery: checked as boolean })}
           />
-          <Label htmlFor="needs_delivery" className="text-sm text-gray-700 dark:text-white/80">
+          <Label htmlFor="needs_delivery" className="text-sm text-theme-secondary">
             Requires delivery (appears on delivery schedule)
           </Label>
         </div>
@@ -922,19 +922,19 @@ function EditCustomerForm({
               onChange({ ...data, portal_enabled: checked as boolean } as any)
             }
           />
-          <Label htmlFor="portal_enabled" className="text-sm text-gray-700 dark:text-white/80">
+          <Label htmlFor="portal_enabled" className="text-sm text-theme-secondary">
             Enable customer portal access
           </Label>
         </div>
       </div>
 
       {/* Save/Cancel */}
-      <div className="flex justify-end gap-2 pt-4 border-t border-gray-200 dark:border-white/10">
+      <div className="flex justify-end gap-2 pt-4 border-t border-theme">
         <Button
           variant="outline"
           onClick={onCancel}
           disabled={isSaving}
-          className="border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5"
+          className="border-theme text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/5"
         >
           Cancel
         </Button>

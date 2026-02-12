@@ -26,14 +26,14 @@ export default function CompanySetupWizard() {
   const prev = () => setStep((s) => Math.max(s - 1, 0));
   const markDone = (key: string) => setCompleted((c) => ({ ...c, [key]: true }));
   return (
-    <div className="min-h-screen bg-neutral-950 text-white">
+    <div className="min-h-screen bg-neutral-950 text-theme-primary">
       {/* Hero */}
       <section className="flex flex-col items-center justify-center text-center w-full px-6 py-5 bg-gradient-to-r from-magenta-400/10 to-blue-400/10">
         <div className="max-w-5xl mx-auto flex flex-col items-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-2 tracking-tight leading-tight bg-gradient-to-r from-magenta-500 to-blue-500 text-transparent bg-clip-text">
             Welcome — Let’s set up your company
           </h1>
-          <p className="text-base text-gray-300 mb-4 max-w-2xl leading-snug">
+          <p className="text-base text-theme-tertiary mb-4 max-w-2xl leading-snug">
             A quick guided setup to configure your organisation, sites, people, and assets.
           </p>
           <div className="mt-2 flex items-center justify-center space-x-2">
@@ -120,13 +120,13 @@ export default function CompanySetupWizard() {
           <button
             onClick={prev}
             disabled={step === 0}
-            className="px-3 py-2 rounded-full border border-white/20 bg-transparent text-slate-300 hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 hover:text-white transition-all duration-300"
+            className="px-3 py-2 rounded-full border border-white/20 bg-transparent text-theme-secondary hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 hover:text-white transition-all duration-300"
           >
             Back
           </button>
           <Link
             href="/dashboard/sites"
-            className={`px-3 py-2 rounded-full border border-white/20 bg-transparent text-slate-300 transition-all duration-300 inline-flex items-center gap-2 ${step === 0 && !canGoSites ? "opacity-50 pointer-events-none" : "hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 hover:text-white"}`}
+            className={`px-3 py-2 rounded-full border border-white/20 bg-transparent text-theme-secondary transition-all duration-300 inline-flex items-center gap-2 ${step === 0 && !canGoSites ? "opacity-50 pointer-events-none" : "hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 hover:text-white"}`}
             aria-disabled={step === 0 && !canGoSites}
           >
             Sites <ArrowRight className="w-4 h-4" />
@@ -272,7 +272,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto pt-16">
-        <p className="text-slate-300">Loading…</p>
+        <p className="text-theme-secondary">Loading…</p>
       </div>
     );
   }
@@ -280,7 +280,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
     <form onSubmit={submit} className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 max-w-5xl mx-auto pt-16">
       {/* Company Name */}
       <div className="col-span-2">
-        <label className="block text-sm font-medium text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-theme-tertiary mb-2">
           Company Name <span className="text-red-500">*</span>
         </label>
         <input
@@ -294,7 +294,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
 
       {/* Industry Dropdown */}
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-theme-tertiary mb-2">
           Industry <span className="text-red-500">*</span>
         </label>
         <select
@@ -320,7 +320,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
 
       {/* Country Dropdown */}
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-theme-tertiary mb-2">
           Country <span className="text-red-500">*</span>
         </label>
         <select
@@ -368,7 +368,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
 
       {/* Company Number */}
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-theme-tertiary mb-2">
           Company Number <span className="text-red-500">*</span>
         </label>
         <input
@@ -382,7 +382,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
 
       {/* VAT Number */}
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-theme-tertiary mb-2">
           VAT Number (optional)
         </label>
         <input
@@ -396,7 +396,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
 
       {/* Contact Email */}
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-theme-tertiary mb-2">
           Contact Email <span className="text-red-500">*</span>
         </label>
         <input
@@ -410,7 +410,7 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
 
       {/* Logo Upload */}
       <div className="col-span-2">
-        <label className="block text-sm font-medium text-gray-300 mb-2">Company Logo</label>
+        <label className="block text-sm font-medium text-theme-tertiary mb-2">Company Logo</label>
         <input
           type="file"
           accept="image/*"
@@ -431,14 +431,14 @@ function CompanyForm({ busy, setBusy, setError, userId, onDone, onGateSites }: a
         <button
           type="button"
           onClick={() => doSubmit(false)}
-          className="glass-button text-white px-8 py-3 rounded-lg font-medium transition disabled:opacity-60"
+          className="glass-button text-theme-primary px-8 py-3 rounded-lg font-medium transition disabled:opacity-60"
           disabled={busy || !requiredComplete}
         >
           Save
         </button>
         <button
           type="submit"
-          className="glass-button text-white px-8 py-3 rounded-lg font-medium transition disabled:opacity-60"
+          className="glass-button text-theme-primary px-8 py-3 rounded-lg font-medium transition disabled:opacity-60"
           disabled={busy || !requiredComplete}
         >
           Save and Continue
@@ -536,7 +536,7 @@ function ImportTemplates({ busy, setBusy, setError, companyId, siteId, onDone }:
   return (
     <Card title="Import Checklists" icon={<ClipboardList className="w-6 h-6 text-magenta-400" />}>
       <form onSubmit={submit} className="space-y-4">
-        <p className="text-slate-300 text-sm">Select a checklist library to import starter templates for your site. You can edit these later.</p>
+        <p className="text-theme-secondary text-sm">Select a checklist library to import starter templates for your site. You can edit these later.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {[
             { id: "kitchen", name: "Kitchen", desc: "Opening/closing, prep, hygiene" },
@@ -550,13 +550,13 @@ function ImportTemplates({ busy, setBusy, setError, companyId, siteId, onDone }:
               onClick={() => setLibrary(opt.id)}
             >
               <p className="font-medium">{opt.name}</p>
-              <p className="text-xs text-slate-400">{opt.desc}</p>
+              <p className="text-xs text-theme-tertiary">{opt.desc}</p>
             </button>
           ))}
         </div>
         <div className="rounded-lg border border-neutral-800 p-3 bg-[#0f1220]">
-          <p className="text-xs text-slate-400">Preview templates:</p>
-          <ul className="mt-2 text-sm text-slate-300 list-disc list-inside">
+          <p className="text-xs text-theme-tertiary">Preview templates:</p>
+          <ul className="mt-2 text-sm text-theme-secondary list-disc list-inside">
             {library === "kitchen" && ["Daily opening checks", "Food prep hygiene", "Fridge temp logs"].map((t) => <li key={t}>{t}</li>)}
             {library === "foh" && ["Dining area cleaning", "Service standards", "Guest safety walk"].map((t) => <li key={t}>{t}</li>)}
             {library === "bar" && ["Opening checks", "Glassware cleaning", "Stock/line checks"].map((t) => <li key={t}>{t}</li>)}

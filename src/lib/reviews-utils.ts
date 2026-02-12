@@ -124,7 +124,7 @@ export const TEMPLATE_TYPE_CONFIG: Record<string, {
     label: 'Exit Interview',
     shortLabel: 'Exit',
     category: 'offboarding',
-    color: 'text-gray-400',
+    color: 'text-theme-tertiary',
     bgColor: 'bg-gray-600/20',
     borderColor: 'border-gray-600/30',
     icon: UserMinus
@@ -191,7 +191,7 @@ export const TEMPLATE_TYPE_CONFIG: Record<string, {
     label: 'Custom Template',
     shortLabel: 'Custom',
     category: 'performance',
-    color: 'text-gray-400',
+    color: 'text-theme-tertiary',
     bgColor: 'bg-gray-600/20',
     borderColor: 'border-gray-600/30',
     icon: FileEdit

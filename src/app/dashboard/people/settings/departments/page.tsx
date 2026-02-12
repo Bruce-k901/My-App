@@ -266,7 +266,7 @@ export default function SettingsDepartmentsPage() {
   if (ctxLoading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-900 dark:text-white">Loading...</div>
+        <div className="text-theme-primary">Loading...</div>
       </div>
     );
   }
@@ -278,18 +278,18 @@ export default function SettingsDepartmentsPage() {
         <BackToSetup />
         <Link
           href="/dashboard/people/settings"
-          className="inline-flex items-center gap-2 text-sm text-gray-900 dark:text-white/60 hover:text-gray-900 dark:hover:text-white mb-4"
+          className="inline-flex items-center gap-2 text-sm text-theme-primary/60 hover:text-theme-primary mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Settings
         </Link>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-theme-primary mb-2 flex items-center gap-2">
               <Building2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               Departments
             </h1>
-            <p className="text-gray-500 dark:text-white/60">
+            <p className="text-theme-tertiary">
               Manage your company departments and contact information
             </p>
           </div>
@@ -297,14 +297,14 @@ export default function SettingsDepartmentsPage() {
             <Button
               onClick={handleExport}
               variant="outline"
-              className="border-white/12 text-gray-600 dark:text-white/80 hover:bg-gray-200 dark:hover:bg-white/[0.08]"
+              className="border-white/12 text-theme-secondary hover:bg-gray-200 dark:hover:bg-white/[0.08]"
             >
               Export
             </Button>
             <Button
               onClick={handleImport}
               variant="outline"
-              className="border-white/12 text-gray-600 dark:text-white/80 hover:bg-gray-200 dark:hover:bg-white/[0.08]"
+              className="border-white/12 text-theme-secondary hover:bg-gray-200 dark:hover:bg-white/[0.08]"
             >
               Import
             </Button>
@@ -313,7 +313,7 @@ export default function SettingsDepartmentsPage() {
                 setEditingDepartment(null);
                 setFormOpen(true);
               }}
-              className="flex items-center justify-center w-10 h-10 rounded-md border border-[#D37E91] text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D37E91]/40"
+              className="flex items-center justify-center w-10 h-10 rounded-md border border-module-fg text-blue-600 dark:text-blue-400 hover:bg-module-fg/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-module-fg/40"
               title="Add Department"
             >
               <Plus className="w-5 h-5" />
@@ -324,18 +324,18 @@ export default function SettingsDepartmentsPage() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-theme-tertiary" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search departments by name, description, or contact..."
-          className="w-full pl-10 pr-10 py-2 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-md text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 dark:focus:ring-blue-400/50"
+          className="w-full pl-10 pr-10 py-2 bg-theme-surface border border-theme rounded-md text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-blue-500/50 dark:focus:ring-blue-400/50"
         />
         {searchQuery && (
           <button
             onClick={() => setSearchQuery('')}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-900 dark:text-white"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-theme-tertiary hover:text-theme-primary"
           >
             <X className="w-4 h-4" />
           </button>
@@ -344,9 +344,9 @@ export default function SettingsDepartmentsPage() {
 
       {/* Departments List - Org Chart View */}
       {departments.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg">
-          <Building2 className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-          <p className="text-gray-400 mb-2">
+        <div className="text-center py-12 bg-theme-surface border border-theme rounded-lg">
+          <Building2 className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
+          <p className="text-theme-tertiary mb-2">
             {searchQuery ? 'No departments found matching your search' : 'No departments yet'}
           </p>
           {!searchQuery && (
@@ -355,7 +355,7 @@ export default function SettingsDepartmentsPage() {
                 setEditingDepartment(null);
                 setFormOpen(true);
               }}
-              className="mt-4 bg-transparent border border-[#D37E91] text-blue-600 dark:text-blue-400 hover:shadow-[0_0_12px_rgba(211,126,145,0.7)]"
+              className="mt-4 bg-transparent border border-module-fg text-blue-600 dark:text-blue-400 hover:shadow-module-glow"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create First Department
@@ -374,9 +374,9 @@ export default function SettingsDepartmentsPage() {
       {/* Form Modal */}
       {formOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-50 dark:bg-[#0B0D13] border border-gray-200 dark:border-white/[0.06] rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6">
+          <div className="bg-theme-surface-elevated border border-theme rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-bold text-theme-primary">
                 {editingDepartment ? 'Edit Department' : 'Create New Department'}
               </h2>
               <button
@@ -384,7 +384,7 @@ export default function SettingsDepartmentsPage() {
                   setFormOpen(false);
                   setEditingDepartment(null);
                 }}
-                className="text-gray-400 hover:text-gray-900 dark:text-white"
+                className="text-theme-tertiary hover:text-theme-primary"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -409,9 +409,9 @@ export default function SettingsDepartmentsPage() {
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-50 dark:bg-[#0B0D13] border border-gray-200 dark:border-white/[0.06] rounded-lg max-w-md w-full p-6">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Delete Department</h3>
-            <p className="text-gray-400 mb-6">
+          <div className="bg-theme-surface-elevated border border-theme rounded-lg max-w-md w-full p-6">
+            <h3 className="text-lg font-bold text-theme-primary mb-2">Delete Department</h3>
+            <p className="text-theme-tertiary mb-6">
               Are you sure you want to delete <strong>{deleteConfirm.name}</strong>? This action
               cannot be undone.
             </p>
@@ -419,7 +419,7 @@ export default function SettingsDepartmentsPage() {
               <Button
                 variant="outline"
                 onClick={() => setDeleteConfirm(null)}
-                className="border-white/12 text-gray-600 dark:text-white/80 hover:bg-gray-200 dark:hover:bg-white/[0.08]"
+                className="border-white/12 text-theme-secondary hover:bg-gray-200 dark:hover:bg-white/[0.08]"
               >
                 Cancel
               </Button>

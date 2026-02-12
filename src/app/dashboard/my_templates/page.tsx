@@ -200,22 +200,22 @@ export default function TemplatesPage() {
       'h_and_s': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
       'fire': 'bg-red-500/10 text-red-400 border-red-500/20',
       'cleaning': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-      'compliance': 'bg-[#D37E91]/15 text-[#D37E91] border-[#D37E91]/20'
+      'compliance': 'bg-module-fg/[0.15] text-module-fg border-module-fg/[0.20]'
     };
-    return colors[category] || 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+    return colors[category] || 'bg-theme-surface-elevated0/10 text-theme-tertiary border-gray-500/20';
   };
 
   return (
-    <div className="bg-[#0f1220] text-white border border-neutral-800 rounded-xl p-4 sm:p-6 lg:p-8">
+    <div className="bg-[rgb(var(--surface-elevated))] text-theme-primary border border-neutral-800 rounded-xl p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">My Task Templates</h1>
-          <p className="text-white/60 text-sm sm:text-base">Custom task templates you've created</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary mb-2">My Task Templates</h1>
+          <p className="text-theme-tertiary text-sm sm:text-base">Custom task templates you've created</p>
         </div>
         <button
           onClick={handleNewTemplate}
-          className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-[#D37E91] text-[#D37E91] bg-transparent hover:bg-white/[0.04] transition-all duration-150"
+          className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-module-fg text-module-fg bg-transparent hover:bg-white/[0.04] transition-all duration-150"
           aria-label="Add Template"
         >
           <Plus className="h-5 w-5" />
@@ -225,7 +225,7 @@ export default function TemplatesPage() {
       {/* Loading State */}
       {loading && (
         <div className="mt-8 text-center">
-          <p className="text-white/60">Loading templates...</p>
+          <p className="text-theme-tertiary">Loading templates...</p>
         </div>
       )}
 
@@ -239,11 +239,11 @@ export default function TemplatesPage() {
               className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-5 hover:bg-white/[0.06] transition-colors cursor-pointer relative"
             >
               <div className="flex items-start justify-between mb-3">
-                <h3 className="text-lg font-semibold text-white pr-2">{template.name}</h3>
+                <h3 className="text-lg font-semibold text-theme-primary pr-2">{template.name}</h3>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={(e) => handleEditTemplate(template, e)}
-                    className="p-1.5 rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                    className="p-1.5 rounded hover:bg-white/10 text-theme-tertiary hover:text-white transition-colors"
                     title="Edit Template"
                   >
                     <Edit2 className="h-4 w-4" />
@@ -251,7 +251,7 @@ export default function TemplatesPage() {
                   <button
                     onClick={(e) => handleDeleteTemplate(template.id, e)}
                     disabled={deletingTemplateId === template.id}
-                    className="p-1.5 rounded hover:bg-white/10 text-white/60 hover:text-red-400 transition-colors disabled:opacity-50"
+                    className="p-1.5 rounded hover:bg-white/10 text-theme-tertiary hover:text-red-400 transition-colors disabled:opacity-50"
                     title="Delete Template"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -260,7 +260,7 @@ export default function TemplatesPage() {
               </div>
               
               {template.description && (
-                <p className="text-white/60 text-sm mb-3 line-clamp-2">{template.description}</p>
+                <p className="text-theme-tertiary text-sm mb-3 line-clamp-2">{template.description}</p>
               )}
 
               {/* Usage Count Tag */}
@@ -270,7 +270,7 @@ export default function TemplatesPage() {
                 </span>
               </div>
 
-              <div className="flex items-center gap-4 text-xs text-white/50">
+              <div className="flex items-center gap-4 text-xs text-theme-tertiary">
                 <div className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   <span>{getFrequencyLabel(template.frequency)}</span>
@@ -291,8 +291,8 @@ export default function TemplatesPage() {
       {!loading && templates.length === 0 && (
         <div className="mt-8 text-center py-12">
           <FileText className="h-12 w-12 text-white/20 mx-auto mb-4" />
-          <p className="text-white/60 mb-2">No templates yet</p>
-          <p className="text-white/40 text-sm">Create your first template to get started</p>
+          <p className="text-theme-tertiary mb-2">No templates yet</p>
+          <p className="text-theme-tertiary text-sm">Create your first template to get started</p>
         </div>
       )}
 

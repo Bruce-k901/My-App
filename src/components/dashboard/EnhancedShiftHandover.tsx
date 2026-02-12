@@ -652,15 +652,15 @@ export default function EnhancedShiftHandover() {
             <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-[#D37E91]" />
           </div>
           <div>
-            <h3 className="text-xl sm:text-2xl font-semibold text-white">Daily Notes & Actions</h3>
-            <p className="text-xs text-slate-400 hidden sm:block">Notes, tasks, reminders, and messages</p>
+            <h3 className="text-xl sm:text-2xl font-semibold text-theme-primary">Daily Notes & Actions</h3>
+            <p className="text-xs text-theme-tertiary hidden sm:block">Notes, tasks, reminders, and messages</p>
           </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
-          {savedAt && <span className="text-xs text-slate-400">Saved at {savedAt}</span>}
+          {savedAt && <span className="text-xs text-theme-tertiary">Saved at {savedAt}</span>}
           <Link
             href="/dashboard/calendar"
-            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 ease-in-out text-xs sm:text-sm font-medium whitespace-nowrap"
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-module-glow transition-all duration-200 ease-in-out text-xs sm:text-sm font-medium whitespace-nowrap"
           >
             <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
             <span className="hidden xs:inline">Calendar & Diary</span>
@@ -668,7 +668,7 @@ export default function EnhancedShiftHandover() {
           </Link>
           <Link
             href="/dashboard/tasks/my-tasks"
-            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all duration-200 ease-in-out text-xs sm:text-sm font-medium whitespace-nowrap"
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-transparent border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-module-glow transition-all duration-200 ease-in-out text-xs sm:text-sm font-medium whitespace-nowrap"
           >
             <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
             <span className="hidden xs:inline">My Tasks</span>
@@ -693,7 +693,7 @@ export default function EnhancedShiftHandover() {
               className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
                 activeTab === tab.id
                   ? "border-[#D37E91] text-[#D37E91]"
-                  : "border-transparent text-slate-400 hover:text-slate-300"
+                  : "border-transparent text-theme-tertiary hover:text-theme-secondary"
               }`}
             >
               <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -712,7 +712,7 @@ export default function EnhancedShiftHandover() {
             onChange={(e) => setNotes(e.target.value)}
             onBlur={save}
             placeholder="Key updates for the next shift, important information, issues to follow up..."
-            className="w-full h-24 sm:h-32 bg-black/30 border border-white/10 rounded-xl p-3 sm:p-4 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 resize-none"
+            className="w-full h-24 sm:h-32 bg-black/30 border border-white/10 rounded-xl p-3 sm:p-4 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 resize-none"
           />
           <div className="flex justify-end">
             <button
@@ -732,13 +732,13 @@ export default function EnhancedShiftHandover() {
           {/* Quick-add Task Templates */}
           {taskTemplates.length > 0 && !showTaskForm && (
             <div className="mb-4">
-              <p className="text-xs text-slate-400 mb-2">Quick-add from templates:</p>
+              <p className="text-xs text-theme-tertiary mb-2">Quick-add from templates:</p>
               <div className="flex flex-wrap gap-2">
                 {taskTemplates.slice(0, 5).map((template) => (
                   <button
                     key={template.id}
                     onClick={() => addTaskFromTemplate(template)}
-                    className="px-3 py-1.5 text-xs rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500/20 transition-colors flex items-center gap-1"
+                    className="px-3 py-1.5 text-xs rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-module-fg/10 transition-colors flex items-center gap-1"
                   >
                     <Zap className="w-3 h-3" />
                     {template.name}
@@ -749,7 +749,7 @@ export default function EnhancedShiftHandover() {
           )}
 
           {tasks.length === 0 && !showTaskForm && (
-            <div className="text-center py-8 text-slate-400">
+            <div className="text-center py-8 text-theme-tertiary">
               <CheckCircle2 className="w-12 h-12 mx-auto mb-2 opacity-50" />
               <p>No tasks created yet</p>
             </div>
@@ -759,8 +759,8 @@ export default function EnhancedShiftHandover() {
             <div key={task.id} className="bg-black/30 border border-white/10 rounded-lg p-3 sm:p-4">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2 gap-2">
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-white mb-1 text-sm sm:text-base break-words">{task.title}</h4>
-                  <div className="flex items-center gap-2 sm:gap-4 text-xs text-slate-400 flex-wrap">
+                  <h4 className="font-medium text-theme-primary mb-1 text-sm sm:text-base break-words">{task.title}</h4>
+                  <div className="flex items-center gap-2 sm:gap-4 text-xs text-theme-tertiary flex-wrap">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       {new Date(task.dueDate).toLocaleDateString()}
@@ -785,13 +785,13 @@ export default function EnhancedShiftHandover() {
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button
                     onClick={() => createTaskInSystem(task)}
-                    className="px-2 sm:px-3 py-1 text-xs rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-green-500/20 transition-colors whitespace-nowrap"
+                    className="px-2 sm:px-3 py-1 text-xs rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-module-fg/10 transition-colors whitespace-nowrap"
                   >
                     Create Task
                   </button>
                   <button
                     onClick={() => removeTask(task.id)}
-                    className="p-1 text-slate-400 hover:text-red-400 transition-colors"
+                    className="p-1 text-theme-tertiary hover:text-red-400 transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -807,14 +807,14 @@ export default function EnhancedShiftHandover() {
                 placeholder="Task title"
                 value={newTask.title}
                 onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
               />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input
                   type="date"
                   value={newTask.dueDate}
                   onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-                  className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                  className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
                 />
                 <TimePicker
                   value={newTask.dueTime}
@@ -825,7 +825,7 @@ export default function EnhancedShiftHandover() {
               <select
                 value={newTask.assignedTo}
                 onChange={(e) => setNewTask({ ...newTask, assignedTo: e.target.value })}
-                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
               >
                 <option value="">Assign to (optional)</option>
                 {/* Staff */}
@@ -862,7 +862,7 @@ export default function EnhancedShiftHandover() {
               <select
                 value={newTask.priority}
                 onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as any })}
-                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
               >
                 <option value="low">Low Priority</option>
                 <option value="medium">Medium Priority</option>
@@ -877,7 +877,7 @@ export default function EnhancedShiftHandover() {
                 </button>
                 <button
                   onClick={() => setShowTaskForm(false)}
-                  className="px-4 py-2 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 transition-colors"
+                  className="px-4 py-2 rounded-lg border border-white/10 text-theme-tertiary hover:bg-white/5 transition-colors"
                 >
                   Cancel
                 </button>
@@ -886,7 +886,7 @@ export default function EnhancedShiftHandover() {
           ) : (
             <button
               onClick={() => setShowTaskForm(true)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-slate-400 hover:border-[#D37E91]/30 hover:text-[#D37E91] transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-theme-tertiary hover:border-[#D37E91]/30 hover:text-[#D37E91] transition-colors"
             >
               <Plus className="w-4 h-4" />
               Add Task
@@ -899,7 +899,7 @@ export default function EnhancedShiftHandover() {
       {activeTab === "reminders" && (
         <div className="space-y-4">
           {reminders.length === 0 && !showReminderForm && (
-            <div className="text-center py-8 text-slate-400">
+            <div className="text-center py-8 text-theme-tertiary">
               <Bell className="w-12 h-12 mx-auto mb-2 opacity-50" />
               <p>No reminders set</p>
             </div>
@@ -910,14 +910,14 @@ export default function EnhancedShiftHandover() {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium text-white">{reminder.title}</h4>
+                    <h4 className="font-medium text-theme-primary">{reminder.title}</h4>
                     {reminder.notificationCreated && (
                       <span className="px-2 py-0.5 rounded text-xs bg-green-500/10 border border-green-500/30 text-green-400">
                         Scheduled
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-4 text-xs text-slate-400">
+                  <div className="flex items-center gap-4 text-xs text-theme-tertiary">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       {new Date(reminder.date).toLocaleDateString()}
@@ -933,7 +933,7 @@ export default function EnhancedShiftHandover() {
                 </div>
                 <button
                   onClick={() => removeReminder(reminder.id)}
-                  className="p-1 text-slate-400 hover:text-red-400 transition-colors"
+                  className="p-1 text-theme-tertiary hover:text-red-400 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -948,14 +948,14 @@ export default function EnhancedShiftHandover() {
                 placeholder="Reminder title"
                 value={newReminder.title}
                 onChange={(e) => setNewReminder({ ...newReminder, title: e.target.value })}
-                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
               />
               <div className="grid grid-cols-2 gap-3">
                 <input
                   type="date"
                   value={newReminder.date}
                   onChange={(e) => setNewReminder({ ...newReminder, date: e.target.value })}
-                  className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                  className="px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
                 />
                 <TimePicker
                   value={newReminder.time}
@@ -966,7 +966,7 @@ export default function EnhancedShiftHandover() {
               <select
                 value={newReminder.repeat}
                 onChange={(e) => setNewReminder({ ...newReminder, repeat: e.target.value as any })}
-                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
               >
                 <option value="once">Once</option>
                 <option value="daily">Daily</option>
@@ -981,7 +981,7 @@ export default function EnhancedShiftHandover() {
                 </button>
                 <button
                   onClick={() => setShowReminderForm(false)}
-                  className="px-4 py-2 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 transition-colors"
+                  className="px-4 py-2 rounded-lg border border-white/10 text-theme-tertiary hover:bg-white/5 transition-colors"
                 >
                   Cancel
                 </button>
@@ -990,7 +990,7 @@ export default function EnhancedShiftHandover() {
           ) : (
             <button
               onClick={() => setShowReminderForm(true)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-slate-400 hover:border-[#D37E91]/30 hover:text-[#D37E91] transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-theme-tertiary hover:border-[#D37E91]/30 hover:text-[#D37E91] transition-colors"
             >
               <Plus className="w-4 h-4" />
               Add Reminder
@@ -1009,7 +1009,7 @@ export default function EnhancedShiftHandover() {
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${
                 showMessageHistory
                   ? "bg-[#D37E91]/15 border border-[#D37E91]/30 text-[#D37E91]"
-                  : "bg-white/5 border border-white/10 text-slate-400 hover:text-slate-300"
+                  : "bg-white/5 border border-white/10 text-theme-tertiary hover:text-theme-secondary"
               }`}
             >
               <History className="w-4 h-4" />
@@ -1020,22 +1020,22 @@ export default function EnhancedShiftHandover() {
           {/* Message History */}
           {showMessageHistory && sentMessages.length > 0 && (
             <div className="mb-6">
-              <h4 className="text-sm font-semibold text-slate-300 mb-3">Sent Messages</h4>
+              <h4 className="text-sm font-semibold text-theme-secondary mb-3">Sent Messages</h4>
               <div className="space-y-3 max-h-64 overflow-y-auto">
                 {sentMessages.map((message) => (
                   <div key={message.id} className={`bg-black/20 border rounded-lg p-3 ${message.urgent ? "border-red-500/20" : "border-white/5"}`}>
                     <div className="flex items-start justify-between mb-1">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <h5 className="font-medium text-white text-sm">{message.subject}</h5>
+                          <h5 className="font-medium text-theme-primary text-sm">{message.subject}</h5>
                           {message.urgent && (
                             <span className="px-1.5 py-0.5 rounded text-xs bg-red-500/10 border border-red-500/30 text-red-400">
                               Urgent
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-slate-400 mb-1 line-clamp-2">{message.message}</p>
-                        <div className="flex items-center gap-3 text-xs text-slate-500">
+                        <p className="text-xs text-theme-tertiary mb-1 line-clamp-2">{message.message}</p>
+                        <div className="flex items-center gap-3 text-xs text-theme-tertiary">
                           <span className="capitalize">{message.recipient.replace("_", " ")}</span>
                           {message.sentAt && (
                             <span>• {new Date(message.sentAt).toLocaleString()}</span>
@@ -1071,15 +1071,15 @@ export default function EnhancedShiftHandover() {
                     <div className="flex items-start justify-between mb-1">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h5 className="font-medium text-white text-sm truncate">
+                          <h5 className="font-medium text-theme-primary text-sm truncate">
                             {msg.sender_name}
                           </h5>
                           <span className="text-xs text-[#D37E91]/70">
                             in {msg.conversation_name}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-300 mb-1 line-clamp-2">{msg.content}</p>
-                        <div className="text-xs text-slate-500">
+                        <p className="text-xs text-theme-secondary mb-1 line-clamp-2">{msg.content}</p>
+                        <div className="text-xs text-theme-tertiary">
                           {new Date(msg.created_at).toLocaleString()}
                         </div>
                       </div>
@@ -1092,9 +1092,9 @@ export default function EnhancedShiftHandover() {
 
           {/* Draft Messages */}
           <div>
-            <h4 className="text-sm font-semibold text-slate-300 mb-3">Draft Messages</h4>
+            <h4 className="text-sm font-semibold text-theme-secondary mb-3">Draft Messages</h4>
             {messages.length === 0 && !showMessageForm && (
-              <div className="text-center py-8 text-slate-400">
+              <div className="text-center py-8 text-theme-tertiary">
                 <MessageSquare className="w-12 h-12 mx-auto mb-2 opacity-50" />
                 <p>No messages prepared</p>
               </div>
@@ -1105,15 +1105,15 @@ export default function EnhancedShiftHandover() {
               <div className="flex items-start justify-between mb-2">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium text-white">{message.subject}</h4>
+                    <h4 className="font-medium text-theme-primary">{message.subject}</h4>
                     {message.urgent && (
                       <span className="px-2 py-0.5 rounded text-xs bg-red-500/10 border border-red-500/30 text-red-400">
                         Urgent
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-slate-300 mb-2">{message.message}</p>
-                  <div className="flex items-center gap-2 text-xs text-slate-400">
+                  <p className="text-sm text-theme-secondary mb-2">{message.message}</p>
+                  <div className="flex items-center gap-2 text-xs text-theme-tertiary">
                     <Users className="w-3 h-3" />
                     <span className="capitalize">{message.recipient.replace("_", " ")}</span>
                   </div>
@@ -1121,14 +1121,14 @@ export default function EnhancedShiftHandover() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => sendMessage(message)}
-                    className="px-3 py-1 text-xs rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-green-500/20 transition-colors flex items-center gap-1"
+                    className="px-3 py-1 text-xs rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-module-fg/10 transition-colors flex items-center gap-1"
                   >
                     <Send className="w-3 h-3" />
                     Send
                   </button>
                   <button
                     onClick={() => removeMessage(message.id)}
-                    className="p-1 text-slate-400 hover:text-red-400 transition-colors"
+                    className="p-1 text-theme-tertiary hover:text-red-400 transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -1142,7 +1142,7 @@ export default function EnhancedShiftHandover() {
               <select
                 value={newMessage.recipient}
                 onChange={(e) => setNewMessage({ ...newMessage, recipient: e.target.value as any })}
-                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
               >
                 <option value="manager">Manager</option>
                 <option value="owner">Owner/Admin</option>
@@ -1153,16 +1153,16 @@ export default function EnhancedShiftHandover() {
                 placeholder="Subject"
                 value={newMessage.subject}
                 onChange={(e) => setNewMessage({ ...newMessage, subject: e.target.value })}
-                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
+                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40"
               />
               <textarea
                 placeholder="Message"
                 value={newMessage.message}
                 onChange={(e) => setNewMessage({ ...newMessage, message: e.target.value })}
                 rows={4}
-                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 resize-none"
+                className="w-full px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 resize-none"
               />
-              <label className="flex items-center gap-2 text-sm text-slate-300">
+              <label className="flex items-center gap-2 text-sm text-theme-secondary">
                 <input
                   type="checkbox"
                   checked={newMessage.urgent}
@@ -1180,7 +1180,7 @@ export default function EnhancedShiftHandover() {
                 </button>
                 <button
                   onClick={() => setShowMessageForm(false)}
-                  className="px-4 py-2 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 transition-colors"
+                  className="px-4 py-2 rounded-lg border border-white/10 text-theme-tertiary hover:bg-white/5 transition-colors"
                 >
                   Cancel
                 </button>
@@ -1189,7 +1189,7 @@ export default function EnhancedShiftHandover() {
           ) : (
             <button
               onClick={() => setShowMessageForm(true)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-slate-400 hover:border-[#D37E91]/30 hover:text-[#D37E91] transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-white/20 rounded-lg text-theme-tertiary hover:border-[#D37E91]/30 hover:text-[#D37E91] transition-colors"
             >
               <Plus className="w-4 h-4" />
               Add Message

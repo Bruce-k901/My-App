@@ -14,7 +14,7 @@ type SwitchProps = {
 export default function Switch({ checked, onChange, disabled, className, label }: SwitchProps) {
   return (
     <label className={cn("inline-flex items-center gap-3 cursor-pointer select-none", className)}>
-      {label && <span className="text-sm text-slate-200">{label}</span>}
+      {label && <span className="text-sm text-theme-primary">{label}</span>}
       <span
         role="switch"
         aria-checked={checked}

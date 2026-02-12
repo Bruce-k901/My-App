@@ -129,10 +129,10 @@ export default function OverdueChecksWidget({ siteId, companyId }: OverdueChecks
     return (
       <WidgetCard title="Overdue Checks" module="checkly" viewAllHref="/dashboard/todays_tasks">
         <div className="flex items-center gap-2 py-4 justify-center">
-          <div className="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center">
-            <Check className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="w-6 h-6 rounded-full bg-module-fg/10 flex items-center justify-center">
+            <Check className="w-3.5 h-3.5 text-module-fg" />
           </div>
-          <span className="text-emerald-400 text-xs">No overdue checks — great work!</span>
+          <span className="text-module-fg text-xs">No overdue checks — great work!</span>
         </div>
       </WidgetCard>
     );

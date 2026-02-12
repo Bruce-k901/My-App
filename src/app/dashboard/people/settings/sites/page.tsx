@@ -245,7 +245,7 @@ export default function SettingsSitesPage() {
   });
 
   if (ctxLoading) {
-    return <div className="text-slate-400">Loading context...</div>;
+    return <div className="text-theme-tertiary">Loading context...</div>;
   }
 
   return (
@@ -254,18 +254,18 @@ export default function SettingsSitesPage() {
       <div>
         <Link
           href="/dashboard/people/settings"
-          className="inline-flex items-center gap-2 text-sm text-gray-900 dark:text-white/60 hover:text-gray-900 dark:text-white mb-4"
+          className="inline-flex items-center gap-2 text-sm text-theme-primary/60 hover:text-theme-primary mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Settings
         </Link>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-theme-primary mb-2 flex items-center gap-2">
               <Building2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               Sites
             </h1>
-            <p className="text-gray-500 dark:text-white/60">
+            <p className="text-theme-tertiary">
               Manage your company locations and site-specific settings
             </p>
           </div>
@@ -275,14 +275,14 @@ export default function SettingsSitesPage() {
               disabled={loadingImport}
               loading={loadingImport}
               variant="outline"
-              className="border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10"
+              className="border-module-fg text-module-fg hover:bg-module-fg/10"
             >
               <Download className="w-4 h-4 mr-2" />
               Refresh from Sites
             </Button>
             <button
               onClick={() => setFormOpen(true)}
-              className="flex items-center justify-center w-10 h-10 rounded-md border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 dark:focus-visible:ring-blue-400/40"
+              className="flex items-center justify-center w-10 h-10 rounded-md border border-module-fg text-module-fg hover:bg-module-fg/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 dark:focus-visible:ring-blue-400/40"
               title="Add Site"
             >
               <Plus className="w-5 h-5" />
@@ -330,7 +330,7 @@ export default function SettingsSitesPage() {
                   toast.error('Failed to export sites');
                 }
               }}
-              className="flex items-center justify-center w-10 h-10 rounded-md border border-white/12 bg-gray-100 dark:bg-white/[0.04] text-gray-600 dark:text-white/80 hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300/20 dark:focus-visible:ring-white/20 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]"
+              className="flex items-center justify-center w-10 h-10 rounded-md border border-white/12 bg-gray-100 dark:bg-white/[0.04] text-theme-secondary hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300/20 dark:focus-visible:ring-white/20 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]"
               title="Download CSV"
             >
               <Download className="w-5 h-5" />
@@ -406,7 +406,7 @@ export default function SettingsSitesPage() {
             />
             <button
               onClick={() => document.getElementById('site-upload-input')?.click()}
-              className="flex items-center justify-center w-10 h-10 rounded-md border border-white/12 bg-gray-100 dark:bg-white/[0.04] text-gray-600 dark:text-white/80 hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300/20 dark:focus-visible:ring-white/20 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]"
+              className="flex items-center justify-center w-10 h-10 rounded-md border border-white/12 bg-gray-100 dark:bg-white/[0.04] text-theme-secondary hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300/20 dark:focus-visible:ring-white/20 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]"
               title="Upload CSV"
             >
               <Upload className="w-5 h-5" />
@@ -422,27 +422,27 @@ export default function SettingsSitesPage() {
           placeholder="Search sites..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white placeholder-neutral-500 focus:outline-none focus:border-blue-600 dark:focus:border-blue-400"
+ className="w-full px-4 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary placeholder-neutral-500 focus:outline-none focus:border-blue-600 dark:focus:border-blue-400"
         />
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="rounded-xl bg-gray-50 dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] px-4 py-3">
+        <div className="rounded-xl bg-gray-50 dark:bg-white/[0.06] border border-theme px-4 py-3">
           <p className="text-sm text-red-400">{error}</p>
         </div>
       )}
 
       {/* Loading State */}
       {loading ? (
-        <div className="text-slate-400 text-center py-8">Loading sites…</div>
+        <div className="text-theme-tertiary text-center py-8">Loading sites…</div>
       ) : filteredSites.length === 0 ? (
         <div className="text-center py-12">
           {searchTerm ? (
-            <p className="text-gray-400">No sites found matching "{searchTerm}".</p>
+            <p className="text-theme-tertiary">No sites found matching "{searchTerm}".</p>
           ) : (
             <>
-              <p className="text-gray-400 mb-4">No sites yet. Add one to get started.</p>
+              <p className="text-theme-tertiary mb-4">No sites yet. Add one to get started.</p>
               <Button
                 onClick={() => setFormOpen(true)}
                 variant="secondary"

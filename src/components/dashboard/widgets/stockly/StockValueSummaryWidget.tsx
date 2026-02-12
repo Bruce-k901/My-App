@@ -131,7 +131,7 @@ export default function StockValueSummaryWidget({ companyId, siteId }: WidgetPro
           <div className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">
             {formatCurrency(summary.totalValue)}
           </div>
-          <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40">
+          <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
             Total inventory value at cost
           </div>
         </div>
@@ -145,7 +145,7 @@ export default function StockValueSummaryWidget({ companyId, siteId }: WidgetPro
               return (
                 <div key={category.category}>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-[rgb(var(--text-secondary))] dark:text-white/60 truncate">
+                    <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary truncate">
                       {category.category}
                     </span>
                     <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium ml-2">

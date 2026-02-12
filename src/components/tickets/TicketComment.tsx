@@ -31,7 +31,7 @@ export function TicketComment({ comment, onDelete, canDelete = false }: TicketCo
       className={`flex gap-3 p-4 rounded-lg border ${
         isInternal
           ? 'bg-yellow-50 dark:bg-yellow-500/5 border-yellow-200 dark:border-yellow-500/20'
-          : 'bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06]'
+          : 'bg-gray-50 dark:bg-white/[0.03] border-theme'
       }`}
     >
       {/* Avatar */}
@@ -56,14 +56,14 @@ export function TicketComment({ comment, onDelete, canDelete = false }: TicketCo
         {/* Header */}
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-medium text-gray-900 dark:text-white">
+            <span className="font-medium text-theme-primary">
               {authorName}
             </span>
-            <span className="text-xs text-gray-600 dark:text-white/60">
+            <span className="text-xs text-theme-secondary">
               {timeAgo}
             </span>
             {isEdited && (
-              <span className="text-xs text-gray-500 dark:text-white/40 italic">
+              <span className="text-xs text-theme-tertiary italic">
                 (edited)
               </span>
             )}
@@ -86,7 +86,7 @@ export function TicketComment({ comment, onDelete, canDelete = false }: TicketCo
         </div>
 
         {/* Comment content */}
-        <div className="text-gray-700 dark:text-white/80 whitespace-pre-wrap break-words">
+        <div className="text-theme-secondary whitespace-pre-wrap break-words">
           {comment.content}
         </div>
 
@@ -99,7 +99,7 @@ export function TicketComment({ comment, onDelete, canDelete = false }: TicketCo
                 href={`/api/attachments/${attachment.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.06] text-sm text-gray-700 dark:text-white/80 hover:bg-gray-200 dark:hover:bg-white/[0.09] transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.06] text-sm text-theme-secondary hover:bg-gray-200 dark:hover:bg-white/[0.09] transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -110,7 +110,7 @@ export function TicketComment({ comment, onDelete, canDelete = false }: TicketCo
                   />
                 </svg>
                 <span className="truncate max-w-xs">{attachment.file_name}</span>
-                <span className="text-xs text-gray-600 dark:text-white/60">
+                <span className="text-xs text-theme-secondary">
                   ({Math.round(attachment.file_size / 1024)}KB)
                 </span>
               </a>

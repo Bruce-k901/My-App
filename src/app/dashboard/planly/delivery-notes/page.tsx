@@ -68,7 +68,7 @@ export default function DeliveryNotesPage() {
   if (!siteId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
+        <div className="text-theme-tertiary">Please select a site</div>
       </div>
     );
   }
@@ -76,8 +76,8 @@ export default function DeliveryNotesPage() {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
-        <Loader2 className="h-8 w-8 text-[#14B8A6] animate-spin" />
-        <div className="text-gray-500 dark:text-white/60">Loading delivery notes...</div>
+        <Loader2 className="h-8 w-8 text-module-fg animate-spin" />
+        <div className="text-theme-tertiary">Loading delivery notes...</div>
       </div>
     );
   }
@@ -114,10 +114,10 @@ export default function DeliveryNotesPage() {
           <Card className="p-12 text-center">
             <div className="flex flex-col items-center gap-4">
               <FileText className="h-12 w-12 text-gray-300 dark:text-white/20" />
-              <div className="text-gray-500 dark:text-white/60">
+              <div className="text-theme-tertiary">
                 No delivery notes for {format(new Date(deliveryDate), 'd MMMM yyyy')}
               </div>
-              <div className="text-sm text-gray-400 dark:text-white/40">
+              <div className="text-sm text-theme-tertiary">
                 Try selecting a different date or check that orders are locked for this date.
               </div>
             </div>

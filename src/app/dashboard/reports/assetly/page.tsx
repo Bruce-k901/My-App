@@ -38,7 +38,7 @@ export default function AssetlyReportsPage() {
       <ReportPageHeader title="Assetly Reports" subtitle="Asset health, PPM compliance, and callout history" />
       <ReportFiltersBar />
 
-      <div className="flex gap-1 sm:gap-2 border-b border-gray-200 dark:border-white/[0.1] overflow-x-auto">
+      <div className="flex gap-1 sm:gap-2 border-b border-theme overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -46,7 +46,7 @@ export default function AssetlyReportsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-2 sm:px-3 md:px-4 py-2 sm:py-3 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
-                activeTab === tab.id ? "border-cyan-500 text-cyan-400" : "border-transparent text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white/80"
+                activeTab === tab.id ? "border-cyan-500 text-module-fg" : "border-transparent text-theme-tertiary hover:text-theme-secondary dark:hover:text-theme-secondary"
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -138,9 +138,9 @@ function AssetOverviewSection({ companyId, siteId }: { companyId: string; siteId
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-cyan-400 animate-spin" />
-        <span className="ml-3 text-gray-500 dark:text-white/60">Loading asset data...</span>
+      <div className="bg-theme-surface border border-theme rounded-xl p-8 flex items-center justify-center">
+        <Loader2 className="w-6 h-6 text-module-fg animate-spin" />
+        <span className="ml-3 text-theme-tertiary">Loading asset data...</span>
       </div>
     );
   }
@@ -157,9 +157,9 @@ function AssetOverviewSection({ companyId, siteId }: { companyId: string; siteId
       </div>
 
       {/* Health Score */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Asset Health Score</h3>
+          <h3 className="text-lg font-semibold text-theme-primary">Asset Health Score</h3>
           <span className={`text-2xl font-bold ${data.healthScore >= 80 ? "text-green-400" : data.healthScore >= 60 ? "text-yellow-400" : "text-red-400"}`}>
             {data.healthScore}%
           </span>
@@ -174,17 +174,17 @@ function AssetOverviewSection({ companyId, siteId }: { companyId: string; siteId
 
       {/* Category Breakdown */}
       {data.byCategory.length > 0 && (
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Assets by Category</h3>
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">Assets by Category</h3>
           <div className="space-y-3">
             {data.byCategory.map((cat) => (
               <div key={cat.category} className="flex items-center justify-between">
-                <span className="text-gray-700 dark:text-white/80">{cat.category}</span>
+                <span className="text-theme-secondary">{cat.category}</span>
                 <div className="flex items-center gap-3">
                   <div className="w-32 bg-gray-100 dark:bg-white/[0.05] rounded-full h-2">
                     <div className="bg-cyan-500 h-2 rounded-full" style={{ width: `${(cat.count / data.total) * 100}%` }} />
                   </div>
-                  <span className="text-gray-900 dark:text-white font-semibold w-12 text-right">{cat.count}</span>
+                  <span className="text-theme-primary font-semibold w-12 text-right">{cat.count}</span>
                 </div>
               </div>
             ))}
@@ -254,9 +254,9 @@ function PPMComplianceSection({ companyId, siteId }: { companyId: string; siteId
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-cyan-400 animate-spin" />
-        <span className="ml-3 text-gray-500 dark:text-white/60">Loading PPM data...</span>
+      <div className="bg-theme-surface border border-theme rounded-xl p-8 flex items-center justify-center">
+        <Loader2 className="w-6 h-6 text-module-fg animate-spin" />
+        <span className="ml-3 text-theme-tertiary">Loading PPM data...</span>
       </div>
     );
   }
@@ -273,9 +273,9 @@ function PPMComplianceSection({ companyId, siteId }: { companyId: string; siteId
       </div>
 
       {/* Compliance Rate */}
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+      <div className="bg-theme-surface border border-theme rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">PPM Compliance Rate</h3>
+          <h3 className="text-lg font-semibold text-theme-primary">PPM Compliance Rate</h3>
           <span className={`text-3xl font-bold ${data.complianceRate >= 90 ? "text-green-400" : data.complianceRate >= 70 ? "text-yellow-400" : "text-red-400"}`}>
             {data.complianceRate}%
           </span>
@@ -356,9 +356,9 @@ function CalloutHistorySection({
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-cyan-400 animate-spin" />
-        <span className="ml-3 text-gray-500 dark:text-white/60">Loading callout data...</span>
+      <div className="bg-theme-surface border border-theme rounded-xl p-8 flex items-center justify-center">
+        <Loader2 className="w-6 h-6 text-module-fg animate-spin" />
+        <span className="ml-3 text-theme-tertiary">Loading callout data...</span>
       </div>
     );
   }
@@ -375,17 +375,17 @@ function CalloutHistorySection({
 
       {/* Contractor Breakdown */}
       {data.byContractor.length > 0 && (
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Callouts by Contractor</h3>
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-theme-primary mb-4">Callouts by Contractor</h3>
           <div className="space-y-3">
             {data.byContractor.map((contractor) => (
               <div key={contractor.name} className="flex items-center justify-between">
-                <span className="text-gray-700 dark:text-white/80">{contractor.name}</span>
+                <span className="text-theme-secondary">{contractor.name}</span>
                 <div className="flex items-center gap-3">
                   <div className="w-32 bg-gray-100 dark:bg-white/[0.05] rounded-full h-2">
                     <div className="bg-cyan-500 h-2 rounded-full" style={{ width: `${(contractor.count / data.total) * 100}%` }} />
                   </div>
-                  <span className="text-gray-900 dark:text-white font-semibold w-12 text-right">{contractor.count}</span>
+                  <span className="text-theme-primary font-semibold w-12 text-right">{contractor.count}</span>
                 </div>
               </div>
             ))}

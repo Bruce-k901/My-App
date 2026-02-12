@@ -204,7 +204,7 @@ export function StocklyNavItem({ item }: { item: NavItem }) {
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
           isActive
             ? 'bg-stockly-dark/[0.08] dark:bg-stockly/10 text-stockly-dark dark:text-stockly font-medium'
-            : 'text-[#888] dark:text-white/50 hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-white/80'
+            : 'text-[#888] dark:text-theme-tertiary hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-theme-secondary'
         }`}
       >
         <IconComponent className="w-5 h-5 flex-shrink-0" suppressHydrationWarning />
@@ -243,12 +243,12 @@ export function StocklyNavItem({ item }: { item: NavItem }) {
           className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
             shouldHighlightParent
               ? 'bg-stockly-dark/[0.08] dark:bg-stockly/10 text-stockly-dark dark:text-stockly font-medium'
-              : 'text-[#888] dark:text-white/50 hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-white/80'
+              : 'text-[#888] dark:text-theme-tertiary hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-theme-secondary'
           }`}
         >
           <IconComponent className="w-5 h-5 flex-shrink-0" suppressHydrationWarning />
           <span className="flex-1" suppressHydrationWarning>{item.label}</span>
-          <span className="text-[#999] dark:text-white/50">
+          <span className="text-[#999] dark:text-theme-tertiary">
             {shouldExpand ? (
               <ChevronDown className="w-4 h-4" suppressHydrationWarning />
             ) : (
@@ -270,7 +270,7 @@ export function StocklyNavItem({ item }: { item: NavItem }) {
                   className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors relative ${
                     isChildActive
                       ? 'bg-stockly-dark/[0.08] dark:bg-stockly/10 text-stockly-dark dark:text-stockly font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-stockly-dark dark:before:bg-stockly'
-                      : 'text-[#888] dark:text-white/50 hover:text-[#555] dark:hover:text-white/80 hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5'
+                      : 'text-[#888] dark:text-theme-tertiary hover:text-[#555] dark:hover:text-theme-secondary hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5'
                   }`}
                 >
                   <ChildIcon className="w-4 h-4" suppressHydrationWarning />
@@ -305,8 +305,8 @@ export function StocklySidebar() {
       {/* Header */}
       <div className={`${!showExpanded ? 'px-2 py-3' : 'px-4 py-5'} bg-sidebar-stockly-light dark:bg-sidebar-stockly border-b border-module-fg/[0.18]`}>
         <Link href="/dashboard/stockly" className="flex items-center justify-center hover:opacity-80 transition-opacity w-full">
-          <img src="/new_module_logos/stockly_light.svg" alt="Stockly" className={`${!showExpanded ? 'h-8' : 'h-12'} w-auto max-w-full dark:hidden`} />
-          <img src="/new_module_logos/stockly_dark.svg" alt="Stockly" className={`${!showExpanded ? 'h-8' : 'h-12'} w-auto max-w-full hidden dark:block`} />
+          <img src="/new_module_logos/stockly_light.svg" alt="Stockly" className={`${!showExpanded ? 'h-8' : 'h-[4.5rem]'} w-auto max-w-full dark:hidden`} />
+          <img src="/new_module_logos/stockly_dark.svg" alt="Stockly" className={`${!showExpanded ? 'h-8' : 'h-[4.5rem]'} w-auto max-w-full hidden dark:block`} />
         </Link>
       </div>
 
@@ -319,7 +319,7 @@ export function StocklySidebar() {
               const Icon = item.icon;
               const href = item.href || (item.children?.[0]?.href) || '#';
               return (
-                <Link key={`${item.label}-${index}`} href={href} className="flex items-center justify-center w-full h-10 rounded-lg text-[#888] dark:text-white/50 hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-white/80 transition-colors" title={item.label}>
+                <Link key={`${item.label}-${index}`} href={href} className="flex items-center justify-center w-full h-10 rounded-lg text-[#888] dark:text-theme-tertiary hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-theme-secondary transition-colors" title={item.label}>
                   <Icon className="w-5 h-5" />
                 </Link>
               );
@@ -335,17 +335,17 @@ export function StocklySidebar() {
       <div className="border-t border-module-fg/[0.18]">
         {showExpanded ? (
           <div className="p-4 pb-0">
-            <Link href={`/dashboard/people/${profile?.id}`} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#888] dark:text-white/50 hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-white/80 transition-colors">
+            <Link href={`/dashboard/people/${profile?.id}`} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#888] dark:text-theme-tertiary hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-theme-secondary transition-colors">
               <UserCircle className="w-5 h-5" />
               <div className="flex-1 min-w-0">
                 <p className="truncate text-[#1a1a1a] dark:text-white">{profile?.full_name || 'My Profile'}</p>
-                <p className="truncate text-xs text-[#999] dark:text-white/50">{profile?.position_title || 'Employee'}</p>
+                <p className="truncate text-xs text-[#999] dark:text-theme-tertiary">{profile?.position_title || 'Employee'}</p>
               </div>
             </Link>
           </div>
         ) : (
           <div className="flex justify-center py-2">
-            <Link href={`/dashboard/people/${profile?.id}`} title={profile?.full_name || 'My Profile'} className="text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors">
+            <Link href={`/dashboard/people/${profile?.id}`} title={profile?.full_name || 'My Profile'} className="text-theme-secondary hover:text-theme-primary transition-colors">
               <UserCircle className="w-5 h-5" />
             </Link>
           </div>

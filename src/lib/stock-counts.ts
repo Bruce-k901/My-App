@@ -153,30 +153,24 @@ export async function getApproverForStockCount(
       if (regionId) {
         const { data: region } = await supabase
           .from('regions')
-          .select('regional_manager_id, manager_id')
+          .select('regional_manager_id')
           .eq('id', regionId)
           .single();
 
-        // Check both regional_manager_id and manager_id for compatibility
         if (region?.regional_manager_id) {
           approverId = region.regional_manager_id;
-        } else if (region?.manager_id) {
-          approverId = region.manager_id;
         }
       }
     } else if (approverRole === 'Area Manager') {
       if (site.area_id) {
         const { data: area } = await supabase
           .from('areas')
-          .select('area_manager_id, manager_id')
+          .select('area_manager_id')
           .eq('id', site.area_id)
           .single();
 
-        // Check both area_manager_id and manager_id for compatibility
         if (area?.area_manager_id) {
           approverId = area.area_manager_id;
-        } else if (area?.manager_id) {
-          approverId = area.manager_id;
         }
       }
     } else if (approverRole === 'General Manager' || approverRole === 'Manager') {
@@ -214,30 +208,24 @@ export async function getApproverForStockCount(
         // 2. Try area manager from org chart
         const { data: area } = await supabase
           .from('areas')
-          .select('area_manager_id, manager_id')
+          .select('area_manager_id, region_id')
           .eq('id', site.area_id)
           .single();
 
         if (area?.area_manager_id) {
           approverId = area.area_manager_id;
           approverRole = 'Area Manager';
-        } else if (area?.manager_id) {
-          approverId = area.manager_id;
-          approverRole = 'Area Manager';
         } else {
           // 3. Try regional manager from org chart
           if (area?.region_id) {
             const { data: region } = await supabase
               .from('regions')
-              .select('regional_manager_id, manager_id')
+              .select('regional_manager_id')
               .eq('id', area.region_id)
               .single();
 
             if (region?.regional_manager_id) {
               approverId = region.regional_manager_id;
-              approverRole = 'Regional Manager';
-            } else if (region?.manager_id) {
-              approverId = region.manager_id;
               approverRole = 'Regional Manager';
             }
           }
@@ -389,15 +377,14 @@ export async function getAvailableApproversForSite(
       console.log('🔍 Looking for regional manager in region:', regionId);
       const { data: region, error: regionError } = await client
         .from('regions')
-        .select('id, name, regional_manager_id, manager_id')
+        .select('id, name, regional_manager_id')
         .eq('id', regionId)
         .single();
 
       if (regionError) {
         console.error('❌ Error fetching region:', regionError);
       } else if (region) {
-        // Check both regional_manager_id and manager_id for compatibility
-        const regionalManagerId = region?.regional_manager_id || region?.manager_id;
+        const regionalManagerId = region?.regional_manager_id;
         
         if (regionalManagerId) {
           console.log('✅ Found regional manager ID:', regionalManagerId);
@@ -456,15 +443,14 @@ export async function getAvailableApproversForSite(
       console.log('🔍 Looking for area manager in area:', site.area_id);
       const { data: area, error: areaError } = await client
         .from('areas')
-        .select('id, name, area_manager_id, manager_id')
+        .select('id, name, area_manager_id')
         .eq('id', site.area_id)
         .single();
 
       if (areaError) {
         console.error('❌ Error fetching area:', areaError);
       } else if (area) {
-        // Check both area_manager_id and manager_id for compatibility
-        const areaManagerId = area?.area_manager_id || area?.manager_id;
+        const areaManagerId = area?.area_manager_id;
         
         if (areaManagerId) {
           console.log('✅ Found area manager ID:', areaManagerId);

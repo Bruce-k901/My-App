@@ -69,7 +69,7 @@ function SitesContent() {
     return (
       <SetupLayout>
         <div className="bg-[#14161d] border border-gray-800 rounded-2xl p-6 shadow-sm mt-4 text-center">
-          <p className="text-slate-300 text-sm">Create your company first, then add sites.</p>
+          <p className="text-theme-secondary text-sm">Create your company first, then add sites.</p>
           <div className="mt-4 flex items-center justify-center gap-4">
             <Link
               href="/setup/company"
@@ -77,7 +77,7 @@ function SitesContent() {
             >
               Create Company
             </Link>
-            <Link href="#" className="text-gray-400 text-sm hover:text-gray-300 flex items-center space-x-1">
+            <Link href="#" className="text-theme-tertiary text-sm hover:text-theme-tertiary flex items-center space-x-1">
               <span>Finish later</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
@@ -160,7 +160,7 @@ function SitesContent() {
   return (
     <SetupLayout stepLabel="Step 2 of 5">
       <h2 className="text-xl font-semibold mb-2 text-center">Add your sites</h2>
-      <p className="text-slate-300 mb-6 text-center">Each site can have its own checklists, team, and equipment.</p>
+      <p className="text-theme-secondary mb-6 text-center">Each site can have its own checklists, team, and equipment.</p>
 
       {role === "Admin" && (
         <div className="mb-4">
@@ -209,15 +209,15 @@ function SitesContent() {
       <div className="mt-6">
         <h3 className="text-lg font-semibold mb-2">Your Sites</h3>
         {sites.length === 0 ? (
-          <p className="text-slate-400 text-sm">No sites yet. Add your first site to continue.</p>
+          <p className="text-theme-tertiary text-sm">No sites yet. Add your first site to continue.</p>
         ) : (
           <div className="space-y-2">
             {sites.map((s) => (
               <div key={s.id} className="rounded border border-neutral-800 p-3 bg-[#0f1220] flex items-center justify-between">
                 <div>
                   <p className="font-medium">{s.name}</p>
-                  <p className="text-xs text-slate-400">{s.address}</p>
-                  <p className="text-xs text-slate-400">Status: {s.active === false ? "Inactive" : "Active"} • TZ: {s.timezone} • Open {s.open_time} → Close {s.close_time}</p>
+                  <p className="text-xs text-theme-tertiary">{s.address}</p>
+                  <p className="text-xs text-theme-tertiary">Status: {s.active === false ? "Inactive" : "Active"} • TZ: {s.timezone} • Open {s.open_time} → Close {s.close_time}</p>
                 </div>
                 {role === "Admin" && (
                   <div className="flex items-center gap-2">

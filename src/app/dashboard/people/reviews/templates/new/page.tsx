@@ -28,13 +28,13 @@ export default async function NewTemplatePage() {
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Link href="/dashboard/people/reviews/templates">
-          <Button variant="ghost" className="text-gray-500 dark:text-white/60 hover:text-gray-900 dark:text-white">
+          <Button variant="ghost" className="text-theme-tertiary hover:text-theme-primary">
             <ArrowLeft className="h-4 w-4 mr-2" />Back
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create New Template</h1>
-          <p className="text-gray-500 dark:text-white/60 mt-1">Build a custom review template for your organization</p>
+          <h1 className="text-2xl font-bold text-theme-primary">Create New Template</h1>
+          <p className="text-theme-tertiary mt-1">Build a custom review template for your organization</p>
         </div>
       </div>
 
@@ -47,7 +47,7 @@ export default async function NewTemplatePage() {
 
 function CreateTemplateSkeleton() {
   return (
-    <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 space-y-6">
+    <div className="bg-theme-surface border border-theme rounded-lg p-6 space-y-6">
       {[...Array(5)].map((_, i) => (
         <div key={i} className="space-y-2">
           <div className="h-5 w-32 bg-gray-100 dark:bg-white/[0.05] rounded animate-pulse" />

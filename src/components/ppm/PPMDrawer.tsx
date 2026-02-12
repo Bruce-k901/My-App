@@ -231,14 +231,14 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed right-0 top-0 h-full w-full max-w-2xl bg-white dark:bg-[#0f1220] border-l border-gray-200 dark:border-white/10 z-50 overflow-y-auto shadow-xl dark:shadow-none"
+            className="fixed right-0 top-0 h-full w-full max-w-2xl bg-white dark:bg-[#0f1220] border-l border-theme z-50 overflow-y-auto shadow-xl dark:shadow-none"
           >
             {/* Header */}
-            <div className="sticky top-0 bg-gray-50 dark:bg-[#0f1220] border-b border-gray-200 dark:border-white/10 px-6 py-4">
+            <div className="sticky top-0 bg-gray-50 dark:bg-[#0f1220] border-b border-theme px-6 py-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white truncate">{cleanAsset.name}</h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{cleanAsset.category_name}</p>
+                  <h2 className="text-xl font-semibold text-theme-primary truncate">{cleanAsset.name}</h2>
+                  <p className="text-sm text-theme-tertiary mt-1">{cleanAsset.category_name}</p>
 
                   {/* Status Badge */}
                   <div className="mt-3">
@@ -250,7 +250,7 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
 
                 <button
                   onClick={onClose}
-                  className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                  className="flex items-center justify-center w-8 h-8 rounded-lg text-theme-tertiary hover:text-theme-primary hover:bg-theme-muted transition-colors"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -261,21 +261,21 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
             <div className="p-6 space-y-8">
               {/* PPM Schedule Form */}
               <section>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <Wrench className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
+                <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+                  <Wrench className="h-5 w-5 text-module-fg" />
                   PPM Schedule
                 </h3>
 
-                <div className="bg-gray-50 dark:bg-white/[0.02] rounded-xl border border-gray-200 dark:border-white/[0.08] p-6 space-y-4">
+                <div className="bg-gray-50 dark:bg-white/[0.02] rounded-xl border border-theme p-6 space-y-4">
                   {/* Contractor */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Contractor
                     </label>
                     <select
                       value={form.contractor_id || ''}
                       onChange={(e) => setForm({ ...form, contractor_id: e.target.value || null })}
-                      className="w-full px-3 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.15] text-gray-900 dark:text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none"
+ className="w-full px-3 py-2 rounded-lg bg-theme-surface ] border border-gray-300 dark:border-white/[0.15] text-theme-primary focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none"
                     >
                       <option value="">Select contractor...</option>
                       {contractors.map((contractor) => (
@@ -288,13 +288,13 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
 
                   {/* Frequency */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Frequency (months)
                     </label>
                     <select
                       value={form.frequency_months}
                       onChange={(e) => setForm({ ...form, frequency_months: parseInt(e.target.value) })}
-                      className="w-full px-3 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.15] text-gray-900 dark:text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none"
+ className="w-full px-3 py-2 rounded-lg bg-theme-surface ] border border-gray-300 dark:border-white/[0.15] text-theme-primary focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none"
                     >
                       <option value={1}>Monthly</option>
                       <option value={3}>Quarterly</option>
@@ -306,27 +306,27 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
 
                   {/* Next Service Date */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Next Service Date
                     </label>
                     <input
                       type="date"
                       value={form.next_service_date}
                       onChange={(e) => setForm({ ...form, next_service_date: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.15] text-gray-900 dark:text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none"
+ className="w-full px-3 py-2 rounded-lg bg-theme-surface ] border border-gray-300 dark:border-white/[0.15] text-theme-primary focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none"
                     />
                   </div>
 
                   {/* Notes */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Notes
                     </label>
                     <textarea
                       value={form.notes}
                       onChange={(e) => setForm({ ...form, notes: e.target.value })}
                       rows={3}
-                      className="w-full px-3 py-2 rounded-lg bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.15] text-gray-900 dark:text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-white/40"
+ className="w-full px-3 py-2 rounded-lg bg-theme-surface ] border border-gray-300 dark:border-white/[0.15] text-theme-primary focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary"
                       placeholder="Add any notes about this PPM schedule..."
                     />
                   </div>
@@ -336,7 +336,7 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
                     <button
                       onClick={handleSave}
                       disabled={loading}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-500 dark:hover:bg-cyan-600 text-white font-medium transition-colors disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-module-fg hover:bg-module-fg/90 text-white font-medium transition-colors disabled:opacity-50"
                     >
                       <Save className="h-4 w-4" />
                       {loading ? 'Saving...' : 'Save Schedule'}
@@ -346,7 +346,7 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
                       <button
                         onClick={() => setShowServiceModal(true)}
                         disabled={loading}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg border border-cyan-600 dark:border-cyan-500 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-500/10 font-medium transition-all duration-200 disabled:opacity-50"
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg border border-module-fg text-module-fg hover:bg-module-fg/10 font-medium transition-all duration-200 disabled:opacity-50"
                       >
                         <CheckCircle className="h-4 w-4" />
                         Mark Service Completed
@@ -358,36 +358,36 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
 
               {/* Asset Summary */}
               <section>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
+                <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-module-fg" />
                   Asset Summary
                 </h3>
 
-                <div className="bg-gray-50 dark:bg-white/[0.02] rounded-xl border border-gray-200 dark:border-white/[0.08] p-6">
+                <div className="bg-gray-50 dark:bg-white/[0.02] rounded-xl border border-theme p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Basic Info */}
                     <div className="space-y-4">
                       <div className="flex items-center gap-3">
-                        <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        <MapPin className="h-4 w-4 text-theme-tertiary flex-shrink-0" />
                         <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Site</p>
-                          <p className="text-sm text-gray-900 dark:text-white">{cleanAsset.site_name}</p>
+                          <p className="text-xs text-theme-tertiary">Site</p>
+                          <p className="text-sm text-theme-primary">{cleanAsset.site_name}</p>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        <User className="h-4 w-4 text-theme-tertiary flex-shrink-0" />
                         <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Contractor</p>
-                          <p className="text-sm text-gray-900 dark:text-white">{cleanAsset.contractor_name || 'Unassigned'}</p>
+                          <p className="text-xs text-theme-tertiary">Contractor</p>
+                          <p className="text-sm text-theme-primary">{cleanAsset.contractor_name || 'Unassigned'}</p>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <Wrench className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        <Wrench className="h-4 w-4 text-theme-tertiary flex-shrink-0" />
                         <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Frequency</p>
-                          <p className="text-sm text-gray-900 dark:text-white">{frequencyText}</p>
+                          <p className="text-xs text-theme-tertiary">Frequency</p>
+                          <p className="text-sm text-theme-primary">{frequencyText}</p>
                         </div>
                       </div>
                     </div>
@@ -395,17 +395,17 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
                     {/* Service Dates */}
                     <div className="space-y-4">
                       <div className="flex items-center gap-3">
-                        <Calendar className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        <Calendar className="h-4 w-4 text-theme-tertiary flex-shrink-0" />
                         <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Last Service</p>
-                          <p className="text-sm text-gray-900 dark:text-white">{formatServiceDate(cleanAsset.last_service_date)}</p>
+                          <p className="text-xs text-theme-tertiary">Last Service</p>
+                          <p className="text-sm text-theme-primary">{formatServiceDate(cleanAsset.last_service_date)}</p>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <Clock className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        <Clock className="h-4 w-4 text-theme-tertiary flex-shrink-0" />
                         <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Next Service</p>
+                          <p className="text-xs text-theme-tertiary">Next Service</p>
                           <p className={`text-sm ${color}`}>{formatServiceDate(cleanAsset.next_service_date)}</p>
                         </div>
                       </div>
@@ -416,18 +416,18 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
 
               {/* Service History Placeholder */}
               <section>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
+                <h3 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-module-fg" />
                   Service History & Certificates
                 </h3>
 
-                <div className="bg-gray-50 dark:bg-white/[0.02] rounded-xl border border-gray-200 dark:border-white/[0.08] p-6 space-y-4">
+                <div className="bg-gray-50 dark:bg-white/[0.02] rounded-xl border border-theme p-6 space-y-4">
                   {/* File Upload */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-theme-secondary mb-2">
                       Upload Certificate
                     </label>
-                    <div className="border-2 border-dashed border-gray-300 dark:border-white/[0.15] rounded-lg p-4 text-center hover:border-cyan-500/50 transition-colors">
+                    <div className="border-2 border-dashed border-gray-300 dark:border-white/[0.15] rounded-lg p-4 text-center hover:border-module-fg/30 transition-colors">
                       <input
                         type="file"
                         accept=".pdf,.png,.jpg,.jpeg"
@@ -440,11 +440,11 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
                         htmlFor="certificate-upload"
                         className={`cursor-pointer flex flex-col items-center gap-2 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
-                        <Upload className="h-8 w-8 text-gray-400" />
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <Upload className="h-8 w-8 text-theme-tertiary" />
+                        <p className="text-sm text-theme-tertiary">
                           {uploading ? 'Uploading...' : 'Click to upload certificate'}
                         </p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500">
+                        <p className="text-xs text-theme-tertiary">
                           PDF, PNG, JPG up to 10MB
                         </p>
                       </label>
@@ -525,7 +525,7 @@ function ServiceHistoryList({ assetId }: { assetId: string }) {
     return (
       <div className="text-center py-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400 mx-auto mb-4"></div>
-        <p className="text-sm text-gray-500">Loading service history...</p>
+        <p className="text-sm text-theme-tertiary">Loading service history...</p>
       </div>
     );
   }
@@ -533,9 +533,9 @@ function ServiceHistoryList({ assetId }: { assetId: string }) {
   if (serviceEvents.length === 0) {
     return (
       <div className="text-center py-8">
-        <Clock className="h-12 w-12 text-gray-300 dark:text-gray-400 mx-auto mb-4" />
-        <p className="text-gray-600 dark:text-gray-400 mb-2">No Service History</p>
-        <p className="text-sm text-gray-500">Service history will appear here after completing PPM tasks</p>
+ <Clock className="h-12 w-12 text-gray-300 dark:text-theme-tertiary mx-auto mb-4"/>
+        <p className="text-theme-secondary mb-2">No Service History</p>
+        <p className="text-sm text-theme-tertiary">Service history will appear here after completing PPM tasks</p>
       </div>
     );
   }
@@ -545,14 +545,14 @@ function ServiceHistoryList({ assetId }: { assetId: string }) {
       {serviceEvents.map((event) => (
         <div
           key={event.id}
-          className="bg-white dark:bg-white/[0.05] rounded-lg border border-gray-200 dark:border-white/[0.1] p-4"
+ className="bg-theme-surface ] rounded-lg border border-theme p-4"
         >
           <div className="flex items-start justify-between mb-2">
             <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
+              <p className="text-sm font-medium text-theme-primary">
                 Service Completed
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-theme-tertiary">
                 {new Date(event.service_date).toLocaleDateString('en-GB', {
                   day: 'numeric',
                   month: 'short',
@@ -567,15 +567,15 @@ function ServiceHistoryList({ assetId }: { assetId: string }) {
 
           {event.contractor_id && contractors.get(event.contractor_id) && (
             <div className="flex items-center gap-2 mb-2">
-              <User className="h-3 w-3 text-gray-400" />
-              <p className="text-xs text-gray-600 dark:text-gray-400">
+              <User className="h-3 w-3 text-theme-tertiary" />
+              <p className="text-xs text-theme-secondary">
                 {contractors.get(event.contractor_id)}
               </p>
             </div>
           )}
 
           {event.notes && (
-            <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+            <p className="text-xs text-theme-secondary mb-2">
               {event.notes}
             </p>
           )}
@@ -585,7 +585,7 @@ function ServiceHistoryList({ assetId }: { assetId: string }) {
               href={event.file_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300"
+              className="inline-flex items-center gap-1.5 text-xs text-module-fg hover:text-cyan-700 dark:hover:text-module-fg"
             >
               <FileText className="h-3 w-3" />
               View Certificate

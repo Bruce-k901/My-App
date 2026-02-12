@@ -66,8 +66,8 @@ export default function AdminLoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#D37E91]/10 mb-4">
             <Shield className="w-8 h-8 text-[#D37E91]" />
           </div>
-          <h1 className="text-2xl font-bold text-white">Opsly Admin</h1>
-          <p className="text-white/60 mt-2">Platform Administration Portal</p>
+          <h1 className="text-2xl font-bold text-theme-primary">Opsly Admin</h1>
+          <p className="text-theme-tertiary mt-2">Platform Administration Portal</p>
         </div>
 
         {/* Login Form */}
@@ -80,7 +80,7 @@ export default function AdminLoginPage() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
               Email
             </label>
             <input
@@ -88,13 +88,13 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
+              className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
               placeholder="admin@opsly.app"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-2">
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
               Password
             </label>
             <input
@@ -102,7 +102,7 @@ export default function AdminLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
+              className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
               placeholder="••••••••"
             />
           </div>
@@ -126,7 +126,7 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        <p className="text-center text-white/40 text-xs mt-6">
+        <p className="text-center text-theme-tertiary text-xs mt-6">
           This portal is for authorized Opsly platform administrators only.
         </p>
       </div>

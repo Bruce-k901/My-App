@@ -70,7 +70,7 @@ export function ProfileDropdown() {
         <div className="w-8 h-8 rounded-full bg-[#D37E91] flex items-center justify-center text-white font-medium text-sm">
           {initials}
         </div>
-        <ChevronDown className={`w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-white/60 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown className={`w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {isOpen && mounted && buttonRect && createPortal(
@@ -90,7 +90,7 @@ export function ProfileDropdown() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-[rgb(var(--text-primary))] dark:text-white font-medium truncate">{displayName}</div>
-                <div className="text-[rgb(var(--text-secondary))] dark:text-white/60 text-sm truncate">{profile?.email}</div>
+                <div className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm truncate">{profile?.email}</div>
               </div>
             </div>
           </div>
@@ -100,18 +100,18 @@ export function ProfileDropdown() {
             <Link
               href="/dashboard/settings"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 px-4 py-2 hover:bg-black/[0.05] dark:hover:bg-white/[0.06] transition-colors text-[rgb(var(--text-primary))] dark:text-white/80 dark:hover:text-white"
+              className="flex items-center gap-3 px-4 py-2 hover:bg-black/[0.05] dark:hover:bg-white/[0.06] transition-colors text-[rgb(var(--text-primary))] dark:text-theme-secondary"
             >
-              <Settings className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-white/60" />
+              <Settings className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
               <span>Settings</span>
             </Link>
             {profile?.id && (
               <Link
                 href={`/dashboard/people/${profile.id}`}
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-4 py-2 hover:bg-white/[0.06] transition-colors text-white/80 hover:text-white"
+                className="flex items-center gap-3 px-4 py-2 hover:bg-white/[0.06] transition-colors text-theme-secondary hover:text-white"
               >
-                <User className="w-4 h-4 text-white/60" />
+                <User className="w-4 h-4 text-theme-tertiary" />
                 <span>My Profile</span>
               </Link>
             )}

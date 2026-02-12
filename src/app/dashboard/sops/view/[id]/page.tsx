@@ -840,7 +840,7 @@ export default function SOPViewPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--background-primary))] dark:bg-neutral-900">
-        <div className="text-[rgb(var(--text-secondary))] dark:text-neutral-400">Loading SOP...</div>
+ <div className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Loading SOP...</div>
       </div>
     );
   }
@@ -848,20 +848,20 @@ export default function SOPViewPage() {
   if (!sop) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--background-primary))] dark:bg-neutral-900">
-        <div className="text-[rgb(var(--text-secondary))] dark:text-neutral-400">SOP not found</div>
+ <div className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">SOP not found</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--background-primary))] dark:bg-neutral-900 print:bg-white">
+ <div className="min-h-screen bg-[rgb(var(--background-primary))] print:bg-theme-surface">
       {/* Header - Hidden when printing */}
-      <div className="no-print sticky top-0 z-10 bg-[rgb(var(--background-primary))] dark:bg-neutral-900 border-b border-[rgb(var(--border))] dark:border-neutral-700">
+      <div className="no-print sticky top-0 z-10 bg-[rgb(var(--background-primary))] dark:bg-neutral-900 border-b border-[rgb(var(--border))] dark:border-theme">
         <div className="max-w-5xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <button
               onClick={() => router.push('/dashboard/sops/list')}
-              className="flex items-center gap-2 text-[rgb(var(--text-secondary))] dark:text-neutral-400 hover:text-[rgb(var(--text-primary))] dark:hover:text-white transition-colors"
+ className="flex items-center gap-2 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors"
             >
               <ArrowLeft size={20} />
               <span>Back to SOPs</span>
@@ -869,7 +869,7 @@ export default function SOPViewPage() {
             <div className="flex items-center gap-4">
               {/* Recipe Scaling Multiplier - More Prominent */}
               {printData?.recipe && (
-                <div className="flex items-center gap-3 px-5 py-3 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 rounded-xl border-2 border-[#D37E91] dark:border-[#D37E91]/70 shadow-lg shadow-[#D37E91]/20 dark:shadow-[#D37E91]/30">
+                <div className="flex items-center gap-3 px-5 py-3 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 rounded-xl border-2 border-module-fg dark:border-module-fg/70 shadow-lg shadow-module-fg/20 dark:shadow-module-fg/30">
                   <label htmlFor="multiplier" className="text-base font-semibold text-[rgb(var(--text-primary))] dark:text-white whitespace-nowrap">
                     Portions:
                   </label>
@@ -903,9 +903,9 @@ export default function SOPViewPage() {
                         setMultiplier(clampedValue);
                       }
                     }}
-                    className="w-28 bg-[rgb(var(--background-primary))] dark:bg-neutral-900 border-2 border-[#D37E91] dark:border-[#D37E91] rounded-lg px-3 py-2 text-lg font-bold text-[rgb(var(--text-primary))] dark:text-white focus:border-[#D37E91] dark:focus:border-[#D37E91] focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 dark:focus:ring-[#D37E91]/40"
+                    className="w-28 bg-[rgb(var(--background-primary))] dark:bg-neutral-900 border-2 border-module-fg dark:border-module-fg rounded-lg px-3 py-2 text-lg font-bold text-[rgb(var(--text-primary))] dark:text-white focus:border-module-fg dark:focus:border-module-fg focus:outline-none focus:ring-2 focus:ring-module-fg/40 dark:focus:ring-module-fg/40"
                   />
-                  <span className="text-base font-bold text-[#D37E91] dark:text-[#D37E91]">
+                  <span className="text-base font-bold text-module-fg dark:text-module-fg">
                     ×{multiplier.toFixed(1)}
                   </span>
                 </div>
@@ -914,7 +914,7 @@ export default function SOPViewPage() {
                 {/* Always show sync button - will try to find recipe by code if not linked */}
                 {/* Debug: Show recipe ID status */}
                 {process.env.NODE_ENV === 'development' && (
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-theme-tertiary">
                     Recipe ID: {sop?.linked_recipe_id || sop?.linked_recipe?.id || printData?.recipe?.code || 'none'}
                   </span>
                 )}
@@ -963,7 +963,7 @@ export default function SOPViewPage() {
             companyName="Checkly"
           />
         ) : (
-          <div className="text-center py-12 text-[rgb(var(--text-secondary))] dark:text-neutral-400">
+ <div className="text-center py-12 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
             <p>No SOP data available</p>
           </div>
         )}

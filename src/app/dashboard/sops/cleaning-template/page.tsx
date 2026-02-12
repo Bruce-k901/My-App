@@ -312,7 +312,7 @@ export default function CleaningSOPTemplatePage() {
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
-        <div className="text-neutral-400 text-center py-8">Loading libraries...</div>
+        <div className="text-theme-tertiary text-center py-8">Loading libraries...</div>
       </div>
     );
   }
@@ -323,61 +323,61 @@ export default function CleaningSOPTemplatePage() {
       <BackButton href="/dashboard/sops" label="Back to SOPs" />
       
       {/* Header */}
-      <div className="bg-gradient-to-r from-teal-600/20 to-blue-600/20 rounded-2xl p-6 border border-teal-500/30">
+      <div className="bg-gradient-to-r from-teal-600/20 to-blue-600/20 rounded-2xl p-6 border border-module-fg/30">
         <h1 className="text-2xl font-semibold mb-2">Cleaning SOP Template</h1>
-        <p className="text-neutral-300 text-sm">
+        <p className="text-theme-tertiary text-sm">
           Sanitation and hygiene procedures with chemical safety
         </p>
       </div>
 
       {/* SOP DETAILS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">SOP Details</h2>
         
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">SOP Title *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">SOP Title *</label>
             <input 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., Kitchen Work Surfaces Deep Clean"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Reference Code (Auto)</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Reference Code (Auto)</label>
             <input 
               value={refCode}
               readOnly
-              className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-neutral-400"
+              className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-theme-tertiary"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Version *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Version *</label>
             <input 
               value={version}
               onChange={(e) => setVersion(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Author *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Author *</label>
             <input 
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Status *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Status *</label>
             <select 
               value={status} 
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
             >
               <option value="Draft">Draft</option>
               <option value="Published">Published</option>
@@ -386,11 +386,11 @@ export default function CleaningSOPTemplatePage() {
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Frequency *</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Frequency *</label>
             <select 
               value={frequency} 
               onChange={(e) => setFrequency(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
             >
               {FREQUENCY_OPTIONS.map(f => (
                 <option key={f.value} value={f.value}>{f.label}</option>
@@ -399,21 +399,21 @@ export default function CleaningSOPTemplatePage() {
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Estimated Time</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Estimated Time</label>
             <input 
               value={estimatedTime}
               onChange={(e) => setEstimatedTime(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., 45 minutes"
             />
           </div>
 
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">Risk Assessment Link</label>
+            <label className="block text-sm text-theme-tertiary mb-1">Risk Assessment Link</label>
             <input 
               value={riskAssessmentLink}
               onChange={(e) => setRiskAssessmentLink(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white"
+              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
               placeholder="Link to risk assessment document"
             />
           </div>
@@ -421,9 +421,9 @@ export default function CleaningSOPTemplatePage() {
       </section>
 
       {/* AREA/EQUIPMENT SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Area/Equipment to Clean</h2>
-        <p className="text-xs text-neutral-400 mb-4">
+        <p className="text-xs text-theme-tertiary mb-4">
           Specify what needs to be cleaned
         </p>
 
@@ -431,25 +431,25 @@ export default function CleaningSOPTemplatePage() {
           {cleaningAreas.map((area, index) => (
             <div key={area.id} className="grid grid-cols-12 gap-2 items-end">
               <div className="col-span-4">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Area</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Area</label>}
                 <input
                   value={area.area}
                   onChange={(e) => setCleaningAreas(cleaningAreas.map(a => a.id === area.id ? { ...a, area: e.target.value } : a))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Kitchen"
                 />
               </div>
               <div className="col-span-4">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Equipment</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Equipment</label>}
                 <input
                   value={area.equipment}
                   onChange={(e) => setCleaningAreas(cleaningAreas.map(a => a.id === area.id ? { ...a, equipment: e.target.value } : a))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Work surfaces"
                 />
               </div>
               <div className="col-span-3">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Photo</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Photo</label>}
                 <div>
                   {area.photo_url ? (
                     <div className="relative inline-block">
@@ -475,7 +475,7 @@ export default function CleaningSOPTemplatePage() {
                       />
                       <button
                         onClick={() => photoInputRefs.current[area.id]?.click()}
-                        className="w-full bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg p-2 text-white text-sm"
+                        className="w-full bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg p-2 text-theme-primary text-sm"
                       >
                         <Upload size={16} />
                       </button>
@@ -506,9 +506,9 @@ export default function CleaningSOPTemplatePage() {
       </section>
 
       {/* CHEMICALS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Chemicals Required</h2>
-        <p className="text-xs text-neutral-400 mb-4">
+        <p className="text-xs text-theme-tertiary mb-4">
           Select chemicals from library (auto-fills contact time and hazards)
         </p>
 
@@ -527,7 +527,7 @@ export default function CleaningSOPTemplatePage() {
                 )}
                 <div className="grid grid-cols-12 gap-2 items-end">
                   <div className="col-span-5">
-                    {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Chemical</label>}
+                    {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Chemical</label>}
                     <SmartSearch
                       libraryTable="chemicals_library"
                       placeholder={chem.chemical_id ? chemicalsLibrary.find(c => c.id === chem.chemical_id)?.product_name : "Search chemical..."}
@@ -538,28 +538,28 @@ export default function CleaningSOPTemplatePage() {
                     />
                   </div>
                   <div className="col-span-2">
-                    {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Contact Time</label>}
+                    {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Contact Time</label>}
                     <input
                       value={chem.contact_time}
                       readOnly
-                      className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-neutral-400 text-sm"
+                      className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-theme-tertiary text-sm"
                     />
                   </div>
                   <div className="col-span-2">
-                    {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Dilution</label>}
+                    {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Dilution</label>}
                     <input
                       value={chem.dilution}
                       onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, dilution: e.target.value } : c))}
-                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                       placeholder="Optional"
                     />
                   </div>
                   <div className="col-span-2">
-                    {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Notes</label>}
+                    {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Notes</label>}
                     <input
                       value={chem.notes}
                       onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, notes: e.target.value } : c))}
-                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                       placeholder="Optional"
                     />
                   </div>
@@ -600,9 +600,9 @@ export default function CleaningSOPTemplatePage() {
       </section>
 
       {/* PPE SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">PPE Required</h2>
-        <p className="text-xs text-neutral-400 mb-4">
+        <p className="text-xs text-theme-tertiary mb-4">
           Personal protective equipment needed for this cleaning task
         </p>
 
@@ -610,7 +610,7 @@ export default function CleaningSOPTemplatePage() {
           {ppe.map((item, index) => (
             <div key={item.id} className="grid grid-cols-12 gap-2 items-end">
               <div className="col-span-5">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">PPE Item</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">PPE Item</label>}
                 <SmartSearch
                   libraryTable="ppe_library"
                   placeholder={item.ppe_id ? ppeLibrary.find(p => p.id === item.ppe_id)?.item_name : "Search PPE..."}
@@ -621,22 +621,22 @@ export default function CleaningSOPTemplatePage() {
                 />
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Required</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Required</label>}
                 <select
                   value={item.required ? 'yes' : 'no'}
                   onChange={(e) => setPPE(ppe.map(p => p.id === item.id ? { ...p, required: e.target.value === 'yes' } : p))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                 >
                   <option value="yes">Yes</option>
                   <option value="no">No</option>
                 </select>
               </div>
               <div className="col-span-4">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Notes</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Notes</label>}
                 <input
                   value={item.notes}
                   onChange={(e) => setPPE(ppe.map(p => p.id === item.id ? { ...p, notes: e.target.value } : p))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="Optional"
                 />
               </div>
@@ -663,9 +663,9 @@ export default function CleaningSOPTemplatePage() {
       </section>
 
       {/* PRE-CLEANING CHECKS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Pre-Cleaning Checks</h2>
-        <p className="text-xs text-neutral-400 mb-4">
+        <p className="text-xs text-theme-tertiary mb-4">
           Safety checks before starting cleaning
         </p>
 
@@ -681,7 +681,7 @@ export default function CleaningSOPTemplatePage() {
               <input
                 value={check.check}
                 onChange={(e) => setPreChecks(preChecks.map(c => c.id === check.id ? { ...c, check: e.target.value } : c))}
-                className="flex-1 bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                className="flex-1 bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                 placeholder="e.g., Equipment powered off"
               />
               <button
@@ -705,9 +705,9 @@ export default function CleaningSOPTemplatePage() {
       </section>
 
       {/* PROCESS STEPS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Step-by-Step Process</h2>
-        <p className="text-xs text-neutral-400 mb-4">
+        <p className="text-xs text-theme-tertiary mb-4">
           Detailed cleaning procedure
         </p>
 
@@ -727,38 +727,38 @@ export default function CleaningSOPTemplatePage() {
 
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs text-neutral-400 mb-1">Step Description</label>
+                  <label className="block text-xs text-theme-tertiary mb-1">Step Description</label>
                   <input
                     value={step.step}
                     onChange={(e) => setProcessSteps(processSteps.map(s => s.id === step.id ? { ...s, step: e.target.value } : s))}
-                    className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                    className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                     placeholder="e.g., Apply degreaser to surface"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Method</label>
+                    <label className="block text-xs text-theme-tertiary mb-1">Method</label>
                     <input
                       value={step.method}
                       onChange={(e) => setProcessSteps(processSteps.map(s => s.id === step.id ? { ...s, method: e.target.value } : s))}
-                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                       placeholder="e.g., Spray and scrub"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Duration</label>
+                    <label className="block text-xs text-theme-tertiary mb-1">Duration</label>
                     <input
                       value={step.duration}
                       onChange={(e) => setProcessSteps(processSteps.map(s => s.id === step.id ? { ...s, duration: e.target.value } : s))}
-                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                       placeholder="e.g., 10 minutes"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs text-neutral-400 mb-1">Photo</label>
+                  <label className="block text-xs text-theme-tertiary mb-1">Photo</label>
                   <div>
                     {step.photo_url ? (
                       <div className="relative inline-block">
@@ -784,7 +784,7 @@ export default function CleaningSOPTemplatePage() {
                         />
                         <button
                           onClick={() => photoInputRefs.current[step.id]?.click()}
-                          className="bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg p-2 text-white text-sm flex items-center gap-2"
+                          className="bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg p-2 text-theme-primary text-sm flex items-center gap-2"
                         >
                           <Upload size={16} />
                           Upload Photo
@@ -808,9 +808,9 @@ export default function CleaningSOPTemplatePage() {
       </section>
 
       {/* POST-CLEANING VERIFICATION SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
+      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Post-Cleaning Verification</h2>
-        <p className="text-xs text-neutral-400 mb-4">
+        <p className="text-xs text-theme-tertiary mb-4">
           Final checks to confirm cleaning is complete
         </p>
 
@@ -818,25 +818,25 @@ export default function CleaningSOPTemplatePage() {
           {postChecks.map((check, index) => (
             <div key={check.id} className="grid grid-cols-12 gap-2 items-end">
               <div className="col-span-5">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Check</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Check</label>}
                 <input
                   value={check.check}
                   onChange={(e) => setPostChecks(postChecks.map(c => c.id === check.id ? { ...c, check: e.target.value } : c))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Surface is dry"
                 />
               </div>
               <div className="col-span-4">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Standard</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Standard</label>}
                 <input
                   value={check.standard}
                   onChange={(e) => setPostChecks(postChecks.map(c => c.id === check.id ? { ...c, standard: e.target.value } : c))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm"
+                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Visually clean, no residue"
                 />
               </div>
               <div className="col-span-2">
-                {index === 0 && <label className="block text-xs text-neutral-400 mb-1">Verified</label>}
+                {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Verified</label>}
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
@@ -844,7 +844,7 @@ export default function CleaningSOPTemplatePage() {
                     onChange={(e) => setPostChecks(postChecks.map(c => c.id === check.id ? { ...c, verified: e.target.checked } : c))}
                     className="w-5 h-5 rounded border-neutral-600 bg-neutral-900"
                   />
-                  <span className="text-xs text-neutral-400">Yes</span>
+                  <span className="text-xs text-theme-tertiary">Yes</span>
                 </div>
               </div>
               <div className="col-span-1">
@@ -881,7 +881,7 @@ export default function CleaningSOPTemplatePage() {
         </button>
         <button
           onClick={() => showToast({ title: 'Export', description: 'PDF export coming soon', type: 'info' })}
-          className="px-6 py-3 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-white font-medium flex items-center gap-2"
+          className="px-6 py-3 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-theme-primary font-medium flex items-center gap-2"
         >
           <Download size={20} />
           Export PDF

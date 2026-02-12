@@ -11,7 +11,7 @@ export default function AuthLogoHeader() {
           <OpslyLogo 
             variant="horizontal" 
             size="lg" 
-            className="text-white"
+            className="text-theme-primary"
           />
         </Link>
       </div>

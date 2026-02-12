@@ -84,7 +84,7 @@ export default function AssetLogsDrawer({ asset, open, onClose }: AssetLogsDrawe
       case 'warranty':
         return 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 border-green-400';
       default:
-        return 'bg-gray-100 dark:bg-neutral-900/30 text-gray-600 dark:text-neutral-400 border-neutral-400';
+ return'bg-gray-100 dark:bg-neutral-900/30 text-gray-600 dark:text-theme-tertiary border-neutral-400';
     }
   };
 
@@ -110,12 +110,12 @@ export default function AssetLogsDrawer({ asset, open, onClose }: AssetLogsDrawe
       />
 
       {/* Drawer */}
-      <div className="w-96 bg-white dark:bg-neutral-900 border-l border-gray-200 dark:border-neutral-700 flex flex-col shadow-xl dark:shadow-none">
+      <div className="w-96 bg-theme-surface border-l border-theme flex flex-col shadow-xl dark:shadow-none">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-neutral-700">
+        <div className="flex items-center justify-between p-4 border-b border-theme">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Asset Logs</h2>
-            <p className="text-sm text-gray-500 dark:text-neutral-400">{asset.name}</p>
+            <h2 className="text-lg font-semibold text-theme-primary">Asset Logs</h2>
+ <p className="text-sm text-gray-500 dark:text-theme-tertiary">{asset.name}</p>
           </div>
           <Button
             variant="outline"
@@ -131,18 +131,18 @@ export default function AssetLogsDrawer({ asset, open, onClose }: AssetLogsDrawe
         <div className="flex-1 overflow-y-auto p-4">
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <p className="text-gray-500 dark:text-neutral-400">Loading logs...</p>
+ <p className="text-gray-500 dark:text-theme-tertiary">Loading logs...</p>
             </div>
           ) : logs.length === 0 ? (
             <div className="flex items-center justify-center py-8">
-              <p className="text-gray-500 dark:text-neutral-400">No logs found for this asset.</p>
+ <p className="text-gray-500 dark:text-theme-tertiary">No logs found for this asset.</p>
             </div>
           ) : (
             <div className="space-y-4">
               {logs.map((log) => (
                 <div
                   key={log.id}
-                  className="p-4 rounded-lg border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800/50"
+                  className="p-4 rounded-lg border border-theme bg-theme-button/50"
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2">
@@ -153,16 +153,16 @@ export default function AssetLogsDrawer({ asset, open, onClose }: AssetLogsDrawe
                         {log.type.toUpperCase()}
                       </span>
                     </div>
-                    <span className="text-xs text-gray-400 dark:text-neutral-500">
+ <span className="text-xs text-gray-400 dark:text-theme-tertiary">
                       {new Date(log.date).toLocaleDateString()}
                     </span>
                   </div>
 
-                  <h3 className="font-medium text-gray-900 dark:text-white mb-1">
+                  <h3 className="font-medium text-theme-primary mb-1">
                     {log.description}
                   </h3>
 
-                  <p className="text-sm text-gray-500 dark:text-neutral-400 mb-2">
+ <p className="text-sm text-gray-500 dark:text-theme-tertiary mb-2">
                     <User size={14} className="inline mr-1" />
                     {log.contractor}
                   </p>
@@ -179,7 +179,7 @@ export default function AssetLogsDrawer({ asset, open, onClose }: AssetLogsDrawe
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-gray-200 dark:border-neutral-700">
+        <div className="p-4 border-t border-theme">
           <Button
             variant="outline"
             className="w-full"

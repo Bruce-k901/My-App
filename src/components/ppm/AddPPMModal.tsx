@@ -168,13 +168,13 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
       <div className="bg-gray-800 rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
             <Calendar className="h-5 w-5 text-magenta-400" />
             Add PPM Task
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-theme-tertiary hover:text-white transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -183,13 +183,13 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Site Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               <MapPin className="h-4 w-4 inline mr-1" />
               Filter by Site (Optional)
             </label>
             <select
               onChange={(e) => filterAssetsBySite(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-magenta-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-magenta-500 focus:border-transparent"
             >
               <option value="">All Sites</option>
               {sites.map(site => (
@@ -202,14 +202,14 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
 
           {/* Asset Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               Asset *
             </label>
             <select
               value={formData.asset_id}
               onChange={(e) => setFormData(prev => ({ ...prev, asset_id: e.target.value }))}
               required
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-magenta-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-magenta-500 focus:border-transparent"
             >
               <option value="">Select Asset</option>
               {filteredAssets.map(asset => (
@@ -222,14 +222,14 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
 
           {/* Contractor */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               <User className="h-4 w-4 inline mr-1" />
               Contractor
             </label>
             <select
               value={formData.contractor_id}
               onChange={(e) => setFormData(prev => ({ ...prev, contractor_id: e.target.value }))}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-magenta-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-magenta-500 focus:border-transparent"
             >
               <option value="">Select Contractor</option>
               {contractors.map(contractor => (
@@ -242,7 +242,7 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
 
           {/* Service Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               <Calendar className="h-4 w-4 inline mr-1" />
               Service Date *
             </label>
@@ -251,13 +251,13 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
               value={formData.next_service_date}
               onChange={(e) => setFormData(prev => ({ ...prev, next_service_date: e.target.value }))}
               required
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-magenta-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-magenta-500 focus:border-transparent"
             />
           </div>
 
           {/* Frequency */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               <Clock className="h-4 w-4 inline mr-1" />
               Frequency (Months) *
             </label>
@@ -265,7 +265,7 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
               value={formData.frequency_months}
               onChange={(e) => setFormData(prev => ({ ...prev, frequency_months: parseInt(e.target.value) }))}
               required
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-magenta-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-magenta-500 focus:border-transparent"
             >
               <option value={1}>Monthly</option>
               <option value={3}>Quarterly</option>
@@ -277,7 +277,7 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-theme-tertiary mb-2">
               <FileText className="h-4 w-4 inline mr-1" />
               Notes
             </label>
@@ -285,7 +285,7 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
               value={formData.notes}
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               rows={3}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-magenta-500 focus:border-transparent resize-none"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-magenta-500 focus:border-transparent resize-none"
               placeholder="Additional notes or instructions..."
             />
           </div>
@@ -295,7 +295,7 @@ export function AddPPMModal({ isOpen, onClose, selectedDate, onPPMAdded }: AddPP
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+              className="flex-1 px-4 py-2 text-theme-tertiary bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
             >
               Cancel
             </button>

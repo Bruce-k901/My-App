@@ -155,13 +155,13 @@ function NotificationsInner() {
     <section className="px-6 py-8 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">Notifications</h1>
-        <Link href="/dashboard" className="text-sm text-slate-400 hover:text-white">Back to Dashboard</Link>
+        <Link href="/dashboard" className="text-sm text-theme-tertiary hover:text-white">Back to Dashboard</Link>
       </div>
 
       {loading ? (
-        <p className="text-slate-400">Loading…</p>
+        <p className="text-theme-tertiary">Loading…</p>
       ) : items.length === 0 ? (
-        <p className="text-slate-400">No notifications yet.</p>
+        <p className="text-theme-tertiary">No notifications yet.</p>
       ) : (
         <ul className="divide-y divide-neutral-800 rounded border border-neutral-800 bg-[#0f1220]">
           {items.slice(0, limit).map((n) => (
@@ -172,9 +172,9 @@ function NotificationsInner() {
                   <span className="font-medium">{n.title}</span>
                   {n.severity && <span className={`text-xs px-2 py-0.5 rounded ${severityBadge(n.severity)}`}>{n.severity}</span>}
                   {!n.read && <span className="text-xs px-2 py-0.5 rounded bg-magenta-500/20 text-magenta-300">new</span>}
-                  <span className="ml-auto text-xs text-slate-500">{timeAgo(n.created_at)}</span>
+                  <span className="ml-auto text-xs text-theme-tertiary">{timeAgo(n.created_at)}</span>
                 </div>
-                <p className="text-sm text-slate-300 mt-1 whitespace-pre-line">{n.message}</p>
+                <p className="text-sm text-theme-secondary mt-1 whitespace-pre-line">{n.message}</p>
                 <div className="mt-2 flex items-center gap-3">
                   {n?.metadata?.kind === "open_shift_offer" && typeof n?.metadata?.shift_id === "string" && (
                     <button
@@ -187,7 +187,7 @@ function NotificationsInner() {
                     </button>
                   )}
                   {!n.read && (
-                    <button onClick={() => markSeen(n.id)} className="text-xs text-slate-300 hover:text-white underline">
+                    <button onClick={() => markSeen(n.id)} className="text-xs text-theme-secondary hover:text-white underline">
                       Mark as read
                     </button>
                   )}

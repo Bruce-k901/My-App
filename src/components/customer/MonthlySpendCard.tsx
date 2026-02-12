@@ -125,9 +125,9 @@ export function MonthlySpendCard() {
               onClick={() => setSelectedMonth(subMonths(selectedMonth, 1))}
               className="p-1 hover:bg-white/10 rounded transition-colors"
             >
-              <ChevronLeft className="w-5 h-5 text-white/60" />
+              <ChevronLeft className="w-5 h-5 text-theme-tertiary" />
             </button>
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="text-xl font-semibold text-theme-primary">
               {format(selectedMonth, 'MMMM yyyy')}
             </h2>
             <button
@@ -135,11 +135,11 @@ export function MonthlySpendCard() {
               disabled={format(selectedMonth, 'yyyy-MM') >= format(new Date(), 'yyyy-MM')}
               className="p-1 hover:bg-white/10 rounded transition-colors disabled:opacity-40"
             >
-              <ChevronRight className="w-5 h-5 text-white/60" />
+              <ChevronRight className="w-5 h-5 text-theme-tertiary" />
             </button>
           </div>
         </div>
-        <p className="text-white/60">No orders for this month</p>
+        <p className="text-theme-tertiary">No orders for this month</p>
       </div>
     );
   }
@@ -161,9 +161,9 @@ export function MonthlySpendCard() {
             onClick={() => setSelectedMonth(subMonths(selectedMonth, 1))}
             className="p-1 hover:bg-white/10 rounded transition-colors"
           >
-            <ChevronLeft className="w-5 h-5 text-white/60" />
+            <ChevronLeft className="w-5 h-5 text-theme-tertiary" />
           </button>
-          <h2 className="text-xl font-semibold text-white">
+          <h2 className="text-xl font-semibold text-theme-primary">
             {format(selectedMonth, 'MMMM yyyy')}
           </h2>
           <button
@@ -171,7 +171,7 @@ export function MonthlySpendCard() {
             disabled={format(selectedMonth, 'yyyy-MM') >= format(new Date(), 'yyyy-MM')}
             className="p-1 hover:bg-white/10 rounded transition-colors disabled:opacity-40"
           >
-            <ChevronRight className="w-5 h-5 text-white/60" />
+            <ChevronRight className="w-5 h-5 text-theme-tertiary" />
           </button>
         </div>
         <Link href={`/customer/reports/monthly?month=${format(selectedMonth, 'yyyy-MM')}`}>
@@ -213,7 +213,7 @@ export function MonthlySpendCard() {
       {/* Top Products */}
       {data.top_products && data.top_products.length > 0 && (
         <div className="mt-6">
-          <h3 className="text-sm font-medium text-white/80 mb-3">Top Products</h3>
+          <h3 className="text-sm font-medium text-theme-secondary mb-3">Top Products</h3>
           <div className="space-y-2">
             {data.top_products.slice(0, 3).map((product) => {
               const maxSpend = Math.max(...data.top_products.map(p => p.total_spend));
@@ -223,7 +223,7 @@ export function MonthlySpendCard() {
                 <div key={product.product_id} className="flex items-center gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm text-white/90 truncate">{product.product_name}</div>
-                    <div className="text-xs text-white/60">{product.total_quantity} units</div>
+                    <div className="text-xs text-theme-tertiary">{product.total_quantity} units</div>
                   </div>
                   <div className="flex-1 bg-white/5 rounded-full h-2 overflow-hidden">
                     <div
@@ -231,7 +231,7 @@ export function MonthlySpendCard() {
                       style={{ width: `${widthPercent}%` }}
                     />
                   </div>
-                  <div className="text-sm font-medium text-white w-20 text-right">
+                  <div className="text-sm font-medium text-theme-primary w-20 text-right">
                     {formatCurrency(product.total_spend)}
                   </div>
                 </div>
@@ -274,8 +274,8 @@ function MetricCard({
 
   return (
     <div className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-4">
-      <div className="text-xs text-white/60 mb-1">{label}</div>
-      <div className="text-xl font-bold text-white mb-1">{value}</div>
+      <div className="text-xs text-theme-tertiary mb-1">{label}</div>
+      <div className="text-xl font-bold text-theme-primary mb-1">{value}</div>
       {previousValue && (
         <div className={`flex items-center gap-1 text-xs ${
           trend.isPositive ? 'text-green-400' : 'text-red-400'

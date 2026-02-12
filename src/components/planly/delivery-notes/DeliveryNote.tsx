@@ -31,7 +31,7 @@ export function DeliveryNote({
   })();
 
   return (
-    <div className="delivery-note bg-white text-black flex flex-col h-full">
+    <div className="delivery-note bg-white text-theme-primary flex flex-col h-full">
       {/* Header - spans full width */}
       <div className="delivery-note-header flex justify-between items-center border-b border-gray-300 pb-1 mb-1">
         <div className="flex items-center gap-2">
@@ -44,7 +44,7 @@ export function DeliveryNote({
           )}
           <div className="font-bold text-xs">{companyName}</div>
         </div>
-        <div className="text-xs text-gray-500 font-medium">DELIVERY NOTE</div>
+        <div className="text-xs text-theme-tertiary font-medium">DELIVERY NOTE</div>
       </div>
 
       {/* Two Column Layout */}
@@ -53,25 +53,25 @@ export function DeliveryNote({
         <div className="info-column w-[35%] flex flex-col text-[7pt] border-r border-gray-200 pr-2">
           {/* Date */}
           <div className="flex justify-between mb-1 pb-1 border-b border-gray-100">
-            <span className="text-gray-500">Date:</span>
+            <span className="text-theme-tertiary">Date:</span>
             <span className="font-semibold">{formattedDate}</span>
           </div>
 
           {/* Customer Details */}
           <div className="customer-info flex-1">
             <div className="font-bold text-[8pt] mb-1">{note.customerName}</div>
-            {note.address && <div className="text-gray-600 leading-tight">{note.address}</div>}
-            {note.postcode && <div className="text-gray-600 font-medium mt-0.5">{note.postcode}</div>}
+            {note.address && <div className="text-theme-secondary leading-tight">{note.address}</div>}
+            {note.postcode && <div className="text-theme-secondary font-medium mt-0.5">{note.postcode}</div>}
             {note.contact && (
-              <div className="text-gray-500 mt-2 pt-1 border-t border-gray-100">
-                <span className="text-gray-400">Contact:</span><br />
+              <div className="text-theme-tertiary mt-2 pt-1 border-t border-gray-100">
+                <span className="text-theme-tertiary">Contact:</span><br />
                 {note.contact}
               </div>
             )}
           </div>
 
           {/* Footer */}
-          <div className="note-footer text-center text-[6pt] text-gray-400 mt-auto pt-1 border-t border-gray-200">
+          <div className="note-footer text-center text-[6pt] text-theme-tertiary mt-auto pt-1 border-t border-gray-200">
             THANK YOU!
           </div>
         </div>
@@ -100,7 +100,7 @@ export function DeliveryNote({
                       {/* Category Header */}
                       <tr className="category-header">
                         <td colSpan={2} className="py-0.5 font-bold text-[6pt] bg-gray-100">
-                          <span className="text-teal-600 mr-1">●</span>
+                          <span className="text-module-fg mr-1">●</span>
                           {group.name.toUpperCase()}
                         </td>
                       </tr>
@@ -110,7 +110,7 @@ export function DeliveryNote({
                         return (
                           <tr
                             key={product.id}
-                            className={productIdx % 2 === 1 ? 'bg-gray-50' : ''}
+                            className={productIdx % 2 === 1 ? 'bg-theme-surface-elevated' : ''}
                           >
                             <td className="py-0.5 pr-1 truncate">
                               {product.name}

@@ -72,34 +72,34 @@ export function UpdateCertificateExpiryModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white dark:bg-neutral-800 rounded-lg border border-gray-200 dark:border-neutral-700 w-full max-w-md shadow-xl">
+      <div className="bg-theme-surface rounded-lg border border-theme w-full max-w-md shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-neutral-700">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Update Certificate Expiry Date</h2>
+        <div className="flex items-center justify-between p-6 border-b border-theme">
+          <h2 className="text-xl font-semibold text-theme-primary">Update Certificate Expiry Date</h2>
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg transition-colors"
             disabled={saving}
           >
-            <X className="w-5 h-5 text-gray-500 dark:text-white/60" />
+            <X className="w-5 h-5 text-theme-tertiary" />
           </button>
         </div>
 
         {/* Content */}
         <div className="p-6 space-y-4">
           <div>
-            <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Employee</p>
-            <p className="text-gray-900 dark:text-white font-medium">{employeeName}</p>
+            <p className="text-sm text-theme-tertiary mb-1">Employee</p>
+            <p className="text-theme-primary font-medium">{employeeName}</p>
           </div>
 
           <div>
-            <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Course</p>
-            <p className="text-gray-900 dark:text-white font-medium">{courseName}</p>
+            <p className="text-sm text-theme-tertiary mb-1">Course</p>
+            <p className="text-theme-primary font-medium">{courseName}</p>
           </div>
 
           <div>
-            <p className="text-sm text-gray-500 dark:text-white/60 mb-1">Current Expiry Date</p>
-            <p className="text-gray-900 dark:text-white">
+            <p className="text-sm text-theme-tertiary mb-1">Current Expiry Date</p>
+            <p className="text-theme-primary">
               {currentExpiryDate
                 ? new Date(currentExpiryDate).toLocaleDateString('en-GB', {
                     day: 'numeric',
@@ -111,7 +111,7 @@ export function UpdateCertificateExpiryModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+            <label className="block text-sm font-medium text-theme-primary mb-2">
               New Expiry Date <span className="text-red-400">*</span>
             </label>
             <div className="relative">
@@ -120,30 +120,30 @@ export function UpdateCertificateExpiryModal({
                 value={newExpiryDate}
                 onChange={(e) => setNewExpiryDate(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-4 py-2 bg-gray-50 dark:bg-neutral-700 border border-gray-300 dark:border-neutral-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-neutral-700 border border-gray-300 dark:border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 disabled={saving}
               />
-              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-white/60 pointer-events-none" />
+              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary pointer-events-none" />
             </div>
-            <p className="text-xs text-gray-500 dark:text-neutral-500 mt-1">
+ <p className="text-xs text-gray-500 dark:text-theme-tertiary mt-1">
               Select a future date for the new certificate expiry
             </p>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-neutral-700">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-theme">
           <button
             onClick={onClose}
             disabled={saving}
-            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-gray-900 dark:text-white rounded-lg transition-colors disabled:opacity-50"
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-theme-primary rounded-lg transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving || !newExpiryDate}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 bg-module-fg hover:bg-module-fg/90 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {saving ? (
               <>

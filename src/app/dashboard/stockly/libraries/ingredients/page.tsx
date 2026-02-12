@@ -993,22 +993,22 @@ export default function IngredientsLibraryPage() {
   const { statusMap: planlyStatusMap } = usePlanlyBadgeStatusBulk(ingredientIds);
 
   return (
-    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen">
+    <div className="w-full bg-theme-surface-elevated min-h-screen">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-              <Package className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+            <h1 className="text-3xl font-bold text-theme-primary mb-2 flex items-center gap-3">
+              <Package className="w-8 h-8 text-module-fg" />
               Ingredients Library
             </h1>
-            <p className="text-sm text-gray-600 dark:text-white/60">Manage ingredients, allergens, and costs</p>
+            <p className="text-sm text-theme-secondary">Manage ingredients, allergens, and costs</p>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={handleUploadClick} className="px-4 py-2 bg-white dark:bg-white/[0.05] border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2">
+ <button onClick={handleUploadClick} className="px-4 py-2 bg-theme-surface ] border border-module-fg text-module-fg hover:bg-module-fg/10 hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2">
               <Upload size={16} />
               Upload CSV
             </button>
-            <button onClick={handleDownloadCSV} className="px-4 py-2 bg-white dark:bg-white/[0.05] border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2">
+ <button onClick={handleDownloadCSV} className="px-4 py-2 bg-theme-surface ] border border-module-fg text-module-fg hover:bg-module-fg/10 hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out flex items-center gap-2">
               <Download size={16} />
               Download CSV
             </button>
@@ -1048,7 +1048,7 @@ export default function IngredientsLibraryPage() {
                 setNewRowIds(prev => new Set(prev).add(tempId));
               }}
               aria-label="Add Ingredient"
-              className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-emerald-600 dark:border-emerald-500/60 text-emerald-600 dark:text-emerald-400 bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-[0_0_14px_rgba(16,185,129,0.7)] transition"
+ className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-emerald-600 dark:border-module-fg/30 text-module-fg bg-theme-surface ] hover:bg-theme-muted hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-module-glow transition"
             >
               <Plus size={18} />
               <span className="sr-only">Add Ingredient</span>
@@ -1056,22 +1056,22 @@ export default function IngredientsLibraryPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
+        <div className="bg-theme-surface border border-theme rounded-xl p-4">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-white/40" size={20} />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-tertiary" size={20} />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search ingredients..."
-                className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg pl-10 pr-4 py-2.5 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
+ className="w-full bg-theme-surface ] border border-theme rounded-lg pl-10 pr-4 py-2.5 text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
               />
             </div>
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
-              className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-lg px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 min-w-[180px] appearance-none cursor-pointer"
+ className="bg-theme-surface ] border border-theme rounded-lg px-4 py-2.5 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 min-w-[180px] appearance-none cursor-pointer"
             >
               <option value="all">All Categories</option>
               {INGREDIENT_CATEGORIES.map(cat => (
@@ -1082,20 +1082,20 @@ export default function IngredientsLibraryPage() {
         </div>
 
         {loading ? (
-          <div className="text-gray-600 dark:text-white/60 text-center py-8">Loading ingredients...</div>
+          <div className="text-theme-secondary text-center py-8">Loading ingredients...</div>
         ) : filteredItems.length === 0 ? (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 text-center">
-            <p className="text-gray-600 dark:text-white/60">No ingredients found.</p>
+          <div className="bg-theme-surface border border-theme rounded-xl p-8 text-center">
+            <p className="text-theme-secondary">No ingredients found.</p>
           </div>
         ) : (
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
+          <div className="bg-theme-surface border border-theme rounded-xl overflow-hidden">
             <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-white/[0.05] border-b border-gray-200 dark:border-white/[0.06]">
+              <thead className="bg-theme-button border-b border-theme">
                 <tr>
                   <th className="w-10 px-2" aria-label="Expand" />
-                  <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-emerald-400 text-[0.95rem]">Name</th>
-                  <th className="text-left px-2 py-3 font-semibold text-gray-900 dark:text-emerald-400 text-[0.95rem]">Category</th>
-                  <th className="text-left px-2 py-3 font-semibold text-gray-900 dark:text-emerald-400 text-[0.95rem]">Unit</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-900 dark:text-module-fg text-[0.95rem]">Name</th>
+                  <th className="text-left px-2 py-3 font-semibold text-gray-900 dark:text-module-fg text-[0.95rem]">Category</th>
+                  <th className="text-left px-2 py-3 font-semibold text-gray-900 dark:text-module-fg text-[0.95rem]">Unit</th>
                 </tr>
               </thead>
               <tbody>
@@ -1103,30 +1103,30 @@ export default function IngredientsLibraryPage() {
                   const expanded = expandedRows.has(item.id);
                   return (
                     <React.Fragment key={item.id}>
-                      <tr className="border-b border-gray-100 dark:border-white/[0.05] hover:bg-gray-50 dark:hover:bg-white/[0.02] bg-white dark:bg-transparent">
+                      <tr className="border-b border-theme hover:bg-gray-50 dark:hover:bg-white/[0.02] bg-white dark:bg-transparent">
                         <td className="px-2 py-3 align-top">
-                          <button aria-label={expanded ? 'Collapse' : 'Expand'} onClick={() => toggleRow(item.id)} className="p-1 rounded hover:bg-gray-100 dark:hover:bg-white/[0.05] text-gray-600 dark:text-white/60">
+                          <button aria-label={expanded ? 'Collapse' : 'Expand'} onClick={() => toggleRow(item.id)} className="p-1 rounded hover:bg-gray-100 dark:hover:bg-white/[0.05] text-theme-secondary">
                             {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                           </button>
                         </td>
                         <td className="px-4 py-3">
                           {editingRowId === item.id ? (
-                            <input className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.ingredient_name ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, ingredient_name: e.target.value }))} />
+ <input className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.ingredient_name ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, ingredient_name: e.target.value }))} />
                           ) : (
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-gray-900 dark:text-white font-medium">{item.ingredient_name}</span>
+                              <span className="text-theme-primary font-medium">{item.ingredient_name}</span>
                               {item.supplier && (
-                                <span className="text-gray-500 dark:text-white/40 text-sm">• {item.supplier}</span>
+                                <span className="text-theme-tertiary text-sm">• {item.supplier}</span>
                               )}
                               {/* Prep Item Recipe Status Indicators */}
                               {item.is_prep_item && item.linked_recipe && (
                                 <>
                                   {item.linked_recipe.recipe_status === 'active' && item.linked_recipe.is_active ? (
-                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 dark:bg-module-fg/10 text-module-fg border border-emerald-200 dark:border-module-fg/30">
                                       ✓ Recipe Active
                                     </span>
                                   ) : item.linked_recipe.recipe_status === 'draft' ? (
-                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-50 dark:bg-gray-500/10 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-500/20 italic">
+ <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-50 dark:bg-theme-surface-elevated0/10 text-theme-secondary border border-gray-200 dark:border-gray-500/20 italic">
                                       ⚠ Recipe Draft
                                     </span>
                                   ) : (
@@ -1146,9 +1146,9 @@ export default function IngredientsLibraryPage() {
                             </div>
                           )}
                         </td>
-                        <td className="px-2 py-3 text-gray-700 dark:text-white/80 text-sm whitespace-nowrap">
+                        <td className="px-2 py-3 text-theme-secondary text-sm whitespace-nowrap">
                           {editingRowId === item.id ? (
-                            <select className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white" value={rowDraft?.category ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, category: e.target.value }))}>
+ <select className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary"value={rowDraft?.category ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, category: e.target.value }))}>
                               <option value="">Select...</option>
                               {INGREDIENT_CATEGORIES.map(cat => (<option key={cat} value={cat}>{cat}</option>))}
                             </select>
@@ -1156,7 +1156,7 @@ export default function IngredientsLibraryPage() {
                             item.category || '-'
                           )}
                         </td>
-                        <td className="px-2 py-3 text-gray-700 dark:text-white/80 text-sm whitespace-nowrap">
+                        <td className="px-2 py-3 text-theme-secondary text-sm whitespace-nowrap">
                           {editingRowId === item.id ? (
                             <Select
                               value={rowDraft?.unit ?? ''}
@@ -1171,12 +1171,12 @@ export default function IngredientsLibraryPage() {
                         </td>
                       </tr>
                       {expanded && (
-                        <tr className="border-t border-gray-200 dark:border-white/[0.06]">
+                        <tr className="border-t border-theme">
                           <td colSpan={4} className="px-4 py-4 bg-gray-50 dark:bg-white/[0.02]">
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {/* Stock Management Section - Full Width at Top */}
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 md:col-span-2 lg:col-span-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-2">Stock Management</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs text-theme-tertiary mb-2">Stock Management</div>
                               <div className="flex flex-wrap gap-6">
                                 {/* Track Stock */}
                                 <label className="flex items-center gap-2 cursor-pointer">
@@ -1190,9 +1190,9 @@ export default function IngredientsLibraryPage() {
                                     }}
                                     disabled={editingRowId !== item.id}
                                     style={{ accentColor: '#10B981' }}
-                                    className="w-4 h-4 rounded border-emerald-500/50 bg-white dark:bg-neutral-900 text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500 disabled:opacity-50"
+                                    className="w-4 h-4 rounded border-module-fg/30 bg-theme-surface text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500 disabled:opacity-50"
                                   />
-                                  <span className="text-sm text-gray-900 dark:text-white">Track Stock</span>
+                                  <span className="text-sm text-theme-primary">Track Stock</span>
                                 </label>
                                 {/* Prep Item */}
                                 <label className="flex items-center gap-2 cursor-pointer">
@@ -1212,9 +1212,9 @@ export default function IngredientsLibraryPage() {
                                     }}
                                     disabled={editingRowId !== item.id}
                                     style={{ accentColor: '#10B981' }}
-                                    className="w-4 h-4 rounded border-emerald-500/50 bg-white dark:bg-neutral-900 text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500 disabled:opacity-50"
+                                    className="w-4 h-4 rounded border-module-fg/30 bg-theme-surface text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500 disabled:opacity-50"
                                   />
-                                  <span className="text-sm text-gray-900 dark:text-white">Prep Item</span>
+                                  <span className="text-sm text-theme-primary">Prep Item</span>
                                   {(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) && (
                                     <span className="text-xs text-amber-600 dark:text-amber-400">(costs from recipe)</span>
                                   )}
@@ -1231,47 +1231,47 @@ export default function IngredientsLibraryPage() {
                                     }}
                                     disabled={editingRowId !== item.id}
                                     style={{ accentColor: '#10B981' }}
-                                    className="w-4 h-4 rounded border-emerald-500/50 bg-white dark:bg-neutral-900 text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500 disabled:opacity-50"
+                                    className="w-4 h-4 rounded border-module-fg/30 bg-theme-surface text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500 disabled:opacity-50"
                                   />
-                                  <span className="text-sm text-gray-900 dark:text-white">Purchasable</span>
+                                  <span className="text-sm text-theme-primary">Purchasable</span>
                                 </label>
                               </div>
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40">Supplier</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary">Supplier</div>
                               {editingRowId === item.id ? (
-                                <input className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.supplier ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, supplier: e.target.value }))} />
+ <input className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.supplier ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, supplier: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.supplier || '-'}</div>
+                                <div className="text-sm text-theme-primary font-medium">{item.supplier || '-'}</div>
                               )}
                             </div>
-                            <div className={`bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 ${(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) ? 'opacity-50' : ''}`}>
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">
+                            <div className={`bg-theme-surface border border-theme rounded-lg p-3 ${(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) ? 'opacity-50' : ''}`}>
+                              <div className="text-xs text-theme-tertiary mb-1">
                                 Unit Cost
                                 {(item.pack_cost && item.pack_size) && (
-                                  <span className="ml-2 text-emerald-600 dark:text-emerald-400 text-[10px]">(from pack)</span>
+                                  <span className="ml-2 text-module-fg text-[10px]">(from pack)</span>
                                 )}
                                 {(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) && (
                                   <span className="ml-2 text-amber-600 dark:text-amber-400 text-[10px]">(set by recipe)</span>
                                 )}
                                 {editingRowId === item.id && rowDraft?.unit_cost_auto_calculated && !rowDraft?.is_prep_item && (
-                                  <span className="ml-2 text-emerald-600 dark:text-emerald-400 text-[10px]">(Auto-calculated)</span>
+                                  <span className="ml-2 text-module-fg text-[10px]">(Auto-calculated)</span>
                                 )}
                               </div>
                               {editingRowId === item.id ? (
                                 <input
                                   type="number"
                                   step="0.01"
-                                  className={`w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 ${rowDraft?.is_prep_item ? 'cursor-not-allowed' : ''}`}
+ className={`w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 ${rowDraft?.is_prep_item ?'cursor-not-allowed':''}`}
                                   value={rowDraft?.unit_cost ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, unit_cost: e.target.value, unit_cost_auto_calculated: false }))}
                                   disabled={rowDraft?.is_prep_item}
                                   readOnly={rowDraft?.unit_cost_auto_calculated}
                                 />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white">
+                                <div className="text-sm text-theme-primary">
                                   {item.unit_cost ? (
-                                    <span className={item.pack_cost && item.pack_size ? 'text-emerald-600 dark:text-emerald-400 font-medium' : ''}>
+                                    <span className={item.pack_cost && item.pack_size ? 'text-module-fg font-medium' : ''}>
                                       {formatUnitCost(parseFloat(item.unit_cost))}
                                     </span>
                                   ) : (
@@ -1280,8 +1280,8 @@ export default function IngredientsLibraryPage() {
                                 </div>
                               )}
                             </div>
-                            <div className={`bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 ${(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) ? 'opacity-50' : ''}`}>
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">
+                            <div className={`bg-theme-surface border border-theme rounded-lg p-3 ${(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) ? 'opacity-50' : ''}`}>
+                              <div className="text-xs text-theme-tertiary mb-1">
                                 Pack Size {item.unit && <span className="text-emerald-500">({item.unit})</span>}
                                 {(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) && (
                                   <span className="ml-2 text-amber-600 dark:text-amber-400 text-[10px]">(N/A for prep)</span>
@@ -1291,20 +1291,20 @@ export default function IngredientsLibraryPage() {
                                 <input
                                   type="number"
                                   step="0.01"
-                                  className={`w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 ${rowDraft?.is_prep_item ? 'cursor-not-allowed' : ''}`}
+ className={`w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 ${rowDraft?.is_prep_item ?'cursor-not-allowed':''}`}
                                   value={rowDraft?.pack_size ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, pack_size: e.target.value }))}
                                   disabled={rowDraft?.is_prep_item}
                                 />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">
+                                <div className="text-sm text-theme-primary font-medium">
                                   {item.pack_size != null ? item.pack_size : '-'}
-                                  {item.pack_size != null && item.unit && <span className="text-gray-500 dark:text-white/50 ml-1">{item.unit}</span>}
+                                  {item.pack_size != null && item.unit && <span className="text-theme-tertiary ml-1">{item.unit}</span>}
                                 </div>
                               )}
                             </div>
-                            <div className={`bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 ${(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) ? 'opacity-50' : ''}`}>
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">
+                            <div className={`bg-theme-surface border border-theme rounded-lg p-3 ${(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) ? 'opacity-50' : ''}`}>
+                              <div className="text-xs text-theme-tertiary mb-1">
                                 Pack Cost
                                 {(editingRowId === item.id ? rowDraft?.is_prep_item : item.is_prep_item) && (
                                   <span className="ml-2 text-amber-600 dark:text-amber-400 text-[10px]">(N/A for prep)</span>
@@ -1314,17 +1314,17 @@ export default function IngredientsLibraryPage() {
                                 <input
                                   type="number"
                                   step="0.01"
-                                  className={`w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 ${rowDraft?.is_prep_item ? 'cursor-not-allowed' : ''}`}
+ className={`w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 ${rowDraft?.is_prep_item ?'cursor-not-allowed':''}`}
                                   value={rowDraft?.pack_cost ?? ''}
                                   onChange={(e) => setRowDraft((d: any) => ({ ...d, pack_cost: e.target.value }))}
                                   disabled={rowDraft?.is_prep_item}
                                 />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.pack_cost != null ? `£${item.pack_cost}` : '-'}</div>
+                                <div className="text-sm text-theme-primary font-medium">{item.pack_cost != null ? `£${item.pack_cost}` : '-'}</div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 md:col-span-2 lg:col-span-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-2">Allergens (UK 14)</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs text-theme-tertiary mb-2">Allergens (UK 14)</div>
                               {editingRowId === item.id ? (
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                                   {UK_ALLERGENS.map((allergen) => {
@@ -1343,15 +1343,15 @@ export default function IngredientsLibraryPage() {
                                             }
                                           }}
                                           style={{ accentColor: '#10B981' }}
-                                          className="w-4 h-4 rounded border-emerald-500/50 bg-white dark:bg-neutral-900 text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500"
+                                          className="w-4 h-4 rounded border-module-fg/30 bg-theme-surface text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500"
                                         />
-                                        <span className="text-xs text-gray-900 dark:text-white">{allergen}</span>
+                                        <span className="text-xs text-theme-primary">{allergen}</span>
                                       </label>
                                     );
                                   })}
                                 </div>
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white">
+                                <div className="text-sm text-theme-primary">
                                   {(item.allergens || []).length > 0 ? (
                                     <div className="flex flex-wrap gap-1">
                                       {(item.allergens || []).map((allergen: string) => (
@@ -1367,16 +1367,16 @@ export default function IngredientsLibraryPage() {
                               )}
                             </div>
 
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">SKU</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">SKU</div>
                               {editingRowId === item.id ? (
-                                <input className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.sku ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, sku: e.target.value }))} />
+ <input className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.sku ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, sku: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">{item.sku || '-'}</div>
+                                <div className="text-sm text-theme-primary font-medium">{item.sku || '-'}</div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Storage Area</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Storage Area</div>
                               {editingRowId === item.id ? (
                                 <Select
                                   value={rowDraft?.storage_area_id ?? ''}
@@ -1392,7 +1392,7 @@ export default function IngredientsLibraryPage() {
                                   className="w-full"
                                 />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white">
+                                <div className="text-sm text-theme-primary">
                                   {item.storage_area_id 
                                     ? (() => {
                                         const area = storageAreas.find(a => a.id === item.storage_area_id);
@@ -1402,59 +1402,59 @@ export default function IngredientsLibraryPage() {
                                   }
                                 </div>
                               )}
-                              <p className="text-xs text-gray-500 dark:text-white/40 mt-1">
+                              <p className="text-xs text-theme-tertiary mt-1">
                                 Assign to a physical storage location for stock counting
                               </p>
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">
                                 Current Stock {item.unit && <span className="text-emerald-500">({item.unit})</span>}
                               </div>
                               {editingRowId === item.id ? (
-                                <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.current_stock ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, current_stock: e.target.value }))} />
+ <input type="number"step="0.01"className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.current_stock ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, current_stock: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">
+                                <div className="text-sm text-theme-primary font-medium">
                                   {item.current_stock != null ? item.current_stock : '0'}
-                                  {item.unit && <span className="text-gray-500 dark:text-white/50 ml-1">{item.unit}</span>}
+                                  {item.unit && <span className="text-theme-tertiary ml-1">{item.unit}</span>}
                                 </div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">
                                 Par Level {item.unit && <span className="text-emerald-500">({item.unit})</span>}
                               </div>
                               {editingRowId === item.id ? (
-                                <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.par_level ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, par_level: e.target.value }))} />
+ <input type="number"step="0.01"className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.par_level ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, par_level: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">
+                                <div className="text-sm text-theme-primary font-medium">
                                   {item.par_level != null ? item.par_level : '-'}
-                                  {item.par_level != null && item.unit && <span className="text-gray-500 dark:text-white/50 ml-1">{item.unit}</span>}
+                                  {item.par_level != null && item.unit && <span className="text-theme-tertiary ml-1">{item.unit}</span>}
                                 </div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">
                                 Reorder Point {item.unit && <span className="text-emerald-500">({item.unit})</span>}
                               </div>
                               {editingRowId === item.id ? (
-                                <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.reorder_point ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_point: e.target.value }))} />
+ <input type="number"step="0.01"className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.reorder_point ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_point: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">
+                                <div className="text-sm text-theme-primary font-medium">
                                   {item.reorder_point != null ? item.reorder_point : '-'}
-                                  {item.reorder_point != null && item.unit && <span className="text-gray-500 dark:text-white/50 ml-1">{item.unit}</span>}
+                                  {item.reorder_point != null && item.unit && <span className="text-theme-tertiary ml-1">{item.unit}</span>}
                                 </div>
                               )}
                             </div>
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                              <div className="text-xs text-theme-tertiary mb-1">
                                 Reorder Qty {item.unit && <span className="text-emerald-500">({item.unit})</span>}
                               </div>
                               {editingRowId === item.id ? (
-                                <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.reorder_qty ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_qty: e.target.value }))} />
+ <input type="number"step="0.01"className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.reorder_qty ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, reorder_qty: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white font-medium">
+                                <div className="text-sm text-theme-primary font-medium">
                                   {item.reorder_qty != null ? item.reorder_qty : '-'}
-                                  {item.reorder_qty != null && item.unit && <span className="text-gray-500 dark:text-white/50 ml-1">{item.unit}</span>}
+                                  {item.reorder_qty != null && item.unit && <span className="text-theme-tertiary ml-1">{item.unit}</span>}
                                 </div>
                               )}
                             </div>
@@ -1465,50 +1465,50 @@ export default function IngredientsLibraryPage() {
                             )}
                             
                             {/* Costing & Pricing Section */}
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 md:col-span-2 lg:col-span-3">
-                              <div className="text-xs font-semibold text-gray-700 dark:text-white/80 mb-2 uppercase">Costing & Pricing</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs font-semibold text-theme-secondary mb-2 uppercase">Costing & Pricing</div>
                               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                                 <div>
-                                  <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Costing Method</div>
+                                  <div className="text-xs text-theme-tertiary mb-1">Costing Method</div>
                                   {editingRowId === item.id ? (
-                                    <select className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.costing_method || 'average'} onChange={(e) => setRowDraft((d: any) => ({ ...d, costing_method: e.target.value }))}>
+ <select className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.costing_method ||'average'} onChange={(e) => setRowDraft((d: any) => ({ ...d, costing_method: e.target.value }))}>
                                       <option value="average">Average</option>
                                       <option value="fifo">FIFO</option>
                                       <option value="lifo">LIFO</option>
                                     </select>
                                   ) : (
-                                    <div className="text-sm text-gray-900 dark:text-white font-medium capitalize">{item.costing_method || 'average'}</div>
+                                    <div className="text-sm text-theme-primary font-medium capitalize">{item.costing_method || 'average'}</div>
                                   )}
                                 </div>
                                 <div>
-                                  <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Yield %</div>
+                                  <div className="text-xs text-theme-tertiary mb-1">Yield %</div>
                                   {editingRowId === item.id ? (
-                                    <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.yield_percent ?? 100} onChange={(e) => setRowDraft((d: any) => ({ ...d, yield_percent: e.target.value }))} />
+ <input type="number"step="0.01"className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.yield_percent ?? 100} onChange={(e) => setRowDraft((d: any) => ({ ...d, yield_percent: e.target.value }))} />
                                   ) : (
-                                    <div className="text-sm text-gray-900 dark:text-white font-medium">{item.yield_percent != null ? `${item.yield_percent}%` : '100%'}</div>
+                                    <div className="text-sm text-theme-primary font-medium">{item.yield_percent != null ? `${item.yield_percent}%` : '100%'}</div>
                                   )}
                                 </div>
                                 <div>
-                                  <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Stock Value</div>
-                                  <div className="text-sm text-gray-900 dark:text-white font-medium">{item.stock_value != null ? `£${item.stock_value.toFixed(2)}` : '£0.00'}</div>
+                                  <div className="text-xs text-theme-tertiary mb-1">Stock Value</div>
+                                  <div className="text-sm text-theme-primary font-medium">{item.stock_value != null ? `£${item.stock_value.toFixed(2)}` : '£0.00'}</div>
                                 </div>
                               </div>
                               {/* Recipe Cost Information for Prep Items */}
                               {item.is_prep_item && item.linked_recipe && item.recipe_cost && (
-                                <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/10">
-                                  <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-2">Recipe Cost Information</div>
+                                <div className="mt-3 pt-3 border-t border-theme">
+                                  <div className="text-xs font-semibold text-module-fg mb-2">Recipe Cost Information</div>
                                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                     <div>
-                                      <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Total Recipe Cost</div>
-                                      <div className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">£{item.recipe_cost.toFixed(2)}</div>
+                                      <div className="text-xs text-theme-tertiary mb-1">Total Recipe Cost</div>
+                                      <div className="text-sm text-module-fg font-medium">£{item.recipe_cost.toFixed(2)}</div>
                                     </div>
                                     <div>
-                                      <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Recipe Yield</div>
-                                      <div className="text-sm text-gray-900 dark:text-white">{item.recipe_yield || item.linked_recipe.yield_qty || 1} {item.linked_recipe.yield_unit || item.unit || ''}</div>
+                                      <div className="text-xs text-theme-tertiary mb-1">Recipe Yield</div>
+                                      <div className="text-sm text-theme-primary">{item.recipe_yield || item.linked_recipe.yield_qty || 1} {item.linked_recipe.yield_unit || item.unit || ''}</div>
                                     </div>
                                     <div>
-                                      <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Unit Cost (Calculated)</div>
-                                      <div className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">£{item.unit_cost_from_recipe?.toFixed(2) || '-'}</div>
+                                      <div className="text-xs text-theme-tertiary mb-1">Unit Cost (Calculated)</div>
+                                      <div className="text-sm text-module-fg font-medium">£{item.unit_cost_from_recipe?.toFixed(2) || '-'}</div>
                                     </div>
                                   </div>
                                 </div>
@@ -1516,97 +1516,97 @@ export default function IngredientsLibraryPage() {
                             </div>
                             
                             {/* Sales Channels Section */}
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 md:col-span-2 lg:col-span-3">
-                              <div className="text-xs font-semibold text-gray-700 dark:text-white/80 mb-2 uppercase">Sales Channels</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs font-semibold text-theme-secondary mb-2 uppercase">Sales Channels</div>
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-2">
                                   <div className="flex items-center gap-2">
                                     {editingRowId === item.id ? (
-                                      <input type="checkbox" checked={rowDraft?.is_retail_saleable ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_retail_saleable: e.target.checked }))} style={{ accentColor: '#10B981' }} className="w-4 h-4 rounded border-emerald-500/50 bg-white dark:bg-neutral-900 text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500" />
+                                      <input type="checkbox" checked={rowDraft?.is_retail_saleable ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_retail_saleable: e.target.checked }))} style={{ accentColor: '#10B981' }} className="w-4 h-4 rounded border-module-fg/30 bg-theme-surface text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500" />
                                     ) : (
                                       <div className="relative w-4 h-4">
                                         <input type="checkbox" checked={item.is_retail_saleable ?? false} disabled className="sr-only" />
-                                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_retail_saleable ? 'bg-emerald-500 border-emerald-500' : 'bg-white dark:bg-neutral-900 border-emerald-500/30'}`}>
-                                          {item.is_retail_saleable && <Check size={12} className="text-white" />}
+                                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_retail_saleable ? 'bg-emerald-500 border-emerald-500' : 'bg-theme-surface border-module-fg/30'}`}>
+                                          {item.is_retail_saleable && <Check size={12} className="text-theme-primary" />}
                                         </div>
                                       </div>
                                     )}
-                                    <label className="text-xs text-gray-600 dark:text-white/60">Retail Saleable</label>
+                                    <label className="text-xs text-theme-secondary">Retail Saleable</label>
                                   </div>
                                   {editingRowId === item.id ? (
-                                    <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.retail_price ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, retail_price: e.target.value }))} placeholder="Retail price" />
+ <input type="number"step="0.01"className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.retail_price ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, retail_price: e.target.value }))} placeholder="Retail price"/>
                                   ) : (
-                                    <div className="text-sm text-gray-900 dark:text-white font-medium">{item.retail_price != null ? `£${item.retail_price}` : '-'}</div>
+                                    <div className="text-sm text-theme-primary font-medium">{item.retail_price != null ? `£${item.retail_price}` : '-'}</div>
                                   )}
                                 </div>
                                 <div className="space-y-2">
                                   <div className="flex items-center gap-2">
                                     {editingRowId === item.id ? (
                                       <label className="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" checked={rowDraft?.is_wholesale_saleable ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_wholesale_saleable: e.target.checked }))} style={{ accentColor: '#10B981' }} className="w-4 h-4 rounded border-emerald-500/50 bg-white dark:bg-neutral-900 text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500" />
-                                        <span className="text-xs text-gray-600 dark:text-white/60">Wholesale Saleable</span>
+                                        <input type="checkbox" checked={rowDraft?.is_wholesale_saleable ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_wholesale_saleable: e.target.checked }))} style={{ accentColor: '#10B981' }} className="w-4 h-4 rounded border-module-fg/30 bg-theme-surface text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500" />
+                                        <span className="text-xs text-theme-secondary">Wholesale Saleable</span>
                                       </label>
                                     ) : (
                                       <label className="flex items-center gap-2">
                                         <div className="relative w-4 h-4">
                                           <input type="checkbox" checked={item.is_wholesale_saleable ?? false} disabled className="sr-only" />
-                                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_wholesale_saleable ? 'bg-emerald-500 border-emerald-500' : 'bg-white dark:bg-neutral-900 border-emerald-500/30'}`}>
-                                            {item.is_wholesale_saleable && <Check size={12} className="text-white" />}
+                                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_wholesale_saleable ? 'bg-emerald-500 border-emerald-500' : 'bg-theme-surface border-module-fg/30'}`}>
+                                            {item.is_wholesale_saleable && <Check size={12} className="text-theme-primary" />}
                                           </div>
                                         </div>
-                                        <span className="text-xs text-gray-600 dark:text-white/60">Wholesale Saleable</span>
+                                        <span className="text-xs text-theme-secondary">Wholesale Saleable</span>
                                       </label>
                                     )}
                                   </div>
                                   {editingRowId === item.id ? (
-                                    <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.wholesale_price ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, wholesale_price: e.target.value }))} placeholder="Wholesale price" />
+ <input type="number"step="0.01"className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.wholesale_price ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, wholesale_price: e.target.value }))} placeholder="Wholesale price"/>
                                   ) : (
-                                    <div className="text-sm text-gray-900 dark:text-white font-medium">{item.wholesale_price != null ? `£${item.wholesale_price}` : '-'}</div>
+                                    <div className="text-sm text-theme-primary font-medium">{item.wholesale_price != null ? `£${item.wholesale_price}` : '-'}</div>
                                   )}
                                 </div>
                                 <div className="space-y-2">
                                   <div className="flex items-center gap-2">
                                     {editingRowId === item.id ? (
                                       <label className="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" checked={rowDraft?.is_online_saleable ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_online_saleable: e.target.checked }))} style={{ accentColor: '#10B981' }} className="w-4 h-4 rounded border-emerald-500/50 bg-white dark:bg-neutral-900 text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500" />
-                                        <span className="text-xs text-gray-600 dark:text-white/60">Online Saleable</span>
+                                        <input type="checkbox" checked={rowDraft?.is_online_saleable ?? false} onChange={(e) => setRowDraft((d: any) => ({ ...d, is_online_saleable: e.target.checked }))} style={{ accentColor: '#10B981' }} className="w-4 h-4 rounded border-module-fg/30 bg-theme-surface text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500" />
+                                        <span className="text-xs text-theme-secondary">Online Saleable</span>
                                       </label>
                                     ) : (
                                       <label className="flex items-center gap-2">
                                         <div className="relative w-4 h-4">
                                           <input type="checkbox" checked={item.is_online_saleable ?? false} disabled className="sr-only" />
-                                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_online_saleable ? 'bg-emerald-500 border-emerald-500' : 'bg-white dark:bg-neutral-900 border-emerald-500/30'}`}>
-                                            {item.is_online_saleable && <Check size={12} className="text-white" />}
+                                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${item.is_online_saleable ? 'bg-emerald-500 border-emerald-500' : 'bg-theme-surface border-module-fg/30'}`}>
+                                            {item.is_online_saleable && <Check size={12} className="text-theme-primary" />}
                                           </div>
                                         </div>
-                                        <span className="text-xs text-gray-600 dark:text-white/60">Online Saleable</span>
+                                        <span className="text-xs text-theme-secondary">Online Saleable</span>
                                       </label>
                                     )}
                                   </div>
                                   {editingRowId === item.id ? (
-                                    <input type="number" step="0.01" className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.online_price ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, online_price: e.target.value }))} placeholder="Online price" />
+ <input type="number"step="0.01"className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.online_price ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, online_price: e.target.value }))} placeholder="Online price"/>
                                   ) : (
-                                    <div className="text-sm text-gray-900 dark:text-white font-medium">{item.online_price != null ? `£${item.online_price}` : '-'}</div>
+                                    <div className="text-sm text-theme-primary font-medium">{item.online_price != null ? `£${item.online_price}` : '-'}</div>
                                   )}
                                 </div>
                               </div>
                             </div>
                             
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 md:col-span-2 lg:col-span-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Yield Notes</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Yield Notes</div>
                               {editingRowId === item.id ? (
-                                <textarea className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white min-h-[60px] text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.yield_notes ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, yield_notes: e.target.value }))} />
+ <textarea className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary min-h-[60px] text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.yield_notes ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, yield_notes: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">{item.yield_notes || '-'}</div>
+                                <div className="text-sm text-theme-primary whitespace-pre-wrap">{item.yield_notes || '-'}</div>
                               )}
                             </div>
                             
-                            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3 md:col-span-2 lg:col-span-3">
-                              <div className="text-xs text-gray-500 dark:text-white/40 mb-1">Notes</div>
+                            <div className="bg-theme-surface border border-theme rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                              <div className="text-xs text-theme-tertiary mb-1">Notes</div>
                               {editingRowId === item.id ? (
-                                <textarea className="w-full bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded px-2 py-1 text-gray-900 dark:text-white min-h-[80px] focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" value={rowDraft?.notes ?? ''} onChange={(e) => setRowDraft((d: any) => ({ ...d, notes: e.target.value }))} />
+ <textarea className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary min-h-[80px] focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.notes ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, notes: e.target.value }))} />
                               ) : (
-                                <div className="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">{item.notes || '-'}</div>
+                                <div className="text-sm text-theme-primary whitespace-pre-wrap">{item.notes || '-'}</div>
                               )}
                             </div>
 
@@ -1621,22 +1621,22 @@ export default function IngredientsLibraryPage() {
                           <div className="flex items-center gap-2 mt-4">
                             {editingRowId === item.id ? (
                               <>
-                                <button onClick={() => saveRow(item.id)} className="px-3 py-2 rounded-lg border border-emerald-600 dark:border-emerald-500/60 text-emerald-600 dark:text-emerald-400 bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-[0_0_14px_rgba(16,185,129,0.7)] transition flex items-center gap-2">
-                                  <Save size={16} className="text-emerald-600 dark:text-emerald-400" />
-                                  <span className="text-gray-900 dark:text-white">Save</span>
+ <button onClick={() => saveRow(item.id)} className="px-3 py-2 rounded-lg border border-emerald-600 dark:border-module-fg/30 text-module-fg bg-theme-surface ] hover:bg-theme-muted hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-module-glow transition flex items-center gap-2">
+                                  <Save size={16} className="text-module-fg" />
+                                  <span className="text-theme-primary">Save</span>
                                 </button>
-                                <button onClick={() => cancelEdit(item.id)} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-white/20 text-gray-700 dark:text-white bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 transition flex items-center gap-2">
-                                  <X size={16} className="text-gray-600 dark:text-white/60" />
-                                  <span className="text-gray-900 dark:text-white">Cancel</span>
+ <button onClick={() => cancelEdit(item.id)} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-white/20 text-theme-secondary bg-theme-surface ] hover:bg-theme-muted transition flex items-center gap-2">
+                                  <X size={16} className="text-theme-secondary" />
+                                  <span className="text-theme-primary">Cancel</span>
                                 </button>
                               </>
                             ) : (
                               <>
-                                <button aria-label="Edit Ingredient" onClick={() => handleEdit(item)} className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-emerald-600 dark:border-emerald-500/60 text-emerald-600 dark:text-emerald-400 bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-[0_0_14px_rgba(16,185,129,0.7)] transition">
+ <button aria-label="Edit Ingredient"onClick={() => handleEdit(item)} className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-emerald-600 dark:border-module-fg/30 text-module-fg bg-theme-surface ] hover:bg-theme-muted hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-module-glow transition">
                                   <Edit size={16} />
                                   <span className="sr-only">Edit</span>
                                 </button>
-                                <button aria-label="Delete Ingredient" onClick={() => handleDelete(item.id)} className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-red-600 dark:border-red-500/60 text-red-600 dark:text-red-400 bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 hover:border-red-500 dark:hover:border-red-400 hover:shadow-[0_0_14px_rgba(239,68,68,0.55)] transition">
+ <button aria-label="Delete Ingredient"onClick={() => handleDelete(item.id)} className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-red-600 dark:border-red-500/60 text-red-600 dark:text-red-400 bg-theme-surface ] hover:bg-theme-muted hover:border-red-500 dark:hover:border-red-400 hover:shadow-module-glow transition">
                                   <Trash2 size={16} />
                                   <span className="sr-only">Delete</span>
                                 </button>

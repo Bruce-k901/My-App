@@ -28,7 +28,7 @@ const topicConfig: Record<TopicCategory | 'all' | 'pinned', {
   all: {
     label: 'All Topics',
     icon: MessageSquare,
-    color: 'text-gray-700 dark:text-white',
+    color: 'text-theme-secondary',
     description: 'Show all conversations'
   },
   pinned: {
@@ -64,7 +64,7 @@ const topicConfig: Record<TopicCategory | 'all' | 'pinned', {
   compliance: {
     label: 'Compliance',
     icon: FileCheck,
-    color: 'text-cyan-600 dark:text-cyan-400',
+    color: 'text-module-fg',
     description: 'Compliance and documentation'
   },
   incidents: {
@@ -76,7 +76,7 @@ const topicConfig: Record<TopicCategory | 'all' | 'pinned', {
   general: {
     label: 'General',
     icon: MessageSquare,
-    color: 'text-gray-600 dark:text-gray-400',
+    color: 'text-theme-secondary',
     description: 'General discussions'
   }
 };
@@ -132,13 +132,13 @@ export default function TopicFilter({ currentFilters, onFilterChange, counts }: 
                 flex items-center gap-2 px-4 py-2 rounded-lg transition-all whitespace-nowrap
                 ${active 
                   ? 'bg-transparent border border-[#D37E91] text-[#D37E91] shadow-[0_0_12px_rgba(211, 126, 145,0.7)]' 
-                  : 'bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] hover:bg-gray-100 dark:hover:bg-white/[0.06]'
+                  : 'bg-gray-50 dark:bg-white/[0.03] border border-theme hover:bg-gray-100 dark:hover:bg-white/[0.06]'
                 }
               `}
               title={config.description}
             >
               <Icon className={`h-4 w-4 ${active ? 'text-[#D37E91]' : config.color}`} />
-              <span className={`text-sm font-medium ${active ? 'text-[#D37E91]' : 'text-gray-700 dark:text-white/70'}`}>
+              <span className={`text-sm font-medium ${active ? 'text-[#D37E91]' : 'text-theme-secondary'}`}>
                 {config.label}
               </span>
               {count > 0 && (
@@ -146,7 +146,7 @@ export default function TopicFilter({ currentFilters, onFilterChange, counts }: 
                   text-xs px-2 py-0.5 rounded-full
                   ${active 
                     ? 'bg-[#D37E91]/10 dark:bg-[#D37E91]/30 text-[#D37E91] dark:text-[#D37E91]' 
-                    : 'bg-gray-200 dark:bg-white/[0.1] text-gray-600 dark:text-white/60'
+                    : 'bg-gray-200 dark:bg-white/[0.1] text-theme-secondary'
                   }
                 `}>
                   {count}
@@ -160,7 +160,7 @@ export default function TopicFilter({ currentFilters, onFilterChange, counts }: 
       {/* Active filter indicator */}
       {(currentFilters.topicCategory || currentFilters.isPinned) && (
         <div className="mt-3 flex items-center gap-2">
-          <span className="text-xs text-gray-500 dark:text-white/40">Showing:</span>
+          <span className="text-xs text-theme-tertiary">Showing:</span>
           <span className="text-xs text-[#D37E91] font-medium">
             {currentFilters.isPinned 
               ? 'Pinned Conversations' 
@@ -169,7 +169,7 @@ export default function TopicFilter({ currentFilters, onFilterChange, counts }: 
           </span>
           <button
             onClick={() => onFilterChange({ ...currentFilters, topicCategory: undefined, isPinned: undefined })}
-            className="text-xs text-gray-500 dark:text-white/40 hover:text-gray-700 dark:hover:text-white/60 underline"
+            className="text-xs text-theme-tertiary hover:text-theme-secondary dark:hover:text-theme-tertiary underline"
           >
             Clear
           </button>

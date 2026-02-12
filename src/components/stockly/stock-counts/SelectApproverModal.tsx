@@ -140,7 +140,7 @@ export default function SelectApproverModal({
     if (roleLower.includes('site') || (roleLower.includes('manager') && !roleLower.includes('area') && !roleLower.includes('regional'))) {
       return 'bg-amber-100 dark:bg-amber-900/20 text-amber-800 dark:text-amber-400 border-amber-200 dark:border-amber-600/30';
     }
-    return 'bg-gray-100 dark:bg-gray-900/20 text-gray-800 dark:text-gray-400 border-gray-200 dark:border-gray-600/30';
+ return'bg-gray-100 dark:bg-gray-900/20 text-gray-800 dark:text-theme-tertiary border-gray-200 dark:border-gray-600/30';
   };
 
   const getRoleIcon = (role: string) => {
@@ -174,23 +174,23 @@ export default function SelectApproverModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-[#0f1220] border-neutral-800">
         <DialogHeader>
-          <DialogTitle className="text-white text-xl font-semibold">
+          <DialogTitle className="text-theme-primary text-xl font-semibold">
             Select Approver for Stock Count
           </DialogTitle>
           {countName && (
-            <p className="text-sm text-gray-400 mt-1">{countName}</p>
+            <p className="text-sm text-theme-tertiary mt-1">{countName}</p>
           )}
         </DialogHeader>
 
         <div className="space-y-4 mt-4">
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-emerald-600 dark:text-emerald-400" />
-              <span className="ml-2 text-gray-600 dark:text-gray-400">Loading approvers...</span>
+              <Loader2 className="h-6 w-6 animate-spin text-module-fg" />
+              <span className="ml-2 text-theme-secondary">Loading approvers...</span>
             </div>
           ) : approvers.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-theme-secondary">
                 No approvers found. Please ensure managers are assigned in your organization structure.
               </p>
             </div>
@@ -208,8 +208,8 @@ export default function SelectApproverModal({
                   return (
                     <div key={group} className="space-y-2">
                       <div className="flex items-center gap-2 mb-2">
-                        <GroupIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+                        <GroupIcon className="h-4 w-4 text-theme-tertiary" />
+                        <h3 className="text-sm font-semibold text-theme-secondary uppercase tracking-wide">
                           {getGroupTitle(group)}
                         </h3>
                       </div>
@@ -226,7 +226,7 @@ export default function SelectApproverModal({
                                 ? 'border-emerald-600 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
                                 : isRecommended
                                 ? 'border-blue-300 dark:border-blue-600 bg-blue-50/50 dark:bg-blue-900/10 hover:border-blue-400 dark:hover:border-blue-500'
-                                : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-white/[0.03] hover:border-gray-300 dark:hover:border-gray-600'
+                                : 'border-theme bg-theme-surface hover:border-gray-300 dark:hover:border-gray-600'
                             }`}
                           >
                             {isRecommended && !selectedApprover && (
@@ -239,8 +239,8 @@ export default function SelectApproverModal({
                             <div className="flex items-center justify-between">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <RoleIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                                  <RoleIcon className="h-4 w-4 text-theme-tertiary" />
+                                  <h3 className="font-semibold text-theme-primary">
                                     {approver.name}
                                   </h3>
                                   <span className={`px-2 py-0.5 text-xs font-medium rounded border ${getRoleBadgeColor(approver.role)}`}>
@@ -248,11 +248,11 @@ export default function SelectApproverModal({
                                   </span>
                                 </div>
                                 {approver.email && (
-                                  <p className="text-sm text-gray-500 dark:text-gray-400 ml-6">{approver.email}</p>
+                                  <p className="text-sm text-theme-tertiary ml-6">{approver.email}</p>
                                 )}
                               </div>
                               {selectedApprover?.id === approver.id && (
-                                <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                                <CheckCircle2 className="h-5 w-5 text-module-fg flex-shrink-0" />
                               )}
                             </div>
                           </button>
@@ -288,18 +288,18 @@ export default function SelectApproverModal({
           )}
         </div>
 
-        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-theme">
           <Button
             onClick={onClose}
             variant="outline"
-            className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
+            className="border-gray-300 dark:border-gray-600 text-theme-secondary"
           >
             Cancel
           </Button>
           <Button
             onClick={handleSelect}
             disabled={!selectedApprover}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-module-fg hover:bg-module-fg/90 text-white disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Select {selectedApprover ? selectedApprover.name : 'Approver'}
           </Button>

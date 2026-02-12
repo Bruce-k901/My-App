@@ -104,9 +104,9 @@ export function ClockInButton() {
   // NOW we can do conditional returns - all hooks have been called
   if (loading) {
     return (
-      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] h-9 md:h-10">
-        <Clock className="w-4 h-4 text-gray-400 dark:text-white/40 animate-pulse" />
-        <span className="text-gray-500 dark:text-white/60 text-xs md:text-sm hidden sm:inline">Loading...</span>
+      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 dark:bg-white/[0.06] border border-theme h-9 md:h-10">
+        <Clock className="w-4 h-4 text-theme-tertiary animate-pulse" />
+        <span className="text-theme-tertiary text-xs md:text-sm hidden sm:inline">Loading...</span>
       </div>
     )
   }
@@ -116,7 +116,7 @@ export function ClockInButton() {
     const clockInTimeValue = currentAttendance.clock_in_time || currentAttendance.clock_in_at
     if (!clockInTimeValue) {
       return (
-        <div className="px-3 py-2 text-gray-500 dark:text-white/60 text-sm">
+        <div className="px-3 py-2 text-theme-tertiary text-sm">
           Clocked in (time unavailable)
         </div>
       )
@@ -124,7 +124,7 @@ export function ClockInButton() {
     
     if (!duration) {
       return (
-        <div className="px-3 py-2 text-gray-500 dark:text-white/60 text-sm">
+        <div className="px-3 py-2 text-theme-tertiary text-sm">
           Clocked in (invalid time)
         </div>
       )
@@ -138,7 +138,7 @@ export function ClockInButton() {
             <div className="text-xs md:text-sm">
               <span className="text-green-700 dark:text-green-400 font-medium hidden sm:inline">Clocked In</span>
               <span className="text-green-700 dark:text-green-400 font-medium sm:hidden">In</span>
-              <span className="text-green-600/70 dark:text-white/60 text-xs ml-1 hidden md:inline">({duration})</span>
+              <span className="text-green-600/70 dark:text-theme-tertiary text-xs ml-1 hidden md:inline">({duration})</span>
             </div>
           </div>
           <button
@@ -154,8 +154,8 @@ export function ClockInButton() {
         {/* Clock Out Confirmation - Must be outside the early return */}
         {showClockOutConfirm && (
           <div className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center" style={{ minHeight: '100vh' }} onClick={handleCloseClockOutConfirm}>
-            <div className="bg-white dark:bg-neutral-900 p-6 rounded-lg border border-gray-200 dark:border-neutral-700 shadow-lg max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Clock Out</h2>
+            <div className="bg-theme-surface p-6 rounded-lg border border-theme shadow-lg max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+              <h2 className="text-lg font-semibold text-theme-primary mb-4">Clock Out</h2>
               <p className="text-gray-600 dark:text-neutral-300 mb-6">Are you sure you want to clock out?</p>
               <div className="flex justify-end gap-3">
                 <button
@@ -207,8 +207,8 @@ export function ClockInButton() {
       {/* Clock In Confirmation */}
       {showClockInConfirm && (
         <div className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center" style={{ minHeight: '100vh' }} onClick={handleCloseClockInConfirm}>
-          <div className="bg-white dark:bg-neutral-900 p-6 rounded-lg border border-gray-200 dark:border-neutral-700 shadow-lg max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Clock In</h2>
+          <div className="bg-theme-surface p-6 rounded-lg border border-theme shadow-lg max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-semibold text-theme-primary mb-4">Clock In</h2>
             <p className="text-gray-600 dark:text-neutral-300 mb-6">Are you ready to clock in? Your location will be recorded if available.</p>
             <div className="flex justify-end gap-3">
               <button
@@ -237,14 +237,14 @@ export function ClockInButton() {
       {/* Clock Out Confirmation */}
       {showClockOutConfirm && (
         <div className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center" style={{ minHeight: '100vh' }} onClick={handleCloseClockOutConfirm}>
-          <div className="bg-neutral-900 p-6 rounded-lg border border-neutral-700 shadow-lg max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-semibold text-white mb-4">Clock Out</h2>
-            <p className="text-neutral-300 mb-6">Are you sure you want to clock out?</p>
+          <div className="bg-neutral-900 p-6 rounded-lg border border-theme shadow-lg max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-semibold text-theme-primary mb-4">Clock Out</h2>
+            <p className="text-theme-tertiary mb-6">Are you sure you want to clock out?</p>
             <div className="flex justify-end gap-3">
               <button
                 type="button"
                 onClick={handleCloseClockOutConfirm}
-                className="px-4 py-2 border border-neutral-600 text-neutral-300 hover:bg-neutral-800 rounded"
+                className="px-4 py-2 border border-neutral-600 text-theme-tertiary hover:bg-neutral-800 rounded"
               >
                 Cancel
               </button>

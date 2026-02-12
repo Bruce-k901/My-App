@@ -84,15 +84,15 @@ function DestinationGroupModal({ isOpen, onClose, group, siteId }: DestinationGr
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50 dark:bg-black/70" onClick={onClose} />
-      <div className="relative w-full max-w-lg bg-white dark:bg-neutral-900 rounded-xl shadow-xl overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-white/10">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+      <div className="relative w-full max-w-lg bg-theme-surface rounded-xl shadow-xl overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-theme">
+          <h2 className="text-lg font-semibold text-theme-primary">
             {isEdit ? 'Edit Destination Group' : 'Create Destination Group'}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+            className="p-2 rounded-lg text-theme-tertiary hover:text-theme-secondary/40 hover:bg-theme-muted transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -108,111 +108,111 @@ function DestinationGroupModal({ isOpen, onClose, group, siteId }: DestinationGr
         <form onSubmit={handleSubmit}>
           <div className="p-6 space-y-4 max-h-[calc(90vh-200px)] overflow-y-auto">
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Name *</Label>
+              <Label className="text-theme-secondary">Name *</Label>
               <Input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., Morning Delivery Route"
-                className="mt-1 bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+                className="mt-1 bg-theme-button border-theme text-theme-primary"
                 required
               />
             </div>
 
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Description</Label>
+              <Label className="text-theme-secondary">Description</Label>
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Optional description..."
-                className="mt-1 bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+                className="mt-1 bg-theme-button border-theme text-theme-primary"
                 rows={2}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-gray-700 dark:text-white/80">Bake Deadline</Label>
+                <Label className="text-theme-secondary">Bake Deadline</Label>
                 <Input
                   type="time"
                   value={bakeDeadline}
                   onChange={(e) => setBakeDeadline(e.target.value)}
-                  className="mt-1 bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+                  className="mt-1 bg-theme-button border-theme text-theme-primary"
                 />
-                <p className="text-xs text-gray-500 dark:text-white/40 mt-1">
+                <p className="text-xs text-theme-tertiary mt-1">
                   Products must be baked by this time
                 </p>
               </div>
               <div>
-                <Label className="text-gray-700 dark:text-white/80">Dispatch Time</Label>
+                <Label className="text-theme-secondary">Dispatch Time</Label>
                 <Input
                   type="time"
                   value={dispatchTime}
                   onChange={(e) => setDispatchTime(e.target.value)}
-                  className="mt-1 bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+                  className="mt-1 bg-theme-button border-theme text-theme-primary"
                 />
-                <p className="text-xs text-gray-500 dark:text-white/40 mt-1">
+                <p className="text-xs text-theme-tertiary mt-1">
                   When deliveries leave for this group
                 </p>
               </div>
             </div>
 
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Priority</Label>
+              <Label className="text-theme-secondary">Priority</Label>
               <Input
                 type="number"
                 min="1"
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
-                className="mt-1 w-24 bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white"
+                className="mt-1 w-24 bg-theme-button border-theme text-theme-primary"
               />
-              <p className="text-xs text-gray-500 dark:text-white/40 mt-1">
+              <p className="text-xs text-theme-tertiary mt-1">
                 Lower numbers = higher priority in scheduling
               </p>
             </div>
 
             <div className="space-y-3 pt-2">
-              <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+              <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-theme-hover transition-colors">
                 <input
                   type="checkbox"
                   checked={isOnsite}
                   onChange={(e) => setIsOnsite(e.target.checked)}
-                  className="w-5 h-5 rounded bg-gray-50 dark:bg-white/5 border-gray-300 dark:border-white/10 text-[#14B8A6] focus:ring-[#14B8A6]/50"
+                  className="w-5 h-5 rounded bg-theme-button border-theme text-module-fg focus:ring-module-fg/50"
                 />
                 <div>
-                  <span className="font-medium text-gray-900 dark:text-white">On-site Destination</span>
-                  <p className="text-sm text-gray-500 dark:text-white/60">For retail counters or internal use (no delivery)</p>
+                  <span className="font-medium text-theme-primary">On-site Destination</span>
+                  <p className="text-sm text-theme-tertiary">For retail counters or internal use (no delivery)</p>
                 </div>
               </label>
 
-              <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+              <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-theme-hover transition-colors">
                 <input
                   type="checkbox"
                   checked={isActive}
                   onChange={(e) => setIsActive(e.target.checked)}
-                  className="w-5 h-5 rounded bg-gray-50 dark:bg-white/5 border-gray-300 dark:border-white/10 text-[#14B8A6] focus:ring-[#14B8A6]/50"
+                  className="w-5 h-5 rounded bg-theme-button border-theme text-module-fg focus:ring-module-fg/50"
                 />
                 <div>
-                  <span className="font-medium text-gray-900 dark:text-white">Active</span>
-                  <p className="text-sm text-gray-500 dark:text-white/60">Group is available for assignment</p>
+                  <span className="font-medium text-theme-primary">Active</span>
+                  <p className="text-sm text-theme-tertiary">Group is available for assignment</p>
                 </div>
               </label>
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/[0.02]">
+          <div className="flex justify-end gap-3 px-6 py-4 border-t border-theme bg-gray-50 dark:bg-white/[0.02]">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
-              className="bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10"
+              className="bg-theme-surface border-theme text-theme-secondary hover:bg-theme-surface-elevated dark:hover:bg-white/10"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isLoading}
-              className="bg-[#14B8A6] hover:bg-[#0D9488] text-white"
+              className="bg-module-fg hover:bg-module-fg/90 text-white"
             >
               {isLoading ? (
                 <>
@@ -273,7 +273,7 @@ export default function DestinationGroupsPage() {
   if (!siteId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
+        <div className="text-theme-tertiary">Please select a site</div>
       </div>
     );
   }
@@ -281,7 +281,7 @@ export default function DestinationGroupsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Loading destination groups...</div>
+        <div className="text-theme-tertiary">Loading destination groups...</div>
       </div>
     );
   }
@@ -300,12 +300,12 @@ export default function DestinationGroupsPage() {
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Packing & Delivery</h1>
-          <p className="text-gray-500 dark:text-white/50 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-theme-primary">Packing & Delivery</h1>
+          <p className="text-theme-tertiary text-sm mt-1">
             Set up your delivery routes and dispatch times. The production plan uses this to group orders and split tray layouts by timing.
           </p>
         </div>
-        <Button onClick={openCreateModal} className="bg-[#14B8A6] hover:bg-[#0D9488] text-white">
+        <Button onClick={openCreateModal} className="bg-module-fg hover:bg-module-fg/90 text-white">
           <Plus className="h-4 w-4 mr-2" />
           Add Destination
         </Button>
@@ -316,7 +316,7 @@ export default function DestinationGroupsPage() {
           <Card
             key={group.id}
             className={cn(
-              "p-4 bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 transition-all",
+              "p-4 bg-theme-surface border-theme transition-all",
               deletingId === group.id && "opacity-50",
               !group.is_active && "opacity-60"
             )}
@@ -324,23 +324,23 @@ export default function DestinationGroupsPage() {
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-2">
                 {group.is_onsite ? (
-                  <Home className="h-5 w-5 text-[#14B8A6]" />
+                  <Home className="h-5 w-5 text-module-fg" />
                 ) : (
-                  <Truck className="h-5 w-5 text-[#14B8A6]" />
+                  <Truck className="h-5 w-5 text-module-fg" />
                 )}
-                <h3 className="font-semibold text-gray-900 dark:text-white">{group.name}</h3>
+                <h3 className="font-semibold text-theme-primary">{group.name}</h3>
               </div>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => openEditModal(group)}
-                  className="p-1.5 rounded text-gray-400 dark:text-white/40 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                  className="p-1.5 rounded text-theme-tertiary hover:text-theme-secondary hover:bg-theme-muted transition-colors"
                 >
                   <Edit2 className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => handleDelete(group.id)}
                   disabled={deletingId === group.id}
-                  className="p-1.5 rounded text-gray-400 dark:text-white/40 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                  className="p-1.5 rounded text-theme-tertiary hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -348,26 +348,26 @@ export default function DestinationGroupsPage() {
             </div>
 
             {group.description && (
-              <p className="text-sm text-gray-600 dark:text-white/60 mb-3">{group.description}</p>
+              <p className="text-sm text-theme-secondary mb-3">{group.description}</p>
             )}
 
             <div className="space-y-2 text-sm">
               {group.bake_deadline && (
-                <div className="flex items-center gap-2 text-gray-600 dark:text-white/60">
-                  <Clock className="h-4 w-4 text-gray-400 dark:text-white/40" />
+                <div className="flex items-center gap-2 text-theme-secondary">
+                  <Clock className="h-4 w-4 text-theme-tertiary" />
                   <span>Bake by: {group.bake_deadline}</span>
                 </div>
               )}
               {group.dispatch_time && (
-                <div className="flex items-center gap-2 text-gray-600 dark:text-white/60">
-                  <MapPin className="h-4 w-4 text-gray-400 dark:text-white/40" />
+                <div className="flex items-center gap-2 text-theme-secondary">
+                  <MapPin className="h-4 w-4 text-theme-tertiary" />
                   <span>Dispatch: {group.dispatch_time}</span>
                 </div>
               )}
             </div>
 
-            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/10 flex items-center gap-2">
-              <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-white/60">
+            <div className="mt-3 pt-3 border-t border-theme flex items-center gap-2">
+              <span className="text-xs px-2 py-1 rounded bg-theme-muted text-theme-secondary">
                 Priority: {group.priority}
               </span>
               {group.is_onsite && (
@@ -376,7 +376,7 @@ export default function DestinationGroupsPage() {
                 </span>
               )}
               {!group.is_active && (
-                <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-white/40">
+                <span className="text-xs px-2 py-1 rounded bg-theme-muted text-theme-tertiary">
                   Inactive
                 </span>
               )}
@@ -386,13 +386,13 @@ export default function DestinationGroupsPage() {
       </div>
 
       {groups.length === 0 && (
-        <Card className="p-12 text-center bg-white dark:bg-white/5 border-gray-200 dark:border-white/10">
+        <Card className="p-12 text-center bg-theme-surface border-theme">
           <MapPin className="h-12 w-12 mx-auto text-gray-300 dark:text-white/20 mb-4" />
-          <div className="text-gray-500 dark:text-white/60 mb-2">No destination groups yet</div>
-          <p className="text-sm text-gray-400 dark:text-white/40 mb-4">
+          <div className="text-theme-tertiary mb-2">No destination groups yet</div>
+          <p className="text-sm text-theme-tertiary mb-4">
             Create groups to organize deliveries by route or timing
           </p>
-          <Button onClick={openCreateModal} className="bg-[#14B8A6] hover:bg-[#0D9488] text-white">
+          <Button onClick={openCreateModal} className="bg-module-fg hover:bg-module-fg/90 text-white">
             <Plus className="h-4 w-4 mr-2" />
             Create First Group
           </Button>

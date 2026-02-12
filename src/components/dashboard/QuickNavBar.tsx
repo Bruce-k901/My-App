@@ -76,7 +76,7 @@ const QUICK_NAV_ITEMS: QuickNavItem[] = [
     href: '/dashboard/messaging',
     module: 'msgly',
     icon: MessageSquare,
-    iconColor: 'text-teal-400',
+    iconColor: 'text-module-fg',
     hoverBorder: 'hover:border-teal-400',
   },
   {
@@ -85,7 +85,7 @@ const QUICK_NAV_ITEMS: QuickNavItem[] = [
     href: '/dashboard/stockly/orders/new',
     module: 'stockly',
     icon: ShoppingCart,
-    iconColor: 'text-emerald-400',
+    iconColor: 'text-module-fg',
     hoverBorder: 'hover:border-emerald-400',
   },
   {
@@ -94,7 +94,7 @@ const QUICK_NAV_ITEMS: QuickNavItem[] = [
     href: '/dashboard/stockly/deliveries',
     module: 'stockly',
     icon: PackageCheck,
-    iconColor: 'text-emerald-400',
+    iconColor: 'text-module-fg',
     hoverBorder: 'hover:border-emerald-400',
   },
 ];
@@ -130,7 +130,7 @@ export function QuickNavBar() {
             className={cn(
               'text-[9px] font-semibold uppercase tracking-[0.06em]',
               'px-1.5 py-0.5 rounded',
-              'text-slate-600 dark:text-slate-400',
+'text-theme-secondary',
               'bg-slate-100 dark:bg-slate-800/50'
             )}
           >

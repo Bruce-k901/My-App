@@ -309,7 +309,7 @@ export default function ProcessTemplateModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-gray-900 dark:text-white">
+          <DialogTitle className="text-theme-primary">
             {isEdit ? `Edit: ${template?.name || 'Template'}` : 'New Process Template'}
           </DialogTitle>
         </DialogHeader>
@@ -324,7 +324,7 @@ export default function ProcessTemplateModal({
           {/* Template Info */}
           <div className="space-y-4">
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Template Name *</Label>
+              <Label className="text-theme-secondary">Template Name *</Label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -334,7 +334,7 @@ export default function ProcessTemplateModal({
             </div>
 
             <div>
-              <Label className="text-gray-700 dark:text-white/80">Description</Label>
+              <Label className="text-theme-secondary">Description</Label>
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -348,8 +348,8 @@ export default function ProcessTemplateModal({
           {/* Days & Stages */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-gray-900 dark:text-white">Process Steps</h3>
-              <span className="text-sm text-gray-500 dark:text-white/50">
+              <h3 className="font-semibold text-theme-primary">Process Steps</h3>
+              <span className="text-sm text-theme-tertiary">
                 {totalDays} {totalDays === 1 ? 'day' : 'days'}
               </span>
             </div>
@@ -357,27 +357,27 @@ export default function ProcessTemplateModal({
             {days.map((day) => (
               <div
                 key={day.dayNumber}
-                className="border border-gray-200 dark:border-white/10 rounded-lg overflow-hidden"
+                className="border border-theme rounded-lg overflow-hidden"
               >
                 {/* Day Header */}
                 <div
-                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/5 cursor-pointer"
+                  className="flex items-center justify-between p-3 bg-theme-button cursor-pointer"
                   onClick={() => toggleDayExpanded(day.dayNumber)}
                 >
                   <div className="flex items-center gap-2">
                     {day.isExpanded ? (
-                      <ChevronDown className="h-4 w-4 text-gray-400" />
+                      <ChevronDown className="h-4 w-4 text-theme-tertiary" />
                     ) : (
-                      <ChevronRight className="h-4 w-4 text-gray-400" />
+                      <ChevronRight className="h-4 w-4 text-theme-tertiary" />
                     )}
                     <Calendar className="h-4 w-4 text-cyan-500" />
-                    <span className="font-medium text-gray-900 dark:text-white">
+                    <span className="font-medium text-theme-primary">
                       Day {day.dayNumber}
                       {day.dayNumber === totalDays && (
-                        <span className="ml-2 text-xs text-cyan-600 dark:text-cyan-400">(Delivery)</span>
+                        <span className="ml-2 text-xs text-module-fg">(Delivery)</span>
                       )}
                     </span>
-                    <span className="text-xs text-gray-400 dark:text-white/40">
+                    <span className="text-xs text-theme-tertiary">
                       {day.stages.filter((s) => !s.isDeleted).length} steps
                     </span>
                   </div>
@@ -399,7 +399,7 @@ export default function ProcessTemplateModal({
                           e.stopPropagation();
                           handleRemoveDay(day.dayNumber);
                         }}
-                        className="p-1.5 rounded text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                        className="p-1.5 rounded text-theme-tertiary hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -411,7 +411,7 @@ export default function ProcessTemplateModal({
                 {day.isExpanded && (
                   <div className="p-3 space-y-3">
                     {day.stages.filter((s) => !s.isDeleted).length === 0 ? (
-                      <p className="text-center text-gray-400 dark:text-white/40 py-4 text-sm">
+                      <p className="text-center text-theme-tertiary py-4 text-sm">
                         No steps for this day. Click "Add Step" to add one.
                       </p>
                     ) : (
@@ -419,10 +419,10 @@ export default function ProcessTemplateModal({
                         stage.isDeleted ? null : (
                           <div
                             key={stage.id || `new-${index}`}
-                            className="p-3 bg-white dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10 space-y-3"
+                            className="p-3 bg-theme-surface rounded-lg border border-theme space-y-3"
                           >
                             <div className="flex items-start gap-3">
-                              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 dark:bg-white/10 text-xs font-medium text-gray-600 dark:text-white/60 mt-1">
+                              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 dark:bg-white/10 text-xs font-medium text-theme-secondary mt-1">
                                 {index + 1}
                               </div>
                               <div className="flex-1 space-y-3">
@@ -436,7 +436,7 @@ export default function ProcessTemplateModal({
 
                                 <div className="grid grid-cols-2 gap-3">
                                   <div>
-                                    <Label className="text-xs text-gray-500 dark:text-white/50">
+                                    <Label className="text-xs text-theme-tertiary">
                                       Bake Group
                                     </Label>
                                     <StyledSelect
@@ -460,7 +460,7 @@ export default function ProcessTemplateModal({
                                     </StyledSelect>
                                   </div>
                                   <div>
-                                    <Label className="text-xs text-gray-500 dark:text-white/50">
+                                    <Label className="text-xs text-theme-tertiary">
                                       Destination Group
                                     </Label>
                                     <StyledSelect
@@ -487,7 +487,7 @@ export default function ProcessTemplateModal({
 
                                 <div className="grid grid-cols-2 gap-3">
                                   <div>
-                                    <Label className="text-xs text-gray-500 dark:text-white/50">
+                                    <Label className="text-xs text-theme-tertiary">
                                       Time Constraint
                                     </Label>
                                     <Input
@@ -505,7 +505,7 @@ export default function ProcessTemplateModal({
                                     />
                                   </div>
                                   <div className="flex items-end">
-                                    <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-gray-50 dark:hover:bg-white/5">
+                                    <label className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-theme-hover">
                                       <input
                                         type="checkbox"
                                         checked={stage.is_overnight}
@@ -517,9 +517,9 @@ export default function ProcessTemplateModal({
                                             e.target.checked
                                           )
                                         }
-                                        className="w-4 h-4 rounded border-gray-300 dark:border-white/20 text-cyan-600 focus:ring-cyan-500"
+                                        className="w-4 h-4 rounded border-gray-300 dark:border-white/20 text-module-fg focus:ring-cyan-500"
                                       />
-                                      <span className="text-sm text-gray-700 dark:text-white/80">
+                                      <span className="text-sm text-theme-secondary">
                                         Overnight step
                                       </span>
                                     </label>
@@ -527,7 +527,7 @@ export default function ProcessTemplateModal({
                                 </div>
 
                                 <div>
-                                  <Label className="text-xs text-gray-500 dark:text-white/50">
+                                  <Label className="text-xs text-theme-tertiary">
                                     Instructions / Notes
                                   </Label>
                                   <Textarea
@@ -543,7 +543,7 @@ export default function ProcessTemplateModal({
                               </div>
                               <button
                                 onClick={() => handleRemoveStage(day.dayNumber, index)}
-                                className="p-1.5 rounded text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                                className="p-1.5 rounded text-theme-tertiary hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
@@ -565,7 +565,7 @@ export default function ProcessTemplateModal({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-white/10">
+        <div className="flex justify-end gap-3 pt-4 border-t border-theme">
           <Button variant="outline" onClick={onClose} disabled={isSaving}>
             Cancel
           </Button>

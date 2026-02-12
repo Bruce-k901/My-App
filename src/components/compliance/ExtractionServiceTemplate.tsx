@@ -535,26 +535,26 @@ ${validEquipment.map(eq => {
                   Critical
                 </span>
               </div>
-              <p className="text-slate-400 text-sm mb-3">
+              <p className="text-theme-tertiary text-sm mb-3">
                 Biannual service and verification of extraction and ventilation systems. Escalate any failures immediately.
               </p>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                 <div>
-                  <span className="text-slate-500">Regulation:</span>
-                  <p className="text-slate-200 font-medium">H&S at Work Act</p>
+                  <span className="text-theme-tertiary">Regulation:</span>
+                  <p className="text-theme-primary font-medium">H&S at Work Act</p>
                 </div>
                 <div>
-                  <span className="text-slate-500">Frequency:</span>
-                  <p className="text-slate-200 font-medium">Quarterly</p>
+                  <span className="text-theme-tertiary">Frequency:</span>
+                  <p className="text-theme-primary font-medium">Quarterly</p>
                 </div>
                 <div>
-                  <span className="text-slate-500">Category:</span>
-                  <p className="text-slate-200 font-medium">Health & Safety</p>
+                  <span className="text-theme-tertiary">Category:</span>
+                  <p className="text-theme-primary font-medium">Health & Safety</p>
                 </div>
                 <div>
-                  <span className="text-slate-500">Evidence:</span>
-                  <p className="text-slate-200 font-medium">Pass/Fail, Document</p>
+                  <span className="text-theme-tertiary">Evidence:</span>
+                  <p className="text-theme-primary font-medium">Pass/Fail, Document</p>
                 </div>
               </div>
             </div>
@@ -597,7 +597,7 @@ ${validEquipment.map(eq => {
                     <select
                       value={row.assetId}
                       onChange={(e) => updateEquipmentRow(row.id, 'assetId', e.target.value)}
-                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-slate-200"
+                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-theme-primary"
                     >
                       <option value="">Select extraction/ventilation system...</option>
                       {assets.length === 0 ? (
@@ -616,7 +616,7 @@ ${validEquipment.map(eq => {
                       placeholder="Location/Nickname"
                       value={row.nickname}
                       onChange={(e) => updateEquipmentRow(row.id, 'nickname', e.target.value)}
-                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-slate-200 placeholder:text-slate-500"
+                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-theme-primary placeholder:text-theme-tertiary"
                     />
 
                     {equipmentRows.length > 1 && (
@@ -646,7 +646,7 @@ ${validEquipment.map(eq => {
                     className={`px-4 py-3 rounded-lg border text-center transition-all ${
                       selectedDayParts.includes(part.id)
                         ? "border-magenta-500 bg-magenta-500/10 text-magenta-400"
-                        : "border-gray-200 dark:border-neutral-800 bg-[#141823] text-slate-400 hover:border-neutral-700"
+ : "border-gray-200 bg-[#141823] text-theme-tertiary hover:border-theme"
                     }`}
                   >
                     <div className="text-sm font-medium">{part.label}</div>
@@ -662,7 +662,7 @@ ${validEquipment.map(eq => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {selectedDayParts.map((dayPart, index) => (
                   <div key={dayPart}>
-                    <label className="block text-xs text-slate-400 mb-1 capitalize">
+                    <label className="block text-xs text-theme-tertiary mb-1 capitalize">
                       {dayPart.replace('_', ' ')}
                     </label>
                     <TimePicker
@@ -684,7 +684,7 @@ ${validEquipment.map(eq => {
                 onChange={(e) => setInstructions(e.target.value)}
                 placeholder="Enter step-by-step instructions for completing this task..."
                 rows={10}
-                className="w-full px-4 py-3 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-magenta-500 transition-colors resize-y"
+                className="w-full px-4 py-3 text-sm rounded-lg bg-[#141823] border border-gray-200 dark:border-neutral-800 text-theme-primary placeholder:text-theme-tertiary focus:outline-none focus:border-magenta-500 transition-colors resize-y"
               />
             </div>
 
@@ -702,14 +702,14 @@ ${validEquipment.map(eq => {
                   <button
                     type="button"
                     onClick={handleSave}
-                    className="px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12] hover:border-white/[0.25] backdrop-blur-md transition-all duration-150"
+                    className="px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-theme-primary hover:bg-white/[0.12] hover:border-white/[0.25] backdrop-blur-md transition-all duration-150"
                   >
                     Save as Draft
                   </button>
                   <button
                     type="button"
                     onClick={handleSaveAndDeploy}
-                    className="px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12] hover:border-white/[0.25] backdrop-blur-md transition-all duration-150"
+                    className="px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-theme-primary hover:bg-white/[0.12] hover:border-white/[0.25] backdrop-blur-md transition-all duration-150"
                   >
                     Save & Deploy
                   </button>

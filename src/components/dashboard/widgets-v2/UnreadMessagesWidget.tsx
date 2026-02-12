@@ -32,7 +32,7 @@ export default function UnreadMessagesWidget({ siteId, companyId }: UnreadMessag
       <div className="flex flex-col items-center py-2">
         <span
           className={`text-2xl font-bold ${
-            unreadCount > 0 ? 'text-teal-400' : 'text-[rgb(var(--text-disabled))]'
+            unreadCount > 0 ? 'text-module-fg' : 'text-[rgb(var(--text-disabled))]'
           }`}
         >
           {unreadCount}
@@ -43,7 +43,7 @@ export default function UnreadMessagesWidget({ siteId, companyId }: UnreadMessag
         <div className="flex gap-2">
           <button
             onClick={() => setMessagingOpen(true)}
-            className="flex items-center px-2.5 py-1.5 rounded-md bg-teal-500/10 border border-teal-400/30 text-teal-400 text-[10.5px] font-medium hover:bg-teal-500/20 transition-colors"
+            className="flex items-center px-2.5 py-1.5 rounded-md bg-module-fg/10 border border-teal-400/30 text-module-fg text-[10.5px] font-medium hover:bg-module-fg/10 transition-colors"
           >
             Open Inbox
           </button>

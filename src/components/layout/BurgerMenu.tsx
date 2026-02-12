@@ -113,23 +113,23 @@ export function BurgerMenu({
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-white dark:bg-transparent border-b border-gray-200 dark:border-white/10">
+        <div className="flex items-center justify-between p-4 bg-white dark:bg-transparent border-b border-theme">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-teamly/20 flex items-center justify-center">
               <User className="w-5 h-5 text-teamly dark:text-teamly" />
             </div>
             <div>
-              <div className="text-sm font-medium text-gray-900 dark:text-white">
+              <div className="text-sm font-medium text-theme-primary">
                 {profile?.full_name || 'User'}
               </div>
-              <div className="text-xs text-gray-500 dark:text-white/60 capitalize">
+              <div className="text-xs text-theme-tertiary capitalize">
                 {userRole}
               </div>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-500 hover:text-gray-900 dark:text-white/60 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors"
+            className="p-2 text-theme-tertiary hover:text-theme-primary/60 hover:bg-theme-muted rounded-lg transition-colors"
             aria-label="Close menu"
           >
             <X className="w-5 h-5" />
@@ -141,10 +141,10 @@ export function BurgerMenu({
           {menuSections.map((section) => (
             <div
               key={section.id}
-              className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/[0.06] shadow-sm dark:shadow-none overflow-hidden"
+              className="bg-theme-surface rounded-xl border border-theme shadow-sm dark:shadow-none overflow-hidden"
             >
               {/* Section Header */}
-              <div className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/40 border-b border-gray-100 dark:border-white/[0.04]">
+              <div className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-theme-tertiary border-b border-gray-100 dark:border-white/[0.04]">
                 {section.label}
               </div>
 
@@ -167,10 +167,10 @@ export function BurgerMenu({
                           ? 'bg-teamly/15 text-teamly dark:text-teamly/30 shadow-[inset_0_0_12px_rgba(211,126,145,0.12)]'
                           : isSignOut
                             ? 'text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-500/10 hover:shadow-[inset_0_0_12px_rgba(239,68,68,0.08)]'
-                            : 'text-gray-600 dark:text-white/70 hover:text-teamly dark:hover:text-teamly/30 hover:bg-teamly/5 dark:hover:bg-teamly/10 hover:shadow-[inset_0_0_12px_rgba(211,126,145,0.12)]'
+                            : 'text-theme-secondary hover:text-teamly dark:hover:text-teamly/30 hover:bg-teamly/5 dark:hover:bg-teamly/10 hover:shadow-[inset_0_0_12px_rgba(211,126,145,0.12)]'
                       }`}
                     >
-                      <Icon className={`w-4 h-4 flex-shrink-0 transition-colors duration-150 ${active ? 'text-teamly dark:text-teamly' : isSignOut ? 'text-red-500 dark:text-red-400' : 'text-gray-400 dark:text-white/50'}`} />
+                      <Icon className={`w-4 h-4 flex-shrink-0 transition-colors duration-150 ${active ? 'text-teamly dark:text-teamly' : isSignOut ? 'text-red-500 dark:text-red-400' : 'text-theme-tertiary'}`} />
                       <span className="font-medium truncate">{item.label}</span>
                       {showTicketBadge && (
                         <span className="ml-auto px-2 py-0.5 text-xs font-bold bg-[#D37E91] text-white rounded-full min-w-[20px] text-center">
@@ -186,8 +186,8 @@ export function BurgerMenu({
 
           {/* Admin Portal - Only for platform admins */}
           {profile?.is_platform_admin && (
-            <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/[0.06] shadow-sm dark:shadow-none overflow-hidden">
-              <div className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-white/40 border-b border-gray-100 dark:border-white/[0.04]">
+            <div className="bg-theme-surface rounded-xl border border-theme shadow-sm dark:shadow-none overflow-hidden">
+              <div className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-theme-tertiary border-b border-gray-100 dark:border-white/[0.04]">
                 PLATFORM
               </div>
               <div className="py-1">
@@ -196,10 +196,10 @@ export function BurgerMenu({
                   className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-150 text-left ${
                     isActive('/admin')
                       ? 'bg-teamly/15 text-teamly dark:text-teamly/30 shadow-[inset_0_0_12px_rgba(211,126,145,0.12)]'
-                      : 'text-gray-600 dark:text-white/70 hover:text-teamly dark:hover:text-teamly/30 hover:bg-teamly/5 dark:hover:bg-teamly/10 hover:shadow-[inset_0_0_12px_rgba(211,126,145,0.12)]'
+                      : 'text-theme-secondary hover:text-teamly dark:hover:text-teamly/30 hover:bg-teamly/5 dark:hover:bg-teamly/10 hover:shadow-[inset_0_0_12px_rgba(211,126,145,0.12)]'
                   }`}
                 >
-                  <Shield className={`w-4 h-4 flex-shrink-0 transition-colors duration-150 ${isActive('/admin') ? 'text-teamly dark:text-teamly' : 'text-gray-400 dark:text-white/50'}`} />
+                  <Shield className={`w-4 h-4 flex-shrink-0 transition-colors duration-150 ${isActive('/admin') ? 'text-teamly dark:text-teamly' : 'text-theme-tertiary'}`} />
                   <span className="font-medium truncate">Admin Portal</span>
                 </button>
               </div>
@@ -208,8 +208,8 @@ export function BurgerMenu({
         </div>
 
         {/* Footer */}
-        <div className="bg-white dark:bg-transparent border-t border-gray-200 dark:border-white/10 p-4 flex-shrink-0">
-          <div className="text-xs text-gray-400 dark:text-white/40 text-center">
+        <div className="bg-white dark:bg-transparent border-t border-theme p-4 flex-shrink-0">
+          <div className="text-xs text-theme-tertiary text-center">
             Opsly © {new Date().getFullYear()}
           </div>
         </div>

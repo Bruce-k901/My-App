@@ -372,8 +372,8 @@ export default function CandidateOnboardingPage() {
       <div className="min-h-screen bg-[#0A0B0F] flex items-center justify-center p-6">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-white mb-2">Onboarding Not Found</h1>
-          <p className="text-white/60">This onboarding link is invalid or has expired.</p>
+          <h1 className="text-2xl font-bold text-theme-primary mb-2">Onboarding Not Found</h1>
+          <p className="text-theme-tertiary">This onboarding link is invalid or has expired.</p>
         </div>
       </div>
     )
@@ -389,8 +389,8 @@ export default function CandidateOnboardingPage() {
               <CheckCircle2 className="w-6 h-6 text-[#D37E91]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Welcome, {data.profile.full_name}!</h1>
-              <p className="text-white/70">Let's get you started with your onboarding</p>
+              <h1 className="text-2xl font-bold text-theme-primary">Welcome, {data.profile.full_name}!</h1>
+              <p className="text-theme-secondary">Let's get you started with your onboarding</p>
             </div>
           </div>
 
@@ -418,11 +418,11 @@ export default function CandidateOnboardingPage() {
             })()}
           </div>
           <div className={`flex ${data.documents.length > 0 ? 'justify-between' : 'justify-around'} mt-2`}>
-            <span className="text-xs text-white/50">Personal Details</span>
+            <span className="text-xs text-theme-tertiary">Personal Details</span>
             {data.documents.length > 0 && (
-              <span className="text-xs text-white/50">Documents</span>
+              <span className="text-xs text-theme-tertiary">Documents</span>
             )}
-            <span className="text-xs text-white/50">Complete</span>
+            <span className="text-xs text-theme-tertiary">Complete</span>
           </div>
         </div>
       </div>
@@ -433,22 +433,22 @@ export default function CandidateOnboardingPage() {
         {currentStep === 1 && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-semibold text-white mb-2">Personal Details</h2>
-              <p className="text-white/60 text-sm">
+              <h2 className="text-xl font-semibold text-theme-primary mb-2">Personal Details</h2>
+              <p className="text-theme-tertiary text-sm">
                 We need some basic information to set up your profile and payroll.
               </p>
             </div>
 
             {/* Section 1: Personal Information */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 space-y-5">
-              <h3 className="text-white font-semibold flex items-center gap-2">
+              <h3 className="text-theme-primary font-semibold flex items-center gap-2">
                 <User className="w-5 h-5 text-[#D37E91]" />
                 Personal Information
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Phone Number *
                   </label>
                   <input
@@ -456,12 +456,12 @@ export default function CandidateOnboardingPage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="07XXX XXXXXX"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Date of Birth *
                   </label>
                   <input
@@ -469,12 +469,12 @@ export default function CandidateOnboardingPage() {
                     value={dateOfBirth}
                     onChange={(e) => setDateOfBirth(e.target.value)}
                     max={new Date(new Date().setFullYear(new Date().getFullYear() - 16)).toISOString().split('T')[0]}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Gender (Optional)
                   </label>
                   <select
@@ -491,7 +491,7 @@ export default function CandidateOnboardingPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Nationality (Optional)
                 </label>
                 <input
@@ -499,20 +499,20 @@ export default function CandidateOnboardingPage() {
                   value={nationality}
                   onChange={(e) => setNationality(e.target.value)}
                   placeholder="e.g., British, Irish, etc."
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                 />
               </div>
             </div>
 
             {/* Section 2: Address */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 space-y-4">
-              <h3 className="text-white font-semibold flex items-center gap-2">
+              <h3 className="text-theme-primary font-semibold flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-[#D37E91]" />
                 Home Address
               </h3>
 
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Address Line 1 *
                 </label>
                 <input
@@ -520,12 +520,12 @@ export default function CandidateOnboardingPage() {
                   value={addressLine1}
                   onChange={(e) => setAddressLine1(e.target.value)}
                   placeholder="House number and street name"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   Address Line 2 (Optional)
                 </label>
                 <input
@@ -533,13 +533,13 @@ export default function CandidateOnboardingPage() {
                   value={addressLine2}
                   onChange={(e) => setAddressLine2(e.target.value)}
                   placeholder="Apartment, suite, etc."
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     City/Town *
                   </label>
                   <input
@@ -547,12 +547,12 @@ export default function CandidateOnboardingPage() {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="London"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     County (Optional)
                   </label>
                   <input
@@ -560,12 +560,12 @@ export default function CandidateOnboardingPage() {
                     value={county}
                     onChange={(e) => setCounty(e.target.value)}
                     placeholder="Greater London"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Postcode *
                   </label>
                   <input
@@ -573,7 +573,7 @@ export default function CandidateOnboardingPage() {
                     value={postcode}
                     onChange={(e) => setPostcode(e.target.value)}
                     placeholder="SW1A 1AA"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] uppercase"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] uppercase"
                   />
                 </div>
               </div>
@@ -581,13 +581,13 @@ export default function CandidateOnboardingPage() {
 
             {/* Section 3: Employment & Compliance */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 space-y-4">
-              <h3 className="text-white font-semibold flex items-center gap-2">
+              <h3 className="text-theme-primary font-semibold flex items-center gap-2">
                 <FileText className="w-5 h-5 text-[#D37E91]" />
                 Employment & Compliance
               </h3>
 
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-2">
+                <label className="block text-sm font-medium text-theme-secondary mb-2">
                   National Insurance Number *
                 </label>
                 <input
@@ -595,15 +595,15 @@ export default function CandidateOnboardingPage() {
                   value={niNumber}
                   onChange={(e) => setNiNumber(e.target.value)}
                   placeholder="AB123456C"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] uppercase"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] uppercase"
                   maxLength={9}
                 />
-                <p className="text-xs text-white/40 mt-1">Required for payroll and tax purposes</p>
+                <p className="text-xs text-theme-tertiary mt-1">Required for payroll and tax purposes</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Right to Work Status *
                   </label>
                   <select
@@ -617,7 +617,7 @@ export default function CandidateOnboardingPage() {
                     <option value="pending">Visa/Work Permit with Expiry</option>
                     <option value="pending">Biometric Residence Permit (BRP)</option>
                   </select>
-                  <p className="text-xs text-white/40 mt-1">
+                  <p className="text-xs text-theme-tertiary mt-1">
                     You must provide proof of your right to work. Your manager will verify your documents.
                   </p>
                 </div>
@@ -625,7 +625,7 @@ export default function CandidateOnboardingPage() {
                 {rightToWork && (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-white/70 mb-2">
+                      <label className="block text-sm font-medium text-theme-secondary mb-2">
                         Document Type *
                       </label>
                       <select
@@ -648,7 +648,7 @@ export default function CandidateOnboardingPage() {
 
                     {rightToWorkDocumentType && (
                       <div>
-                        <label className="block text-sm font-medium text-white/70 mb-2">
+                        <label className="block text-sm font-medium text-theme-secondary mb-2">
                           {rightToWorkDocumentType === 'share_code' ? 'Share Code *' : rightToWorkDocumentType === 'passport' ? 'Passport Number *' : 'Document Number/Reference *'}
                         </label>
                         <input
@@ -662,10 +662,10 @@ export default function CandidateOnboardingPage() {
                               ? 'Enter passport number'
                               : 'Enter document number or reference'
                           }
-                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-[#D37E91]"
+                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder-white/30 focus:outline-none focus:border-[#D37E91]"
                         />
                         {rightToWorkDocumentType === 'share_code' && (
-                          <p className="text-xs text-white/40 mt-1">
+                          <p className="text-xs text-theme-tertiary mt-1">
                             Get your share code from <a href="https://www.gov.uk/view-prove-immigration-status" target="_blank" rel="noopener noreferrer" className="text-[#D37E91] underline">gov.uk/view-prove-immigration-status</a>
                           </p>
                         )}
@@ -674,16 +674,16 @@ export default function CandidateOnboardingPage() {
 
                     {(rightToWorkDocumentType === 'visa' || rightToWorkDocumentType === 'biometric_residence_permit' || rightToWorkDocumentType === 'share_code') && (
                       <div>
-                        <label className="block text-sm font-medium text-white/70 mb-2">
+                        <label className="block text-sm font-medium text-theme-secondary mb-2">
                           Expiry Date *
                         </label>
                         <input
                           type="date"
                           value={rightToWorkExpiry}
                           onChange={(e) => setRightToWorkExpiry(e.target.value)}
-                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
+                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91]"
                         />
-                        <p className="text-xs text-white/40 mt-1">
+                        <p className="text-xs text-theme-tertiary mt-1">
                           {rightToWorkDocumentType === 'share_code' 
                             ? 'Your settled/pre-settled status expiry date'
                             : 'When your visa/BRP expires'}
@@ -703,7 +703,7 @@ export default function CandidateOnboardingPage() {
 
             {/* Section 4: Bank Details */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 space-y-4">
-              <h3 className="text-white font-semibold flex items-center gap-2">
+              <h3 className="text-theme-primary font-semibold flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-[#D37E91]" />
                 Bank Details (for payroll)
               </h3>
@@ -714,7 +714,7 @@ export default function CandidateOnboardingPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Bank Name *
                   </label>
                   <input
@@ -722,12 +722,12 @@ export default function CandidateOnboardingPage() {
                     value={bankName}
                     onChange={(e) => setBankName(e.target.value)}
                     placeholder="e.g., Barclays, HSBC, Lloyds"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Account Name (Optional)
                   </label>
                   <input
@@ -735,15 +735,15 @@ export default function CandidateOnboardingPage() {
                     value={accountName}
                     onChange={(e) => setAccountName(e.target.value)}
                     placeholder="Full name on account"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                   />
-                  <p className="text-xs text-white/40 mt-1">Defaults to your full name if blank</p>
+                  <p className="text-xs text-theme-tertiary mt-1">Defaults to your full name if blank</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Account Number *
                   </label>
                   <input
@@ -752,12 +752,12 @@ export default function CandidateOnboardingPage() {
                     onChange={(e) => setAccountNumber(e.target.value)}
                     placeholder="12345678"
                     maxLength={8}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] font-mono"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Sort Code *
                   </label>
                   <input
@@ -771,7 +771,7 @@ export default function CandidateOnboardingPage() {
                     }}
                     placeholder="12-34-56"
                     maxLength={8}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] font-mono"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] font-mono"
                   />
                 </div>
               </div>
@@ -779,14 +779,14 @@ export default function CandidateOnboardingPage() {
 
             {/* Section 5: Emergency Contact */}
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 space-y-4">
-              <h3 className="text-white font-semibold flex items-center gap-2">
+              <h3 className="text-theme-primary font-semibold flex items-center gap-2">
                 <Phone className="w-5 h-5 text-[#D37E91]" />
                 Emergency Contact
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Name *
                   </label>
                   <input
@@ -794,12 +794,12 @@ export default function CandidateOnboardingPage() {
                     value={emergencyName}
                     onChange={(e) => setEmergencyName(e.target.value)}
                     placeholder="Contact name"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Relationship *
                   </label>
                   <input
@@ -807,14 +807,14 @@ export default function CandidateOnboardingPage() {
                     value={emergencyRelationship}
                     onChange={(e) => setEmergencyRelationship(e.target.value)}
                     placeholder="e.g., Partner, Parent, Sibling"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Phone Number *
                   </label>
                   <input
@@ -822,12 +822,12 @@ export default function CandidateOnboardingPage() {
                     value={emergencyPhone}
                     onChange={(e) => setEmergencyPhone(e.target.value)}
                     placeholder="07XXX XXXXXX"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Email (Optional)
                   </label>
                   <input
@@ -835,7 +835,7 @@ export default function CandidateOnboardingPage() {
                     value={emergencyEmail}
                     onChange={(e) => setEmergencyEmail(e.target.value)}
                     placeholder="contact@email.com"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                   />
                 </div>
               </div>
@@ -866,20 +866,20 @@ export default function CandidateOnboardingPage() {
         {currentStep === 2 && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-semibold text-white mb-2">Review & Acknowledge Documents</h2>
-              <p className="text-white/60 text-sm">
+              <h2 className="text-xl font-semibold text-theme-primary mb-2">Review & Acknowledge Documents</h2>
+              <p className="text-theme-tertiary text-sm">
                 Please review these documents and confirm you've read and understood them.
               </p>
             </div>
 
             {data.documents.length === 0 ? (
               <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
-                <FileText className="w-12 h-12 text-white/30 mx-auto mb-4" />
-                <h3 className="text-white font-semibold mb-2">No Documents Required</h3>
-                <p className="text-white/60 mb-4">
+                <FileText className="w-12 h-12 text-theme-disabled mx-auto mb-4" />
+                <h3 className="text-theme-primary font-semibold mb-2">No Documents Required</h3>
+                <p className="text-theme-tertiary mb-4">
                   There are no documents assigned to your onboarding pack at this time.
                 </p>
-                <p className="text-white/50 text-sm">
+                <p className="text-theme-tertiary text-sm">
                   You can continue to complete your onboarding. Your manager may add documents later if needed.
                 </p>
               </div>
@@ -895,12 +895,12 @@ export default function CandidateOnboardingPage() {
                         <div className="flex items-center gap-3 mb-2">
                           <FileText className="w-5 h-5 text-[#D37E91]" />
                           <div>
-                            <h3 className="text-white font-medium">{doc.name}</h3>
-                            <p className="text-xs text-white/50">{doc.category}</p>
+                            <h3 className="text-theme-primary font-medium">{doc.name}</h3>
+                            <p className="text-xs text-theme-tertiary">{doc.category}</p>
                           </div>
                         </div>
                         {doc.notes && (
-                          <p className="text-sm text-white/60 ml-8">{doc.notes}</p>
+                          <p className="text-sm text-theme-tertiary ml-8">{doc.notes}</p>
                         )}
                       </div>
                       <div className="flex items-center gap-2">
@@ -919,7 +919,7 @@ export default function CandidateOnboardingPage() {
                                 toast.error('Failed to open document')
                               }
                             }}
-                            className="px-3 py-1.5 rounded-lg text-sm bg-white/10 hover:bg-white/15 border border-white/10 text-white"
+                            className="px-3 py-1.5 rounded-lg text-sm bg-white/10 hover:bg-white/15 border border-white/10 text-theme-primary"
                           >
                             View
                           </button>
@@ -956,7 +956,7 @@ export default function CandidateOnboardingPage() {
             <div className="flex items-center justify-between">
               <button
                 onClick={() => setCurrentStep(1)}
-                className="px-6 py-3 rounded-lg text-white/70 hover:text-white transition-colors"
+                className="px-6 py-3 rounded-lg text-theme-secondary hover:text-white transition-colors"
               >
                 ← Back
               </button>
@@ -984,16 +984,16 @@ export default function CandidateOnboardingPage() {
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-500/10 border-2 border-green-500/30 mb-6">
                 <CheckCircle2 className="w-10 h-10 text-green-400" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-3">
+              <h2 className="text-2xl font-bold text-theme-primary mb-3">
                 Onboarding In Progress!
               </h2>
-              <p className="text-white/70 text-lg mb-8">
+              <p className="text-theme-secondary text-lg mb-8">
                 Thank you for completing the initial steps.
               </p>
 
               <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 max-w-2xl mx-auto text-left">
-                <h3 className="text-white font-semibold mb-4">What happens next?</h3>
-                <ul className="space-y-3 text-white/70 text-sm">
+                <h3 className="text-theme-primary font-semibold mb-4">What happens next?</h3>
+                <ul className="space-y-3 text-theme-secondary text-sm">
                   <li className="flex items-start gap-3">
                     <span className="text-[#D37E91] mt-1">•</span>
                     <span>Your manager will review your information</span>
@@ -1004,19 +1004,19 @@ export default function CandidateOnboardingPage() {
                   </li>
                   <ul className="ml-8 space-y-2 mt-2">
                     <li className="flex items-start gap-2">
-                      <span className="text-white/40">→</span>
+                      <span className="text-theme-tertiary">→</span>
                       <span>Photo ID (passport or driving licence)</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-white/40">→</span>
+                      <span className="text-theme-tertiary">→</span>
                       <span>Proof of National Insurance number</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-white/40">→</span>
+                      <span className="text-theme-tertiary">→</span>
                       <span>Proof of address (utility bill or bank statement)</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-white/40">→</span>
+                      <span className="text-theme-tertiary">→</span>
                       <span>Any relevant certificates (if applicable)</span>
                     </li>
                   </ul>
@@ -1033,10 +1033,10 @@ export default function CandidateOnboardingPage() {
 
               {data.pack && (
                 <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 max-w-2xl mx-auto text-left mt-6">
-                  <h3 className="text-white font-semibold mb-2">Your Onboarding Pack</h3>
-                  <p className="text-white/70 text-sm">{data.pack.name}</p>
+                  <h3 className="text-theme-primary font-semibold mb-2">Your Onboarding Pack</h3>
+                  <p className="text-theme-secondary text-sm">{data.pack.name}</p>
                   {data.pack.description && (
-                    <p className="text-white/50 text-xs mt-2">{data.pack.description}</p>
+                    <p className="text-theme-tertiary text-xs mt-2">{data.pack.description}</p>
                   )}
                 </div>
               )}

@@ -47,9 +47,9 @@ export function PlanlyBadge({ data, size = 'sm', showDetails = false, className 
         };
       default:
         return {
-          bg: 'bg-gray-100 dark:bg-white/10',
+          bg: 'bg-theme-muted',
           border: 'border-gray-200 dark:border-white/20',
-          text: 'text-gray-600 dark:text-white/60',
+          text: 'text-theme-secondary',
           icon: Package,
           label: 'Linked to Planly',
         };
@@ -75,7 +75,7 @@ export function PlanlyBadge({ data, size = 'sm', showDetails = false, className 
         <span>Planly</span>
       </span>
       {showDetails && data.linked_groups && data.linked_groups.length > 0 && (
-        <span className="text-xs text-gray-500 dark:text-white/50 pl-1">
+        <span className="text-xs text-theme-tertiary pl-1">
           {data.linked_groups.join(', ')}
         </span>
       )}

@@ -67,11 +67,11 @@ export function UpdateGM({ siteId, gmList, currentGM, renderExpandedOnly = false
           <select
             value={selectedGM}
             onChange={(e) => setSelectedGM(e.target.value)}
-            className="bg-white/[0.05] border border-white/[0.1] rounded-md px-4 py-2 text-white min-w-[180px] h-11 hover:border-white/20 focus:border-[#D37E91] focus:outline-none"
+            className="bg-white/[0.05] border border-white/[0.1] rounded-md px-4 py-2 text-theme-primary min-w-[180px] h-11 hover:border-white/20 focus:border-[#D37E91] focus:outline-none"
           >
             <option value="">Select GM...</option>
             {gmList.map((gm) => (
-              <option key={gm.id} value={gm.id} className="bg-neutral-900 text-white">
+              <option key={gm.id} value={gm.id} className="bg-neutral-900 text-theme-primary">
                 {gm.full_name}
               </option>
             ))}
@@ -89,7 +89,7 @@ export function UpdateGM({ siteId, gmList, currentGM, renderExpandedOnly = false
           <Button
             variant="ghost"
             onClick={() => setIsOpen(false)}
-            className="p-2 text-neutral-400 hover:text-white"
+            className="p-2 text-theme-tertiary hover:text-white"
             title="Close section"
           >
             <ChevronUp size={18} />

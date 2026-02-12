@@ -156,7 +156,7 @@ export default function PrepHeaderComponent({ node, updateAttributes, selected, 
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full text-lg font-bold text-white bg-transparent border-none outline-none placeholder-gray-500"
+              className="w-full text-lg font-bold text-theme-primary bg-transparent border-none outline-none placeholder-gray-500"
               placeholder="Enter SOP title..."
             />
           </div>
@@ -205,20 +205,20 @@ export default function PrepHeaderComponent({ node, updateAttributes, selected, 
         </div>
 
         {/* Helper text */}
-        <div className="text-xs text-gray-400 mb-2">
+        <div className="text-xs text-theme-tertiary mb-2">
           All fields marked <span className="text-red-400">*</span> are required before adding SOP content.
         </div>
 
         {/* Metadata Line - Right aligned reference code */}
-        <div className="flex items-center justify-between text-xs text-gray-400">
+        <div className="flex items-center justify-between text-xs text-theme-tertiary">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <span>Last Edited:</span>
-              <span className="text-gray-300">{lastEdited}</span>
+              <span className="text-theme-tertiary">{lastEdited}</span>
             </div>
           </div>
           {/* Dynamic Reference Code - Bottom Right */}
-          <div className="text-sm text-gray-300 font-mono">
+          <div className="text-sm text-theme-tertiary font-mono">
             Ref: {refCode || "AUTO"}
           </div>
         </div>
@@ -227,7 +227,7 @@ export default function PrepHeaderComponent({ node, updateAttributes, selected, 
       {/* Existing HACCP Content */}
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2 text-xs text-gray-400">
+          <div className="flex items-center gap-2 text-xs text-theme-tertiary">
             <span 
               className="cursor-grab select-none hover:text-magenta-400 transition-colors"
               contentEditable={false}
@@ -242,7 +242,7 @@ export default function PrepHeaderComponent({ node, updateAttributes, selected, 
               className="w-3 h-3 rounded-full border border-white/20" 
               style={{ backgroundColor: toolColourHex }}
             ></span>
-            <span className="text-xs text-gray-400">{toolColour}</span>
+            <span className="text-xs text-theme-tertiary">{toolColour}</span>
           </div>
         </div>
 
@@ -252,15 +252,15 @@ export default function PrepHeaderComponent({ node, updateAttributes, selected, 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Scale size={16} className="text-magenta-400" />
-            <span className="text-sm text-gray-300">Yield:</span>
-            <span className="text-sm font-medium text-white">
+            <span className="text-sm text-theme-tertiary">Yield:</span>
+            <span className="text-sm font-medium text-theme-primary">
               {yieldData.total > 0 ? `${yieldData.total.toFixed(2)} ${yieldData.unit}` : (yieldValue > 0 ? `${yieldValue} ${unit}` : 'Auto-calculated from ingredients')}
             </span>
           </div>
           
           <div className="flex items-center gap-2">
             <Palette size={16} className="text-magenta-400" />
-            <span className="text-sm text-gray-300">Tool Colours Used:</span>
+            <span className="text-sm text-theme-tertiary">Tool Colours Used:</span>
             <div className="flex flex-wrap gap-1">
               {contextToolColour.colours.length > 0 ? (
                 contextToolColour.colours.map((colour, index) => (
@@ -272,7 +272,7 @@ export default function PrepHeaderComponent({ node, updateAttributes, selected, 
                   </span>
                 ))
               ) : (
-                <span className="text-sm text-gray-500 italic">None specified</span>
+                <span className="text-sm text-theme-tertiary italic">None specified</span>
               )}
             </div>
           </div>
@@ -280,8 +280,8 @@ export default function PrepHeaderComponent({ node, updateAttributes, selected, 
           {/* Storage Information */}
           {storage.type && (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-300">Storage:</span>
-              <span className="text-sm font-medium text-white">
+              <span className="text-sm text-theme-tertiary">Storage:</span>
+              <span className="text-sm font-medium text-theme-primary">
                 {storage.type} ({storage.tempMin ?? "–"}–{storage.tempMax ?? "–"}°C)
               </span>
             </div>
@@ -292,7 +292,7 @@ export default function PrepHeaderComponent({ node, updateAttributes, selected, 
         <div className="flex items-start gap-2">
           <AlertTriangle size={16} className="text-red-400 mt-0.5" />
           <div className="flex-1">
-            <span className="text-sm text-gray-300 mr-2">Allergens:</span>
+            <span className="text-sm text-theme-tertiary mr-2">Allergens:</span>
             <div className="flex flex-wrap gap-2 mt-1">
               {contextAllergens.length > 0 ? (
                 contextAllergens.map((allergen, index) => (
@@ -305,7 +305,7 @@ export default function PrepHeaderComponent({ node, updateAttributes, selected, 
                   </span>
                 ))
               ) : (
-                <span className="text-xs text-gray-500 italic">No allergens identified</span>
+                <span className="text-xs text-theme-tertiary italic">No allergens identified</span>
               )}
             </div>
           </div>
@@ -315,11 +315,11 @@ export default function PrepHeaderComponent({ node, updateAttributes, selected, 
         <div className="flex items-start gap-2">
           <FileText size={16} className="text-yellow-400 mt-0.5" />
           <div className="flex-1">
-            <label className="text-sm text-gray-300 mb-1 block">Safety Notes:</label>
+            <label className="text-sm text-theme-tertiary mb-1 block">Safety Notes:</label>
             <textarea
               value={safetyNotes}
               onChange={(e) => setSafetyNotes(e.target.value)}
-              className="w-full bg-neutral-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-magenta-400 focus:outline-none resize-none"
+              className="w-full bg-neutral-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-theme-primary placeholder-gray-500 focus:border-magenta-400 focus:outline-none resize-none"
               placeholder="Enter HACCP safety notes (cross-contamination, cleaning reminders, etc.)"
               rows={2}
             />
@@ -331,7 +331,7 @@ export default function PrepHeaderComponent({ node, updateAttributes, selected, 
           <div>
             <button
               onClick={() => setShowSubRecipes(!showSubRecipes)}
-              className="flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors"
+              className="flex items-center gap-2 text-sm text-theme-tertiary hover:text-white transition-colors"
             >
               <ChefHat size={16} className="text-magenta-400" />
               <span>Sub-Recipes</span>
@@ -347,10 +347,10 @@ export default function PrepHeaderComponent({ node, updateAttributes, selected, 
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="text-sm font-medium text-white">{recipe.title}</h4>
-                        <p className="text-xs text-gray-400">Yields: {recipe.yield} {recipe.unit}</p>
+                        <h4 className="text-sm font-medium text-theme-primary">{recipe.title}</h4>
+                        <p className="text-xs text-theme-tertiary">Yields: {recipe.yield} {recipe.unit}</p>
                       </div>
-                      <span className="text-xs text-gray-500">Ref: {recipe.refId}</span>
+                      <span className="text-xs text-theme-tertiary">Ref: {recipe.refId}</span>
                     </div>
                   </div>
                 ))}

@@ -19,13 +19,13 @@ export default function SiteList({ sites, onEdit, onDelete }: Props) {
       <table className="min-w-full divide-y divide-neutral-800">
         <thead className="bg-white/[0.04]">
           <tr>
-            <th className="px-4 py-2 text-left text-xs font-medium text-slate-300">\u00A0</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-slate-300">Name</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-slate-300">Type</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-slate-300">City</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-slate-300">Region</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-slate-300">Status</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-slate-300">Actions</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-theme-secondary">\u00A0</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-theme-secondary">Name</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-theme-secondary">Type</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-theme-secondary">City</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-theme-secondary">Region</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-theme-secondary">Status</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-theme-secondary">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-neutral-800">
@@ -38,25 +38,25 @@ export default function SiteList({ sites, onEdit, onDelete }: Props) {
                     onClick={() => toggle(s.id)}
                     aria-label={expanded[s.id] ? "Collapse" : "Expand"}
                   >
-                    {expanded[s.id] ? <ChevronDown className="w-4 h-4 text-slate-300" /> : <ChevronRight className="w-4 h-4 text-slate-300" />}
+                    {expanded[s.id] ? <ChevronDown className="w-4 h-4 text-theme-secondary" /> : <ChevronRight className="w-4 h-4 text-theme-secondary" />}
                   </button>
                 </td>
-                <td className="px-4 py-2 text-sm text-white">{s.name || "—"}</td>
-                <td className="px-4 py-2 text-sm text-slate-300">—</td>
-                <td className="px-4 py-2 text-sm text-slate-300">{s.city || "—"}</td>
-                <td className="px-4 py-2 text-sm text-slate-300">{s.region || "—"}</td>
-                <td className="px-4 py-2 text-sm text-slate-300">{s.status || "—"}</td>
+                <td className="px-4 py-2 text-sm text-theme-primary">{s.name || "—"}</td>
+                <td className="px-4 py-2 text-sm text-theme-secondary">—</td>
+                <td className="px-4 py-2 text-sm text-theme-secondary">{s.city || "—"}</td>
+                <td className="px-4 py-2 text-sm text-theme-secondary">{s.region || "—"}</td>
+                <td className="px-4 py-2 text-sm text-theme-secondary">{s.status || "—"}</td>
                 <td className="px-4 py-2 text-sm">
                   <div className="flex items-center gap-2">
                     <button
-                      className="px-3 py-1.5 rounded bg-white/[0.08] border border-white/[0.12] text-white hover:bg-white/[0.14] text-xs flex items-center gap-1"
+                      className="px-3 py-1.5 rounded bg-white/[0.08] border border-white/[0.12] text-theme-primary hover:bg-white/[0.14] text-xs flex items-center gap-1"
                       onClick={() => onEdit(s)}
                       title="Edit"
                     >
                       <Pencil className="w-3.5 h-3.5" /> Edit
                     </button>
                     <button
-                      className="px-3 py-1.5 rounded bg-white/[0.08] border border-white/[0.12] text-white hover:bg-white/[0.14] text-xs flex items-center gap-1"
+                      className="px-3 py-1.5 rounded bg-white/[0.08] border border-white/[0.12] text-theme-primary hover:bg-white/[0.14] text-xs flex items-center gap-1"
                       onClick={() => onDelete(s)}
                       title="Delete"
                     >
@@ -71,47 +71,47 @@ export default function SiteList({ sites, onEdit, onDelete }: Props) {
                     <div className="rounded-lg bg-white/[0.03] border border-white/[0.08] p-4">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
                         <div>
-                          <p className="text-slate-400">Address</p>
-                          <p className="text-white">{[s.address_line1, s.address_line2].filter(Boolean).join(", ") || "—"}</p>
+                          <p className="text-theme-tertiary">Address</p>
+                          <p className="text-theme-primary">{[s.address_line1, s.address_line2].filter(Boolean).join(", ") || "—"}</p>
                         </div>
                         <div>
-                          <p className="text-slate-400">City / Postcode</p>
-                          <p className="text-white">{[s.city, s.postcode].filter(Boolean).join(" ") || "—"}</p>
+                          <p className="text-theme-tertiary">City / Postcode</p>
+                          <p className="text-theme-primary">{[s.city, s.postcode].filter(Boolean).join(" ") || "—"}</p>
                         </div>
                         <div>
-                          <p className="text-slate-400">Region</p>
-                          <p className="text-white">{s.region || "—"}</p>
+                          <p className="text-theme-tertiary">Region</p>
+                          <p className="text-theme-primary">{s.region || "—"}</p>
                         </div>
                         <div>
-                          <p className="text-slate-400">Type</p>
-                          <p className="text-white">—</p>
+                          <p className="text-theme-tertiary">Type</p>
+                          <p className="text-theme-primary">—</p>
                         </div>
                         <div>
-                          <p className="text-slate-400">Region</p>
-                          <p className="text-white">{s.region || "—"}</p>
+                          <p className="text-theme-tertiary">Region</p>
+                          <p className="text-theme-primary">{s.region || "—"}</p>
                         </div>
                         <div>
-                          <p className="text-slate-400">Floor Area</p>
-                          <p className="text-white">—</p>
+                          <p className="text-theme-tertiary">Floor Area</p>
+                          <p className="text-theme-primary">—</p>
                         </div>
                         <div>
-                          <p className="text-slate-400">Opening Date</p>
-                          <p className="text-white">—</p>
+                          <p className="text-theme-tertiary">Opening Date</p>
+                          <p className="text-theme-primary">—</p>
                         </div>
                         <div>
-                          <p className="text-slate-400">Contact</p>
-                          <p className="text-white">—</p>
+                          <p className="text-theme-tertiary">Contact</p>
+                          <p className="text-theme-primary">—</p>
                         </div>
                       </div>
                       <div className="mt-4 flex items-center justify-end gap-2">
                         <button
-                          className="px-3 py-1.5 rounded bg-white/[0.08] border border-white/[0.12] text-white hover:bg-white/[0.14] text-xs"
+                          className="px-3 py-1.5 rounded bg-white/[0.08] border border-white/[0.12] text-theme-primary hover:bg-white/[0.14] text-xs"
                           onClick={() => onEdit(s)}
                         >
                           Edit Details
                         </button>
                         <button
-                          className="px-3 py-1.5 rounded bg-white/[0.08] border border-white/[0.12] text-white hover:bg-white/[0.14] text-xs"
+                          className="px-3 py-1.5 rounded bg-white/[0.08] border border-white/[0.12] text-theme-primary hover:bg-white/[0.14] text-xs"
                           onClick={() => onDelete(s)}
                         >
                           Delete Site
@@ -127,7 +127,7 @@ export default function SiteList({ sites, onEdit, onDelete }: Props) {
       </table>
 
       {(!sites || sites.length === 0) && (
-        <div className="p-4 text-slate-400">No sites found.</div>
+        <div className="p-4 text-theme-tertiary">No sites found.</div>
       )}
     </div>
   );

@@ -946,29 +946,29 @@ export default function PurchaseOrderDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-module-fg animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-gray-50 dark:bg-[#0B0D13] min-h-screen p-6">
+    <div className="w-full bg-theme-surface-elevated min-h-screen p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard/stockly/orders"
-              className="p-2 rounded-lg bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
+ className="p-2 rounded-lg bg-theme-surface ] hover:bg-theme-muted border border-theme text-theme-secondary hover:text-theme-primary transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-3xl font-bold text-theme-primary mb-2">
                 {isNew ? 'New Purchase Order' : order.order_number}
               </h1>
               {!isNew && (
-                <p className="text-gray-600 dark:text-white/60 text-sm">
+                <p className="text-theme-secondary text-sm">
                   {selectedSupplier?.name} • {order.order_date}
                 </p>
               )}
@@ -980,19 +980,19 @@ export default function PurchaseOrderDetailPage() {
             <div className="relative">
               <button
                 onClick={() => setShowActions(!showActions)}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white rounded-lg transition-colors"
+ className="flex items-center gap-2 px-4 py-2 bg-theme-surface ] hover:bg-theme-muted border border-theme text-theme-secondary rounded-lg transition-colors"
               >
                 <MoreVertical className="w-5 h-5" />
                 Actions
               </button>
               
               {showActions && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/10 rounded-lg shadow-xl z-10">
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1a1a2e] border border-theme rounded-lg shadow-xl z-10">
                   {statusActions.map((action) => (
                     <button
                       key={action.next}
                       onClick={() => handleStatusChange(action.next)}
-                      className="w-full px-4 py-2 flex items-center gap-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5 first:rounded-t-lg last:rounded-b-lg"
+                      className="w-full px-4 py-2 flex items-center gap-2 text-theme-primary hover:bg-gray-100 dark:hover:bg-white/5 first:rounded-t-lg last:rounded-b-lg"
                     >
                       <action.icon className="w-4 h-4" />
                       {action.label}
@@ -1007,7 +1007,7 @@ export default function PurchaseOrderDetailPage() {
             <button
               onClick={handleSave}
               disabled={saving || !order.supplier_id || order.items.length === 0}
-              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)] rounded-lg transition-all duration-200 ease-in-out disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out disabled:opacity-50"
             >
               {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
               {isNew ? 'Create Order' : 'Save Changes'}
@@ -1020,19 +1020,19 @@ export default function PurchaseOrderDetailPage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Order Details */}
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Order Details</h2>
+          <div className="bg-theme-surface border border-theme rounded-xl p-6">
+            <h2 className="text-lg font-semibold text-theme-primary mb-4">Order Details</h2>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="supplier-select" className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-1">Supplier *</label>
+                <label htmlFor="supplier-select" className="block text-sm font-medium text-theme-primary/80 mb-1">Supplier *</label>
                 <select
                   id="supplier-select"
                   name="supplier_id"
                   value={order.supplier_id}
                   onChange={(e) => handleSupplierChange(e.target.value)}
                   disabled={!canEdit}
-                  className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 disabled:opacity-50"
+ className="w-full px-3 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 disabled:opacity-50"
                 >
                   <option value="">Select supplier...</option>
                   {suppliers.map(s => (
@@ -1042,7 +1042,7 @@ export default function PurchaseOrderDetailPage() {
               </div>
               
               <div>
-                <label htmlFor="order-date" className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-1">Order Date</label>
+                <label htmlFor="order-date" className="block text-sm font-medium text-theme-primary/80 mb-1">Order Date</label>
                 <input
                   id="order-date"
                   name="order_date"
@@ -1050,12 +1050,12 @@ export default function PurchaseOrderDetailPage() {
                   value={order.order_date}
                   onChange={(e) => setOrder(prev => ({ ...prev, order_date: e.target.value }))}
                   disabled={!canEdit}
-                  className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 disabled:opacity-50"
+ className="w-full px-3 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 disabled:opacity-50"
                 />
               </div>
               
               <div>
-                <label htmlFor="expected-delivery-date" className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-1">Expected Delivery</label>
+                <label htmlFor="expected-delivery-date" className="block text-sm font-medium text-theme-primary/80 mb-1">Expected Delivery</label>
                 <input
                   id="expected-delivery-date"
                   name="expected_delivery_date"
@@ -1063,10 +1063,10 @@ export default function PurchaseOrderDetailPage() {
                   value={order.expected_delivery_date || ''}
                   onChange={(e) => setOrder(prev => ({ ...prev, expected_delivery_date: e.target.value || null }))}
                   disabled={!canEdit}
-                  className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 disabled:opacity-50"
+ className="w-full px-3 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 disabled:opacity-50"
                 />
                 {selectedSupplier?.lead_time_days && (
-                  <p className="text-gray-500 dark:text-white/40 text-xs mt-1">
+                  <p className="text-theme-tertiary text-xs mt-1">
                     Lead time: {selectedSupplier.lead_time_days} days
                   </p>
                 )}
@@ -1075,20 +1075,20 @@ export default function PurchaseOrderDetailPage() {
           </div>
 
           {/* Items */}
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+          <div className="bg-theme-surface border border-theme rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Items</h2>
+              <h2 className="text-lg font-semibold text-theme-primary">Items</h2>
             </div>
             
             {/* Show existing order items FIRST for existing orders */}
             {!isNew && order.items.length > 0 && (
-              <div className="mb-6 pb-6 border-b border-gray-200 dark:border-white/10">
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+              <div className="mb-6 pb-6 border-b border-theme">
+                <h3 className="text-sm font-medium text-theme-primary mb-3">
                   Ordered Items ({order.items.length})
                 </h3>
                 <div className="space-y-2">
                   {/* Header */}
-                  <div className="grid grid-cols-12 gap-3 pb-2 border-b border-gray-200 dark:border-white/10 text-xs font-medium text-gray-600 dark:text-white/60">
+                  <div className="grid grid-cols-12 gap-3 pb-2 border-b border-theme text-xs font-medium text-theme-secondary">
                     <div className="col-span-5">Item</div>
                     <div className="col-span-2 text-center">Quantity</div>
                     <div className="col-span-2 text-right">Unit Price</div>
@@ -1098,26 +1098,26 @@ export default function PurchaseOrderDetailPage() {
                   {order.items.map((item, idx) => (
                     <div
                       key={item.id || idx}
-                      className="grid grid-cols-12 gap-3 items-center py-3 px-2 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-lg"
+                      className="grid grid-cols-12 gap-3 items-center py-3 px-2 bg-emerald-50 dark:bg-module-fg/10 border border-emerald-200 dark:border-module-fg/30 rounded-lg"
                     >
                       <div className="col-span-5">
-                        <p className="text-gray-900 dark:text-white font-medium text-sm">{item.name}</p>
+                        <p className="text-theme-primary font-medium text-sm">{item.name}</p>
                       </div>
                       <div className="col-span-2 text-center">
-                        <span className="text-gray-900 dark:text-white font-medium">{item.ordered_quantity}</span>
-                        <span className="text-gray-500 dark:text-white/40 text-xs ml-1">{item.unit}</span>
+                        <span className="text-theme-primary font-medium">{item.ordered_quantity}</span>
+                        <span className="text-theme-tertiary text-xs ml-1">{item.unit}</span>
                       </div>
-                      <div className="col-span-2 text-right text-gray-900 dark:text-white">
+                      <div className="col-span-2 text-right text-theme-primary">
                         £{item.unit_price.toFixed(2)}
                       </div>
-                      <div className="col-span-2 text-right text-gray-900 dark:text-white font-medium">
+                      <div className="col-span-2 text-right text-theme-primary font-medium">
                         £{item.line_total.toFixed(2)}
                       </div>
                       <div className="col-span-1 text-right">
                         {canEdit && (
                           <button
                             onClick={() => removeItem(idx)}
-                            className="p-1 text-gray-400 dark:text-white/40 hover:text-red-600 dark:hover:text-red-400"
+                            className="p-1 text-theme-tertiary hover:text-red-600 dark:hover:text-red-400"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -1133,27 +1133,27 @@ export default function PurchaseOrderDetailPage() {
             {canEdit && (
               <>
                 {!isNew && order.items.length > 0 && (
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Add More Items</h3>
+                  <h3 className="text-sm font-medium text-theme-primary mb-3">Add More Items</h3>
                 )}
                 {!order.supplier_id ? (
-                  <div className="border border-dashed border-gray-300 dark:border-white/10 rounded-lg p-8 text-center">
-                    <Package className="w-10 h-10 text-gray-400 dark:text-white/20 mx-auto mb-2" />
-                    <p className="text-gray-600 dark:text-white/40 text-sm">Select a supplier to view available items</p>
+                  <div className="border border-dashed border-theme rounded-lg p-8 text-center">
+                    <Package className="w-10 h-10 text-theme-tertiary/20 mx-auto mb-2" />
+                    <p className="text-theme-secondary/40 text-sm">Select a supplier to view available items</p>
                   </div>
                 ) : loadingSupplierItems ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 animate-spin" />
-                <span className="ml-2 text-gray-600 dark:text-white/60">Loading items...</span>
+                <Loader2 className="w-6 h-6 text-module-fg animate-spin" />
+                <span className="ml-2 text-theme-secondary">Loading items...</span>
               </div>
             ) : supplierItems.length === 0 ? (
-              <div className="border border-dashed border-gray-300 dark:border-white/10 rounded-lg p-8 text-center">
-                <Package className="w-10 h-10 text-gray-400 dark:text-white/20 mx-auto mb-2" />
-                <p className="text-gray-600 dark:text-white/40 text-sm">No items available from this supplier</p>
+              <div className="border border-dashed border-theme rounded-lg p-8 text-center">
+                <Package className="w-10 h-10 text-theme-tertiary/20 mx-auto mb-2" />
+                <p className="text-theme-secondary/40 text-sm">No items available from this supplier</p>
               </div>
             ) : (
               <div className="space-y-2">
                 {/* Header */}
-                <div className="grid grid-cols-12 gap-3 pb-2 border-b border-gray-200 dark:border-white/10 text-xs font-medium text-gray-600 dark:text-white/60">
+                <div className="grid grid-cols-12 gap-3 pb-2 border-b border-theme text-xs font-medium text-theme-secondary">
                   <div className="col-span-5">Item</div>
                   <div className="col-span-2 text-center">Pack Size</div>
                   <div className="col-span-2 text-right">Price</div>
@@ -1174,13 +1174,13 @@ export default function PurchaseOrderDetailPage() {
                       key={item.library_item_id || item.product_variant_id || item.product_name}
                       className={`grid grid-cols-12 gap-3 items-center py-3 px-2 rounded-lg transition-colors ${
                         quantity > 0 
-                          ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20' 
-                          : 'hover:bg-gray-50 dark:hover:bg-white/[0.02]'
+                          ? 'bg-emerald-50 dark:bg-module-fg/10 border border-emerald-200 dark:border-module-fg/30' 
+                          : 'hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02]'
                       }`}
                     >
                       <div className="col-span-5">
                         <div className="flex items-center gap-2">
-                          <p className="text-gray-900 dark:text-white font-medium text-sm">
+                          <p className="text-theme-primary font-medium text-sm">
                             {item.product_name || item.stock_item_name}
                           </p>
                           {item.is_preferred && (
@@ -1190,17 +1190,17 @@ export default function PurchaseOrderDetailPage() {
                           )}
                         </div>
                         {item.supplier_code && (
-                          <p className="text-gray-500 dark:text-white/40 text-xs mt-0.5">
+                          <p className="text-theme-tertiary text-xs mt-0.5">
                             Code: {item.supplier_code}
                           </p>
                         )}
                       </div>
                       
-                      <div className="col-span-2 text-center text-sm text-gray-700 dark:text-white/80">
+                      <div className="col-span-2 text-center text-sm text-theme-secondary">
                         {item.pack_size} {item.pack_unit}
                       </div>
                       
-                      <div className="col-span-2 text-right text-sm text-gray-900 dark:text-white font-medium">
+                      <div className="col-span-2 text-right text-sm text-theme-primary font-medium">
                         {item.current_price ? `£${item.current_price.toFixed(2)}` : '—'}
                       </div>
                       
@@ -1222,10 +1222,10 @@ export default function PurchaseOrderDetailPage() {
                           disabled={!canEdit}
                           placeholder="0"
                           aria-label={`Quantity for ${item.product_name || item.stock_item_name}`}
-                          className="w-full px-2 py-1.5 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/10 rounded text-gray-900 dark:text-white text-sm text-center disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
+ className="w-full px-2 py-1.5 bg-theme-surface ] border border-theme rounded text-theme-primary text-sm text-center disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
                         />
                         {item.min_order_qty > 1 && (
-                          <p className="text-xs text-gray-500 dark:text-white/40 mt-0.5 text-center">
+                          <p className="text-xs text-theme-tertiary mt-0.5 text-center">
                             Min: {item.min_order_qty}
                           </p>
                         )}
@@ -1236,7 +1236,7 @@ export default function PurchaseOrderDetailPage() {
                           <button
                             onClick={() => handleQuantityChange(item, 0)}
                             disabled={!canEdit}
-                            className="p-1 text-gray-400 dark:text-white/40 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
+                            className="p-1 text-theme-tertiary hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50"
                             title="Remove item"
                           >
                             <X className="w-4 h-4" />
@@ -1254,11 +1254,11 @@ export default function PurchaseOrderDetailPage() {
 
           {/* Notes */}
           {canEdit && (
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Notes</h2>
+            <div className="bg-theme-surface border border-theme rounded-xl p-6">
+              <h2 className="text-lg font-semibold text-theme-primary mb-4">Notes</h2>
               
               <div>
-                <label htmlFor="order-notes" className="block text-sm font-medium text-gray-900 dark:text-white/80 mb-1">Internal Notes</label>
+                <label htmlFor="order-notes" className="block text-sm font-medium text-theme-primary/80 mb-1">Internal Notes</label>
                 <textarea
                   id="order-notes"
                   name="notes"
@@ -1266,7 +1266,7 @@ export default function PurchaseOrderDetailPage() {
                   onChange={(e) => setOrder(prev => ({ ...prev, notes: e.target.value }))}
                   placeholder="Internal notes..."
                   rows={3}
-                  className="w-full px-3 py-2 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 resize-none"
+ className="w-full px-3 py-2 bg-theme-surface ] border border-theme rounded-lg text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-disabled focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 resize-none"
                 />
               </div>
             </div>
@@ -1302,12 +1302,12 @@ export default function PurchaseOrderDetailPage() {
         <div className="space-y-6">
           {/* Status */}
           {!isNew && (
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-              <h2 className="text-sm font-medium text-gray-600 dark:text-white/60 mb-3">Status</h2>
+            <div className="bg-theme-surface border border-theme rounded-xl p-6">
+              <h2 className="text-sm font-medium text-theme-secondary mb-3">Status</h2>
               <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${
                 order.status === 'received' ? 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30' :
                 order.status === 'cancelled' ? 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/30' :
-                order.status === 'draft' ? 'bg-gray-100 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-500/30' :
+ order.status ==='draft'?'bg-gray-100 dark:bg-theme-surface-elevated0/20 text-theme-secondary border border-gray-200 dark:border-gray-500/30':
                 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30'
               }`}>
                 {order.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
@@ -1316,21 +1316,21 @@ export default function PurchaseOrderDetailPage() {
           )}
 
           {/* Totals */}
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-            <h2 className="text-sm font-medium text-gray-600 dark:text-white/60 mb-4">Order Total</h2>
+          <div className="bg-theme-surface border border-theme rounded-xl p-6">
+            <h2 className="text-sm font-medium text-theme-secondary mb-4">Order Total</h2>
             
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-white/60">Subtotal</span>
-                <span className="text-gray-900 dark:text-white">£{order.subtotal.toFixed(2)}</span>
+                <span className="text-theme-secondary">Subtotal</span>
+                <span className="text-theme-primary">£{order.subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-white/60">VAT (20%)</span>
-                <span className="text-gray-900 dark:text-white">£{order.tax.toFixed(2)}</span>
+                <span className="text-theme-secondary">VAT (20%)</span>
+                <span className="text-theme-primary">£{order.tax.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-lg font-semibold border-t border-gray-200 dark:border-white/10 pt-2 mt-2">
-                <span className="text-gray-900 dark:text-white">Total</span>
-                <span className="text-gray-900 dark:text-white">£{order.total.toFixed(2)}</span>
+              <div className="flex justify-between text-lg font-semibold border-t border-theme pt-2 mt-2">
+                <span className="text-theme-primary">Total</span>
+                <span className="text-theme-primary">£{order.total.toFixed(2)}</span>
               </div>
             </div>
             
@@ -1346,17 +1346,17 @@ export default function PurchaseOrderDetailPage() {
 
           {/* Supplier Info */}
           {selectedSupplier && (
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-              <h2 className="text-sm font-medium text-gray-600 dark:text-white/60 mb-3">Supplier</h2>
-              <p className="text-gray-900 dark:text-white font-medium">{selectedSupplier.name}</p>
+            <div className="bg-theme-surface border border-theme rounded-xl p-6">
+              <h2 className="text-sm font-medium text-theme-secondary mb-3">Supplier</h2>
+              <p className="text-theme-primary font-medium">{selectedSupplier.name}</p>
               {selectedSupplier.email && (
-                <p className="text-gray-600 dark:text-white/60 text-sm">{selectedSupplier.email}</p>
+                <p className="text-theme-secondary text-sm">{selectedSupplier.email}</p>
               )}
               {selectedSupplier.code && (
-                <p className="text-gray-500 dark:text-white/40 text-xs">Code: {selectedSupplier.code}</p>
+                <p className="text-theme-tertiary text-xs">Code: {selectedSupplier.code}</p>
               )}
               {selectedSupplier.lead_time_days && (
-                <p className="text-gray-500 dark:text-white/40 text-xs mt-2">
+                <p className="text-theme-tertiary text-xs mt-2">
                   Lead time: {selectedSupplier.lead_time_days} days
                 </p>
               )}

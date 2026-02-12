@@ -50,7 +50,7 @@ export default function WhosOnTodayWidget({ companyId, siteId }: WidgetProps) {
         </div>
       }
       badge={
-        <span className="text-xs font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">
+        <span className="text-xs font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
           {totalCount} scheduled
         </span>
       }
@@ -83,13 +83,13 @@ export default function WhosOnTodayWidget({ companyId, siteId }: WidgetProps) {
                     {person.full_name}
                   </p>
                   {person.position_title && (
-                    <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 truncate">
+                    <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary truncate">
                       {person.position_title}
                     </p>
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-1 text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 ml-2 flex-shrink-0">
+              <div className="flex items-center gap-1 text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary ml-2 flex-shrink-0">
                 <Clock className="w-3 h-3" />
                 {formatTime(person.shift_start)} - {formatTime(person.shift_end)}
               </div>

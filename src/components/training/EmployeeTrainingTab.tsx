@@ -188,7 +188,7 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
       {/* Section 1: Assign Courses */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h4 className="text-base font-medium text-white">Assign Courses</h4>
+          <h4 className="text-base font-medium text-theme-primary">Assign Courses</h4>
           {selectedCourses.length > 0 && (
             <button
               onClick={handleAssignSelected}
@@ -218,13 +218,13 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h5 className="font-medium text-white text-sm truncate">{course.name}</h5>
+                      <h5 className="font-medium text-theme-primary text-sm truncate">{course.name}</h5>
                       {course.is_mandatory && (
                         <span className="text-xs text-red-400">*</span>
                       )}
                     </div>
                     {course.code && (
-                      <p className="text-xs text-gray-500 dark:text-white/60">{course.code}</p>
+                      <p className="text-xs text-theme-tertiary">{course.code}</p>
                     )}
                   </div>
                   {!assignment && (
@@ -243,7 +243,7 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
                   )}
                 </div>
                 {assignment && (
-                  <div className="mt-2 flex items-center gap-2 text-xs text-gray-500 dark:text-white/60">
+                  <div className="mt-2 flex items-center gap-2 text-xs text-theme-tertiary">
                     {getStatusIcon(assignment.status)}
                     <span className="capitalize">{assignment.status.replace('_', ' ')}</span>
                     {assignment.deadline_date && (
@@ -261,10 +261,10 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
 
       {/* Section 2: Training History */}
       <div className="space-y-4">
-        <h4 className="text-base font-medium text-white">Training History</h4>
+        <h4 className="text-base font-medium text-theme-primary">Training History</h4>
 
         {trainingRecords.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-white/60">No training records found.</p>
+          <p className="text-sm text-theme-tertiary">No training records found.</p>
         ) : (
           <div className="space-y-3">
             {trainingRecords.map((record) => {
@@ -286,10 +286,10 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <h5 className="font-medium text-white mb-1">
+                      <h5 className="font-medium text-theme-primary mb-1">
                         {record.course?.name || 'Unknown Course'}
                       </h5>
-                      <div className="space-y-1 text-sm text-gray-500 dark:text-white/60">
+                      <div className="space-y-1 text-sm text-theme-tertiary">
                         <div className="flex items-center gap-4">
                           <span className="capitalize">{record.status.replace('_', ' ')}</span>
                           {record.score_percentage !== null && (
@@ -306,7 +306,7 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
                           </p>
                         )}
                         {record.certificate_number && (
-                          <p className="text-xs text-neutral-500">Cert: {record.certificate_number}</p>
+                          <p className="text-xs text-theme-tertiary">Cert: {record.certificate_number}</p>
                         )}
                       </div>
                     </div>
@@ -331,10 +331,10 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
       {/* Section 3: Record Training */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h4 className="text-base font-medium text-gray-900 dark:text-white">Record Training</h4>
+          <h4 className="text-base font-medium text-theme-primary">Record Training</h4>
           <button
             onClick={() => setShowRecordModal(true)}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-module-fg hover:bg-module-fg/90 text-white rounded-lg transition-colors"
           >
             <Plus className="w-4 h-4" />
             Record Training

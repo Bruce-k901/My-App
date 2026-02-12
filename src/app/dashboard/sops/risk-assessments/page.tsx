@@ -83,10 +83,10 @@ export default function RiskAssessmentsPage() {
       {/* COSHH Data Summary */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">COSHH Data</h2>
+          <h2 className="text-xl font-semibold text-theme-primary">COSHH Data</h2>
           <button
             onClick={() => router.push('/dashboard/coshh-data')}
-            className="px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/90 rounded-lg text-white text-sm flex items-center gap-2"
+            className="px-4 py-2 bg-module-fg hover:bg-module-fg/90 rounded-lg text-white text-sm flex items-center gap-2"
           >
             <Download size={16} />
             Manage All COSHH Data
@@ -95,25 +95,25 @@ export default function RiskAssessmentsPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-          <div className="bg-white dark:bg-neutral-800/50 rounded-xl p-4 border border-gray-200 dark:border-neutral-700">
-            <div className="text-gray-600 dark:text-neutral-400 text-sm">Total Sheets</div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{coshhSheets.length}</div>
+          <div className="bg-theme-surface/50 rounded-xl p-4 border border-theme">
+ <div className="text-gray-600 dark:text-theme-tertiary text-sm">Total Sheets</div>
+            <div className="text-2xl font-bold text-theme-primary mt-1">{coshhSheets.length}</div>
           </div>
-          <div className="bg-white dark:bg-neutral-800/50 rounded-xl p-4 border border-gray-200 dark:border-neutral-700">
-            <div className="text-gray-600 dark:text-neutral-400 text-sm">Verified</div>
+          <div className="bg-theme-surface/50 rounded-xl p-4 border border-theme">
+ <div className="text-gray-600 dark:text-theme-tertiary text-sm">Verified</div>
             <div className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
               {coshhSheets.filter(s => s.verification_status === 'Verified').length}
             </div>
           </div>
-          <div className="bg-white dark:bg-neutral-800/50 rounded-xl p-4 border border-gray-200 dark:border-neutral-700">
-            <div className="text-gray-600 dark:text-neutral-400 text-sm">Expiring Soon</div>
-            <div className={`text-2xl font-bold mt-1 ${coshhSheets.filter(s => isExpiringSoon(s.expiry_date)).length > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-gray-900 dark:text-white'}`}>
+          <div className="bg-theme-surface/50 rounded-xl p-4 border border-theme">
+ <div className="text-gray-600 dark:text-theme-tertiary text-sm">Expiring Soon</div>
+            <div className={`text-2xl font-bold mt-1 ${coshhSheets.filter(s => isExpiringSoon(s.expiry_date)).length > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-theme-primary'}`}>
               {coshhSheets.filter(s => isExpiringSoon(s.expiry_date)).length}
             </div>
           </div>
-          <div className="bg-white dark:bg-neutral-800/50 rounded-xl p-4 border border-gray-200 dark:border-neutral-700">
-            <div className="text-gray-600 dark:text-neutral-400 text-sm">Missing</div>
-            <div className={`text-2xl font-bold mt-1 ${missingSheets > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
+          <div className="bg-theme-surface/50 rounded-xl p-4 border border-theme">
+ <div className="text-gray-600 dark:text-theme-tertiary text-sm">Missing</div>
+            <div className={`text-2xl font-bold mt-1 ${missingSheets > 0 ? 'text-red-600 dark:text-red-400' : 'text-theme-primary'}`}>
               {missingSheets}
             </div>
           </div>
@@ -138,14 +138,14 @@ export default function RiskAssessmentsPage() {
 
         {/* Recent Uploads */}
         {coshhSheets.length > 0 && (
-          <div className="bg-white dark:bg-neutral-800/50 rounded-xl p-4 border border-gray-200 dark:border-neutral-700">
+          <div className="bg-theme-surface/50 rounded-xl p-4 border border-theme">
             <h3 className="text-sm font-semibold text-gray-700 dark:text-neutral-300 mb-3">Recent Uploads</h3>
             <div className="space-y-2">
               {coshhSheets.slice(0, 5).map((sheet) => (
                 <div key={sheet.id} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-neutral-900/50 rounded border border-gray-200 dark:border-neutral-600">
                   <div className="flex-1">
-                    <div className="text-sm text-gray-900 dark:text-white">{sheet.product_name}</div>
-                    <div className="text-xs text-gray-600 dark:text-neutral-400">{sheet.manufacturer}</div>
+                    <div className="text-sm text-theme-primary">{sheet.product_name}</div>
+ <div className="text-xs text-gray-600 dark:text-theme-tertiary">{sheet.manufacturer}</div>
                   </div>
                   <div className="flex items-center gap-2">
                     {sheet.verification_status === 'Verified' && (
@@ -169,7 +169,7 @@ export default function RiskAssessmentsPage() {
 
       {/* Create New Risk Assessments */}
       <div>
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Create New Risk Assessment</h2>
+        <h2 className="text-xl font-semibold text-theme-primary mb-4">Create New Risk Assessment</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {TEMPLATES.map((template) => {
             const Icon = template.icon;
@@ -186,7 +186,7 @@ export default function RiskAssessmentsPage() {
                   <h3 className={`text-lg font-semibold ${template.lightText} dark:text-white`}>{template.title}</h3>
                 </div>
                 <p className={`text-sm ${template.lightText} opacity-90 dark:text-neutral-300`}>{template.description}</p>
-                <div className={`mt-4 flex items-center gap-2 text-xs font-medium ${template.lightIcon} dark:text-neutral-400`}>
+ <div className={`mt-4 flex items-center gap-2 text-xs font-medium ${template.lightIcon} dark:text-theme-tertiary`}>
                   <Plus size={14} />
                   <span>Create new</span>
                 </div>
@@ -196,8 +196,8 @@ export default function RiskAssessmentsPage() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-neutral-800/50 rounded-xl p-8 text-center border border-gray-200 dark:border-neutral-700">
-        <p className="text-gray-600 dark:text-neutral-400">
+      <div className="bg-theme-surface/50 rounded-xl p-8 text-center border border-theme">
+ <p className="text-gray-600 dark:text-theme-tertiary">
           View and manage existing risk assessments from the main Risk Assessments page.
         </p>
       </div>

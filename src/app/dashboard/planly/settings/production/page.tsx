@@ -256,7 +256,7 @@ export default function ProductionSettingsPage() {
   if (!siteId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
+        <div className="text-theme-tertiary">Please select a site</div>
       </div>
     );
   }
@@ -274,8 +274,8 @@ export default function ProductionSettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Production Setup</h1>
-          <p className="text-gray-500 dark:text-white/50 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-theme-primary">Production Setup</h1>
+          <p className="text-theme-tertiary text-sm mt-1">
             Manage your base doughs and lamination styles for mix sheet calculations.
           </p>
         </div>
@@ -288,18 +288,18 @@ export default function ProductionSettingsPage() {
       {/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-gray-400 mr-2" />
-          <span className="text-gray-500 dark:text-white/50">Loading...</span>
+          <Loader2 className="h-6 w-6 animate-spin text-theme-tertiary mr-2" />
+          <span className="text-theme-tertiary">Loading...</span>
         </div>
       )}
 
       {/* Empty State */}
       {!isLoading && baseDoughs.length === 0 && (
-        <div className="border border-dashed border-gray-200 dark:border-white/10 rounded-lg p-10 text-center space-y-4 bg-gray-50 dark:bg-white/5">
+        <div className="border border-dashed border-theme rounded-lg p-10 text-center space-y-4 bg-theme-button">
           <Scale className="h-12 w-12 mx-auto text-gray-300 dark:text-white/20" />
           <div className="space-y-2">
-            <h3 className="font-medium text-gray-900 dark:text-white">No production setup yet</h3>
-            <p className="text-gray-500 dark:text-white/50 max-w-md mx-auto">
+            <h3 className="font-medium text-theme-primary">No production setup yet</h3>
+            <p className="text-theme-tertiary max-w-md mx-auto">
               Use the Setup Wizard to configure your doughs and lamination styles.
               This will enable automatic mix sheet calculations.
             </p>
@@ -321,20 +321,20 @@ export default function ProductionSettingsPage() {
             return (
               <div
                 key={dough.id}
-                className="border border-gray-200 dark:border-white/10 rounded-lg overflow-hidden bg-white dark:bg-white/5"
+                className="border border-theme rounded-lg overflow-hidden bg-theme-surface"
               >
                 {/* Dough Header */}
                 <div className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-teal-100 dark:bg-teal-500/20 flex items-center justify-center shrink-0">
-                        <Scale className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                      <div className="w-10 h-10 rounded-lg bg-module-fg/10 flex items-center justify-center shrink-0">
+                        <Scale className="h-5 w-5 text-module-fg" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
+                        <h3 className="font-semibold text-theme-primary text-lg">
                           {dough.name}
                         </h3>
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-white/50 mt-1">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-theme-tertiary mt-1">
                           <span>Recipe: {getRecipeName(dough.recipe_id)}</span>
                           <span>Mix: {dough.mix_lead_days} day{dough.mix_lead_days !== 1 ? 's' : ''} ahead</span>
                           {!hasLamination && dough.batch_size_kg && dough.units_per_batch && (
@@ -342,7 +342,7 @@ export default function ProductionSettingsPage() {
                           )}
                         </div>
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-300 rounded text-xs">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-teal-50 dark:bg-module-fg/10 text-teal-700 dark:text-teal-300 rounded text-xs">
                             <Package className="h-3 w-3" />
                             {dough.product_count || 0} products
                           </span>
@@ -360,7 +360,7 @@ export default function ProductionSettingsPage() {
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => openEditDough(dough)}
-                        className="p-2 rounded-lg text-gray-500 dark:text-white/50 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                        className="p-2 rounded-lg text-theme-tertiary hover:text-theme-secondary hover:bg-theme-muted transition-colors"
                         title="Edit"
                       >
                         <Pencil className="h-4 w-4" />
@@ -375,7 +375,7 @@ export default function ProductionSettingsPage() {
                       {hasLamination && (
                         <button
                           onClick={() => toggleExpanded(dough.id)}
-                          className="p-2 rounded-lg text-gray-500 dark:text-white/50 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                          className="p-2 rounded-lg text-theme-tertiary hover:text-theme-secondary hover:bg-theme-muted transition-colors"
                         >
                           {isExpanded ? (
                             <ChevronUp className="h-4 w-4" />
@@ -390,9 +390,9 @@ export default function ProductionSettingsPage() {
 
                 {/* Lamination Styles (Expanded) */}
                 {hasLamination && isExpanded && (
-                  <div className="border-t border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/[0.02] p-4 space-y-2">
+                  <div className="border-t border-theme bg-gray-50 dark:bg-white/[0.02] p-4 space-y-2">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-medium text-gray-700 dark:text-white/70">
+                      <h4 className="text-sm font-medium text-theme-secondary">
                         Lamination Styles
                       </h4>
                       <Button variant="ghost" size="sm" onClick={() => openAddStyle(dough.id)}>
@@ -404,13 +404,13 @@ export default function ProductionSettingsPage() {
                     {dough.lamination_styles?.map(style => (
                       <div
                         key={style.id}
-                        className="flex items-center justify-between p-3 bg-white dark:bg-white/5 rounded-lg border border-gray-100 dark:border-white/5"
+                        className="flex items-center justify-between p-3 bg-theme-surface rounded-lg border border-theme"
                       >
                         <div>
-                          <span className="font-medium text-gray-900 dark:text-white">
+                          <span className="font-medium text-theme-primary">
                             {style.name}
                           </span>
-                          <p className="text-xs text-gray-500 dark:text-white/50">
+                          <p className="text-xs text-theme-tertiary">
                             {getRecipeName(style.recipe_id)} | {style.products_per_sheet} products/sheet
                             {style.dough_per_sheet_g ? ` | ${style.dough_per_sheet_g}g dough/sheet` : ''}
                           </p>
@@ -418,7 +418,7 @@ export default function ProductionSettingsPage() {
                         <div className="flex items-center gap-1">
                           <button
                             onClick={() => openEditStyle(style)}
-                            className="p-1.5 rounded text-gray-400 hover:text-gray-600 dark:hover:text-white"
+                            className="p-1.5 rounded text-theme-tertiary hover:text-theme-secondary"
                           >
                             <Pencil className="h-3.5 w-3.5" />
                           </button>
@@ -471,7 +471,7 @@ export default function ProductionSettingsPage() {
               {doughForm.recipe_id && (() => {
                 const selectedRecipe = recipes.find(r => r.id === doughForm.recipe_id);
                 return selectedRecipe ? (
-                  <p className="text-xs text-teal-600 dark:text-teal-400">
+                  <p className="text-xs text-module-fg">
                     Recipe yields: {selectedRecipe.yield_quantity}{selectedRecipe.yield_unit} per batch
                   </p>
                 ) : null;

@@ -25,7 +25,7 @@ export function OrderSummary({
           {/* Customer */}
           <div className="flex items-center gap-2">
             <User className="h-4 w-4 text-[#14B8A6]" />
-            <span className="text-gray-500 dark:text-white/60 text-sm">
+            <span className="text-theme-tertiary text-sm">
               {customerName || 'No customer selected'}
             </span>
           </div>
@@ -33,7 +33,7 @@ export function OrderSummary({
           {/* Date */}
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-[#14B8A6]" />
-            <span className="text-gray-500 dark:text-white/60 text-sm">
+            <span className="text-theme-tertiary text-sm">
               {format(deliveryDate, 'EEE d MMM')}
             </span>
           </div>
@@ -41,7 +41,7 @@ export function OrderSummary({
           {/* Items */}
           <div className="flex items-center gap-2">
             <Package className="h-4 w-4 text-[#14B8A6]" />
-            <span className="text-gray-500 dark:text-white/60 text-sm">
+            <span className="text-theme-tertiary text-sm">
               {lineCount} {lineCount === 1 ? 'item' : 'items'}
             </span>
           </div>
@@ -50,7 +50,7 @@ export function OrderSummary({
         {/* Total */}
         <div className="flex items-center gap-2">
           <PoundSterling className="h-5 w-5 text-[#14B8A6]" />
-          <span className="text-2xl font-bold text-gray-900 dark:text-white">
+          <span className="text-2xl font-bold text-theme-primary">
             {subtotal.toFixed(2)}
           </span>
         </div>

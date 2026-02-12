@@ -67,36 +67,36 @@ export function ReviewComparisonQuestion({
   
   const alignmentStyles = {
     'aligned': {
-      border: 'border-green-500/30',
-      bg: 'bg-green-500/5',
+      border: 'border-green-200 dark:border-green-500/30',
+      bg: 'bg-green-50 dark:bg-green-500/5',
       icon: CheckCircle,
-      iconColor: 'text-green-400',
+      iconColor: 'text-green-600 dark:text-green-400',
       label: 'Aligned',
-      labelBg: 'bg-green-500/20 text-green-400',
+      labelBg: 'bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400',
     },
     'minor-gap': {
-      border: 'border-amber-500/30',
-      bg: 'bg-amber-500/5',
+      border: 'border-amber-200 dark:border-amber-500/30',
+      bg: 'bg-amber-50 dark:bg-amber-500/5',
       icon: HelpCircle,
-      iconColor: 'text-amber-400',
+      iconColor: 'text-amber-600 dark:text-amber-400',
       label: 'Minor Gap',
-      labelBg: 'bg-amber-500/20 text-amber-400',
+      labelBg: 'bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400',
     },
     'significant-gap': {
-      border: 'border-red-500/30',
-      bg: 'bg-red-500/5',
+      border: 'border-red-200 dark:border-red-500/30',
+      bg: 'bg-red-50 dark:bg-red-500/5',
       icon: AlertTriangle,
-      iconColor: 'text-red-400',
+      iconColor: 'text-red-600 dark:text-red-400',
       label: 'Discussion Needed',
-      labelBg: 'bg-red-500/20 text-red-400',
+      labelBg: 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400',
     },
     'unknown': {
-      border: 'border-white/10',
-      bg: 'bg-white/[0.02]',
+      border: 'border-theme',
+      bg: 'bg-theme-hover',
       icon: HelpCircle,
-      iconColor: 'text-gray-500 dark:text-white/60',
+      iconColor: 'text-theme-tertiary',
       label: 'Incomplete',
-      labelBg: 'bg-white/10 text-gray-500 dark:text-white/60',
+      labelBg: 'bg-theme-button text-theme-tertiary',
     },
   };
   
@@ -110,7 +110,7 @@ export function ReviewComparisonQuestion({
   const renderResponse = (response?: ReviewResponse, label?: string) => {
     if (!response) {
       return (
-        <div className="text-neutral-500 italic text-sm">Not yet answered</div>
+        <div className="text-theme-tertiary italic text-sm">Not yet answered</div>
       );
     }
     
@@ -126,18 +126,18 @@ export function ReviewComparisonQuestion({
                   key={i}
                   className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-medium ${
                     score && i < score
-                      ? 'bg-[#D37E91] border-[#D37E91] text-white'
-                      : 'border-white/20 text-neutral-500'
+                      ? 'bg-module-fg border-module-fg text-white'
+                      : 'border-theme text-theme-tertiary'
                   }`}
                 >
                   {i + 1}
                 </div>
               ))}
             </div>
-            <span className="text-sm font-medium text-white">{score}/{max}</span>
+            <span className="text-sm font-medium text-theme-primary">{score}/{max}</span>
           </div>
           {response.response_text && (
-            <p className="text-sm text-neutral-300 bg-white/[0.03] rounded p-2">
+            <p className="text-sm text-theme-tertiary bg-theme-hover rounded p-2">
               "{response.response_text}"
             </p>
           )}
@@ -148,9 +148,9 @@ export function ReviewComparisonQuestion({
     if (question.question_type === 'yes_no') {
       return (
         <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm ${
-          response.response_boolean 
-            ? 'bg-green-500/20 text-green-400' 
-            : 'bg-red-500/20 text-red-400'
+          response.response_boolean
+            ? 'bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400'
+            : 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400'
         }`}>
           {response.response_boolean ? 'Yes' : 'No'}
         </div>
@@ -159,8 +159,8 @@ export function ReviewComparisonQuestion({
     
     // Text response
     return (
-      <div className="text-sm text-neutral-300 bg-white/[0.03] rounded p-3">
-        {response.response_text || <span className="text-neutral-500 italic">No response</span>}
+      <div className="text-sm text-theme-tertiary bg-theme-hover rounded p-3">
+        {response.response_text || <span className="text-theme-tertiary italic">No response</span>}
       </div>
     );
   };
@@ -171,14 +171,14 @@ export function ReviewComparisonQuestion({
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-medium text-neutral-500">Q{questionNumber}</span>
+            <span className="text-xs font-medium text-theme-tertiary">Q{questionNumber}</span>
             {question.is_required && (
-              <span className="text-xs text-red-400">Required</span>
+              <span className="text-xs text-red-600 dark:text-red-400">Required</span>
             )}
           </div>
-          <h4 className="font-medium text-white">{question.question_text}</h4>
+          <h4 className="font-medium text-theme-primary">{question.question_text}</h4>
           {question.helper_text && (
-            <p className="text-sm text-gray-500 dark:text-white/60 mt-1">{question.helper_text}</p>
+            <p className="text-sm text-theme-tertiary mt-1">{question.helper_text}</p>
           )}
         </div>
         
@@ -199,10 +199,10 @@ export function ReviewComparisonQuestion({
         {/* Employee Response */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center">
-              <span className="text-xs font-medium text-blue-400">E</span>
+            <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center">
+              <span className="text-xs font-medium text-blue-600 dark:text-blue-400">E</span>
             </div>
-            <span className="text-sm font-medium text-blue-400">Employee</span>
+            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">Employee</span>
           </div>
           {renderResponse(employeeResponse)}
         </div>
@@ -210,10 +210,10 @@ export function ReviewComparisonQuestion({
         {/* Manager Response */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center">
-              <span className="text-xs font-medium text-purple-400">M</span>
+            <div className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center">
+              <span className="text-xs font-medium text-purple-600 dark:text-purple-400">M</span>
             </div>
-            <span className="text-sm font-medium text-purple-400">Manager</span>
+            <span className="text-sm font-medium text-purple-600 dark:text-purple-400">Manager</span>
           </div>
           {renderResponse(managerResponse)}
         </div>
@@ -221,18 +221,18 @@ export function ReviewComparisonQuestion({
       
       {/* Discussion Prompt */}
       {showDiscussionPrompts && (
-        <div className="pt-2 border-t border-white/5">
+        <div className="pt-2 border-t border-theme">
           <button
             onClick={() => setShowPrompt(!showPrompt)}
-            className="flex items-center gap-2 text-sm text-gray-500 dark:text-white/60 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-sm text-theme-tertiary hover:text-theme-primary transition-colors"
           >
             <MessageSquare className="w-4 h-4" />
             {showPrompt ? 'Hide' : 'Show'} Discussion Prompt
           </button>
           
           {showPrompt && (
-            <div className="mt-3 p-3 bg-[#D37E91]/10 border border-[#D37E91]/20 rounded-lg">
-              <p className="text-sm text-[#D37E91]">
+            <div className="mt-3 p-3 bg-module-fg/10 border border-module-fg/20 rounded-lg">
+              <p className="text-sm text-module-fg">
                 💬 {discussionPrompt}
               </p>
             </div>

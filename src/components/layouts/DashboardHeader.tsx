@@ -206,14 +206,14 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
   };
 
   return (
-    <header className="flex items-center justify-between h-[72px] px-2 sm:px-4 md:px-6 bg-white dark:bg-white/[0.05] backdrop-blur-lg border-b border-gray-200 dark:border-white/[0.1]">
+ <header className="flex items-center justify-between h-[72px] px-2 sm:px-4 md:px-6 bg-theme-surface ] backdrop-blur-lg border-b border-theme">
       {/* Left: Mobile Menu Button + Logo */}
       <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1" suppressHydrationWarning>
         {/* Mobile Menu Button - Only visible on mobile */}
         {onMobileMenuClick && (
           <button
             onClick={onMobileMenuClick}
-            className="lg:hidden p-2 rounded-lg hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors flex-shrink-0"
+            className="lg:hidden p-2 rounded-lg hover:bg-white/[0.08] text-theme-tertiary hover:text-white transition-colors flex-shrink-0"
             aria-label="Open menu"
             suppressHydrationWarning
           >
@@ -234,7 +234,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
         {/* Today's Tasks - Main Priority */}
         <Link
           href="/dashboard/todays_tasks"
-          className="flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-gradient-to-r from-[#D37E91]/25 to-[#544349]/25 border border-[#D37E91]/30 text-white hover:from-[#D37E91]/35 hover:to-[#544349]/35 transition-all shadow-[0_0_10px_rgba(211,126,145,0.2)] hover:shadow-[0_0_15px_rgba(211,126,145,0.3)] h-9 md:h-10"
+          className="flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-gradient-to-r from-[#D37E91]/25 to-[#544349]/25 border border-[#D37E91]/30 text-white hover:from-[#D37E91]/35 hover:to-[#544349]/35 transition-all shadow-[0_0_10px_rgba(211,126,145,0.2)] hover:shadow-module-glow h-9 md:h-10"
         >
           <ClipboardCheck className="w-4 h-4 md:w-5 md:h-5 text-[#D37E91] flex-shrink-0" />
           <span className="font-semibold text-xs md:text-sm whitespace-nowrap hidden md:inline">Today's Tasks</span>
@@ -253,8 +253,8 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
             }}
             className={
               isIncidentsMenuOpen || pathname.startsWith('/dashboard/incidents')
-                ? 'flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.12] border border-[#D37E91]/30 text-white hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 md:h-10'
-                : 'flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 md:h-10'
+                ? 'flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.12] border border-[#D37E91]/30 text-theme-primary hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 md:h-10'
+                : 'flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-theme-secondary hover:text-white hover:bg-white/[0.12] transition-all cursor-pointer h-9 md:h-10'
             }
           >
             <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-[#D37E91] flex-shrink-0" />
@@ -375,11 +375,11 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
                             className={
                               isActive
                                 ? "block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer bg-[#D37E91]/25 text-[#D37E91] font-medium"
-                                : "block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer text-white/80 hover:text-white hover:bg-white/[0.08]"
+                                : "block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 cursor-pointer text-theme-secondary hover:text-white hover:bg-white/[0.08]"
                             }
                           >
                             <div className="flex items-center gap-3">
-                              <Icon size={18} className={isActive ? "text-[#D37E91]" : "text-white/60"} />
+                              <Icon size={18} className={isActive ? "text-[#D37E91]" : "text-theme-tertiary"} />
                               {item.label}
                             </div>
                           </Link>
@@ -423,7 +423,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
         {/* Messages Button - Opens messaging panel directly */}
         <button
           onClick={() => setMessagingOpen(true)}
-          className="relative flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/80 hover:text-white hover:bg-white/[0.12] transition-all h-9 md:h-10"
+          className="relative flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-theme-secondary hover:text-white hover:bg-white/[0.12] transition-all h-9 md:h-10"
         >
           <MessageSquare className="w-4 h-4 md:w-5 md:h-5 text-[#D37E91] flex-shrink-0" />
           <span className="font-medium text-xs md:text-sm whitespace-nowrap hidden md:inline">Messages</span>
@@ -437,7 +437,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
         {/* Ask AI Button */}
         <button
           onClick={() => setAiAssistantOpen(true)}
-          className="flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-[#D37E91]/10 border border-[#D37E91]/50 text-[#D37E91] hover:bg-[#D37E91]/20 hover:shadow-[0_0_12px_rgba(211,126,145,0.5)] transition-all h-9 md:h-10"
+          className="flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-[#D37E91]/10 border border-[#D37E91]/50 text-[#D37E91] hover:bg-[#D37E91]/20 hover:shadow-module-glow transition-all h-9 md:h-10"
           aria-label="Ask AI Assistant"
         >
           <Sparkles className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
@@ -450,7 +450,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
         {/* Clock - Hidden on mobile and tablet */}
         <div className="hidden lg:flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] h-9 md:h-10" suppressHydrationWarning>
           <Clock className="w-4 h-4 md:w-5 md:h-5 text-[#D37E91] flex-shrink-0" />
-          <div className="font-mono text-xs md:text-sm text-white whitespace-nowrap" suppressHydrationWarning>
+          <div className="font-mono text-xs md:text-sm text-theme-primary whitespace-nowrap" suppressHydrationWarning>
             {currentTime ? format(currentTime, "HH:mm:ss") : "--:--:--"}
           </div>
         </div>
@@ -463,7 +463,7 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
             className={
               isBurgerMenuOpen
                 ? "relative flex items-center justify-center w-10 h-10 rounded-lg bg-[#D37E91]/25 border border-[#D37E91]/30 text-[#D37E91] transition-all duration-200 hover:text-[#D37E91] hover:bg-[#D37E91]/25"
-                : "relative flex items-center justify-center w-10 h-10 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white/60 transition-all duration-200 hover:text-white hover:bg-white/[0.12]"
+                : "relative flex items-center justify-center w-10 h-10 rounded-lg bg-white/[0.06] border border-white/[0.1] text-theme-tertiary transition-all duration-200 hover:text-white hover:bg-white/[0.12]"
             }
             aria-label="Menu"
           >

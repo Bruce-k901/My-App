@@ -107,7 +107,7 @@ export function PrioritySummaryCard() {
 
   return (
     <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+      <h3 className="text-xs font-semibold text-theme-tertiary uppercase tracking-wider mb-3">
         Today's Overview
       </h3>
 
@@ -125,8 +125,8 @@ export function PrioritySummaryCard() {
               </span>
             )}
           </div>
-          <span className="text-xl font-bold text-white">{summary.tasksDue}</span>
-          <span className="text-[10px] text-gray-500">Tasks Due</span>
+          <span className="text-xl font-bold text-theme-primary">{summary.tasksDue}</span>
+          <span className="text-[10px] text-theme-tertiary">Tasks Due</span>
         </button>
 
         {/* Messages */}
@@ -142,8 +142,8 @@ export function PrioritySummaryCard() {
               </span>
             )}
           </div>
-          <span className="text-xl font-bold text-white">{summary.unreadMessages}</span>
-          <span className="text-[10px] text-gray-500">Messages</span>
+          <span className="text-xl font-bold text-theme-primary">{summary.unreadMessages}</span>
+          <span className="text-[10px] text-theme-tertiary">Messages</span>
         </button>
 
         {/* Next Shift / Overdue */}
@@ -158,11 +158,11 @@ export function PrioritySummaryCard() {
           </button>
         ) : (
           <div className="flex flex-col items-center p-3 rounded-lg bg-white/[0.02]">
-            <Clock className="w-6 h-6 text-emerald-400 mb-1" />
-            <span className="text-xl font-bold text-white">
+            <Clock className="w-6 h-6 text-module-fg mb-1" />
+            <span className="text-xl font-bold text-theme-primary">
               {summary.nextShift || '--:--'}
             </span>
-            <span className="text-[10px] text-gray-500">Next Shift</span>
+            <span className="text-[10px] text-theme-tertiary">Next Shift</span>
           </div>
         )}
       </div>

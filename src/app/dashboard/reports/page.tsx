@@ -32,8 +32,8 @@ export default function ReportsHubPage() {
             <BarChart3 className="w-5 h-5 text-teamly" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Reports & Analytics</h1>
-            <p className="text-sm text-gray-500 dark:text-white/50">
+            <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary">Reports & Analytics</h1>
+            <p className="text-sm text-theme-tertiary">
               Drill down into performance across all modules
             </p>
           </div>
@@ -49,7 +49,7 @@ export default function ReportsHubPage() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-40 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl animate-pulse"
+              className="h-40 bg-theme-surface border border-theme rounded-xl animate-pulse"
             />
           ))}
         </div>
@@ -70,8 +70,8 @@ export default function ReportsHubPage() {
       {/* Quick Info */}
       {!modulesLoading && visibleModules.length === 0 && (
         <div className="text-center py-12">
-          <BarChart3 className="w-12 h-12 text-gray-300 dark:text-white/30 mx-auto mb-4" />
-          <p className="text-gray-500 dark:text-white/50">No modules enabled. Enable modules in your company settings.</p>
+          <BarChart3 className="w-12 h-12 text-gray-300 dark:text-theme-disabled mx-auto mb-4" />
+          <p className="text-theme-tertiary">No modules enabled. Enable modules in your company settings.</p>
         </div>
       )}
     </div>

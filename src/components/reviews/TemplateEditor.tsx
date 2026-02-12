@@ -45,7 +45,7 @@ const SECTION_MODES = {
     shortLabel: 'Both',
     description: 'Employee and manager answer the same questions (enables comparison view)',
     color: 'blue',
-    bgClass: 'bg-blue-500/10 border-blue-500/20 text-blue-400',
+    bgClass: 'bg-blue-100 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 text-blue-600 dark:text-blue-400',
   },
   employee_only: {
     icon: User,
@@ -53,7 +53,7 @@ const SECTION_MODES = {
     shortLabel: 'Employee',
     description: 'Only the employee sees and answers these questions',
     color: 'green',
-    bgClass: 'bg-green-500/10 border-green-500/20 text-green-400',
+    bgClass: 'bg-green-100 dark:bg-green-500/10 border-green-200 dark:border-green-500/20 text-green-600 dark:text-green-400',
   },
   manager_only: {
     icon: UserCircle,
@@ -61,7 +61,7 @@ const SECTION_MODES = {
     shortLabel: 'Manager',
     description: 'Only the manager sees these questions (hidden from employee)',
     color: 'purple',
-    bgClass: 'bg-purple-500/10 border-purple-500/20 text-purple-400',
+    bgClass: 'bg-purple-100 dark:bg-purple-500/10 border-purple-200 dark:border-purple-500/20 text-purple-600 dark:text-purple-400',
   },
   manager_shared: {
     icon: FileText,
@@ -69,7 +69,7 @@ const SECTION_MODES = {
     shortLabel: 'Shared',
     description: 'Manager answers, employee can see the response after',
     color: 'amber',
-    bgClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
+    bgClass: 'bg-amber-100 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20 text-amber-600 dark:text-amber-400',
   },
   sign_off: {
     icon: PenLine,
@@ -77,7 +77,7 @@ const SECTION_MODES = {
     shortLabel: 'Sign-off',
     description: 'Both parties must acknowledge and sign',
     color: 'pink',
-    bgClass: 'bg-[#D37E91]/15 border-[#D37E91]/20 text-[#D37E91]',
+    bgClass: 'bg-module-fg/10 border-module-fg/20 text-module-fg',
   },
 } as const;
 
@@ -214,7 +214,7 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {template.is_system_template && (
-            <span className="px-3 py-1 bg-blue-500/10 text-blue-400 text-xs rounded-full border border-blue-500/20">
+            <span className="px-3 py-1 bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs rounded-full border border-blue-200 dark:border-blue-500/20">
               System Template
             </span>
           )}
@@ -223,7 +223,7 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
           <Button
             variant="ghost"
             onClick={() => setShowSettings(!showSettings)}
-            className="text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white"
+            className="text-theme-secondary hover:text-theme-primary"
           >
             <Settings className="w-4 h-4 mr-2" />
             Settings
@@ -231,7 +231,7 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
           <Button
             variant="ghost"
             onClick={() => router.push(`/dashboard/people/reviews/templates/${template.id}/preview`)}
-            className="text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white"
+            className="text-theme-secondary hover:text-theme-primary"
           >
             <Eye className="w-4 h-4 mr-2" />
             Preview
@@ -240,44 +240,44 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
       </div>
 
       {/* About This Template */}
-      <div className="bg-white dark:bg-gradient-to-br dark:from-white/[0.03] dark:to-white/[0.01] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6 shadow-sm dark:shadow-none">
+      <div className="bg-white dark:bg-gradient-to-br dark:from-white/[0.03] dark:to-white/[0.01] border border-theme rounded-xl p-6 shadow-sm dark:shadow-none">
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center flex-shrink-0">
             <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
           </div>
           <div className="flex-1 space-y-4">
             <div>
-              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">{template.name}</h1>
-              <p className="text-gray-600 dark:text-white/60 text-sm mt-1">
+              <h1 className="text-xl font-semibold text-theme-primary">{template.name}</h1>
+              <p className="text-theme-secondary text-sm mt-1">
                 {template.description || 'No description set'}
               </p>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div className="flex items-center gap-2 text-sm">
-                <Clock className="w-4 h-4 text-gray-500 dark:text-white/50" />
-                <span className="text-gray-600 dark:text-white/60">
+                <Clock className="w-4 h-4 text-theme-tertiary" />
+                <span className="text-theme-secondary">
                   {template.recommended_duration_minutes || 45} mins
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <Users className="w-4 h-4 text-gray-500 dark:text-white/50" />
-                <span className="text-gray-600 dark:text-white/60">Manager + Employee</span>
+                <Users className="w-4 h-4 text-theme-tertiary" />
+                <span className="text-theme-secondary">Manager + Employee</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <FileText className="w-4 h-4 text-gray-500 dark:text-white/50" />
-                <span className="text-gray-600 dark:text-white/60">{sortedSections.length} sections</span>
+                <FileText className="w-4 h-4 text-theme-tertiary" />
+                <span className="text-theme-secondary">{sortedSections.length} sections</span>
               </div>
             </div>
 
             {/* When to use guidance */}
             {(template.rationale) && (
-              <div className="bg-blue-500/5 border border-blue-500/10 rounded-lg p-4">
+              <div className="bg-module-fg/5 border border-module-fg/10 rounded-lg p-4">
                 <div className="flex items-start gap-3">
-                  <HelpCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                  <HelpCircle className="w-5 h-5 text-module-fg flex-shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="text-sm font-medium text-blue-300 mb-1">When to use</h4>
-                    <p className="text-sm text-blue-300/70">
+                    <h4 className="text-sm font-medium text-module-fg mb-1">When to use</h4>
+                    <p className="text-sm text-theme-secondary">
                       {template.rationale}
                     </p>
                   </div>
@@ -287,12 +287,12 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
 
             {/* Tips */}
             {(template.instructions) && (
-              <div className="bg-amber-500/5 border border-amber-500/10 rounded-lg p-4">
+              <div className="bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/10 rounded-lg p-4">
                 <div className="flex items-start gap-3">
-                  <Lightbulb className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                  <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="text-sm font-medium text-amber-300 mb-1">Tips</h4>
-                    <p className="text-sm text-amber-300/70">
+                    <h4 className="text-sm font-medium text-amber-800 dark:text-amber-300 mb-1">Tips</h4>
+                    <p className="text-sm text-amber-600 dark:text-amber-300/70">
                       {template.instructions}
                     </p>
                   </div>
@@ -315,8 +315,8 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
       {/* Sections */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Sections</h2>
-          <span className="text-sm text-gray-600 dark:text-white/50">{sortedSections.length} sections</span>
+          <h2 className="text-lg font-semibold text-theme-primary">Sections</h2>
+          <span className="text-sm text-theme-secondary/50">{sortedSections.length} sections</span>
         </div>
 
         {sortedSections.map((section, index) => {
@@ -330,22 +330,22 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
           return (
             <div
               key={section.id}
-              className={`bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] rounded-xl overflow-hidden transition-all shadow-sm dark:shadow-none ${
-                isExpanded ? 'border-gray-300 dark:border-white/[0.1]' : 'border-gray-200 dark:border-white/[0.06]'
+              className={`bg-white dark:bg-white/[0.02] border border-theme rounded-xl overflow-hidden transition-all shadow-sm dark:shadow-none ${
+                isExpanded ? 'border-theme' : 'border-theme'
               }`}
             >
               {/* Section Header */}
               <button
                 onClick={() => toggleSection(section.id)}
-                className="w-full px-5 py-4 flex items-center gap-4 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
+                className="w-full px-5 py-4 flex items-center gap-4 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02] transition-colors"
               >
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 dark:bg-white/[0.05] text-sm font-medium text-gray-700 dark:text-white">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-theme-button text-sm font-medium text-theme-secondary">
                   {index + 1}
                 </div>
                 
                 <div className="flex-1 text-left">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-medium text-gray-900 dark:text-white">{section.title}</h3>
+                    <h3 className="font-medium text-theme-primary">{section.title}</h3>
                     {isLocked && (
                       <Lock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                     )}
@@ -360,18 +360,18 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
                         ? 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-500/20'
                         : mode === 'manager_shared'
                         ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'
-                        : 'bg-[#D37E91]/10 dark:bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91] border-[#D37E91]/30 dark:border-[#D37E91]/20'
+                        : 'bg-module-fg/10 text-module-fg border-module-fg/20'
                     }`}>
                       <ModeIcon className="w-3 h-3" />
                       {modeConfig.shortLabel}
                     </span>
-                    <span className="text-xs text-gray-600 dark:text-white/50">
+                    <span className="text-xs text-theme-secondary/50">
                       {questionCount} question{questionCount !== 1 ? 's' : ''}
                     </span>
                   </div>
                 </div>
 
-                <div className="text-gray-400 dark:text-white/50">
+                <div className="text-theme-tertiary">
                   {isExpanded ? (
                     <ChevronDown className="w-5 h-5" />
                   ) : (
@@ -382,13 +382,13 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
 
               {/* Expanded Section Content */}
               {isExpanded && (
-                <div className="px-5 pb-5 border-t border-white/[0.06]">
+                <div className="px-5 pb-5 border-t border-theme">
                   {/* Section Settings */}
                   <div className="py-4 space-y-4">
                     {/* Section Mode Selector */}
                     {!isLocked && (
                       <div>
-                        <label className="text-sm text-gray-500 dark:text-white/60 mb-2 block">Who completes this section?</label>
+                        <label className="text-sm text-theme-tertiary mb-2 block">Who completes this section?</label>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                           {Object.entries(SECTION_MODES).filter(([key]) => key !== 'sign_off').map(([key, config]) => {
                             const Icon = config.icon;
@@ -403,8 +403,8 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
                                 })}
                                 className={`p-3 rounded-lg border text-left transition-all ${
                                   isSelected 
-                                    ? `${config.bgClass} border-current` 
-                                    : 'border-white/[0.06] hover:border-white/[0.1] text-gray-500 dark:text-white/60'
+                                    ? `${config.bgClass} border-current`
+                                    : 'border-theme hover:border-theme-hover text-theme-tertiary'
                                 }`}
                               >
                                 <Icon className="w-4 h-4 mb-1" />
@@ -417,7 +417,7 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
                     )}
 
                     {isLocked && (
-                      <div className="flex items-center gap-2 text-amber-400 text-sm bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+                      <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 text-sm bg-amber-100 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-lg p-3">
                         <AlertTriangle className="w-4 h-4" />
                         This section is legally required and cannot be modified
                       </div>
@@ -427,7 +427,7 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
                     {!isLocked && (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="text-sm text-gray-600 dark:text-white/60 mb-1 block">Section Title</label>
+                          <label className="text-sm text-theme-secondary mb-1 block">Section Title</label>
                           <input
                             type="text"
                             defaultValue={section.title}
@@ -436,11 +436,11 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
                                 handleUpdateSection(section.id, { title: e.target.value });
                               }
                             }}
-                            className="w-full px-3 py-2 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500/20"
+                            className="w-full px-3 py-2 bg-white dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-module-fg focus:ring-1 focus:ring-module-fg/20"
                           />
                         </div>
                         <div>
-                          <label className="text-sm text-gray-600 dark:text-white/60 mb-1 block">Description (optional)</label>
+                          <label className="text-sm text-theme-secondary mb-1 block">Description (optional)</label>
                           <input
                             type="text"
                             defaultValue={section.description || ''}
@@ -450,7 +450,7 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
                                 handleUpdateSection(section.id, { description: e.target.value || null });
                               }
                             }}
-                            className="w-full px-3 py-2 bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500/20 placeholder:text-gray-400 dark:placeholder:text-white/40"
+                            className="w-full px-3 py-2 bg-white dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-module-fg focus:ring-1 focus:ring-module-fg/20 placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary"
                           />
                         </div>
                       </div>
@@ -460,12 +460,12 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
                   {/* Questions */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between py-2">
-                      <h4 className="text-sm font-medium text-gray-700 dark:text-white/80">Questions</h4>
+                      <h4 className="text-sm font-medium text-theme-secondary">Questions</h4>
                       {!isLocked && (
                         <button
                           onClick={() => handleAddQuestion(section.id)}
                           disabled={isPending}
-                          className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1"
+                          className="text-xs text-module-fg hover:text-module-fg/80 flex items-center gap-1"
                         >
                           <Plus className="w-3 h-3" />
                           Add Question
@@ -489,12 +489,12 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
                           ))}
                       </div>
                     ) : (
-                      <div className="text-center py-6 text-gray-600 dark:text-white/50 text-sm">
+                      <div className="text-center py-6 text-theme-secondary/50 text-sm">
                         No questions yet
                         {!isLocked && (
                           <button
                             onClick={() => handleAddQuestion(section.id)}
-                            className="block mx-auto mt-2 text-blue-600 dark:text-blue-400 hover:underline"
+                            className="block mx-auto mt-2 text-module-fg hover:underline"
                           >
                             Add your first question
                           </button>
@@ -509,18 +509,18 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
         })}
 
         {/* Add Section */}
-        <div className="border border-dashed border-gray-300 dark:border-white/[0.1] rounded-xl">
+        <div className="border border-dashed border-theme rounded-xl">
           {!showAddSection ? (
             <button
               onClick={() => setShowAddSection(true)}
-              className="w-full py-6 flex items-center justify-center gap-2 text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="w-full py-6 flex items-center justify-center gap-2 text-theme-secondary hover:text-theme-primary transition-colors"
             >
               <Plus className="w-5 h-5" />
               Add Section
             </button>
           ) : (
             <div className="p-6 space-y-4">
-              <h4 className="text-sm font-medium text-gray-900 dark:text-white text-center">Who will complete this section?</h4>
+              <h4 className="text-sm font-medium text-theme-primary text-center">Who will complete this section?</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {Object.entries(SECTION_MODES).filter(([key]) => key !== 'sign_off').map(([key, config]) => {
                   const Icon = config.icon;
@@ -529,20 +529,20 @@ export function TemplateEditor({ template: initialTemplate }: TemplateEditorProp
                       key={key}
                       onClick={() => handleAddSection(key as keyof typeof SECTION_MODES)}
                       disabled={isPending}
-                      className="p-4 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl hover:border-blue-300 dark:hover:border-blue-500/30 hover:bg-blue-50 dark:hover:bg-blue-500/5 transition-all text-center group shadow-sm dark:shadow-none"
+                      className="p-4 bg-theme-surface border border-theme rounded-xl hover:border-module-fg/30 hover:bg-module-fg/10 transition-all text-center group shadow-sm dark:shadow-none"
                     >
                       <div className={`w-10 h-10 rounded-lg ${config.bgClass} flex items-center justify-center mx-auto mb-2`}>
                         <Icon className="w-5 h-5" />
                       </div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">{config.shortLabel}</div>
-                      <div className="text-xs text-gray-600 dark:text-white/50 mt-1 line-clamp-2">{config.description}</div>
+                      <div className="text-sm font-medium text-theme-primary">{config.shortLabel}</div>
+                      <div className="text-xs text-theme-secondary/50 mt-1 line-clamp-2">{config.description}</div>
                     </button>
                   );
                 })}
               </div>
               <button
                 onClick={() => setShowAddSection(false)}
-                className="w-full py-2 text-sm text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white"
+                className="w-full py-2 text-sm text-theme-secondary hover:text-theme-primary"
               >
                 Cancel
               </button>
@@ -586,22 +586,22 @@ function QuestionRow({
 
   if (isEditing && !isLocked) {
     return (
-      <div className="bg-white/[0.03] border border-[#D37E91]/30 rounded-lg p-4 space-y-3">
+      <div className="bg-theme-surface border border-module-fg/30 rounded-lg p-4 space-y-3">
         <div>
-          <label className="text-xs text-gray-500 dark:text-white/60 mb-1 block">Question</label>
+          <label className="text-xs text-theme-tertiary mb-1 block">Question</label>
           <textarea
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
             rows={2}
-            className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#D37E91]/50 resize-none"
+            className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-module-fg/50 resize-none"
           />
         </div>
         <div>
-          <label className="text-xs text-gray-500 dark:text-white/60 mb-1 block">Answer Type</label>
+          <label className="text-xs text-theme-tertiary mb-1 block">Answer Type</label>
           <select
             value={editType}
             onChange={(e) => setEditType(e.target.value)}
-            className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+            className="w-full px-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50"
           >
             {QUESTION_TYPES.map(type => (
               <option key={type.value} value={type.value}>{type.label}</option>
@@ -611,14 +611,14 @@ function QuestionRow({
         <div className="flex items-center justify-end gap-2">
           <button
             onClick={() => setIsEditing(false)}
-            className="px-3 py-1.5 text-sm text-gray-500 dark:text-white/60 hover:text-white"
+            className="px-3 py-1.5 text-sm text-theme-tertiary hover:text-theme-primary"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={isPending}
-            className="px-3 py-1.5 text-sm bg-[#D37E91]/20 text-[#D37E91] rounded-lg hover:bg-[#D37E91]/30"
+            className="px-3 py-1.5 text-sm bg-module-fg/20 text-module-fg rounded-lg hover:bg-module-fg/30"
           >
             Save
           </button>
@@ -629,18 +629,18 @@ function QuestionRow({
 
   return (
     <div 
-      className={`flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] group ${
-        !isLocked ? 'hover:border-gray-300 dark:hover:border-white/[0.08] cursor-pointer' : ''
+      className={`flex items-start gap-3 p-3 rounded-lg bg-theme-button border border-theme group ${
+        !isLocked ? 'hover:border-theme-hover cursor-pointer' : ''
       }`}
       onClick={() => !isLocked && setIsEditing(true)}
     >
-      <span className="text-xs text-gray-500 dark:text-white/50 mt-1">Q{index + 1}</span>
+      <span className="text-xs text-theme-tertiary mt-1">Q{index + 1}</span>
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-gray-900 dark:text-white">{question.question_text}</p>
-        <p className="text-xs text-gray-600 dark:text-white/50 mt-1">{questionTypeLabel}</p>
+        <p className="text-sm text-theme-primary">{question.question_text}</p>
+        <p className="text-xs text-theme-secondary/50 mt-1">{questionTypeLabel}</p>
       </div>
       {!isLocked && (
-        <span className="text-xs text-gray-600 dark:text-white/50 opacity-0 group-hover:opacity-100 transition-opacity">
+        <span className="text-xs text-theme-secondary/50 opacity-0 group-hover:opacity-100 transition-opacity">
           Click to edit
         </span>
       )}
@@ -675,59 +675,59 @@ function TemplateSettings({
   };
 
   return (
-    <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-6 space-y-4">
-      <h3 className="font-medium text-white">Template Settings</h3>
+    <div className="bg-theme-surface border border-theme rounded-xl p-6 space-y-4">
+      <h3 className="font-medium text-theme-primary">Template Settings</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="text-sm text-gray-500 dark:text-white/60 mb-1 block">Template Name</label>
+          <label className="text-sm text-theme-tertiary mb-1 block">Template Name</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#D37E91]/50"
+            className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-module-fg/50"
           />
         </div>
         <div>
-          <label className="text-sm text-gray-500 dark:text-white/60 mb-1 block">Duration (minutes)</label>
+          <label className="text-sm text-theme-tertiary mb-1 block">Duration (minutes)</label>
           <input
             type="number"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
-            className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#D37E91]/50"
+            className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-module-fg/50"
           />
         </div>
       </div>
 
       <div>
-        <label className="text-sm text-gray-500 dark:text-white/60 mb-1 block">Description</label>
+        <label className="text-sm text-theme-tertiary mb-1 block">Description</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
-          className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#D37E91]/50 resize-none"
+          className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-module-fg/50 resize-none"
         />
       </div>
 
       <div>
-        <label className="text-sm text-gray-500 dark:text-white/60 mb-1 block">When to Use</label>
+        <label className="text-sm text-theme-tertiary mb-1 block">When to Use</label>
         <textarea
           value={whenToUse}
           onChange={(e) => setWhenToUse(e.target.value)}
           rows={2}
           placeholder="Describe when this template should be used..."
-          className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#D37E91]/50 resize-none placeholder-neutral-600"
+          className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-module-fg/50 resize-none placeholder-theme-tertiary"
         />
       </div>
 
       <div>
-        <label className="text-sm text-gray-500 dark:text-white/60 mb-1 block">Tips for Managers</label>
+        <label className="text-sm text-theme-tertiary mb-1 block">Tips for Managers</label>
         <textarea
           value={tips}
           onChange={(e) => setTips(e.target.value)}
           rows={2}
           placeholder="Best practices and tips for conducting this review..."
-          className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:border-[#D37E91]/50 resize-none placeholder-neutral-600"
+          className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-module-fg/50 resize-none placeholder-theme-tertiary"
         />
       </div>
 
@@ -735,7 +735,7 @@ function TemplateSettings({
         <Button
           onClick={handleSave}
           disabled={isPending}
-          className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)]"
+          className="bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow"
         >
           <Save className="w-4 h-4 mr-2" />
           Save Settings

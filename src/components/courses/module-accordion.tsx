@@ -47,18 +47,18 @@ export function ModuleAccordion({ modules }: ModuleAccordionProps) {
                 <button
                   type="button"
                   onClick={() => setOpenModule((prev) => (prev === module.id ? null : module.id))}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white transition hover:border-magenta-500/50 hover:text-magenta-200"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-theme-primary transition hover:border-magenta-500/50 hover:text-magenta-200"
                   aria-expanded={isOpen}
                   aria-controls={`module-${module.id}`}
                 >
                   {isOpen ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
                 </button>
                 <div>
-                  <h3 className="text-base font-semibold text-white">{module.title}</h3>
-                  <p className="text-xs text-slate-400">Module {module.id.slice(1)} • {module.quizItems} quiz questions</p>
+                  <h3 className="text-base font-semibold text-theme-primary">{module.title}</h3>
+                  <p className="text-xs text-theme-tertiary">Module {module.id.slice(1)} • {module.quizItems} quiz questions</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-xs text-slate-400">
+              <div className="flex items-center gap-2 text-xs text-theme-tertiary">
                 <Activity className="h-4 w-4" />
                 Self-study sequence
               </div>
@@ -78,18 +78,18 @@ export function ModuleAccordion({ modules }: ModuleAccordionProps) {
                             <Icon className="h-4 w-4" />
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-white">{page.title || page.id}</p>
-                            <p className="text-xs text-slate-400">{label}</p>
+                            <p className="text-sm font-semibold text-theme-primary">{page.title || page.id}</p>
+                            <p className="text-xs text-theme-tertiary">{label}</p>
                             {page.description && (
-                              <p className="mt-1 text-xs text-slate-300">{page.description}</p>
+                              <p className="mt-1 text-xs text-theme-secondary">{page.description}</p>
                             )}
                             {page.interactionType && (
-                              <p className="mt-1 text-xs text-slate-400">Interaction: {page.interactionType}</p>
+                              <p className="mt-1 text-xs text-theme-tertiary">Interaction: {page.interactionType}</p>
                             )}
                           </div>
                         </div>
                         {page.durationSec ? (
-                          <span className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
+                          <span className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-theme-secondary">
                             ~{Math.round(page.durationSec / 60)} min
                           </span>
                         ) : null}

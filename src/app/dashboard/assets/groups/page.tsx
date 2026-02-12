@@ -99,7 +99,7 @@ export default function PPMGroupsPage() {
           setAvailableAssets(assets);
         }
       })
-      .catch(() => setAvailableAssets([]))
+      .catch(err => { console.error('Failed to fetch available assets:', err); setAvailableAssets([]); })
       .finally(() => setLoadingAssets(false));
   }, [form.site_id, editingId]);
 
@@ -175,11 +175,11 @@ export default function PPMGroupsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-theme-primary flex items-center gap-3">
             <Layers className="w-7 h-7 text-assetly" />
             PPM Asset Groups
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-sm text-theme-tertiary mt-1">
             Group assets at the same site so a contractor services them all in one PPM visit
           </p>
         </div>
@@ -196,41 +196,41 @@ export default function PPMGroupsPage() {
 
       {/* Create / Edit Form */}
       {(isCreating || editingId) && (
-        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-xl p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+ <div className="bg-theme-surface ] border border-theme rounded-xl p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-theme-primary">
             {editingId ? 'Edit Group' : 'New PPM Group'}
           </h2>
 
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Group Name *</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Group Name *</label>
             <input
               type="text"
               value={form.name}
               onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
               placeholder="e.g. Main Kitchen Refrigeration"
-              className="w-full rounded-lg border border-gray-300 dark:border-white/[0.15] bg-white dark:bg-white/[0.05] px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-assetly/50"
+ className="w-full rounded-lg border border-gray-300 dark:border-white/[0.15] bg-theme-surface ] px-3 py-2 text-sm text-theme-primary placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-assetly/50"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">Description</label>
             <input
               type="text"
               value={form.description}
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
               placeholder="Optional notes about this group"
-              className="w-full rounded-lg border border-gray-300 dark:border-white/[0.15] bg-white dark:bg-white/[0.05] px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-assetly/50"
+ className="w-full rounded-lg border border-gray-300 dark:border-white/[0.15] bg-theme-surface ] px-3 py-2 text-sm text-theme-primary placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-assetly/50"
             />
           </div>
 
           {/* Site + Contractor row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Site *</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Site *</label>
               {editingId ? (
-                <div className="px-3 py-2 rounded-lg bg-gray-100 dark:bg-white/[0.03] text-sm text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-white/[0.1]">
+                <div className="px-3 py-2 rounded-lg bg-gray-100 dark:bg-white/[0.03] text-sm text-theme-secondary border border-theme">
                   {groups.find(g => g.id === editingId)?.site_name || 'Unknown site'}
                 </div>
               ) : (
@@ -242,7 +242,7 @@ export default function PPMGroupsPage() {
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">PPM Contractor</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">PPM Contractor</label>
               <SearchableSelect
                 value={form.ppm_contractor_id}
                 onValueChange={handleContractorChange}
@@ -255,7 +255,7 @@ export default function PPMGroupsPage() {
           {/* Frequency + Next Service Date row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">PPM Frequency</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">PPM Frequency</label>
               <SearchableSelect
                 value={form.ppm_frequency_months?.toString() || ''}
                 onValueChange={v => setForm(f => ({ ...f, ppm_frequency_months: v ? parseInt(v) : null }))}
@@ -264,23 +264,23 @@ export default function PPMGroupsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Next Service Date</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Next Service Date</label>
               <input
                 type="date"
                 value={form.next_service_date}
                 onChange={e => setForm(f => ({ ...f, next_service_date: e.target.value }))}
-                className="w-full rounded-lg border border-gray-300 dark:border-white/[0.15] bg-white dark:bg-white/[0.05] px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-assetly/50"
+ className="w-full rounded-lg border border-gray-300 dark:border-white/[0.15] bg-theme-surface ] px-3 py-2 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-assetly/50"
               />
             </div>
           </div>
 
-          {/* Assets */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          {/* Assets — z-20 so dropdown renders above action buttons below */}
+          <div className="relative z-20">
+            <label className="block text-sm font-medium text-theme-secondary mb-1">
               Assets * {loadingAssets && <Loader2 className="w-3 h-3 inline animate-spin ml-1" />}
             </label>
             {!form.site_id ? (
-              <p className="text-sm text-gray-400 dark:text-gray-500 italic">Select a site first to see available assets</p>
+              <p className="text-sm text-theme-tertiary italic">Select a site first to see available assets</p>
             ) : (
               <MultiSelect
                 value={form.asset_ids}
@@ -303,7 +303,7 @@ export default function PPMGroupsPage() {
             </button>
             <button
               onClick={resetForm}
-              className="px-4 py-2 rounded-lg border border-gray-300 dark:border-white/[0.15] text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors text-sm"
+              className="px-4 py-2 rounded-lg border border-gray-300 dark:border-white/[0.15] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors text-sm"
             >
               Cancel
             </button>
@@ -322,8 +322,8 @@ export default function PPMGroupsPage() {
       {!loading && groups.length === 0 && !isCreating && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <Layers className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" />
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">No PPM Groups Yet</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-md">
+          <h3 className="text-lg font-semibold text-theme-secondary mb-2">No PPM Groups Yet</h3>
+          <p className="text-sm text-theme-tertiary mb-6 max-w-md">
             Group assets at the same site so your contractor can service them all in a single PPM visit.
           </p>
           <button
@@ -411,10 +411,10 @@ function GroupCard({
       >
         <Layers className="w-5 h-5 text-assetly flex-shrink-0" />
         <div className="flex-1 min-w-0">
-          <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
+          <h3 className="text-base font-semibold text-theme-primary truncate">
             {group.name}
           </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+          <p className="text-xs text-theme-tertiary mt-0.5">
             {group.site_name || 'No site'} &middot; {group.asset_count} asset{group.asset_count !== 1 ? 's' : ''}
           </p>
         </div>
@@ -422,17 +422,17 @@ function GroupCard({
         {/* Info chips */}
         <div className="hidden md:flex items-center gap-3 flex-shrink-0">
           {group.ppm_contractor_name && (
-            <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+            <span className="flex items-center gap-1 text-xs text-theme-tertiary">
               <Wrench className="w-3.5 h-3.5" />
               {group.ppm_contractor_name}
             </span>
           )}
-          <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+          <span className="flex items-center gap-1 text-xs text-theme-tertiary">
             <Calendar className="w-3.5 h-3.5" />
             {frequencyText}
           </span>
           {group.next_service_date && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="text-xs text-theme-tertiary">
               Next: {formatServiceDate(group.next_service_date)}
             </span>
           )}
@@ -444,22 +444,22 @@ function GroupCard({
         </span>
 
         {expanded ? (
-          <ChevronUp className="w-4 h-4 text-gray-400 flex-shrink-0" />
+          <ChevronUp className="w-4 h-4 text-theme-tertiary flex-shrink-0" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0" />
+          <ChevronDown className="w-4 h-4 text-theme-tertiary flex-shrink-0" />
         )}
       </button>
 
       {/* Expanded content */}
       {expanded && (
-        <div className="border-t border-gray-200 dark:border-white/[0.08] px-5 py-4 space-y-4">
+        <div className="border-t border-theme px-5 py-4 space-y-4">
           {/* Description */}
           {group.description && (
-            <p className="text-sm text-gray-600 dark:text-gray-400">{group.description}</p>
+            <p className="text-sm text-theme-secondary">{group.description}</p>
           )}
 
           {/* Mobile info (hidden on desktop, shown here) */}
-          <div className="md:hidden space-y-2 text-sm text-gray-600 dark:text-gray-400">
+          <div className="md:hidden space-y-2 text-sm text-theme-secondary">
             {group.ppm_contractor_name && (
               <div className="flex items-center gap-2">
                 <Wrench className="w-4 h-4" /> {group.ppm_contractor_name}
@@ -478,22 +478,22 @@ function GroupCard({
 
           {/* Assets list */}
           <div>
-            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <h4 className="text-sm font-medium text-theme-secondary mb-2">
               Grouped Assets ({group.asset_count})
             </h4>
             {group.assets.length === 0 ? (
-              <p className="text-sm text-gray-400 italic">No assets in this group</p>
+              <p className="text-sm text-theme-tertiary italic">No assets in this group</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {group.assets.map(asset => (
                   <div
                     key={asset.asset_id}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-sm"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-sm"
                   >
                     <Package className="w-4 h-4 text-assetly/70 flex-shrink-0" />
-                    <span className="text-gray-900 dark:text-white truncate">{asset.asset_name}</span>
+                    <span className="text-theme-primary truncate">{asset.asset_name}</span>
                     {asset.asset_category && (
-                      <span className="text-gray-400 dark:text-gray-500 text-xs ml-auto flex-shrink-0">
+                      <span className="text-theme-tertiary text-xs ml-auto flex-shrink-0">
                         {asset.asset_category}
                       </span>
                     )}
@@ -504,7 +504,7 @@ function GroupCard({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-2 pt-2 border-t border-gray-100 dark:border-white/[0.05]">
+          <div className="flex items-center gap-2 pt-2 border-t border-theme">
             <button
               onClick={onCallout}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-assetly bg-assetly/10 hover:bg-assetly/20 transition-colors font-medium"
@@ -514,7 +514,7 @@ function GroupCard({
             </button>
             <button
               onClick={onEdit}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors"
             >
               <Pencil className="w-3.5 h-3.5" />
               Edit

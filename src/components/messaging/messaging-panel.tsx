@@ -18,13 +18,13 @@ export function MessagingPanel() {
         side="right"
         className="w-full md:w-[85vw] lg:w-[900px] xl:w-[1100px] p-0 flex flex-col bg-white dark:bg-[#0a0a0a]"
       >
-        <SheetHeader className="px-4 py-4 border-b border-gray-200 dark:border-white/[0.1] flex-row items-center justify-between">
-          <SheetTitle className="text-gray-900 dark:text-white">Messages</SheetTitle>
+        <SheetHeader className="px-4 py-4 border-b border-theme flex-row items-center justify-between">
+          <SheetTitle className="text-theme-primary">Messages</SheetTitle>
           <div className="flex items-center gap-2">
             {isMobile && (
               <button
                 onClick={() => openMoreSheet()}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 transition-colors"
+                className="p-2 rounded-lg hover:bg-theme-muted text-theme-secondary transition-colors"
                 aria-label="Quick Access"
               >
                 <Menu size={20} />
@@ -32,7 +32,7 @@ export function MessagingPanel() {
             )}
             <button
               onClick={() => setMessagingOpen(false)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 transition-colors"
+              className="p-2 rounded-lg hover:bg-theme-muted text-theme-secondary transition-colors"
               aria-label="Close"
             >
               <X size={20} />

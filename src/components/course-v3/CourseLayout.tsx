@@ -95,17 +95,17 @@ export function CourseLayout({ course }: CourseLayoutProps) {
       {/* Sidebar */}
       <aside className="hidden md:flex w-80 border-r border-[rgb(var(--border))] dark:border-white/10 bg-[rgb(var(--surface-elevated))] dark:bg-[#0B0D13] flex-col">
         <div className="p-6 border-b border-[rgb(var(--border))] dark:border-white/10">
-            <Link href="/dashboard/courses" className="flex items-center gap-2 text-[rgb(var(--text-secondary))] dark:text-slate-400 hover:text-[rgb(var(--text-primary))] dark:hover:text-white mb-4 transition-colors">
+ <Link href="/dashboard/courses"className="flex items-center gap-2 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] mb-4 transition-colors">
             <ArrowLeft size={16} /> Back to Courses
             </Link>
             <h1 className="text-xl font-bold text-[rgb(var(--text-primary))] dark:text-white leading-tight">{course.title}</h1>
-            <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-slate-500 mt-2">{course.description}</p>
+ <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mt-2">{course.description}</p>
         </div>
         
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
           {course.modules.map((module, mIdx) => (
             <div key={module.id}>
-              <h3 className={`text-xs font-bold uppercase tracking-wider mb-3 ${mIdx === currentModuleIndex ? 'text-[#D37E91] dark:text-[#D37E91]' : 'text-[rgb(var(--text-tertiary))] dark:text-slate-500'}`}>
+ <h3 className={`text-xs font-bold uppercase tracking-wider mb-3 ${mIdx === currentModuleIndex ?'text-[#D37E91] dark:text-[#D37E91]':'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'}`}>
                 Module {mIdx + 1}: {module.title}
               </h3>
               <div className="space-y-1">
@@ -114,7 +114,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
                     return (
                         <div 
                             key={lesson.id} 
-                            className={`px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${isActive ? 'bg-[rgb(var(--surface))] dark:bg-white/10 text-[#D37E91] dark:text-[#D37E91] font-medium' : 'text-[rgb(var(--text-secondary))] dark:text-slate-400 hover:text-[rgb(var(--text-primary))] dark:hover:text-slate-300 hover:bg-[rgb(var(--surface))] dark:hover:bg-white/5'}`}
+ className={`px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${isActive ?'bg-[rgb(var(--surface))] dark:bg-white/10 text-[#D37E91] dark:text-[#D37E91] font-medium':'text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] dark:hover:text-theme-secondary hover:bg-[rgb(var(--surface))] dark:hover:bg-white/5'}`}
                         >
                             {lesson.title}
                         </div>
@@ -129,12 +129,12 @@ export function CourseLayout({ course }: CourseLayoutProps) {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
         <header className="h-16 border-b border-[rgb(var(--border))] dark:border-white/10 flex items-center justify-between px-8 bg-[rgb(var(--surface-elevated))] dark:bg-[#0B0D13]">
-          <div className="flex items-center gap-2 text-sm text-[rgb(var(--text-secondary))] dark:text-slate-400">
+ <div className="flex items-center gap-2 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
             <span className="font-medium text-[rgb(var(--text-primary))] dark:text-white">{currentModule.title}</span>
             <span className="text-[rgb(var(--text-tertiary))] dark:text-slate-600">/</span>
-            <span className="text-[rgb(var(--text-secondary))] dark:text-slate-400">{currentLesson.title}</span>
+ <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">{currentLesson.title}</span>
           </div>
-          <div className="text-sm font-medium bg-[rgb(var(--surface))] dark:bg-white/5 px-3 py-1.5 rounded-full border border-[rgb(var(--border))] dark:border-white/10 text-[rgb(var(--text-secondary))] dark:text-slate-300">
+          <div className="text-sm font-medium bg-[rgb(var(--surface))] dark:bg-white/5 px-3 py-1.5 rounded-full border border-[rgb(var(--border))] dark:border-white/10 text-[rgb(var(--text-secondary))] dark:text-theme-secondary">
             Slide {currentSlideIndex + 1} of {currentLesson.slides.length}
           </div>
         </header>
@@ -155,7 +155,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
                             const flushList = () => {
                                 if (currentList.length > 0) {
                                     elements.push(
-                                        <ul key={`list-${elements.length}`} className="list-disc list-inside space-y-2 mt-4 mb-4 ml-4 text-[rgb(var(--text-secondary))] dark:text-slate-300">
+                                        <ul key={`list-${elements.length}`} className="list-disc list-inside space-y-2 mt-4 mb-4 ml-4 text-[rgb(var(--text-secondary))] dark:text-theme-secondary">
                                             {currentList.map((item, idx) => (
                                                 <li key={idx} dangerouslySetInnerHTML={{__html: item.replace(/\*\*(.*?)\*\*/g, '<strong class="text-[rgb(var(--text-primary))] dark:text-white font-semibold">$1</strong>')}} />
                                             ))}
@@ -179,7 +179,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
                                     elements.push(<br key={i} />);
                                 } else {
                                     flushList();
-                                    elements.push(<p key={i} className="text-[rgb(var(--text-secondary))] dark:text-slate-300 leading-relaxed mb-4" dangerouslySetInnerHTML={{__html: line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-[rgb(var(--text-primary))] dark:text-white font-semibold">$1</strong>')}} />);
+ elements.push(<p key={i} className="text-[rgb(var(--text-secondary))] dark:text-theme-secondary leading-relaxed mb-4" dangerouslySetInnerHTML={{__html: line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-[rgb(var(--text-primary))] font-semibold">$1</strong>')}} />);
                                 }
                             });
                             flushList();
@@ -214,7 +214,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
                     </div>
                     <h2 className="text-2xl font-bold mb-2 text-[rgb(var(--text-primary))] dark:text-white">{currentSlide.title}</h2>
                     <div className="mb-8 max-w-none">
-                        <p className="text-[rgb(var(--text-secondary))] dark:text-slate-300 leading-relaxed">
+                        <p className="text-[rgb(var(--text-secondary))] dark:text-theme-secondary leading-relaxed">
                             {currentSlide.scenarioData?.nodes['start']?.text}
                         </p>
                     </div>
@@ -226,8 +226,8 @@ export function CourseLayout({ course }: CourseLayoutProps) {
                             onClick={() => alert(`You chose: ${opt.label}\n\n(Full interactive scenario logic would go here)`)}
                             className="w-full p-4 bg-[rgb(var(--surface))] dark:bg-white/5 hover:bg-[rgb(var(--surface-elevated))] dark:hover:bg-white/10 border border-[rgb(var(--border))] dark:border-white/10 hover:border-[#D37E91]/50 rounded-xl text-left transition-all duration-200 flex items-center justify-between group"
                         >
-                            <span className="font-medium text-[rgb(var(--text-secondary))] dark:text-slate-200 group-hover:text-[rgb(var(--text-primary))] dark:group-hover:text-white">{opt.label}</span>
-                            <ChevronRight className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-slate-500 group-hover:text-[#D37E91] dark:group-hover:text-[#D37E91]" />
+                            <span className="font-medium text-[rgb(var(--text-secondary))] dark:text-theme-primary group-hover:text-[rgb(var(--text-primary))] dark:group-hover:text-white">{opt.label}</span>
+ <ChevronRight className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary group-hover:text-[#D37E91] dark:group-hover:text-[#D37E91]"/>
                         </button>
                         ))}
                     </div>
@@ -242,7 +242,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
                         <CheckCircle size={32} />
                     </div>
                     <h2 className="text-3xl font-bold mb-4 text-[rgb(var(--text-primary))] dark:text-white">Final Assessment</h2>
-                    <p className="text-[rgb(var(--text-secondary))] dark:text-slate-400 mb-8">
+ <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-8">
                         You have reached the end of the course content. Ready to test your knowledge?
                     </p>
                     
@@ -261,7 +261,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
                                                     onChange={() => setQuizAnswers({...quizAnswers, [q.id]: optIdx})}
                                                     checked={quizAnswers[q.id] === optIdx}
                                                 />
-                                                <span className="text-sm text-[rgb(var(--text-secondary))] dark:text-slate-300">{opt}</span>
+                                                <span className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-secondary">{opt}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -277,7 +277,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
                     ) : (
                         <div className="text-center space-y-4">
                             <div className="text-4xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{quizScore} / {Math.min(5, course.questionBanks?.['final']?.length ?? 0)}</div>
-                            <p className="text-[rgb(var(--text-secondary))] dark:text-slate-400">Score</p>
+ <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Score</p>
                             <button 
                                 onClick={handleNext}
                                 className="px-8 py-3 bg-[rgb(var(--text-primary))] dark:bg-white text-[rgb(var(--background))] dark:text-slate-900 rounded-xl font-bold hover:bg-[rgb(var(--text-secondary))] dark:hover:bg-slate-200 transition-colors"
@@ -304,7 +304,7 @@ export function CourseLayout({ course }: CourseLayoutProps) {
           
           <div className="flex gap-2">
              {/* Debug/Skip button */}
-             {/* <button onClick={handleNext} className="px-4 py-2 text-xs text-slate-600 hover:text-slate-400">Skip</button> */}
+             {/* <button onClick={handleNext} className="px-4 py-2 text-xs text-theme-secondary hover:text-theme-tertiary">Skip</button> */}
              
              <button 
                 onClick={handleNext}

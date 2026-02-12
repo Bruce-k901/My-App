@@ -77,7 +77,7 @@ export default function AssetTable() {
 
   return (
     <table className="min-w-full text-sm text-gray-700 dark:text-neutral-200">
-      <thead className="bg-gray-50 dark:bg-transparent border-b border-gray-200 dark:border-neutral-700 text-gray-500 dark:text-neutral-400">
+ <thead className="bg-gray-50 dark:bg-transparent border-b border-theme text-gray-500 dark:text-theme-tertiary">
         <tr>
           <th className="py-2 text-left">Item</th>
           <th className="text-left">Model</th>
@@ -91,7 +91,7 @@ export default function AssetTable() {
       </thead>
       <tbody>
         {assets.map((a) => (
-          <tr key={a.id} className="border-b border-gray-200 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800/40">
+          <tr key={a.id} className="border-b border-gray-200 dark:border-neutral-800 hover:bg-theme-surface-elevated dark:hover:bg-neutral-800/40">
             <td className="py-2">
               {editId === a.id ? (
                 <form
@@ -102,7 +102,7 @@ export default function AssetTable() {
                   className="flex items-center gap-2"
                 >
                   <input
-                    className="rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-2 py-1"
+                    className="rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-2 py-1"
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
                     placeholder="(unnamed asset)"
@@ -110,13 +110,13 @@ export default function AssetTable() {
                   />
                   <button
                     type="submit"
-                    className="text-xs px-2 py-1 rounded bg-gray-200 dark:bg-neutral-700 hover:bg-gray-300 dark:hover:bg-neutral-600 text-gray-700 dark:text-white"
+                    className="text-xs px-2 py-1 rounded bg-gray-200 dark:bg-neutral-700 hover:bg-gray-300 dark:hover:bg-neutral-600 text-theme-secondary"
                   >
                     Save
                   </button>
                   <button
                     type="button"
-                    className="text-xs px-2 py-1 rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-700 dark:text-white"
+                    className="text-xs px-2 py-1 rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-secondary"
                     onClick={() => {
                       setEditId(null);
                       setEditValue('');
@@ -131,7 +131,7 @@ export default function AssetTable() {
                     setEditId(a.id);
                     setEditValue(a.label || '');
                   }}
-                  className={a.label ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-neutral-500'}
+ className={a.label ?'text-theme-primary':'text-gray-400 dark:text-theme-tertiary'}
                   title={a.label ? 'Double-click to edit label' : 'Double-click to set label'}
                 >
                   {a.name || '(unnamed asset)'}
@@ -151,7 +151,7 @@ export default function AssetTable() {
         ))}
         {assets.length === 0 && (
           <tr>
-            <td colSpan={8} className="py-4 text-center text-gray-400 dark:text-neutral-500">
+ <td colSpan={8} className="py-4 text-center text-gray-400 dark:text-theme-tertiary">
               No assets yet.
             </td>
           </tr>

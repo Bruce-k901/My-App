@@ -151,19 +151,19 @@ export function ScheduleForm({ templates, employees = [] }: ScheduleFormProps) {
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-4">
         <Link href="/dashboard/people/reviews">
-          <Button variant="ghost" className="text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white">
+          <Button variant="ghost" className="text-theme-secondary hover:text-theme-primary">
             <ArrowLeft className="h-4 w-4 mr-2" />Back
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Schedule Review</h1>
-          <p className="text-gray-600 dark:text-white/60 mt-1">Set up a new review for an employee</p>
+          <h1 className="text-2xl font-bold text-theme-primary">Schedule Review</h1>
+          <p className="text-theme-secondary mt-1">Set up a new review for an employee</p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-6 space-y-6 shadow-sm dark:shadow-none">
+      <form onSubmit={handleSubmit} className="bg-theme-surface border border-theme rounded-lg p-6 space-y-6 shadow-sm dark:shadow-none">
         <div className="space-y-2">
-          <Label className="flex items-center gap-2 text-gray-900 dark:text-white">
+          <Label className="flex items-center gap-2 text-theme-primary">
             <User className="h-4 w-4" />Employee <span className="text-blue-600 dark:text-blue-400">*</span>
           </Label>
           <Select
@@ -179,8 +179,8 @@ export function ScheduleForm({ templates, employees = [] }: ScheduleFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label className="flex items-center gap-2 text-white">
-            <FileText className="h-4 w-4" />Review Template <span className="text-[#D37E91]">*</span>
+          <Label className="flex items-center gap-2 text-theme-primary">
+            <FileText className="h-4 w-4" />Review Template <span className="text-module-fg">*</span>
           </Label>
           <Select
             value={formData.template_id || undefined}
@@ -193,11 +193,11 @@ export function ScheduleForm({ templates, employees = [] }: ScheduleFormProps) {
             options={groupedTemplateOptions}
             className="w-full"
           />
-          {selectedTemplate && <p className="text-sm text-gray-500 dark:text-white/60">{selectedTemplate.description}</p>}
+          {selectedTemplate && <p className="text-sm text-theme-tertiary">{selectedTemplate.description}</p>}
         </div>
 
         <div className="space-y-2">
-          <Label className="text-gray-900 dark:text-white">Custom Title (optional)</Label>
+          <Label className="text-theme-primary">Custom Title (optional)</Label>
           <Input
             placeholder={selectedTemplate?.name || 'e.g., Q4 Performance Review'}
             value={formData.title}
@@ -206,8 +206,8 @@ export function ScheduleForm({ templates, employees = [] }: ScheduleFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label className="flex items-center gap-2 text-white">
-            <Calendar className="h-4 w-4" />Scheduled Date <span className="text-[#D37E91]">*</span>
+          <Label className="flex items-center gap-2 text-theme-primary">
+            <Calendar className="h-4 w-4" />Scheduled Date <span className="text-module-fg">*</span>
           </Label>
           <Input
             type="date"
@@ -219,7 +219,7 @@ export function ScheduleForm({ templates, employees = [] }: ScheduleFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label className="flex items-center gap-2 text-gray-900 dark:text-white">
+          <Label className="flex items-center gap-2 text-theme-primary">
             <Clock className="h-4 w-4" />Due Date (optional)
           </Label>
           <Input
@@ -230,25 +230,25 @@ export function ScheduleForm({ templates, employees = [] }: ScheduleFormProps) {
           />
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/[0.02] rounded-lg border border-gray-200 dark:border-white/[0.06]">
+        <div className="flex items-center justify-between p-4 bg-theme-button rounded-lg border border-theme">
           <div className="flex items-center gap-3">
-            <Repeat className="h-5 w-5 text-gray-500 dark:text-white/60" />
+            <Repeat className="h-5 w-5 text-theme-tertiary" />
             <div>
-              <Label className="text-gray-900 dark:text-white">Make this a recurring review</Label>
-              <p className="text-sm text-gray-600 dark:text-white/60">Automatically reschedule after completion</p>
+              <Label className="text-theme-primary">Make this a recurring review</Label>
+              <p className="text-sm text-theme-secondary">Automatically reschedule after completion</p>
             </div>
           </div>
           <input
             type="checkbox"
             checked={formData.is_recurring}
             onChange={(e) => setFormData({ ...formData, is_recurring: e.target.checked })}
-            className="w-4 h-4 rounded border-gray-300 dark:border-white/[0.06] bg-white dark:bg-white/[0.05] text-blue-600 dark:text-blue-400 focus:ring-blue-500 focus:ring-2"
+ className="w-4 h-4 rounded border-theme bg-theme-surface accent-module-fg focus:ring-module-fg focus:ring-2"
           />
         </div>
 
         {formData.is_recurring && (
           <div className="space-y-2">
-            <Label className="text-gray-900 dark:text-white">Recurrence Pattern</Label>
+            <Label className="text-theme-primary">Recurrence Pattern</Label>
             <Select
               value={formData.recurrence_pattern || undefined}
               onValueChange={(value) => setFormData({ ...formData, recurrence_pattern: value as RecurrencePattern })}
@@ -273,7 +273,7 @@ export function ScheduleForm({ templates, employees = [] }: ScheduleFormProps) {
             type="submit"
             variant="primary"
             disabled={isPending}
-            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border-0 shadow-sm dark:shadow-none"
+            className="bg-module-fg hover:bg-module-fg/90 text-white border-0 shadow-sm dark:shadow-none"
           >
             {isPending ? 'Scheduling...' : 'Schedule Review'}
           </Button>

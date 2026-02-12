@@ -26,13 +26,13 @@ function SettingsRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]">
+    <div className="flex items-center justify-between gap-4 p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-theme">
       <div className="flex items-start gap-3 flex-1 min-w-0">
-        {icon && <div className="text-neutral-400 dark:text-white/40 mt-0.5 flex-shrink-0">{icon}</div>}
+        {icon && <div className="text-theme-tertiary mt-0.5 flex-shrink-0">{icon}</div>}
         <div className="flex-1 min-w-0">
-          <p className="font-medium text-neutral-900 dark:text-white">{label}</p>
+          <p className="font-medium text-theme-primary">{label}</p>
           {description && (
-            <p className="text-sm text-neutral-500 dark:text-white/50 mt-0.5">{description}</p>
+            <p className="text-sm text-theme-tertiary/50 mt-0.5">{description}</p>
           )}
         </div>
       </div>
@@ -76,8 +76,8 @@ export function WorkflowTab() {
       {/* Default Site */}
       {showSitePicker && (
         <div>
-          <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-1">Default Site</h3>
-          <p className="text-sm text-neutral-500 dark:text-white/50 mb-4">
+          <h3 className="text-lg font-semibold text-theme-primary mb-1">Default Site</h3>
+          <p className="text-sm text-theme-tertiary/50 mb-4">
             Which site is pre-selected when you open the app.
           </p>
           <SettingsRow
@@ -101,24 +101,24 @@ export function WorkflowTab() {
 
       {/* Default Views */}
       <div>
-        <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-1">Default Views</h3>
-        <p className="text-sm text-neutral-500 dark:text-white/50 mb-4">
+        <h3 className="text-lg font-semibold text-theme-primary mb-1">Default Views</h3>
+        <p className="text-sm text-theme-tertiary/50 mb-4">
           Choose table or card layout for each section.
         </p>
         <div className="space-y-2">
           {VIEW_SECTIONS.map(({ key, label }) => (
             <div
               key={key}
-              className="flex items-center justify-between gap-4 p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06]"
+              className="flex items-center justify-between gap-4 p-4 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-theme"
             >
-              <span className="text-sm font-medium text-neutral-900 dark:text-white">{label}</span>
-              <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-white/[0.1]">
+              <span className="text-sm font-medium text-theme-primary">{label}</span>
+              <div className="flex rounded-lg overflow-hidden border border-theme">
                 <button
                   onClick={() => setViewForSection(key, 'table')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors
                     ${(defaultViews[key] ?? 'table') === 'table'
                       ? 'bg-[#D37E91]/20 text-[#D37E91] font-medium'
-                      : 'text-neutral-500 dark:text-white/50 hover:bg-gray-100 dark:hover:bg-white/[0.05]'
+                      : 'text-theme-tertiary/50 hover:bg-gray-100 dark:hover:bg-white/[0.05]'
                     }`}
                 >
                   <Table2 className="w-4 h-4" />
@@ -126,10 +126,10 @@ export function WorkflowTab() {
                 </button>
                 <button
                   onClick={() => setViewForSection(key, 'card')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors border-l border-gray-200 dark:border-white/[0.1]
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors border-l border-theme
                     ${defaultViews[key] === 'card'
                       ? 'bg-[#D37E91]/20 text-[#D37E91] font-medium'
-                      : 'text-neutral-500 dark:text-white/50 hover:bg-gray-100 dark:hover:bg-white/[0.05]'
+                      : 'text-theme-tertiary/50 hover:bg-gray-100 dark:hover:bg-white/[0.05]'
                     }`}
                 >
                   <LayoutGrid className="w-4 h-4" />

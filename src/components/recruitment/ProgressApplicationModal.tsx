@@ -461,18 +461,18 @@ export default function ProgressApplicationModal({ candidate, application, compa
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white dark:bg-[#14161c] border border-gray-200 dark:border-white/10 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div className="bg-white dark:bg-[#14161c] border border-theme rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-white/[0.06]">
+        <div className="flex items-center justify-between p-6 border-b border-theme">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{titles[mode]}</h2>
-            <p className="text-sm text-gray-600 dark:text-white/60 mt-1">
+            <h2 className="text-xl font-semibold text-theme-primary">{titles[mode]}</h2>
+            <p className="text-sm text-theme-secondary mt-1">
               {candidate.full_name} - {application.job.title}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-theme-secondary hover:text-theme-primary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -484,7 +484,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
             <>
               {/* Progression Decision */}
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-3">
+                <label className="block text-sm font-medium text-theme-secondary mb-3">
                   Decision *
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -497,7 +497,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                     }`}
                   >
                     <ThumbsUp className="w-6 h-6 mx-auto mb-2 text-green-400" />
-                    <div className="text-white text-sm font-medium">
+                    <div className="text-theme-primary text-sm font-medium">
                       {mode === 'interview' ? 'Progress to Trial' : 'Send Offer'}
                     </div>
                   </button>
@@ -510,7 +510,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                     }`}
                   >
                     <ThumbsDown className="w-6 h-6 mx-auto mb-2 text-red-400" />
-                    <div className="text-white text-sm font-medium">Reject</div>
+                    <div className="text-theme-primary text-sm font-medium">Reject</div>
                   </button>
                 </div>
               </div>
@@ -519,7 +519,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                 <>
                   {/* Rating */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-900 dark:text-white/70 mb-2">
+                    <label className="block text-sm font-medium text-theme-primary/70 mb-2">
                       Overall Rating (1-5)
                     </label>
                     <div className="flex items-center gap-2">
@@ -530,19 +530,19 @@ export default function ProgressApplicationModal({ candidate, application, compa
                           className={`w-10 h-10 rounded-lg border-2 transition-all ${
                             num <= rating
                               ? 'border-yellow-500 bg-yellow-500/20 text-yellow-400'
-                              : 'border-white/10 bg-white/5 text-white/40 hover:bg-white/10'
+                              : 'border-white/10 bg-white/5 text-theme-tertiary hover:bg-white/10'
                           }`}
                         >
                           ★
                         </button>
                       ))}
-                      <span className="ml-2 text-white/60 text-sm">{rating}/5</span>
+                      <span className="ml-2 text-theme-tertiary text-sm">{rating}/5</span>
                     </div>
                   </div>
 
                   {/* Manager Notes */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-900 dark:text-white/70 mb-2">
+                    <label className="block text-sm font-medium text-theme-primary/70 mb-2">
                       <MessageSquare className="w-4 h-4 inline mr-1" />
                       Manager Notes *
                     </label>
@@ -551,14 +551,14 @@ export default function ProgressApplicationModal({ candidate, application, compa
                       onChange={(e) => setManagerNotes(e.target.value)}
                       placeholder={`What went well? Any concerns? Key takeaways from the ${mode}...`}
                       rows={4}
-                      className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 resize-none"
+                      className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 resize-none"
                     />
                   </div>
 
                   {/* Team Feedback (Trial only) */}
                   {mode === 'trial' && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-900 dark:text-white/70 mb-2">
+                      <label className="block text-sm font-medium text-theme-primary/70 mb-2">
                         <UsersIcon className="w-4 h-4 inline mr-1" />
                         Team Feedback
                       </label>
@@ -567,7 +567,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                         onChange={(e) => setTeamFeedback(e.target.value)}
                         placeholder="What did the team think? How did they fit in?"
                         rows={3}
-                        className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 resize-none"
+                        className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 resize-none"
                       />
                     </div>
                   )}
@@ -575,14 +575,14 @@ export default function ProgressApplicationModal({ candidate, application, compa
                   {/* Trial Scheduling (Interview → Trial progression only) */}
                   {mode === 'interview' && (
                     <div className="mt-6 pt-6 border-t border-white/[0.06]">
-                      <h3 className="text-gray-900 dark:text-white font-semibold text-base mb-4">
+                      <h3 className="text-theme-primary font-semibold text-base mb-4">
                         📅 Schedule Trial Shift
                       </h3>
                       <div className="space-y-4">
                         {/* Date and Time */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-medium text-gray-900 dark:text-white/70 mb-2">
+                            <label className="block text-sm font-medium text-theme-primary/70 mb-2">
                               <Calendar className="w-4 h-4 inline mr-1" />
                               Trial Date *
                             </label>
@@ -590,11 +590,11 @@ export default function ProgressApplicationModal({ candidate, application, compa
                               type="date"
                               value={trialDate}
                               onChange={(e) => setTrialDate(e.target.value)}
-                              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91]"
+                              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91]"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-900 dark:text-white/70 mb-2">
+                            <label className="block text-sm font-medium text-theme-primary/70 mb-2">
                               <Clock className="w-4 h-4 inline mr-1" />
                               Start Time *
                             </label>
@@ -608,7 +608,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
 
                         {/* Duration */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-900 dark:text-white/70 mb-2">
+                          <label className="block text-sm font-medium text-theme-primary/70 mb-2">
                             Duration (hours)
                           </label>
                           <select
@@ -626,7 +626,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
 
                         {/* Site Selection */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-900 dark:text-white/70 mb-2">
+                          <label className="block text-sm font-medium text-theme-primary/70 mb-2">
                             <MapPin className="w-4 h-4 inline mr-1" />
                             Trial Location *
                           </label>
@@ -650,9 +650,9 @@ export default function ProgressApplicationModal({ candidate, application, compa
                                 value={trialSiteId}
                                 onChange={(e) => setTrialSiteId(e.target.value)}
                                 placeholder="e.g., Main Kitchen, 123 High Street, London"
-                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                               />
-                              <p className="text-xs text-white/40 mt-1">
+                              <p className="text-xs text-theme-tertiary mt-1">
                                 💡 No sites found. Enter location manually or set up sites in your company settings.
                               </p>
                             </div>
@@ -661,12 +661,12 @@ export default function ProgressApplicationModal({ candidate, application, compa
 
                         {/* Contact Person */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-900 dark:text-white/70 mb-2">
+                          <label className="block text-sm font-medium text-theme-primary/70 mb-2">
                             <User className="w-4 h-4 inline mr-1" />
                             Who Will They Meet? *
                           </label>
                           {loadingSiteStaff ? (
-                            <div className="flex items-center gap-2 text-white/40 text-sm py-2">
+                            <div className="flex items-center gap-2 text-theme-tertiary text-sm py-2">
                               <Loader2 className="w-4 h-4 animate-spin" />
                               Loading staff...
                             </div>
@@ -691,10 +691,10 @@ export default function ProgressApplicationModal({ candidate, application, compa
                                 value={trialContactPerson}
                                 onChange={(e) => setTrialContactPerson(e.target.value)}
                                 placeholder="e.g., John Smith (Manager)"
-                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                               />
                               {trialSiteId && siteStaff.length === 0 && !loadingSiteStaff && (
-                                <p className="text-xs text-white/40 mt-1">
+                                <p className="text-xs text-theme-tertiary mt-1">
                                   💡 Enter the contact person's name manually
                                 </p>
                               )}
@@ -704,7 +704,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
 
                         {/* What to Bring */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-900 dark:text-white/70 mb-2">
+                          <label className="block text-sm font-medium text-theme-primary/70 mb-2">
                             What to Bring
                           </label>
                           <input
@@ -712,13 +712,13 @@ export default function ProgressApplicationModal({ candidate, application, compa
                             value={trialWhatToBring}
                             onChange={(e) => setTrialWhatToBring(e.target.value)}
                             placeholder="e.g., Black shoes, apron, ID, etc."
-                            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                           />
                         </div>
 
                         {/* Additional Info */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-900 dark:text-white/70 mb-2">
+                          <label className="block text-sm font-medium text-theme-primary/70 mb-2">
                             Additional Information
                           </label>
                           <textarea
@@ -726,13 +726,13 @@ export default function ProgressApplicationModal({ candidate, application, compa
                             onChange={(e) => setTrialAdditionalInfo(e.target.value)}
                             placeholder="Parking info, where to enter, what to expect, etc."
                             rows={3}
-                            className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 resize-none"
+                            className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 resize-none"
                           />
                         </div>
 
                         {/* Payment Terms Section */}
                         <div className="pt-4 border-t border-white/[0.06]">
-                          <h4 className="text-white font-medium text-sm mb-3">💰 Payment Agreement</h4>
+                          <h4 className="text-theme-primary font-medium text-sm mb-3">💰 Payment Agreement</h4>
                           
                           {/* Payment Terms Radio */}
                           <div className="space-y-2 mb-4">
@@ -750,8 +750,8 @@ export default function ProgressApplicationModal({ candidate, application, compa
                                 className="mt-0.5"
                               />
                               <div>
-                                <div className="text-white text-sm font-medium">Unpaid Trial</div>
-                                <div className="text-white/50 text-xs">No payment for trial shift hours</div>
+                                <div className="text-theme-primary text-sm font-medium">Unpaid Trial</div>
+                                <div className="text-theme-tertiary text-xs">No payment for trial shift hours</div>
                               </div>
                             </label>
 
@@ -769,8 +769,8 @@ export default function ProgressApplicationModal({ candidate, application, compa
                                 className="mt-0.5"
                               />
                               <div>
-                                <div className="text-white text-sm font-medium">Paid Trial</div>
-                                <div className="text-white/50 text-xs">Candidate will be paid for trial hours</div>
+                                <div className="text-theme-primary text-sm font-medium">Paid Trial</div>
+                                <div className="text-theme-tertiary text-xs">Candidate will be paid for trial hours</div>
                               </div>
                             </label>
 
@@ -788,8 +788,8 @@ export default function ProgressApplicationModal({ candidate, application, compa
                                 className="mt-0.5"
                               />
                               <div>
-                                <div className="text-white text-sm font-medium">Paid if Hired</div>
-                                <div className="text-white/50 text-xs">Payment only if candidate is hired</div>
+                                <div className="text-theme-primary text-sm font-medium">Paid if Hired</div>
+                                <div className="text-theme-tertiary text-xs">Payment only if candidate is hired</div>
                               </div>
                             </label>
                           </div>
@@ -797,7 +797,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                           {/* Hourly Rate (if paid) */}
                           {trialPaymentTerms === 'paid' && (
                             <div className="mb-3">
-                              <label className="block text-sm font-medium text-gray-900 dark:text-white/70 mb-2">
+                              <label className="block text-sm font-medium text-theme-primary/70 mb-2">
                                 Hourly Rate (£) *
                               </label>
                               <input
@@ -806,14 +806,14 @@ export default function ProgressApplicationModal({ candidate, application, compa
                                 value={trialPaymentRate}
                                 onChange={(e) => setTrialPaymentRate(e.target.value)}
                                 placeholder="e.g., 11.50"
-                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91]"
+                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                               />
                             </div>
                           )}
 
                           {/* Payment Notes */}
                           <div>
-                            <label className="block text-sm font-medium text-gray-900 dark:text-white/70 mb-2">
+                            <label className="block text-sm font-medium text-theme-primary/70 mb-2">
                               Payment Notes (Optional)
                             </label>
                             <textarea
@@ -821,7 +821,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                               onChange={(e) => setTrialPaymentNotes(e.target.value)}
                               placeholder="Any additional payment details or conditions..."
                               rows={2}
-                              className="w-full px-3 py-2 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 resize-none"
+                              className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] focus:ring-2 focus:ring-[#D37E91]/20 resize-none"
                             />
                           </div>
                         </div>
@@ -836,10 +836,10 @@ export default function ProgressApplicationModal({ candidate, application, compa
                               className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#D37E91] focus:ring-[#D37E91]"
                             />
                             <div>
-                              <div className="text-white text-sm font-medium">
+                              <div className="text-theme-primary text-sm font-medium">
                                 📅 Add trial shift to rota
                               </div>
-                              <div className="text-white/50 text-xs">
+                              <div className="text-theme-tertiary text-xs">
                                 Creates a rota entry so managers can see the trial on the schedule
                               </div>
                             </div>
@@ -853,7 +853,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
 
               {progression === 'reject' && (
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-2">
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">
                     Rejection Message *
                   </label>
                   <textarea
@@ -861,7 +861,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                     onChange={(e) => setRejectionMessage(e.target.value)}
                     placeholder="Optional personal message to include in rejection email..."
                     rows={4}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] resize-none"
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] resize-none"
                   />
                 </div>
               )}
@@ -870,7 +870,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
 
           {mode === 'reject' && (
             <div>
-              <label className="block text-sm font-medium text-white/70 mb-2">
+              <label className="block text-sm font-medium text-theme-secondary mb-2">
                 Message to Candidate (Optional)
               </label>
               <textarea
@@ -878,7 +878,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                 onChange={(e) => setRejectionMessage(e.target.value)}
                 placeholder="You can add a personal message here, or leave blank for the standard rejection email..."
                 rows={4}
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-[#D37E91] resize-none"
+                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] resize-none"
               />
             </div>
           )}
@@ -892,7 +892,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
               onChange={(e) => setSendEmail(e.target.checked)}
               className="w-4 h-4 rounded accent-[#D37E91]"
             />
-            <label htmlFor="send-rejection-email" className="text-sm text-white/70 cursor-pointer">
+            <label htmlFor="send-rejection-email" className="text-sm text-theme-secondary cursor-pointer">
               Send email notification to candidate
             </label>
           </div>
@@ -903,7 +903,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
           <button
             onClick={onClose}
             disabled={saving}
-            className="px-4 py-2 rounded-lg text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-white disabled:opacity-50"
+            className="px-4 py-2 rounded-lg text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-theme-primary disabled:opacity-50"
           >
             Cancel
           </button>

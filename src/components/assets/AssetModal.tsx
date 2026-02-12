@@ -275,12 +275,12 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
   return (
     <Dialog open={open}>
       <DialogContent
-        className="max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col bg-white dark:bg-[#171b2d] border border-gray-200 dark:border-white/[0.1]"
+        className="max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col bg-white dark:bg-[#171b2d] border border-theme"
         style={{ minWidth: '900px' }}
       >
         {/* Sticky Header */}
         <div className="flex items-center justify-between sticky top-0 bg-gray-50/90 dark:bg-black/60 backdrop-blur-lg z-10 px-4 py-3 rounded-t-2xl">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-lg font-semibold text-theme-primary">
             {asset?.id ? 'Edit Asset' : 'Add New Asset'}
           </h2>
           <div className="flex gap-3">
@@ -302,17 +302,17 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
             
             {/* Assignment Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-gray-200 dark:border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-theme pb-2">
                 Assignment
               </h3>
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Site</label>
+ <label className="text-sm text-gray-500 dark:text-theme-tertiary mb-1 block">Site</label>
                   <select
                     required
                     value={form.site_id}
                     onChange={(e) => handleInputChange('site_id', e.target.value)}
-                    className="w-full rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+                    className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                   >
                     <option value="">Select a site</option>
                     {sites.map((site) => (
@@ -323,12 +323,12 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
                   </select>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Category</label>
+ <label className="text-sm text-gray-500 dark:text-theme-tertiary mb-1 block">Category</label>
                   <select
                     required
                     value={form.category}
                     onChange={(e) => handleInputChange('category', e.target.value)}
-                    className="w-full rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+                    className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                   >
                     <option value="">Select a category</option>
                     <option value="refrigeration">Refrigeration</option>
@@ -344,48 +344,48 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
 
             {/* Identification Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-gray-200 dark:border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-theme pb-2">
                 Identification
               </h3>
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Name</label>
+ <label className="text-sm text-gray-500 dark:text-theme-tertiary mb-1 block">Name</label>
                   <input
                     required
                     type="text"
                     value={form.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    className="w-full rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+                    className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                     placeholder="e.g. Kitchen Fridge 1"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Brand</label>
+ <label className="text-sm text-gray-500 dark:text-theme-tertiary mb-1 block">Brand</label>
                   <input
                     type="text"
                     value={form.brand}
                     onChange={(e) => handleInputChange('brand', e.target.value)}
-                    className="w-full rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+                    className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                     placeholder="e.g. Williams, Hoshizaki"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Model</label>
+ <label className="text-sm text-gray-500 dark:text-theme-tertiary mb-1 block">Model</label>
                   <input
                     type="text"
                     value={form.model}
                     onChange={(e) => handleInputChange('model', e.target.value)}
-                    className="w-full rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+                    className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                     placeholder="e.g. Williams H280"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Serial Number</label>
+ <label className="text-sm text-gray-500 dark:text-theme-tertiary mb-1 block">Serial Number</label>
                   <input
                     type="text"
                     value={form.serial_number}
                     onChange={(e) => handleInputChange('serial_number', e.target.value)}
-                    className="w-full rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+                    className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                     placeholder="Manufacturer serial"
                   />
                 </div>
@@ -394,26 +394,26 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
 
             {/* Lifecycle Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-gray-200 dark:border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-theme pb-2">
                 Lifecycle
               </h3>
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Install Date</label>
+ <label className="text-sm text-gray-500 dark:text-theme-tertiary mb-1 block">Install Date</label>
                   <input
                     type="date"
                     value={form.install_date}
                     onChange={(e) => handleInputChange('install_date', e.target.value)}
-                    className="w-full rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+                    className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Warranty End</label>
+ <label className="text-sm text-gray-500 dark:text-theme-tertiary mb-1 block">Warranty End</label>
                   <input
                     type="date"
                     value={form.warranty_end}
                     onChange={(e) => handleInputChange('warranty_end', e.target.value)}
-                    className="w-full rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+                    className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                   />
                 </div>
               </div>
@@ -421,37 +421,37 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
 
             {/* PPM Schedule Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-gray-200 dark:border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-theme pb-2">
                 PPM Schedule
               </h3>
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Last Service Date</label>
+ <label className="text-sm text-gray-500 dark:text-theme-tertiary mb-1 block">Last Service Date</label>
                   <input
                     type="date"
                     value={form.last_service_date}
                     onChange={(e) => handleInputChange('last_service_date', e.target.value)}
-                    className="w-full rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+                    className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Frequency (Months)</label>
+ <label className="text-sm text-gray-500 dark:text-theme-tertiary mb-1 block">Frequency (Months)</label>
                   <input
                     type="number"
                     min="1"
                     max="24"
                     value={form.ppm_frequency_months}
                     onChange={(e) => handleInputChange('ppm_frequency_months', parseInt(e.target.value) || 6)}
-                    className="w-full rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+                    className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Next Service Date</label>
+ <label className="text-sm text-gray-500 dark:text-theme-tertiary mb-1 block">Next Service Date</label>
                   <input
                     type="date"
                     value={form.next_service_date}
                     onChange={(e) => handleInputChange('next_service_date', e.target.value)}
-                    className="w-full rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+                    className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                   />
                 </div>
               </div>
@@ -459,15 +459,15 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
 
             {/* Contractor Assignments */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-gray-200 dark:border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-theme pb-2">
                 PPM Contractor
               </h3>
               <div>
-                <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">PPM Contractor</label>
+ <label className="text-sm text-gray-500 dark:text-theme-tertiary mb-1 block">PPM Contractor</label>
                 <select
                   value={form.ppm_contractor_id}
                   onChange={(e) => handleInputChange('ppm_contractor_id', e.target.value)}
-                  className="w-full rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+                  className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                 >
                   <option value="">Select PPM contractor</option>
                   {contractors.map((contractor) => (
@@ -480,15 +480,15 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-gray-200 dark:border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-theme pb-2">
                 Reactive Contractor
               </h3>
               <div>
-                <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Reactive Contractor</label>
+ <label className="text-sm text-gray-500 dark:text-theme-tertiary mb-1 block">Reactive Contractor</label>
                 <select
                   value={form.reactive_contractor_id}
                   onChange={(e) => handleInputChange('reactive_contractor_id', e.target.value)}
-                  className="w-full rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+                  className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                 >
                   <option value="">Select reactive contractor</option>
                   {contractors.map((contractor) => (
@@ -501,15 +501,15 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-gray-200 dark:border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-theme pb-2">
                 Warranty Contractor
               </h3>
               <div>
-                <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Warranty Contractor</label>
+ <label className="text-sm text-gray-500 dark:text-theme-tertiary mb-1 block">Warranty Contractor</label>
                 <select
                   value={form.warranty_contractor_id}
                   onChange={(e) => handleInputChange('warranty_contractor_id', e.target.value)}
-                  className="w-full rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
+                  className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500"
                 >
                   <option value="">Select warranty contractor</option>
                   {contractors.map((contractor) => (
@@ -523,15 +523,15 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
 
             {/* Notes Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-gray-200 dark:border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-neutral-300 uppercase tracking-wide border-b border-theme pb-2">
                 Notes / Docs
               </h3>
               <div>
-                <label className="text-sm text-gray-500 dark:text-neutral-400 mb-1 block">Notes</label>
+ <label className="text-sm text-gray-500 dark:text-theme-tertiary mb-1 block">Notes</label>
                 <textarea
                   value={form.notes}
                   onChange={(e) => handleInputChange('notes', e.target.value)}
-                  className="w-full rounded bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-white text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 min-h-[80px]"
+                  className="w-full rounded bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary text-sm px-3 py-2 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 min-h-[80px]"
                   rows={3}
                   placeholder="Additional notes about this asset"
                 />
@@ -541,7 +541,7 @@ export default function AssetModal({ open, onClose, onSaved, asset }: AssetModal
         </div>
 
         {/* Bottom Action Bar */}
-        <div className="flex items-center justify-end gap-3 sticky bottom-0 bg-gray-50/90 dark:bg-black/60 backdrop-blur-lg z-10 px-4 py-3 rounded-b-2xl border-t border-gray-200 dark:border-neutral-700">
+        <div className="flex items-center justify-end gap-3 sticky bottom-0 bg-gray-50/90 dark:bg-black/60 backdrop-blur-lg z-10 px-4 py-3 rounded-b-2xl border-t border-theme">
           <Button
             className="p-2 rounded-xl border border-[#E0E0E0] text-[#E0E0E0] bg-black/30 backdrop-blur-md transition-all hover:shadow-[0_0_10px_#E0E0E0]"
             onClick={onClose}

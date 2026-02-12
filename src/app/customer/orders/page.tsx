@@ -595,15 +595,15 @@ export default function OrdersPage() {
       <div className="mb-6">
         <Link
           href="/customer/dashboard"
-          className="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm mb-4 transition-colors"
+          className="inline-flex items-center gap-2 text-theme-tertiary hover:text-white text-sm mb-4 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Dashboard
         </Link>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">My Orders</h1>
-            <p className="text-white/60 text-sm mt-2">
+            <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary">My Orders</h1>
+            <p className="text-theme-tertiary text-sm mt-2">
               View and edit your orders for the week
             </p>
           </div>
@@ -611,7 +611,7 @@ export default function OrdersPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setWeekOffset(weekOffset - 1)}
-              className="p-2 rounded-lg border border-white/[0.1] text-white/60 hover:text-white hover:bg-white/[0.05] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-2 rounded-lg border border-white/[0.1] text-theme-tertiary hover:text-white hover:bg-white/[0.05] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label="Previous week"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -619,7 +619,7 @@ export default function OrdersPage() {
             <button
               onClick={() => setWeekOffset(Math.min(weekOffset + 1, 4))}
               disabled={weekOffset >= 4}
-              className="p-2 rounded-lg border border-white/[0.1] text-white/60 hover:text-white hover:bg-white/[0.05] disabled:opacity-30 disabled:cursor-not-allowed transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-2 rounded-lg border border-white/[0.1] text-theme-tertiary hover:text-white hover:bg-white/[0.05] disabled:opacity-30 disabled:cursor-not-allowed transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label="Next week"
             >
               <ChevronRight className="w-5 h-5" />
@@ -634,13 +634,13 @@ export default function OrdersPage() {
           <table className="w-full border-collapse">
             <thead className="sticky top-0 z-20">
               <tr className="bg-white/[0.05] border-b border-white/[0.1]">
-                <th className="sticky left-0 z-30 bg-white/[0.05] px-4 py-3 text-left text-sm font-semibold text-white border-r border-white/[0.1] min-w-[200px]">
+                <th className="sticky left-0 z-30 bg-white/[0.05] px-4 py-3 text-left text-sm font-semibold text-theme-primary border-r border-white/[0.1] min-w-[200px]">
                   Product
                 </th>
                 {availableDates.map((date) => (
                   <th
                     key={date}
-                    className="bg-white/[0.05] px-3 py-3 text-center text-xs font-semibold text-white/80 min-w-[100px]"
+                    className="bg-white/[0.05] px-3 py-3 text-center text-xs font-semibold text-theme-secondary min-w-[100px]"
                   >
                     <div className="flex flex-col items-center gap-1">
                       <Calendar className="w-4 h-4 text-[#D37E91]" />
@@ -648,7 +648,7 @@ export default function OrdersPage() {
                     </div>
                   </th>
                 ))}
-                <th className="bg-white/[0.05] px-4 py-3 text-right text-sm font-semibold text-white min-w-[120px]">
+                <th className="bg-white/[0.05] px-4 py-3 text-right text-sm font-semibold text-theme-primary min-w-[120px]">
                   Total
                 </th>
               </tr>
@@ -701,8 +701,8 @@ export default function OrdersPage() {
                         >
                           <td className="sticky left-0 z-10 bg-inherit px-4 py-3 border-r border-white/[0.1]">
                             <div>
-                              <div className="font-medium text-white text-sm">{product.name}</div>
-                              <div className="text-xs text-white/60 mt-0.5">
+                              <div className="font-medium text-theme-primary text-sm">{product.name}</div>
+                              <div className="text-xs text-theme-tertiary mt-0.5">
                                 {formatCurrency(getProductPrice(product.id))} / {product.unit}
                               </div>
                             </div>
@@ -724,14 +724,14 @@ export default function OrdersPage() {
                                   className={`w-full px-2 py-2 rounded text-center text-base font-semibold focus:outline-none focus:ring-2 focus:ring-[#10B981]/50 min-h-[44px] ${
                                     hasValueForCell
                                       ? 'bg-[#10B981]/10 border-[#10B981]/30 text-[#10B981]'
-                                      : 'bg-white/[0.03] border-white/[0.1] text-white'
+                                      : 'bg-white/[0.03] border-white/[0.1] text-theme-primary'
                                   }`}
                                   placeholder="0"
                                 />
                               </td>
                             );
                           })}
-                          <td className="px-4 py-3 text-right text-sm font-medium text-white/80 bg-white/[0.02]">
+                          <td className="px-4 py-3 text-right text-sm font-medium text-theme-secondary bg-white/[0.02]">
                             {getTotalForProduct(product.id) > 0 && (
                               <span className="text-[#10B981]">
                                 {formatCurrency(getTotalForProduct(product.id))}
@@ -746,7 +746,7 @@ export default function OrdersPage() {
               })()}
               {/* Totals Row */}
               <tr className="bg-white/[0.05] border-t-2 border-white/[0.1] font-semibold">
-                <td className="sticky left-0 z-10 bg-white/[0.05] px-4 py-3 text-white border-r border-white/[0.1]">
+                <td className="sticky left-0 z-10 bg-white/[0.05] px-4 py-3 text-theme-primary border-r border-white/[0.1]">
                   Total
                 </td>
                 {availableDates.map((date) => {
@@ -774,11 +774,11 @@ export default function OrdersPage() {
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="text-lg font-semibold text-white mb-1">
+            <div className="text-lg font-semibold text-theme-primary mb-1">
               Grand Total: <span className="text-[#D37E91]">{formatCurrency(getGrandTotal())}</span>
             </div>
             {!hasAnyOrders && (
-              <p className="text-sm text-white/60">Enter quantities above to place your order</p>
+              <p className="text-sm text-theme-tertiary">Enter quantities above to place your order</p>
             )}
           </div>
           {error && (
@@ -790,7 +790,7 @@ export default function OrdersPage() {
             <Button
               onClick={handleSubmit}
               variant="primary"
-              className="min-h-[44px] bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] whitespace-nowrap"
+              className="min-h-[44px] bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-module-glow whitespace-nowrap"
               disabled={submitting || !hasAnyOrders}
             >
               {submitting ? (
@@ -833,13 +833,13 @@ export default function OrdersPage() {
             <Button
               onClick={handleSaveAsStandingOrder}
               variant="ghost"
-              className="w-full sm:w-auto min-h-[44px] bg-transparent text-[#10B981] border border-[#10B981] hover:shadow-[0_0_12px_rgba(16,185,129,0.7)]"
+              className="w-full sm:w-auto min-h-[44px] bg-transparent text-[#10B981] border border-[#10B981] hover:shadow-module-glow"
               disabled={submitting}
             >
               <Repeat className="w-4 h-4 mr-2" />
               Save as Standing Order
             </Button>
-            <p className="text-xs text-white/50 mt-2">
+            <p className="text-xs text-theme-tertiary mt-2">
               This will create a standing order and automatically generate the same orders for the next 4 weeks
             </p>
           </div>

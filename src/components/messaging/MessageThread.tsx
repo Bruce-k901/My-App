@@ -24,7 +24,7 @@ const TOPICS: Array<{ label: string; value: TopicCategory; color: string }> = [
   { label: '👥 HR', value: 'hr', color: 'text-[#D37E91]' },
   { label: '✅ Compliance', value: 'compliance', color: 'text-green-500' },
   { label: '⚠️ Incidents', value: 'incidents', color: 'text-red-600' },
-  { label: '💬 General', value: 'general', color: 'text-white/60' },
+  { label: '💬 General', value: 'general', color: 'text-theme-tertiary' },
 ];
 
 const getTopicLabel = (topic: TopicCategory): string => {
@@ -32,7 +32,7 @@ const getTopicLabel = (topic: TopicCategory): string => {
 };
 
 const getTopicColor = (topic: TopicCategory): string => {
-  return TOPICS.find(t => t.value === topic)?.color || 'text-white/60';
+  return TOPICS.find(t => t.value === topic)?.color || 'text-theme-tertiary';
 };
 
 // File attachment display component
@@ -78,16 +78,16 @@ function FileAttachmentDisplay({ file }: { file: { url: string; name: string; si
       onClick={handleDownload}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/[0.06] hover:bg-gray-50 dark:hover:bg-white/[0.06] transition max-w-sm"
+      className="group flex items-center gap-3 p-3 rounded-lg border border-theme hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06] transition max-w-sm"
     >
       <span className="text-2xl flex-shrink-0">{getFileIcon(file.type)}</span>
       <div className="flex-1 min-w-0">
         <div className="text-sm font-medium text-[#D37E91] dark:text-[#D37E91] truncate group-hover:text-[#D37E91] dark:group-hover:text-[#D37E91]">
           {file.name}
         </div>
-        <div className="text-xs text-gray-500 dark:text-white/40">{formatFileSize(file.size)}</div>
+        <div className="text-xs text-theme-tertiary">{formatFileSize(file.size)}</div>
       </div>
-      <span className="text-gray-500 dark:text-white/40 group-hover:text-gray-700 dark:group-hover:text-white/60 transition">↗</span>
+      <span className="text-theme-tertiary group-hover:text-theme-secondary dark:group-hover:text-theme-tertiary transition">↗</span>
     </a>
   );
 }
@@ -327,7 +327,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
   if (loading && messages.length === 0) {
     return (
       <div className="flex items-center justify-center h-full relative">
-        <div className="text-gray-600 dark:text-white/60">Loading messages...</div>
+        <div className="text-theme-secondary">Loading messages...</div>
       </div>
     );
   }
@@ -342,8 +342,8 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
       >
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <div className="text-gray-500 dark:text-white/40 text-sm mb-2">No messages yet</div>
-            <div className="text-gray-400 dark:text-white/20 text-xs">Start the conversation!</div>
+            <div className="text-theme-tertiary text-sm mb-2">No messages yet</div>
+            <div className="text-theme-tertiary/20 text-xs">Start the conversation!</div>
           </div>
         ) : (
           messages.map((message, index) => {
@@ -377,7 +377,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                   }`}
                 >
                   {showAvatar && message.sender && (message.sender.full_name || message.sender.email) && (
-                    <div className="text-xs text-gray-500 dark:text-white/40 mb-1 px-2">
+                    <div className="text-xs text-theme-tertiary mb-1 px-2">
                       {message.sender.full_name || message.sender.email?.split('@')[0]}
                     </div>
                   )}
@@ -404,11 +404,11 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <Reply className="w-3 h-3 text-[#D37E91] dark:text-[#D37E91] flex-shrink-0" />
-                        <div className="text-xs text-gray-600 dark:text-white/50 font-medium">
+                        <div className="text-xs text-theme-secondary/50 font-medium">
                           {message.reply_to.sender?.full_name || message.reply_to.sender?.email?.split('@')[0] || 'Unknown'}
                         </div>
                       </div>
-                      <div className="text-gray-900 dark:text-white truncate max-w-[150px] xs:max-w-[200px] sm:max-w-[250px] break-words">
+                      <div className="text-theme-primary truncate max-w-[150px] xs:max-w-[200px] sm:max-w-[250px] break-words">
                         {message.reply_to.message_type === 'image' ? (
                           <span className="italic">📷 Photo</span>
                         ) : message.reply_to.message_type === 'file' ? (
@@ -422,7 +422,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
 
                   {/* Forwarded message indicator */}
                   {message.metadata?.forwarded_from_message_id && (
-                    <div className="flex items-center gap-2 mb-2 text-xs text-gray-600 dark:text-white/50">
+                    <div className="flex items-center gap-2 mb-2 text-xs text-theme-secondary/50">
                       <Forward className="w-3 h-3 text-[#D37E91] dark:text-[#D37E91] flex-shrink-0" />
                       <span>
                         Forwarded from {message.metadata?.forwarded_from_sender || 'Unknown'}
@@ -433,8 +433,8 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                   <div
                     className={`group relative px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base ${
                       isOwn
-                        ? 'bg-[#D37E91]/10 dark:bg-white/[0.03] border border-[#D37E91]/30 dark:border-white/[0.06] text-gray-900 dark:text-white'
-                        : 'bg-gray-100 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-900 dark:text-white'
+                        ? 'bg-[#D37E91]/10 dark:bg-white/[0.03] border border-[#D37E91]/30 dark:border-white/[0.06] text-theme-primary'
+                        : 'bg-gray-100 dark:bg-white/[0.03] border border-theme text-theme-primary'
                     }`}
                   >
                     {message.message_type === 'image' && message.file_url ? (
@@ -456,13 +456,13 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                         }}
                       />
                     ) : (
-                      <p className="text-sm whitespace-pre-wrap break-words text-gray-900 dark:text-white">
+                      <p className="text-sm whitespace-pre-wrap break-words text-theme-primary">
                         {message.content}
                       </p>
                     )}
 
                     {message.edited_at && (
-                      <span className="text-xs text-gray-600 dark:text-white/60 italic ml-2">
+                      <span className="text-xs text-theme-secondary italic ml-2">
                         (edited)
                       </span>
                     )}
@@ -479,7 +479,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
 
                     <div className="flex items-center justify-between mt-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-600 dark:text-white/60">
+                        <span className="text-xs text-theme-secondary">
                           {formatMessageTime(message.created_at)}
                         </span>
                         {isOwn && (
@@ -489,11 +489,11 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                 ✓✓
                               </span>
                             ) : message.receipt_status === 'delivered' ? (
-                              <span className="text-xs text-gray-600 dark:text-white/70" title="Delivered">
+                              <span className="text-xs text-theme-secondary" title="Delivered">
                                 ✓✓
                               </span>
                             ) : (
-                              <span className="text-xs text-gray-600 dark:text-white/60" title="Sent">
+                              <span className="text-xs text-theme-secondary" title="Sent">
                                 ✓
                               </span>
                             )}
@@ -508,7 +508,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                             e.stopPropagation();
                             setActiveMenuId(activeMenuId === message.id ? null : message.id);
                           }}
-                          className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-white/10 text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
+                          className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-white/10 text-theme-secondary hover:text-theme-primary transition-colors"
                           title="Message actions"
                         >
                           <MoreVertical className="w-4 h-4" />
@@ -519,7 +519,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                             ref={(el) => {
                               if (el) menuRefs.current.set(message.id, el);
                             }}
-                            className="absolute right-0 bottom-full mb-2 bg-white dark:bg-[#1a1c24] backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 dark:border-white/[0.1] py-1 min-w-[160px] z-50"
+                            className="absolute right-0 bottom-full mb-2 bg-white dark:bg-[#1a1c24] backdrop-blur-sm rounded-lg shadow-lg border border-theme py-1 min-w-[160px] z-50"
                           >
                             <button
                               onClick={(e) => {
@@ -527,7 +527,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                 handleReply(message);
                                 setActiveMenuId(null);
                               }}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-white/80 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-theme-secondary hover:bg-theme-muted transition-colors"
                             >
                               <Reply className="w-4 h-4" />
                               Reply
@@ -538,7 +538,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                 handleForward(message);
                                 setActiveMenuId(null);
                               }}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-white/80 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-theme-secondary hover:bg-theme-muted transition-colors"
                             >
                               <Forward className="w-4 h-4" />
                               Forward
@@ -549,7 +549,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                 handleCopy(message);
                                 setActiveMenuId(null);
                               }}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-white/80 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-theme-secondary hover:bg-theme-muted transition-colors"
                             >
                               {copiedMessageId === message.id ? (
                                 <>
@@ -569,7 +569,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                 setCreateTaskModalMessage(message);
                                 setActiveMenuId(null);
                               }}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-white/80 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-theme-secondary hover:bg-theme-muted transition-colors"
                             >
                               <CheckSquare className="w-4 h-4" />
                               Create Task
@@ -581,7 +581,7 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                   setTaskModalMessage(message);
                                   setActiveMenuId(null);
                                 }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-white/80 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-theme-secondary hover:bg-theme-muted transition-colors"
                               >
                                 <CheckSquare className="w-4 h-4" />
                                 Convert to Task
@@ -593,8 +593,8 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                                 setTopicTagMessage(message);
                                 setActiveMenuId(null);
                               }}
-                              className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-white/10 transition-colors ${
-                                message.topic ? 'text-[#D37E91]' : 'text-gray-700 dark:text-white/80'
+                              className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-theme-muted transition-colors ${
+                                message.topic ? 'text-[#D37E91]' : 'text-theme-secondary'
                               }`}
                             >
                               <Tag className="w-4 h-4" />

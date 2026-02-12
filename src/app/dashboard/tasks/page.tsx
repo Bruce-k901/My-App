@@ -162,7 +162,7 @@ function TasksDashboardContent() {
   if (loading && companyId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-[rgb(var(--text-primary))] dark:text-white">Loading dashboard...</div>
+        <div className="text-theme-primary">Loading dashboard...</div>
       </div>
     );
   }
@@ -172,12 +172,12 @@ function TasksDashboardContent() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">Task Management</h1>
-          <p className="text-[rgb(var(--text-secondary))] dark:text-white/60 mt-1">Task management overview</p>
+          <h1 className="text-3xl font-bold text-theme-primary">Task Management</h1>
+          <p className="text-theme-secondary mt-1">Task management overview</p>
         </div>
         <Link
           href="/dashboard/tasks/my-tasks"
-          className="px-4 py-2 bg-[#D37E91] hover:bg-[#D37E91]/90 text-white rounded-lg transition-colors"
+          className="px-4 py-2 bg-module-fg hover:bg-module-fg/90 text-white rounded-lg transition-colors"
         >
           View All Tasks
         </Link>
@@ -186,36 +186,36 @@ function TasksDashboardContent() {
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Today's Tasks */}
-        <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Today's Tasks</h3>
-            <Calendar className="w-5 h-5 text-[#D37E91]" />
+            <h3 className="text-sm font-medium text-theme-secondary">Today's Tasks</h3>
+            <Calendar className="w-5 h-5 text-module-fg" />
           </div>
-          <div className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{metrics?.totalToday || 0}</div>
-          <div className="text-sm text-[rgb(var(--text-tertiary))] dark:text-white/40 mt-1">
+          <div className="text-3xl font-bold text-theme-primary">{metrics?.totalToday || 0}</div>
+          <div className="text-sm text-theme-tertiary mt-1">
             {metrics?.completedToday || 0} completed
           </div>
         </div>
 
         {/* Completion Rate */}
-        <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Completion Rate</h3>
+            <h3 className="text-sm font-medium text-theme-secondary">Completion Rate</h3>
             <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
           </div>
-          <div className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{metrics?.completionRate || 0}%</div>
-          <div className="text-sm text-[rgb(var(--text-tertiary))] dark:text-white/40 mt-1">
+          <div className="text-3xl font-bold text-theme-primary">{metrics?.completionRate || 0}%</div>
+          <div className="text-sm text-theme-tertiary mt-1">
             {metrics?.completedToday || 0} of {metrics?.totalToday || 0} tasks
           </div>
         </div>
 
         {/* Pending Tasks */}
-        <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Pending</h3>
+            <h3 className="text-sm font-medium text-theme-secondary">Pending</h3>
             <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
           </div>
-          <div className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{metrics?.pendingToday || 0}</div>
+          <div className="text-3xl font-bold text-theme-primary">{metrics?.pendingToday || 0}</div>
           {metrics && metrics.overdueToday > 0 && (
             <div className="text-sm text-red-600 dark:text-red-400 mt-1">
               {metrics.overdueToday} overdue
@@ -224,79 +224,79 @@ function TasksDashboardContent() {
         </div>
 
         {/* Active Tasks */}
-        <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">Active Tasks</h3>
+            <h3 className="text-sm font-medium text-theme-secondary">Active Tasks</h3>
             <CheckCircle2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
-          <div className="text-3xl font-bold text-[rgb(var(--text-primary))] dark:text-white">{metrics?.totalActive || 0}</div>
-          <div className="text-sm text-[rgb(var(--text-tertiary))] dark:text-white/40 mt-1">All sites</div>
+          <div className="text-3xl font-bold text-theme-primary">{metrics?.totalActive || 0}</div>
+          <div className="text-sm text-theme-tertiary mt-1">All sites</div>
         </div>
       </div>
 
       {/* Quick Actions & Recent Tasks */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Quick Actions */}
-        <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
-          <h2 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white mb-4">Quick Actions</h2>
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
+          <h2 className="text-xl font-semibold text-theme-primary mb-4">Quick Actions</h2>
           <div className="grid grid-cols-2 gap-3">
             <Link
               href="/dashboard/todays_tasks"
-              className="flex items-center gap-3 p-4 bg-theme-button dark:bg-white/[0.05] hover:bg-theme-button-hover dark:hover:bg-white/[0.08] rounded-lg transition-colors border border-theme dark:border-white/[0.06]"
+              className="flex items-center gap-3 p-4 bg-theme-button hover:bg-theme-button-hover rounded-lg transition-colors border border-theme"
             >
-              <Calendar className="w-5 h-5 text-[#D37E91]" />
+              <Calendar className="w-5 h-5 text-module-fg" />
               <div>
-                <div className="font-medium text-[rgb(var(--text-primary))] dark:text-white">Today's Tasks</div>
-                <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-white/60">View today</div>
+                <div className="font-medium text-theme-primary">Today's Tasks</div>
+                <div className="text-xs text-theme-secondary">View today</div>
               </div>
             </Link>
             <Link
               href="/dashboard/tasks/my-tasks"
-              className="flex items-center gap-3 p-4 bg-theme-button dark:bg-white/[0.05] hover:bg-theme-button-hover dark:hover:bg-white/[0.08] rounded-lg transition-colors border border-theme dark:border-white/[0.06]"
+              className="flex items-center gap-3 p-4 bg-theme-button hover:bg-theme-button-hover rounded-lg transition-colors border border-theme"
             >
-              <CheckCircle2 className="w-5 h-5 text-[#D37E91]" />
+              <CheckCircle2 className="w-5 h-5 text-module-fg" />
               <div>
-                <div className="font-medium text-[rgb(var(--text-primary))] dark:text-white">My Tasks</div>
-                <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-white/60">Assigned to me</div>
+                <div className="font-medium text-theme-primary">My Tasks</div>
+                <div className="text-xs text-theme-secondary">Assigned to me</div>
               </div>
             </Link>
             <Link
               href="/dashboard/tasks/compliance"
-              className="flex items-center gap-3 p-4 bg-theme-button dark:bg-white/[0.05] hover:bg-theme-button-hover dark:hover:bg-white/[0.08] rounded-lg transition-colors border border-theme dark:border-white/[0.06]"
+              className="flex items-center gap-3 p-4 bg-theme-button hover:bg-theme-button-hover rounded-lg transition-colors border border-theme"
             >
-              <ShieldCheck className="w-5 h-5 text-[#D37E91]" />
+              <ShieldCheck className="w-5 h-5 text-module-fg" />
               <div>
-                <div className="font-medium text-[rgb(var(--text-primary))] dark:text-white">Compliance</div>
-                <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-white/60">Templates</div>
+                <div className="font-medium text-theme-primary">Compliance</div>
+                <div className="text-xs text-theme-secondary">Templates</div>
               </div>
             </Link>
             <Link
               href="/dashboard/tasks/templates"
-              className="flex items-center gap-3 p-4 bg-theme-button dark:bg-white/[0.05] hover:bg-theme-button-hover dark:hover:bg-white/[0.08] rounded-lg transition-colors border border-theme dark:border-white/[0.06]"
+              className="flex items-center gap-3 p-4 bg-theme-button hover:bg-theme-button-hover rounded-lg transition-colors border border-theme"
             >
-              <FileText className="w-5 h-5 text-[#D37E91]" />
+              <FileText className="w-5 h-5 text-module-fg" />
               <div>
-                <div className="font-medium text-[rgb(var(--text-primary))] dark:text-white">Templates</div>
-                <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-white/60">Custom templates</div>
+                <div className="font-medium text-theme-primary">Templates</div>
+                <div className="text-xs text-theme-secondary">Custom templates</div>
               </div>
             </Link>
           </div>
         </div>
 
         {/* Recent Tasks */}
-        <div className="bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl p-6">
+        <div className="bg-theme-surface border border-theme rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white">Recent Tasks</h2>
+            <h2 className="text-xl font-semibold text-theme-primary">Recent Tasks</h2>
             <Link
               href="/dashboard/tasks/my-tasks"
-              className="text-sm text-[#D37E91] hover:text-[#D37E91]/80"
+              className="text-sm text-module-fg hover:text-module-fg/70"
             >
               View all
             </Link>
           </div>
           <div className="space-y-3">
             {recentTasks.length === 0 ? (
-              <div className="text-center py-8 text-[rgb(var(--text-tertiary))] dark:text-white/40">
+              <div className="text-center py-8 text-theme-tertiary">
                 <p>No recent tasks</p>
               </div>
             ) : (
@@ -304,13 +304,13 @@ function TasksDashboardContent() {
                 <Link
                   key={task.id}
                   href={`/dashboard/tasks/my-tasks?task=${task.id}`}
-                  className="flex items-center justify-between p-3 bg-theme-button dark:bg-white/[0.05] hover:bg-theme-button-hover dark:hover:bg-white/[0.08] rounded-lg transition-colors"
+                  className="flex items-center justify-between p-3 bg-theme-button hover:bg-theme-button-hover rounded-lg transition-colors"
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-[rgb(var(--text-primary))] dark:text-white truncate">
+                    <div className="font-medium text-theme-primary truncate">
                       {task.custom_name || task.template?.name || 'Untitled Task'}
                     </div>
-                    <div className="text-xs text-[rgb(var(--text-secondary))] dark:text-white/60 mt-1">
+                    <div className="text-xs text-theme-secondary mt-1">
                       {task.due_date} {task.due_time ? `at ${task.due_time}` : ''}
                     </div>
                   </div>
@@ -337,7 +337,7 @@ export default function TasksPage() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-[rgb(var(--text-primary))] dark:text-white">Loading...</div>
+        <div className="text-theme-primary">Loading...</div>
       </div>
     }>
       <TasksDashboardContent />

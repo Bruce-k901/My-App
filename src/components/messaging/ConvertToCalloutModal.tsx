@@ -158,15 +158,15 @@ export default function ConvertToCalloutModal({
               <Wrench className="h-5 w-5 text-blue-400" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-white">Create Callout</h2>
-              <p className="text-sm text-white/60">Create a maintenance callout from this message</p>
+              <h2 className="text-xl font-semibold text-theme-primary">Create Callout</h2>
+              <p className="text-sm text-theme-tertiary">Create a maintenance callout from this message</p>
             </div>
           </div>
           <button
             onClick={onClose}
             className="p-2 hover:bg-white/[0.06] rounded-lg transition-colors"
           >
-            <X className="h-5 w-5 text-white/60" />
+            <X className="h-5 w-5 text-theme-tertiary" />
           </button>
         </div>
 
@@ -174,19 +174,19 @@ export default function ConvertToCalloutModal({
         <div className="p-6 space-y-4">
           {/* Original Message Preview */}
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
-            <p className="text-xs text-white/40 mb-2">Original Message:</p>
-            <p className="text-sm text-white/80 line-clamp-3">{message.content}</p>
+            <p className="text-xs text-theme-tertiary mb-2">Original Message:</p>
+            <p className="text-sm text-theme-secondary line-clamp-3">{message.content}</p>
           </div>
 
           {/* Asset Selection */}
           <div>
-            <label className="block text-sm font-medium text-white mb-2">
+            <label className="block text-sm font-medium text-theme-primary mb-2">
               Asset *
             </label>
             <select
               value={calloutData.asset_id}
               onChange={(e) => setCalloutData({ ...calloutData, asset_id: e.target.value })}
-              className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-[#D37E91] transition-colors"
+              className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91] transition-colors"
               required
             >
               <option value="">Select an asset...</option>
@@ -200,7 +200,7 @@ export default function ConvertToCalloutModal({
 
           {/* Callout Type */}
           <div>
-            <label className="block text-sm font-medium text-white mb-2">
+            <label className="block text-sm font-medium text-theme-primary mb-2">
               Callout Type
             </label>
             <div className="flex gap-2">
@@ -212,7 +212,7 @@ export default function ConvertToCalloutModal({
                     flex-1 px-4 py-2 rounded-lg border transition-all capitalize
                     ${calloutData.callout_type === type
                       ? 'bg-transparent border-[#D37E91] text-[#D37E91]'
-                      : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                      : 'bg-white/[0.03] border-white/[0.06] text-theme-tertiary hover:bg-white/[0.06]'
                     }
                   `}
                 >
@@ -224,7 +224,7 @@ export default function ConvertToCalloutModal({
 
           {/* Priority */}
           <div>
-            <label className="block text-sm font-medium text-white mb-2">
+            <label className="block text-sm font-medium text-theme-primary mb-2">
               Priority
             </label>
             <div className="flex gap-2">
@@ -240,7 +240,7 @@ export default function ConvertToCalloutModal({
                         : priority === 'medium'
                         ? 'bg-yellow-500/20 border-yellow-500/40 text-yellow-400'
                         : 'bg-blue-500/20 border-blue-500/40 text-blue-400'
-                      : 'bg-white/[0.03] border-white/[0.06] text-white/60 hover:bg-white/[0.06]'
+                      : 'bg-white/[0.03] border-white/[0.06] text-theme-tertiary hover:bg-white/[0.06]'
                     }
                   `}
                 >
@@ -252,14 +252,14 @@ export default function ConvertToCalloutModal({
 
           {/* Fault Description */}
           <div>
-            <label className="block text-sm font-medium text-white mb-2">
+            <label className="block text-sm font-medium text-theme-primary mb-2">
               Fault Description *
             </label>
             <textarea
               value={calloutData.fault_description}
               onChange={(e) => setCalloutData({ ...calloutData, fault_description: e.target.value })}
               rows={4}
-              className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#D37E91] transition-colors resize-none"
+              className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:border-[#D37E91] transition-colors resize-none"
               placeholder="Describe the issue..."
               required
             />
@@ -267,14 +267,14 @@ export default function ConvertToCalloutModal({
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-white mb-2">
+            <label className="block text-sm font-medium text-theme-primary mb-2">
               Additional Notes
             </label>
             <textarea
               value={calloutData.notes}
               onChange={(e) => setCalloutData({ ...calloutData, notes: e.target.value })}
               rows={3}
-              className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#D37E91] transition-colors resize-none"
+              className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:border-[#D37E91] transition-colors resize-none"
               placeholder="Add any additional information..."
             />
           </div>
@@ -284,7 +284,7 @@ export default function ConvertToCalloutModal({
         <div className="flex items-center justify-end gap-3 p-6 border-t border-white/[0.06]">
           <button
             onClick={onClose}
-            className="px-6 py-2.5 bg-white/[0.03] border border-white/[0.06] rounded-lg text-white hover:bg-white/[0.06] transition-colors"
+            className="px-6 py-2.5 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary hover:bg-white/[0.06] transition-colors"
             disabled={loading}
           >
             Cancel

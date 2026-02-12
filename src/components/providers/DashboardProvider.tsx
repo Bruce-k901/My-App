@@ -153,8 +153,8 @@ export default function DashboardProvider({ children }: { children: React.ReactN
       <div className="min-h-[40vh] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91] mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading dashboard data...</p>
-          <p className="text-slate-500 text-sm mt-2">This should only take a moment</p>
+          <p className="text-theme-tertiary">Loading dashboard data...</p>
+          <p className="text-theme-tertiary text-sm mt-2">This should only take a moment</p>
         </div>
       </div>
     );

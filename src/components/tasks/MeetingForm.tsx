@@ -42,11 +42,11 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
     <div className="space-y-4">
       {/* Title */}
       <div>
-        <label className="flex items-center justify-between text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+        <label className="flex items-center justify-between text-sm font-medium text-theme-secondary mb-2">
           <span>
             Title <span className="text-[#D37E91]">*</span>
           </span>
-          <span className="text-xs text-gray-500 dark:text-white/40 font-normal">
+          <span className="text-xs text-theme-tertiary font-normal">
             Auto-generated from selections
           </span>
         </label>
@@ -65,7 +65,7 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
             // When user focuses on title field, allow manual editing
             // Auto-generation will be disabled if they change it
           }}
-          className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+          className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
           placeholder="Enter meeting title"
           required
         />
@@ -73,21 +73,21 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+        <label className="block text-sm font-medium text-theme-secondary mb-2">
           Description
         </label>
         <textarea
           value={formData.description || ''}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           rows={3}
-          className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 resize-none"
+          className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 resize-none"
           placeholder="Meeting agenda or notes..."
         />
       </div>
 
       {/* Meeting Type */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+        <label className="block text-sm font-medium text-theme-secondary mb-2">
           Meeting Type
         </label>
         <select
@@ -99,7 +99,7 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
               onTemplateChange(undefined, undefined);
             }
           }}
-          className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 appearance-none cursor-pointer"
+          className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 appearance-none cursor-pointer"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
             backgroundRepeat: 'no-repeat',
@@ -107,10 +107,10 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
             paddingRight: '2.5rem',
           }}
         >
-          <option value="1-2-1" className="bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white">1-2-1</option>
-          <option value="team_meeting" className="bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white">Team Meeting</option>
-          <option value="client_call" className="bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white">Client Call</option>
-          <option value="other" className="bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white">Other</option>
+          <option value="1-2-1" className="bg-white dark:bg-[#0B0D13] text-theme-primary">1-2-1</option>
+          <option value="team_meeting" className="bg-white dark:bg-[#0B0D13] text-theme-primary">Team Meeting</option>
+          <option value="client_call" className="bg-white dark:bg-[#0B0D13] text-theme-primary">Client Call</option>
+          <option value="other" className="bg-white dark:bg-[#0B0D13] text-theme-primary">Other</option>
         </select>
       </div>
 
@@ -142,13 +142,13 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
 
       {/* Site */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+        <label className="block text-sm font-medium text-theme-secondary mb-2">
           Site <span className="text-[#D37E91]">*</span>
         </label>
         <select
           value={formData.siteId || ''}
           onChange={(e) => setFormData({ ...formData, siteId: e.target.value })}
-          className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 appearance-none cursor-pointer"
+          className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 appearance-none cursor-pointer"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
             backgroundRepeat: 'no-repeat',
@@ -157,9 +157,9 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
           }}
           required
         >
-          <option value="" className="bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white">Select a site...</option>
+          <option value="" className="bg-white dark:bg-[#0B0D13] text-theme-primary">Select a site...</option>
           {sites.map((site) => (
-            <option key={site.id} value={site.id} className="bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white">
+            <option key={site.id} value={site.id} className="bg-white dark:bg-[#0B0D13] text-theme-primary">
               {site.name || 'Unnamed Site'}
             </option>
           ))}
@@ -184,7 +184,7 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
 
       {/* Duration */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+        <label className="block text-sm font-medium text-theme-secondary mb-2">
           Duration
         </label>
         <div className="grid grid-cols-4 gap-2">
@@ -196,7 +196,7 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 formData.duration === dur
                   ? 'bg-[#D37E91] text-white'
-                  : 'bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:text-gray-900 dark:hover:text-white'
+                  : 'bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-secondary/60 hover:text-theme-primary'
               }`}
             >
               {dur} min
@@ -208,7 +208,7 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
             className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
               formData.duration === 'custom'
                 ? 'bg-[#D37E91] text-white'
-                : 'bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:text-gray-900 dark:hover:text-white'
+                : 'bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-secondary/60 hover:text-theme-primary'
             }`}
           >
             Custom
@@ -222,14 +222,14 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
             value={formData.customDuration || ''}
             onChange={(e) => setFormData({ ...formData, customDuration: parseInt(e.target.value) || undefined })}
             placeholder="Minutes"
-            className="w-full mt-2 px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+            className="w-full mt-2 px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
           />
         )}
       </div>
 
       {/* Location */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+        <label className="block text-sm font-medium text-theme-secondary mb-2">
           Location
         </label>
         <div className="space-y-2">
@@ -242,7 +242,7 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all capitalize ${
                   formData.location === loc
                     ? 'bg-[#D37E91] text-white'
-                    : 'bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white/60 hover:text-gray-900 dark:hover:text-white'
+                    : 'bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-secondary/60 hover:text-theme-primary'
                 }`}
               >
                 {loc}
@@ -255,7 +255,7 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
               value={formData.customLocation || ''}
               onChange={(e) => setFormData({ ...formData, customLocation: e.target.value })}
               placeholder="Enter location"
-              className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+              className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
             />
           )}
         </div>
@@ -264,7 +264,7 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
       {/* Meeting Link */}
       {formData.location === 'virtual' && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-2">
+          <label className="block text-sm font-medium text-theme-secondary mb-2">
             Meeting Link
           </label>
           <input
@@ -272,7 +272,7 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
             value={formData.meetingLink || ''}
             onChange={(e) => setFormData({ ...formData, meetingLink: e.target.value })}
             placeholder="https://..."
-            className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+            className="w-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
           />
         </div>
       )}
@@ -284,9 +284,9 @@ export default function MeetingForm({ formData, setFormData, sites, companyId, o
           id="sendInvites"
           checked={formData.sendInvites !== false}
           onChange={(e) => setFormData({ ...formData, sendInvites: e.target.checked })}
-          className="w-4 h-4 rounded border-gray-300 dark:border-white/[0.2] bg-white dark:bg-white/[0.03] text-[#D37E91] focus:ring-[#D37E91]"
+          className="w-4 h-4 rounded border-gray-300 dark:border-white/[0.2] bg-theme-surface text-[#D37E91] focus:ring-[#D37E91]"
         />
-        <label htmlFor="sendInvites" className="text-sm text-gray-700 dark:text-white/80">
+        <label htmlFor="sendInvites" className="text-sm text-theme-secondary">
           Send calendar invites to participants
         </label>
       </div>

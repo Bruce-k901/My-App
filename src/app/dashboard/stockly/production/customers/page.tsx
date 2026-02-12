@@ -116,7 +116,7 @@ export default function CustomersPage() {
         window.history.replaceState({}, '', '/dashboard/stockly/production/customers');
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [customers]);
 
   // Calculate stats
@@ -289,7 +289,7 @@ export default function CustomersPage() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white/60">Loading customers...</p>
+          <p className="text-theme-tertiary">Loading customers...</p>
         </div>
       </div>
     );
@@ -302,8 +302,8 @@ export default function CustomersPage() {
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Wholesale Customers</h1>
-            <p className="text-white/50 text-sm mt-1">
+            <h1 className="text-2xl font-bold text-theme-primary">Wholesale Customers</h1>
+            <p className="text-theme-tertiary text-sm mt-1">
               Manage cafes and restaurants ordering from you
             </p>
           </div>
@@ -317,14 +317,14 @@ export default function CustomersPage() {
                   type: 'info',
                 });
               }}
-              className="bg-transparent text-emerald-400 border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)]"
+              className="bg-transparent text-module-fg border-emerald-500 hover:shadow-module-glow"
             >
               <Upload className="w-4 h-4 mr-2" />
               Import CSV
             </Button>
             <Button
               onClick={handleAddCustomer}
-              className="bg-transparent text-emerald-400 border border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)]"
+              className="bg-transparent text-module-fg border border-emerald-500 hover:shadow-module-glow"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Customer
@@ -348,13 +348,13 @@ export default function CustomersPage() {
         {/* Empty State */}
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
           <div className="max-w-md mx-auto">
-            <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Plus className="w-8 h-8 text-emerald-400" />
+            <div className="w-16 h-16 bg-module-fg/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Plus className="w-8 h-8 text-module-fg" />
             </div>
-            <h3 className="text-xl font-semibold text-white mb-2">
+            <h3 className="text-xl font-semibold text-theme-primary mb-2">
               {supplierMessage ? 'Supplier Setup Required' : 'No customers yet'}
             </h3>
-            <p className="text-white/60 text-sm mb-6">
+            <p className="text-theme-tertiary text-sm mb-6">
               {supplierMessage 
                 ? supplierMessage + ' Once your supplier profile is set up, you can start adding customers.'
                 : "Add your first wholesale customer to start taking orders. When you add a customer, they'll automatically receive a portal invitation email."}
@@ -362,7 +362,7 @@ export default function CustomersPage() {
             {!supplierMessage && (
               <Button
                 onClick={handleAddCustomer}
-                className="bg-transparent text-emerald-400 border border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)]"
+                className="bg-transparent text-module-fg border border-emerald-500 hover:shadow-module-glow"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add First Customer
@@ -397,8 +397,8 @@ export default function CustomersPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Wholesale Customers</h1>
-          <p className="text-white/50 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-theme-primary">Wholesale Customers</h1>
+          <p className="text-theme-tertiary text-sm mt-1">
             Manage cafes and restaurants ordering from you
           </p>
         </div>
@@ -413,14 +413,14 @@ export default function CustomersPage() {
                 type: 'info',
               });
             }}
-            className="bg-transparent text-emerald-400 border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)]"
+            className="bg-transparent text-module-fg border-emerald-500 hover:shadow-module-glow"
           >
             <Upload className="w-4 h-4 mr-2" />
             Import CSV
           </Button>
           <Button
             onClick={handleAddCustomer}
-            className="bg-transparent text-emerald-400 border border-emerald-500 hover:shadow-[0_0_12px_rgba(16,185,129,0.7)]"
+            className="bg-transparent text-module-fg border border-emerald-500 hover:shadow-module-glow"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Customer

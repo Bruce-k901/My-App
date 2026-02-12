@@ -258,7 +258,7 @@ export default function OnboardingPacksPage() {
   if (!profile?.id) {
     return (
       <div className="p-6">
-        <div className="flex items-center gap-2 text-gray-500 dark:text-white/60">
+        <div className="flex items-center gap-2 text-theme-tertiary">
           <Loader2 className="w-5 h-5 animate-spin" />
           Loading profile…
         </div>
@@ -270,10 +270,10 @@ export default function OnboardingPacksPage() {
     return (
       <div className="p-6 space-y-4">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Onboarding Packs</h1>
-          <p className="text-sm text-gray-900 dark:text-white/60">This page is for managers/admins only.</p>
+          <h1 className="text-xl font-semibold text-theme-primary">Onboarding Packs</h1>
+          <p className="text-sm text-theme-secondary">This page is for managers/admins only.</p>
         </div>
-        <Link href="/dashboard/people/onboarding/my-docs" className="text-sm text-[#D37E91] hover:underline">
+        <Link href="/dashboard/people/onboarding/my-docs" className="text-sm text-module-fg hover:underline">
           View My Onboarding Docs
         </Link>
       </div>
@@ -305,28 +305,28 @@ export default function OnboardingPacksPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Onboarding Packs</h1>
-          <p className="text-sm text-gray-900 dark:text-white/60">Create and manage onboarding document packs for different roles</p>
+          <h1 className="text-xl font-semibold text-theme-primary">Onboarding Packs</h1>
+          <p className="text-sm text-theme-secondary">Create and manage onboarding document packs for different roles</p>
         </div>
         <div className="flex items-center gap-2">
           <Link
             href="/dashboard/people/onboarding/company-docs"
-            className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white/80 rounded-lg"
+            className="px-3 py-1.5 text-sm bg-theme-button hover:bg-theme-button-hover border border-theme text-theme-secondary rounded-lg"
           >
             Manage Docs
           </Link>
-          <Link href="/dashboard/people/onboarding" className="text-sm text-[#D37E91] hover:underline">
+          <Link href="/dashboard/people/onboarding" className="text-sm text-module-fg hover:underline">
             Back
           </Link>
         </div>
       </div>
 
       {errorMsg && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-sm text-red-200">{errorMsg}</div>
+        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-sm text-red-600 dark:text-red-400">{errorMsg}</div>
       )}
 
       {loading ? (
-        <div className="flex items-center gap-2 text-gray-500 dark:text-white/60">
+        <div className="flex items-center gap-2 text-theme-tertiary">
           <Loader2 className="w-5 h-5 animate-spin" />
           Loading…
         </div>
@@ -336,37 +336,37 @@ export default function OnboardingPacksPage() {
           {!showCreateForm ? (
             <button
               onClick={() => setShowCreateForm(true)}
-              className="px-4 py-2 rounded-lg text-sm bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all flex items-center gap-2"
+              className="px-4 py-2 rounded-lg text-sm bg-transparent text-module-fg border border-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] transition-all flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               Create New Pack
             </button>
           ) : (
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Create New Onboarding Pack</h2>
+            <div className="bg-theme-surface border border-theme rounded-xl p-6">
+              <h2 className="text-lg font-semibold text-theme-primary mb-4">Create New Onboarding Pack</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Pack Name *</label>
+                  <label className="text-xs text-theme-tertiary block mb-1">Pack Name *</label>
                   <input
                     type="text"
                     value={newPackName}
                     onChange={(e) => setNewPackName(e.target.value)}
                     placeholder="e.g., FOH - Hourly Staff"
-                    className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm"
+                    className="w-full px-3 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary text-sm"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Description</label>
+                  <label className="text-xs text-theme-tertiary block mb-1">Description</label>
                   <input
                     type="text"
                     value={newPackDescription}
                     onChange={(e) => setNewPackDescription(e.target.value)}
                     placeholder="e.g., For front-of-house hourly employees"
-                    className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm"
+                    className="w-full px-3 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary text-sm"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Staff Type *</label>
+                  <label className="text-xs text-theme-tertiary block mb-1">Staff Type *</label>
                   <Select
                     value={newPackStaffType}
                     onValueChange={(v) => {
@@ -384,7 +384,7 @@ export default function OnboardingPacksPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">BOH/FOH</label>
+                  <label className="text-xs text-theme-tertiary block mb-1">BOH/FOH</label>
                   <Select
                     value={newPackBohFoh}
                     onValueChange={(v) => setNewPackBohFoh(v as 'FOH' | 'BOH' | 'BOTH')}
@@ -398,7 +398,7 @@ export default function OnboardingPacksPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Pay Type</label>
+                  <label className="text-xs text-theme-tertiary block mb-1">Pay Type</label>
                   <Select
                     value={newPackPayType}
                     onValueChange={(v) => setNewPackPayType(v as 'hourly' | 'salaried')}
@@ -414,13 +414,13 @@ export default function OnboardingPacksPage() {
                 <button
                   onClick={() => void createPack()}
                   disabled={creatingPack || !newPackName.trim()}
-                  className="px-4 py-2 rounded-lg text-sm bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg text-sm bg-transparent text-module-fg border border-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] transition-all disabled:opacity-50"
                 >
                   {creatingPack ? 'Creating…' : 'Create Pack'}
                 </button>
                 <button
                   onClick={() => setShowCreateForm(false)}
-                  className="px-4 py-2 rounded-lg text-sm bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white/80"
+                  className="px-4 py-2 rounded-lg text-sm bg-theme-button hover:bg-theme-button-hover border border-theme text-theme-secondary"
                 >
                   Cancel
                 </button>
@@ -430,18 +430,18 @@ export default function OnboardingPacksPage() {
 
           {/* Packs List & Editor */}
           {packs.length === 0 ? (
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-8 text-center">
-              <Package className="w-12 h-12 text-gray-900 dark:text-white/30 mx-auto mb-4" />
-              <div className="text-gray-900 dark:text-white font-semibold text-lg">No onboarding packs yet</div>
-              <div className="text-gray-900 dark:text-white/60 text-sm mt-2">
+            <div className="bg-theme-surface border border-theme rounded-xl p-8 text-center">
+              <Package className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
+              <div className="text-theme-primary font-semibold text-lg">No onboarding packs yet</div>
+              <div className="text-theme-secondary text-sm mt-2">
                 Create a starter kit or add your first pack to get started
               </div>
             </div>
           ) : (
             <div className="space-y-6">
               {/* Pack List with Expandable Documents */}
-              <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-4">
-                <h2 className="text-gray-900 dark:text-white font-semibold mb-3">Packs ({packs.length})</h2>
+              <div className="bg-theme-surface border border-theme rounded-xl p-4">
+                <h2 className="text-theme-primary font-semibold mb-3">Packs ({packs.length})</h2>
                 <div className="space-y-3">
                   {packs.map((p) => {
                     const packDocsList = packDocs.filter((pd) => pd.pack_id === p.id)
@@ -451,7 +451,7 @@ export default function OnboardingPacksPage() {
                     return (
                       <div
                         key={p.id}
-                        className="border border-gray-200 dark:border-white/[0.05] rounded-lg bg-gray-50 dark:bg-white/[0.02] overflow-hidden"
+                        className="border border-theme rounded-lg bg-theme-button overflow-hidden"
                       >
                         {/* Pack Header */}
                         <div className="flex items-center justify-between p-3">
@@ -460,20 +460,20 @@ export default function OnboardingPacksPage() {
                             className="flex-1 flex items-center gap-2 text-left"
                           >
                             {isExpanded ? (
-                              <ChevronDown className="w-4 h-4 text-gray-900 dark:text-white/50 flex-shrink-0" />
+                              <ChevronDown className="w-4 h-4 text-theme-tertiary flex-shrink-0" />
                             ) : (
-                              <ChevronRight className="w-4 h-4 text-gray-900 dark:text-white/50 flex-shrink-0" />
+                              <ChevronRight className="w-4 h-4 text-theme-tertiary flex-shrink-0" />
                             )}
                             <div className="flex-1 min-w-0">
-                              <div className="font-medium text-sm text-gray-900 dark:text-white">{p.name}</div>
-                              <div className="text-xs text-gray-900 dark:text-white/50 mt-0.5">
+                              <div className="font-medium text-sm text-theme-primary">{p.name}</div>
+                              <div className="text-xs text-theme-tertiary mt-0.5">
                                 {p.staff_type === 'head_office' ? 'Head Office' : 'Site Staff'} • {p.staff_type === 'site_staff' ? `${p.boh_foh} • ` : ''}{p.pay_type} • {docCount} {docCount === 1 ? 'doc' : 'docs'}
                               </div>
                             </div>
                           </button>
                           <button
                             onClick={() => setSelectedPackId(p.id)}
-                            className="px-3 py-1.5 rounded text-xs bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white"
+                            className="px-3 py-1.5 rounded text-xs bg-theme-muted hover:bg-theme-button-hover border border-theme text-theme-primary"
                           >
                             Edit
                           </button>
@@ -481,9 +481,9 @@ export default function OnboardingPacksPage() {
 
                         {/* Expandable Document List */}
                         {isExpanded && (
-                          <div className="border-t border-gray-200 dark:border-white/[0.05] p-3 bg-gray-50 dark:bg-white/[0.02] space-y-2">
+                          <div className="border-t border-theme p-3 bg-theme-button space-y-2">
                             {packDocsList.length === 0 ? (
-                              <div className="text-xs text-gray-900 dark:text-white/40 text-center py-2">
+                              <div className="text-xs text-theme-tertiary text-center py-2">
                                 No documents yet
                               </div>
                             ) : (
@@ -492,14 +492,14 @@ export default function OnboardingPacksPage() {
                                 return (
                                   <div
                                     key={pd.id}
-                                    className="flex items-center gap-2 p-2 rounded bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.03]"
+                                    className="flex items-center gap-2 p-2 rounded bg-theme-button border border-theme"
                                   >
-                                    <FileText className="w-3.5 h-3.5 text-gray-900 dark:text-white/40 flex-shrink-0" />
+                                    <FileText className="w-3.5 h-3.5 text-theme-tertiary flex-shrink-0" />
                                     <div className="flex-1 min-w-0">
-                                      <div className="text-xs text-gray-900 dark:text-white truncate">
+                                      <div className="text-xs text-theme-primary truncate">
                                         {gd?.name || 'Unnamed'}
                                       </div>
-                                      <div className="text-[10px] text-gray-900 dark:text-white/40">
+                                      <div className="text-[10px] text-theme-tertiary">
                                         {pd.required ? 'Required' : 'Optional'}
                                       </div>
                                     </div>
@@ -516,24 +516,24 @@ export default function OnboardingPacksPage() {
               </div>
 
               {/* Pack Editor */}
-              <div className="lg:col-span-2 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+              <div className="lg:col-span-2 bg-theme-surface border border-theme rounded-xl p-6">
                 {selectedPack ? (
                   <>
                     <div className="mb-6">
-                      <h2 className="text-gray-900 dark:text-white font-semibold text-lg">{selectedPack.name}</h2>
+                      <h2 className="text-theme-primary font-semibold text-lg">{selectedPack.name}</h2>
                       {selectedPack.description && (
-                        <p className="text-gray-900 dark:text-white/60 text-sm mt-1">{selectedPack.description}</p>
+                        <p className="text-theme-secondary text-sm mt-1">{selectedPack.description}</p>
                       )}
                       <div className="flex items-center gap-2 mt-2">
-                        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white/70">
+                        <span className="text-xs px-2 py-1 rounded-full bg-theme-muted text-theme-secondary">
                           {selectedPack.staff_type === 'head_office' ? 'Head Office' : 'Site Staff'}
                         </span>
                         {selectedPack.staff_type === 'site_staff' && (
-                          <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white/70">
+                          <span className="text-xs px-2 py-1 rounded-full bg-theme-muted text-theme-secondary">
                             {selectedPack.boh_foh}
                           </span>
                         )}
-                        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white/70">
+                        <span className="text-xs px-2 py-1 rounded-full bg-theme-muted text-theme-secondary">
                           {selectedPack.pay_type}
                         </span>
                       </div>
@@ -541,10 +541,10 @@ export default function OnboardingPacksPage() {
 
                     {/* Add Documents */}
                     <div className="mb-6">
-                      <label className="text-sm text-gray-900 dark:text-white/70 block mb-2">
+                      <label className="text-sm text-theme-secondary block mb-2">
                         Add Documents to Pack
                         {docsToAdd.length > 0 && (
-                          <span className="ml-2 text-xs text-gray-900 dark:text-white/50">
+                          <span className="ml-2 text-xs text-theme-tertiary">
                             ({docsToAdd.length} selected)
                           </span>
                         )}
@@ -563,7 +563,7 @@ export default function OnboardingPacksPage() {
                         <button
                           onClick={() => void addDocsToPack()}
                           disabled={docsToAdd.length === 0 || addingDocs}
-                          className="px-4 py-2 rounded-lg text-sm bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-4 py-2 rounded-lg text-sm bg-theme-muted hover:bg-theme-button-hover border border-theme text-theme-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {addingDocs ? 'Adding…' : docsToAdd.length > 0 ? `Add (${docsToAdd.length})` : 'Add'}
                         </button>
@@ -572,11 +572,11 @@ export default function OnboardingPacksPage() {
 
                     {/* Documents in Pack */}
                     <div>
-                      <div className="text-sm text-gray-900 dark:text-white/70 mb-2">
+                      <div className="text-sm text-theme-secondary mb-2">
                         Documents in Pack ({selectedPackDocs.length})
                       </div>
                       {selectedPackDocs.length === 0 ? (
-                        <div className="text-center py-8 text-gray-900 dark:text-white/60 text-sm">
+                        <div className="text-center py-8 text-theme-secondary text-sm">
                           No documents in this pack yet. Add some above!
                         </div>
                       ) : (
@@ -586,15 +586,15 @@ export default function OnboardingPacksPage() {
                             return (
                               <div
                                 key={pd.id}
-                                className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]"
+                                className="flex items-center justify-between p-3 rounded-lg bg-theme-button border border-theme"
                               >
                                 <div className="flex items-center gap-3 flex-1">
-                                  <FileText className="w-4 h-4 text-gray-900 dark:text-white/40 flex-shrink-0" />
+                                  <FileText className="w-4 h-4 text-theme-tertiary flex-shrink-0" />
                                   <div className="flex-1 min-w-0">
-                                    <div className="text-gray-900 dark:text-white text-sm font-medium truncate">
+                                    <div className="text-theme-primary text-sm font-medium truncate">
                                       {gd?.name || 'Unnamed'}
                                     </div>
-                                    <div className="text-xs text-gray-900 dark:text-white/50">
+                                    <div className="text-xs text-theme-tertiary">
                                       {gd?.category || 'Uncategorized'} •{' '}
                                       {pd.required ? 'Required' : 'Optional'}
                                     </div>
@@ -603,13 +603,13 @@ export default function OnboardingPacksPage() {
                                 <div className="flex items-center gap-2">
                                   <button
                                     onClick={() => void toggleRequired(pd.id, pd.required)}
-                                    className="px-2 py-1 rounded text-xs bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white"
+                                    className="px-2 py-1 rounded text-xs bg-theme-muted hover:bg-theme-button-hover border border-theme text-theme-primary"
                                   >
                                     {pd.required ? 'Make Optional' : 'Make Required'}
                                   </button>
                                   <button
                                     onClick={() => void removeDocFromPack(pd.id)}
-                                    className="px-2 py-1 rounded text-xs bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-200"
+                                    className="px-2 py-1 rounded text-xs bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-600 dark:text-red-400"
                                   >
                                     Remove
                                   </button>
@@ -622,7 +622,7 @@ export default function OnboardingPacksPage() {
                     </div>
                   </>
                 ) : (
-                  <div className="text-center py-12 text-gray-900 dark:text-white/60">Select a pack to edit</div>
+                  <div className="text-center py-12 text-theme-secondary">Select a pack to edit</div>
                 )}
               </div>
             </div>

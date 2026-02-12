@@ -84,7 +84,7 @@ export default function SiteSelector({
       value={effectiveValue || ""}
       onChange={(e) => effectiveOnChange(e.target.value || null)}
       className={`
-        h-10 px-3 rounded-lg border border-white/[0.12] bg-white/[0.06] text-white
+        h-10 px-3 rounded-lg border border-white/[0.12] bg-white/[0.06] text-theme-primary
         focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 focus:border-[#D37E91]/50
         hover:bg-white/[0.08] transition-colors
         ${className}
@@ -93,7 +93,7 @@ export default function SiteSelector({
     >
       <option value="">{loading ? "Loading..." : placeholder}</option>
       {sites.map((site) => (
-        <option key={site.id} value={site.id} className="bg-gray-800 text-white">
+        <option key={site.id} value={site.id} className="bg-gray-800 text-theme-primary">
           {site.name}
         </option>
       ))}

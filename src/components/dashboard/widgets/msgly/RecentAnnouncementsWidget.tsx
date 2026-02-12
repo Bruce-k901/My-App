@@ -149,11 +149,11 @@ export default function RecentAnnouncementsWidget({ companyId, siteId }: WidgetP
                 {announcement.title}
               </p>
               {announcement.message && (
-                <p className="text-xs text-[rgb(var(--text-secondary))] dark:text-white/60 line-clamp-2 mt-1">
+                <p className="text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary line-clamp-2 mt-1">
                   {announcement.message}
                 </p>
               )}
-              <div className="flex items-center gap-2 text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40 mt-2">
+              <div className="flex items-center gap-2 text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mt-2">
                 <span>{announcement.author_name}</span>
                 <span>•</span>
                 <Clock className="w-3 h-3" />

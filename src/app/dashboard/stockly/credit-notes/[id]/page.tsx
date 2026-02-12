@@ -90,13 +90,13 @@ interface CreditNoteRequest {
 }
 
 const CN_STATUS_CONFIG = {
-  draft: { label: 'Draft', color: 'bg-gray-500/20 text-gray-400 border-gray-500/30' },
+  draft: { label: 'Draft', color: 'bg-theme-surface-elevated0/20 text-theme-tertiary border-gray-500/30' },
   submitted: { label: 'Submitted', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
   acknowledged: { label: 'Acknowledged', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
   approved: { label: 'Approved', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
   disputed: { label: 'Disputed', color: 'bg-red-500/20 text-red-400 border-red-500/30' },
   received: { label: 'CN Received', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
-  closed: { label: 'Closed', color: 'bg-gray-500/20 text-gray-400 border-gray-500/30' },
+  closed: { label: 'Closed', color: 'bg-theme-surface-elevated0/20 text-theme-tertiary border-gray-500/30' },
 } as const;
 
 const REJECTION_REASONS = [
@@ -270,9 +270,9 @@ export default function CreditNoteDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
+      <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-white">Loading credit note...</div>
+          <div className="text-theme-primary">Loading credit note...</div>
         </div>
       </div>
     );
@@ -280,9 +280,9 @@ export default function CreditNoteDetailPage() {
 
   if (!creditNote) {
     return (
-      <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
+      <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-white">Credit note not found</div>
+          <div className="text-theme-primary">Credit note not found</div>
         </div>
       </div>
     );
@@ -292,7 +292,7 @@ export default function CreditNoteDetailPage() {
   const canEdit = ['draft', 'disputed'].includes(creditNote.status);
 
   return (
-    <div className="min-h-screen bg-[#0f1220] p-4 md:p-8">
+    <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
@@ -307,10 +307,10 @@ export default function CreditNoteDetailPage() {
 
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold text-theme-primary mb-2">
                 {creditNote.request_number}
               </h1>
-              <p className="text-slate-400 text-sm">
+              <p className="text-theme-tertiary text-sm">
                 {creditNote.supplier?.name}
                 {creditNote.delivery && ` • Linked to: ${creditNote.delivery.invoice_number || 'Delivery'} (${formatDate(creditNote.delivery.delivery_date)})`}
               </p>
@@ -324,52 +324,52 @@ export default function CreditNoteDetailPage() {
         {/* Line Items */}
         <div className="bg-white/[0.03] border border-neutral-800 rounded-xl overflow-hidden mb-6">
           <div className="p-6 border-b border-neutral-800">
-            <h2 className="text-lg font-semibold text-white">Line Items</h2>
+            <h2 className="text-lg font-semibold text-theme-primary">Line Items</h2>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-white/[0.05] border-b border-neutral-800">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Item</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase">Reason</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase">Qty</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase">Price</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase">VAT</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase">Total</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-theme-tertiary uppercase">Item</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-theme-tertiary uppercase">Reason</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-theme-tertiary uppercase">Qty</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-theme-tertiary uppercase">Price</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-theme-tertiary uppercase">VAT</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-theme-tertiary uppercase">Total</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-800">
                 {creditNote.lines?.map((line) => (
                   <tr key={line.id} className="hover:bg-white/[0.05] transition-colors">
                     <td className="px-4 py-4">
-                      <div className="text-sm text-white font-medium">{line.description}</div>
+                      <div className="text-sm text-theme-primary font-medium">{line.description}</div>
                       {line.notes && (
-                        <div className="text-xs text-slate-400 mt-1">{line.notes}</div>
+                        <div className="text-xs text-theme-tertiary mt-1">{line.notes}</div>
                       )}
                       {line.photo_url && (
                         <a
                           href={line.photo_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-[#D37E91] hover:underline mt-1 inline-flex items-center gap-1"
+                          className="text-xs text-module-fg hover:underline mt-1 inline-flex items-center gap-1"
                         >
                           <Upload size={12} />
                           View Photo
                         </a>
                       )}
                     </td>
-                    <td className="px-4 py-4 text-sm text-slate-300">
+                    <td className="px-4 py-4 text-sm text-theme-secondary">
                       {getReasonLabel(line.reason)}
                     </td>
-                    <td className="px-4 py-4 text-sm text-white text-right">{line.quantity}</td>
-                    <td className="px-4 py-4 text-sm text-white text-right">
+                    <td className="px-4 py-4 text-sm text-theme-primary text-right">{line.quantity}</td>
+                    <td className="px-4 py-4 text-sm text-theme-primary text-right">
                       {formatCurrency(line.unit_price)}
                     </td>
-                    <td className="px-4 py-4 text-sm text-slate-300 text-right">
+                    <td className="px-4 py-4 text-sm text-theme-secondary text-right">
                       {line.vat_rate}%
                     </td>
-                    <td className="px-4 py-4 text-sm text-white font-medium text-right">
+                    <td className="px-4 py-4 text-sm text-theme-primary font-medium text-right">
                       {formatCurrency(line.line_total_inc_vat || line.line_total)}
                     </td>
                   </tr>
@@ -382,15 +382,15 @@ export default function CreditNoteDetailPage() {
           <div className="p-6 border-t border-neutral-800">
             <div className="flex justify-end">
               <div className="w-full md:w-64 space-y-2">
-                <div className="flex justify-between text-slate-300">
+                <div className="flex justify-between text-theme-secondary">
                   <span>Subtotal (Ex-VAT):</span>
                   <span className="font-medium">{formatCurrency(creditNote.subtotal)}</span>
                 </div>
-                <div className="flex justify-between text-slate-300">
+                <div className="flex justify-between text-theme-secondary">
                   <span>VAT:</span>
                   <span className="font-medium">{formatCurrency(creditNote.vat)}</span>
                 </div>
-                <div className="border-t border-neutral-700 pt-2 flex justify-between text-white">
+                <div className="border-t border-theme pt-2 flex justify-between text-theme-primary">
                   <span className="font-semibold">Total:</span>
                   <span className="font-bold text-lg">{formatCurrency(creditNote.total)}</span>
                 </div>
@@ -401,10 +401,10 @@ export default function CreditNoteDetailPage() {
 
         {/* Supplier Response */}
         <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Supplier Response</h2>
+          <h2 className="text-lg font-semibold text-theme-primary mb-4">Supplier Response</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Supplier CN Number</label>
+              <label className="block text-xs text-theme-tertiary mb-1">Supplier CN Number</label>
               <Input
                 value={supplierResponse.supplier_cn_number}
                 onChange={(e) =>
@@ -415,7 +415,7 @@ export default function CreditNoteDetailPage() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Supplier CN Date</label>
+              <label className="block text-xs text-theme-tertiary mb-1">Supplier CN Date</label>
               <Input
                 type="date"
                 value={supplierResponse.supplier_cn_date}
@@ -426,7 +426,7 @@ export default function CreditNoteDetailPage() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Approved Amount</label>
+              <label className="block text-xs text-theme-tertiary mb-1">Approved Amount</label>
               <Input
                 type="number"
                 step="0.01"
@@ -439,7 +439,7 @@ export default function CreditNoteDetailPage() {
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-xs text-slate-400 mb-1">Notes</label>
+              <label className="block text-xs text-theme-tertiary mb-1">Notes</label>
               <Input
                 value={supplierResponse.supplier_response_notes}
                 onChange={(e) =>
@@ -462,7 +462,7 @@ export default function CreditNoteDetailPage() {
 
         {/* Actions */}
         <div className="bg-white/[0.03] border border-neutral-800 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Actions</h2>
+          <h2 className="text-lg font-semibold text-theme-primary mb-4">Actions</h2>
           <div className="flex flex-wrap gap-3">
             {creditNote.status === 'draft' && (
               <>

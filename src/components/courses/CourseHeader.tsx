@@ -6,7 +6,7 @@ export function CourseHeader() {
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex flex-col gap-1">
           <h1 className="text-xl font-semibold text-[rgb(var(--text-primary))] dark:text-white">Food Safety Level 2 (UK)</h1>
-          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-slate-300">
+          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-secondary">
             Self-study compliance course aligned to UK hygiene law, ready for team onboarding or refresher training.
           </p>
         </div>
@@ -19,19 +19,19 @@ export function CourseHeader() {
           </Link>
           <Link
             href="/dashboard/people/training"
-            className="rounded-lg border border-[rgb(var(--border))] dark:border-neutral-700 px-4 py-2 text-sm text-[rgb(var(--text-secondary))] dark:text-slate-200 transition hover:bg-[rgb(var(--surface))] dark:hover:bg-neutral-800"
+            className="rounded-lg border border-[rgb(var(--border))] dark:border-theme px-4 py-2 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-primary transition hover:bg-[rgb(var(--surface))] dark:hover:bg-neutral-800"
           >
             Training & records
           </Link>
           <Link
             href="/dashboard/training"
-            className="rounded-lg border border-[rgb(var(--border))] dark:border-neutral-700 px-4 py-2 text-sm text-[rgb(var(--text-secondary))] dark:text-slate-200 transition hover:bg-[rgb(var(--surface))] dark:hover:bg-neutral-800"
+            className="rounded-lg border border-[rgb(var(--border))] dark:border-theme px-4 py-2 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-primary transition hover:bg-[rgb(var(--surface))] dark:hover:bg-neutral-800"
           >
             Open Training Matrix
           </Link>
         </div>
       </div>
-      <p className="mt-3 text-xs text-[rgb(var(--text-tertiary))] dark:text-slate-400">
+ <p className="mt-3 text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
         Work through the modules, complete the final assessment, then return to the dashboard. Training records can be viewed in Training.
       </p>
     </div>

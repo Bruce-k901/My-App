@@ -4,9 +4,9 @@
 
 /* Theme CSS Variables */
 :root {
-  --background: 12 11 10;       /* warm near-black */
+  --background: 12 11 10; /* warm near-black */
   --foreground: 255 255 255;
-  --surface: 28 25 22;          /* warm charcoal */
+  --surface: 28 25 22; /* warm charcoal */
   --surface-elevated: 40 36 33; /* warm mid */
   --text-primary: 255 255 255;
   --text-secondary: 255 255 255 / 0.8;
@@ -17,41 +17,48 @@
 
   /* Module colours — single source of truth
      Change a module colour here and it updates everywhere. */
-  --module-checkly: 241 225 148;  /* #F1E194 */
-  --module-stockly: 120 154 153;  /* #789A99 */
-  --module-teamly: 211 126 145;   /* #D37E91 */
-  --module-planly: 172 200 162;   /* #ACC8A2 */
-  --module-assetly: 243 231 217;  /* #F3E7D9 */
-  --module-msgly: 203 221 233;    /* #CBDDE9 */
+  --module-checkly: 241 225 148; /* #F1E194 */
+  --module-stockly: 120 154 153; /* #789A99 */
+  --module-teamly: 211 126 145; /* #D37E91 */
+  --module-planly: 172 200 162; /* #ACC8A2 */
+  --module-assetly: 243 231 217; /* #F3E7D9 */
+  --module-msgly: 203 221 233; /* #CBDDE9 */
 
   /* Module dark variants — for text on light backgrounds */
-  --module-checkly-dark: 91 14 20;       /* #5B0E14 */
-  --module-stockly-dark: 78 125 124;     /* #4e7d7c */
-  --module-teamly-dark: 176 96 122;      /* #b0607a */
-  --module-planly-dark: 26 37 23;        /* #1A2517 */
-  --module-assetly-dark: 84 67 73;       /* #544349 */
-  --module-msgly-dark: 40 114 161;       /* #2872A1 */
+  --module-checkly-dark: 91 14 20; /* #5B0E14 */
+  --module-stockly-dark: 78 125 124; /* #4e7d7c */
+  --module-teamly-dark: 176 96 122; /* #b0607a */
+  --module-planly-dark: 26 37 23; /* #1A2517 */
+  --module-assetly-dark: 84 67 73; /* #544349 */
+  --module-msgly-dark: 40 114 161; /* #2872A1 */
   --module-forecastly: 124 58 237; /* #7C3AED */
 
   /* Sidebar tints — dark theme (colour-shifted dark backgrounds) */
-  --sidebar-checkly: 18 20 14;         /* #12140e warm olive-black */
-  --sidebar-stockly: 13 20 20;         /* #0d1414 cool teal-black */
-  --sidebar-teamly: 20 16 14;          /* #14100e warm rose-black */
-  --sidebar-planly: 14 18 13;          /* #0e120d green-black */
-  --sidebar-assetly: 19 17 16;         /* #131110 warm brown-black */
-  --sidebar-msgly: 13 17 20;           /* #0d1114 steel-black */
+  --sidebar-checkly: 18 20 14; /* #12140e warm olive-black */
+  --sidebar-stockly: 13 20 20; /* #0d1414 cool teal-black */
+  --sidebar-teamly: 20 16 14; /* #14100e warm rose-black */
+  --sidebar-planly: 14 18 13; /* #0e120d green-black */
+  --sidebar-assetly: 19 17 16; /* #131110 warm brown-black */
+  --sidebar-msgly: 13 17 20; /* #0d1114 steel-black */
 
   /* Sidebar tints — light theme */
   --sidebar-checkly-light: 248 241 232; /* #f8f1e8 warm cream */
   --sidebar-stockly-light: 237 243 243; /* #edf3f3 cool mint */
-  --sidebar-teamly-light: 246 239 241;  /* #f6eff1 soft rose */
-  --sidebar-planly-light: 239 243 238;  /* #eff3ee sage mist */
+  --sidebar-teamly-light: 246 239 241; /* #f6eff1 soft rose */
+  --sidebar-planly-light: 239 243 238; /* #eff3ee sage mist */
   --sidebar-assetly-light: 245 242 239; /* #f5f2ef warm linen */
-  --sidebar-msgly-light: 238 242 245;   /* #eef2f5 ice blue */
+  --sidebar-msgly-light: 238 242 245; /* #eef2f5 ice blue */
 
   /* Active module defaults (overridden by .module-* class on layout wrapper) */
   --module-fg: var(--module-checkly);
   --module-bg-tint: var(--sidebar-checkly);
+
+  /* Theme background tokens — CSS vars so hover:/focus: Tailwind variants work in both themes */
+  --theme-bg-button: rgba(255, 255, 255, 0.03);
+  --theme-bg-button-hover: rgba(255, 255, 255, 0.06);
+  --theme-bg-muted: rgba(255, 255, 255, 0.08);
+  --theme-bg-muted-strong: rgba(255, 255, 255, 0.12);
+  --theme-bg-hover: rgba(255, 255, 255, 0.05);
 
   /* Density tokens (comfortable = default) */
   --spacing-card: 1rem;
@@ -61,29 +68,95 @@
 
 /* ─── Active Module Variable System ─── */
 /* Apply .module-{name} to a layout wrapper — children use text-module-fg, bg-module-fg/[0.04], etc. */
-.module-checkly  { --module-fg: var(--module-checkly);  --module-bg-tint: var(--sidebar-checkly);  }
-.module-stockly  { --module-fg: var(--module-stockly);  --module-bg-tint: var(--sidebar-stockly);  }
-.module-teamly   { --module-fg: var(--module-teamly);   --module-bg-tint: var(--sidebar-teamly);   }
-.module-planly   { --module-fg: var(--module-planly);    --module-bg-tint: var(--sidebar-planly);   }
-.module-assetly  { --module-fg: var(--module-assetly);   --module-bg-tint: var(--sidebar-assetly);  }
-.module-msgly    { --module-fg: var(--module-msgly);     --module-bg-tint: var(--sidebar-msgly);    }
+.module-checkly {
+  --module-fg: var(--module-checkly);
+  --module-bg-tint: var(--sidebar-checkly);
+}
+.module-stockly {
+  --module-fg: var(--module-stockly);
+  --module-bg-tint: var(--sidebar-stockly);
+}
+.module-teamly {
+  --module-fg: var(--module-teamly);
+  --module-bg-tint: var(--sidebar-teamly);
+}
+.module-planly {
+  --module-fg: var(--module-planly);
+  --module-bg-tint: var(--sidebar-planly);
+}
+.module-assetly {
+  --module-fg: var(--module-assetly);
+  --module-bg-tint: var(--sidebar-assetly);
+}
+.module-msgly {
+  --module-fg: var(--module-msgly);
+  --module-bg-tint: var(--sidebar-msgly);
+}
 
-.light .module-checkly  { --module-fg: var(--module-checkly-dark);  --module-bg-tint: var(--sidebar-checkly-light);  }
-.light .module-stockly  { --module-fg: var(--module-stockly-dark);  --module-bg-tint: var(--sidebar-stockly-light);  }
-.light .module-teamly   { --module-fg: var(--module-teamly-dark);   --module-bg-tint: var(--sidebar-teamly-light);   }
-.light .module-planly   { --module-fg: var(--module-planly-dark);   --module-bg-tint: var(--sidebar-planly-light);   }
-.light .module-assetly  { --module-fg: var(--module-assetly-dark);  --module-bg-tint: var(--sidebar-assetly-light);  }
-.light .module-msgly    { --module-fg: var(--module-msgly-dark);    --module-bg-tint: var(--sidebar-msgly-light);    }
+.light .module-checkly {
+  --module-fg: var(--module-checkly-dark);
+  --module-bg-tint: var(--sidebar-checkly-light);
+}
+.light .module-stockly {
+  --module-fg: var(--module-stockly-dark);
+  --module-bg-tint: var(--sidebar-stockly-light);
+}
+.light .module-teamly {
+  --module-fg: var(--module-teamly-dark);
+  --module-bg-tint: var(--sidebar-teamly-light);
+}
+.light .module-planly {
+  --module-fg: var(--module-planly-dark);
+  --module-bg-tint: var(--sidebar-planly-light);
+}
+.light .module-assetly {
+  --module-fg: var(--module-assetly-dark);
+  --module-bg-tint: var(--sidebar-assetly-light);
+}
+.light .module-msgly {
+  --module-fg: var(--module-msgly-dark);
+  --module-bg-tint: var(--sidebar-msgly-light);
+}
+
+/* ─── Module Page Text Overrides ─── */
+/* All text colours derive from the active module colour                 */
+/* so there is NEVER generic black/white text on any module page.        */
+[class*="module-"] {
+  --text-primary: var(--module-fg);
+  --text-secondary: var(--module-fg) / 0.72;
+  --text-tertiary: var(--module-fg) / 0.5;
+  --text-disabled: var(--module-fg) / 0.35;
+}
+
+/* Module-adaptive form controls (checkbox/radio tick matches module colour) */
+[class*="module-"] input[type="checkbox"],
+[class*="module-"] input[type="radio"] {
+  accent-color: rgb(var(--module-fg));
+}
 
 /* Module-adaptive scrollbar (auto-adapts to current module) */
-.module-page-scrollbar::-webkit-scrollbar { width: 6px; }
-.module-page-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.module-page-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-fg) / 0.2); border-radius: 9999px; }
-.module-page-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-fg) / 0.4); }
-.module-page-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-fg) / 0.2) transparent; }
+.module-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.module-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.module-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-fg) / 0.2);
+  border-radius: 9999px;
+}
+.module-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-fg) / 0.4);
+}
+.module-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-fg) / 0.2) transparent;
+}
 
 /* Module hover shadow utility */
-.shadow-module-glow { box-shadow: 0 0 15px rgb(var(--module-fg) / 0.15); }
+.shadow-module-glow {
+  box-shadow: 0 0 15px rgb(var(--module-fg) / 0.15);
+}
 
 /* ----------------------------- */
 /* Compact density mode          */
@@ -95,25 +168,58 @@
 }
 
 /* Global compact density overrides for common UI patterns */
-.compact .p-4 { padding: var(--spacing-card) !important; }
-.compact .p-6 { padding: calc(var(--spacing-card) * 1.25) !important; }
-.compact .gap-2\.5 { gap: 0.375rem !important; }
-.compact .gap-3 { gap: 0.5rem !important; }
-.compact .gap-4 { gap: 0.625rem !important; }
-.compact .py-3 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
-.compact .py-4 { padding-top: 0.625rem !important; padding-bottom: 0.625rem !important; }
-.compact .mb-6 { margin-bottom: 1rem !important; }
-.compact .mb-8 { margin-bottom: 1.25rem !important; }
-.compact .space-y-6 > :not([hidden]) ~ :not([hidden]) { --tw-space-y-reverse: 0; margin-top: 1rem !important; }
+.compact .p-4 {
+  padding: var(--spacing-card) !important;
+}
+.compact .p-6 {
+  padding: calc(var(--spacing-card) * 1.25) !important;
+}
+.compact .gap-2\.5 {
+  gap: 0.375rem !important;
+}
+.compact .gap-3 {
+  gap: 0.5rem !important;
+}
+.compact .gap-4 {
+  gap: 0.625rem !important;
+}
+.compact .py-3 {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+.compact .py-4 {
+  padding-top: 0.625rem !important;
+  padding-bottom: 0.625rem !important;
+}
+.compact .mb-6 {
+  margin-bottom: 1rem !important;
+}
+.compact .mb-8 {
+  margin-bottom: 1.25rem !important;
+}
+.compact .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: 1rem !important;
+}
 /* Table row density */
-.compact tr td, .compact tr th { padding-top: var(--spacing-row) !important; padding-bottom: var(--spacing-row) !important; }
-.compact .min-h-\[3rem\] { min-height: var(--row-height) !important; }
+.compact tr td,
+.compact tr th {
+  padding-top: var(--spacing-row) !important;
+  padding-bottom: var(--spacing-row) !important;
+}
+.compact .min-h-\[3rem\] {
+  min-height: var(--row-height) !important;
+}
 
 /* ----------------------------- */
 /* Font size scaling              */
 /* ----------------------------- */
-.font-size-small { font-size: 13px !important; }
-.font-size-large { font-size: 16px !important; }
+.font-size-small {
+  font-size: 13px !important;
+}
+.font-size-large {
+  font-size: 16px !important;
+}
 /* medium = 14px default — no class needed */
 
 /* ----------------------------- */
@@ -169,77 +275,65 @@
   --border-hover: 0 0 0 / 0.18; /* More visible hover borders */
   --module-fg: var(--module-checkly-dark);
   --module-bg-tint: var(--sidebar-checkly-light);
+  --theme-bg-button: rgba(0, 0, 0, 0.03);
+  --theme-bg-button-hover: rgba(0, 0, 0, 0.05);
+  --theme-bg-muted: rgba(0, 0, 0, 0.05);
+  --theme-bg-muted-strong: rgba(0, 0, 0, 0.1);
+  --theme-bg-hover: rgba(0, 0, 0, 0.04);
 }
 
 /* Theme-Aware Utility Classes */
-/* Use these classes instead of hardcoded colors for automatic light/dark mode support */
+/* All use CSS custom properties so Tailwind hover:/focus:/group-hover: variants work in BOTH themes */
 @layer utilities {
   /* Text Colors */
   .text-theme-primary {
     color: rgb(var(--text-primary));
   }
-  .dark .text-theme-primary {
-    color: rgb(var(--text-primary));
-  }
-
   .text-theme-secondary {
     color: rgb(var(--text-secondary));
   }
-  .dark .text-theme-secondary {
-    color: rgb(var(--text-secondary));
-  }
-
   .text-theme-tertiary {
     color: rgb(var(--text-tertiary));
   }
-  .dark .text-theme-tertiary {
-    color: rgb(var(--text-tertiary));
+  .text-theme-disabled {
+    color: rgb(var(--text-disabled));
   }
 
-  /* Background Colors */
+  /* Background Colors — all driven by CSS vars so hover: works in both themes */
   .bg-theme-surface {
     background-color: rgb(var(--surface));
   }
-  .dark .bg-theme-surface {
-    background-color: rgb(var(--surface));
-  }
-
   .bg-theme-surface-elevated {
     background-color: rgb(var(--surface-elevated));
   }
-  .dark .bg-theme-surface-elevated {
-    background-color: rgb(var(--surface-elevated));
+  .bg-theme-button {
+    background-color: var(--theme-bg-button);
+  }
+  .bg-theme-button-hover {
+    background-color: var(--theme-bg-button-hover);
+  }
+  .bg-theme-muted {
+    background-color: var(--theme-bg-muted);
+  }
+  .bg-theme-muted-strong {
+    background-color: var(--theme-bg-muted-strong);
+  }
+  .bg-theme-hover {
+    background-color: var(--theme-bg-hover);
   }
 
   /* Border Colors */
   .border-theme {
     border-color: rgb(var(--border));
   }
-  .dark .border-theme {
-    border-color: rgb(var(--border));
-  }
-
   .border-theme-hover {
     border-color: rgb(var(--border-hover));
   }
-  .dark .border-theme-hover {
-    border-color: rgb(var(--border-hover));
-  }
+}
 
-  /* Button Backgrounds (subtle) */
-  .bg-theme-button {
-    background-color: rgba(0, 0, 0, 0.03);
-  }
-  .dark .bg-theme-button {
-    background-color: rgba(255, 255, 255, 0.03);
-  }
-
-  .bg-theme-button-hover {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-  .dark .bg-theme-button-hover {
-    background-color: rgba(255, 255, 255, 0.06);
-  }
+/* Ensure native select dropdown arrows never overlap text */
+select {
+  padding-right: 2.5rem !important;
 }
 
 /* Safe area for mobile bottom nav */
@@ -279,7 +373,7 @@ select {
 
 select:focus {
   outline: none;
-  border-color: #D37E91;
+  border-color: #d37e91;
   box-shadow: 0 0 0 2px rgba(211, 126, 145, 0.5);
 }
 
@@ -518,7 +612,7 @@ select option {
 }
 
 .deploy-button {
-  background: #D37E91;
+  background: #d37e91;
   color: #ffffff;
   border: none;
   padding: 10px 20px;
@@ -636,11 +730,24 @@ body {
 }
 
 /* Order Book scrollbar - uses stockly module colour */
-.order-book-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-.order-book-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.order-book-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-stockly) / 0.5); border-radius: 9999px; }
-.order-book-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-stockly) / 0.7); }
-.order-book-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-stockly) / 0.5) transparent; }
+.order-book-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.order-book-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.order-book-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-stockly) / 0.5);
+  border-radius: 9999px;
+}
+.order-book-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-stockly) / 0.7);
+}
+.order-book-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-stockly) / 0.5) transparent;
+}
 
 /* Prevent body scrolling on dashboard pages - app-like experience */
 body:has(.dashboard-page) {
@@ -717,7 +824,7 @@ p {
   }
 
   .btn-glass:hover {
-    border-color: #D37E91;
+    border-color: #d37e91;
     transform: scale(1.04);
     box-shadow:
       0 0 16px rgba(211, 126, 145, 0.25),
@@ -752,7 +859,7 @@ p {
   }
 
   .btn-glass-cta:hover {
-    border-color: #D37E91;
+    border-color: #d37e91;
     transform: scale(1.05);
     box-shadow:
       0 0 20px rgba(211, 126, 145, 0.3),
@@ -800,29 +907,28 @@ p {
 .hover-glow:hover {
   box-shadow: 0 0 6px rgba(211, 126, 145, 0.4);
 }
-/* Fix for gradient header clipping on all hero sections */
-.hero-title {
-  padding-top: 0.25rem; /* adds small breathing room */
-  padding-bottom: 0.5rem; /* prevents bottom clipping for descenders (g, p, q, y) */
-  line-height: 1.3; /* allows space for descenders */
-  overflow: visible; /* ensures descenders aren't clipped */
+/* ----------------------------- */
+/* Marketing Typography Override  */
+/* ----------------------------- */
+.marketing-page,
+.marketing-page * {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 /* ----------------------------- */
-/* Simple Glass Button            */
+/* Marketing Buttons              */
 /* ----------------------------- */
-.glass-button {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.3s ease;
+.btn-marketing-primary {
+  @apply bg-[#e8e8e8] text-[#0a0a0a] px-8 py-3 rounded-lg font-medium transition-all duration-200;
 }
-.glass-button:hover {
-  background: rgba(211, 126, 145, 0.25);
-  border-color: rgba(211, 126, 145, 0.5);
-  box-shadow:
-    0 0 18px rgba(211, 126, 145, 0.35),
-    0 0 26px rgba(120, 154, 153, 0.25);
+.btn-marketing-primary:hover {
+  @apply bg-white;
+}
+.btn-marketing-secondary {
+  @apply bg-transparent text-[#e8e8e8] px-8 py-3 rounded-lg font-medium border border-white/20 transition-all duration-200;
+}
+.btn-marketing-secondary:hover {
+  @apply border-white/40 bg-white/[0.05];
 }
 
 /* ----------------------------- */
@@ -860,96 +966,264 @@ body:has(.marketing-page) .global-footer {
 /* All use 6px pill-style thumbs; sidebar = solid color, page = 30% opacity */
 
 /* Checkly */
-.checkly-sidebar-scrollbar::-webkit-scrollbar { width: 6px; }
-.checkly-sidebar-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.checkly-sidebar-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-checkly) / 0.5); border-radius: 9999px; }
-.checkly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-checkly) / 0.7); }
-.checkly-sidebar-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-checkly) / 0.5) transparent; }
+.checkly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.checkly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.checkly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-checkly) / 0.5);
+  border-radius: 9999px;
+}
+.checkly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-checkly) / 0.7);
+}
+.checkly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-checkly) / 0.5) transparent;
+}
 
-.checkly-page-scrollbar::-webkit-scrollbar { width: 6px; }
-.checkly-page-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.checkly-page-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-checkly) / 0.2); border-radius: 9999px; }
-.checkly-page-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-checkly) / 0.4); }
-.checkly-page-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-checkly) / 0.2) transparent; }
+.checkly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.checkly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.checkly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-checkly) / 0.2);
+  border-radius: 9999px;
+}
+.checkly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-checkly) / 0.4);
+}
+.checkly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-checkly) / 0.2) transparent;
+}
 
 /* Stockly */
-.stockly-sidebar-scrollbar::-webkit-scrollbar { width: 6px; }
-.stockly-sidebar-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.stockly-sidebar-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-stockly) / 0.5); border-radius: 9999px; }
-.stockly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-stockly) / 0.7); }
-.stockly-sidebar-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-stockly) / 0.5) transparent; }
+.stockly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.stockly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.stockly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-stockly) / 0.5);
+  border-radius: 9999px;
+}
+.stockly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-stockly) / 0.7);
+}
+.stockly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-stockly) / 0.5) transparent;
+}
 
-.stockly-page-scrollbar::-webkit-scrollbar { width: 6px; }
-.stockly-page-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.stockly-page-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-stockly) / 0.2); border-radius: 9999px; }
-.stockly-page-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-stockly) / 0.4); }
-.stockly-page-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-stockly) / 0.2) transparent; }
+.stockly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.stockly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.stockly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-stockly) / 0.2);
+  border-radius: 9999px;
+}
+.stockly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-stockly) / 0.4);
+}
+.stockly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-stockly) / 0.2) transparent;
+}
 
 /* Teamly */
-.teamly-sidebar-scrollbar::-webkit-scrollbar { width: 6px; }
-.teamly-sidebar-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.teamly-sidebar-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-teamly) / 0.5); border-radius: 9999px; }
-.teamly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-teamly) / 0.7); }
-.teamly-sidebar-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-teamly) / 0.5) transparent; }
+.teamly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.teamly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.teamly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-teamly) / 0.5);
+  border-radius: 9999px;
+}
+.teamly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-teamly) / 0.7);
+}
+.teamly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-teamly) / 0.5) transparent;
+}
 
-.teamly-page-scrollbar::-webkit-scrollbar { width: 6px; }
-.teamly-page-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.teamly-page-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-teamly) / 0.2); border-radius: 9999px; }
-.teamly-page-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-teamly) / 0.4); }
-.teamly-page-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-teamly) / 0.2) transparent; }
+.teamly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.teamly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.teamly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-teamly) / 0.2);
+  border-radius: 9999px;
+}
+.teamly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-teamly) / 0.4);
+}
+.teamly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-teamly) / 0.2) transparent;
+}
 
 /* Assetly */
-.assetly-sidebar-scrollbar::-webkit-scrollbar { width: 6px; }
-.assetly-sidebar-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.assetly-sidebar-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-assetly) / 0.5); border-radius: 9999px; }
-.assetly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-assetly) / 0.7); }
-.assetly-sidebar-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-assetly) / 0.5) transparent; }
+.assetly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.assetly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.assetly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-assetly) / 0.5);
+  border-radius: 9999px;
+}
+.assetly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-assetly) / 0.7);
+}
+.assetly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-assetly) / 0.5) transparent;
+}
 
-.assetly-page-scrollbar::-webkit-scrollbar { width: 6px; }
-.assetly-page-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.assetly-page-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-assetly) / 0.2); border-radius: 9999px; }
-.assetly-page-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-assetly) / 0.4); }
-.assetly-page-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-assetly) / 0.2) transparent; }
+.assetly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.assetly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.assetly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-assetly) / 0.2);
+  border-radius: 9999px;
+}
+.assetly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-assetly) / 0.4);
+}
+.assetly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-assetly) / 0.2) transparent;
+}
 
 /* Planly */
-.planly-sidebar-scrollbar::-webkit-scrollbar { width: 6px; }
-.planly-sidebar-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.planly-sidebar-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-planly) / 0.5); border-radius: 9999px; }
-.planly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-planly) / 0.7); }
-.planly-sidebar-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-planly) / 0.5) transparent; }
+.planly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.planly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.planly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-planly) / 0.5);
+  border-radius: 9999px;
+}
+.planly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-planly) / 0.7);
+}
+.planly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-planly) / 0.5) transparent;
+}
 
-.planly-page-scrollbar::-webkit-scrollbar { width: 6px; }
-.planly-page-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.planly-page-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-planly) / 0.2); border-radius: 9999px; }
-.planly-page-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-planly) / 0.4); }
-.planly-page-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-planly) / 0.2) transparent; }
+.planly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.planly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.planly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-planly) / 0.2);
+  border-radius: 9999px;
+}
+.planly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-planly) / 0.4);
+}
+.planly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-planly) / 0.2) transparent;
+}
 
 /* Forecastly */
-.forecastly-sidebar-scrollbar::-webkit-scrollbar { width: 6px; }
-.forecastly-sidebar-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.forecastly-sidebar-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-forecastly) / 0.5); border-radius: 9999px; }
-.forecastly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-forecastly) / 0.7); }
-.forecastly-sidebar-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-forecastly) / 0.5) transparent; }
+.forecastly-sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.forecastly-sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.forecastly-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-forecastly) / 0.5);
+  border-radius: 9999px;
+}
+.forecastly-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-forecastly) / 0.7);
+}
+.forecastly-sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-forecastly) / 0.5) transparent;
+}
 
-.forecastly-page-scrollbar::-webkit-scrollbar { width: 6px; }
-.forecastly-page-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.forecastly-page-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-forecastly) / 0.2); border-radius: 9999px; }
-.forecastly-page-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-forecastly) / 0.4); }
-.forecastly-page-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-forecastly) / 0.2) transparent; }
+.forecastly-page-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.forecastly-page-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.forecastly-page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-forecastly) / 0.2);
+  border-radius: 9999px;
+}
+.forecastly-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-forecastly) / 0.4);
+}
+.forecastly-page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-forecastly) / 0.2) transparent;
+}
 
 /* AI Assistant - uses checkly module colour */
-.assistant-scrollbar::-webkit-scrollbar { width: 6px; }
-.assistant-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.assistant-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-checkly) / 0.5); border-radius: 9999px; }
-.assistant-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-checkly) / 0.7); }
-.assistant-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-checkly) / 0.5) transparent; }
+.assistant-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.assistant-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.assistant-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-checkly) / 0.5);
+  border-radius: 9999px;
+}
+.assistant-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-checkly) / 0.7);
+}
+.assistant-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-checkly) / 0.5) transparent;
+}
 
 /* Global search modal - uses forecastly module colour */
-.search-scrollbar::-webkit-scrollbar { width: 6px; }
-.search-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.search-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--module-forecastly) / 0.5); border-radius: 9999px; }
-.search-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--module-forecastly) / 0.7); }
-.search-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(var(--module-forecastly) / 0.5) transparent; }
+.search-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.search-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.search-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--module-forecastly) / 0.5);
+  border-radius: 9999px;
+}
+.search-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--module-forecastly) / 0.7);
+}
+.search-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--module-forecastly) / 0.5) transparent;
+}
 
 /* Default dashboard scrollbar (for non-module pages) */
 .dashboard-page main::-webkit-scrollbar {
@@ -1000,7 +1274,7 @@ body:has(.marketing-page) .global-footer {
   width: 8px;
   height: 8px;
   border-radius: 9999px;
-  background-color: #D37E91;
+  background-color: #d37e91;
   animation: blinkPulse 1.2s ease-in-out infinite;
 }
 

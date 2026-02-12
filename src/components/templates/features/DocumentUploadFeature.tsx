@@ -125,7 +125,7 @@ export function DocumentUploadFeature({
           {label}
         </label>
         {helpText && (
-          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">{helpText}</p>
+          <p className="text-xs text-theme-secondary mb-2">{helpText}</p>
         )}
       </div>
 
@@ -153,7 +153,7 @@ export function DocumentUploadFeature({
           disabled={uploading || uploads.length >= maxFiles}
         />
         {uploads.length > 0 && (
-          <span className="text-xs text-gray-600 dark:text-gray-400">
+          <span className="text-xs text-theme-secondary">
             {uploads.length} / {maxFiles} files
           </span>
         )}
@@ -165,10 +165,10 @@ export function DocumentUploadFeature({
           {uploads.map((upload, index) => (
             <div
               key={index}
-              className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800/50 rounded border border-gray-200 dark:border-gray-700"
+              className="flex items-center justify-between p-2 bg-theme-surface/50 rounded border border-theme"
             >
               <div className="flex items-center gap-2 flex-1 min-w-0">
-                <div className="text-gray-600 dark:text-gray-400">
+                <div className="text-theme-secondary">
                   {getFileIcon(upload.fileType)}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -181,7 +181,7 @@ export function DocumentUploadFeature({
                   >
                     {upload.fileName}
                   </a>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-theme-tertiary">
                     {formatFileSize(upload.fileSize)}
                   </p>
                 </div>

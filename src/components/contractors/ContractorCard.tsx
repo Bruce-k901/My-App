@@ -59,7 +59,7 @@ export default function ContractorCard({
       rightActions={
         <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
           {/* Category name (faded) */}
-          <span className="text-sm text-gray-400 mr-2">
+          <span className="text-sm text-theme-tertiary mr-2">
             {contractor.category || "—"}
           </span>
           <CardChevron 
@@ -70,7 +70,7 @@ export default function ContractorCard({
       }
     >
       {isOpen && (
-        <div className="mt-3 text-sm text-gray-300 pt-2">
+        <div className="mt-3 text-sm text-theme-tertiary pt-2">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* column 1 */}
             <div className="space-y-3">
@@ -81,8 +81,8 @@ export default function ContractorCard({
               <Field label="Website" value={contractor.website} />
               {contractor.notes && (
                 <div>
-                  <p className="text-slate-400 text-sm">Notes</p>
-                  <p className="text-white text-sm line-clamp-3">{contractor.notes}</p>
+                  <p className="text-theme-tertiary text-sm">Notes</p>
+                  <p className="text-theme-primary text-sm line-clamp-3">{contractor.notes}</p>
                 </div>
               )}
             </div>
@@ -101,7 +101,7 @@ export default function ContractorCard({
             {/* sites */}
             {Array.isArray(contractor.site_names) && contractor.site_names.length > 0 && (
               <div className="md:col-span-2">
-                <p className="text-slate-400 text-sm flex items-center gap-2">
+                <p className="text-theme-tertiary text-sm flex items-center gap-2">
                   Sites Serviced
                   {typeof contractor.site_count === 'number' && (
                     <span className="px-2 py-0.5 text-[10px] rounded-full bg-[#D37E91]/25 border border-[#D37E91]/40 text-[#D37E91]/70">
@@ -113,7 +113,7 @@ export default function ContractorCard({
                   {contractor.site_names.map((siteName, idx) => (
                     <span
                       key={idx}
-                      className="px-2 py-1 text-xs rounded bg-slate-700 text-slate-200"
+                      className="px-2 py-1 text-xs rounded bg-slate-700 text-theme-primary"
                     >
                       {siteName}
                     </span>
@@ -151,8 +151,8 @@ function Field({ label, value }: { label: string; value?: string | number | null
   if (!value) return null;
   return (
     <div>
-      <p className="text-slate-400 text-sm">{label}</p>
-      <p className="text-white text-sm">{value}</p>
+      <p className="text-theme-tertiary text-sm">{label}</p>
+      <p className="text-theme-primary text-sm">{value}</p>
     </div>
   );
 }
@@ -164,8 +164,8 @@ function LinkField({ label, value, type, showPlaceholder = false }: { label: str
     if (!showPlaceholder) return null;
     return (
       <div>
-        <p className="text-slate-400 text-sm">{label}</p>
-        <div className="text-gray-500 text-sm italic flex items-center gap-2">
+        <p className="text-theme-tertiary text-sm">{label}</p>
+        <div className="text-theme-tertiary text-sm italic flex items-center gap-2">
           {icon}
           Not provided
         </div>
@@ -177,10 +177,10 @@ function LinkField({ label, value, type, showPlaceholder = false }: { label: str
   
   return (
     <div>
-      <p className="text-slate-400 text-sm">{label}</p>
+      <p className="text-theme-tertiary text-sm">{label}</p>
       <a 
         href={href}
-        className="text-white text-sm hover:text-[#D37E91] transition flex items-center gap-2"
+        className="text-theme-primary text-sm hover:text-[#D37E91] transition flex items-center gap-2"
       >
         {icon}
         {value}

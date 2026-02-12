@@ -89,10 +89,10 @@ function StepCard({
       className={cn(
         'relative p-4 rounded-lg border-2 transition-all',
         step.complete
-          ? 'bg-[#14B8A6]/5 border-[#14B8A6]/30 dark:bg-[#14B8A6]/10'
+          ? 'bg-module-fg/5 border-module-fg/30 dark:bg-module-fg/10'
           : isActive
-          ? 'bg-white dark:bg-white/5 border-[#14B8A6] shadow-lg'
-          : 'bg-gray-50 dark:bg-white/[0.02] border-gray-200 dark:border-white/10'
+          ? 'bg-theme-surface border-module-fg shadow-lg'
+          : 'bg-gray-50 dark:bg-white/[0.02] border-theme'
       )}
     >
       {/* Step Number Badge */}
@@ -100,10 +100,10 @@ function StepCard({
         className={cn(
           'absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold',
           step.complete
-            ? 'bg-[#14B8A6] text-white'
+            ? 'bg-module-fg text-white'
             : isActive
-            ? 'bg-[#14B8A6] text-white'
-            : 'bg-gray-200 dark:bg-white/20 text-gray-600 dark:text-white/60'
+            ? 'bg-module-fg text-white'
+            : 'bg-gray-200 dark:bg-white/20 text-theme-secondary'
         )}
       >
         {step.complete ? (
@@ -116,19 +116,19 @@ function StepCard({
       <div className="flex items-start justify-between gap-4 ml-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <Icon className={cn('h-5 w-5', step.complete ? 'text-[#14B8A6]' : config?.color)} />
-            <h3 className="font-semibold text-gray-900 dark:text-white">{step.name}</h3>
+            <Icon className={cn('h-5 w-5', step.complete ? 'text-module-fg' : config?.color)} />
+            <h3 className="font-semibold text-theme-primary">{step.name}</h3>
           </div>
-          <p className="text-sm text-gray-600 dark:text-white/60 mb-2">{config?.description}</p>
+          <p className="text-sm text-theme-secondary mb-2">{config?.description}</p>
           <div className="flex items-center gap-3">
             <span
               className={cn(
                 'text-sm font-medium',
                 step.complete
-                  ? 'text-[#14B8A6]'
+                  ? 'text-module-fg'
                   : step.count > 0
                   ? 'text-amber-600 dark:text-amber-400'
-                  : 'text-gray-500 dark:text-white/50'
+                  : 'text-theme-tertiary'
               )}
             >
               {step.complete
@@ -157,7 +157,7 @@ function StepCard({
           onClick={onNavigate}
           className={cn(
             'shrink-0',
-            isActive && 'bg-[#14B8A6] hover:bg-[#14B8A6]/90'
+            isActive && 'bg-module-fg hover:bg-module-fg/90'
           )}
         >
           {step.complete ? 'Edit' : 'Configure'}
@@ -171,20 +171,20 @@ function StepCard({
 function CompletionCelebration() {
   return (
     <div className="text-center py-8 px-4">
-      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#14B8A6]/10 mb-4">
-        <PartyPopper className="h-8 w-8 text-[#14B8A6]" />
+      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-module-fg/10 mb-4">
+        <PartyPopper className="h-8 w-8 text-module-fg" />
       </div>
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      <h2 className="text-2xl font-bold text-theme-primary mb-2">
         Setup Complete!
       </h2>
-      <p className="text-gray-600 dark:text-white/60 mb-6 max-w-md mx-auto">
+      <p className="text-theme-secondary mb-6 max-w-md mx-auto">
         Your Planly module is fully configured. You can now start taking orders and generating production plans.
       </p>
       <div className="flex items-center justify-center gap-4">
         <Button variant="outline" asChild>
           <a href="/dashboard/planly/order-book">View Order Book</a>
         </Button>
-        <Button className="bg-[#14B8A6] hover:bg-[#14B8A6]/90" asChild>
+        <Button className="bg-module-fg hover:bg-module-fg/90" asChild>
           <a href="/dashboard/planly/production-plan">
             Production Plan
             <ArrowRight className="h-4 w-4 ml-2" />
@@ -217,7 +217,7 @@ export default function SetupWizardPage() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 mx-auto text-amber-500 mb-4" />
-          <p className="text-gray-600 dark:text-white/60">Please select a site to continue</p>
+          <p className="text-theme-secondary">Please select a site to continue</p>
         </div>
       </div>
     );
@@ -226,7 +226,7 @@ export default function SetupWizardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#14B8A6]" />
+        <Loader2 className="h-8 w-8 animate-spin text-module-fg" />
       </div>
     );
   }
@@ -250,10 +250,10 @@ export default function SetupWizardPage() {
     <div className="max-w-3xl mx-auto py-8 px-4">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <h1 className="text-2xl font-bold text-theme-primary mb-2">
           Planly Setup Wizard
         </h1>
-        <p className="text-gray-600 dark:text-white/60">
+        <p className="text-theme-secondary">
           Complete these steps to get your wholesale ordering system ready.
         </p>
       </div>
@@ -261,21 +261,21 @@ export default function SetupWizardPage() {
       {/* Progress Bar */}
       <Card className="p-4 mb-8">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-700 dark:text-white/80">
+          <span className="text-sm font-medium text-theme-secondary">
             Setup Progress
           </span>
-          <span className="text-sm font-bold text-[#14B8A6]">
+          <span className="text-sm font-bold text-module-fg">
             {completedSteps} of {totalSteps} complete
           </span>
         </div>
-        <div className="h-3 bg-gray-100 dark:bg-white/10 rounded-full overflow-hidden">
+        <div className="h-3 bg-theme-muted rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#14B8A6] rounded-full transition-all duration-500"
+            className="h-full bg-module-fg rounded-full transition-all duration-500"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
         {status?.overall_complete && (
-          <p className="mt-2 text-sm text-[#14B8A6] font-medium flex items-center gap-1">
+          <p className="mt-2 text-sm text-module-fg font-medium flex items-center gap-1">
             <CheckCircle className="h-4 w-4" />
             All steps complete!
           </p>
@@ -285,7 +285,7 @@ export default function SetupWizardPage() {
       {/* Completion Celebration */}
       {status?.overall_complete && (
         <Card className="mb-8 overflow-hidden">
-          <div className="bg-gradient-to-r from-[#14B8A6]/10 to-[#14B8A6]/5">
+          <div className="bg-gradient-to-r from-module-fg/10 to-module-fg/5">
             <CompletionCelebration />
           </div>
         </Card>

@@ -263,23 +263,23 @@ export default function PrintPreviewModal({
       <DialogContent className="bg-[#0B0D13] border-white/[0.06] text-white max-w-[1200px] w-[95vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">Print Preview - Count Sheets</DialogTitle>
-          <p className="text-gray-400">
+          <p className="text-theme-tertiary">
             Review and print your count sheets below
           </p>
         </DialogHeader>
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
-            <span className="ml-3 text-gray-400">Generating count sheets...</span>
+            <Loader2 className="h-8 w-8 animate-spin text-module-fg" />
+            <span className="ml-3 text-theme-tertiary">Generating count sheets...</span>
           </div>
         ) : (
           <div className="space-y-6 mt-6">
             {/* Action Buttons at Top */}
             <div className="flex justify-between items-center pb-4 border-b border-white/[0.06]">
               <div>
-                <h3 className="text-lg font-semibold text-white">{countName}</h3>
-                <p className="text-sm text-gray-400">
+                <h3 className="text-lg font-semibold text-theme-primary">{countName}</h3>
+                <p className="text-sm text-theme-tertiary">
                   {new Date(countDate).toLocaleDateString('en-GB', {
                     day: 'numeric',
                     month: 'long',
@@ -291,14 +291,14 @@ export default function PrintPreviewModal({
                 <Button
                   onClick={handleDownloadAll}
                   variant="outline"
-                  className="border-white/[0.06] text-white"
+                  className="border-white/[0.06] text-theme-primary"
                 >
                   <Download className="mr-2 h-4 w-4" />
                   Download All
                 </Button>
                 <Button
                   onClick={handleContinue}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="bg-module-fg hover:bg-module-fg/90 text-white"
                 >
                   Continue to Data Entry
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -310,7 +310,7 @@ export default function PrintPreviewModal({
             <div className="space-y-4">
               {pdfPreviews.length === 0 ? (
                 <div className="text-center py-12 bg-white/[0.03] border border-white/[0.06] rounded-lg">
-                  <p className="text-gray-400">No count sheets to preview</p>
+                  <p className="text-theme-tertiary">No count sheets to preview</p>
                 </div>
               ) : (
                 pdfPreviews.map((preview) => (
@@ -321,10 +321,10 @@ export default function PrintPreviewModal({
                     {/* Header */}
                     <div className="flex items-center justify-between p-4 border-b border-white/[0.06]">
                       <div>
-                        <h4 className="text-lg font-semibold text-white">
+                        <h4 className="text-lg font-semibold text-theme-primary">
                           {preview.libraryName}
                         </h4>
-                        <p className="text-sm text-gray-400">
+                        <p className="text-sm text-theme-tertiary">
                           {preview.itemCount} items to count
                         </p>
                       </div>
@@ -333,7 +333,7 @@ export default function PrintPreviewModal({
                           onClick={() => handleDownload(preview)}
                           size="sm"
                           variant="outline"
-                          className="border-white/[0.06] text-white"
+                          className="border-white/[0.06] text-theme-primary"
                         >
                           <Download className="mr-2 h-4 w-4" />
                           Download
@@ -341,7 +341,7 @@ export default function PrintPreviewModal({
                         <Button
                           onClick={() => handlePrint(preview.pdfUrl)}
                           size="sm"
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                          className="bg-module-fg hover:bg-module-fg/90 text-white"
                         >
                           <Printer className="mr-2 h-4 w-4" />
                           Print
@@ -367,13 +367,13 @@ export default function PrintPreviewModal({
               <Button
                 onClick={onClose}
                 variant="outline"
-                className="border-white/[0.06] text-white"
+                className="border-white/[0.06] text-theme-primary"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleContinue}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-module-fg hover:bg-module-fg/90 text-white"
               >
                 Continue to Data Entry
                 <ArrowRight className="ml-2 h-4 w-4" />

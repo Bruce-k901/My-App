@@ -178,7 +178,7 @@ export default function PeopleToOnboardPage() {
   if (!profile?.id) {
     return (
       <div className="p-6">
-        <div className="flex items-center gap-2 text-gray-500 dark:text-white/60">
+        <div className="flex items-center gap-2 text-theme-tertiary">
           <Loader2 className="w-5 h-5 animate-spin" />
           Loading profile…
         </div>
@@ -190,10 +190,10 @@ export default function PeopleToOnboardPage() {
     return (
       <div className="p-6 space-y-4">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">People to Onboard</h1>
-          <p className="text-sm text-gray-900 dark:text-white/60">This page is for managers/admins only.</p>
+          <h1 className="text-xl font-semibold text-theme-primary">People to Onboard</h1>
+          <p className="text-sm text-theme-primary/60">This page is for managers/admins only.</p>
         </div>
-        <Link href="/dashboard/people/onboarding/my-docs" className="text-sm text-[#D37E91] hover:underline">
+        <Link href="/dashboard/people/onboarding/my-docs" className="text-sm text-module-fg hover:underline">
           View My Onboarding Docs
         </Link>
       </div>
@@ -205,10 +205,10 @@ export default function PeopleToOnboardPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">People to Onboard</h1>
-          <p className="text-sm text-gray-900 dark:text-white/60">Assign onboarding packs to employees and track their progress</p>
+          <h1 className="text-xl font-semibold text-theme-primary">People to Onboard</h1>
+          <p className="text-sm text-theme-primary/60">Assign onboarding packs to employees and track their progress</p>
         </div>
-        <Link href="/dashboard/people" className="text-sm text-[#D37E91] hover:underline">
+        <Link href="/dashboard/people" className="text-sm text-module-fg hover:underline">
           Back to People
         </Link>
       </div>
@@ -221,35 +221,35 @@ export default function PeopleToOnboardPage() {
       <div className="flex items-center gap-2">
         <Link
           href="/dashboard/people/onboarding/company-docs"
-          className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10 text-gray-800 dark:text-white/80 rounded-lg"
+ className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-theme-muted border border-theme text-theme-primary/80 rounded-lg"
         >
           Manage Docs
         </Link>
         <Link
           href="/dashboard/people/onboarding/packs"
-          className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-300 dark:border-white/10 text-gray-800 dark:text-white/80 rounded-lg"
+ className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-theme-muted border border-theme text-theme-primary/80 rounded-lg"
         >
           Manage Packs
         </Link>
       </div>
 
       {loading ? (
-        <div className="flex items-center gap-2 text-gray-500 dark:text-white/60">
+        <div className="flex items-center gap-2 text-theme-tertiary">
           <Loader2 className="w-5 h-5 animate-spin" />
           Loading…
         </div>
       ) : (
         <>
           {/* Assign Pack Section */}
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+          <div className="bg-theme-surface border border-theme rounded-xl p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Package className="w-5 h-5 text-[#D37E91]" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Assign Onboarding Pack</h2>
+              <Package className="w-5 h-5 text-module-fg" />
+              <h2 className="text-lg font-semibold text-theme-primary">Assign Onboarding Pack</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Employee</label>
+                <label className="text-xs text-theme-primary/50 block mb-1">Employee</label>
                 <Select
                   value={assignEmployeeId}
                   onValueChange={setAssignEmployeeId}
@@ -265,7 +265,7 @@ export default function PeopleToOnboardPage() {
               </div>
 
               <div>
-                <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Onboarding Pack</label>
+                <label className="text-xs text-theme-primary/50 block mb-1">Onboarding Pack</label>
                   <Select
                     value={assignPackId}
                     onValueChange={setAssignPackId}
@@ -286,7 +286,7 @@ export default function PeopleToOnboardPage() {
                 <button
                   onClick={() => void assignPack()}
                   disabled={!assignEmployeeId || !assignPackId || assigning}
-                  className="w-full px-4 py-2 rounded-lg text-sm bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-4 py-2 rounded-lg text-sm bg-transparent text-module-fg border border-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {assigning ? 'Assigning…' : 'Assign Pack'}
                 </button>
@@ -294,26 +294,26 @@ export default function PeopleToOnboardPage() {
             </div>
 
             <div className="mt-4">
-              <label className="text-xs text-gray-900 dark:text-white/50 block mb-1">Optional Message (sent with pack)</label>
+              <label className="text-xs text-theme-primary/50 block mb-1">Optional Message (sent with pack)</label>
               <textarea
                 value={assignMessage}
                 onChange={(e) => setAssignMessage(e.target.value)}
                 placeholder="e.g., Welcome to the team! Please review these documents..."
                 rows={2}
-                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-white/40"
+                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-theme rounded-lg text-theme-primary text-sm placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary"
               />
             </div>
           </div>
 
           {/* Assignments List */}
-          <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl p-6">
+          <div className="bg-theme-surface border border-theme rounded-xl p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Users className="w-5 h-5 text-[#D37E91]" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Assigned Onboarding ({assignments.length})</h2>
+              <Users className="w-5 h-5 text-module-fg" />
+              <h2 className="text-lg font-semibold text-theme-primary">Assigned Onboarding ({assignments.length})</h2>
             </div>
 
             {assignments.length === 0 ? (
-              <div className="text-center py-8 text-gray-900 dark:text-white/60">
+              <div className="text-center py-8 text-theme-primary/60">
                 No onboarding assignments yet. Assign a pack to get started!
               </div>
             ) : (
@@ -329,10 +329,10 @@ export default function PeopleToOnboardPage() {
                       className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05] hover:bg-white dark:hover:bg-white/[0.03] transition-colors"
                     >
                       <div className="flex-1">
-                        <div className="text-gray-900 dark:text-white font-medium">
+                        <div className="text-theme-primary font-medium">
                           {employee?.full_name || employee?.email || 'Unknown Employee'}
                         </div>
-                        <div className="text-xs text-gray-900 dark:text-white/50 mt-1">
+                        <div className="text-xs text-theme-primary/50 mt-1">
                           {pack?.name || 'Unknown Pack'} • Assigned {new Date(a.sent_at).toLocaleDateString()}
                         </div>
                       </div>
@@ -346,7 +346,7 @@ export default function PeopleToOnboardPage() {
                         )}
                         <Link
                           href={`/dashboard/people/onboarding?employeeId=${a.profile_id}`}
-                          className="text-sm text-[#D37E91] hover:underline"
+                          className="text-sm text-module-fg hover:underline"
                         >
                           View Details
                         </Link>

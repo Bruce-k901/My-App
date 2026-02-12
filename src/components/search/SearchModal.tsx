@@ -147,7 +147,7 @@ export function SearchModal() {
         onMouseDown={(e) => e.stopPropagation()}
       >
         <Command
-          className="rounded-xl border border-gray-200 dark:border-white/[0.1] shadow-2xl"
+          className="rounded-xl border border-theme shadow-2xl"
           filter={(value, search) => {
             // Data results always pass the filter (they're already filtered server-side)
             if (value.startsWith("data-")) return 1;
@@ -174,7 +174,7 @@ export function SearchModal() {
           <CommandList>
             <CommandEmpty>
               {dataLoading ? (
-                <span className="flex items-center justify-center gap-2 text-gray-400 dark:text-white/40">
+                <span className="flex items-center justify-center gap-2 text-theme-tertiary">
                   <Loader2 className="w-4 h-4 animate-spin" />
                   Searching...
                 </span>
@@ -213,7 +213,7 @@ export function SearchModal() {
                   );
                 })}
                 {dataLoading && !hasDataResults && (
-                  <div className="flex items-center justify-center gap-2 py-3 text-xs text-gray-400 dark:text-white/40">
+                  <div className="flex items-center justify-center gap-2 py-3 text-xs text-theme-tertiary">
                     <Loader2 className="w-3 h-3 animate-spin" />
                     Searching data...
                   </div>

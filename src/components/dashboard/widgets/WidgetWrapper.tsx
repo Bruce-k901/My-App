@@ -46,7 +46,7 @@ class WidgetErrorBoundary extends Component<
       return (
         <div className="flex flex-col items-center justify-center p-4 text-center h-full min-h-[100px]">
           <AlertCircle className="w-8 h-8 text-red-500 mb-2" />
-          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2">
+          <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-2">
             Failed to load {this.props.widgetName}
           </p>
           <button
@@ -93,7 +93,7 @@ export function WidgetWrapper({
     return (
       <div
         className={cn(
-          'bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl overflow-hidden',
+          'bg-theme-surface border border-theme rounded-xl overflow-hidden',
           'border-l-4',
           moduleColors.border
         )}
@@ -107,9 +107,9 @@ export function WidgetWrapper({
             {config.name}
           </span>
           {isCollapsed ? (
-            <ChevronDown className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-white/40" />
+            <ChevronDown className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary" />
           ) : (
-            <ChevronUp className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-white/40" />
+            <ChevronUp className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary" />
           )}
         </button>
 
@@ -137,7 +137,7 @@ export function WidgetWrapper({
   return (
     <div
       className={cn(
-        'bg-theme-surface dark:bg-white/[0.03] border border-theme dark:border-white/[0.06] rounded-xl',
+        'bg-theme-surface border border-theme rounded-xl',
         'border-l-4',
         moduleColors.border,
         'h-full'
@@ -197,7 +197,7 @@ export function WidgetCard({
 
       {/* Footer with View All link */}
       {viewAllHref && (
-        <div className="mt-3 pt-3 border-t border-theme dark:border-white/[0.06]">
+        <div className="mt-3 pt-3 border-t border-theme">
           <Link
             href={viewAllHref}
             className="text-xs text-[#D37E91] hover:text-[#D37E91] font-medium"
@@ -226,8 +226,8 @@ export function WidgetEmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center p-4 text-center h-full min-h-[80px]">
-      {icon && <div className="text-[rgb(var(--text-tertiary))] dark:text-white/30 mb-2">{icon}</div>}
-      <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mb-2">{message}</p>
+      {icon && <div className="text-[rgb(var(--text-tertiary))] dark:text-theme-disabled mb-2">{icon}</div>}
+      <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-2">{message}</p>
       {actionLabel && actionHref && (
         <Link href={actionHref} className="text-xs text-[#D37E91] hover:text-[#D37E91] font-medium">
           {actionLabel}

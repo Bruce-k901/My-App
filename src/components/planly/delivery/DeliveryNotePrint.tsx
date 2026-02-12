@@ -39,11 +39,11 @@ export const DeliveryNotePrint = forwardRef<HTMLDivElement, DeliveryNotePrintPro
               >
                 {/* Company Header */}
                 <div className="text-lg font-bold mb-1">{note.companyName}</div>
-                <div className="text-sm text-gray-600 mb-4">Delivery Note</div>
+                <div className="text-sm text-theme-secondary mb-4">Delivery Note</div>
 
                 {/* Date & Customer */}
                 <div className="flex justify-between mb-2 text-sm">
-                  <span className="text-gray-600">Date:</span>
+                  <span className="text-theme-secondary">Date:</span>
                   <span className="font-medium">{note.date}</span>
                 </div>
                 <div className="mb-4">
@@ -72,7 +72,7 @@ export const DeliveryNotePrint = forwardRef<HTMLDivElement, DeliveryNotePrintPro
                 </table>
 
                 {/* Footer */}
-                <div className="text-center text-xs text-gray-500 mt-4">
+                <div className="text-center text-xs text-theme-tertiary mt-4">
                   THANK YOU FOR YOUR BUSINESS!
                 </div>
               </div>

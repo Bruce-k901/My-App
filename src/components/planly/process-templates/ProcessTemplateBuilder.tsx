@@ -520,13 +520,13 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0B0F1A] flex flex-col">
       {/* Header */}
-      <div className="border-b border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02]">
+      <div className="border-b border-theme bg-white dark:bg-white/[0.02]">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link
                 href="/dashboard/planly/settings/process-templates"
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] text-gray-500 dark:text-white/60 hover:text-gray-900 dark:hover:text-white transition-colors"
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05] text-theme-tertiary hover:text-theme-primary transition-colors"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Link>
@@ -538,7 +538,7 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
                     setIsDirty(true);
                   }}
                   placeholder="Template name..."
-                  className="text-xl font-semibold bg-transparent border-none text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 focus:ring-0 px-0"
+                  className="text-xl font-semibold bg-transparent border-none text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-disabled focus:ring-0 px-0"
                 />
                 <Input
                   value={description}
@@ -547,18 +547,18 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
                     setIsDirty(true);
                   }}
                   placeholder="Optional description..."
-                  className="text-sm bg-transparent border-none text-gray-500 dark:text-white/60 placeholder:text-gray-400 dark:placeholder:text-white/30 focus:ring-0 px-0 mt-1"
+                  className="text-sm bg-transparent border-none text-theme-tertiary placeholder:text-theme-tertiary dark:placeholder:text-theme-disabled focus:ring-0 px-0 mt-1"
                 />
                 <div className="flex items-center gap-4 mt-3">
                   <div className="flex items-center gap-2">
-                    <ChefHat className="h-4 w-4 text-gray-400 dark:text-white/40" />
+                    <ChefHat className="h-4 w-4 text-theme-tertiary" />
                     <select
                       value={baseDoughRecipeId || ''}
                       onChange={(e) => {
                         setBaseDoughRecipeId(e.target.value || null);
                         setIsDirty(true);
                       }}
-                      className="text-sm bg-gray-100 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] rounded-md text-gray-700 dark:text-white/80 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#14B8A6]/50"
+                      className="text-sm bg-gray-100 dark:bg-white/[0.05] border border-theme rounded-md text-theme-secondary px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#14B8A6]/50"
                     >
                       <option value="">Select base dough recipe...</option>
                       {recipes.map((recipe) => (
@@ -567,7 +567,7 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
                         </option>
                       ))}
                     </select>
-                    <span className="text-xs text-gray-400 dark:text-white/40">(for Dough Mix calculations)</span>
+                    <span className="text-xs text-theme-tertiary">(for Dough Mix calculations)</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Input
@@ -577,7 +577,7 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
                         setIsDirty(true);
                       }}
                       placeholder="Production plan label..."
-                      className="text-sm bg-gray-100 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-gray-700 dark:text-white/80 placeholder:text-gray-400 dark:placeholder:text-white/30 w-48 px-2 py-1"
+                      className="text-sm bg-gray-100 dark:bg-white/[0.05] border border-theme text-theme-secondary placeholder:text-theme-tertiary dark:placeholder:text-theme-disabled w-48 px-2 py-1"
                     />
                     {productionPlanLabel && (
                       <span className="text-xs text-[#14B8A6]">
@@ -590,7 +590,7 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
             </div>
             <div className="flex items-center gap-3">
               {isDirty && (
-                <span className="text-sm text-gray-400 dark:text-white/40 flex items-center gap-1.5">
+                <span className="text-sm text-theme-tertiary flex items-center gap-1.5">
                   <AlertTriangle className="h-4 w-4" />
                   Unsaved changes
                 </span>
@@ -599,7 +599,7 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
                 variant="outline"
                 onClick={() => handleSave(false)}
                 disabled={isSaving}
-                className="bg-gray-100 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-white/[0.05]"
+                className="bg-gray-100 dark:bg-white/[0.03] border-theme text-theme-secondary hover:bg-gray-200 dark:hover:bg-white/[0.05]"
               >
                 {isSaving ? (
                   <>
@@ -678,9 +678,9 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
                 onClick={handleAddDay}
                 className={cn(
                   'flex-shrink-0 w-48 min-h-[300px] rounded-lg',
-                  'border-2 border-dashed border-gray-300 dark:border-white/[0.1] hover:border-gray-400 dark:hover:border-white/[0.2]',
+                  'border-2 border-dashed border-theme hover:border-gray-400 dark:hover:border-white/[0.2]',
                   'flex flex-col items-center justify-center gap-2',
-                  'text-gray-400 dark:text-white/40 hover:text-gray-500 dark:hover:text-white/60 transition-colors'
+                  'text-theme-tertiary hover:text-theme-tertiary dark:hover:text-theme-tertiary transition-colors'
                 )}
               >
                 <Plus className="h-8 w-8" />
@@ -690,8 +690,8 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
 
             <DragOverlay>
               {activeId && (
-                <div className="bg-white dark:bg-white/[0.05] border border-[#14B8A6]/50 rounded-lg p-3 shadow-xl opacity-80">
-                  <span className="text-gray-900 dark:text-white text-sm">Moving step...</span>
+ <div className="bg-theme-surface ] border border-[#14B8A6]/50 rounded-lg p-3 shadow-xl opacity-80">
+                  <span className="text-theme-primary text-sm">Moving step...</span>
                 </div>
               )}
             </DragOverlay>

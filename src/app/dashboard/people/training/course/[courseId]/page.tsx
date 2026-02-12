@@ -23,7 +23,7 @@ const statusConfig = {
   expired: { icon: XCircle, color: 'text-red-600 dark:text-red-400', bg: 'bg-red-50 dark:bg-red-500/10', label: 'Expired' },
   in_progress: { icon: Clock, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-500/10', label: 'In Progress' },
   required: { icon: AlertTriangle, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-500/10', label: 'Required' },
-  optional: { icon: Clock, color: 'text-gray-500 dark:text-white/50', bg: 'bg-gray-50 dark:bg-white/[0.03]', label: 'Not Assigned' },
+  optional: { icon: Clock, color: 'text-theme-tertiary', bg: 'bg-gray-50 dark:bg-white/[0.03]', label: 'Not Assigned' },
 } as const;
 
 export default function CourseDetailPage() {
@@ -104,11 +104,11 @@ export default function CourseDetailPage() {
           href="/dashboard/people/training"
           className="p-2 hover:bg-gray-100 dark:hover:bg-white/[0.05] rounded-lg transition-colors"
         >
-          <ArrowLeft className="w-5 h-5 text-gray-500 dark:text-white/60" />
+          <ArrowLeft className="w-5 h-5 text-theme-tertiary" />
         </Link>
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl font-bold text-theme-primary">
               {course?.name || 'Course Details'}
             </h1>
             {course?.is_mandatory && (
@@ -117,7 +117,7 @@ export default function CourseDetailPage() {
               </span>
             )}
           </div>
-          <p className="text-gray-600 dark:text-white/70 text-sm mt-1">
+          <p className="text-theme-secondary text-sm mt-1">
             {course?.category && <span>{course.category}</span>}
             {course?.code && <span> &middot; {course.code}</span>}
             {course?.provider && <span> &middot; {course.provider}</span>}
@@ -134,9 +134,9 @@ export default function CourseDetailPage() {
 
       {/* Course Info */}
       {course?.description && (
-        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-          <p className="text-gray-700 dark:text-white/80 text-sm">{course.description}</p>
-          <div className="flex flex-wrap gap-4 mt-3 text-xs text-gray-500 dark:text-white/50">
+ <div className="bg-theme-surface ] border border-theme rounded-lg p-4">
+          <p className="text-theme-secondary text-sm">{course.description}</p>
+          <div className="flex flex-wrap gap-4 mt-3 text-xs text-theme-tertiary">
             {course.duration_minutes && (
               <span>Duration: {course.duration_minutes} mins</span>
             )}
@@ -158,7 +158,7 @@ export default function CourseDetailPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <StatCard icon={Users} label="Total Staff" value={stats.total} color="text-gray-900 dark:text-white" />
+        <StatCard icon={Users} label="Total Staff" value={stats.total} color="text-theme-primary" />
         <StatCard icon={CheckCircle} label="Compliant" value={stats.compliant} color="text-green-600 dark:text-green-400" />
         <StatCard icon={XCircle} label="Expired" value={stats.expired} color="text-red-600 dark:text-red-400" />
         <StatCard icon={Clock} label="In Progress" value={stats.inProgress} color="text-blue-600 dark:text-blue-400" />
@@ -167,10 +167,10 @@ export default function CourseDetailPage() {
 
       {/* Compliance Rate */}
       {stats.total > 0 && (
-        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
+ <div className="bg-theme-surface ] border border-theme rounded-lg p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700 dark:text-white/80">Compliance Rate</span>
-            <span className="text-lg font-bold text-gray-900 dark:text-white">
+            <span className="text-sm font-medium text-theme-secondary">Compliance Rate</span>
+            <span className="text-lg font-bold text-theme-primary">
               {Math.round((stats.compliant / stats.total) * 100)}%
             </span>
           </div>
@@ -184,18 +184,18 @@ export default function CourseDetailPage() {
       )}
 
       {/* Employee List */}
-      <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg overflow-hidden">
-        <div className="px-4 py-3 border-b border-gray-200 dark:border-white/[0.06]">
-          <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+ <div className="bg-theme-surface ] border border-theme rounded-lg overflow-hidden">
+        <div className="px-4 py-3 border-b border-theme">
+          <h2 className="text-sm font-semibold text-theme-primary">
             Employees ({entries.length})
           </h2>
         </div>
 
         {entries.length === 0 ? (
           <div className="p-8 text-center">
-            <GraduationCap className="w-10 h-10 text-gray-400 dark:text-white/40 mx-auto mb-3" />
-            <p className="text-gray-600 dark:text-white/70 text-sm">No employee records found for this course</p>
-            <p className="text-gray-500 dark:text-white/50 text-xs mt-1">
+            <GraduationCap className="w-10 h-10 text-theme-tertiary mx-auto mb-3" />
+            <p className="text-theme-secondary text-sm">No employee records found for this course</p>
+            <p className="text-theme-tertiary text-xs mt-1">
               Assign this course to employees via the{' '}
               <Link href="/dashboard/people/training/matrix" className="text-blue-600 dark:text-blue-400 hover:underline">
                 compliance matrix
@@ -211,15 +211,15 @@ export default function CourseDetailPage() {
               return (
                 <div
                   key={entry.profile_id}
-                  className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors"
+                  className="flex items-center justify-between px-4 py-3 hover:bg-theme-surface-elevated dark:hover:bg-white/[0.03] transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${config.bg}`}>
                       <StatusIcon className={`w-4 h-4 ${config.color}`} />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">{entry.full_name}</p>
-                      <p className="text-xs text-gray-500 dark:text-white/50">
+                      <p className="text-sm font-medium text-theme-primary">{entry.full_name}</p>
+                      <p className="text-xs text-theme-tertiary">
                         {entry.position_title || entry.app_role || 'Employee'}
                         {entry.site_name && ` \u00b7 ${entry.site_name}`}
                       </p>
@@ -229,17 +229,17 @@ export default function CourseDetailPage() {
                   <div className="flex items-center gap-4">
                     {entry.completed_at && (
                       <div className="text-right hidden sm:block">
-                        <p className="text-xs text-gray-500 dark:text-white/50">Completed</p>
-                        <p className="text-xs font-medium text-gray-700 dark:text-white/80">
+                        <p className="text-xs text-theme-tertiary">Completed</p>
+                        <p className="text-xs font-medium text-theme-secondary">
                           {new Date(entry.completed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </p>
                       </div>
                     )}
                     {entry.expiry_date && (
                       <div className="text-right hidden sm:block">
-                        <p className="text-xs text-gray-500 dark:text-white/50">Expires</p>
+                        <p className="text-xs text-theme-tertiary">Expires</p>
                         <p className={`text-xs font-medium ${
-                          entry.compliance_status === 'expired' ? 'text-red-600 dark:text-red-400' : 'text-gray-700 dark:text-white/80'
+                          entry.compliance_status === 'expired' ? 'text-red-600 dark:text-red-400' : 'text-theme-secondary'
                         }`}>
                           {new Date(entry.expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </p>
@@ -271,8 +271,8 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
-      <div className="flex items-center gap-2 text-gray-500 dark:text-white/50 text-xs mb-1">
+ <div className="bg-theme-surface ] border border-theme rounded-lg p-3">
+      <div className="flex items-center gap-2 text-theme-tertiary text-xs mb-1">
         <Icon className="w-3.5 h-3.5" />
         {label}
       </div>

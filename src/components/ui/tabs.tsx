@@ -59,8 +59,8 @@ export function TabsTrigger({ value, children, className = '', _activeTab, _onTa
       className={`
         px-3 py-1.5 text-sm font-medium rounded-md transition-colors
         ${isActive
-          ? 'bg-white dark:bg-white/[0.1] text-gray-900 dark:text-white shadow-sm'
-          : 'text-gray-500 dark:text-white/50 hover:text-gray-700 dark:hover:text-white/70'
+          ? 'bg-white dark:bg-white/[0.1] text-theme-primary shadow-sm'
+          : 'text-theme-tertiary hover:text-theme-secondary dark:hover:text-theme-secondary'
         }
         ${className}
       `}

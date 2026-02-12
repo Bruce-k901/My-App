@@ -136,7 +136,7 @@ export function ComplianceMatrixPageClient() {
       if (course.is_mandatory) {
         return { status: 'required', icon: AlertTriangle, color: 'text-amber-600 dark:text-amber-400', bgColor: 'bg-amber-50 dark:bg-amber-500/10' };
       }
-      return { status: 'optional', icon: Clock, color: 'text-gray-400 dark:text-white/40', bgColor: 'bg-gray-50 dark:bg-white/[0.02]' };
+      return { status: 'optional', icon: Clock, color: 'text-theme-tertiary', bgColor: '' };
     }
 
     const status = entry.compliance_status?.toLowerCase() || 'optional';
@@ -157,7 +157,7 @@ export function ComplianceMatrixPageClient() {
         return { status: 'required', icon: AlertTriangle, color: 'text-amber-600 dark:text-amber-400', bgColor: 'bg-amber-50 dark:bg-amber-500/10' };
       case 'optional':
       default:
-        return { status: 'optional', icon: Clock, color: 'text-gray-400 dark:text-white/40', bgColor: 'bg-gray-50 dark:bg-white/[0.02]' };
+        return { status: 'optional', icon: Clock, color: 'text-theme-tertiary', bgColor: '' };
     }
   };
 
@@ -224,7 +224,7 @@ export function ComplianceMatrixPageClient() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/50">Loading compliance matrix...</div>
+        <div className="text-theme-tertiary">Loading compliance matrix...</div>
       </div>
     );
   }
@@ -241,8 +241,8 @@ export function ComplianceMatrixPageClient() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Compliance Matrix</h1>
-          <p className="text-gray-600 dark:text-white/70 mt-1">Track training compliance across your organization</p>
+          <h1 className="text-2xl font-bold text-theme-primary">Compliance Matrix</h1>
+          <p className="text-theme-secondary mt-1">Track training compliance across your organization</p>
         </div>
         <div className="flex items-center gap-4">
           <label className="flex items-center gap-2 cursor-pointer">
@@ -250,13 +250,13 @@ export function ComplianceMatrixPageClient() {
               type="checkbox"
               checked={showMandatoryOnly}
               onChange={(e) => setShowMandatoryOnly(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 dark:border-white/20 bg-white dark:bg-white/[0.05] text-blue-600 dark:text-blue-500 focus:ring-blue-500 focus:ring-2"
+ className="w-4 h-4 rounded border-theme bg-theme-surface"
             />
-            <span className="text-gray-600 dark:text-white/70 text-sm">Mandatory only</span>
+            <span className="text-theme-secondary text-sm">Mandatory only</span>
           </label>
           <Link
             href="/dashboard/people/training"
-            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/[0.05] hover:bg-gray-50 dark:hover:bg-white/[0.08] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white transition-colors"
+ className="flex items-center gap-2 px-4 py-2 bg-theme-surface hover:bg-theme-hover border border-theme rounded-lg text-theme-secondary hover:text-theme-primary transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back</span>
@@ -264,113 +264,64 @@ export function ComplianceMatrixPageClient() {
         </div>
       </div>
 
-      {/* Summary and Legend */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Summary</h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-white/70">Employees:</span>
-              <span className="text-gray-900 dark:text-white font-medium">{employees.length}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-white/70">Courses:</span>
-              <span className="text-gray-900 dark:text-white font-medium">{courses.length}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-white/70">Total Combinations:</span>
-              <span className="text-gray-900 dark:text-white font-medium">{employees.length * courses.length}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Status Legend</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-              <span className="text-xs text-gray-600 dark:text-white/70">Compliant</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-              <span className="text-xs text-gray-600 dark:text-white/70">Expiring Soon</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
-              <span className="text-xs text-gray-600 dark:text-white/70">Expired</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              <span className="text-xs text-gray-600 dark:text-white/70">In Progress</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-              <span className="text-xs text-gray-600 dark:text-white/70">Required</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-gray-400 dark:text-white/40" />
-              <span className="text-xs text-gray-600 dark:text-white/70">Not Assigned</span>
-            </div>
-          </div>
-          <p className="text-xs text-gray-500 dark:text-white/50 mt-3">
-            <span className="text-red-600 dark:text-red-400">*</span> indicates mandatory training. Click any cell to record or edit training.
-          </p>
-        </div>
+      {/* Legend — compact inline */}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 bg-theme-surface border border-theme rounded-lg px-4 py-3 text-xs">
+        <span className="text-theme-secondary font-medium">{employees.length} employees &middot; {courses.length} courses</span>
+        <span className="text-theme-tertiary">|</span>
+        <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-green-600 dark:text-green-400" /> Compliant</span>
+        <span className="flex items-center gap-1.5"><AlertTriangle className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" /> Expiring</span>
+        <span className="flex items-center gap-1.5"><XCircle className="w-3.5 h-3.5 text-red-600 dark:text-red-400" /> Expired</span>
+        <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> In Progress</span>
+        <span className="flex items-center gap-1.5"><AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" /> Required</span>
+        <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-theme-tertiary" /> Not Assigned</span>
+        <span className="ml-auto text-theme-tertiary">Click any cell to record or edit training</span>
       </div>
 
       {data.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg">
-          <p className="text-gray-600 dark:text-white/70">No compliance data found.</p>
-          <p className="text-gray-500 dark:text-white/50 text-sm mt-2">Make sure training courses and employees exist in your system.</p>
+ <div className="text-center py-12 bg-theme-surface border border-theme rounded-lg">
+          <p className="text-theme-secondary">No compliance data found.</p>
+          <p className="text-theme-tertiary text-sm mt-2">Make sure training courses and employees exist in your system.</p>
         </div>
       ) : employees.length === 0 || courses.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg">
-          <p className="text-gray-600 dark:text-white/70">
+ <div className="text-center py-12 bg-theme-surface border border-theme rounded-lg">
+          <p className="text-theme-secondary">
             {employees.length === 0 ? 'No employees found.' : 'No courses found.'}
           </p>
           {showMandatoryOnly && courses.length === 0 && (
-            <p className="text-gray-500 dark:text-white/50 text-sm mt-2">Try unchecking &ldquo;Mandatory only&rdquo; to see all courses.</p>
+            <p className="text-theme-tertiary text-sm mt-2">Try unchecking &ldquo;Mandatory only&rdquo; to see all courses.</p>
           )}
         </div>
       ) : (
-        <div className="overflow-x-auto bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06] rounded-lg">
+ <div className="overflow-x-auto bg-theme-surface border border-theme rounded-lg">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="border-b border-gray-200 dark:border-white/[0.06] bg-gray-50 dark:bg-white/[0.03]">
-                <th className="text-left p-4 text-gray-900 dark:text-white font-medium sticky left-0 bg-gray-50 dark:bg-[#0f1220] z-10 min-w-[200px] border-r border-gray-200 dark:border-white/[0.06]">
+              <tr className="border-b border-theme bg-theme-button">
+                <th className="text-left px-3 py-2 text-theme-primary text-xs font-semibold sticky left-0 bg-theme-button z-10 min-w-[180px] border-r border-theme">
                   Employee
                 </th>
                 {courses.map(course => (
-                  <th key={course.id} className="text-center px-1 pb-2 align-bottom" style={{ minWidth: '48px', height: '130px' }}>
-                    <div className="flex flex-col items-center justify-end h-full gap-1">
-                      <span
-                        className="text-[11px] font-semibold text-gray-900 dark:text-white leading-tight"
-                        style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', maxHeight: '110px', overflow: 'hidden', textOverflow: 'ellipsis' }}
-                        title={course.name}
-                      >
-                        {course.name}
-                      </span>
-                      {course.is_mandatory && (
-                        <span className="text-[10px] text-red-600 dark:text-red-400 font-bold" title="Mandatory">*</span>
-                      )}
-                    </div>
+                  <th key={course.id} className="px-2 py-2 text-center align-bottom" style={{ minWidth: '72px', maxWidth: '110px' }}>
+                    <span
+                      className="text-[11px] font-medium text-theme-primary leading-tight block"
+                      title={course.name}
+                    >
+                      {course.name}
+                    </span>
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {employees.map(employee => (
-                <tr key={employee.id} className="border-b border-gray-100 dark:border-white/[0.04] hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
-                  <td className="p-4 text-gray-900 dark:text-white sticky left-0 bg-white dark:bg-[#0f1220] z-10 border-r border-gray-200 dark:border-white/[0.06]">
-                    <div>
-                      <div className="font-semibold text-sm">{employee.name}</div>
-                      {employee.position && (
-                        <div className="text-xs text-gray-500 dark:text-white/50 mt-0.5">{employee.position}</div>
-                      )}
-                      {employee.site && (
-                        <div className="text-xs text-gray-400 dark:text-white/40 mt-0.5">{employee.site}</div>
-                      )}
-                    </div>
+                <tr key={employee.id} className="border-b border-theme hover:bg-theme-hover transition-colors">
+                  <td className="px-3 py-2 text-theme-primary sticky left-0 bg-theme-surface z-10 border-r border-theme">
+                    <div className="font-semibold text-xs leading-tight">{employee.name}</div>
+                    {employee.position && (
+                      <div className="text-[11px] text-theme-tertiary leading-tight">{employee.position}</div>
+                    )}
+                    {employee.site && (
+                      <div className="text-[11px] text-theme-tertiary leading-tight">{employee.site}</div>
+                    )}
                   </td>
                   {courses.map(course => {
                     const entry = getEntry(employee.id, course.id);
@@ -380,26 +331,26 @@ export function ComplianceMatrixPageClient() {
                     return (
                       <td
                         key={course.id}
-                        className={`p-1.5 text-center ${statusInfo.bgColor} transition-all cursor-pointer hover:ring-2 hover:ring-blue-400/50 dark:hover:ring-blue-500/30 hover:ring-inset`}
+                        className={`px-1 py-1.5 text-center ${statusInfo.bgColor} transition-all cursor-pointer hover:ring-2 hover:ring-module-fg/40 hover:ring-inset`}
                         onClick={() => handleCellClick(entry, employee, course)}
                         title={`${course.name} - ${statusInfo.status.charAt(0).toUpperCase() + statusInfo.status.slice(1).replace('_', ' ')}`}
                       >
-                        <div className="flex flex-col items-center gap-1">
-                          <StatusIcon className={`w-5 h-5 ${statusInfo.color}`} />
+                        <div className="flex flex-col items-center gap-0.5">
+                          <StatusIcon className={`w-4 h-4 ${statusInfo.color}`} />
                           {entry?.completed_at && (
-                            <span className="text-[10px] text-gray-500 dark:text-white/50">
+                            <span className="text-[10px] leading-tight text-theme-tertiary">
                               {new Date(entry.completed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                             </span>
                           )}
                           {entry?.expiry_date && (
-                            <span className={`text-[10px] font-medium ${
+                            <span className={`text-[10px] leading-tight font-medium ${
                               entry.compliance_status === 'expired'
                                 ? 'text-red-600 dark:text-red-400'
                                 : (entry.compliance_status === 'compliant' || entry.compliance_status === 'current')
                                 ? 'text-green-600 dark:text-green-400'
                                 : entry.compliance_status === 'expiring_soon'
                                 ? 'text-orange-600 dark:text-orange-400'
-                                : 'text-gray-500 dark:text-white/50'
+                                : 'text-theme-tertiary'
                             }`}>
                               {entry.compliance_status === 'expired' ? 'Expired' :
                                `Exp: ${new Date(entry.expiry_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`}

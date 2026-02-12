@@ -31,18 +31,18 @@ export function PhotoEvidenceRenderer({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-white mb-2">
+      <label className="block text-sm font-medium text-theme-primary mb-2">
         Photo Evidence (Optional)
       </label>
 
       {/* Photo Upload Button */}
       <label className={`flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg transition-colors ${
         disabled
-          ? 'border-white/[0.05] cursor-not-allowed opacity-50'
-          : 'border-white/[0.1] hover:border-white/[0.2] cursor-pointer'
+          ? 'border-gray-200 dark:border-white/[0.05] cursor-not-allowed opacity-50'
+          : 'border-gray-300 dark:border-white/[0.1] hover:border-module-fg cursor-pointer'
       }`}>
-        <Camera className="w-5 h-5 text-neutral-400" />
-        <span className="text-sm text-neutral-400">
+        <Camera className="w-5 h-5 text-theme-tertiary" />
+        <span className="text-sm text-theme-tertiary">
           {photos.length > 0 ? `${photos.length} photo(s) selected` : 'Tap to add photo'}
         </span>
         <input
@@ -63,7 +63,7 @@ export function PhotoEvidenceRenderer({
               <img
                 src={URL.createObjectURL(photo)}
                 alt={`Preview ${index + 1}`}
-                className="w-full h-24 object-cover rounded-lg border border-white/[0.06]"
+                className="w-full h-24 object-cover rounded-lg border border-theme"
               />
               {!disabled && (
                 <button
@@ -71,7 +71,7 @@ export function PhotoEvidenceRenderer({
                   onClick={() => onRemove(index)}
                   className="absolute top-1 right-1 p-1 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <X className="w-3 h-3 text-white" />
+                  <X className="w-3 h-3 text-theme-primary" />
                 </button>
               )}
             </div>

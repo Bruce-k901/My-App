@@ -64,12 +64,12 @@
                 <h2 className="text-xl font-semibold">Something went wrong</h2>
               </div>
               
-              <p className="text-slate-300 text-sm">
+              <p className="text-theme-secondary text-sm">
                 We encountered an unexpected error. Don't worry, your data is safe.
               </p>
 
               {process.env.NODE_ENV === "development" && this.state.error && (
-                <div className="bg-black/40 rounded-md p-3 text-xs text-slate-400 font-mono overflow-auto max-h-32">
+                <div className="bg-black/40 rounded-md p-3 text-xs text-theme-tertiary font-mono overflow-auto max-h-32">
                   <div className="font-semibold text-red-400 mb-1">Error:</div>
                   <div>{this.state.error.message}</div>
                   {this.state.error.stack && (
@@ -91,7 +91,7 @@
                 <Button
                   onClick={() => window.location.reload()}
                   variant="outline"
-                  className="flex-1 border-white/[0.2] text-white hover:bg-white/[0.1]"
+                  className="flex-1 border-white/[0.2] text-theme-primary hover:bg-white/[0.1]"
                 >
                   Reload Page
                 </Button>

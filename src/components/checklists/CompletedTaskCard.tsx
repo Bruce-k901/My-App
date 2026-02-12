@@ -1192,7 +1192,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
     green: {
       cardBorder: 'border-green-200 dark:border-green-500/20',
       cardBg: 'bg-green-50 dark:bg-green-500/5',
-      headerHover: 'hover:bg-green-100 dark:hover:bg-green-500/10',
+      headerHover: 'hover:bg-green-100 dark:hover:bg-module-fg/10',
       badge: 'bg-green-100 dark:bg-green-500/10 text-green-800 dark:text-green-400 border-green-300 dark:border-green-500/20',
       expanded: 'border-green-200 dark:border-green-500/20 bg-green-50 dark:bg-green-500/5'
     },
@@ -1253,7 +1253,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
       >
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-lg font-semibold text-theme-primary">
               {task.custom_name || task.template?.name || 'Untitled Task'}
             </h3>
             {task.status === 'missed' && (
@@ -1267,7 +1267,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
               {statusLabel.toUpperCase()}
             </span>
             {task.template?.category && (
-              <span className="px-2 py-1 rounded-full text-xs font-medium border border-gray-300 dark:border-white/20 bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-white/70">
+              <span className="px-2 py-1 rounded-full text-xs font-medium border border-gray-300 dark:border-white/20 bg-gray-100 dark:bg-white/5 text-theme-secondary">
                 {task.template.category.replace('_', ' ').toUpperCase()}
               </span>
             )}
@@ -1278,11 +1278,11 @@ const photoPaths = completionRecord?.evidence_attachments ||
             )}
           </div>
           
-          <div className="flex items-center gap-4 text-sm text-[rgb(var(--text-secondary))] dark:text-white/60 mb-3">
+          <div className="flex items-center gap-4 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-3">
             {task.completed_by_profile && (
               <div className="flex items-center gap-1">
                 <span>Completed by:</span>
-                <span className="text-[rgb(var(--text-primary))] dark:text-white/80 font-medium">{task.completed_by_profile.full_name || task.completed_by_profile.email || 'Unknown'}</span>
+                <span className="text-[rgb(var(--text-primary))] dark:text-theme-secondary font-medium">{task.completed_by_profile.full_name || task.completed_by_profile.email || 'Unknown'}</span>
               </div>
             )}
             {(completionRecord?.completed_at || task.completed_at) && (
@@ -1340,7 +1340,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
                   {temperatures.filter((t: any) => t.status === 'ok').length > 0 && (
                     <div className="flex items-center gap-2 text-sm">
                       <Thermometer className="w-4 h-4 text-green-700 dark:text-green-400" />
-                      <span className="text-gray-800 dark:text-white/80">
+                      <span className="text-theme-primary/80">
                         {previewTemps.filter((t: any) => t.status === 'ok').map((t: any, i: number) => (
                           <span key={i}>
                             {t.equipment}: <span className="font-medium">{t.temp !== null && t.temp !== undefined ? `${t.temp}°C` : 'No reading'}</span>
@@ -1348,7 +1348,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
                           </span>
                         ))}
                         {temperatures.filter((t: any) => t.status === 'ok').length > 3 && (
-                          <span className="text-gray-600 dark:text-white/60">
+                          <span className="text-theme-secondary">
                             {' '}+{temperatures.filter((t: any) => t.status === 'ok').length - 3} more
                           </span>
                         )}
@@ -1362,7 +1362,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
               {checklistItems.length > 0 && (
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-                  <span className="text-[rgb(var(--text-primary))] dark:text-white/80">
+                  <span className="text-[rgb(var(--text-primary))] dark:text-theme-secondary">
                     {completedChecklistCount} of {checklistItems.length} checklist items completed
                   </span>
                 </div>
@@ -1372,7 +1372,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
               {yesNoChecklistItems.length > 0 && (
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-                  <span className="text-[rgb(var(--text-primary))] dark:text-white/80">
+                  <span className="text-[rgb(var(--text-primary))] dark:text-theme-secondary">
                     {yesNoChecklistItems.length} yes/no question{yesNoChecklistItems.length !== 1 ? 's' : ''}
                   </span>
                 </div>
@@ -1386,7 +1386,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
                   ) : (
                     <X className="w-4 h-4 text-red-600 dark:text-red-400" />
                   )}
-                  <span className="text-[rgb(var(--text-primary))] dark:text-white/80 font-medium">Result: {passFailResult.toUpperCase()}</span>
+                  <span className="text-[rgb(var(--text-primary))] dark:text-theme-secondary font-medium">Result: {passFailResult.toUpperCase()}</span>
                 </div>
               )}
             </div>
@@ -1395,9 +1395,9 @@ const photoPaths = completionRecord?.evidence_attachments ||
         
         <div className="ml-4 flex items-center">
           {isExpanded ? (
-            <ChevronUp className="w-5 h-5 text-gray-500 dark:text-white/60" />
+            <ChevronUp className="w-5 h-5 text-theme-tertiary" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-gray-500 dark:text-white/60" />
+            <ChevronDown className="w-5 h-5 text-theme-tertiary" />
           )}
         </div>
       </button>
@@ -1409,19 +1409,19 @@ const photoPaths = completionRecord?.evidence_attachments ||
             {/* PRIMARY: Assets Checked with Temperatures - MOST IMPORTANT FOR EHO */}
             {temperatures.length > 0 ? (
               <div>
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                <h4 className="text-lg font-semibold text-theme-primary mb-3 flex items-center gap-2">
                   <Thermometer className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   Temperature Readings
                 </h4>
 
-                <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.08] rounded-lg overflow-hidden">
+                <div className="bg-white dark:bg-white/[0.02] border border-theme rounded-lg overflow-hidden">
                   <table className="w-full">
                     <thead>
-                      <tr className="bg-gray-50 dark:bg-white/[0.04] border-b border-gray-200 dark:border-white/[0.08]">
-                        <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Equipment</th>
-                        <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Reading</th>
-                        <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Expected Range</th>
-                        <th className="text-center px-4 py-2 text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Status</th>
+                      <tr className="bg-gray-50 dark:bg-white/[0.04] border-b border-theme">
+ <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-theme-tertiary uppercase tracking-wider">Equipment</th>
+ <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-theme-tertiary uppercase tracking-wider">Reading</th>
+ <th className="text-left px-4 py-2 text-xs font-medium text-gray-500 dark:text-theme-tertiary uppercase tracking-wider">Expected Range</th>
+ <th className="text-center px-4 py-2 text-xs font-medium text-gray-500 dark:text-theme-tertiary uppercase tracking-wider">Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1430,7 +1430,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
                         const isWarning = temp.status === 'warning';
 
                         return (
-                          <tr key={idx} className={`border-b border-gray-100 dark:border-white/[0.05] transition-colors ${
+                          <tr key={idx} className={`border-b border-theme transition-colors ${
                             isOutOfRange ? 'bg-red-50 dark:bg-red-500/5' : ''
                           }`}>
                             {/* Equipment Column */}
@@ -1440,11 +1440,11 @@ const photoPaths = completionRecord?.evidence_attachments ||
                                   isOutOfRange ? 'text-red-500 dark:text-red-400' : isWarning ? 'text-orange-500 dark:text-orange-400' : 'text-green-600 dark:text-green-400'
                                 }`} />
                                 <div className="min-w-0">
-                                  <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                  <div className="text-sm font-semibold text-theme-primary truncate">
                                     {temp.nickname || temp.asset_name || temp.equipment || 'Unknown'}
                                   </div>
                                   {temp.nickname && temp.asset_name && (
-                                    <div className="text-xs text-gray-500 dark:text-neutral-500 truncate">
+ <div className="text-xs text-gray-500 dark:text-theme-tertiary truncate">
                                       {temp.asset_name}
                                     </div>
                                   )}
@@ -1461,18 +1461,18 @@ const photoPaths = completionRecord?.evidence_attachments ||
                                   {temp.temp}°C
                                 </div>
                               ) : (
-                                <span className="text-sm text-gray-400 dark:text-neutral-500 italic">No reading</span>
+ <span className="text-sm text-gray-400 dark:text-theme-tertiary italic">No reading</span>
                               )}
                             </td>
 
                             {/* Range Column */}
                             <td className="px-4 py-3">
                               {temp.range && temp.range.min !== null && temp.range.max !== null ? (
-                                <div className="text-sm text-gray-500 dark:text-neutral-400 tabular-nums">
+ <div className="text-sm text-gray-500 dark:text-theme-tertiary tabular-nums">
                                   {temp.range.min}°C to {temp.range.max}°C
                                 </div>
                               ) : (
-                                <span className="text-sm text-gray-400 dark:text-neutral-500">—</span>
+ <span className="text-sm text-gray-400 dark:text-theme-tertiary">—</span>
                               )}
                             </td>
 
@@ -1558,44 +1558,44 @@ const photoPaths = completionRecord?.evidence_attachments ||
                 <div className="space-y-4 text-sm">
                   {/* Asset Information */}
                   {(calloutAssetName || calloutAssetId) && (
-                    <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg p-3">
-                      <p className="text-gray-500 dark:text-white/60 text-xs mb-2 font-medium">Asset Information</p>
+                    <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                      <p className="text-theme-tertiary text-xs mb-2 font-medium">Asset Information</p>
                       {calloutAssetName && (
-                        <p className="text-gray-900 dark:text-white/90 font-medium text-base mb-1">{calloutAssetName}</p>
+                        <p className="text-theme-primary/90 font-medium text-base mb-1">{calloutAssetName}</p>
                       )}
                       {calloutAssetId && (
-                        <p className="text-gray-500 dark:text-white/60 text-xs font-mono">ID: {calloutAssetId}</p>
+                        <p className="text-theme-tertiary text-xs font-mono">ID: {calloutAssetId}</p>
                       )}
                     </div>
                   )}
 
                   {/* Contractor Information */}
                   {(calloutContractorName || calloutContractorId || calloutContractorEmail) && (
-                    <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg p-3">
-                      <p className="text-gray-500 dark:text-white/60 text-xs mb-2 font-medium">Contractor Information</p>
+                    <div className="bg-theme-surface border border-theme rounded-lg p-3">
+                      <p className="text-theme-tertiary text-xs mb-2 font-medium">Contractor Information</p>
                       {calloutContractorName && (
-                        <p className="text-gray-900 dark:text-white/90 font-medium text-base mb-1">{calloutContractorName}</p>
+                        <p className="text-theme-primary/90 font-medium text-base mb-1">{calloutContractorName}</p>
                       )}
                       {calloutContractorEmail && (
-                        <p className="text-gray-600 dark:text-white/70 text-xs mb-1">Email: {calloutContractorEmail}</p>
+                        <p className="text-theme-secondary text-xs mb-1">Email: {calloutContractorEmail}</p>
                       )}
                       {calloutContractorId && (
-                        <p className="text-gray-500 dark:text-white/60 text-xs font-mono">ID: {calloutContractorId}</p>
+                        <p className="text-theme-tertiary text-xs font-mono">ID: {calloutContractorId}</p>
                       )}
                     </div>
                   )}
                   
                   {calloutType && (
                     <div>
-                      <p className="text-gray-600 dark:text-white/60 text-xs mb-1">Callout Type</p>
-                      <p className="text-gray-900 dark:text-white/90 font-medium capitalize">{calloutType}</p>
+                      <p className="text-theme-secondary text-xs mb-1">Callout Type</p>
+                      <p className="text-theme-primary/90 font-medium capitalize">{calloutType}</p>
                     </div>
                   )}
                   
                   {calloutFaultDescription && (
                     <div>
-                      <p className="text-gray-600 dark:text-white/60 text-xs mb-1">Fault Description</p>
-                      <p className="text-gray-900 dark:text-white/90 font-medium whitespace-pre-line bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg p-3 text-sm">
+                      <p className="text-theme-secondary text-xs mb-1">Fault Description</p>
+                      <p className="text-theme-primary/90 font-medium whitespace-pre-line bg-theme-surface border border-theme rounded-lg p-3 text-sm">
                         {calloutFaultDescription}
                       </p>
                     </div>
@@ -1604,7 +1604,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
                   {/* Troubleshooting Questions with Answers */}
                   {troubleshootingQuestions.length > 0 && (
                     <div>
-                      <p className="text-gray-600 dark:text-white/60 text-xs mb-3 font-medium">Troubleshooting Questions & Answers</p>
+                      <p className="text-theme-secondary text-xs mb-3 font-medium">Troubleshooting Questions & Answers</p>
                       <div className="space-y-3">
                         {troubleshootingQuestions.map((question: string, idx: number) => {
                           // Try to get answer from multiple sources
@@ -1630,11 +1630,11 @@ const photoPaths = completionRecord?.evidence_attachments ||
                             ? { text: 'No', color: 'text-red-700 dark:text-red-400', bg: 'bg-red-100 dark:bg-red-500/20', border: 'border-red-300 dark:border-red-500/30' }
                             : answer
                             ? { text: String(answer), color: 'text-yellow-700 dark:text-yellow-400', bg: 'bg-yellow-100 dark:bg-yellow-500/20', border: 'border-yellow-300 dark:border-yellow-500/30' }
-                            : { text: 'No answer recorded', color: 'text-gray-500 dark:text-white/40', bg: 'bg-gray-100 dark:bg-white/5', border: 'border-gray-300 dark:border-white/10' }
+                            : { text: 'No answer recorded', color: 'text-theme-tertiary', bg: 'bg-gray-100 dark:bg-white/5', border: 'border-theme' }
                           
                           return (
-                            <div key={idx} className={`bg-white dark:bg-white/5 border ${answerDisplay.border} rounded-lg p-3`}>
-                              <p className="text-gray-900 dark:text-white/90 text-sm font-medium mb-2">{question}</p>
+                            <div key={idx} className={`bg-theme-surface border ${answerDisplay.border} rounded-lg p-3`}>
+                              <p className="text-theme-primary/90 text-sm font-medium mb-2">{question}</p>
                               <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg ${answerDisplay.bg} ${answerDisplay.border} border`}>
                                 <span className={`text-xs font-semibold ${answerDisplay.color}`}>
                                   {answerDisplay.text === 'No answer recorded' ? (
@@ -1657,8 +1657,8 @@ const photoPaths = completionRecord?.evidence_attachments ||
                   
                   {calloutNotes && (
                     <div>
-                      <p className="text-gray-600 dark:text-white/60 text-xs mb-1">Additional Notes</p>
-                      <p className="text-gray-800 dark:text-white/70 whitespace-pre-line bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg p-3 text-sm">
+                      <p className="text-theme-secondary text-xs mb-1">Additional Notes</p>
+                      <p className="text-theme-primary/70 whitespace-pre-line bg-theme-surface border border-theme rounded-lg p-3 text-sm">
                         {calloutNotes}
                       </p>
                     </div>
@@ -1666,8 +1666,8 @@ const photoPaths = completionRecord?.evidence_attachments ||
                   
                   {calloutId && (
                     <div>
-                      <p className="text-gray-600 dark:text-white/60 text-xs mb-1">Callout ID</p>
-                      <p className="text-gray-900 dark:text-white/90 font-mono text-xs bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg p-2 inline-block">
+                      <p className="text-theme-secondary text-xs mb-1">Callout ID</p>
+                      <p className="text-theme-primary/90 font-mono text-xs bg-theme-surface border border-theme rounded-lg p-2 inline-block">
                         {calloutId}
                       </p>
                     </div>
@@ -1817,12 +1817,12 @@ const photoPaths = completionRecord?.evidence_attachments ||
                         <span className="font-bold text-orange-800 dark:text-orange-300">Monitoring Task Created</span>
                       </div>
                       {monitoringAssetName && (
-                        <p className="text-gray-900 dark:text-white/90 text-sm font-medium mb-1">
+                        <p className="text-theme-primary/90 text-sm font-medium mb-1">
                           Asset: {monitoringAssetName}
                         </p>
                       )}
                       {monitoringDuration && (
-                        <p className="text-gray-700 dark:text-white/80 text-sm">
+                        <p className="text-theme-secondary text-sm">
                           <span className="font-medium">Duration:</span> {
                             typeof monitoringDuration === 'number' 
                               ? monitoringDuration === 60 
@@ -1835,17 +1835,17 @@ const photoPaths = completionRecord?.evidence_attachments ||
                         </p>
                       )}
                       {!monitoringDuration && (
-                        <p className="text-gray-700 dark:text-white/80 text-sm">
+                        <p className="text-theme-secondary text-sm">
                           <span className="font-medium">Duration:</span> 1 hour (default)
                         </p>
                       )}
                       {monitoringDetails.result && (
-                        <p className="text-gray-700 dark:text-white/80 text-sm mt-2">
+                        <p className="text-theme-secondary text-sm mt-2">
                           <span className="font-medium">Result:</span> {monitoringDetails.result}
                         </p>
                       )}
                       {monitoringDetails.follow_up_temp !== undefined && monitoringDetails.follow_up_temp !== null && (
-                        <p className="text-gray-700 dark:text-white/80 text-sm mt-2">
+                        <p className="text-theme-secondary text-sm mt-2">
                           <span className="font-medium">Follow-up Temperature:</span> {monitoringDetails.follow_up_temp}°C
                         </p>
                       )}
@@ -1857,27 +1857,27 @@ const photoPaths = completionRecord?.evidence_attachments ||
                         <span className="font-bold text-red-700 dark:text-red-300">Contractor Callout Created</span>
                       </div>
                       {contractorName && (
-                        <p className="text-gray-900 dark:text-white/90 text-sm font-medium mb-1">
+                        <p className="text-theme-primary/90 text-sm font-medium mb-1">
                           Contractor: {contractorName}
                         </p>
                       )}
                       {calloutDetails.contractor_type && (
-                        <p className="text-gray-700 dark:text-white/80 text-sm">
+                        <p className="text-theme-secondary text-sm">
                           <span className="font-medium">Type:</span> {calloutDetails.contractor_type}
                         </p>
                       )}
                       {calloutDetails.status && (
-                        <p className="text-gray-700 dark:text-white/80 text-sm mt-2">
+                        <p className="text-theme-secondary text-sm mt-2">
                           <span className="font-medium">Status:</span> <span className="capitalize">{calloutDetails.status}</span>
                         </p>
                       )}
                       {calloutDetails.resolution && (
-                        <p className="text-gray-700 dark:text-white/80 text-sm mt-2">
+                        <p className="text-theme-secondary text-sm mt-2">
                           <span className="font-medium">Resolution:</span> {calloutDetails.resolution}
                         </p>
                       )}
                       {calloutDetails.resolved_at && (
-                        <p className="text-gray-700 dark:text-white/80 text-sm mt-2">
+                        <p className="text-theme-secondary text-sm mt-2">
                           <span className="font-medium">Resolved At:</span> {new Date(calloutDetails.resolved_at).toLocaleString()}
                         </p>
                       )}
@@ -1887,7 +1887,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
                     <div className="bg-yellow-100 dark:bg-yellow-500/20 border border-yellow-300 dark:border-yellow-500/40 rounded-lg p-3">
                       <p className="text-yellow-800 dark:text-yellow-300 font-medium">Task was completed late</p>
                       {(completionRecord?.completed_at || task.completed_at) && task.due_date && (
-                        <p className="text-gray-700 dark:text-white/80 text-xs mt-1">
+                        <p className="text-theme-secondary text-xs mt-1">
                           Due: {new Date(task.due_date).toLocaleDateString()} |
                           Completed: {new Date(completionRecord?.completed_at || task.completed_at).toLocaleString()}
                         </p>
@@ -1907,7 +1907,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
             {/* Checklist Items - Show ALL items with completion status */}
             {checklistItems.length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                <h4 className="text-sm font-semibold text-theme-primary mb-3">
                   Checklist Items ({completedChecklistCount} of {checklistItems.length} completed)
                 </h4>
                 <div className="space-y-2">
@@ -1927,11 +1927,11 @@ const photoPaths = completionRecord?.evidence_attachments ||
                           <X className="w-5 h-5 text-red-700 dark:text-red-400 flex-shrink-0 mt-0.5" />
                         )}
                         <div className="flex-1">
-                          <p className={`text-sm font-medium ${isCompleted ? 'text-gray-900 dark:text-white/90' : 'text-gray-700 dark:text-white/60'}`}>
+                          <p className={`text-sm font-medium ${isCompleted ? 'text-theme-primary/90' : 'text-theme-secondary/60'}`}>
                             {itemText}
                           </p>
                           {typeof item === 'object' && item.description && (
-                            <p className="text-xs text-gray-600 dark:text-white/50 mt-1">{item.description}</p>
+                            <p className="text-xs text-theme-secondary/50 mt-1">{item.description}</p>
                           )}
                         </div>
                       </div>
@@ -1944,7 +1944,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
             {/* Yes/No Checklist Items - Show ALL questions with answers */}
             {yesNoChecklistItems.length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                <h4 className="text-sm font-semibold text-theme-primary mb-3">
                   Yes/No Questions ({yesNoChecklistItems.filter((item: any) => item.answer).length} of {yesNoChecklistItems.length} answered)
                 </h4>
                 <div className="space-y-2">
@@ -1958,7 +1958,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
                           ? 'bg-green-50 dark:bg-green-500/10 border-green-300 dark:border-green-500/30' 
                           : answer === 'no' 
                           ? 'bg-red-50 dark:bg-red-500/10 border-red-300 dark:border-red-500/30' 
-                          : 'bg-gray-50 dark:bg-white/[0.03] border-gray-200 dark:border-white/[0.06]'
+                          : 'bg-gray-50 dark:bg-white/[0.03] border-theme'
                       }`}>
                         {answer === 'yes' ? (
                           <CheckCircle className="w-5 h-5 text-green-700 dark:text-green-400 flex-shrink-0 mt-0.5" />
@@ -1968,7 +1968,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
                           <div className="w-5 h-5 flex-shrink-0 mt-0.5 border-2 border-gray-300 dark:border-white/20 rounded-full" />
                         )}
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white/90">{itemText}</p>
+                          <p className="text-sm font-medium text-theme-primary/90">{itemText}</p>
                           {answer ? (
                             <p className={`text-sm mt-1 font-semibold ${
                               answer === 'yes' ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'
@@ -1979,7 +1979,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
                               )}
                             </p>
                           ) : (
-                            <p className="text-xs mt-1 text-gray-500 dark:text-white/40 italic">No answer recorded</p>
+                            <p className="text-xs mt-1 text-theme-tertiary italic">No answer recorded</p>
                           )}
                         </div>
                       </div>
@@ -1993,7 +1993,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
             {/* Pass/Fail Result */}
             {passFailResult && (
               <div>
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Result</h4>
+                <h4 className="text-sm font-semibold text-theme-primary mb-2">Result</h4>
                 <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg ${
                   passFailResult === 'pass'
                     ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-500/50'
@@ -2012,7 +2012,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
             {/* Photos */}
             {photoUrls.length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Photos</h4>
+                <h4 className="text-sm font-semibold text-theme-primary mb-3">Photos</h4>
                 <div className="grid grid-cols-2 gap-3">
                   {photoUrls.map((photoUrl: string, idx: number) => (
                     <a
@@ -2020,7 +2020,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
                       href={photoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 dark:border-white/[0.06] hover:border-[#D37E91]/50 transition-colors group"
+                      className="relative aspect-square rounded-lg overflow-hidden border border-theme hover:border-[#D37E91]/50 transition-colors group"
                     >
                       <img
                         src={photoUrl}
@@ -2028,7 +2028,7 @@ const photoPaths = completionRecord?.evidence_attachments ||
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                        <ExternalLink className="w-5 h-5 text-white" />
+                        <ExternalLink className="w-5 h-5 text-theme-primary" />
                       </div>
                     </a>
                   ))}
@@ -2039,8 +2039,8 @@ const photoPaths = completionRecord?.evidence_attachments ||
             {/* Notes */}
             {notes && (
               <div>
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Notes & Observations</h4>
-                <p className="text-sm text-gray-700 dark:text-white/70 whitespace-pre-line bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-3">
+                <h4 className="text-sm font-semibold text-theme-primary mb-2">Notes & Observations</h4>
+                <p className="text-sm text-theme-secondary whitespace-pre-line bg-theme-surface border border-theme rounded-lg p-3">
                   {notes}
                 </p>
               </div>
@@ -2049,16 +2049,16 @@ const photoPaths = completionRecord?.evidence_attachments ||
 
             {/* Instructions - Hide for completed follow-up tasks, show for others */}
             {(task.custom_instructions || task.template?.instructions) && !isMonitoringTask && (
-              <div className="pt-4 border-t border-gray-200 dark:border-white/[0.06]">
+              <div className="pt-4 border-t border-theme">
                 <details className="group">
-                  <summary className="cursor-pointer text-sm font-semibold text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white/80 transition-colors list-none">
+                  <summary className="cursor-pointer text-sm font-semibold text-theme-tertiary hover:text-theme-secondary dark:hover:text-theme-secondary transition-colors list-none">
                     <div className="flex items-center gap-2">
                       <span>View Instructions</span>
                       <ChevronDown className="w-4 h-4 group-open:rotate-180 transition-transform" />
                     </div>
                   </summary>
-                  <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/[0.06]">
-                    <p className="text-sm text-gray-700 dark:text-white/70 whitespace-pre-line">
+                  <div className="mt-3 pt-3 border-t border-theme">
+                    <p className="text-sm text-theme-secondary whitespace-pre-line">
                       {task.custom_instructions || task.template?.instructions}
                     </p>
                   </div>

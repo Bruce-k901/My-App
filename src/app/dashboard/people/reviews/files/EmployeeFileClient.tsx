@@ -49,19 +49,19 @@ export default function EmployeeFileClient({ profile, employees }: { profile: an
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Employee Files</h1>
-        <p className="text-gray-600 dark:text-white/60">View comprehensive review history and performance trends</p>
+        <h1 className="text-2xl font-bold text-theme-primary">Employee Files</h1>
+        <p className="text-theme-secondary">View comprehensive review history and performance trends</p>
       </div>
 
       <div className={`grid ${isStaff ? 'lg:grid-cols-1' : 'lg:grid-cols-4'} gap-6`}>
         {/* Employee List - Hide for staff since they can only see themselves */}
         {!isStaff && (
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-4 shadow-sm dark:shadow-none">
-              <h2 className="text-gray-900 dark:text-white font-medium mb-4">Employees</h2>
+            <div className="bg-theme-surface border border-theme rounded-lg p-4 shadow-sm dark:shadow-none">
+              <h2 className="text-theme-primary font-medium mb-4">Employees</h2>
               <div className="space-y-2">
                 {employees.length === 0 ? (
-                  <p className="text-gray-600 dark:text-white/60 text-sm">No employees found</p>
+                  <p className="text-theme-secondary text-sm">No employees found</p>
                 ) : (
                   employees.map((emp) => (
                   <button
@@ -70,12 +70,12 @@ export default function EmployeeFileClient({ profile, employees }: { profile: an
                     className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
                       selectedEmployee === emp.id
                         ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30'
-                        : 'bg-gray-50 dark:bg-white/[0.02] text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05] border border-gray-200 dark:border-white/[0.06]'
+                        : 'bg-gray-50 dark:bg-white/[0.02] text-theme-primary hover:bg-gray-100 dark:hover:bg-white/[0.05] border border-theme'
                     }`}
                   >
                     <p className="font-medium truncate">{emp.full_name}</p>
                     {emp.position_title && (
-                      <p className="text-xs text-gray-600 dark:text-white/60 truncate">{emp.position_title}</p>
+                      <p className="text-xs text-theme-secondary truncate">{emp.position_title}</p>
                     )}
                   </button>
                   ))
@@ -88,10 +88,10 @@ export default function EmployeeFileClient({ profile, employees }: { profile: an
         {/* Employee File Content */}
         <div className={isStaff ? 'lg:col-span-1' : 'lg:col-span-3'}>
           {!selectedEmployee ? (
-            <div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg p-12 text-center shadow-sm dark:shadow-none">
-              <FileText className="w-12 h-12 text-gray-400 dark:text-white/50 mx-auto mb-4" />
-              <p className="text-gray-900 dark:text-white font-medium">Select an employee</p>
-              <p className="text-gray-600 dark:text-white/60 text-sm mt-1">Choose an employee to view their review file</p>
+            <div className="bg-theme-surface border border-theme rounded-lg p-12 text-center shadow-sm dark:shadow-none">
+              <FileText className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
+              <p className="text-theme-primary font-medium">Select an employee</p>
+              <p className="text-theme-secondary text-sm mt-1">Choose an employee to view their review file</p>
             </div>
           ) : fileData ? (
             <EmployeeFile fileData={fileData} />

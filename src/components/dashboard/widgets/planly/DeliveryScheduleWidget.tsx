@@ -70,7 +70,7 @@ export default function DeliveryScheduleWidget({ companyId, siteId }: WidgetProp
         </div>
       }
       badge={
-        <span className="text-xs font-medium text-[rgb(var(--text-secondary))] dark:text-white/60">
+        <span className="text-xs font-medium text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
           Next 3 days
         </span>
       }
@@ -88,8 +88,8 @@ export default function DeliveryScheduleWidget({ companyId, siteId }: WidgetProp
           {Object.entries(groupedDeliveries).map(([date, dateDeliveries]) => (
             <div key={date}>
               <div className="flex items-center gap-2 mb-2">
-                <Calendar className="w-3 h-3 text-[rgb(var(--text-tertiary))] dark:text-white/40" />
-                <span className="text-xs font-semibold text-[rgb(var(--text-secondary))] dark:text-white/60 uppercase">
+                <Calendar className="w-3 h-3 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary" />
+                <span className="text-xs font-semibold text-[rgb(var(--text-secondary))] dark:text-theme-tertiary uppercase">
                   {date}
                 </span>
               </div>
@@ -104,7 +104,7 @@ export default function DeliveryScheduleWidget({ companyId, siteId }: WidgetProp
                       <p className="text-sm font-medium text-[rgb(var(--text-primary))] dark:text-white truncate">
                         {delivery.customer_name}
                       </p>
-                      <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-white/40">
+                      <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
                         {delivery.item_count} items
                       </p>
                     </div>

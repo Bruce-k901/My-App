@@ -111,12 +111,15 @@ export default function PayRatesPage() {
         } else if (emp.hourly_rate || emp.annual_salary) {
           // Fallback: profile has pay data but no pay_rates row
           const isSalaried = emp.pay_type === 'salaried' || emp.pay_type === 'salary';
-          const rateInPounds = isSalaried ? emp.annual_salary : emp.hourly_rate;
+          // hourly_rate is stored in pence; annual_salary is stored in pounds
+          const baseRateInPence = isSalaried
+            ? Math.round((emp.annual_salary || 0) * 100)
+            : (emp.hourly_rate || 0);
           effectiveRate = {
             source: 'profile',
             pay_rate_id: null,
             pay_type: isSalaried ? 'salary' : 'hourly',
-            base_rate: Math.round((rateInPounds || 0) * 100), // Convert £ to pence
+            base_rate: baseRateInPence,
             overtime_multiplier: 1.5,
             contracted_hours_per_week: emp.contracted_hours || 40,
             effective_from: null,
@@ -286,10 +289,10 @@ export default function PayRatesPage() {
         contracted_hours: parseFloat(formContractedHours) || 40,
       };
       if (formPayType === 'hourly' || formPayType === 'daily') {
-        profileUpdate.hourly_rate = rateInPounds;
+        profileUpdate.hourly_rate = baseRateInPence; // Store in pence to match DB convention
         profileUpdate.annual_salary = null;
       } else {
-        profileUpdate.annual_salary = rateInPounds;
+        profileUpdate.annual_salary = rateInPounds; // Store in pounds
         profileUpdate.hourly_rate = null;
       }
 
@@ -313,27 +316,27 @@ export default function PayRatesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white p-6 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-module-fg" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0B0D13] text-gray-900 dark:text-white p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="space-y-6">
+      <div>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Link href="/dashboard/people/payroll">
-              <Button variant="ghost" className="text-gray-900 dark:text-white/60 hover:text-gray-900 dark:hover:text-white">
+              <Button variant="ghost" className="text-theme-primary/60 hover:text-theme-primary">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Payroll
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pay Rates</h1>
-              <p className="text-gray-500 dark:text-white/60 text-sm">
+              <h1 className="text-2xl font-bold text-theme-primary">Pay Rates</h1>
+              <p className="text-theme-tertiary text-sm">
                 Manage employee compensation rates
               </p>
             </div>
@@ -362,19 +365,19 @@ export default function PayRatesPage() {
         {/* Filters */}
         <div className="flex gap-4 mb-6">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-theme-tertiary" />
             <input
               type="text"
               placeholder="Search employees..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-[#1A1D26] border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+              className="w-full pl-10 pr-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus:outline-none focus:border-module-fg"
             />
           </div>
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="px-4 py-2 bg-white dark:bg-[#1A1D26] border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+            className="px-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-module-fg"
           >
             <option value="all">All Employees</option>
             <option value="not_set">No Rate Set</option>
@@ -385,38 +388,38 @@ export default function PayRatesPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-white dark:bg-[#1A1D26] rounded-lg border border-gray-300 dark:border-white/10 overflow-hidden">
+        <div className="bg-theme-surface rounded-lg border border-theme overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-[#0B0D13] border-b border-gray-300 dark:border-white/10">
+              <thead className="bg-theme-surface-elevated border-b border-theme">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-white/60 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                     Employee
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-white/60 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                     Pay Type
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-white/60 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                     Rate
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-white/60 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                     Overtime
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-white/60 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                     Hours / Week
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-white/60 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                     Effective From
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-white/60 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-theme-tertiary uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-white/10">
+              <tbody className="divide-y divide-theme">
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500 dark:text-white/60">
+                    <td colSpan={7} className="px-6 py-12 text-center text-theme-tertiary">
                       {searchTerm || filterType !== 'all'
                         ? 'No employees match your filters'
                         : 'No employees found'}
@@ -426,16 +429,16 @@ export default function PayRatesPage() {
                   filtered.map((emp) => {
                     const rate = emp.currentRate;
                     return (
-                      <tr key={emp.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                      <tr key={emp.id} className="hover:bg-theme-hover transition-colors">
                         <td className="px-6 py-4">
                           <div>
-                            <div className="font-medium text-gray-900 dark:text-white">{emp.full_name}</div>
-                            <div className="text-sm text-gray-500 dark:text-white/60">{emp.position_title || 'No title'}</div>
+                            <div className="font-medium text-theme-primary">{emp.full_name}</div>
+                            <div className="text-sm text-theme-tertiary">{emp.position_title || 'No title'}</div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           {rate ? (
-                            <span className="px-2 py-1 text-xs rounded-full bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 capitalize">
+                            <span className="px-2 py-1 text-xs rounded-full bg-module-fg/20 text-module-fg capitalize">
                               {rate.pay_type}
                             </span>
                           ) : (
@@ -444,28 +447,28 @@ export default function PayRatesPage() {
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-gray-900 dark:text-white">
+                        <td className="px-6 py-4 text-theme-primary">
                           {rate ? (
                             rate.pay_type === 'salary'
                               ? formatCurrency(rate.base_rate) + '/year'
                               : formatCurrency(rate.base_rate) + (rate.pay_type === 'hourly' ? '/hr' : '/day')
                           ) : (
-                            <span className="text-gray-400 dark:text-white/30">—</span>
+                            <span className="text-theme-tertiary/30">—</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-gray-700 dark:text-white/80">
+                        <td className="px-6 py-4 text-theme-secondary">
                           {rate?.overtime_multiplier ? `${rate.overtime_multiplier}x` : (
-                            <span className="text-gray-400 dark:text-white/30">—</span>
+                            <span className="text-theme-tertiary/30">—</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-gray-700 dark:text-white/80">
+                        <td className="px-6 py-4 text-theme-secondary">
                           {rate?.contracted_hours_per_week ? `${rate.contracted_hours_per_week}h` : (
-                            <span className="text-gray-400 dark:text-white/30">—</span>
+                            <span className="text-theme-tertiary/30">—</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-gray-700 dark:text-white/80">
+                        <td className="px-6 py-4 text-theme-secondary">
                           {rate?.effective_from ? formatDate(rate.effective_from) : (
-                            <span className="text-gray-400 dark:text-white/30">—</span>
+                            <span className="text-theme-tertiary/30">—</span>
                           )}
                         </td>
                         <td className="px-6 py-4 text-right">
@@ -476,7 +479,7 @@ export default function PayRatesPage() {
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => openModal(emp)}
-                                  className="text-gray-500 dark:text-white/60 hover:text-gray-900 dark:hover:text-white"
+                                  className="text-theme-tertiary hover:text-theme-primary"
                                 >
                                   <Edit className="w-4 h-4" />
                                 </Button>
@@ -484,7 +487,7 @@ export default function PayRatesPage() {
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => handleDelete(emp)}
-                                  className="text-red-400/60 hover:text-red-400"
+                                  className="text-red-500/60 dark:text-red-400/60 hover:text-red-600 dark:hover:text-red-400"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </Button>
@@ -493,7 +496,7 @@ export default function PayRatesPage() {
                               <Button
                                 size="sm"
                                 onClick={() => openModal(emp)}
-                                className="bg-blue-600 dark:bg-blue-500 text-white text-xs px-3 py-1"
+                                className="bg-module-fg text-white text-xs px-3 py-1"
                               >
                                 <Plus className="w-3 h-3 mr-1" />
                                 Set Rate
@@ -511,7 +514,7 @@ export default function PayRatesPage() {
         </div>
 
         {/* Summary */}
-        <div className="mt-4 text-sm text-gray-500 dark:text-white/40">
+        <div className="mt-4 text-sm text-theme-tertiary">
           Showing {filtered.length} of {employeesWithRates.length} employees
         </div>
       </div>
@@ -519,16 +522,16 @@ export default function PayRatesPage() {
       {/* Edit/Add Pay Rate Modal */}
       {showModal && editingEmployee && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-[#1A1D26] rounded-xl border border-gray-300 dark:border-white/10 w-full max-w-lg">
+          <div className="bg-theme-surface rounded-xl border border-theme w-full max-w-lg">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-white/10">
+            <div className="flex items-center justify-between p-6 border-b border-theme">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h2 className="text-lg font-semibold text-theme-primary">
                   {editingEmployee.currentRate ? 'Edit Pay Rate' : 'Set Pay Rate'}
                 </h2>
-                <p className="text-sm text-gray-500 dark:text-white/60 mt-0.5">{editingEmployee.full_name}</p>
+                <p className="text-sm text-theme-tertiary mt-0.5">{editingEmployee.full_name}</p>
               </div>
-              <button onClick={closeModal} className="text-gray-400 dark:text-white/40 hover:text-gray-600 dark:hover:text-white">
+              <button onClick={closeModal} className="text-theme-tertiary hover:text-theme-secondary">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -537,11 +540,11 @@ export default function PayRatesPage() {
             <div className="p-6 space-y-4">
               {/* Pay Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/70 mb-1">Pay Type *</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">Pay Type *</label>
                 <select
                   value={formPayType}
                   onChange={(e) => setFormPayType(e.target.value as 'hourly' | 'salary' | 'daily')}
-                  className="w-full bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/10 rounded-lg px-3 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+                  className="w-full bg-theme-surface border border-theme rounded-lg px-3 py-2 text-theme-primary focus:outline-none focus:border-module-fg"
                 >
                   <option value="hourly">Hourly</option>
                   <option value="salary">Annual Salary</option>
@@ -551,11 +554,11 @@ export default function PayRatesPage() {
 
               {/* Base Rate */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/70 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   {formPayType === 'hourly' ? 'Hourly Rate (£) *' : formPayType === 'salary' ? 'Annual Salary (£) *' : 'Daily Rate (£) *'}
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-white/40">£</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-tertiary">£</span>
                   <input
                     type="number"
                     step="0.01"
@@ -563,7 +566,7 @@ export default function PayRatesPage() {
                     value={formBaseRate}
                     onChange={(e) => setFormBaseRate(e.target.value)}
                     placeholder={formPayType === 'salary' ? '25000.00' : '12.50'}
-                    className="w-full pl-8 pr-4 py-2 bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+                    className="w-full pl-8 pr-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus:outline-none focus:border-module-fg"
                   />
                 </div>
               </div>
@@ -571,57 +574,57 @@ export default function PayRatesPage() {
               {/* Overtime Multiplier */}
               {formPayType === 'hourly' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white/70 mb-1">Overtime Multiplier</label>
+                  <label className="block text-sm font-medium text-theme-secondary mb-1">Overtime Multiplier</label>
                   <input
                     type="number"
                     step="0.1"
                     min="1"
                     value={formOvertimeMultiplier}
                     onChange={(e) => setFormOvertimeMultiplier(e.target.value)}
-                    className="w-full bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/10 rounded-lg px-3 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+                    className="w-full bg-theme-surface border border-theme rounded-lg px-3 py-2 text-theme-primary focus:outline-none focus:border-module-fg"
                   />
-                  <p className="text-xs text-gray-500 dark:text-white/40 mt-1">e.g. 1.5 = time and a half</p>
+                  <p className="text-xs text-theme-tertiary mt-1">e.g. 1.5 = time and a half</p>
                 </div>
               )}
 
               {/* Contracted Hours */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/70 mb-1">Contracted Hours / Week</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">Contracted Hours / Week</label>
                 <input
                   type="number"
                   step="0.5"
                   min="0"
                   value={formContractedHours}
                   onChange={(e) => setFormContractedHours(e.target.value)}
-                  className="w-full bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/10 rounded-lg px-3 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+                  className="w-full bg-theme-surface border border-theme rounded-lg px-3 py-2 text-theme-primary focus:outline-none focus:border-module-fg"
                 />
               </div>
 
               {/* Effective From */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-white/70 mb-1">Effective From *</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-1">Effective From *</label>
                 <input
                   type="date"
                   value={formEffectiveFrom}
                   onChange={(e) => setFormEffectiveFrom(e.target.value)}
-                  className="w-full bg-white dark:bg-[#0B0D13] border border-gray-300 dark:border-white/10 rounded-lg px-3 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+                  className="w-full bg-theme-surface border border-theme rounded-lg px-3 py-2 text-theme-primary focus:outline-none focus:border-module-fg"
                 />
               </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-white/10">
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-theme">
               <Button
                 variant="ghost"
                 onClick={closeModal}
-                className="text-gray-600 dark:text-white/60"
+                className="text-theme-secondary"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleSaveRate}
                 disabled={saving || !formBaseRate}
-                className="bg-blue-600 dark:bg-blue-500 text-white disabled:opacity-50"
+                className="bg-module-fg text-white disabled:opacity-50"
               >
                 {saving ? (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />

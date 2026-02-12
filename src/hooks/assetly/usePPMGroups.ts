@@ -159,6 +159,7 @@ export function usePPMGroups(companyId: string | undefined, siteId?: string | nu
   };
 
   const fetchAvailableAssets = async (forSiteId: string) => {
+    // Try with ppm_group_id filter (excludes assets already in a group)
     const { data, error } = await supabase
       .from('assets')
       .select('id, name, category')
@@ -167,8 +168,19 @@ export function usePPMGroups(companyId: string | undefined, siteId?: string | nu
       .is('ppm_group_id', null)
       .eq('archived', false)
       .order('name');
-    if (error) throw error;
-    return data || [];
+
+    if (!error) return data || [];
+
+    // ppm_group_id column may not exist yet — fall back without that filter
+    const fallback = await supabase
+      .from('assets')
+      .select('id, name, category')
+      .eq('company_id', companyId!)
+      .eq('site_id', forSiteId)
+      .eq('archived', false)
+      .order('name');
+    if (fallback.error) throw fallback.error;
+    return fallback.data || [];
   };
 
   return {

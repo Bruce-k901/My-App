@@ -24,7 +24,7 @@ export function TicketStatusDropdown({ value, onChange, disabled = false }: Tick
         value={value}
         onChange={(e) => onChange(e.target.value as TicketStatus)}
         disabled={disabled}
-        className="w-full appearance-none px-3 py-2 pr-8 rounded-lg border border-white/[0.06] bg-white/[0.06] text-white focus:outline-none focus:ring-2 focus:ring-[#D37E91] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        className="w-full appearance-none px-3 py-2 pr-8 rounded-lg border border-white/[0.06] bg-white/[0.06] text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
         {STATUS_OPTIONS.map((status) => (
           <option key={status} value={status} className="bg-[#0B0D13] text-white">
@@ -37,7 +37,7 @@ export function TicketStatusDropdown({ value, onChange, disabled = false }: Tick
 
       {/* Dropdown icon */}
       <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
-        <svg className="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-theme-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </div>
@@ -55,7 +55,7 @@ export function TicketStatusBadgeDropdown({ value, onChange, disabled = false }:
         className="flex items-center gap-1 disabled:cursor-not-allowed"
       >
         <TicketStatusBadge status={value} />
-        <svg className="w-4 h-4 text-gray-400 group-hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-theme-tertiary group-hover:text-theme-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>

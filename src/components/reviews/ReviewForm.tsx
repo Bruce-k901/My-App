@@ -31,12 +31,12 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
   // Handle missing template gracefully
   if (!review.template || !review.template_id) {
     return (
-      <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-6">
+      <div className="bg-amber-100 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-lg p-6">
         <div className="flex items-start gap-3">
-          <AlertTriangle className="h-5 w-5 text-amber-400 mt-0.5 flex-shrink-0" />
+          <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
           <div>
-            <h3 className="font-medium text-amber-200 mb-1">Template Not Attached</h3>
-            <p className="text-sm text-amber-300/80">
+            <h3 className="font-medium text-amber-800 dark:text-amber-200 mb-1">Template Not Attached</h3>
+            <p className="text-sm text-amber-600 dark:text-amber-300/80">
               {isManager
                 ? 'This review does not have a template attached. Please attach a template to proceed.'
                 : 'Your manager is still setting up the review template. Please check back later.'}
@@ -162,16 +162,16 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Link href="/dashboard/people/reviews">
-          <Button variant="ghost" className="text-gray-500 dark:text-white/60 hover:text-white">
+          <Button variant="ghost" className="text-theme-tertiary hover:text-theme-primary">
             <ArrowLeft className="h-4 w-4 mr-2" />Back
           </Button>
         </Link>
       </div>
 
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
+      <div className="bg-theme-surface border border-theme rounded-lg p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#D37E91] to-blue-500 flex items-center justify-center text-white text-lg font-medium">
+            <div className="w-14 h-14 rounded-full bg-module-fg flex items-center justify-center text-white text-lg font-medium">
               {review.employee?.avatar_url ? (
                 <img src={review.employee.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
               ) : (
@@ -179,10 +179,10 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
               )}
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">{review.template?.name || review.title}</h1>
-              <p className="text-gray-500 dark:text-white/60">{review.employee?.full_name} • {review.employee?.position_title}</p>
+              <h1 className="text-xl font-bold text-theme-primary">{review.template?.name || review.title}</h1>
+              <p className="text-theme-tertiary">{review.employee?.full_name} • {review.employee?.position_title}</p>
               {review.review_period_start && review.review_period_end && (
-                <p className="text-sm text-neutral-500 mt-1 flex items-center gap-1">
+                <p className="text-sm text-theme-tertiary mt-1 flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   Review Period: {new Date(review.review_period_start).toLocaleDateString()} - {new Date(review.review_period_end).toLocaleDateString()}
                 </p>
@@ -192,7 +192,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
           <div className="flex flex-col items-end gap-2">
             <StatusBadge status={review.status} />
             {review.manager && (
-              <span className="text-sm text-gray-500 dark:text-white/60 flex items-center gap-1">
+              <span className="text-sm text-theme-tertiary flex items-center gap-1">
                 <User className="h-3 w-3" />Manager: {review.manager.full_name}
               </span>
             )}
@@ -201,38 +201,38 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
 
         <div className="mt-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-500 dark:text-white/60">Progress</span>
-            <span className="text-sm font-medium text-white">{Math.round(progress)}%</span>
+            <span className="text-sm text-theme-tertiary">Progress</span>
+            <span className="text-sm font-medium text-theme-primary">{Math.round(progress)}%</span>
           </div>
-          <div className="h-2 bg-white/[0.05] rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-[#D37E91] transition-all"
+          <div className="h-2 bg-theme-button rounded-full overflow-hidden">
+            <div
+              className="h-full bg-module-fg transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-xs text-neutral-500 mt-1">{answeredQuestions} of {totalQuestions} questions answered</p>
+          <p className="text-xs text-theme-tertiary mt-1">{answeredQuestions} of {totalQuestions} questions answered</p>
         </div>
       </div>
 
       {review.template?.instructions && (
-        <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+        <div className="bg-module-fg/10 border border-module-fg/30 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <FileText className="h-5 w-5 text-blue-400 mt-0.5" />
+            <FileText className="h-5 w-5 text-module-fg mt-0.5" />
             <div>
-              <h3 className="font-medium text-blue-200">Instructions</h3>
-              <p className="text-sm text-blue-300/80 mt-1">{review.template.instructions}</p>
+              <h3 className="font-medium text-module-fg">Instructions</h3>
+              <p className="text-sm text-theme-secondary mt-1">{review.template.instructions}</p>
             </div>
           </div>
         </div>
       )}
 
       {isDisciplinaryTemplate(review.template?.template_type || '') && (
-        <div className="bg-red-900/20 border border-red-800/50 rounded-lg p-4">
+        <div className="bg-red-100 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+            <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
             <div>
-              <h3 className="font-medium text-red-200">Confidential HR Process</h3>
-              <p className="text-sm text-red-300/80 mt-1">
+              <h3 className="font-medium text-red-800 dark:text-red-200">Confidential HR Process</h3>
+              <p className="text-sm text-red-600 dark:text-red-300/80 mt-1">
                 This document contains sensitive employee information. Handle in accordance 
                 with data protection policies and ACAS guidelines. Do not share without 
                 appropriate authorization.
@@ -308,7 +308,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
             const isExpanded = expandedSections.includes(section.id);
 
             return (
-            <div key={section.id} className="bg-white/[0.03] border border-white/[0.06] rounded-lg overflow-hidden">
+            <div key={section.id} className="bg-theme-surface border border-theme rounded-lg overflow-hidden">
               <button
                 onClick={() => {
                   if (isExpanded) {
@@ -317,70 +317,70 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
                     setExpandedSections([...expandedSections, section.id]);
                   }
                 }}
-                className="w-full px-6 py-4 hover:bg-white/[0.02] transition-colors flex items-center justify-between"
+                className="w-full px-6 py-4 hover:bg-theme-hover transition-colors flex items-center justify-between"
               >
                 <div className="flex items-center gap-4 flex-1 text-left">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.05] text-sm font-medium text-white">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-theme-button text-sm font-medium text-theme-primary">
                     {index + 1}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-medium text-white">{section.title}</h3>
+                      <h3 className="font-medium text-theme-primary">{section.title}</h3>
                       {/* Section Mode Badges */}
                       {sectionMode === 'manager_only' && (
-                        <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded border border-purple-500/30">
+                        <span className="text-xs bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-500/30">
                           👤 Manager Only
                         </span>
                       )}
                       {sectionMode === 'manager_shared' && isEmployee && (
-                        <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30">
+                        <span className="text-xs bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-500/30">
                           📄 View Only
                         </span>
                       )}
                       {sectionMode === 'employee_only' && (
-                        <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded border border-green-500/30">
+                        <span className="text-xs bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 px-2 py-0.5 rounded border border-green-200 dark:border-green-500/30">
                           🙋 Your Response
                         </span>
                       )}
                       {sectionMode === 'both_answer' && (
-                        <span className="text-xs bg-neutral-500/20 text-gray-500 dark:text-white/60 px-2 py-0.5 rounded border border-neutral-500/30">
+                        <span className="text-xs bg-theme-button text-theme-tertiary px-2 py-0.5 rounded border border-theme">
                           👥 Both Answer
                         </span>
                       )}
                       {sectionMode === 'sign_off' && (
-                        <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded border border-amber-500/30">
+                        <span className="text-xs bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-500/30">
                           ✍️ Sign-off
                         </span>
                       )}
                     </div>
-                    {section.description && <p className="text-sm text-gray-500 dark:text-white/60 mt-0.5">{section.description}</p>}
+                    {section.description && <p className="text-sm text-theme-tertiary mt-0.5">{section.description}</p>}
                   </div>
                   <div className="flex items-center gap-2">
                     {sectionComplete ? (
-                      <span className="px-2 py-0.5 bg-green-500/20 text-green-400 rounded text-xs border border-green-500/30 flex items-center gap-1">
+                      <span className="px-2 py-0.5 bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 rounded text-xs border border-green-200 dark:border-green-500/30 flex items-center gap-1">
                         <CheckCircle className="h-3 w-3" />Complete
                       </span>
                     ) : sectionResponses.length > 0 ? (
-                      <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded text-xs border border-amber-500/30 flex items-center gap-1">
+                      <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded text-xs border border-amber-200 dark:border-amber-500/30 flex items-center gap-1">
                         <Clock className="h-3 w-3" />In Progress
                       </span>
                     ) : (
-                      <span className="px-2 py-0.5 bg-white/[0.05] text-gray-500 dark:text-white/60 rounded text-xs border border-white/[0.06] flex items-center gap-1">
+                      <span className="px-2 py-0.5 bg-theme-button text-theme-tertiary rounded text-xs border border-theme flex items-center gap-1">
                         <Circle className="h-3 w-3" />Not Started
                       </span>
                     )}
-                    <span className="text-xs text-neutral-500">{sectionResponses.length}/{sectionQuestions.length}</span>
+                    <span className="text-xs text-theme-tertiary">{sectionResponses.length}/{sectionQuestions.length}</span>
                   </div>
                 </div>
-                <span className="text-neutral-500 ml-4">
+                <span className="text-theme-tertiary ml-4">
                   {isExpanded ? '−' : '+'}
                 </span>
               </button>
               
               {isExpanded && (
-                <div className="px-6 pb-6 border-t border-white/[0.06] pt-6">
+                <div className="px-6 pb-6 border-t border-theme pt-6">
                   {section.instructions && (
-                    <p className="text-sm text-gray-500 dark:text-white/60 mb-6 p-3 bg-white/[0.02] rounded-lg">{section.instructions}</p>
+                    <p className="text-sm text-theme-tertiary mb-6 p-3 bg-theme-hover rounded-lg">{section.instructions}</p>
                   )}
                   <ReviewFormSection
                     section={section}
@@ -400,18 +400,18 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
       </div>
 
       {review.status !== 'completed' && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 sticky bottom-4">
+        <div className="bg-theme-surface border border-theme rounded-lg p-4 sticky bottom-4">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-500 dark:text-white/60">
+            <div className="text-sm text-theme-tertiary">
               {Object.keys(localResponses).length > 0 && (
-                <span className="text-amber-400">{Object.keys(localResponses).length} unsaved changes</span>
+                <span className="text-amber-600 dark:text-amber-400">{Object.keys(localResponses).length} unsaved changes</span>
               )}
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" onClick={handleSave} disabled={isPending || Object.keys(localResponses).length === 0}>
                 <Save className="h-4 w-4 mr-2" />Save Draft
               </Button>
-              <Button variant="primary" onClick={handleSubmit} disabled={isPending} className="bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)]">
+              <Button variant="primary" onClick={handleSubmit} disabled={isPending} className="bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow">
                 <Send className="h-4 w-4 mr-2" />Submit {isEmployee ? 'Employee' : 'Manager'} Section
               </Button>
             </div>
@@ -420,18 +420,18 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
       )}
 
       {review.status === 'pending_sign_off' && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
-          <h3 className="font-medium text-white mb-2">Sign Off</h3>
-          <p className="text-sm text-gray-500 dark:text-white/60 mb-4">Review the responses above and sign off to complete this review.</p>
+        <div className="bg-theme-surface border border-theme rounded-lg p-6">
+          <h3 className="font-medium text-theme-primary mb-2">Sign Off</h3>
+          <p className="text-sm text-theme-tertiary mb-4">Review the responses above and sign off to complete this review.</p>
           <div className="flex items-center justify-between">
             <div>
               {review.employee_signed_off && (
-                <p className="text-sm text-green-400 flex items-center gap-1">
+                <p className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
                   <CheckCircle className="h-4 w-4" />Employee signed off on {new Date(review.employee_signed_at!).toLocaleString()}
                 </p>
               )}
               {review.manager_signed_off && (
-                <p className="text-sm text-green-400 flex items-center gap-1">
+                <p className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
                   <CheckCircle className="h-4 w-4" />Manager signed off on {new Date(review.manager_signed_at!).toLocaleString()}
                 </p>
               )}
@@ -440,7 +440,7 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
               variant="primary" 
               onClick={handleSignOff}
               disabled={isPending || (isEmployee && review.employee_signed_off) || (isManager && review.manager_signed_off)}
-              className="bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30"
+              className="bg-green-100 dark:bg-green-500/20 border border-green-200 dark:border-green-500/30 text-green-600 dark:text-green-400 hover:bg-module-fg/10"
             >
               <CheckCircle className="h-4 w-4 mr-2" />Sign Off
             </Button>
@@ -453,14 +453,14 @@ export function ReviewForm({ review, currentUserId, isEmployee, isManager }: Rev
 
 function StatusBadge({ status }: { status: string }) {
   const configs: Record<string, { label: string; className: string }> = {
-    draft: { label: 'Draft', className: 'bg-white/[0.05] text-gray-500 dark:text-white/60' },
-    employee_in_progress: { label: 'Employee In Progress', className: 'bg-amber-500/20 text-amber-400 border border-amber-500/30' },
-    employee_complete: { label: 'Employee Complete', className: 'bg-blue-500/20 text-blue-400 border border-blue-500/30' },
-    manager_in_progress: { label: 'Manager In Progress', className: 'bg-purple-500/20 text-purple-400 border border-purple-500/30' },
-    manager_complete: { label: 'Manager Complete', className: 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' },
-    pending_sign_off: { label: 'Pending Sign-off', className: 'bg-orange-500/20 text-orange-400 border border-orange-500/30' },
-    completed: { label: 'Completed', className: 'bg-green-500/20 text-green-400 border border-green-500/30' },
-    cancelled: { label: 'Cancelled', className: 'bg-white/[0.05] text-gray-500 dark:text-white/60' },
+    draft: { label: 'Draft', className: 'bg-theme-button text-theme-tertiary' },
+    employee_in_progress: { label: 'Employee In Progress', className: 'bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30' },
+    employee_complete: { label: 'Employee Complete', className: 'bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30' },
+    manager_in_progress: { label: 'Manager In Progress', className: 'bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-500/30' },
+    manager_complete: { label: 'Manager Complete', className: 'bg-module-fg/20 text-module-fg border border-module-fg/30' },
+    pending_sign_off: { label: 'Pending Sign-off', className: 'bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-500/30' },
+    completed: { label: 'Completed', className: 'bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/30' },
+    cancelled: { label: 'Cancelled', className: 'bg-theme-button text-theme-tertiary' },
   };
   const config = configs[status] || configs.draft;
   return (

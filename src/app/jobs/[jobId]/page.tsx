@@ -172,8 +172,8 @@ export default function PublicJobPage() {
     return (
       <div className="min-h-screen bg-[#0A0B0F] flex items-center justify-center p-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-2">Job Not Found</h1>
-          <p className="text-white/60">This job posting is no longer available.</p>
+          <h1 className="text-2xl font-bold text-theme-primary mb-2">Job Not Found</h1>
+          <p className="text-theme-tertiary">This job posting is no longer available.</p>
         </div>
       </div>
     )
@@ -192,33 +192,33 @@ export default function PublicJobPage() {
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-3">
                 {job.companies?.name && (
-                  <div className="flex items-center gap-2 text-white/60 text-sm">
+                  <div className="flex items-center gap-2 text-theme-tertiary text-sm">
                     <Building2 className="w-4 h-4" />
                     <span>{job.companies.name}</span>
                   </div>
                 )}
               </div>
-              <h1 className="text-3xl font-bold text-white mb-4">{job.title}</h1>
+              <h1 className="text-3xl font-bold text-theme-primary mb-4">{job.title}</h1>
               
               <div className="flex flex-wrap items-center gap-3">
                 {job.location && (
-                  <div className="flex items-center gap-2 text-white/70 text-sm">
+                  <div className="flex items-center gap-2 text-theme-secondary text-sm">
                     <MapPin className="w-4 h-4" />
                     <span>{job.location}</span>
                   </div>
                 )}
                 {job.department && (
-                  <div className="flex items-center gap-2 text-white/70 text-sm">
+                  <div className="flex items-center gap-2 text-theme-secondary text-sm">
                     <Briefcase className="w-4 h-4" />
                     <span>{job.department}</span>
                   </div>
                 )}
-                <div className="flex items-center gap-2 text-white/70 text-sm">
+                <div className="flex items-center gap-2 text-theme-secondary text-sm">
                   <DollarSign className="w-4 h-4" />
                   <span>{payRange}</span>
                 </div>
                 {job.contract_hours && (
-                  <div className="flex items-center gap-2 text-white/70 text-sm">
+                  <div className="flex items-center gap-2 text-theme-secondary text-sm">
                     <Clock className="w-4 h-4" />
                     <span>{job.contract_hours} hrs/week</span>
                   </div>
@@ -233,7 +233,7 @@ export default function PublicJobPage() {
                   {job.pay_type === 'hourly' ? 'Hourly' : 'Salaried'}
                 </span>
                 {job.contract_type && (
-                  <span className="px-3 py-1 text-xs rounded-full bg-white/5 text-white/70 border border-white/10">
+                  <span className="px-3 py-1 text-xs rounded-full bg-white/5 text-theme-secondary border border-white/10">
                     {job.contract_type}
                   </span>
                 )}
@@ -255,9 +255,9 @@ export default function PublicJobPage() {
         {/* Description */}
         {job.description && (
           <div>
-            <h2 className="text-xl font-semibold text-white mb-4">About the Role</h2>
+            <h2 className="text-xl font-semibold text-theme-primary mb-4">About the Role</h2>
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-              <p className="text-white/70 whitespace-pre-wrap leading-relaxed">{job.description}</p>
+              <p className="text-theme-secondary whitespace-pre-wrap leading-relaxed">{job.description}</p>
             </div>
           </div>
         )}
@@ -265,11 +265,11 @@ export default function PublicJobPage() {
         {/* Requirements */}
         {(job.required_skills || job.required_certifications || job.experience_required) && (
           <div>
-            <h2 className="text-xl font-semibold text-white mb-4">Requirements</h2>
+            <h2 className="text-xl font-semibold text-theme-primary mb-4">Requirements</h2>
             <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 space-y-6">
               {job.required_skills && job.required_skills.length > 0 && (
                 <div>
-                  <h3 className="text-white font-medium mb-3 flex items-center gap-2">
+                  <h3 className="text-theme-primary font-medium mb-3 flex items-center gap-2">
                     <CheckCircle2 className="w-5 h-5 text-[#D37E91]" />
                     Required Skills
                   </h3>
@@ -277,7 +277,7 @@ export default function PublicJobPage() {
                     {job.required_skills.map((skill, idx) => (
                       <span
                         key={idx}
-                        className="px-3 py-1.5 text-sm rounded-lg bg-white/5 text-white/70 border border-white/10"
+                        className="px-3 py-1.5 text-sm rounded-lg bg-white/5 text-theme-secondary border border-white/10"
                       >
                         {skill}
                       </span>
@@ -288,7 +288,7 @@ export default function PublicJobPage() {
 
               {job.required_certifications && job.required_certifications.length > 0 && (
                 <div>
-                  <h3 className="text-white font-medium mb-3 flex items-center gap-2">
+                  <h3 className="text-theme-primary font-medium mb-3 flex items-center gap-2">
                     <CheckCircle2 className="w-5 h-5 text-[#D37E91]" />
                     Required Certifications
                   </h3>
@@ -307,11 +307,11 @@ export default function PublicJobPage() {
 
               {job.experience_required && (
                 <div>
-                  <h3 className="text-white font-medium mb-3 flex items-center gap-2">
+                  <h3 className="text-theme-primary font-medium mb-3 flex items-center gap-2">
                     <CheckCircle2 className="w-5 h-5 text-[#D37E91]" />
                     Experience Required
                   </h3>
-                  <p className="text-white/70">{job.experience_required}</p>
+                  <p className="text-theme-secondary">{job.experience_required}</p>
                 </div>
               )}
             </div>
@@ -320,8 +320,8 @@ export default function PublicJobPage() {
 
         {/* Apply CTA */}
         <div className="bg-gradient-to-r from-[#D37E91]/10 to-purple-500/10 border border-white/[0.06] rounded-xl p-8 text-center">
-          <h3 className="text-xl font-semibold text-white mb-2">Ready to Apply?</h3>
-          <p className="text-white/60 mb-6">Join our team and start your career with us today.</p>
+          <h3 className="text-xl font-semibold text-theme-primary mb-2">Ready to Apply?</h3>
+          <p className="text-theme-tertiary mb-6">Join our team and start your career with us today.</p>
           <Link
             href={`/jobs/${jobIdOrSlug}/apply`}
             className="inline-block px-8 py-3 rounded-lg bg-transparent text-[#D37E91] border-2 border-[#D37E91] hover:shadow-[0_0_20px_rgba(211, 126, 145,0.7)] transition-all font-semibold"
