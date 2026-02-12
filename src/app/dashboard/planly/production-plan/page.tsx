@@ -19,8 +19,6 @@ import {
   Truck,
   AlertCircle,
 } from '@/components/ui/icons';
-import { pdf } from '@react-pdf/renderer';
-import { ProductionPlanPDF } from '@/lib/pdf/templates/ProductionPlanPDF';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import StyledSelect, { StyledOption } from '@/components/ui/StyledSelect';
@@ -28,7 +26,6 @@ import { useProductionPlan, getDateRange, formatDateDisplay, getTodayString } fr
 import { useMixSheet } from '@/hooks/planly/useMixSheet';
 import { useTrayLayout } from '@/hooks/planly/useTrayLayout';
 import { useAppContext } from '@/context/AppContext';
-import { useSiteContext } from '@/contexts/SiteContext';
 import {
   ProductionPlan,
   DeliveryOrderSummary,
@@ -131,24 +128,24 @@ function CollapsibleSection({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="production-section border border-gray-200 dark:border-white/10 rounded-lg overflow-hidden">
+    <div className="production-section border border-theme rounded-lg overflow-hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 bg-theme-button hover:bg-theme-muted transition-colors"
       >
         <div className="flex items-center gap-2">
-          <Icon className="h-5 w-5 text-[#14B8A6]" />
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h2>
+          <Icon className="h-5 w-5 text-module-fg" />
+          <h2 className="text-lg font-semibold text-theme-primary">{title}</h2>
           {badge !== undefined && (
-            <span className="px-2 py-0.5 text-xs font-medium bg-[#14B8A6]/10 text-[#14B8A6] rounded-full">
+            <span className="px-2 py-0.5 text-xs font-medium bg-module-fg/10 text-module-fg rounded-full">
               {badge}
             </span>
           )}
         </div>
         {isOpen ? (
-          <ChevronUp className="h-5 w-5 text-gray-500 dark:text-white/50" />
+          <ChevronUp className="h-5 w-5 text-theme-tertiary" />
         ) : (
-          <ChevronDown className="h-5 w-5 text-gray-500 dark:text-white/50" />
+          <ChevronDown className="h-5 w-5 text-theme-tertiary" />
         )}
       </button>
       {isOpen && <div className="p-4">{children}</div>}
@@ -166,7 +163,7 @@ function DailyBookSection({ orders, date }: { orders?: DeliveryOrderSummary[]; d
   if (!orders || orders.length === 0) {
     return (
       <CollapsibleSection title={`Daily Book for ${formatDateDisplay(date)}`} icon={Package} badge={0}>
-        <p className="text-gray-500 dark:text-white/50">No deliveries scheduled for this date</p>
+        <p className="text-theme-tertiary">No deliveries scheduled for this date</p>
       </CollapsibleSection>
     );
   }
@@ -180,45 +177,45 @@ function DailyBookSection({ orders, date }: { orders?: DeliveryOrderSummary[]; d
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="bg-gray-100 dark:bg-white/10">
-              <th className="border border-gray-200 dark:border-white/10 px-3 py-2 text-left font-semibold text-gray-900 dark:text-white">
+            <tr className="bg-theme-muted">
+              <th className="border border-theme px-3 py-2 text-left font-semibold text-theme-primary">
                 Product
               </th>
               {destinationGroups.map((dg) => (
                 <th
                   key={dg.id}
-                  className="border border-gray-200 dark:border-white/10 px-3 py-2 text-center font-semibold text-gray-900 dark:text-white"
+                  className="border border-theme px-3 py-2 text-center font-semibold text-theme-primary"
                 >
                   {dg.name}
                 </th>
               ))}
-              <th className="border border-gray-200 dark:border-white/10 px-3 py-2 text-center font-bold text-gray-900 dark:text-white bg-[#14B8A6]/10">
+              <th className="border border-theme px-3 py-2 text-center font-bold text-theme-primary bg-module-fg/10">
                 Total
               </th>
             </tr>
           </thead>
           <tbody>
             {productRows.map((row) => (
-              <tr key={row.product_id} className="hover:bg-gray-50 dark:hover:bg-white/5">
-                <td className="border border-gray-200 dark:border-white/10 px-3 py-2 text-gray-900 dark:text-white">
+              <tr key={row.product_id} className="hover:bg-theme-hover">
+                <td className="border border-theme px-3 py-2 text-theme-primary">
                   {row.product_name}
                 </td>
                 {destinationGroups.map((dg) => (
                   <td
                     key={dg.id}
-                    className="border border-gray-200 dark:border-white/10 px-3 py-2 text-center text-gray-700 dark:text-white/80"
+                    className="border border-theme px-3 py-2 text-center text-theme-secondary"
                   >
                     {row.quantities[dg.id] || '-'}
                   </td>
                 ))}
-                <td className="border border-gray-200 dark:border-white/10 px-3 py-2 text-center font-bold text-gray-900 dark:text-white bg-[#14B8A6]/5">
+                <td className="border border-theme px-3 py-2 text-center font-bold text-theme-primary bg-module-fg/5">
                   {row.total}
                 </td>
               </tr>
             ))}
             {/* Totals row */}
-            <tr className="bg-gray-100 dark:bg-white/10 font-semibold">
-              <td className="border border-gray-200 dark:border-white/10 px-3 py-2 text-gray-900 dark:text-white">
+            <tr className="bg-theme-muted font-semibold">
+              <td className="border border-theme px-3 py-2 text-theme-primary">
                 Total
               </td>
               {destinationGroups.map((dg) => {
@@ -226,13 +223,13 @@ function DailyBookSection({ orders, date }: { orders?: DeliveryOrderSummary[]; d
                 return (
                   <td
                     key={dg.id}
-                    className="border border-gray-200 dark:border-white/10 px-3 py-2 text-center text-gray-900 dark:text-white"
+                    className="border border-theme px-3 py-2 text-center text-theme-primary"
                   >
                     {total}
                   </td>
                 );
               })}
-              <td className="border border-gray-200 dark:border-white/10 px-3 py-2 text-center text-gray-900 dark:text-white bg-[#14B8A6]/10">
+              <td className="border border-theme px-3 py-2 text-center text-theme-primary bg-module-fg/10">
                 {productRows.reduce((sum, r) => sum + r.total, 0)}
               </td>
             </tr>
@@ -270,8 +267,8 @@ function MixSheetSection({
     return (
       <CollapsibleSection title={`Mix Sheets for ${formatDateDisplay(tomorrow)}`} icon={Scale}>
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-5 w-5 animate-spin text-gray-400 mr-2" />
-          <span className="text-gray-500 dark:text-white/50">Loading mix sheets...</span>
+          <Loader2 className="h-5 w-5 animate-spin text-theme-tertiary mr-2" />
+          <span className="text-theme-tertiary">Loading mix sheets...</span>
         </div>
       </CollapsibleSection>
     );
@@ -280,7 +277,7 @@ function MixSheetSection({
   if (!doughMixes || doughMixes.length === 0) {
     return (
       <CollapsibleSection title={`Dough Sheets for ${formatDateDisplay(tomorrow)}`} icon={Scale} badge={0}>
-        <p className="text-gray-500 dark:text-white/50">No mix sheets required for this date</p>
+        <p className="text-theme-tertiary">No mix sheets required for this date</p>
       </CollapsibleSection>
     );
   }
@@ -308,13 +305,13 @@ function MixSheetSection({
 
       {/* Sheet Summary */}
       {sheetSummary && sheetSummary.total_sheets > 0 && (
-        <div className="mb-4 p-3 bg-teal-50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/20 rounded-lg">
-          <h4 className="text-sm font-medium text-teal-700 dark:text-teal-400 mb-2">
+        <div className="mb-4 p-3 bg-module-fg/10 dark:bg-module-fg/10 border border-module-fg/20 dark:border-module-fg/20 rounded-lg">
+          <h4 className="text-sm font-medium text-module-fg mb-2">
             Total Lamination Sheets: {sheetSummary.total_sheets}
           </h4>
           <div className="space-y-1">
             {sheetSummary.by_style.map((style, idx) => (
-              <p key={idx} className="text-xs text-teal-600 dark:text-teal-400/80">
+              <p key={idx} className="text-xs text-module-fg/80">
                 • {style.style_name} ({style.base_dough_name}): {style.sheets_needed} sheets = {style.total_products} products
               </p>
             ))}
@@ -324,27 +321,27 @@ function MixSheetSection({
 
       <div className="space-y-6">
         {doughMixes.map((dough) => (
-          <div key={dough.dough_id} className="border border-gray-200 dark:border-white/10 rounded-lg overflow-hidden">
+          <div key={dough.dough_id} className="border border-theme rounded-lg overflow-hidden">
             {/* Dough Mix Header */}
-            <div className="bg-gray-100 dark:bg-white/10 px-4 py-3 border-b border-gray-200 dark:border-white/10">
-              <h3 className="font-semibold text-gray-900 dark:text-white">
+            <div className="bg-theme-muted px-4 py-3 border-b border-theme">
+              <h3 className="font-semibold text-theme-primary">
                 Dough Mix - {dough.dough_name}
               </h3>
-              <div className="flex gap-4 mt-1 text-sm text-gray-600 dark:text-white/60">
+              <div className="flex gap-4 mt-1 text-sm text-theme-secondary">
                 <span>Total: <strong>{dough.total_kg.toFixed(2)} kg</strong></span>
                 {dough.total_batches && (
                   <span>Batches: <strong>{dough.total_batches}</strong></span>
                 )}
                 {dough.lamination_styles.length > 0 && (
                   <span>
-                    Sheets: <strong className="text-teal-600 dark:text-teal-400">
+                    Sheets: <strong className="text-module-fg">
                       {dough.lamination_styles.reduce((sum, s) => sum + s.sheets_needed, 0)}
                     </strong>
                   </span>
                 )}
               </div>
               {dough.recipe_name && (
-                <p className="text-xs text-gray-500 dark:text-white/40 mt-1">
+                <p className="text-xs text-theme-tertiary mt-1">
                   Recipe: {dough.recipe_name} | Mix {dough.mix_lead_days} day(s) ahead
                 </p>
               )}
@@ -354,41 +351,41 @@ function MixSheetSection({
               {/* Lamination Sheets Section */}
               {dough.lamination_styles.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-white/70 mb-2">
+                  <h4 className="text-sm font-medium text-theme-secondary mb-2">
                     Lamination Sheets
                   </h4>
-                  <p className="text-xs text-gray-500 dark:text-white/40 mb-3">
+                  <p className="text-xs text-theme-tertiary mb-3">
                     Laminate these sheets today for production
                   </p>
                   <div className="space-y-3">
                     {dough.lamination_styles.map((style) => (
                       <div
                         key={style.style_id}
-                        className="p-3 bg-teal-50 dark:bg-teal-500/10 rounded-lg border border-teal-200 dark:border-teal-500/20"
+                        className="p-3 bg-module-fg/10 dark:bg-module-fg/10 rounded-lg border border-module-fg/20 dark:border-module-fg/20"
                       >
                         <div className="flex justify-between items-start">
                           <div>
-                            <span className="font-medium text-gray-900 dark:text-white">
+                            <span className="font-medium text-theme-primary">
                               {style.style_name}
                             </span>
                             {style.recipe_name && (
-                              <p className="text-xs text-gray-500 dark:text-white/40 mt-0.5">
+                              <p className="text-xs text-theme-tertiary mt-0.5">
                                 Recipe: {style.recipe_name}
                               </p>
                             )}
-                            <p className="text-xs text-gray-500 dark:text-white/40">
+                            <p className="text-xs text-theme-tertiary">
                               {style.products_per_sheet} products/sheet • {style.laminate_lead_days} day(s) ahead
                             </p>
                           </div>
-                          <span className="text-lg font-bold text-teal-600 dark:text-teal-400">
+                          <span className="text-lg font-bold text-module-fg">
                             {style.sheets_needed} sheet{style.sheets_needed !== 1 ? 's' : ''}
                           </span>
                         </div>
 
                         {/* Products in this lamination style */}
                         {style.products.length > 0 && (
-                          <div className="mt-2 pt-2 border-t border-teal-200 dark:border-teal-500/20">
-                            <p className="text-xs text-gray-600 dark:text-white/60 mb-1">
+                          <div className="mt-2 pt-2 border-t border-module-fg/20 dark:border-module-fg/20">
+                            <p className="text-xs text-theme-secondary mb-1">
                               Products ({style.total_products} total):
                             </p>
                             <div className="flex flex-wrap gap-2">
@@ -406,13 +403,13 @@ function MixSheetSection({
 
                         {/* Lamination Recipe Ingredients */}
                         {style.ingredients.length > 0 && (
-                          <div className="mt-3 pt-2 border-t border-teal-200 dark:border-teal-500/20">
-                            <p className="text-xs font-medium text-gray-600 dark:text-white/60 mb-1">
+                          <div className="mt-3 pt-2 border-t border-module-fg/20 dark:border-module-fg/20">
+                            <p className="text-xs font-medium text-theme-secondary mb-1">
                               Total ingredients for {style.sheets_needed} sheets:
                             </p>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-1">
                               {style.ingredients.map((ing, idx) => (
-                                <p key={idx} className="text-xs text-gray-700 dark:text-white/70">
+                                <p key={idx} className="text-xs text-theme-secondary">
                                   • {ing.name}: {ing.quantity.toFixed(2)} {ing.unit}
                                 </p>
                               ))}
@@ -428,18 +425,18 @@ function MixSheetSection({
               {/* Direct Products (Non-laminated) */}
               {dough.direct_products.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-white/70 mb-2">
+                  <h4 className="text-sm font-medium text-theme-secondary mb-2">
                     Direct Products (Non-laminated)
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {dough.direct_products.map((product, idx) => (
                       <div
                         key={idx}
-                        className="p-3 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-100 dark:border-white/5"
+                        className="p-3 bg-theme-button rounded-lg border border-theme"
                       >
                         <div className="flex justify-between items-start">
-                          <span className="font-medium text-gray-900 dark:text-white">{product.name}</span>
-                          <span className="text-sm text-gray-500 dark:text-white/50">
+                          <span className="font-medium text-theme-primary">{product.name}</span>
+                          <span className="text-sm text-theme-tertiary">
                             {product.quantity} units
                           </span>
                         </div>
@@ -447,7 +444,7 @@ function MixSheetSection({
                     ))}
                   </div>
                   {dough.total_batches && dough.batch_size_kg && (
-                    <p className="text-xs text-gray-500 dark:text-white/40 mt-2">
+                    <p className="text-xs text-theme-tertiary mt-2">
                       {dough.total_batches} batches × {dough.batch_size_kg}kg = {(dough.total_batches * dough.batch_size_kg).toFixed(2)}kg
                     </p>
                   )}
@@ -457,17 +454,17 @@ function MixSheetSection({
               {/* Base Dough Ingredients */}
               {dough.ingredients.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-white/70 mb-2">
+                  <h4 className="text-sm font-medium text-theme-secondary mb-2">
                     Dough Ingredients (for {dough.total_kg.toFixed(2)} kg)
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                     {dough.ingredients.map((ing, idx) => (
                       <div
                         key={idx}
-                        className="flex justify-between items-center p-2 bg-white dark:bg-white/5 rounded border border-gray-100 dark:border-white/5"
+                        className="flex justify-between items-center p-2 bg-theme-surface rounded border border-theme"
                       >
-                        <span className="text-sm text-gray-700 dark:text-white/80 truncate">{ing.name}</span>
-                        <span className="text-sm font-mono font-medium text-gray-900 dark:text-white ml-2">
+                        <span className="text-sm text-theme-secondary truncate">{ing.name}</span>
+                        <span className="text-sm font-mono font-medium text-theme-primary ml-2">
                           {ing.quantity.toFixed(2)} {ing.unit}
                         </span>
                       </div>
@@ -504,8 +501,8 @@ function TrayLayoutSection({
     return (
       <CollapsibleSection title={`Tray Layout for ${formatDateDisplay(tomorrow)}`} icon={LayoutGrid}>
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-5 w-5 animate-spin text-gray-400 mr-2" />
-          <span className="text-gray-500 dark:text-white/50">Loading tray layout...</span>
+          <Loader2 className="h-5 w-5 animate-spin text-theme-tertiary mr-2" />
+          <span className="text-theme-tertiary">Loading tray layout...</span>
         </div>
       </CollapsibleSection>
     );
@@ -514,7 +511,7 @@ function TrayLayoutSection({
   if (!destinationGroups || destinationGroups.length === 0) {
     return (
       <CollapsibleSection title={`Tray Layout for ${formatDateDisplay(tomorrow)}`} icon={LayoutGrid} badge={0}>
-        <p className="text-gray-500 dark:text-white/50">No tray layouts required for this date</p>
+        <p className="text-theme-tertiary">No tray layouts required for this date</p>
       </CollapsibleSection>
     );
   }
@@ -530,11 +527,11 @@ function TrayLayoutSection({
     >
       <div className="space-y-6">
         {destinationGroups.map((destGroup) => (
-          <div key={destGroup.destination_group_id} className="border border-gray-200 dark:border-white/10 rounded-lg overflow-hidden">
+          <div key={destGroup.destination_group_id} className="border border-theme rounded-lg overflow-hidden">
             {/* Destination Group Header */}
-            <div className="bg-gray-100 dark:bg-white/10 px-4 py-3 border-b border-gray-200 dark:border-white/10">
+            <div className="bg-theme-muted px-4 py-3 border-b border-theme">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-gray-900 dark:text-white">{destGroup.destination_group_name}</h3>
+                <h3 className="font-semibold text-theme-primary">{destGroup.destination_group_name}</h3>
                 <div className="flex items-center gap-4 text-sm">
                   {destGroup.bake_deadline && (
                     <span className="flex items-center gap-1 text-orange-600 dark:text-orange-400">
@@ -550,7 +547,7 @@ function TrayLayoutSection({
                   )}
                 </div>
               </div>
-              <div className="flex gap-4 mt-1 text-sm text-gray-600 dark:text-white/60">
+              <div className="flex gap-4 mt-1 text-sm text-theme-secondary">
                 <span>Trays: <strong>{destGroup.summary.total_equipment}</strong></span>
                 <span>Items: <strong>{destGroup.summary.total_items}</strong></span>
                 <span>Utilization: <strong>{destGroup.summary.utilization_percent}%</strong></span>
@@ -563,25 +560,25 @@ function TrayLayoutSection({
                 {destGroup.equipment.map((equip) => (
                   <div
                     key={equip.number}
-                    className="p-3 bg-white dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10"
+                    className="p-3 bg-theme-surface rounded-lg border border-theme"
                   >
                     {/* Tray Number */}
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-[#14B8A6] bg-[#14B8A6]/10 px-2 py-0.5 rounded">
+                      <span className="text-xs font-bold text-module-fg bg-module-fg/10 px-2 py-0.5 rounded">
                         Tray {equip.number}
                       </span>
-                      <span className="text-xs text-gray-500 dark:text-white/40">
+                      <span className="text-xs text-theme-tertiary">
                         {equip.used}/{equip.capacity}
                       </span>
                     </div>
                     {/* Bake Group */}
-                    <div className="text-xs text-gray-500 dark:text-white/50 mb-2">{equip.bake_group}</div>
+                    <div className="text-xs text-theme-tertiary mb-2">{equip.bake_group}</div>
                     {/* Items */}
                     <div className="space-y-1">
                       {equip.items.map((item, idx) => (
                         <div key={idx} className="flex justify-between text-sm">
-                          <span className="text-gray-700 dark:text-white/80 truncate">{item.product}</span>
-                          <span className="font-mono font-medium text-gray-900 dark:text-white ml-1">{item.qty}</span>
+                          <span className="text-theme-secondary truncate">{item.product}</span>
+                          <span className="font-mono font-medium text-theme-primary ml-1">{item.qty}</span>
                         </div>
                       ))}
                     </div>
@@ -591,7 +588,7 @@ function TrayLayoutSection({
                         className={cn(
                           'h-full rounded-full transition-all',
                           equip.used === equip.capacity
-                            ? 'bg-[#14B8A6]'
+                            ? 'bg-module-fg'
                             : equip.used / equip.capacity > 0.8
                             ? 'bg-amber-500'
                             : 'bg-gray-400'
@@ -617,7 +614,7 @@ function ProductionTasksSection({ tasks, date }: { tasks?: ProductionTask[]; dat
   if (!tasks || tasks.length === 0) {
     return (
       <CollapsibleSection title={`Production Tasks for ${formatDateDisplay(date)}`} icon={Clock} badge={0}>
-        <p className="text-gray-500 dark:text-white/50">No production tasks for this date</p>
+        <p className="text-theme-tertiary">No production tasks for this date</p>
       </CollapsibleSection>
     );
   }
@@ -646,9 +643,9 @@ function ProductionTasksSection({ tasks, date }: { tasks?: ProductionTask[]; dat
 
           return (
             <Card key={stageName} className="p-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{stageName}</h3>
+              <h3 className="font-semibold text-theme-primary mb-1">{stageName}</h3>
               {deliveryDate && (
-                <p className="text-xs text-gray-500 dark:text-white/50 mb-3">
+                <p className="text-xs text-theme-tertiary mb-3">
                   For delivery: {formatDateDisplay(deliveryDate)}
                 </p>
               )}
@@ -656,10 +653,10 @@ function ProductionTasksSection({ tasks, date }: { tasks?: ProductionTask[]; dat
                 {Object.entries(productTotals).map(([productId, data]) => (
                   <div
                     key={productId}
-                    className="flex justify-between items-center py-1 border-b border-gray-100 dark:border-white/5 last:border-0"
+                    className="flex justify-between items-center py-1 border-b border-theme last:border-0"
                   >
-                    <span className="text-gray-700 dark:text-white/80">{data.product_name}</span>
-                    <span className="font-mono font-semibold text-gray-900 dark:text-white">
+                    <span className="text-theme-secondary">{data.product_name}</span>
+                    <span className="font-mono font-semibold text-theme-primary">
                       {data.quantity}
                     </span>
                   </div>
@@ -694,7 +691,7 @@ function TraySetupSection({ traySetup }: { traySetup?: TrayRequirement[] }) {
 
   return (
     <div className="production-section" id="tray-setup">
-      <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+      <h3 className="font-semibold text-theme-primary mb-3 flex items-center gap-2">
         <Flame className="h-4 w-4 text-orange-500" />
         Tray Setup (Legacy)
       </h3>
@@ -702,17 +699,17 @@ function TraySetupSection({ traySetup }: { traySetup?: TrayRequirement[] }) {
       <div className="space-y-4">
         {Object.entries(groupedByBakeGroup).map(([groupName, items]) => (
           <div key={groupName}>
-            <h4 className="text-sm font-medium text-gray-700 dark:text-white/70 mb-2">{groupName}</h4>
+            <h4 className="text-sm font-medium text-theme-secondary mb-2">{groupName}</h4>
             <div className="space-y-1">
               {items.map((item) => (
                 <div
                   key={item.product_id}
                   className="flex justify-between items-center py-1 text-sm"
                 >
-                  <span className="text-gray-700 dark:text-white/80">{item.product_name}</span>
-                  <span className="text-gray-600 dark:text-white/60">
+                  <span className="text-theme-secondary">{item.product_name}</span>
+                  <span className="text-theme-secondary">
                     Trays {item.tray_start}-{item.tray_end}{' '}
-                    <span className="text-xs text-gray-400">({item.items_per_tray}/tray)</span>
+                    <span className="text-xs text-theme-tertiary">({item.items_per_tray}/tray)</span>
                   </span>
                 </div>
               ))}
@@ -732,7 +729,7 @@ function CookieLayoutSection({ cookies }: { cookies?: CookieRequirement[] }) {
 
   return (
     <div className="production-section" id="cookie-layout">
-      <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+      <h3 className="font-semibold text-theme-primary mb-3 flex items-center gap-2">
         <Cookie className="h-4 w-4 text-amber-500" />
         Cookies to Layout
       </h3>
@@ -743,8 +740,8 @@ function CookieLayoutSection({ cookies }: { cookies?: CookieRequirement[] }) {
             key={cookie.product_id}
             className="flex justify-between items-center py-1 text-sm"
           >
-            <span className="text-gray-700 dark:text-white/80">{cookie.product_name}</span>
-            <span className="font-mono font-semibold text-gray-900 dark:text-white">
+            <span className="text-theme-secondary">{cookie.product_name}</span>
+            <span className="font-mono font-semibold text-theme-primary">
               {cookie.quantity}
             </span>
           </div>
@@ -757,7 +754,6 @@ function CookieLayoutSection({ cookies }: { cookies?: CookieRequirement[] }) {
 // Main Page Component
 export default function ProductionPlanPage() {
   const { siteId } = useAppContext();
-  const { getCurrentSiteName } = useSiteContext();
   const [selectedDate, setSelectedDate] = useState(getTodayString());
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
@@ -790,83 +786,16 @@ export default function ProductionPlanPage() {
 
     setIsGeneratingPDF(true);
     try {
-      // Convert delivery orders to packing format
-      const packingData = plan?.delivery_orders ? (() => {
-        type Row = { name: string; bg: string; byCust: Map<string, number>; total: number };
-        const rows = new Map<string, Row>();
-        const custs = new Set<string>();
+      const res = await fetch(
+        `/api/planly/production-plan/pdf?date=${selectedDate}&siteId=${siteId}`
+      );
 
-        for (const order of plan.delivery_orders) {
-          custs.add(order.customer_name);
-          for (const l of order.lines) {
-            if (!rows.has(l.product_name)) {
-              rows.set(l.product_name, { name: l.product_name, bg: l.bake_group_name || 'Other', byCust: new Map(), total: 0 });
-            }
-            const r = rows.get(l.product_name)!;
-            r.byCust.set(order.customer_name, (r.byCust.get(order.customer_name) || 0) + l.quantity);
-            r.total += l.quantity;
-          }
-        }
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(err.error || `PDF generation failed (${res.status})`);
+      }
 
-        const custList = [...custs].sort();
-        const prodList = [...rows.values()].sort((a, b) => a.bg.localeCompare(b.bg) || a.name.localeCompare(b.name));
-        const colTotals = new Map<string, number>();
-        custList.forEach(c => {
-          let t = 0; prodList.forEach(p => t += p.byCust.get(c) || 0);
-          colTotals.set(c, t);
-        });
-        const grand = prodList.reduce((s, p) => s + p.total, 0);
-
-        return {
-          customers: custList,
-          products: prodList.map(p => ({
-            name: p.name,
-            bg: p.bg,
-            quantities: custList.map(c => ({ customer: c, qty: p.byCust.get(c) || 0 })),
-            total: p.total,
-          })),
-          colTotals: custList.map(c => ({ customer: c, total: colTotals.get(c) || 0 })),
-          grand,
-        };
-      })() : null;
-
-      // Convert tray layout to grid format
-      const trayGridsData = trayLayout?.destination_groups?.map(dg => {
-        const productInfo = new Map<string, string>();
-        for (const tray of dg.equipment) {
-          for (const item of tray.items) {
-            if (!productInfo.has(item.product)) {
-              productInfo.set(item.product, tray.bake_group);
-            }
-          }
-        }
-
-        return {
-          name: dg.destination_group_name,
-          dispatch: dg.dispatch_time || undefined,
-          trayNums: dg.equipment.map(t => t.number),
-          products: [...productInfo.entries()].map(([name, bg]) => ({
-            name,
-            bg,
-            trayQuantities: dg.equipment
-              .map(t => ({ trayNum: t.number, qty: t.items.find(i => i.product === name)?.qty || 0 }))
-              .filter(tq => tq.qty > 0),
-          })),
-          totalItems: dg.summary.total_items,
-        };
-      }) || null;
-
-      const blob = await pdf(
-        <ProductionPlanPDF
-          siteName={getCurrentSiteName()}
-          date={selectedDate}
-          packing={packingData}
-          doughSheets={mixSheet?.sheet_summary}
-          doughMix={mixSheet?.dough_mixes}
-          trayGrids={trayGridsData}
-        />
-      ).toBlob();
-
+      const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -885,7 +814,7 @@ export default function ProductionPlanPage() {
   if (!siteId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-gray-500 dark:text-white/60">Please select a site</div>
+        <div className="text-theme-tertiary">Please select a site</div>
       </div>
     );
   }
@@ -1003,9 +932,9 @@ export default function ProductionPlanPage() {
           plan?.production_tasks?.length === 0 &&
           (!mixSheet?.dough_mixes || mixSheet.dough_mixes.length === 0) &&
           (!trayLayout?.destination_groups || trayLayout.destination_groups.length === 0) && (
-            <div className="text-center py-12 bg-gray-50 dark:bg-white/5 rounded-lg">
+            <div className="text-center py-12 bg-theme-button rounded-lg">
               <Calendar className="h-12 w-12 mx-auto text-gray-300 dark:text-white/20 mb-4" />
-              <p className="text-gray-500 dark:text-white/50">
+              <p className="text-theme-tertiary">
                 No production activity scheduled for {formatDateDisplay(selectedDate)}
               </p>
             </div>

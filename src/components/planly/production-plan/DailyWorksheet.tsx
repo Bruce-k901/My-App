@@ -21,10 +21,7 @@ import {
   RefreshCw,
   Loader2,
 } from '@/components/ui/icons';
-import { pdf } from '@react-pdf/renderer';
 import { Button } from '@/components/ui/Button';
-import { ProductionPlanPDF } from '@/lib/pdf/templates/ProductionPlanPDF';
-import { useSiteContext } from '@/contexts/SiteContext';
 
 // ─── Fixed bake group order ─────────────────────────────────────────────
 // This ensures consistent product ordering across all sections
@@ -130,7 +127,6 @@ interface Props { siteId: string; initialDate?: Date; }
 // ─── Component ──────────────────────────────────────────────────────────
 
 export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
-  const { getCurrentSiteName } = useSiteContext();
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const [planToday, setPlanToday] = useState<PlanRes | null>(null);
   const [planTomorrow, setPlanTomorrow] = useState<PlanRes | null>(null);
@@ -517,82 +513,23 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
   const todayDayName = format(selectedDate, 'EEEE');
   const tomorrowDayName = format(addDays(selectedDate, 1), 'EEEE');
 
-  // ── PDF Download Handler ────────────────────────────────────────────
+  // ── PDF Download Handler (via Puppeteer API) ────────────────────────
 
   const handleDownloadPDF = async () => {
     if (isGeneratingPDF) return;
 
     setIsGeneratingPDF(true);
     try {
-      // Convert packing data (Map → array format)
-      const packingData = packing ? {
-        customers: packing.customers,
-        products: packing.products.map(p => ({
-          name: p.name,
-          bg: p.bg,
-          quantities: packing.customers.map(c => ({
-            customer: c,
-            qty: p.byCust.get(c) || 0,
-            isFrozen: p.frozenCustomers?.has(c) || false,
-          })),
-          total: p.total,
-        })),
-        colTotals: packing.customers.map(c => ({
-          customer: c,
-          total: packing.colTotals.get(c) || 0,
-        })),
-        grand: packing.grand,
-      } : null;
+      const res = await fetch(
+        `/api/planly/production-plan/pdf?date=${todayStr}&siteId=${siteId}`
+      );
 
-      // Convert tray grids (Map → array format)
-      const trayGridsData = trayGrids?.map(dg => ({
-        name: dg.name,
-        dispatch: dg.dispatch,
-        trayNums: dg.trayNums,
-        products: dg.products.map(prodName => ({
-          name: prodName,
-          bg: dg.productBG.get(prodName) || '',
-          trayQuantities: dg.trayNums.map(tn => ({
-            trayNum: tn,
-            qty: dg.grid.get(prodName)?.get(tn) || 0,
-          })).filter(tq => tq.qty > 0),
-        })),
-        totalItems: dg.totalItems,
-      })) || null;
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(err.error || `PDF generation failed (${res.status})`);
+      }
 
-      // Convert xcheck data (Map → array format)
-      const xcheckData = xcheck ? {
-        dests: xcheck.dests,
-        products: [...xcheck.productMap.values()].map(p => ({
-          name: p.name,
-          bg: p.bg,
-          destQuantities: xcheck.dests.map(d => ({
-            dest: d,
-            qty: p.byDest.get(d) || 0,
-          })),
-          total: p.total,
-        })),
-        grand: xcheck.grand,
-      } : null;
-
-      const blob = await pdf(
-        <ProductionPlanPDF
-          siteName={getCurrentSiteName()}
-          date={todayStr}
-          dateLabels={{
-            today: todayDisplay,
-            tomorrow: tomorrowDisplay,
-            dayAfter: dayAfterDisplay,
-          }}
-          packing={packingData}
-          doughSheets={doughSheets}
-          cookies={cookies}
-          doughMix={doughMix}
-          trayGrids={trayGridsData}
-          xcheck={xcheckData}
-        />
-      ).toBlob();
-
+      const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -612,8 +549,8 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-[400px]">
-      <Loader2 className="h-5 w-5 animate-spin text-gray-400 dark:text-white/40 mr-3" />
-      <span className="text-gray-500 dark:text-white/60">Loading production plan...</span>
+      <Loader2 className="h-5 w-5 animate-spin text-theme-tertiary mr-3" />
+      <span className="text-theme-tertiary">Loading production plan...</span>
     </div>
   );
 
@@ -637,7 +574,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
           <Button variant="outline" size="sm" onClick={() => setSelectedDate(d => subDays(d, 1))}>
             <ChevronLeft className="h-4 w-4 mr-1" /> Previous
           </Button>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+          <h2 className="text-xl font-bold text-theme-primary">
             {format(selectedDate, 'EEEE d MMMM yyyy')}
           </h2>
           <Button variant="outline" size="sm" onClick={() => setSelectedDate(d => addDays(d, 1))}>
@@ -667,7 +604,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
 
       {!hasAnyData && (
         <Sec title="No Orders" sub={todayDisplay}>
-          <p className="text-gray-400 dark:text-white/40 text-center py-6">No orders for today or tomorrow. Navigate to a date with orders.</p>
+          <p className="text-theme-tertiary text-center py-6">No orders for today or tomorrow. Navigate to a date with orders.</p>
         </Sec>
       )}
 
@@ -683,11 +620,11 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                 <table className="w-full text-xs border-collapse border border-gray-300 dark:border-white/20 table-fixed">
                   <thead>
                     <tr className="border-b-2 border-gray-500 dark:border-white/40 bg-gray-100 dark:bg-white/5">
-                      <th className="text-left py-0.5 px-1.5 text-gray-700 dark:text-white/70 font-bold sticky left-0 bg-gray-100 dark:bg-gray-800 z-10 w-[140px] print:w-[100px] border-r-2 border-gray-400 dark:border-white/30 text-[10px] print:text-[8px]">Product</th>
+                      <th className="text-left py-0.5 px-1.5 text-theme-secondary font-bold sticky left-0 bg-theme-muted z-10 w-[140px] print:w-[100px] border-r-2 border-gray-400 dark:border-white/30 text-[10px] print:text-[8px]">Product</th>
                       {packing.customers.map(c => (
-                        <th key={c} className="py-1 px-1 text-gray-700 dark:text-white/70 font-semibold text-center border-r border-gray-300 dark:border-white/20 text-[9px] print:text-[7px] align-bottom leading-tight whitespace-normal">{c}</th>
+                        <th key={c} className="py-1 px-1 text-theme-secondary font-semibold text-center border-r border-gray-300 dark:border-white/20 text-[9px] print:text-[7px] align-bottom leading-tight whitespace-normal">{c}</th>
                       ))}
-                      <th className="text-center py-0.5 px-1 text-teal-600 dark:text-teal-400 font-bold w-[45px] print:w-[35px] border-l-2 border-gray-500 dark:border-white/40 bg-teal-50 dark:bg-teal-900/20 text-[10px] print:text-[8px]">Tot</th>
+                      <th className="text-center py-0.5 px-1 text-module-fg font-bold w-[45px] print:w-[35px] border-l-2 border-gray-500 dark:border-white/40 bg-teal-50 dark:bg-teal-900/20 text-[10px] print:text-[8px]">Tot</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -701,7 +638,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                           out.push(
                             <tr key={`bg-${p.bg}`} className="bg-gray-50 dark:bg-white/[0.03]">
                               <td colSpan={packing.customers.length + 2}
-                                  className="py-1 px-2 text-[9px] print:text-[7px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider border-t border-gray-300 dark:border-white/20">
+                                  className="py-1 px-2 text-[9px] print:text-[7px] font-bold text-module-fg uppercase tracking-wider border-t border-gray-300 dark:border-white/20">
                                 ● {p.bg}
                               </td>
                             </tr>
@@ -710,15 +647,15 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                         }
                         const isEven = rowIdx % 2 === 0;
                         out.push(
-                          <tr key={p.name} className={`border-b border-gray-300 dark:border-white/20 hover:bg-teal-50 dark:hover:bg-teal-900/10 ${isEven ? 'bg-white dark:bg-gray-900' : 'bg-gray-50/50 dark:bg-white/[0.02]'}`}>
-                            <td className={`py-0.5 px-1.5 text-gray-900 dark:text-white font-medium sticky left-0 z-10 border-r-2 border-gray-400 dark:border-white/30 text-[11px] print:text-[8px] ${isEven ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800'}`}>
+                          <tr key={p.name} className={`border-b border-gray-300 dark:border-white/20 hover:bg-module-fg/10 ${isEven ? 'bg-white dark:bg-gray-900' : 'bg-gray-50/50 dark:bg-white/[0.02]'}`}>
+                            <td className={`py-0.5 px-1.5 text-theme-primary font-medium sticky left-0 z-10 border-r-2 border-gray-400 dark:border-white/30 text-[11px] print:text-[8px] ${isEven ? 'bg-white dark:bg-gray-900' : 'bg-theme-surface'}`}>
                               {p.name}
                             </td>
                             {packing.customers.map((c, ci) => {
                               const q = p.byCust.get(c) || 0;
                               const isFrozenOrder = p.frozenCustomers?.has(c);
                               return (
-                                <td key={c} className={`text-center py-0.5 px-0.5 tabular-nums border-r border-gray-300 dark:border-white/20 text-[10px] print:text-[8px] ${isFrozenOrder ? 'bg-blue-100 dark:bg-blue-900/40' : ''} ${q > 0 ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-300 dark:text-white/20'}`}>
+ <td key={c} className={`text-center py-0.5 px-0.5 tabular-nums border-r border-gray-300 dark:border-white/20 text-[10px] print:text-[8px] ${isFrozenOrder ? 'bg-blue-100 dark:bg-blue-900/40' : ''} ${q > 0 ? 'text-theme-primary font-medium' : 'text-gray-300/20'}`}>
                                   {q > 0 ? (
                                     <span className="flex items-center justify-center gap-0.5">
                                       {q}
@@ -728,7 +665,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                                 </td>
                               );
                             })}
-                            <td className="text-center py-0.5 px-1 text-teal-600 dark:text-teal-400 font-bold tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-teal-50/50 dark:bg-teal-900/10 text-[11px] print:text-[8px]">{p.total}</td>
+                            <td className="text-center py-0.5 px-1 text-module-fg font-bold tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-teal-50/50 dark:bg-teal-900/10 text-[11px] print:text-[8px]">{p.total}</td>
                           </tr>
                         );
                         rowIdx++;
@@ -736,11 +673,11 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                       // Totals row
                       out.push(
                         <tr key="_totals" className="border-t-2 border-gray-500 dark:border-white/40 font-bold bg-gray-100 dark:bg-white/5">
-                          <td className="py-1 px-1.5 text-gray-900 dark:text-white sticky left-0 bg-gray-100 dark:bg-gray-800 z-10 border-r-2 border-gray-400 dark:border-white/30 text-[11px] print:text-[8px]">Totals</td>
+                          <td className="py-1 px-1.5 text-theme-primary sticky left-0 bg-theme-muted z-10 border-r-2 border-gray-400 dark:border-white/30 text-[11px] print:text-[8px]">Totals</td>
                           {packing.customers.map(c => (
-                            <td key={c} className="text-center py-1 px-0.5 text-gray-700 dark:text-white/90 tabular-nums border-r border-gray-300 dark:border-white/20 text-[10px] print:text-[8px]">{packing.colTotals.get(c) || ''}</td>
+                            <td key={c} className="text-center py-1 px-0.5 text-theme-secondary/90 tabular-nums border-r border-gray-300 dark:border-white/20 text-[10px] print:text-[8px]">{packing.colTotals.get(c) || ''}</td>
                           ))}
-                          <td className="text-center py-1 px-1 text-teal-700 dark:text-teal-300 tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-teal-100 dark:bg-teal-900/30 text-[11px] print:text-[8px]">{packing.grand}</td>
+                          <td className="text-center py-1 px-1 text-teal-700 dark:text-teal-300 tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-module-fg/10 text-[11px] print:text-[8px]">{packing.grand}</td>
                         </tr>
                       );
                       return out;
@@ -749,7 +686,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                 </table>
               </div>
             ) : (
-              <p className="text-gray-400 dark:text-white/30 text-sm py-4 text-center italic border border-dashed border-gray-300 dark:border-white/20 rounded">
+              <p className="text-theme-tertiary/30 text-sm py-4 text-center italic border border-dashed border-gray-300 dark:border-white/20 rounded">
                 No orders to pack today
               </p>
             )}
@@ -800,7 +737,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                               <tbody>
                                 {cust.products.map((p, pi) => (
                                   <tr key={p.name} className={`border-b border-blue-50 dark:border-blue-500/10 last:border-0 ${pi % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50/20 dark:bg-blue-900/10'}`}>
-                                    <td className="py-0.5 px-1.5 text-gray-800 dark:text-white/90">{p.name}</td>
+                                    <td className="py-0.5 px-1.5 text-theme-primary/90">{p.name}</td>
                                     <td className="py-0.5 px-1.5 text-right text-blue-600 dark:text-blue-400 font-medium tabular-nums w-8">{p.qty}</td>
                                   </tr>
                                 ))}
@@ -830,7 +767,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                           <tbody>
                             {cust.products.map((p, pi) => (
                               <tr key={p.name} className={`border-b border-blue-100 dark:border-blue-500/10 last:border-0 ${pi % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50/30 dark:bg-blue-900/10'}`}>
-                                <td className="py-0.5 px-1.5 text-gray-800 dark:text-white/90">{p.name}</td>
+                                <td className="py-0.5 px-1.5 text-theme-primary/90">{p.name}</td>
                                 <td className="py-0.5 px-1.5 text-right text-blue-600 dark:text-blue-400 font-medium tabular-nums w-8">{p.qty}</td>
                               </tr>
                             ))}
@@ -852,33 +789,33 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                 <table className="text-xs print:text-[7px] border-collapse w-full border border-gray-300 dark:border-white/20">
                   <thead>
                     <tr className="border-b-2 border-gray-400 dark:border-white/30 bg-gray-100 dark:bg-white/5">
-                      <th className="text-left py-1.5 px-2 text-gray-600 dark:text-white/60 font-semibold border-r border-gray-200 dark:border-white/10">Style</th>
-                      <th className="text-right py-1.5 px-2 text-gray-600 dark:text-white/60 font-semibold border-r border-gray-200 dark:border-white/10">Sheets</th>
-                      <th className="text-right py-1.5 px-2 text-gray-600 dark:text-white/60 font-semibold">Products</th>
+                      <th className="text-left py-1.5 px-2 text-theme-secondary font-semibold border-r border-theme">Style</th>
+                      <th className="text-right py-1.5 px-2 text-theme-secondary font-semibold border-r border-theme">Sheets</th>
+                      <th className="text-right py-1.5 px-2 text-theme-secondary font-semibold">Products</th>
                     </tr>
                   </thead>
                   <tbody>
                     {doughSheets.by_style.map((s, i) => (
-                      <tr key={`${s.style_name}-${i}`} className={`border-b border-gray-200 dark:border-white/10 ${i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-white/[0.02]'}`}>
-                        <td className="py-1.5 px-2 text-gray-900 dark:text-white border-r border-gray-200 dark:border-white/10">
+                      <tr key={`${s.style_name}-${i}`} className={`border-b border-theme ${i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-white/[0.02]'}`}>
+                        <td className="py-1.5 px-2 text-theme-primary border-r border-theme">
                           {s.style_name}
-                          <span className="text-[10px] text-gray-500 dark:text-white/40 ml-1">({s.base_dough_name})</span>
+                          <span className="text-[10px] text-theme-tertiary ml-1">({s.base_dough_name})</span>
                         </td>
-                        <td className="py-1.5 px-2 text-right text-teal-600 dark:text-teal-400 font-bold tabular-nums border-r border-gray-200 dark:border-white/10">{s.sheets_needed}</td>
-                        <td className="py-1.5 px-2 text-right text-gray-600 dark:text-white/60 tabular-nums">{s.total_products}</td>
+                        <td className="py-1.5 px-2 text-right text-module-fg font-bold tabular-nums border-r border-theme">{s.sheets_needed}</td>
+                        <td className="py-1.5 px-2 text-right text-theme-secondary tabular-nums">{s.total_products}</td>
                       </tr>
                     ))}
                     <tr className="border-t-2 border-gray-400 dark:border-white/30 font-bold bg-gray-100 dark:bg-white/5">
-                      <td className="py-1.5 px-2 text-gray-900 dark:text-white border-r border-gray-200 dark:border-white/10">Total</td>
-                      <td className="py-1.5 px-2 text-right text-teal-700 dark:text-teal-300 tabular-nums border-r border-gray-200 dark:border-white/10">{doughSheets.total_sheets}</td>
-                      <td className="py-1.5 px-2 text-right text-gray-700 dark:text-white/80 tabular-nums">
+                      <td className="py-1.5 px-2 text-theme-primary border-r border-theme">Total</td>
+                      <td className="py-1.5 px-2 text-right text-teal-700 dark:text-teal-300 tabular-nums border-r border-theme">{doughSheets.total_sheets}</td>
+                      <td className="py-1.5 px-2 text-right text-theme-secondary tabular-nums">
                         {doughSheets.by_style.reduce((sum, s) => sum + s.total_products, 0)}
                       </td>
                     </tr>
                   </tbody>
                 </table>
               ) : (
-                <p className="text-gray-400 dark:text-white/30 text-sm py-4 text-center italic border border-dashed border-gray-300 dark:border-white/20 rounded">
+                <p className="text-theme-tertiary/30 text-sm py-4 text-center italic border border-dashed border-gray-300 dark:border-white/20 rounded">
                   Configure lamination styles with products_per_sheet
                 </p>
               )}
@@ -890,21 +827,21 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                 <table className="text-xs print:text-[7px] border-collapse w-full border border-gray-300 dark:border-white/20">
                   <thead>
                     <tr className="border-b-2 border-gray-400 dark:border-white/30 bg-gray-100 dark:bg-white/5">
-                      <th className="text-left py-1.5 px-2 text-gray-600 dark:text-white/60 font-semibold border-r border-gray-200 dark:border-white/10">Cookie</th>
-                      <th className="text-right py-1.5 px-2 text-gray-600 dark:text-white/60 font-semibold w-16">Qty</th>
+                      <th className="text-left py-1.5 px-2 text-theme-secondary font-semibold border-r border-theme">Cookie</th>
+                      <th className="text-right py-1.5 px-2 text-theme-secondary font-semibold w-16">Qty</th>
                     </tr>
                   </thead>
                   <tbody>
                     {cookies.map((c, i) => (
-                      <tr key={c.name} className={`border-b border-gray-200 dark:border-white/10 ${i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-white/[0.02]'}`}>
-                        <td className="py-1.5 px-2 text-gray-900 dark:text-white border-r border-gray-200 dark:border-white/10">{c.name}</td>
-                        <td className="py-1.5 px-2 text-right text-teal-600 dark:text-teal-400 font-bold tabular-nums">{c.qty}</td>
+                      <tr key={c.name} className={`border-b border-theme ${i % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-white/[0.02]'}`}>
+                        <td className="py-1.5 px-2 text-theme-primary border-r border-theme">{c.name}</td>
+                        <td className="py-1.5 px-2 text-right text-module-fg font-bold tabular-nums">{c.qty}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               ) : (
-                <p className="text-gray-400 dark:text-white/30 text-sm py-4 text-center italic border border-dashed border-gray-300 dark:border-white/20 rounded">
+                <p className="text-theme-tertiary/30 text-sm py-4 text-center italic border border-dashed border-gray-300 dark:border-white/20 rounded">
                   No cookies ordered
                 </p>
               )}
@@ -917,16 +854,16 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                   {doughMix.map((mix, i) => (
                     <div key={i} className="border border-gray-300 dark:border-white/20 rounded overflow-hidden">
                       <div className="flex justify-between px-1.5 py-1 bg-gray-100 dark:bg-white/5 border-b border-gray-300 dark:border-white/20">
-                        <span className="text-gray-900 dark:text-white font-semibold text-xs print:text-[7px]">{mix.dough_name}</span>
-                        <span className="text-teal-600 dark:text-teal-400 font-bold font-mono text-xs print:text-[7px]">{mix.total_kg}kg</span>
+                        <span className="text-theme-primary font-semibold text-xs print:text-[7px]">{mix.dough_name}</span>
+                        <span className="text-module-fg font-bold font-mono text-xs print:text-[7px]">{mix.total_kg}kg</span>
                       </div>
                       {mix.ingredients.length > 0 && (
                         <table className="w-full text-[10px] print:text-[6px]">
                           <tbody>
                             {mix.ingredients.map((ing, j) => (
-                              <tr key={j} className={`border-b border-gray-200 dark:border-white/10 last:border-0 ${j % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-white/[0.02]'}`}>
-                                <td className="py-0.5 px-1.5 text-gray-700 dark:text-white/80 border-r border-gray-200 dark:border-white/10">{ing.name}</td>
-                                <td className="py-0.5 px-1.5 text-right text-gray-900 dark:text-white font-mono tabular-nums">
+                              <tr key={j} className={`border-b border-theme last:border-0 ${j % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-white/[0.02]'}`}>
+                                <td className="py-0.5 px-1.5 text-theme-secondary border-r border-theme">{ing.name}</td>
+                                <td className="py-0.5 px-1.5 text-right text-theme-primary font-mono tabular-nums">
                                   {Number(ing.quantity).toLocaleString()}{ing.unit}
                                 </td>
                               </tr>
@@ -938,7 +875,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-400 dark:text-white/30 text-sm py-4 text-center italic border border-dashed border-gray-300 dark:border-white/20 rounded">
+                <p className="text-theme-tertiary/30 text-sm py-4 text-center italic border border-dashed border-gray-300 dark:border-white/20 rounded">
                   Link processing groups to recipes
                 </p>
               )}
@@ -971,21 +908,21 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                         <thead>
                           {/* Destination group header row */}
                           <tr className="border-b border-gray-300 dark:border-white/20 bg-gray-50 dark:bg-white/[0.03]">
-                            <th className="text-left py-1 px-1.5 text-gray-600 dark:text-white/60 font-semibold border-r-2 border-gray-400 dark:border-white/30"></th>
+                            <th className="text-left py-1 px-1.5 text-theme-secondary font-semibold border-r-2 border-gray-400 dark:border-white/30"></th>
                             {trayGrids.map((dg, di) => (
                               <th key={dg.name} colSpan={dg.trayNums.length}
-                                  className={`text-center py-1 px-1 text-gray-700 dark:text-white/70 font-bold text-[9px] print:text-[7px] bg-gray-100 dark:bg-white/5 ${di < trayGrids.length - 1 ? 'border-r-2 border-gray-400 dark:border-white/30' : ''}`}>
-                                {dg.name} <span className="text-gray-500 dark:text-white/50 font-normal">({dg.start}–{dg.end})</span>
+                                  className={`text-center py-1 px-1 text-theme-secondary font-bold text-[9px] print:text-[7px] bg-gray-100 dark:bg-white/5 ${di < trayGrids.length - 1 ? 'border-r-2 border-gray-400 dark:border-white/30' : ''}`}>
+                                {dg.name} <span className="text-theme-tertiary font-normal">({dg.start}–{dg.end})</span>
                               </th>
                             ))}
                           </tr>
                           {/* Tray number header row */}
                           <tr className="border-b-2 border-gray-500 dark:border-white/40 bg-gray-100 dark:bg-white/5">
-                            <th className="text-left py-1 px-1.5 text-gray-600 dark:text-white/60 font-semibold border-r-2 border-gray-400 dark:border-white/30 min-w-[130px] print:min-w-[90px]">Product</th>
+                            <th className="text-left py-1 px-1.5 text-theme-secondary font-semibold border-r-2 border-gray-400 dark:border-white/30 min-w-[130px] print:min-w-[90px]">Product</th>
                             {trayGrids.map((dg, di) => (
                               dg.trayNums.map((tn, ti) => (
                                 <th key={`${dg.name}-${tn}`}
-                                    className={`text-center py-1 px-0.5 text-teal-600 dark:text-teal-400 font-bold w-7 print:w-5 bg-teal-50 dark:bg-teal-900/20 ${ti === dg.trayNums.length - 1 && di < trayGrids.length - 1 ? 'border-r-2 border-gray-400 dark:border-white/30' : 'border-r border-gray-300 dark:border-white/20'}`}>
+                                    className={`text-center py-1 px-0.5 text-module-fg font-bold w-7 print:w-5 bg-teal-50 dark:bg-teal-900/20 ${ti === dg.trayNums.length - 1 && di < trayGrids.length - 1 ? 'border-r-2 border-gray-400 dark:border-white/30' : 'border-r border-gray-300 dark:border-white/20'}`}>
                                   {tn}
                                 </th>
                               ))
@@ -1008,7 +945,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                                 out.push(
                                   <tr key={`bg-${bg}`} className="bg-gray-100 dark:bg-white/[0.05]">
                                     <td colSpan={totalCols + 1}
-                                        className="py-1 px-1.5 text-[10px] print:text-[8px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider border-t-2 border-b border-gray-400 dark:border-white/30">
+                                        className="py-1 px-1.5 text-[10px] print:text-[8px] font-bold text-module-fg uppercase tracking-wider border-t-2 border-b border-gray-400 dark:border-white/30">
                                       ● {bg}
                                     </td>
                                   </tr>
@@ -1018,7 +955,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                               const isEven = rowIdx % 2 === 0;
                               out.push(
                                 <tr key={prod} className={`border-b border-gray-300 dark:border-white/20 ${isEven ? 'bg-white dark:bg-gray-900' : 'bg-gray-50/50 dark:bg-white/[0.02]'}`}>
-                                  <td className={`py-0.5 px-1.5 text-gray-900 dark:text-white font-medium border-r-2 border-gray-400 dark:border-white/30 whitespace-normal text-[10px] print:text-[8px] ${isEven ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800'}`}>
+                                  <td className={`py-0.5 px-1.5 text-theme-primary font-medium border-r-2 border-gray-400 dark:border-white/30 whitespace-normal text-[10px] print:text-[8px] ${isEven ? 'bg-white dark:bg-gray-900' : 'bg-theme-surface'}`}>
                                     {prod}
                                   </td>
                                   {trayGrids.map((dg, di) => (
@@ -1027,7 +964,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                                       const isLastInGroup = ti === dg.trayNums.length - 1 && di < trayGrids.length - 1;
                                       return (
                                         <td key={`${dg.name}-${tn}`}
-                                            className={`text-center py-0.5 px-0.5 tabular-nums ${isLastInGroup ? 'border-r-2 border-gray-400 dark:border-white/30' : 'border-r border-gray-200 dark:border-white/10'} ${q != null ? 'text-gray-900 dark:text-white font-medium' : ''}`}>
+ className={`text-center py-0.5 px-0.5 tabular-nums ${isLastInGroup ? 'border-r-2 border-gray-400' : 'border-r border-theme'} ${q != null ? 'text-theme-primary font-medium' : ''}`}>
                                           {q ?? ''}
                                         </td>
                                       );
@@ -1054,17 +991,17 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                     <thead>
                       {/* Spacer row to align with Tray Layout's destination group header */}
                       <tr className="border-b border-gray-300 dark:border-white/20 bg-gray-50 dark:bg-white/[0.03]">
-                        <th className="text-left py-1 px-1.5 text-gray-600 dark:text-white/60 font-semibold border-r-2 border-gray-400 dark:border-white/30"></th>
-                        <th colSpan={xcheck.dests.length + 1} className="text-center py-1 px-1 text-gray-700 dark:text-white/70 font-bold text-[9px] print:text-[7px] bg-gray-100 dark:bg-white/5">
+                        <th className="text-left py-1 px-1.5 text-theme-secondary font-semibold border-r-2 border-gray-400 dark:border-white/30"></th>
+                        <th colSpan={xcheck.dests.length + 1} className="text-center py-1 px-1 text-theme-secondary font-bold text-[9px] print:text-[7px] bg-gray-100 dark:bg-white/5">
                           Totals by Destination
                         </th>
                       </tr>
                       <tr className="border-b-2 border-gray-500 dark:border-white/40 bg-gray-100 dark:bg-white/5">
-                        <th className="text-left py-1 px-1.5 text-gray-600 dark:text-white/60 font-semibold border-r-2 border-gray-400 dark:border-white/30 min-w-[80px] print:min-w-[60px]">Product</th>
+                        <th className="text-left py-1 px-1.5 text-theme-secondary font-semibold border-r-2 border-gray-400 dark:border-white/30 min-w-[80px] print:min-w-[60px]">Product</th>
                         {xcheck.dests.map(d => (
-                          <th key={d} className="text-center py-1 px-2 text-gray-600 dark:text-white/60 font-semibold border-r border-gray-300 dark:border-white/20 text-[9px] print:text-[7px] min-w-[70px] print:min-w-[55px]">{d.replace(' Bake', '')}</th>
+                          <th key={d} className="text-center py-1 px-2 text-theme-secondary font-semibold border-r border-gray-300 dark:border-white/20 text-[9px] print:text-[7px] min-w-[70px] print:min-w-[55px]">{d.replace(' Bake', '')}</th>
                         ))}
-                        <th className="text-center py-1 px-1.5 text-teal-600 dark:text-teal-400 font-bold border-l-2 border-gray-500 dark:border-white/40 bg-teal-50 dark:bg-teal-900/20 min-w-[40px]">Tot</th>
+                        <th className="text-center py-1 px-1.5 text-module-fg font-bold border-l-2 border-gray-500 dark:border-white/40 bg-teal-50 dark:bg-teal-900/20 min-w-[40px]">Tot</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1085,7 +1022,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                             out.push(
                               <tr key={`bg-${bg}`} className="bg-gray-100 dark:bg-white/[0.05]">
                                 <td colSpan={xcheck.dests.length + 2}
-                                    className="py-1 px-1.5 text-[10px] print:text-[8px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider border-t-2 border-b border-gray-400 dark:border-white/30">
+                                    className="py-1 px-1.5 text-[10px] print:text-[8px] font-bold text-module-fg uppercase tracking-wider border-t-2 border-b border-gray-400 dark:border-white/30">
                                   ● {bg}
                                 </td>
                               </tr>
@@ -1095,12 +1032,12 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                           const total = p?.total || 0;
                           out.push(
                             <tr key={prodName} className={`border-b border-gray-300 dark:border-white/20 ${isEven ? 'bg-white dark:bg-gray-900' : 'bg-gray-50/50 dark:bg-white/[0.02]'}`}>
-                              <td className={`py-0.5 px-1.5 text-gray-900 dark:text-white font-medium border-r-2 border-gray-400 dark:border-white/30 whitespace-normal text-[10px] print:text-[8px] ${isEven ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800'}`}>{prodName}</td>
+                              <td className={`py-0.5 px-1.5 text-theme-primary font-medium border-r-2 border-gray-400 dark:border-white/30 whitespace-normal text-[10px] print:text-[8px] ${isEven ? 'bg-white dark:bg-gray-900' : 'bg-theme-surface'}`}>{prodName}</td>
                               {xcheck.dests.map(d => {
                                 const q = p?.byDest.get(d) || 0;
-                                return <td key={d} className={`text-center py-0.5 px-2 tabular-nums border-r border-gray-300 dark:border-white/20 min-w-[70px] print:min-w-[55px] ${q > 0 ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-300 dark:text-white/20'}`}>{q > 0 ? q : ''}</td>;
+ return <td key={d} className={`text-center py-0.5 px-2 tabular-nums border-r border-gray-300 dark:border-white/20 min-w-[70px] print:min-w-[55px] ${q > 0 ? 'text-theme-primary font-medium' : 'text-gray-300/20'}`}>{q > 0 ? q : ''}</td>;
                               })}
-                              <td className="text-center py-0.5 px-1.5 text-teal-600 dark:text-teal-400 font-bold tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-teal-50/50 dark:bg-teal-900/10">{total > 0 ? total : ''}</td>
+                              <td className="text-center py-0.5 px-1.5 text-module-fg font-bold tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-teal-50/50 dark:bg-teal-900/10">{total > 0 ? total : ''}</td>
                             </tr>
                           );
                           rowIdx++;
@@ -1108,12 +1045,12 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                         // Totals row
                         out.push(
                           <tr key="_totals" className="border-t-2 border-gray-500 dark:border-white/40 font-bold bg-gray-100 dark:bg-white/5">
-                            <td className="py-1 px-1.5 text-gray-900 dark:text-white border-r-2 border-gray-400 dark:border-white/30 text-[10px] print:text-[8px]">Totals</td>
+                            <td className="py-1 px-1.5 text-theme-primary border-r-2 border-gray-400 dark:border-white/30 text-[10px] print:text-[8px]">Totals</td>
                             {xcheck.dests.map(d => {
                               const t = [...xcheck.productMap.values()].reduce((s, p) => s + (p.byDest.get(d) || 0), 0);
-                              return <td key={d} className="text-center py-1 px-2 text-gray-700 dark:text-white/90 tabular-nums border-r border-gray-300 dark:border-white/20 min-w-[70px] print:min-w-[55px]">{t}</td>;
+                              return <td key={d} className="text-center py-1 px-2 text-theme-secondary/90 tabular-nums border-r border-gray-300 dark:border-white/20 min-w-[70px] print:min-w-[55px]">{t}</td>;
                             })}
-                            <td className="text-center py-1 px-1.5 text-teal-700 dark:text-teal-300 tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-teal-100 dark:bg-teal-900/30">{xcheck.grand}</td>
+                            <td className="text-center py-1 px-1.5 text-teal-700 dark:text-teal-300 tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-module-fg/10">{xcheck.grand}</td>
                           </tr>
                         );
                         return out;
@@ -1130,139 +1067,64 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
       {/* ── Print Styles ─────────────────────────────────────────────── */}
       <style jsx global>{`
         @media print {
-          /* === HIDE UI === */
-          .print\\:hidden, nav, header, aside, footer, button,
+          /* Hide app chrome — Tailwind print: classes handle the rest */
+          nav, header, aside, footer,
           [role="navigation"], [role="banner"],
-          input, select, textarea, .no-print {
+          .no-print {
             display: none !important;
           }
 
-          /* Remove header offset and padding from main */
+          /* Reset app-shell layout */
           main {
-            margin-top: 0 !important;
-            margin-left: 0 !important;
-            padding: 0.2cm !important;
+            margin: 0 !important;
+            padding: 2px !important;
             width: 100% !important;
             max-width: 100% !important;
           }
 
-          /* === PAGE SETUP - Minimal margins === */
           @page {
-            margin: 0.3cm;
+            margin: 2mm;
             size: A4 landscape;
           }
 
           html, body {
             margin: 0 !important;
             padding: 0 !important;
+            background: white !important;
+            color: black !important;
           }
 
-          /* === LAYOUT - Fill the page === */
           .ws-root {
             width: 100% !important;
             padding: 0 !important;
             margin: 0 !important;
           }
 
-          /* Page break after packing plan */
+          /* Page break support */
           .print\\:page-break-after-always {
             page-break-after: always !important;
           }
 
-          /* Keep tray + confirmation together */
-          .tray-confirmation-grid {
-            display: grid !important;
-            grid-template-columns: 2fr 1fr !important;
-            gap: 0.2cm !important;
-            page-break-inside: avoid !important;
-          }
-
-          /* === SECTION CARDS === */
-          .ws-section {
-            background: white !important;
-            border: 1pt solid #333 !important;
-            padding: 0.15cm !important;
-            margin-bottom: 0.15cm !important;
-            page-break-inside: avoid !important;
-          }
-
-          /* === TABLES - Stretch to fill === */
-          table {
-            width: 100% !important;
-            table-layout: auto !important;
-            border-collapse: collapse !important;
-            border: 1pt solid #333 !important;
-            background: white !important;
-            font-size: 9pt !important;
-          }
-
-          th, td {
-            border: 1pt solid #999 !important;
-            padding: 3px 4px !important;
-            background: white !important;
-            color: black !important;
-          }
-
-          th {
-            background: #f0f0f0 !important;
-            font-weight: 600 !important;
-          }
-
-          /* Product names column - prevent overflow */
-          tbody td:first-child {
-            text-align: left !important;
-            font-weight: 500 !important;
-            background: #fafafa !important;
-            white-space: nowrap !important;
-            min-width: 120px !important;
-          }
-
-          /* Header product column */
-          th:first-child, thead td:first-child {
-            min-width: 120px !important;
-            text-align: left !important;
-          }
-
-          /* Group headers */
-          tbody tr td[colspan] {
-            background: #e8e8e8 !important;
-            font-weight: 600 !important;
-            color: #0d7377 !important;
-          }
-
-          /* Totals */
-          th:last-child, td:last-child {
-            background: #f0f0f0 !important;
-            font-weight: 600 !important;
-          }
-
-          tbody tr:last-child td {
-            background: #f0f0f0 !important;
-            font-weight: 600 !important;
-          }
-
-          /* Overflow visible */
+          /* Scrollable areas must be visible in print */
           .overflow-x-auto, .overflow-auto {
             overflow: visible !important;
           }
 
-          /* Sticky to static */
+          /* Sticky columns break PDF layout */
           .sticky {
             position: static !important;
           }
 
-          /* Prep cards grid */
-          .print\\:grid-cols-3 {
-            grid-template-columns: repeat(3, 1fr) !important;
+          /* Force dark: classes to light values */
+          .dark\\:bg-gray-900, .dark\\:bg-gray-900\\/50,
+          .dark\\:bg-white\\/\\[0\\.02\\], .dark\\:bg-white\\/\\[0\\.03\\],
+          .dark\\:bg-white\\/5 {
+            background: white !important;
           }
 
-          .print\\:grid-cols-4 {
-            grid-template-columns: repeat(4, 1fr) !important;
-          }
-
-          /* Accent colors */
-          .text-teal-600, .text-teal-700 {
-            color: #0d7377 !important;
+          .dark\\:text-white, .dark\\:text-gray-100,
+          .dark\\:text-gray-200, .dark\\:text-gray-300 {
+            color: black !important;
           }
         }
       `}</style>
@@ -1275,9 +1137,9 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
 function Sec({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
   return (
     <div className="ws-section border border-gray-300 dark:border-white/20 rounded-lg p-2.5 print:p-1 bg-white dark:bg-gray-900/50 shadow-sm">
-      <div className="flex items-center gap-1.5 mb-1.5 print:mb-0.5 pb-1 print:pb-0 border-b border-gray-200 dark:border-white/10">
-        <h3 className="text-xs font-bold text-gray-900 dark:text-white print:text-[7px]">{title}</h3>
-        {sub && <span className="text-[10px] print:text-[6px] text-gray-500 dark:text-white/50">{sub}</span>}
+      <div className="flex items-center gap-1.5 mb-1.5 print:mb-0.5 pb-1 print:pb-0 border-b border-theme">
+        <h3 className="text-xs font-bold text-theme-primary print:text-[7px]">{title}</h3>
+        {sub && <span className="text-[10px] print:text-[6px] text-theme-tertiary">{sub}</span>}
       </div>
       {children}
     </div>

@@ -73,6 +73,23 @@ export interface XCheckData {
   grand: number;
 }
 
+export interface FrozenPackCustomer {
+  name: string;
+  products: { name: string; qty: number }[];
+  total: number;
+}
+
+export interface FrozenPackStage {
+  stage: string;
+  customers: FrozenPackCustomer[];
+}
+
+export interface FrozenPackData {
+  stages?: FrozenPackStage[] | null;
+  fallbackCustomers?: { customer: string; products: { name: string; qty: number }[]; total: number }[] | null;
+  totalItems: number;
+}
+
 export interface ProductionPlanPDFProps {
   siteName: string;
   date: string;
@@ -82,6 +99,7 @@ export interface ProductionPlanPDFProps {
     dayAfter: string;
   };
   packing?: PackingData | null;
+  frozenPack?: FrozenPackData | null;
   doughSheets?: DoughSheetData | null;
   cookies?: CookieItem[] | null;
   doughMix?: DoughMixData[] | null;
@@ -382,6 +400,7 @@ export function ProductionPlanPDF({
   date,
   dateLabels,
   packing,
+  frozenPack,
   doughSheets,
   cookies,
   doughMix,
@@ -650,8 +669,78 @@ export function ProductionPlanPDF({
           </View>
         </View>
 
-        {/* 3-Column Prep Row: Dough Sheets | Cookie Prep | Dough Mix */}
+        {/* Prep Row: Frozen Pack (if any) | Dough Sheets | Cookie Prep | Dough Mix */}
         <View style={styles.gridRow}>
+          {/* Frozen Pack */}
+          {frozenPack && (
+            <View style={styles.gridCol}>
+              <View style={[styles.section, { borderColor: '#93c5fd', borderWidth: 1 }]}>
+                <View style={[styles.sectionHeader, { backgroundColor: '#eff6ff', borderBottomColor: '#bfdbfe' }]}>
+                  <Text style={{ fontSize: 7, color: '#2563eb' }}>❄️</Text>
+                  <Text style={[styles.sectionTitle, { color: '#1d4ed8' }]}>Frozen Pack</Text>
+                  <Text style={[styles.sectionSub, { color: '#3b82f6' }]}>{tomorrowLabel}</Text>
+                </View>
+                <View style={{ padding: 4 }}>
+                  {frozenPack.stages ? (
+                    frozenPack.stages.map((stageGroup, si) => (
+                      <View key={si} style={{ marginBottom: si < frozenPack.stages!.length - 1 ? 4 : 0 }}>
+                        {frozenPack.stages!.length > 1 && (
+                          <View style={{ borderBottomWidth: 0.5, borderBottomColor: '#bfdbfe', marginBottom: 2, paddingBottom: 1 }}>
+                            <Text style={{ fontSize: 5.5, fontFamily: 'Helvetica-Bold', color: '#1d4ed8', textTransform: 'uppercase' }}>
+                              {stageGroup.stage}
+                            </Text>
+                          </View>
+                        )}
+                        {stageGroup.customers.map((cust, ci) => (
+                          <View key={ci} style={[styles.mixBlock, { borderColor: '#bfdbfe' }]}>
+                            <View style={[styles.mixHeader, { backgroundColor: '#dbeafe', borderBottomColor: '#bfdbfe' }]}>
+                              <Text style={{ fontSize: 6.5, fontFamily: 'Helvetica-Bold', color: '#1e40af' }}>{cust.name}</Text>
+                              <Text style={{ fontSize: 6.5, fontFamily: 'Helvetica-Bold', color: '#2563eb' }}>{cust.total}</Text>
+                            </View>
+                            {cust.products.map((p, pi) => (
+                              <View key={pi} style={[styles.tr, pi % 2 === 1 && { backgroundColor: '#f0f7ff' }]}>
+                                <View style={[styles.td, { flex: 2 }]}>
+                                  <Text style={{ fontSize: 6 }}>{p.name}</Text>
+                                </View>
+                                <View style={[styles.td, styles.tdLast, styles.tdRight, { width: 30 }]}>
+                                  <Text style={{ fontSize: 6, fontFamily: 'Helvetica-Bold', color: '#2563eb' }}>{p.qty}</Text>
+                                </View>
+                              </View>
+                            ))}
+                          </View>
+                        ))}
+                      </View>
+                    ))
+                  ) : frozenPack.fallbackCustomers ? (
+                    frozenPack.fallbackCustomers.map((cust, ci) => (
+                      <View key={ci} style={[styles.mixBlock, { borderColor: '#bfdbfe' }]}>
+                        <View style={[styles.mixHeader, { backgroundColor: '#dbeafe', borderBottomColor: '#bfdbfe' }]}>
+                          <Text style={{ fontSize: 6.5, fontFamily: 'Helvetica-Bold', color: '#1e40af' }}>{cust.customer}</Text>
+                          <Text style={{ fontSize: 6.5, fontFamily: 'Helvetica-Bold', color: '#2563eb' }}>{cust.total}</Text>
+                        </View>
+                        {cust.products.map((p, pi) => (
+                          <View key={pi} style={[styles.tr, pi % 2 === 1 && { backgroundColor: '#f0f7ff' }]}>
+                            <View style={[styles.td, { flex: 2 }]}>
+                              <Text style={{ fontSize: 6 }}>{p.name}</Text>
+                            </View>
+                            <View style={[styles.td, styles.tdLast, styles.tdRight, { width: 30 }]}>
+                              <Text style={{ fontSize: 6, fontFamily: 'Helvetica-Bold', color: '#2563eb' }}>{p.qty}</Text>
+                            </View>
+                          </View>
+                        ))}
+                      </View>
+                    ))
+                  ) : null}
+                  {/* Total row */}
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#dbeafe', borderRadius: 2, paddingVertical: 3, paddingHorizontal: 6, marginTop: 3 }}>
+                    <Text style={{ fontSize: 7, fontFamily: 'Helvetica-Bold', color: '#1e40af' }}>Total</Text>
+                    <Text style={{ fontSize: 7, fontFamily: 'Helvetica-Bold', color: '#1d4ed8' }}>{frozenPack.totalItems}</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          )}
+
           {/* Dough Sheets */}
           <View style={styles.gridCol}>
             <View style={styles.section}>
