@@ -64,29 +64,10 @@ export async function POST(
     console.log('Portal invite URL:', inviteUrl);
     console.log('Invite for:', portalUser.email);
 
-    // If Resend is configured, send the email
+    // TODO: Send email via Resend once configured
+    // Install `resend` and set RESEND_API_KEY env var to enable
     if (process.env.RESEND_API_KEY) {
-      try {
-        const { Resend } = await import('resend');
-        const resend = new Resend(process.env.RESEND_API_KEY);
-
-        await resend.emails.send({
-          from: 'Orders Portal <orders@opsly.io>',
-          to: portalUser.email,
-          subject: `You're invited to the ordering portal`,
-          html: `
-            <h2>Welcome to the Ordering Portal</h2>
-            <p>Hi ${portalUser.name},</p>
-            <p>You've been invited to join the online ordering portal for ${portalUser.customer?.name}.</p>
-            <p>Click the link below to set up your account:</p>
-            <p><a href="${inviteUrl}">${inviteUrl}</a></p>
-            <p>This invite expires on ${expiresAt.toLocaleDateString()}.</p>
-          `,
-        });
-      } catch (emailError) {
-        console.error('Failed to send invite email:', emailError);
-        // Don't fail the request if email fails - the invite is still created
-      }
+      console.log('RESEND_API_KEY is set but resend package is not yet installed. Skipping email.');
     }
 
     return NextResponse.json({
