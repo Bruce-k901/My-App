@@ -44,18 +44,25 @@ interface CertStat {
   missing: number;
 }
 
-const CERT_TYPES = [
+// Map course codes → certification categories (same codes used by Training Matrix)
+const CERT_CATEGORIES: {
+  key: string;
+  label: string;
+  icon: React.ElementType;
+  color: string;
+  courseCodes: string[];
+}[] = [
   { key: 'food_safety', label: 'Food Safety', icon: GraduationCap, color: 'blue',
-    trainedField: 'food_safety_level', expiryField: 'food_safety_expiry_date', isBool: false },
+    courseCodes: ['FS-L2', 'FS-L3'] },
   { key: 'h_and_s', label: 'Health & Safety', icon: Shield, color: 'indigo',
-    trainedField: 'h_and_s_level', expiryField: 'h_and_s_expiry_date', isBool: false },
+    courseCodes: ['HS-L2', 'HS-L3'] },
   { key: 'fire_marshal', label: 'Fire Marshal', icon: Flame, color: 'orange',
-    trainedField: 'fire_marshal_trained', expiryField: 'fire_marshal_expiry_date', isBool: true },
+    courseCodes: ['FIRE'] },
   { key: 'first_aid', label: 'First Aid', icon: HeartPulse, color: 'red',
-    trainedField: 'first_aid_trained', expiryField: 'first_aid_expiry_date', isBool: true },
+    courseCodes: ['FAW', 'FIRST-AID'] },
   { key: 'cossh', label: 'COSHH / Allergen', icon: Beaker, color: 'purple',
-    trainedField: 'cossh_trained', expiryField: 'cossh_expiry_date', isBool: true },
-] as const;
+    courseCodes: ['COSHH', 'ALLERGY'] },
+];
 
 export default function TrainingPage() {
   const { profile } = useAppContext();
@@ -98,107 +105,56 @@ export default function TrainingPage() {
       return;
     }
 
-    // Check if function is known to be broken (cached in sessionStorage)
-    const functionBrokenKey = 'get_expiring_training_broken';
-    const isFunctionBroken = typeof window !== 'undefined' && sessionStorage.getItem(functionBrokenKey) === 'true';
-    
-    if (isFunctionBroken) {
-      setExpiring([]);
-      return;
-    }
-
     try {
-      const { data, error } = await supabase.rpc('get_expiring_training', {
-        p_company_id: profile.company_id,
-        p_days_ahead: 60
-      });
-      
-      // If function doesn't exist (404) or bad request (400), return empty array
+      // Read from compliance_matrix_view — same source as Training Matrix
+      const { data, error } = await supabase
+        .from('compliance_matrix_view')
+        .select('profile_id, full_name, course_id, course_name, course_code, expiry_date, compliance_status')
+        .eq('company_id', profile.company_id)
+        .not('expiry_date', 'is', null);
+
       if (error) {
-        const errorStr = JSON.stringify(error).toLowerCase();
-        const errorCode = error.code || '';
-        const errorMessage = (error.message || '').toLowerCase();
-        const errorDetails = (error.details || '').toLowerCase();
-        const errorHint = (error.hint || '').toLowerCase();
-        
-        // Check if error object is empty (common with 400 errors)
-        const isEmptyError = Object.keys(error).length === 0 || errorStr === '{}';
-        
-        // Check for 404 or 400 errors in various formats
-        const is404 = errorCode === 'PGRST116' || 
-                     errorMessage.includes('404') || 
-                     errorMessage.includes('not found') ||
-                     errorStr.includes('404') ||
-                     errorStr.includes('not found');
-        
-        const is400 = isEmptyError ||
-                     errorCode === 'PGRST204' || 
-                     errorMessage.includes('400') || 
-                     errorMessage.includes('bad request') ||
-                     errorDetails.includes('400') ||
-                     errorHint.includes('400') ||
-                     errorStr.includes('400') ||
-                     errorStr.includes('bad request');
-        
-        // Check for PostgreSQL schema errors (42703 = undefined_column, 42883 = undefined_function, etc.)
-        const isSchemaError = errorCode === '42703' || // undefined_column
-                             errorCode === '42883' || // undefined_function
-                             errorCode === '42P01' ||  // undefined_table
-                             errorMessage.includes('does not exist') ||
-                             (errorMessage.includes('column') && errorMessage.includes('does not exist'));
-        
-        // If it's a 400, 404, or schema error, silently handle it (don't log)
-        // Also cache that the function is broken to avoid future calls
-        if (is404 || is400 || isSchemaError) {
-          if (typeof window !== 'undefined') {
-            sessionStorage.setItem(functionBrokenKey, 'true');
-          }
+        // Silently handle view-not-found errors
+        if (error.code === '42P01') {
           setExpiring([]);
           return;
         }
-        
-        // Only log unexpected errors
         console.error('Error fetching expiring training:', error);
         setExpiring([]);
         return;
       }
-      
-      setExpiring(data || []);
+
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      const sixtyDaysOut = new Date(now);
+      sixtyDaysOut.setDate(sixtyDaysOut.getDate() + 60);
+
+      const expiringItems: ExpiringTraining[] = (data || [])
+        .filter((row: any) => {
+          if (!row.expiry_date) return false;
+          const expiry = new Date(row.expiry_date);
+          // Include if expired OR expiring within 60 days
+          return expiry <= sixtyDaysOut;
+        })
+        .map((row: any) => {
+          const expiry = new Date(row.expiry_date);
+          expiry.setHours(0, 0, 0, 0);
+          const daysUntil = Math.round((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          return {
+            record_id: `${row.profile_id}-${row.course_id}`,
+            profile_id: row.profile_id,
+            employee_name: row.full_name || 'Unknown',
+            course_name: row.course_name,
+            course_code: row.course_code || '',
+            expiry_date: row.expiry_date,
+            days_until_expiry: daysUntil,
+            is_expired: daysUntil < 0,
+          };
+        })
+        .sort((a: ExpiringTraining, b: ExpiringTraining) => a.days_until_expiry - b.days_until_expiry);
+
+      setExpiring(expiringItems);
     } catch (err: any) {
-      // Silently handle missing function (404) or bad request (400) errors
-      const errorStr = JSON.stringify(err || {}).toLowerCase();
-      const errorCode = err?.code || '';
-      const errorMessage = (err?.message || '').toLowerCase();
-      
-      const is404 = errorCode === 'PGRST116' || 
-                   errorMessage.includes('404') || 
-                   errorMessage.includes('not found') ||
-                   errorStr.includes('404') ||
-                   errorStr.includes('not found');
-      
-      const is400 = errorCode === 'PGRST204' || 
-                   errorMessage.includes('400') || 
-                   errorMessage.includes('bad request') ||
-                   errorStr.includes('400') ||
-                   errorStr.includes('bad request');
-      
-      // Check for PostgreSQL schema errors
-      const isSchemaError = errorCode === '42703' || // undefined_column
-                           errorCode === '42883' || // undefined_function
-                           errorCode === '42P01' ||  // undefined_table
-                           errorMessage.includes('does not exist') ||
-                           (errorMessage.includes('column') && errorMessage.includes('does not exist'));
-      
-      // If it's a 400, 404, or schema error, silently handle it
-      // Also cache that the function is broken to avoid future calls
-      if (is404 || is400 || isSchemaError) {
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem(functionBrokenKey, 'true');
-        }
-        setExpiring([]);
-        return;
-      }
-      // Only log unexpected errors
       console.error('Error fetching expiring training:', err);
       setExpiring([]);
     }
@@ -217,86 +173,100 @@ export default function TrainingPage() {
   const fetchCertStats = async () => {
     if (!profile?.company_id) return;
 
-    const columns = [
-      'id',
-      'food_safety_level', 'food_safety_expiry_date',
-      'h_and_s_level', 'h_and_s_expiry_date',
-      'fire_marshal_trained', 'fire_marshal_expiry_date',
-      'first_aid_trained', 'first_aid_expiry_date',
-      'cossh_trained', 'cossh_expiry_date',
-    ].join(',');
-
-    const { data: profiles, error } = await supabase
-      .from('profiles')
-      .select(columns)
+    // Read from compliance_matrix_view — same source as Training Matrix
+    const { data: matrixData, error } = await supabase
+      .from('compliance_matrix_view')
+      .select('profile_id, course_code, compliance_status, expiry_date')
       .eq('company_id', profile.company_id);
 
-    if (error || !profiles) {
-      console.warn('Failed to fetch profiles for cert stats:', error);
+    if (error || !matrixData) {
+      if (error?.code !== '42P01') {
+        console.warn('Failed to fetch compliance matrix for cert stats:', error);
+      }
       return;
     }
 
-    const now = new Date();
-    const thirtyDaysOut = new Date();
-    thirtyDaysOut.setDate(thirtyDaysOut.getDate() + 30);
+    // Build a set of unique profile IDs for total count
+    const profileIds = new Set(matrixData.map((r: any) => r.profile_id));
+    const totalEmployees = profileIds.size;
 
-    const computed: CertStat[] = CERT_TYPES.map(cert => {
-      let valid = 0, expired = 0, expiringSoon = 0, missing = 0;
-
-      for (const p of profiles) {
-        const trained = (p as any)[cert.trainedField];
-        const expiryStr = (p as any)[cert.expiryField] as string | null;
-
-        const hasCert = cert.isBool ? trained === true : trained != null && trained > 0;
-
-        if (!hasCert) {
-          missing++;
-          continue;
-        }
-
-        if (!expiryStr) {
-          // Trained but no expiry date recorded - count as valid (no expiry tracked)
-          valid++;
-          continue;
-        }
-
-        const expiry = new Date(expiryStr);
-        if (expiry < now) {
-          expired++;
-        } else if (expiry <= thirtyDaysOut) {
-          expiringSoon++;
-        } else {
-          valid++;
-        }
+    // Build a lookup: course_code (uppercase) → category key
+    const codeToCategory = new Map<string, string>();
+    for (const cat of CERT_CATEGORIES) {
+      for (const code of cat.courseCodes) {
+        codeToCategory.set(code.toUpperCase(), cat.key);
       }
+    }
 
+    // Aggregate per-category stats
+    const catCounts: Record<string, { valid: number; expired: number; expiringSoon: number; profilesWithCert: Set<string> }> = {};
+    for (const cat of CERT_CATEGORIES) {
+      catCounts[cat.key] = { valid: 0, expired: 0, expiringSoon: 0, profilesWithCert: new Set() };
+    }
+
+    for (const row of matrixData as any[]) {
+      const code = (row.course_code || '').toUpperCase();
+      const catKey = codeToCategory.get(code);
+      if (!catKey) continue; // course not in any cert category
+
+      const bucket = catCounts[catKey];
+      const status = (row.compliance_status || '').toLowerCase();
+
+      if (status === 'compliant' || status === 'current') {
+        bucket.valid++;
+        bucket.profilesWithCert.add(row.profile_id);
+      } else if (status === 'expiring_soon') {
+        bucket.expiringSoon++;
+        bucket.profilesWithCert.add(row.profile_id);
+      } else if (status === 'expired') {
+        bucket.expired++;
+        bucket.profilesWithCert.add(row.profile_id);
+      }
+      // 'required', 'optional', 'in_progress' → no cert, counted as missing
+    }
+
+    const computed: CertStat[] = CERT_CATEGORIES.map(cat => {
+      const counts = catCounts[cat.key];
+      const missing = totalEmployees - counts.profilesWithCert.size;
       return {
-        key: cert.key,
-        label: cert.label,
-        icon: cert.icon,
-        color: cert.color,
-        total: profiles.length,
-        valid,
-        expired,
-        expiringSoon,
+        key: cat.key,
+        label: cat.label,
+        icon: cat.icon,
+        color: cat.color,
+        total: totalEmployees,
+        valid: counts.valid,
+        expired: counts.expired,
+        expiringSoon: counts.expiringSoon,
         missing,
       };
     });
 
     setCertStats(computed);
 
-    // Compute overview from profiles if the view-based one failed
-    const totalEmployees = profiles.length;
-    const fullyCompliant = profiles.filter(p => {
-      return CERT_TYPES.every(cert => {
-        const trained = (p as any)[cert.trainedField];
-        const expiryStr = (p as any)[cert.expiryField] as string | null;
-        const hasCert = cert.isBool ? trained === true : trained != null && trained > 0;
-        if (!hasCert) return false;
-        if (!expiryStr) return true;
-        return new Date(expiryStr) >= now;
+    // Compute overview from same data if the view-based one failed
+    // A profile is "fully compliant" if they have a valid cert in every category
+    const compliantPerCategory = new Map<string, Set<string>>();
+    for (const cat of CERT_CATEGORIES) {
+      const validProfiles = new Set<string>();
+      for (const row of matrixData as any[]) {
+        const code = (row.course_code || '').toUpperCase();
+        if (!cat.courseCodes.map(c => c.toUpperCase()).includes(code)) continue;
+        const status = (row.compliance_status || '').toLowerCase();
+        if (status === 'compliant' || status === 'current' || status === 'expiring_soon') {
+          validProfiles.add(row.profile_id);
+        }
+      }
+      compliantPerCategory.set(cat.key, validProfiles);
+    }
+
+    let fullyCompliant = 0;
+    for (const pid of profileIds) {
+      const isCompliant = CERT_CATEGORIES.every(cat => {
+        const validSet = compliantPerCategory.get(cat.key);
+        return validSet?.has(pid);
       });
-    }).length;
+      if (isCompliant) fullyCompliant++;
+    }
 
     const expiring30 = computed.reduce((sum, c) => sum + c.expiringSoon, 0);
     const expiredCount = computed.reduce((sum, c) => sum + c.expired, 0);

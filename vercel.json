@@ -1,7 +1,7 @@
 {
   "functions": {
     "src/app/api/planly/production-plan/pdf/route.ts": {
-      "memory": 1024,
+      "memory": 1536,
       "maxDuration": 30
     }
   },

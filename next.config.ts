@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
   // Using path.resolve ensures absolute path for better reliability
   outputFileTracingRoot: process.cwd(),
 
+  // Exclude native binary packages from webpack bundling (required for Puppeteer on Vercel)
+  serverExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
+
   // eslint configuration moved to eslint.config.mjs
   
   typescript: {

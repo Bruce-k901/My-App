@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { LogOut, ClipboardCheck, AlertTriangle, Menu, LayoutGrid, ShieldCheck, Settings, BookOpen, UtensilsCrossed, MessageSquare, FileText, Building2, Box, BarChart3, User, Lock, CreditCard, Users, MapPin, Clock, Plug, Calendar, LayoutTemplate, UserX, Sparkles } from '@/components/ui/icons';
+import { LogOut, ClipboardCheck, AlertTriangle, Menu, LayoutGrid, ShieldCheck, Settings, BookOpen, UtensilsCrossed, MessageSquare, FileText, Building2, Box, BarChart3, User, Lock, CreditCard, Users, MapPin, Clock, Plug, Calendar, LayoutTemplate, UserX } from '@/components/ui/icons';
 import { usePanelStore } from "@/lib/stores/panel-store";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
@@ -434,14 +434,13 @@ export default function DashboardHeader({ onMobileMenuClick }: DashboardHeaderPr
           )}
         </button>
 
-        {/* Ask AI Button */}
+        {/* Ask Opsly Button */}
         <button
           onClick={() => setAiAssistantOpen(true)}
-          className="flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg bg-[#D37E91]/10 border border-[#D37E91]/50 text-[#D37E91] hover:bg-[#D37E91]/20 hover:shadow-module-glow transition-all h-9 md:h-10"
-          aria-label="Ask AI Assistant"
+          className="flex items-center justify-center px-3 md:px-4 py-2 md:py-2.5 rounded-lg bg-[#D37E91]/10 border border-[#D37E91]/50 text-[#D37E91] hover:bg-[#D37E91]/20 hover:shadow-module-glow transition-all h-9 md:h-10"
+          aria-label="Ask Opsly"
         >
-          <Sparkles className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
-          <span className="font-medium text-xs md:text-sm whitespace-nowrap hidden sm:inline">Ask AI</span>
+          <span className="font-medium text-xs md:text-sm whitespace-nowrap">Ask Opsly</span>
         </button>
 
         {/* Clock In Button - Always visible */}

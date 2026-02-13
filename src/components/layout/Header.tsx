@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Search, Sparkles, Calendar } from '@/components/ui/icons';
+import { Menu, Search, Calendar } from '@/components/ui/icons';
 import { cn } from "@/lib/utils";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
@@ -180,14 +180,13 @@ export function Header({
             <Calendar className="w-4 h-4" />
           </button>
 
-          {/* Ask AI Button */}
+          {/* Ask Opsly Button */}
           <button
             onClick={() => setAiAssistantOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#D37E91]/10 border border-[#D37E91]/50 text-[#D37E91] hover:bg-[#D37E91]/20 hover:shadow-module-glow transition-all h-10"
-            aria-label="Ask AI Assistant"
+            className="flex items-center px-3 py-2 rounded-lg bg-[#D37E91]/10 border border-[#D37E91]/50 text-[#D37E91] hover:bg-[#D37E91]/20 hover:shadow-module-glow transition-all h-10"
+            aria-label="Ask Opsly"
           >
-            <Sparkles className="w-4 h-4 flex-shrink-0" />
-            <span className="font-medium text-sm whitespace-nowrap hidden sm:inline">Ask AI</span>
+            <span className="font-medium text-sm whitespace-nowrap">Ask Opsly</span>
           </button>
 
           {/* Burger Menu Button - Desktop only */}
