@@ -86,7 +86,14 @@
       "Bash(npm uninstall:*)",
       "Bash(git merge:*)",
       "Bash(sort:*)",
-      "Bash(copy:*)"
+      "Bash(copy:*)",
+      "mcp__claude_ai_Vercel__get_runtime_logs",
+      "mcp__claude_ai_Vercel__list_deployments",
+      "Bash(npx puppeteer-core:*)",
+      "Bash(npm ls:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:pptr.dev)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ]
   }
 }

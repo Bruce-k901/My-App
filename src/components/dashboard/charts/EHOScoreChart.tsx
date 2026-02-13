@@ -96,8 +96,8 @@ export default function EHOScoreChart({ siteId, companyId }: EHOScoreChartProps)
           supabase.from('coshh_data_sheets').select('product_name, expiry_date, status').eq('company_id', companyId).eq('status', 'Active'),
           supabase.from('risk_assessments').select('template_type, title, next_review_date, status').eq('company_id', companyId).eq('status', 'Published'),
           effectiveSiteId
-            ? supabase.from('training_bookings').select('course, status').eq('site_id', effectiveSiteId)
-            : supabase.from('training_bookings').select('course, status').eq('company_id', companyId),
+            ? supabase.from('compliance_matrix_view').select('course_name, course_code, compliance_status').eq('home_site', effectiveSiteId)
+            : supabase.from('compliance_matrix_view').select('course_name, course_code, compliance_status').eq('company_id', companyId),
           effectiveSiteId
             ? supabase.from('pat_appliances').select('id, has_current_pat_label').eq('site_id', effectiveSiteId).eq('company_id', companyId)
             : supabase.from('pat_appliances').select('id, has_current_pat_label').eq('company_id', companyId),
@@ -123,6 +123,15 @@ export default function EHOScoreChart({ siteId, companyId }: EHOScoreChartProps)
         const temps = tempResult.data || [];
         const incidents = incidentsResult.data || [];
 
+        // Helper to check valid training
+        const hasValidTraining = (keywords: string[]) => 
+          training.some((t: any) => {
+            const code = (t.course_code || '').toUpperCase();
+            const name = (t.course_name || '').toLowerCase();
+            const valid = t.compliance_status === 'compliant' || t.compliance_status === 'expiring_soon';
+            return valid && keywords.some(k => code.includes(k) || name.includes(k.toLowerCase()));
+          });
+
         // Track expiring/expired documents
         let expiringCount = 0;
         let expiredCount = 0;
@@ -143,9 +152,10 @@ export default function EHOScoreChart({ siteId, companyId }: EHOScoreChartProps)
         (DOCUMENT_REQUIREMENTS['Food Safety'] || []).forEach(reqName => {
           if (docs.some((d: any) => d.name.toLowerCase().includes(reqName.substring(0, 15)))) foodFound++;
         });
-        // 2 training requirements
-        if (training.some((t: any) => t.course?.toLowerCase().includes('food hygiene'))) foodFound++;
-        if (training.some((t: any) => t.course?.toLowerCase().includes('allergen'))) foodFound++;
+        // 2 training requirements (Level 2+ and Allergen)
+        if (hasValidTraining(['FS-L', 'FOOD', 'HYGIENE'])) foodFound++;
+        if (hasValidTraining(['ALLERGY', 'ALLERGEN'])) foodFound++;
+        
         // temp logs
         if (temps.length > 0) foodFound++;
         // 4 completion requirements (fridge, hot holding, opening, closing checklists)
@@ -184,9 +194,9 @@ export default function EHOScoreChart({ siteId, companyId }: EHOScoreChartProps)
         // Training (4 requirements)
         let trainFound = 0;
         if (docs.some((d: any) => d.name.toLowerCase().includes('training matrix'))) trainFound++;
-        if (training.some((t: any) => t.course?.toLowerCase().includes('health') && t.course?.toLowerCase().includes('safety'))) trainFound++;
-        if (training.some((t: any) => t.course?.toLowerCase().includes('fire'))) trainFound++;
-        if (training.some((t: any) => t.course?.toLowerCase().includes('first aid'))) trainFound++;
+        if (hasValidTraining(['HS-L', 'HEALTH', 'SAFETY'])) trainFound++;
+        if (hasValidTraining(['FIRE'])) trainFound++;
+        if (hasValidTraining(['FIRST', 'AID'])) trainFound++;
         scores['Training'] = trainFound;
 
         // Cleaning (3 requirements)

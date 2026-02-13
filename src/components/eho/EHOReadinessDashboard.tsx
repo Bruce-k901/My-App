@@ -310,11 +310,11 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
           .eq('company_id', companyId)
           .eq('status', 'Published'),
 
-        // Training records
+        // Training records (Compliance Matrix)
         supabase
-          .from('training_bookings')
-          .select('course, status, site_id')
-          .eq('site_id', siteId),
+          .from('compliance_matrix_view')
+          .select('course_name, course_code, compliance_status')
+          .eq('company_id', companyId),
 
         // PAT appliances - filter by both site_id AND company_id to prevent cross-referencing
         supabase
@@ -451,20 +451,34 @@ export default function EHOReadinessDashboard({ siteId }: EHOReadinessDashboardP
             break
 
           case 'training':
-            // Check training_bookings
-            const trainingMatch = training.find(t => {
-              const course = (t.course || '').toLowerCase()
-              if (req.id === 'food-hygiene-training') return course.includes('food') || course.includes('hygiene')
-              if (req.id === 'allergen-training') return course.includes('allergen')
-              if (req.id === 'hs-training') return course.includes('safety') || course.includes('health')
-              if (req.id === 'fire-training') return course.includes('fire')
-              if (req.id === 'first-aid') return course.includes('first aid')
+            // Check training records from compliance_matrix_view
+            // We look for ANY compliant/expiring record matching the category to mark as "found"
+            // Ideally this should check percentages, but for readiness dashboard presence is key
+            const matchedRecords = training.filter((t: any) => {
+              const course = (t.course_name || '').toLowerCase()
+              const code = (t.course_code || '').toUpperCase()
+              
+              if (req.id === 'food-hygiene-training') return code.includes('FS-L') || course.includes('food')
+              if (req.id === 'allergen-training') return code === 'ALLERGY' || course.includes('allergen')
+              if (req.id === 'hs-training') return code.includes('HS-L') || course.includes('health')
+              if (req.id === 'fire-training') return code.includes('FIRE') || course.includes('fire')
+              if (req.id === 'first-aid') return code.includes('FIRST') || course.includes('first aid')
               return false
             })
-            if (trainingMatch) {
+
+            const compliantRecords = matchedRecords.filter((t: any) => 
+               t.compliance_status === 'compliant' || t.compliance_status === 'expiring_soon'
+            )
+
+            if (compliantRecords.length > 0) {
               found = true
-              foundDetails = `${trainingMatch.course} (${training.length} records)`
+              foundDetails = `${compliantRecords.length} trained staff`
               status = 'valid'
+            } else if (matchedRecords.length > 0) {
+              // Found records but none compliant (all expired/in_progress)
+              found = true
+              foundDetails = `${matchedRecords.length} staff records (none valid)`
+              status = 'expired'
             }
             break
 
