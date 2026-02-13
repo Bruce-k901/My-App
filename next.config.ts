@@ -12,10 +12,10 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: process.cwd(),
 
   // Exclude native binary packages from webpack bundling (required for Puppeteer on Vercel)
-  serverExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
+  serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
 
   // eslint configuration moved to eslint.config.mjs
-  
+
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
   // CSS optimization disabled in dev to prevent preload warnings
   // These warnings are harmless but annoying - they occur due to HMR in development
   experimental: {
-    optimizeCss: process.env.NODE_ENV === 'production', // Only enable in production
+    optimizeCss: false, // Disabled to prevent SIGKILL/OOM on Vercel
   },
 
   // Explicitly use webpack instead of Turbopack (Next.js 16 defaults to Turbopack)
@@ -34,19 +34,19 @@ const nextConfig: NextConfig = {
     // Use filesystem cache in dev for fast rebuilds
     if (dev) {
       config.cache = {
-        type: 'filesystem',
+        type: "filesystem",
       };
     }
-    
+
     // Add bundle analyzer for production builds
     if (!dev && !isServer) {
-      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+      const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
       config.plugins.push(
         new BundleAnalyzerPlugin({
-          analyzerMode: 'static',
+          analyzerMode: "static",
           openAnalyzer: false,
-          reportFilename: 'bundle-analyzer-report.html',
-        })
+          reportFilename: "bundle-analyzer-report.html",
+        }),
       );
     }
     return config;
@@ -56,14 +56,48 @@ const nextConfig: NextConfig = {
   async redirects() {
     const learnFoodSafety = "/learn/uk-l2-food-safety";
     return [
-      { source: "/learn/uk-l2-food-safety-v3", destination: learnFoodSafety, permanent: true },
-      { source: "/training/courses/l2-food-hygiene/start", destination: learnFoodSafety, permanent: true },
-      { source: "/training/courses/uk-l2-food-hygiene/start", destination: learnFoodSafety, permanent: true },
-      { source: "/training/courses/l2-food-hygiene/certificate", destination: "/dashboard/courses", permanent: true },
-      { source: "/selfstudy/uk-l2-food-hygiene/uk_l2_food_hygiene_selfstudy_v1_0", destination: learnFoodSafety, permanent: true },
-      { source: "/selfstudy/uk-l2-food-hygiene/uk_l2_food_hygiene_selfstudy_v1_0/:path*", destination: learnFoodSafety, permanent: true },
-      { source: "/selfstudy/uk-l2-food-hygiene", destination: learnFoodSafety, permanent: true },
-      { source: "/selfstudy/uk-l2-food-hygiene/:path*", destination: learnFoodSafety, permanent: true },
+      {
+        source: "/learn/uk-l2-food-safety-v3",
+        destination: learnFoodSafety,
+        permanent: true,
+      },
+      {
+        source: "/training/courses/l2-food-hygiene/start",
+        destination: learnFoodSafety,
+        permanent: true,
+      },
+      {
+        source: "/training/courses/uk-l2-food-hygiene/start",
+        destination: learnFoodSafety,
+        permanent: true,
+      },
+      {
+        source: "/training/courses/l2-food-hygiene/certificate",
+        destination: "/dashboard/courses",
+        permanent: true,
+      },
+      {
+        source:
+          "/selfstudy/uk-l2-food-hygiene/uk_l2_food_hygiene_selfstudy_v1_0",
+        destination: learnFoodSafety,
+        permanent: true,
+      },
+      {
+        source:
+          "/selfstudy/uk-l2-food-hygiene/uk_l2_food_hygiene_selfstudy_v1_0/:path*",
+        destination: learnFoodSafety,
+        permanent: true,
+      },
+      {
+        source: "/selfstudy/uk-l2-food-hygiene",
+        destination: learnFoodSafety,
+        permanent: true,
+      },
+      {
+        source: "/selfstudy/uk-l2-food-hygiene/:path*",
+        destination: learnFoodSafety,
+        permanent: true,
+      },
     ];
   },
 
@@ -71,11 +105,11 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/_next/static/:path*',
+        source: "/_next/static/:path*",
         headers: [
           {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },

@@ -34,6 +34,7 @@ import {
 import type { EmergencyContact } from '@/types/teamly';
 import EmployeeSiteAssignmentsModal from '@/components/people/EmployeeSiteAssignmentsModal';
 import { EmployeeTrainingTab } from '@/components/training/EmployeeTrainingTab';
+import { EmployeeTrainingEditor } from '@/components/people/EmployeeTrainingEditor';
 
 type TabType = 'overview' | 'documents' | 'leave' | 'training' | 'attendance' | 'notes' | 'pay';
 
@@ -3710,169 +3711,12 @@ function EditEmployeeModal({
           )}
 
           {activeTab === 'training' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-module-fg" />
-                Training & Certifications
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Food Safety Level
-                  </label>
-                  <select
-                    name="food_safety_level"
-                    value={formData.food_safety_level || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  >
-                    <option value="">Not certified</option>
-                    <option value="1">Level 1</option>
-                    <option value="2">Level 2</option>
-                    <option value="3">Level 3</option>
-                    <option value="4">Level 4</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Food Safety Expiry Date
-                  </label>
-                  <input
-                    type="date"
-                    name="food_safety_expiry_date"
-                    value={formData.food_safety_expiry_date || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Health & Safety Level
-                  </label>
-                  <select
-                    name="h_and_s_level"
-                    value={formData.h_and_s_level || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  >
-                    <option value="">Not certified</option>
-                    <option value="1">Level 1</option>
-                    <option value="2">Level 2</option>
-                    <option value="3">Level 3</option>
-                    <option value="4">Level 4</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Health & Safety Expiry Date
-                  </label>
-                  <input
-                    type="date"
-                    name="h_and_s_expiry_date"
-                    value={formData.h_and_s_expiry_date || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Fire Marshal Trained
-                  </label>
-                  <div className="flex items-center gap-2 mt-2">
-                    <input
-                      type="checkbox"
-                      name="fire_marshal_trained"
-                      checked={formData.fire_marshal_trained || false}
-                      onChange={handleChange}
-                      className="w-4 h-4 text-module-fg bg-neutral-700 border-neutral-600 rounded focus:ring-module-fg"
-                    />
-                    <span className="text-sm text-theme-tertiary">Fire marshal trained</span>
-                  </div>
-                </div>
-                
-                {formData.fire_marshal_trained && (
-                  <div>
-                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                      Fire Marshal Expiry Date
-                    </label>
-                    <input
-                      type="date"
-                      name="fire_marshal_expiry_date"
-                      value={formData.fire_marshal_expiry_date || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                    />
-                  </div>
-                )}
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    First Aid Trained
-                  </label>
-                  <div className="flex items-center gap-2 mt-2">
-                    <input
-                      type="checkbox"
-                      name="first_aid_trained"
-                      checked={formData.first_aid_trained || false}
-                      onChange={handleChange}
-                      className="w-4 h-4 text-module-fg bg-neutral-700 border-neutral-600 rounded focus:ring-module-fg"
-                    />
-                    <span className="text-sm text-theme-tertiary">First aid trained</span>
-                  </div>
-                </div>
-                
-                {formData.first_aid_trained && (
-                  <div>
-                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                      First Aid Expiry Date
-                    </label>
-                    <input
-                      type="date"
-                      name="first_aid_expiry_date"
-                      value={formData.first_aid_expiry_date || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                    />
-                  </div>
-                )}
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    COSSH Trained
-                  </label>
-                  <div className="flex items-center gap-2 mt-2">
-                    <input
-                      type="checkbox"
-                      name="cossh_trained"
-                      checked={formData.cossh_trained || false}
-                      onChange={handleChange}
-                      className="w-4 h-4 text-module-fg bg-neutral-700 border-neutral-600 rounded focus:ring-module-fg"
-                    />
-                    <span className="text-sm text-theme-tertiary">COSSH trained</span>
-                  </div>
-                </div>
-                
-                {formData.cossh_trained && (
-                  <div>
-                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                      COSSH Expiry Date
-                    </label>
-                    <input
-                      type="date"
-                      name="cossh_expiry_date"
-                      value={formData.cossh_expiry_date || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
+            <EmployeeTrainingEditor 
+              data={formData} 
+              onChange={handleChange} 
+              updateField={updateField}
+              mode="form"
+            />
           )}
         </div>
 

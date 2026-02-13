@@ -37,6 +37,7 @@ import type { EmergencyContact } from '@/types/teamly';
 import EmployeeSiteAssignmentsModal from '@/components/people/EmployeeSiteAssignmentsModal';
 import AddExecutiveModal from '@/components/users/AddExecutiveModal';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { EmployeeTrainingEditor } from '@/components/people/EmployeeTrainingEditor';
 
 interface Employee {
   id: string;
@@ -1736,39 +1737,14 @@ function ExpandedEmployeeView({
         )}
 
         {activeTab === 'training' && (
-          <div className="p-4 space-y-4">
-            <h4 className="text-md font-semibold text-theme-primary mb-4 flex items-center gap-2">
-              <GraduationCap className="w-4 h-4 text-module-fg" />
-              Training & Certifications
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InfoRow label="Food Safety Level" value={employee.food_safety_level ? `Level ${employee.food_safety_level}` : '—'} fieldName="food_safety_level" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
-                { value: '2', label: 'Level 2' },
-                { value: '3', label: 'Level 3' },
-                { value: '4', label: 'Level 4' },
-                { value: '5', label: 'Level 5' }
-              ]} />
-              <InfoRow label="Food Safety Expiry" value={formatDate(employee.food_safety_expiry_date) || '—'} fieldName="food_safety_expiry_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-              <InfoRow label="H&S Level" value={employee.h_and_s_level ? `Level ${employee.h_and_s_level}` : '—'} fieldName="h_and_s_level" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
-                { value: '2', label: 'Level 2' },
-                { value: '3', label: 'Level 3' },
-                { value: '4', label: 'Level 4' }
-              ]} />
-              <InfoRow label="H&S Expiry" value={formatDate(employee.h_and_s_expiry_date) || '—'} fieldName="h_and_s_expiry_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-              <InfoRow label="Fire Marshal Trained" value={employee.fire_marshal_trained ? 'Yes' : 'No'} fieldName="fire_marshal_trained" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
-              {employee.fire_marshal_trained && (
-                <InfoRow label="Fire Marshal Expiry" value={formatDate(employee.fire_marshal_expiry_date) || '—'} fieldName="fire_marshal_expiry_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-              )}
-              <InfoRow label="First Aid Trained" value={employee.first_aid_trained ? 'Yes' : 'No'} fieldName="first_aid_trained" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
-              {employee.first_aid_trained && (
-                <InfoRow label="First Aid Expiry" value={formatDate(employee.first_aid_expiry_date) || '—'} fieldName="first_aid_expiry_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-              )}
-              <InfoRow label="COSSH Trained" value={employee.cossh_trained ? 'Yes' : 'No'} fieldName="cossh_trained" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
-              {employee.cossh_trained && (
-                <InfoRow label="COSSH Expiry" value={formatDate(employee.cossh_expiry_date) || '—'} fieldName="cossh_expiry_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-              )}
-            </div>
-          </div>
+          <EmployeeTrainingEditor 
+            data={employee} 
+            onUpdate={onUpdate}
+            mode="display"
+            employeeId={employee.id}
+            InfoRowComponent={InfoRow}
+            formatDate={formatDate}
+          />
         )}
       </div>
     </div>
