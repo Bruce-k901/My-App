@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 interface NumericKeyboardProps {
   onKeyPress: (key: string) => void;
   onBackspace: () => void;
   onEnter?: () => void;
+  onDismiss?: () => void;
   isVisible: boolean;
 }
 
@@ -13,13 +15,12 @@ interface NumericKeyboardProps {
  * Custom numeric keyboard component for temperature inputs
  * Includes numbers 0-9, decimal point, minus sign, backspace, and enter
  * Only shows on mobile/touch devices
+ * Renders via portal to escape modal/backdrop stacking contexts
  */
-export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, isVisible }: NumericKeyboardProps) {
+export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, onDismiss, isVisible }: NumericKeyboardProps) {
   const keyboardRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Strict mobile detection: only show keyboard on actual mobile devices
-  // Checks for touch support AND small screen width (mobile/tablet)
   useEffect(() => {
     const checkMobile = () => {
       if (typeof window === 'undefined') {
@@ -30,137 +31,123 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, isVisible }:
       const isSmallScreen = window.innerWidth <= 768;
       setIsMobile(hasTouch && isSmallScreen);
     };
-    
-    // Check on mount
     checkMobile();
-    
-    // Check on resize (in case window is resized)
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Don't render on desktop - always return null if not mobile
-  if (!isMobile) {
-    return null;
-  }
+  // Attach non-passive touchstart on the container to prevent input blur.
+  // This blocks click synthesis, so buttons use onTouchEnd instead.
+  useEffect(() => {
+    const el = keyboardRef.current;
+    if (!el) return;
+    const handler = (e: TouchEvent) => {
+      e.preventDefault();
+    };
+    el.addEventListener('touchstart', handler, { passive: false });
+    return () => el.removeEventListener('touchstart', handler);
+  });
 
-  if (!isVisible) {
-    return null;
-  }
-
-  const handleKeyClick = (key: string, e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleKeyClick = useCallback((key: string) => {
     onKeyPress(key);
-  };
+  }, [onKeyPress]);
 
-  const handleBackspace = (e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleBackspaceClick = useCallback(() => {
     onBackspace();
-  };
+  }, [onBackspace]);
 
-  const handleEnter = (e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (onEnter) {
-      onEnter();
-    }
-  };
+  const handleEnterClick = useCallback(() => {
+    if (onEnter) onEnter();
+  }, [onEnter]);
 
-  return (
+  if (!isMobile || !isVisible) {
+    return null;
+  }
+
+  // Button helper: onTouchEnd for mobile (click is blocked by container touchstart preventDefault),
+  // onClick as fallback for desktop/mouse
+  const btnProps = (action: () => void) => ({
+    onTouchEnd: (e: React.TouchEvent) => { e.stopPropagation(); action(); },
+    onClick: action,
+  });
+
+  const keyboard = (
     <div
       ref={keyboardRef}
       data-numeric-keyboard
-      className="fixed bottom-0 left-0 right-0 z-[10001] bg-[#0B0D13] border-t border-white/[0.06] p-2 safe-area-inset-bottom"
+      className="fixed bottom-0 left-0 right-0 z-[10001] bg-[#0B0D13] border-t border-white/[0.06] p-2 pb-[env(safe-area-inset-bottom,8px)]"
       style={{
-        // Ensure keyboard appears above other content including modals
         boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.5)',
       }}
       onMouseDown={(e) => {
-        // Prevent input blur when clicking keyboard buttons
-        e.preventDefault();
-      }}
-      onTouchStart={(e) => {
-        // Prevent input blur on touch devices
         e.preventDefault();
       }}
     >
       <div className="max-w-md mx-auto">
         {/* Number pad */}
         <div className="grid grid-cols-3 gap-2 mb-2">
-          {/* Row 1: 1, 2, 3 */}
           {[1, 2, 3].map((num) => (
             <button
               key={num}
               type="button"
-              onClick={(e) => handleKeyClick(num.toString(), e)}
-              onTouchEnd={(e) => handleKeyClick(num.toString(), e)}
+              {...btnProps(() => handleKeyClick(num.toString()))}
               className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
             >
               {num}
             </button>
           ))}
-          
-          {/* Row 2: 4, 5, 6 */}
+
           {[4, 5, 6].map((num) => (
             <button
               key={num}
               type="button"
-              onClick={(e) => handleKeyClick(num.toString(), e)}
-              onTouchEnd={(e) => handleKeyClick(num.toString(), e)}
+              {...btnProps(() => handleKeyClick(num.toString()))}
               className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
             >
               {num}
             </button>
           ))}
-          
-          {/* Row 3: 7, 8, 9 */}
+
           {[7, 8, 9].map((num) => (
             <button
               key={num}
               type="button"
-              onClick={(e) => handleKeyClick(num.toString(), e)}
-              onTouchEnd={(e) => handleKeyClick(num.toString(), e)}
+              {...btnProps(() => handleKeyClick(num.toString()))}
               className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
             >
               {num}
             </button>
           ))}
-          
+
           {/* Row 4: Minus, 0, Decimal */}
           <button
             type="button"
-            onClick={(e) => handleKeyClick('-', e)}
-            onTouchEnd={(e) => handleKeyClick('-', e)}
-            className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
+            {...btnProps(() => handleKeyClick('-'))}
+            className="h-12 bg-blue-500/20 border border-blue-500/40 rounded-lg text-blue-400 text-xl font-bold active:bg-blue-500/30 transition-colors touch-manipulation"
           >
             −
           </button>
           <button
             type="button"
-            onClick={(e) => handleKeyClick('0', e)}
-            onTouchEnd={(e) => handleKeyClick('0', e)}
+            {...btnProps(() => handleKeyClick('0'))}
             className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
           >
             0
           </button>
           <button
             type="button"
-            onClick={(e) => handleKeyClick('.', e)}
-            onTouchEnd={(e) => handleKeyClick('.', e)}
+            {...btnProps(() => handleKeyClick('.'))}
             className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-lg font-medium active:bg-white/[0.08] transition-colors touch-manipulation"
           >
             .
           </button>
         </div>
 
-        {/* Action buttons: Backspace and Enter */}
-        <div className="grid grid-cols-2 gap-2">
+        {/* Action buttons: Delete, Hide, Enter */}
+        <div className="grid grid-cols-3 gap-2">
           <button
             type="button"
-            onClick={(e) => handleBackspace(e)}
-            onTouchEnd={(e) => handleBackspace(e)}
+            {...btnProps(handleBackspaceClick)}
             className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-sm font-medium active:bg-white/[0.08] transition-colors touch-manipulation flex items-center justify-center"
           >
             <svg
@@ -179,11 +166,22 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, isVisible }:
             </svg>
             <span className="ml-1">Delete</span>
           </button>
+          {onDismiss && (
+            <button
+              type="button"
+              {...btnProps(onDismiss)}
+              className="h-12 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-tertiary text-sm font-medium active:bg-white/[0.1] transition-colors touch-manipulation flex items-center justify-center gap-1.5"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+              Hide
+            </button>
+          )}
           {onEnter && (
             <button
               type="button"
-              onClick={(e) => handleEnter(e)}
-              onTouchEnd={(e) => handleEnter(e)}
+              {...btnProps(handleEnterClick)}
               className="h-12 bg-[#D37E91]/20 border border-[#D37E91] rounded-lg text-[#D37E91] text-sm font-medium active:bg-[#D37E91]/30 transition-colors touch-manipulation"
             >
               Enter
@@ -193,7 +191,11 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, isVisible }:
       </div>
     </div>
   );
+
+  // Render via portal to escape any parent stacking contexts (modals, backdrop-blur)
+  if (typeof document !== 'undefined') {
+    return createPortal(keyboard, document.body);
+  }
+
+  return keyboard;
 }
-
-
-

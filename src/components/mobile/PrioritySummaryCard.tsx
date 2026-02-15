@@ -13,6 +13,7 @@ interface SummaryData {
   tasksOverdue: number;
   unreadMessages: number;
   nextShift?: string;
+  nextShiftLabel?: string;
 }
 
 export function PrioritySummaryCard() {
@@ -35,13 +36,15 @@ export function PrioritySummaryCard() {
       const nowTime = today.toTimeString().slice(0, 5);
 
       try {
-        // Fetch tasks due today
+        // Fetch tasks due today — only tasks with site_checklist_id (configured via My Tasks)
+        // or monitoring/expiry tasks, to match the today's tasks page filtering
         let taskQuery = supabase
           .from('checklist_tasks')
-          .select('id, due_date, due_time, status')
+          .select('id, due_date, due_time, status, site_checklist_id, flag_reason')
           .eq('company_id', companyId)
           .eq('due_date', todayStr)
-          .in('status', ['pending', 'in_progress']);
+          .in('status', ['pending', 'in_progress'])
+          .or('site_checklist_id.not.is.null,flag_reason.eq.monitoring');
 
         if (siteId && siteId !== 'all') {
           taskQuery = taskQuery.eq('site_id', siteId);
@@ -56,13 +59,52 @@ export function PrioritySummaryCard() {
 
         // TODO: Enable when direct_messages table is created
         // let messageCount = 0;
-        // TODO: Enable when shift_patterns table is created
-        // let nextShift: string | undefined;
+
+        // Fetch next shift from approved/published rotas
+        let nextShift: string | undefined;
+        let nextShiftLabel: string | undefined;
+
+        if (userId) {
+          try {
+            let shiftQuery = supabase
+              .from('rota_shifts')
+              .select('shift_date, start_time, rotas!inner(status, site_id)')
+              .eq('profile_id', userId)
+              .gte('shift_date', todayStr)
+              .in('status', ['scheduled', 'confirmed'])
+              .or('status.eq.approved,status.eq.published', { referencedTable: 'rotas' })
+              .order('shift_date', { ascending: true })
+              .order('start_time', { ascending: true })
+              .limit(1);
+
+            if (siteId && siteId !== 'all') {
+              shiftQuery = shiftQuery.eq('rotas.site_id', siteId);
+            }
+
+            const { data: shiftData } = await shiftQuery;
+
+            if (shiftData && shiftData.length > 0) {
+              const shift = shiftData[0];
+              nextShift = shift.start_time.slice(0, 5);
+              if (shift.shift_date === todayStr) {
+                nextShiftLabel = 'Shift Today';
+              } else {
+                const dayName = new Date(shift.shift_date + 'T00:00:00')
+                  .toLocaleDateString('en-GB', { weekday: 'short' });
+                nextShiftLabel = `${dayName} Shift`;
+              }
+            }
+          } catch {
+            // Gracefully handle if rota tables don't exist yet
+          }
+        }
 
         setSummary({
           tasksDue,
           tasksOverdue,
           unreadMessages: 0,
+          nextShift,
+          nextShiftLabel,
         });
       } catch (err) {
         console.error('Failed to fetch summary:', err);
@@ -134,13 +176,16 @@ export function PrioritySummaryCard() {
             <span className="text-[10px] text-red-400">Overdue</span>
           </button>
         ) : (
-          <div className="flex flex-col items-center p-3 rounded-lg backdrop-blur-sm bg-black/[0.02] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.10]">
+          <button
+            onClick={() => { haptics.light(); router.push('/dashboard/people/schedule'); }}
+            className="flex flex-col items-center p-3 rounded-lg backdrop-blur-sm bg-black/[0.02] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.10] hover:bg-black/[0.04] dark:hover:bg-white/[0.10] transition-colors"
+          >
             <Clock className="w-6 h-6 text-module-fg mb-1" />
             <span className="text-xl font-bold text-theme-primary">
               {summary.nextShift || '--:--'}
             </span>
-            <span className="text-[10px] text-theme-tertiary">Next Shift</span>
-          </div>
+            <span className="text-[10px] text-theme-tertiary">{summary.nextShiftLabel || 'Next Shift'}</span>
+          </button>
         )}
       </div>
     </div>

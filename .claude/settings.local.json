@@ -93,7 +93,11 @@
       "Bash(npm ls:*)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:pptr.dev)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(test:*)",
+      "mcp__claude_ai_Vercel__list_teams",
+      "mcp__claude_ai_Vercel__list_projects",
+      "mcp__claude_ai_Vercel__get_project"
     ]
   }
 }

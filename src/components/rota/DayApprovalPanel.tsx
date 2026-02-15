@@ -81,15 +81,25 @@ export function DayApprovalPanel({
     }
   }, [allDaysApproved, loading]);
 
-  // Load approvals
+  // Load approvals — and auto-approve rota if all days already approved
   useEffect(() => {
     if (rotaId) {
-      loadApprovals();
+      loadApprovals().then(async (freshApprovals) => {
+        if (freshApprovals && weekDays.length > 0) {
+          const allAlreadyApproved = weekDays.every(day => {
+            const ds = day.toISOString().split('T')[0];
+            return freshApprovals[ds]?.status === 'approved';
+          });
+          if (allAlreadyApproved) {
+            await supabase.rpc('approve_rota' as any, { p_rota_id: rotaId } as any);
+            onApprovalChange?.();
+          }
+        }
+      });
     }
-     
   }, [rotaId]);
 
-  const loadApprovals = async () => {
+  const loadApprovals = async (): Promise<Record<string, DayApproval> | null> => {
     try {
       const { data, error } = await supabase
         .from('rota_day_approvals')
@@ -104,8 +114,10 @@ export function DayApprovalPanel({
         approvalsMap[approval.approval_date] = approval;
       });
       setApprovals(approvalsMap);
+      return approvalsMap;
     } catch (err) {
       console.error('Failed to load approvals:', err);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -121,7 +133,19 @@ export function DayApprovalPanel({
         p_notes: null
       });
       if (error) throw error;
-      await loadApprovals();
+      const freshApprovals = await loadApprovals();
+
+      // Auto-approve the rota when all days are approved
+      if (freshApprovals) {
+        const allNowApproved = weekDays.every(day => {
+          const ds = day.toISOString().split('T')[0];
+          return freshApprovals[ds]?.status === 'approved';
+        });
+        if (allNowApproved) {
+          await supabase.rpc('approve_rota' as any, { p_rota_id: rotaId } as any);
+        }
+      }
+
       onApprovalChange?.();
     } catch (err: any) {
       console.error('Failed to approve day:', err);

@@ -189,6 +189,7 @@ export function TemperatureInput({
           onKeyPress={handleKeyPress}
           onBackspace={handleBackspace}
           onEnter={onSubmit ? handleEnter : undefined}
+          onDismiss={() => { setShowKeyboard(false); setIsFocused(false); inputRef.current?.blur(); onBlur?.(); }}
           isVisible={showKeyboard}
         />
       )}

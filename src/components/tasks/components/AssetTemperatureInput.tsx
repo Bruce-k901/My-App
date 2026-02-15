@@ -386,6 +386,7 @@ export function AssetTemperatureInput({
         <NumericKeyboard
           onKeyPress={handleKeyPress}
           onBackspace={handleBackspace}
+          onDismiss={() => { setShowKeyboard(false); inputRef.current?.blur(); }}
           isVisible={showKeyboard}
         />
       )}

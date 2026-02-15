@@ -38,7 +38,7 @@ export interface Rota {
   id: string;
   site_id: string;
   week_starting: string;
-  status: 'draft' | 'published' | 'archived';
+  status: 'draft' | 'pending_approval' | 'approved' | 'published' | 'archived';
   target_labour_cost?: number;
   target_labour_percentage?: number;
   total_hours: number;

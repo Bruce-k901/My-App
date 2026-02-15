@@ -34,7 +34,7 @@ export function Header({
   const { role, profile, user, signOut } = useAppContext();
   const siteContext = useSiteContext();
   const pathname = usePathname();
-  const { setAiAssistantOpen, setCalendarOpen, setSearchOpen } = usePanelStore();
+  const { setAiAssistantOpen, setCalendarOpen, setSearchOpen, setMessagingOpen } = usePanelStore();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -173,7 +173,7 @@ export function Header({
 
           {/* Notifications Bell - Desktop only */}
           <button
-            onClick={() => {/* TODO: Open notifications panel */}}
+            onClick={() => setMessagingOpen(true)}
             className="hidden lg:flex items-center justify-center w-10 h-10 rounded-lg bg-module-fg/10 border border-module-fg/30 hover:bg-module-fg/15 hover:shadow-module-glow transition-all relative group"
             aria-label="Notifications"
             style={{ 

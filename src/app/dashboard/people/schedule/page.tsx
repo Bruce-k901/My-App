@@ -1771,7 +1771,7 @@ export default function RotaBuilderPage() {
   const [notifyingOpenShifts, setNotifyingOpenShifts] = useState(false);
   const [submittingForApproval, setSubmittingForApproval] = useState(false);
   const [approvingRota, setApprovingRota] = useState(false);
-  const [publishingRota, setPublishingRota] = useState(false);
+  // publishingRota state removed — approved is now the final visible state
   const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const actionsMenuRef = useRef<HTMLDivElement | null>(null);
@@ -3918,22 +3918,7 @@ export default function RotaBuilderPage() {
     }
   };
 
-  const publishCurrentRota = async () => {
-    if (!rota) return;
-    if (openShifts > 0 && !confirm(`${openShifts} shifts are unassigned. Publish anyway?`)) return;
-
-    setPublishingRota(true);
-    try {
-      const { error } = await supabase.rpc('publish_rota' as any, { p_rota_id: rota.id } as any);
-      if (error) throw error;
-      await loadData();
-    } catch (err: any) {
-      console.error('Failed to publish rota:', err);
-      alert(err?.message || 'Failed to publish rota');
-    } finally {
-      setPublishingRota(false);
-    }
-  };
+  // publishCurrentRota removed — approved is now the final visible state
 
   const handleSaveForecast = async (date: string, data: DayForecast) => {
     if (!rota || !profile?.company_id) return;
@@ -4545,11 +4530,9 @@ export default function RotaBuilderPage() {
                   <span className="text-theme-primary">
                     {rota?.status === 'pending_approval'
                       ? 'Ready for approval'
-                      : rota?.status === 'approved'
-                        ? 'Approved'
-                        : rota?.status === 'published'
-                          ? 'Published'
-                          : 'Draft'}
+                      : rota?.status === 'approved' || rota?.status === 'published'
+                        ? 'Approved (Live)'
+                        : 'Draft'}
                   </span>
                 </div>
 
@@ -4630,23 +4613,7 @@ export default function RotaBuilderPage() {
                   </button>
                 )}
 
-                {rota?.status === 'approved' && canApproveRota && (
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={() => {
-                      setActionsMenuOpen(false);
-                      publishCurrentRota();
-                    }}
-                    disabled={publishingRota}
-                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-module-fg hover:bg-theme-hover disabled:opacity-50"
-                  >
-                    <span className="flex items-center gap-2">
-                      <Send className="w-4 h-4" />
-                      {publishingRota ? 'Publishing…' : 'Publish'}
-                    </span>
-                  </button>
-                )}
+                {/* Publish step removed — approved is now the final visible state */}
               </div>
             )}
           </div>
@@ -5215,6 +5182,15 @@ export default function RotaBuilderPage() {
           canApprove={canApproveRota}
           onApprovalChange={loadData}
         />
+      )}
+
+      {/* Published banner - shown when rota is approved (live to staff) */}
+      {(rota?.status === 'approved' || rota?.status === 'published') && (
+        <div className="mx-3 mb-3 flex items-center gap-2 px-4 py-2.5 bg-green-500/10 border border-green-500/20 rounded-lg">
+          <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+          <span className="text-sm text-green-600 dark:text-green-400 font-medium">Published</span>
+          <span className="text-xs text-green-600/70 dark:text-green-400/60">— This rota is live and visible to staff</span>
+        </div>
       )}
 
       {/* Modals */}
