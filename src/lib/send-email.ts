@@ -1,5 +1,7 @@
+import { Resend } from 'resend'
+
 /**
- * Send an email via Resend API directly (no self-calling HTTP).
+ * Send an email via Resend SDK (same approach as /api/test-email which works on Vercel).
  * Returns { success, skipped?, error? }
  */
 export async function sendEmail({
@@ -12,37 +14,31 @@ export async function sendEmail({
   html: string
 }): Promise<{ success: boolean; skipped?: boolean; error?: string }> {
   const apiKey = process.env.RESEND_API_KEY
-  const from = process.env.RESEND_FROM || process.env.EMAIL_FROM
 
-  if (!apiKey || !from) {
-    console.log('📧 (email skipped) Missing RESEND_API_KEY or RESEND_FROM/EMAIL_FROM. Email would be:', {
+  if (!apiKey) {
+    console.log('📧 (email skipped) Missing RESEND_API_KEY:', { to, subject })
+    return { success: false, skipped: true, error: 'Email service not configured. Set RESEND_API_KEY.' }
+  }
+
+  try {
+    const resend = new Resend(apiKey)
+
+    const { data, error } = await resend.emails.send({
+      from: 'Opsly <noreply@opslytech.com>',
       to,
       subject,
-    })
-    return { success: false, skipped: true, error: 'Email service not configured. Set RESEND_API_KEY and RESEND_FROM in environment variables.' }
-  }
-
-  const resp = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from,
-      to: [to],
-      subject,
-      text: html.replace(/<[^>]*>/g, ''),
       html,
-    }),
-  })
+    })
 
-  if (!resp.ok) {
-    const errorText = await resp.text()
-    console.error(`❌ Resend API error for ${to}:`, { status: resp.status, response: errorText, from })
-    return { success: false, error: `Email send failed (${resp.status}): ${errorText}` }
+    if (error) {
+      console.error(`❌ Resend error for ${to}: ${error.message}`)
+      return { success: false, error: `Email send failed: ${error.message}` }
+    }
+
+    console.log(`✅ Email sent to ${to} (id: ${data?.id})`)
+    return { success: true }
+  } catch (err: any) {
+    console.error(`❌ Resend exception for ${to}: ${err.message}`)
+    return { success: false, error: `Email send failed: ${err.message}` }
   }
-
-  console.log(`✅ Email sent successfully to ${to}`)
-  return { success: true }
 }
