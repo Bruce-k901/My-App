@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { sendEmail } from '@/lib/send-email'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -130,14 +131,11 @@ export async function POST(request: NextRequest) {
       const companyName = companyData?.name || 'Our Company'
       const jobTitle = jobData?.title || 'the position'
       
-      // Send confirmation email
-      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/send-email`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: email,
-          subject: `Application Received: ${jobTitle} at ${companyName}`,
-          html: `
+      // Send confirmation email via Resend directly
+      await sendEmail({
+        to: email,
+        subject: `Application Received: ${jobTitle} at ${companyName}`,
+        html: `
 <!DOCTYPE html>
 <html>
 <head>
@@ -192,7 +190,6 @@ export async function POST(request: NextRequest) {
 </body>
 </html>
           `,
-        }),
       })
     } catch (emailError) {
       console.error('Failed to send confirmation email:', emailError)

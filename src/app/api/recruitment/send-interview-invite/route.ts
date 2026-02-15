@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { sendEmail } from '@/lib/send-email'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -255,28 +256,23 @@ export async function POST(request: NextRequest) {
 </html>
     `.trim()
 
-    // Send email
-    const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/send-email`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        to: candidateEmail,
-        subject: `Interview Invitation: ${jobTitle} at ${companyName}`,
-        html: htmlContent,
-      }),
+    // Send email via Resend directly
+    const emailResult = await sendEmail({
+      to: candidateEmail,
+      subject: `Interview Invitation: ${jobTitle} at ${companyName}`,
+      html: htmlContent,
     })
-
-    const emailResult = await emailResponse.json()
-
-    if (!emailResponse.ok) {
-      throw new Error(emailResult.error || 'Failed to send email')
-    }
 
     if (emailResult.skipped) {
       return NextResponse.json({
         success: false,
-        error: 'Email service not configured',
+        skipped: true,
+        error: emailResult.error,
       }, { status: 200 })
+    }
+
+    if (!emailResult.success) {
+      throw new Error(emailResult.error || 'Failed to send email')
     }
 
     return NextResponse.json({

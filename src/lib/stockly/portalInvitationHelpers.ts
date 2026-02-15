@@ -1,5 +1,6 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { generatePortalInvitationEmailHTML } from '@/lib/emails/portalInvitation';
+import { sendEmail } from '@/lib/send-email';
 import crypto from 'crypto';
 
 /**
@@ -147,35 +148,28 @@ export async function sendPortalInviteEmail(customer: {
       .update({ portal_invite_sent_at: new Date().toISOString() })
       .eq('id', customer.id);
     
-    // Send email via API
-    // Note: This function is called from server-side API routes, so we can use fetch
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 
+    // Send email via Resend directly
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ||
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
-    
+
     const setupUrl = `${appUrl}/customer/setup?token=${token}`;
-    
+
     try {
-      const emailResponse = await fetch(`${appUrl}/api/send-email`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: customer.email,
-          subject: `You're invited to Okja Bakery's customer portal`,
-          html: generatePortalInvitationEmailHTML({
-            contactName: customer.contact_name || 'there',
-            businessName: customer.business_name,
-            setupUrl,
-          }),
+      const result = await sendEmail({
+        to: customer.email,
+        subject: `You're invited to our customer portal`,
+        html: generatePortalInvitationEmailHTML({
+          contactName: customer.contact_name || 'there',
+          businessName: customer.business_name,
+          setupUrl,
         }),
       });
-      
-      if (!emailResponse.ok) {
-        const errorText = await emailResponse.text();
-        console.error('Failed to send invitation email:', errorText);
-        // Don't throw - token is still created, email can be resent
+
+      if (!result.success && !result.skipped) {
+        console.error('Failed to send invitation email:', result.error);
       }
     } catch (emailError) {
-      console.error('Error calling email API:', emailError);
+      console.error('Error sending invitation email:', emailError);
       // Don't throw - token is still created, email can be resent
     }
     

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { generateMissingOrderReminderHTML } from '@/lib/emails/missingOrderReminder';
+import { sendEmail } from '@/lib/send-email';
 
 /**
  * POST /api/planly/standing-orders/remind
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Send emails via the central send-email API
+    // Send emails via Resend directly
     const results = await Promise.allSettled(
       emailableCustomers.map(async (customer: any) => {
         const html = generateMissingOrderReminderHTML({
@@ -76,20 +77,14 @@ export async function POST(request: NextRequest) {
           portalUrl,
         });
 
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-        const res = await fetch(`${baseUrl}/api/send-email`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: customer.customer_email,
-            subject: `Order Reminder - ${businessName}`,
-            html,
-          }),
+        const result = await sendEmail({
+          to: customer.customer_email,
+          subject: `Order Reminder - ${businessName}`,
+          html,
         });
 
-        if (!res.ok) {
-          const text = await res.text();
-          throw new Error(`Failed to send to ${customer.customer_email}: ${text}`);
+        if (!result.success && !result.skipped) {
+          throw new Error(`Failed to send to ${customer.customer_email}: ${result.error}`);
         }
 
         return { customer_id: customer.customer_id, email: customer.customer_email };

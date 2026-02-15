@@ -2,6 +2,9 @@
   "functions": {
     "src/app/api/planly/production-plan/pdf/route.ts": {
       "maxDuration": 30
+    },
+    "src/app/api/cron/daily-digest/route.ts": {
+      "maxDuration": 60
     }
   },
   "crons": [
@@ -12,6 +15,10 @@
     {
       "path": "/api/cron/health-check-reminders",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/daily-digest",
+      "schedule": "0 6 * * *"
     }
   ],
   "buildCommand": "npm run build",

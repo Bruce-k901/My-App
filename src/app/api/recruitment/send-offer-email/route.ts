@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { sendEmail } from '@/lib/send-email'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -183,31 +184,24 @@ export async function POST(request: NextRequest) {
 </html>
     `.trim()
 
-    // Send email via existing Resend integration
-    const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/send-email`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        to: candidateEmail,
-        subject: `🌟 Job Offer: ${jobTitle} at ${companyName}`,
-        html: htmlContent,
-      }),
+    // Send email via Resend directly (avoid self-calling API which fails on Vercel)
+    const emailResult = await sendEmail({
+      to: candidateEmail,
+      subject: `🌟 Job Offer: ${jobTitle} at ${companyName}`,
+      html: htmlContent,
     })
 
-    const emailResult = await emailResponse.json()
-
-    if (!emailResponse.ok) {
-      throw new Error(emailResult.error || 'Failed to send email')
-    }
-
-    // Check if email was actually sent or just logged
     if (emailResult.skipped) {
-      console.warn('Email was logged but not sent (Resend not configured)')
       return NextResponse.json({
         success: false,
-        error: 'Email service not configured. Set RESEND_API_KEY and RESEND_FROM in environment variables.',
+        skipped: true,
+        error: emailResult.error,
         offerUrl,
       }, { status: 200 })
+    }
+
+    if (!emailResult.success) {
+      throw new Error(emailResult.error || 'Failed to send email')
     }
 
     return NextResponse.json({
