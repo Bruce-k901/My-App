@@ -11,10 +11,10 @@ import { haptics } from '@/lib/haptics';
 
 interface Task {
   id: string;
-  title: string;
+  custom_name: string | null;
+  template?: { name: string } | null;
   due_time: string | null;
   status: 'pending' | 'in_progress' | 'completed';
-  is_critical: boolean;
 }
 
 interface UpcomingTasksListProps {
@@ -36,7 +36,7 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
       try {
         let query = supabase
           .from('checklist_tasks')
-          .select('id, title, due_time, status, is_critical')
+          .select('id, custom_name, due_time, status, template:task_templates(name)')
           .eq('company_id', companyId)
           .eq('due_date', today)
           .in('status', ['pending', 'in_progress'])
@@ -146,11 +146,8 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
 
               {/* Task info */}
               <div className="flex-1 min-w-0">
-                <p className={cn(
-                  "text-sm font-medium truncate",
-                  task.is_critical ? "text-red-400" : "text-theme-primary"
-                )}>
-                  {task.title}
+                <p className="text-sm font-medium truncate text-theme-primary">
+                  {task.custom_name || task.template?.name || 'Task'}
                 </p>
                 {task.due_time && (
                   <div className={cn(
@@ -163,13 +160,6 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
                   </div>
                 )}
               </div>
-
-              {/* Critical badge */}
-              {task.is_critical && (
-                <span className="flex-shrink-0 px-2 py-0.5 bg-red-500/20 text-red-400 text-[10px] font-bold rounded uppercase">
-                  Critical
-                </span>
-              )}
 
               <ChevronRight className="w-4 h-4 text-theme-tertiary flex-shrink-0" />
             </button>

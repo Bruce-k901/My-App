@@ -54,39 +54,15 @@ export function PrioritySummaryCard() {
           t.due_time && t.due_time < nowTime && t.status !== 'completed'
         ).length || 0;
 
-        // Fetch unread messages count (simplified - just get recent unread)
-        let messageCount = 0;
-        if (userId) {
-          const { count } = await supabase
-            .from('direct_messages')
-            .select('*', { count: 'exact', head: true })
-            .eq('recipient_id', userId)
-            .eq('is_read', false);
-          messageCount = count || 0;
-        }
-
-        // Fetch next shift (if user has schedule data)
-        let nextShift: string | undefined;
-        if (userId) {
-          const { data: shifts } = await supabase
-            .from('shift_patterns')
-            .select('start_time, end_time')
-            .eq('user_id', userId)
-            .gte('date', todayStr)
-            .order('date', { ascending: true })
-            .order('start_time', { ascending: true })
-            .limit(1);
-
-          if (shifts?.[0]) {
-            nextShift = shifts[0].start_time?.slice(0, 5);
-          }
-        }
+        // TODO: Enable when direct_messages table is created
+        // let messageCount = 0;
+        // TODO: Enable when shift_patterns table is created
+        // let nextShift: string | undefined;
 
         setSummary({
           tasksDue,
           tasksOverdue,
-          unreadMessages: messageCount,
-          nextShift,
+          unreadMessages: 0,
         });
       } catch (err) {
         console.error('Failed to fetch summary:', err);

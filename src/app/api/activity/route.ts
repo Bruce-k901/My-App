@@ -33,7 +33,7 @@ export async function GET(request: Request) {
       try {
         let query = supabase
           .from('checklist_tasks')
-          .select('id, title, completed_at, completed_by, site_id')
+          .select('id, custom_name, completed_at, completed_by, site_id, template:task_templates(name)')
           .eq('company_id', companyId)
           .eq('status', 'completed')
           .gte('completed_at', twentyFourHoursAgo)
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
         return (data || []).map(t => ({
           id: `task-done-${t.id}`,
           type: 'task_completed' as const,
-          title: `Completed: ${t.title || 'Task'}`,
+          title: `Completed: ${t.custom_name || t.template?.name || 'Task'}`,
           timestamp: t.completed_at || new Date().toISOString(),
           module: 'checkly' as const,
           href: `/dashboard/tasks/view/${t.id}`,
@@ -66,7 +66,7 @@ export async function GET(request: Request) {
       try {
         let query = supabase
           .from('checklist_tasks')
-          .select('id, title, due_date, due_time, site_id')
+          .select('id, custom_name, due_date, due_time, site_id, template:task_templates(name)')
           .eq('company_id', companyId)
           .in('status', ['pending', 'in_progress'])
           .lt('due_date', today)
@@ -84,7 +84,7 @@ export async function GET(request: Request) {
         return (data || []).map(t => ({
           id: `task-overdue-${t.id}`,
           type: 'task_overdue' as const,
-          title: `Overdue: ${t.title || 'Task'}`,
+          title: `Overdue: ${t.custom_name || t.template?.name || 'Task'}`,
           detail: `Due ${t.due_date}`,
           timestamp: t.due_date || new Date().toISOString(),
           module: 'checkly' as const,
