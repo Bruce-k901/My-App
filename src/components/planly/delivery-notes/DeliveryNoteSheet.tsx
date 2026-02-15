@@ -51,7 +51,7 @@ export function DeliveryNoteSheet({
 
   return (
     <div
-      className="delivery-note-sheet relative bg-white sheet-a4-landscape grid grid-cols-2 grid-rows-2 gap-0"
+      className="delivery-note-sheet relative bg-white sheet-a4-portrait grid grid-cols-2 grid-rows-2 gap-0"
       data-page={pageNumber}
     >
       {/* Cutting Markers for 2x2 grid - positioned absolutely so they don't affect grid */}

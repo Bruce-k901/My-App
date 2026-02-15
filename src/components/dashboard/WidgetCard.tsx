@@ -43,7 +43,7 @@ export function WidgetCard({
         'border border-module-fg/[0.12] rounded-lg',
         'border-l-[3px]',
         borderColor,
-        'flex flex-col',
+        'flex flex-col h-full',
         className
       )}
       style={{ padding: 'var(--spacing-card)', gap: 'var(--spacing-row)' }}

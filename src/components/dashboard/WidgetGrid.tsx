@@ -86,7 +86,7 @@ export function WidgetGrid({ variant = 'desktop' }: WidgetGridProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.3 }}
       className={cn(
-        'grid gap-3',
+        'grid gap-3 auto-rows-fr',
         variant === 'mobile' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
       )}
     >
@@ -106,7 +106,7 @@ export function WidgetGrid({ variant = 'desktop' }: WidgetGridProps) {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className={variant === 'mobile' ? '' : sizeClass}
+              className={cn(variant === 'mobile' ? '' : sizeClass, 'h-full')}
             >
               <ErrorBoundary FallbackComponent={WidgetErrorFallback}>
                 <Suspense fallback={<WidgetSkeleton />}>

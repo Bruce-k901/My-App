@@ -38,7 +38,7 @@ export default function PendingStockOrdersWidget({ siteId, companyId }: PendingS
           .from('purchase_orders')
           .select('id, expected_delivery, supplier_id')
           .eq('company_id', companyId)
-          .in('status', ['ordered', 'pending'])
+          .in('status', ['pending_approval', 'approved', 'sent', 'acknowledged', 'partial_received'])
           .order('expected_delivery', { ascending: true })
           .limit(3);
 
@@ -96,7 +96,7 @@ export default function PendingStockOrdersWidget({ siteId, companyId }: PendingS
           .from('purchase_orders')
           .select('id', { count: 'exact', head: true })
           .eq('company_id', companyId)
-          .in('status', ['ordered', 'pending']);
+          .in('status', ['pending_approval', 'approved', 'sent', 'acknowledged', 'partial_received']);
 
         if (siteId && siteId !== 'all') {
           countQuery = countQuery.eq('site_id', siteId);

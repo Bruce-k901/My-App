@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
@@ -48,6 +48,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [viewingAsCompanyId, setViewingAsCompanyId] = useState<string | null>(null);
   // Global selected site - persists in localStorage and overrides profile.site_id
   const [selectedSiteId, setSelectedSiteIdState] = useState<string | null>(null);
+  // Track whether site selection has been initialized (prevents re-init when user selects "All Sites" / null)
+  const siteInitializedRef = useRef(false);
 
   // Load selected site from localStorage on mount
   useEffect(() => {
@@ -56,6 +58,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const stored = localStorage.getItem('selectedSiteId');
       if (stored) {
         setSelectedSiteIdState(stored);
+        siteInitializedRef.current = true;
       }
     } catch (error) {
       console.warn('Failed to load selected site from localStorage:', error);
@@ -64,25 +67,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // Initialize selected site from user preferences, then profile, if not already set
   useEffect(() => {
-    if (!isMounted || !profile) return;
-    if (!selectedSiteId) {
-      let defaultSite: string | null = null;
-      // Check user preferences for default_site_id first
-      try {
-        const prefs = JSON.parse(localStorage.getItem('opsly_user_preferences') || '{}');
-        if (prefs.default_site_id) {
-          defaultSite = prefs.default_site_id;
-        }
-      } catch { /* ignore */ }
-      // Fall back to profile home_site or site_id
-      if (!defaultSite) {
-        defaultSite = profile.home_site || profile.site_id || null;
+    if (!isMounted || !profile || siteInitializedRef.current) return;
+    let defaultSite: string | null = null;
+    // Check user preferences for default_site_id first
+    try {
+      const prefs = JSON.parse(localStorage.getItem('opsly_user_preferences') || '{}');
+      if (prefs.default_site_id) {
+        defaultSite = prefs.default_site_id;
       }
-      if (defaultSite) {
-        setSelectedSiteIdState(defaultSite);
-      }
+    } catch { /* ignore */ }
+    // Fall back to profile home_site or site_id
+    if (!defaultSite) {
+      defaultSite = profile.home_site || profile.site_id || null;
     }
-  }, [profile, isMounted, selectedSiteId]);
+    if (defaultSite) {
+      setSelectedSiteIdState(defaultSite);
+    }
+    siteInitializedRef.current = true;
+  }, [profile, isMounted]);
 
   // Persist selected site to localStorage when it changes
   useEffect(() => {
@@ -100,6 +102,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // Function to set selected site (memoized to prevent re-render loops in consumers)
   const setSelectedSite = useCallback((siteId: string | null) => {
+    siteInitializedRef.current = true;
     setSelectedSiteIdState(siteId);
     console.log('🏢 [AppContext] Selected site changed:', siteId);
   }, []);
@@ -753,6 +756,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   async function signOut() {
     // Clear selected site on logout
+    siteInitializedRef.current = false;
     setSelectedSiteIdState(null);
     try {
       localStorage.removeItem('selectedSiteId');
@@ -763,9 +767,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     window.location.href = '/login';
   }
 
-  // siteId: Use selectedSiteId if available (from header selector), otherwise fall back to profile.site_id
-  // This allows users to override their default site by selecting one in the header
-  const effectiveSiteId = selectedSiteId || profile?.site_id || user?.user_metadata?.site_id || null;
+  // siteId: Use selectedSiteId if set (from header selector), otherwise fall back to profile.site_id
+  // When selectedSiteId is null it means "All Sites" was chosen, so siteId should be null (no filter)
+  // Only fall back to profile.site_id when site selection hasn't been initialized yet
+  const effectiveSiteId = siteInitializedRef.current
+    ? selectedSiteId
+    : (profile?.site_id || user?.user_metadata?.site_id || null);
 
   const value = {
     user,

@@ -79,12 +79,19 @@ export function useDashboardPreferences(): {
     try {
       setError(null);
 
-      const { data, error: queryError } = await supabase
+      let query = supabase
         .from('user_dashboard_preferences')
         .select('*')
-        .eq('user_id', user.id)
-        .eq('site_id', siteId || null)
-        .maybeSingle();
+        .eq('user_id', user.id);
+
+      const effectiveSiteId = siteId && siteId !== 'all' ? siteId : null;
+      if (effectiveSiteId) {
+        query = query.eq('site_id', effectiveSiteId);
+      } else {
+        query = query.is('site_id', null);
+      }
+
+      const { data, error: queryError } = await query.maybeSingle();
 
       if (queryError) {
         // Handle table not existing yet

@@ -1,7 +1,7 @@
 /* ============================================= */
 /* Planly Delivery Notes - Print Styles         */
-/* A4 Landscape: 4 notes per page (2 cols x 2 rows) */
-/* Each note: 148.5mm x 105mm                    */
+/* A4 Portrait: 4 notes per page (2 cols x 2 rows) */
+/* Each note: 105mm x 148.5mm                    */
 /* ============================================= */
 
 /* ===== SCREEN PREVIEW STYLES ===== */
@@ -20,13 +20,13 @@
     border-radius: 4px;
   }
 
-  /* A4 Landscape preview (scaled for readability) */
-  .delivery-note-sheet.sheet-a4-landscape {
-    width: 297mm;
-    height: 210mm;
-    transform: scale(0.5);
+  /* A4 Portrait preview (scaled for readability) */
+  .delivery-note-sheet.sheet-a4-portrait {
+    width: 210mm;
+    height: 297mm;
+    transform: scale(0.85);
     transform-origin: top center;
-    margin-bottom: calc(-210mm * 0.5);
+    margin-bottom: calc(-297mm * 0.15);
   }
 
   .delivery-note-cell {
@@ -58,10 +58,10 @@
     print-color-adjust: exact !important;
   }
 
-  /* Page setup - A4 Landscape */
+  /* Page setup - A4 Portrait (matches globals.css default) */
   @page {
-    size: 297mm 210mm landscape;
-    margin: 0;
+    size: A4 portrait !important;
+    margin: 0 !important;
   }
 
   /* Hide screen-only UI elements - be specific to avoid hiding note content */
@@ -87,8 +87,8 @@
 
   html,
   body {
-    width: 297mm !important;
-    height: 210mm !important;
+    width: 210mm !important;
+    height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
     overflow: visible !important;
@@ -107,18 +107,27 @@
     display: block !important;
   }
 
+  /* Strip all padding/margins from layout wrappers */
+  main > div,
+  .container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
   /* Print area container */
   .delivery-notes-print-area {
     display: block !important;
     padding: 0 !important;
     margin: 0 !important;
-    width: 297mm !important;
+    width: 210mm !important;
   }
 
-  /* A4 Landscape Sheet - 297mm x 210mm */
+  /* A4 Portrait Sheet - 210mm x 297mm */
   .delivery-note-sheet {
-    width: 297mm !important;
-    height: 210mm !important;
+    width: 210mm !important;
+    height: 297mm !important;
     page-break-after: always !important;
     break-after: page !important;
     page-break-inside: avoid !important;
@@ -131,8 +140,8 @@
     box-shadow: none !important;
     border-radius: 0 !important;
     display: grid !important;
-    grid-template-columns: repeat(2, 148.5mm) !important;
-    grid-template-rows: repeat(2, 105mm) !important;
+    grid-template-columns: repeat(2, 105mm) !important;
+    grid-template-rows: repeat(2, 148.5mm) !important;
     box-sizing: border-box !important;
     overflow: hidden !important;
   }
@@ -144,8 +153,8 @@
     pointer-events: none !important;
     z-index: 10 !important;
     display: block !important;
-    width: 297mm !important;
-    height: 210mm !important;
+    width: 210mm !important;
+    height: 297mm !important;
   }
 
   /* Last sheet - no page break */
@@ -154,10 +163,10 @@
     break-after: auto !important;
   }
 
-  /* Individual note cell - 148.5mm x 105mm */
+  /* Individual note cell - 105mm x 148.5mm */
   .delivery-note-cell {
-    width: 148.5mm !important;
-    height: 105mm !important;
+    width: 105mm !important;
+    height: 148.5mm !important;
     padding: 3mm !important;
     box-sizing: border-box !important;
     border: none !important;
@@ -174,7 +183,7 @@
     display: block !important;
   }
 
-  /* Delivery Note styling - 2 column layout */
+  /* Delivery Note styling - 3 column layout */
   .delivery-note {
     width: 100% !important;
     height: 100% !important;
@@ -203,12 +212,12 @@
     max-width: 18mm !important;
   }
 
-  /* Info column (left side) */
+  /* Info column (left side - narrower for 3-col) */
   .info-column {
-    width: 35% !important;
-    font-size: 7pt !important;
+    width: 22% !important;
+    font-size: 6pt !important;
     border-right: 0.5pt solid #ddd !important;
-    padding-right: 2mm !important;
+    padding-right: 1mm !important;
   }
 
   .customer-info {
@@ -216,13 +225,13 @@
   }
 
   .customer-info > div {
-    font-size: 7pt !important;
-    line-height: 1.3 !important;
+    font-size: 6pt !important;
+    line-height: 1.2 !important;
   }
 
-  /* Products column (right side) */
+  /* Products columns (two columns, each ~39%) */
   .products-column {
-    width: 65% !important;
+    width: 39% !important;
   }
 
   /* Products table */
@@ -234,12 +243,12 @@
   .products-table table {
     width: 100% !important;
     border-collapse: collapse !important;
-    font-size: 7pt !important;
+    font-size: 6.5pt !important;
   }
 
   .products-table th,
   .products-table td {
-    padding: 0.5mm 1mm !important;
+    padding: 0.3mm 0.5mm !important;
     text-align: left !important;
     border-bottom: 0.3pt solid #eee !important;
     line-height: 1.2 !important;
@@ -248,21 +257,21 @@
   .products-table th {
     font-weight: 600 !important;
     border-bottom: 0.5pt solid #333 !important;
-    font-size: 7pt !important;
+    font-size: 6.5pt !important;
   }
 
-  /* Category headers - don't hide these! */
+  /* Category headers */
   .category-header td {
     background: #f0f0f0 !important;
     font-weight: bold !important;
-    font-size: 6pt !important;
-    padding: 0.5mm 1mm !important;
+    font-size: 5.5pt !important;
+    padding: 0.3mm 0.5mm !important;
     border-top: 0.3pt solid #ccc !important;
   }
 
   /* Quantity cells */
   .quantity-cell {
-    width: 10mm !important;
+    width: 8mm !important;
     text-align: center !important;
     border: 0.3pt solid #ccc !important;
     background: white !important;

@@ -61,8 +61,15 @@ export async function POST(request: NextRequest) {
     
     <!-- Header -->
     <div style="background: linear-gradient(135deg, #D37E91 0%, #8B5CF6 100%); padding: 40px 32px; text-align: center; position: relative;">
-      <div style="width: 64px; height: 64px; margin: 0 auto 16px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px;">
-        👨‍🍳
+      <div style="margin: 0 auto 20px; text-align: center;">
+        <svg width="60" height="40" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="24" height="110" rx="12" fill="#1B2624"/>
+          <rect x="44" y="30" width="24" height="90" rx="12" fill="#8B2E3E"/>
+          <rect x="78" y="15" width="24" height="105" rx="12" fill="#D9868C"/>
+          <rect x="112" y="25" width="24" height="95" rx="12" fill="#5D8AA8"/>
+          <rect x="146" y="10" width="24" height="110" rx="12" fill="#87B0D6"/>
+          <rect x="180" y="20" width="24" height="100" rx="12" fill="#9AC297"/>
+        </svg>
       </div>
       <h1 style="margin: 0 0 8px 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.8px;">
         Trial Shift Invitation

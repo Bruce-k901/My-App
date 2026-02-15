@@ -81,6 +81,14 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     defaultRoles: ['Admin', 'Owner', 'Manager'],
     component: safeLazy(() => import('@/components/dashboard/widgets-v2/PendingStockOrdersWidget')),
   },
+  stock_value: {
+    id: 'stock_value',
+    title: 'Stock Value',
+    module: 'stockly',
+    size: 'medium',
+    defaultRoles: ['Admin', 'Owner', 'Manager'],
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/StockValueWidget')),
+  },
 
   // ── TEAMLY ──
   whos_on_today: {

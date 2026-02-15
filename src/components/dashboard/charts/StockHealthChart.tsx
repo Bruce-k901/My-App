@@ -55,7 +55,7 @@ export default function StockHealthChart({ siteId, companyId }: StockHealthChart
         const { data: levels, error } = await query;
 
         if (error) {
-          // Table may not exist yet or query fails — degrade gracefully
+          console.error('Stock levels query error:', error);
           setLoading(false);
           return;
         }
@@ -77,11 +77,15 @@ export default function StockHealthChart({ siteId, companyId }: StockHealthChart
           (stockItems || []).forEach((si: any) => itemMap.set(si.id, { name: si.name, par_level: si.par_level || 0 }));
         }
 
-        // Calculate fill percentages, sort by urgency
+        // Calculate fill percentages — only items with par_level set, sort by urgency
         const items: StockItem[] = levels
+          .filter((l: any) => {
+            const si = itemMap.get(l.stock_item_id);
+            return si && si.par_level > 0;
+          })
           .map((l: any) => {
-            const stockItem = itemMap.get(l.stock_item_id);
-            const parLevel = stockItem?.par_level || 1;
+            const stockItem = itemMap.get(l.stock_item_id)!;
+            const parLevel = stockItem.par_level;
             const current = l.quantity || 0;
             // Fill percent relative to 2x par level (full = double the par)
             const fillPercent = Math.min(Math.round((current / (parLevel * 2)) * 100), 100);

@@ -25,6 +25,7 @@ export const ROLE_DEFAULT_WIDGETS: Record<RoleSlug, string[]> = {
     // Stockly
     'low_stock_alerts',
     'pending_stock_orders',
+    'stock_value',
     // Teamly
     'whos_on_today',
     'training_expiries',
@@ -51,6 +52,7 @@ export const ROLE_DEFAULT_WIDGETS: Record<RoleSlug, string[]> = {
     'todays_checks',
     'low_stock_alerts',
     'pending_stock_orders',
+    'stock_value',
     'whos_on_today',
     'training_expiries',
     'todays_production',
@@ -93,6 +95,7 @@ export const ROLE_DEFAULT_WIDGETS: Record<RoleSlug, string[]> = {
   warehouse: [
     'low_stock_alerts',
     'pending_stock_orders',
+    'stock_value',
     'whos_on_today',
     'overdue_maintenance',
     'unread_messages',

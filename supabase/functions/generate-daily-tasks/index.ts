@@ -343,13 +343,13 @@ try {
 
   if (ppmTemplate) {
     for (const asset of ppmAssets || []) {
-      // ✅ Check if a pending/in_progress PPM task already exists for this asset
+      // Check if PPM task already exists for this asset (including completed)
       const { data: existingPpmTask } = await supabase
         .from("checklist_tasks")
         .select("id")
         .eq("task_data->>source_type", "ppm_overdue")
         .eq("task_data->>source_id", asset.id)
-        .in("status", ["pending", "in_progress"])
+        .in("status", ["pending", "in_progress", "completed"])
         .limit(1);
 
       if (existingPpmTask && existingPpmTask.length > 0) {
@@ -445,10 +445,11 @@ try {
             const taskName = isExpired
               ? `EXPIRED ${cert.label}${levelText} Certificate: ${profile.full_name || "Staff Member"}`
               : `${cert.label}${levelText} Certificate Expiring: ${profile.full_name || "Staff Member"}`;
-            // ✅ FIX: Check if ANY pending/in_progress task exists for this cert (not just today)
+            // Check if ANY existing task (pending, in_progress, or completed) exists for this cert
             const { data: existing } = await supabase.from("checklist_tasks").select("id").eq("task_data->>source_type", "certificate_expiry").eq("task_data->>certificate_type", cert.type).eq("task_data->>profile_id", profile.id).in("status", [
               "pending",
-              "in_progress"
+              "in_progress",
+              "completed"
             ]).limit(1);
             if (existing && existing.length > 0) continue;
             // Use actual expiry date as due_date for upcoming, today for already expired
@@ -612,13 +613,13 @@ try {
           ? `EXPIRED Training: ${course.name} - ${profile.full_name || "Staff Member"}`
           : `Training Expiring: ${course.name} - ${profile.full_name || "Staff Member"}`;
 
-        // Check if task already exists for this training record
+        // Check if task already exists for this training record (including completed)
         const { data: existing } = await supabase
           .from("checklist_tasks")
           .select("id")
           .eq("task_data->>source_type", "training_certificate")
           .eq("task_data->>training_record_id", record.id)
-          .in("status", ["pending", "in_progress"])
+          .in("status", ["pending", "in_progress", "completed"])
           .limit(1);
         if (existing && existing.length > 0) continue;
 

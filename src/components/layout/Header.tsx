@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Search, Calendar } from '@/components/ui/icons';
+import { Menu, Search, Calendar, Bell } from '@/components/ui/icons';
 import { cn } from "@/lib/utils";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
@@ -170,6 +170,20 @@ export function Header({
 
           {/* Messages */}
           <MessageButton />
+
+          {/* Notifications Bell - Desktop only */}
+          <button
+            onClick={() => {/* TODO: Open notifications panel */}}
+            className="hidden lg:flex items-center justify-center w-10 h-10 rounded-lg bg-module-fg/10 border border-module-fg/30 hover:bg-module-fg/15 hover:shadow-module-glow transition-all relative group"
+            aria-label="Notifications"
+            style={{ 
+              color: moduleColor || 'rgb(var(--text-secondary))'
+            }}
+          >
+            <Bell className="w-5 h-5" />
+            {/* Notification Badge - uncomment when connected to data */}
+            {/* <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span> */}
+          </button>
 
           {/* Calendar Button */}
           <button

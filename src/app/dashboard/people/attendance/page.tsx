@@ -19,14 +19,34 @@ import {
 import type { DailyAttendance, WeeklyHours } from '@/types/teamly';
 
 export default function AttendancePage() {
-  const { profile } = useAppContext();
+  const { profile, siteId } = useAppContext();
   const [viewMode, setViewMode] = useState<'today' | 'week'>('today');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dailyData, setDailyData] = useState<DailyAttendance[]>([]);
   const [weeklyData, setWeeklyData] = useState<WeeklyHours[]>([]);
   const [loading, setLoading] = useState(true);
-  
+  const [siteProfileIds, setSiteProfileIds] = useState<Set<string> | null>(null);
+
   const isManager = profile?.app_role && ['admin', 'owner', 'manager'].includes(profile.app_role.toLowerCase());
+
+  // Fetch profile IDs for the selected site (for client-side filtering)
+  useEffect(() => {
+    if (!siteId || siteId === 'all' || !profile?.company_id) {
+      setSiteProfileIds(null);
+      return;
+    }
+
+    async function fetchSiteProfiles() {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('company_id', profile?.company_id)
+        .eq('home_site', siteId);
+      setSiteProfileIds(new Set((data || []).map((p: any) => p.id)));
+    }
+
+    fetchSiteProfiles();
+  }, [siteId, profile?.company_id]);
 
   useEffect(() => {
     if (profile?.company_id) {
@@ -59,6 +79,17 @@ export default function AttendancePage() {
     setLoading(false);
   };
 
+  // Filter data by selected site
+  const filteredDailyData = useMemo(() => {
+    if (!siteProfileIds) return dailyData;
+    return dailyData.filter(d => siteProfileIds.has(d.profile_id));
+  }, [dailyData, siteProfileIds]);
+
+  const filteredWeeklyData = useMemo(() => {
+    if (!siteProfileIds) return weeklyData;
+    return weeklyData.filter(d => siteProfileIds.has(d.profile_id));
+  }, [weeklyData, siteProfileIds]);
+
   const getWeekStart = (date: Date) => {
     const d = new Date(date);
     const day = d.getDay();
@@ -69,18 +100,18 @@ export default function AttendancePage() {
   const stats = useMemo(() => {
     if (viewMode === 'today') {
       return {
-        present: dailyData.filter(d => d.status === 'active' || d.status === 'completed').length,
-        absent: dailyData.filter(d => d.status === 'absent').length,
-        late: dailyData.filter(d => d.is_late).length,
-        onBreak: dailyData.filter(d => d.is_on_break).length,
+        present: filteredDailyData.filter(d => d.status === 'active' || d.status === 'completed').length,
+        absent: filteredDailyData.filter(d => d.status === 'absent').length,
+        late: filteredDailyData.filter(d => d.is_late).length,
+        onBreak: filteredDailyData.filter(d => d.is_on_break).length,
       };
     }
     return {
-      totalHours: weeklyData.reduce((sum, w) => sum + w.total_hours, 0),
-      overtime: weeklyData.reduce((sum, w) => sum + w.overtime_hours, 0),
-      avgHours: weeklyData.length ? weeklyData.reduce((sum, w) => sum + w.total_hours, 0) / weeklyData.length : 0,
+      totalHours: filteredWeeklyData.reduce((sum, w) => sum + w.total_hours, 0),
+      overtime: filteredWeeklyData.reduce((sum, w) => sum + w.overtime_hours, 0),
+      avgHours: filteredWeeklyData.length ? filteredWeeklyData.reduce((sum, w) => sum + w.total_hours, 0) / filteredWeeklyData.length : 0,
     };
-  }, [dailyData, weeklyData, viewMode]);
+  }, [filteredDailyData, filteredWeeklyData, viewMode]);
 
   const prevDay = () => {
     const d = new Date(selectedDate);
@@ -152,9 +183,9 @@ export default function AttendancePage() {
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Time Clock */}
         <div className="lg:col-span-1">
-          <TimeClock 
-            profileId={profile?.id || ''} 
-            siteId={profile?.home_site}
+          <TimeClock
+            profileId={profile?.id || ''}
+            siteId={siteId && siteId !== 'all' ? siteId : profile?.home_site}
             onStatusChange={fetchDailyAttendance}
           />
         </div>
@@ -243,7 +274,7 @@ export default function AttendancePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-theme">
-                  {dailyData.map((row) => (
+                  {filteredDailyData.map((row) => (
                     <tr key={row.profile_id} className="hover:bg-theme-hover transition-colors">
                       <td className="px-4 py-3">
                         <p className="text-theme-primary font-medium">{row.employee_name}</p>
@@ -291,7 +322,7 @@ export default function AttendancePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-theme">
-                  {weeklyData.map((row) => (
+                  {filteredWeeklyData.map((row) => (
                     <tr key={row.profile_id} className="hover:bg-theme-hover transition-colors">
                       <td className="px-4 py-3 text-theme-primary font-medium">{row.employee_name}</td>
                       <td className="px-3 py-3 text-center text-theme-secondary">{row.mon_hours ? row.mon_hours.toFixed(1) : '-'}</td>

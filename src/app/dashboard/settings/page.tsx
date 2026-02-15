@@ -5,7 +5,7 @@ import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
-import { User, Bell, Building2, Lock, Mail, Save, Eye, EyeOff, Upload, Image as ImageIcon, Palette, Workflow, Accessibility } from '@/components/ui/icons';
+import { User, Bell, Building2, Lock, Mail, Save, Eye, EyeOff, Upload, Image as ImageIcon, Palette, Workflow, Accessibility, Loader2, Send, CheckCircle } from '@/components/ui/icons';
 import SiteSelector from '@/components/ui/SiteSelector';
 import { AlertSettingsCard } from '@/components/settings/AlertSettingsCard';
 import { AppearanceTab } from '@/components/settings/AppearanceTab';
@@ -58,6 +58,14 @@ export default function SettingsPage() {
   
   // Company settings
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  // Email connection test
+  const [emailConfig, setEmailConfig] = useState<{
+    configured: boolean;
+    details?: { resendFrom?: string };
+  } | null>(null);
+  const [isSendingTest, setIsSendingTest] = useState(false);
+  const [lastTestSent, setLastTestSent] = useState<number | null>(null);
 
   const defaults = useMemo<ProfileSettings | null>(() => {
     if (!userId || !companyId) return null;
@@ -152,6 +160,51 @@ export default function SettingsPage() {
       mounted = false;
     };
   }, [userId, companyId, defaults, company]);
+
+  // Check email configuration on mount
+  useEffect(() => {
+    fetch('/api/test-email-config')
+      .then((r) => r.json())
+      .then(setEmailConfig)
+      .catch(() => setEmailConfig({ configured: false }));
+  }, []);
+
+  const canSendTest = !lastTestSent || Date.now() - lastTestSent > 60000;
+
+  // Re-enable button after cooldown
+  useEffect(() => {
+    if (!lastTestSent) return;
+    const remaining = 60000 - (Date.now() - lastTestSent);
+    if (remaining <= 0) return;
+    const timer = setTimeout(() => setLastTestSent(null), remaining);
+    return () => clearTimeout(timer);
+  }, [lastTestSent]);
+
+  const handleSendTestEmail = async () => {
+    if (!profileForm.email) {
+      toast.error('No email address found on your profile');
+      return;
+    }
+    setIsSendingTest(true);
+    try {
+      const res = await fetch('/api/test-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: profileForm.email }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Test email sent! Check your inbox.');
+        setLastTestSent(Date.now());
+      } else {
+        toast.error(data.error || 'Failed to send test email');
+      }
+    } catch {
+      toast.error('Network error sending test email');
+    } finally {
+      setIsSendingTest(false);
+    }
+  };
 
   const updateSettings = (key: keyof ProfileSettings, value: boolean | string | null) => {
     setSettings((s) => (s ? { ...s, [key]: value } as ProfileSettings : s));
@@ -495,6 +548,85 @@ export default function SettingsPage() {
       {/* Notifications Tab */}
       {activeTab === 'notifications' && settings && (
         <div className="space-y-6">
+          {/* Email Connection Card */}
+          <div className="bg-theme-surface border border-theme rounded-xl p-6">
+            <h2 className="text-xl font-semibold text-theme-primary mb-6 flex items-center gap-2">
+              <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              Email Connection
+            </h2>
+
+            <div className="space-y-4">
+              {/* Status Badge */}
+              <div className="flex items-center gap-3">
+                {emailConfig === null ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-white/[0.06] dark:text-gray-400">
+                    <Loader2 className="w-3 h-3 animate-spin" /> Checking...
+                  </span>
+                ) : emailConfig.configured ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                    <CheckCircle className="w-3.5 h-3.5" /> Connected
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                    Not Configured
+                  </span>
+                )}
+              </div>
+
+              {/* Config Details */}
+              {emailConfig?.configured && emailConfig.details?.resendFrom && (
+                <div className="text-sm text-theme-secondary space-y-1 p-4 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05]">
+                  <p><span className="text-theme-tertiary">Sender:</span> {emailConfig.details.resendFrom}</p>
+                  <p><span className="text-theme-tertiary">Domain:</span> {emailConfig.details.resendFrom.split('@')[1]}</p>
+                </div>
+              )}
+
+              {/* Not configured message */}
+              {emailConfig && !emailConfig.configured && (
+                <p className="text-sm text-amber-600 dark:text-amber-400">
+                  Configure Resend API key in environment variables to enable email delivery.
+                </p>
+              )}
+
+              {/* Send Test Email */}
+              <div className="flex items-center gap-3">
+                <Button
+                  onClick={handleSendTestEmail}
+                  disabled={!emailConfig?.configured || isSendingTest || !canSendTest}
+                  variant="outline"
+                >
+                  {isSendingTest ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2" />
+                      Send Test Email
+                    </>
+                  )}
+                </Button>
+                {lastTestSent && !canSendTest && (
+                  <p className="text-xs text-theme-tertiary">Please wait 60 seconds before sending another test</p>
+                )}
+              </div>
+
+              {/* Email Preview */}
+              <details className="mt-2">
+                <summary className="text-sm text-theme-tertiary cursor-pointer hover:text-theme-secondary transition-colors">
+                  Preview email content
+                </summary>
+                <div className="mt-2 p-4 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05] text-sm text-theme-secondary space-y-1">
+                  <p><span className="text-theme-tertiary">From:</span> Opsly &lt;noreply@opslytech.com&gt;</p>
+                  <p><span className="text-theme-tertiary">To:</span> {profileForm.email || 'your email'}</p>
+                  <p><span className="text-theme-tertiary">Subject:</span> Opsly Test Email</p>
+                  <p className="pt-2 text-theme-tertiary">Confirms your email system is configured correctly and lists the types of emails the platform can send (digests, notifications, recruitment, invitations).</p>
+                </div>
+              </details>
+            </div>
+          </div>
+
           <div className="bg-theme-surface border border-theme rounded-xl p-6">
             <h2 className="text-xl font-semibold text-theme-primary mb-6 flex items-center gap-2">
               <Bell className="w-5 h-5 text-blue-600 dark:text-blue-400" />

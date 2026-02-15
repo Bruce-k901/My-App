@@ -196,7 +196,7 @@ export default function CertificateTaskModal({
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-xl shadow-2xl p-8 border border-white/[0.08]">
+        <div className="bg-theme-surface rounded-xl shadow-2xl p-8 border border-theme">
           <div className="flex flex-col items-center gap-4">
             <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
             <div className="text-theme-tertiary text-sm">Loading certificate details...</div>
@@ -210,7 +210,7 @@ export default function CertificateTaskModal({
   if (error && !employee) {
     return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-xl shadow-2xl max-w-md w-full p-6 border border-white/[0.08]">
+        <div className="bg-theme-surface rounded-xl shadow-2xl max-w-md w-full p-6 border border-theme">
           <h3 className="text-lg font-semibold text-theme-primary mb-4">Error Loading Certificate</h3>
           <p className="text-theme-tertiary mb-6">{error}</p>
           <button
@@ -231,10 +231,10 @@ export default function CertificateTaskModal({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden border border-white/[0.08]">
+      <div className="bg-theme-surface rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden border border-theme">
 
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/[0.08]">
+        <div className="flex items-center justify-between p-6 border-b border-theme">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${isExpired ? 'bg-red-500/20' : isUrgent ? 'bg-amber-500/20' : 'bg-amber-500/10'}`}>
               <Award className={`w-5 h-5 ${isExpired ? 'text-red-400' : 'text-amber-400'}`} />
@@ -249,7 +249,7 @@ export default function CertificateTaskModal({
           <button
             onClick={onClose}
             disabled={submitting}
-            className="p-2 hover:bg-white/[0.06] rounded-lg transition-colors disabled:opacity-50"
+            className="p-2 hover:bg-theme-hover rounded-lg transition-colors disabled:opacity-50"
           >
             <X className="w-5 h-5 text-theme-tertiary" />
           </button>
@@ -258,14 +258,14 @@ export default function CertificateTaskModal({
         {/* Content */}
         <div className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-12rem)]">
           {error && (
-            <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3 text-red-400 text-sm">
+            <div className="p-3 bg-red-100 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg flex items-start gap-3 text-red-600 dark:text-red-400 text-sm">
               <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
           {/* Employee Info */}
-          <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06]">
+          <div className="bg-theme-muted rounded-lg p-4 border border-theme">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-semibold">
                 {employee?.full_name?.charAt(0) || 'U'}
@@ -304,14 +304,14 @@ export default function CertificateTaskModal({
 
           {/* Alert for expired/urgent */}
           {(isExpired || isUrgent) && !isNoExpiry && (
-            <div className={`p-4 rounded-lg border ${isExpired ? 'bg-red-500/10 border-red-500/30' : 'bg-amber-500/10 border-amber-500/30'}`}>
+            <div className={`p-4 rounded-lg border ${isExpired ? 'bg-red-100 dark:bg-red-500/10 border-red-200 dark:border-red-500/30' : 'bg-amber-100 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30'}`}>
               <div className="flex items-start gap-3">
                 <AlertCircle className={`w-5 h-5 flex-shrink-0 ${isExpired ? 'text-red-400' : 'text-amber-400'}`} />
                 <div>
-                  <div className={`font-medium ${isExpired ? 'text-red-400' : 'text-amber-400'}`}>
+                  <div className={`font-medium ${isExpired ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}>
                     {isExpired ? 'Certificate Expired' : 'Certificate Expiring Soon'}
                   </div>
-                  <div className="text-sm text-theme-tertiary mt-1">
+                  <div className="text-sm text-theme-secondary mt-1">
                     {isExpired
                       ? 'This certificate has expired. Please update with the new expiry date once renewed.'
                       : 'This certificate will expire soon. Update the expiry date when the certificate is renewed.'}
@@ -322,9 +322,9 @@ export default function CertificateTaskModal({
           )}
 
           {/* Update Expiry Form */}
-          <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06]">
+          <div className="bg-theme-muted rounded-lg p-4 border border-theme">
             <h3 className="text-theme-primary font-semibold mb-3 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-amber-400" />
+              <Calendar className="w-4 h-4 text-amber-500 dark:text-amber-400" />
               {isNoExpiry ? 'Set Expiry Date' : 'Update Expiry Date'}
             </h3>
             <p className="text-sm text-theme-tertiary mb-4">
@@ -342,7 +342,7 @@ export default function CertificateTaskModal({
                   onChange={(e) => setNewExpiryDate(e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
                   disabled={submitting}
-                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3 py-2 bg-white dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
                 <p className="text-xs text-theme-tertiary mt-1">
                   Select the expiry date shown on the renewed certificate
@@ -371,11 +371,11 @@ export default function CertificateTaskModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-white/[0.08]">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-theme">
           <button
             onClick={onClose}
             disabled={submitting}
-            className="px-4 py-2 text-sm font-medium text-theme-tertiary hover:text-white hover:bg-white/[0.06] rounded-lg transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-theme-tertiary hover:text-theme-primary hover:bg-theme-hover rounded-lg transition-colors disabled:opacity-50"
           >
             Cancel
           </button>

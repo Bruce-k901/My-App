@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { FileText, Loader2 } from '@/components/ui/icons';
 import { Card } from '@/components/ui/Card';
@@ -18,10 +19,16 @@ import type { PrintSettings } from '@/components/planly/delivery-notes';
 import '@/styles/delivery-notes-print.css';
 
 export default function DeliveryNotesPage() {
-  const { siteId } = useAppContext();
-  const [deliveryDate, setDeliveryDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const { siteId: contextSiteId } = useAppContext();
+  const searchParams = useSearchParams();
+  // URL params take priority (used by PDF generation route via Puppeteer)
+  const siteId = searchParams.get('siteId') || contextSiteId;
+  const [deliveryDate, setDeliveryDate] = useState(
+    searchParams.get('date') || format(new Date(), 'yyyy-MM-dd')
+  );
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [printSettings, setPrintSettings] = useState<PrintSettings>(defaultPrintSettings);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   // Load print settings from localStorage on mount
   useEffect(() => {
@@ -31,29 +38,43 @@ export default function DeliveryNotesPage() {
   const { data, isLoading, error } = useDeliveryNotes(deliveryDate, siteId);
 
   const handlePrint = () => {
-    // Add a temporary style to force landscape orientation
-    const style = document.createElement('style');
-    style.id = 'print-orientation-style';
-    style.textContent = `
-      @page { size: A4 landscape !important; margin: 0 !important; }
-      @media print {
-        html, body {
-          width: 297mm !important;
-          height: 210mm !important;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-
-    // Print
     window.print();
-
-    // Clean up the temporary style after a delay
-    setTimeout(() => {
-      const tempStyle = document.getElementById('print-orientation-style');
-      if (tempStyle) tempStyle.remove();
-    }, 1000);
   };
+
+  const handleDownloadPdf = useCallback(async () => {
+    if (!siteId || isGeneratingPdf) return;
+    setIsGeneratingPdf(true);
+    const pdfUrl = `/api/planly/delivery-notes/pdf?date=${encodeURIComponent(deliveryDate)}&siteId=${encodeURIComponent(siteId)}`;
+    const maxAttempts = 2;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 60000);
+        const res = await fetch(pdfUrl, { signal: controller.signal });
+        clearTimeout(timeout);
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: 'PDF generation failed' }));
+          throw new Error(err.error || 'PDF generation failed');
+        }
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `delivery-notes-${deliveryDate}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+        break; // success — exit retry loop
+      } catch (err: any) {
+        console.error(`PDF download attempt ${attempt} failed:`, err);
+        if (attempt === maxAttempts) {
+          alert(err.message || 'Failed to generate PDF. Please try again.');
+        }
+        // First attempt failed — retry automatically
+      }
+    }
+    setIsGeneratingPdf(false);
+  }, [siteId, deliveryDate, isGeneratingPdf]);
 
   const handleSaveSettings = (newSettings: PrintSettings) => {
     setPrintSettings(newSettings);
@@ -103,10 +124,12 @@ export default function DeliveryNotesPage() {
           selectedDate={deliveryDate}
           onDateChange={setDeliveryDate}
           onPrint={handlePrint}
+          onDownloadPdf={handleDownloadPdf}
           onShowSettings={() => setShowSettingsModal(true)}
           printSettings={printSettings}
           noteCount={notes.length}
           isLoading={isLoading}
+          isGeneratingPdf={isGeneratingPdf}
         />
 
         {/* Empty State */}

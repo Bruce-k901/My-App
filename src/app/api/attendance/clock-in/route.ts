@@ -105,7 +105,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Also create a time_entries record so TimeClock UI stays in sync
+    // Close any orphaned active time_entries before inserting a new one
+    // (prevents unique constraint violation on idx_one_active_entry)
+    await supabase
+      .from('time_entries')
+      .update({
+        clock_out: clockInTime,
+        status: 'completed',
+        notes: 'Auto-closed: orphaned active entry on new clock-in',
+      })
+      .eq('profile_id', profile.id)
+      .eq('status', 'active')
+      .is('clock_out', null);
+
+    // Create a time_entries record so TimeClock UI stays in sync
     const { error: timeEntryError } = await supabase
       .from('time_entries')
       .insert({

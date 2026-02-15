@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { Calendar, ChevronLeft, ChevronRight, Printer, Settings } from '@/components/ui/icons';
+import { Calendar, ChevronLeft, ChevronRight, Download, Loader2, Printer, Settings } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { format, addDays, subDays, isValid, parseISO } from 'date-fns';
 import { PrintSettings } from './DeliveryNoteSheet';
@@ -10,10 +10,12 @@ interface DeliveryNotesHeaderProps {
   selectedDate: string;
   onDateChange: (date: string) => void;
   onPrint: () => void;
+  onDownloadPdf: () => void;
   onShowSettings: () => void;
   printSettings: PrintSettings;
   noteCount: number;
   isLoading?: boolean;
+  isGeneratingPdf?: boolean;
 }
 
 // Safe date formatting helper
@@ -49,10 +51,12 @@ export function DeliveryNotesHeader({
   selectedDate,
   onDateChange,
   onPrint,
+  onDownloadPdf,
   onShowSettings,
   printSettings,
   noteCount,
   isLoading,
+  isGeneratingPdf,
 }: DeliveryNotesHeaderProps) {
   const dateInputRef = useRef<HTMLInputElement>(null);
 
@@ -159,6 +163,22 @@ export function DeliveryNotesHeader({
         >
           <Settings className="h-4 w-4" />
         </Button>
+
+        {/* PDF button - hidden until multi-page issue is resolved */}
+        {/* <Button
+          onClick={onDownloadPdf}
+          disabled={isLoading || noteCount === 0 || isGeneratingPdf}
+          variant="outline"
+          className={`${smallBtnClass} border-theme text-theme-secondary hover:bg-theme-hover`}
+          title="Download as PDF"
+        >
+          {isGeneratingPdf ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <Download className="h-4 w-4 mr-2" />
+          )}
+          {isGeneratingPdf ? 'Generating...' : 'PDF'}
+        </Button> */}
 
         {/* Print button */}
         <Button

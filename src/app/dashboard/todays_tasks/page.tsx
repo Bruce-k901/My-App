@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { Clock, CheckCircle2, AlertCircle, Calendar, RefreshCw, Loader2 } from '@/components/ui/icons'
+import { Clock, CheckCircle2, AlertCircle, Calendar, RefreshCw, Loader2, Sunrise, Sun, Sunset, Moon } from '@/components/ui/icons'
 import { supabase } from '@/lib/supabase'
 import { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 import ChecklistsHeader from '@/components/checklists/ChecklistsHeader'
@@ -48,6 +48,48 @@ function parseDayparts(daypart: any): string[] {
   }
   
   return []
+}
+
+// Daypart time ranges for visual grouping
+type TimeDaypart = 'morning' | 'afternoon' | 'evening' | 'night'
+
+const DAYPART_CONFIG: Record<TimeDaypart, {
+  label: string
+  timeRange: string
+  icon: typeof Sunrise
+  startHour: number
+  endHour: number
+}> = {
+  morning:   { label: 'Morning',   timeRange: '5:00 AM – 11:59 AM', icon: Sunrise, startHour: 5,  endHour: 12 },
+  afternoon: { label: 'Afternoon', timeRange: '12:00 PM – 4:59 PM', icon: Sun,     startHour: 12, endHour: 17 },
+  evening:   { label: 'Evening',   timeRange: '5:00 PM – 9:59 PM',  icon: Sunset,  startHour: 17, endHour: 22 },
+  night:     { label: 'Night',     timeRange: '10:00 PM – 4:59 AM', icon: Moon,    startHour: 22, endHour: 5  },
+}
+
+const DAYPART_ORDER_LIST: TimeDaypart[] = ['morning', 'afternoon', 'evening', 'night']
+
+function getTimeDaypart(dueTime: string | null | undefined): TimeDaypart {
+  if (!dueTime) return 'night' // Tasks without a time go to the end
+  const hour = parseInt(dueTime.split(':')[0], 10)
+  if (isNaN(hour)) return 'night'
+  if (hour >= 5 && hour < 12) return 'morning'
+  if (hour >= 12 && hour < 17) return 'afternoon'
+  if (hour >= 17 && hour < 22) return 'evening'
+  return 'night' // 22-23 and 0-4
+}
+
+function groupTasksByDaypart(tasks: ChecklistTaskWithTemplate[]): Record<TimeDaypart, ChecklistTaskWithTemplate[]> {
+  const groups: Record<TimeDaypart, ChecklistTaskWithTemplate[]> = {
+    morning: [],
+    afternoon: [],
+    evening: [],
+    night: [],
+  }
+  for (const task of tasks) {
+    const dp = getTimeDaypart(task.due_time)
+    groups[dp].push(task)
+  }
+  return groups
 }
 
 type CompletedTaskWithRecord = ChecklistTaskWithTemplate & {
@@ -1834,26 +1876,60 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
           </div>
         </div>
       ) : (
-        <div className="space-y-3">
-          {tasks.map((task, index) => {
-            // Use expandedKey if available, otherwise use task.id + index for uniqueness
-            // Ensure key is always a string and unique
-            const expandedKey = (task as any)._expandedKey
-            const key = expandedKey 
-              ? String(expandedKey) 
-              : `${task.id}_${index}`
-            // Render TaskCard for all tasks
-            return (
-              <TaskCard
-                key={key}
-                task={task}
-                onClick={() => {
-                  setSelectedTask(task)
-                  setShowCompletion(true)
-                }}
-              />
-            )
-          })}
+        <div className="space-y-8">
+          {(() => {
+            const grouped = groupTasksByDaypart(tasks)
+            const populatedDayparts = DAYPART_ORDER_LIST.filter(dp => grouped[dp].length > 0)
+            return populatedDayparts.map((dp, dpIndex) => {
+              const config = DAYPART_CONFIG[dp]
+              const Icon = config.icon
+              const dpTasks = grouped[dp]
+              return (
+                <div key={dp}>
+                  {/* Daypart Header */}
+                  <div className="flex items-center gap-3 mb-4 px-1">
+                    <div className="w-10 h-10 rounded-xl bg-checkly-dark/10 dark:bg-checkly/15 border border-checkly-dark/15 dark:border-checkly/20 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-[22px] h-[22px] text-checkly-dark dark:text-checkly" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-base font-semibold text-checkly-dark dark:text-checkly">
+                        {config.label}
+                      </span>
+                      <p className="text-xs text-checkly-dark/40 dark:text-checkly/45 mt-0.5">
+                        {config.timeRange}
+                      </p>
+                    </div>
+                    <span className="text-xs font-medium text-checkly-dark/60 dark:text-checkly/60 px-2.5 py-1 rounded-full bg-checkly-dark/[0.07] dark:bg-checkly/[0.10] border border-checkly-dark/10 dark:border-checkly/15">
+                      {dpTasks.length} task{dpTasks.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+
+                  {/* Divider line */}
+                  <div className="mb-3 h-px bg-gradient-to-r from-checkly-dark/25 dark:from-checkly/25 via-checkly-dark/10 dark:via-checkly/10 to-transparent" />
+
+                  {/* Tasks in this daypart */}
+                  <div className="space-y-3">
+                    {dpTasks.map((task, index) => {
+                      const expandedKey = (task as any)._expandedKey
+                      const key = expandedKey
+                        ? String(expandedKey)
+                        : `${task.id}_${index}`
+                      return (
+                        <TaskCard
+                          key={key}
+                          task={task}
+                          onClick={() => {
+                            setSelectedTask(task)
+                            setShowCompletion(true)
+                          }}
+                        />
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })
+          })()}
         </div>
       )}
 

@@ -14,8 +14,8 @@ export type ModuleKey = 'checkly' | 'stockly' | 'teamly' | 'planly' | 'assetly' 
 
 export const MODULE_HEX: Record<ModuleKey, { light: string; dark: string }> = {
   checkly: { light: '#F1E194', dark: '#5B0E14' },
-  stockly: { light: '#789A99', dark: '#4e7d7c' },
-  teamly:  { light: '#D37E91', dark: '#b0607a' },
+  stockly: { light: '#789A99', dark: '#6B8F8E' },
+  teamly:  { light: '#D37E91', dark: '#C28FA3' },
   planly:  { light: '#ACC8A2', dark: '#1A2517' },
   assetly: { light: '#F3E7D9', dark: '#544349' },
   msgly:   { light: '#CBDDE9', dark: '#2872A1' },

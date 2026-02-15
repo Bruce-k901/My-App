@@ -121,7 +121,20 @@ export async function clockIn(
       return { success: false, error: error.message };
     }
 
-    // Also create a time_entries record so TimeClock UI stays in sync
+    // Close any orphaned active time_entries before inserting a new one
+    // (prevents unique constraint violation on idx_one_active_entry)
+    await supabase
+      .from("time_entries")
+      .update({
+        clock_out: clockInTime,
+        status: "completed",
+        notes: "Auto-closed: orphaned active entry on new clock-in",
+      })
+      .eq("profile_id", user.id)
+      .eq("status", "active")
+      .is("clock_out", null);
+
+    // Create a time_entries record so TimeClock UI stays in sync
     const { error: timeEntryError } = await supabase
       .from("time_entries")
       .insert({
@@ -189,7 +202,7 @@ export async function clockOut(
     if (!activeLog) {
       // No active staff_attendance record — clean up any orphaned time_entries
       // so the TimeClock UI resets properly
-      const { data: orphans } = await supabase
+      await supabase
         .from("time_entries")
         .update({
           clock_out: new Date().toISOString(),
@@ -198,18 +211,11 @@ export async function clockOut(
         })
         .eq("profile_id", user.id)
         .eq("status", "active")
-        .is("clock_out", null)
-        .select("id");
+        .is("clock_out", null);
 
-      if (orphans && orphans.length > 0) {
-        console.log(`Cleaned up ${orphans.length} orphaned time_entries on clock-out`);
-        return { success: true };
-      }
-
-      return {
-        success: false,
-        error: "No active clock-in found. Please clock in first.",
-      };
+      // Return success — the shift was already closed (e.g. by auto-clock-out)
+      // so there's nothing left to do. Don't show an error to the user.
+      return { success: true };
     }
 
     console.log("✅ Found active clock-in:", activeLog);

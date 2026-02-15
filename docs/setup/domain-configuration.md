@@ -1,10 +1,11 @@
-# Domain Setup Guide: checkly-app.com
+# Domain Setup Guide: opslytech.com
 
-This guide will help you connect your custom domain `checkly-app.com` to your Vercel deployment.
+This guide will help you connect your custom domain `opslytech.com` to your
+Vercel deployment.
 
 ## Prerequisites
 
-- ✅ Your domain `checkly-app.com` is registered with a domain registrar
+- ✅ Your domain `opslytech.com` is registered with a domain registrar
 - ✅ Access to your domain registrar's DNS management panel
 - ✅ Your app is deployed on Vercel
 
@@ -22,7 +23,7 @@ This guide will help you connect your custom domain `checkly-app.com` to your Ve
 
 3. **Add Your Domain**
    - Click **Add Domain** button
-   - Enter: `checkly-app.com`
+   - Enter: `opslytech.com`
    - Click **Add**
 
 4. **Vercel will show you DNS records to configure**
@@ -42,9 +43,10 @@ This guide will help you connect your custom domain `checkly-app.com` to your Ve
 
 ## Step 2: Configure DNS Records at Your Domain Registrar
 
-You need to add DNS records at your domain registrar (where you bought checkly-app.com).
+You need to add DNS records at your domain registrar (where you bought
+opslytech.com).
 
-### Option A: Root Domain (checkly-app.com)
+### Option A: Root Domain (opslytech.com)
 
 **If your registrar supports A records for root domains:**
 
@@ -54,8 +56,9 @@ You need to add DNS records at your domain registrar (where you bought checkly-a
 
    **Record 1:**
    - **Type:** `A`
-   - **Name/Host:** `@` (or leave blank, or `checkly-app.com`)
-   - **Value/Points to:** `76.76.21.21` (Vercel's IP - check Vercel dashboard for current IP)
+   - **Name/Host:** `@` (or leave blank, or `opslytech.com`)
+   - **Value/Points to:** `76.76.21.21` (Vercel's IP - check Vercel dashboard
+     for current IP)
    - **TTL:** `3600` (or default)
 
    **Record 2:**
@@ -95,7 +98,8 @@ You need to add DNS records at your domain registrar (where you bought checkly-a
      - **Target:** `cname.vercel-dns.com`
      - **Proxy status:** 🟠 Proxied (Orange cloud)
 
-2. **Important:** Make sure SSL/TLS encryption mode is set to **Full** or **Full (strict)** in Cloudflare SSL/TLS settings
+2. **Important:** Make sure SSL/TLS encryption mode is set to **Full** or **Full
+   (strict)** in Cloudflare SSL/TLS settings
 
 ---
 
@@ -107,7 +111,7 @@ You need to add DNS records at your domain registrar (where you bought checkly-a
 
 2. **Check Domain Status in Vercel**
    - Go back to Vercel Dashboard → Settings → Domains
-   - You should see `checkly-app.com` with status:
+   - You should see `opslytech.com` with status:
      - ✅ **Valid Configuration** (green checkmark)
      - ⏳ **Pending** (waiting for DNS)
      - ❌ **Invalid Configuration** (check DNS records)
@@ -134,7 +138,8 @@ const nextConfig = {
 module.exports = nextConfig;
 ```
 
-**Note:** Vercel handles domain configuration automatically, so you typically don't need to change Next.js config.
+**Note:** Vercel handles domain configuration automatically, so you typically
+don't need to change Next.js config.
 
 ---
 
@@ -146,7 +151,7 @@ If your app uses absolute URLs, you may need to update environment variables:
    - Go to **Settings** → **Environment Variables**
    - Add/Update:
      ```
-     NEXT_PUBLIC_APP_URL=https://checkly-app.com
+     NEXT_PUBLIC_APP_URL=https://opslytech.com
      ```
    - Apply to: Production, Preview, Development
 
@@ -158,9 +163,9 @@ If your app uses absolute URLs, you may need to update environment variables:
 
 1. **Wait for DNS propagation** (check with: https://dnschecker.org)
 2. **Visit your domain:**
-   - http://checkly-app.com
-   - https://checkly-app.com (should auto-redirect to HTTPS)
-   - http://www.checkly-app.com (should redirect to root)
+   - http://opslytech.com
+   - https://opslytech.com (should auto-redirect to HTTPS)
+   - http://www.opslytech.com (should redirect to root)
 
 3. **Verify SSL Certificate:**
    - Check that the padlock icon shows in browser
@@ -174,7 +179,7 @@ If your app uses absolute URLs, you may need to update environment variables:
 
 1. **Check DNS propagation:**
    - Visit: https://dnschecker.org
-   - Enter: `checkly-app.com`
+   - Enter: `opslytech.com`
    - Check if A/CNAME records are propagated globally
 
 2. **Verify DNS records:**
@@ -250,10 +255,11 @@ If your app uses absolute URLs, you may need to update environment variables:
 ## Next Steps After Domain Setup
 
 1. ✅ **Test all pages** on your custom domain
-2. ✅ **Update any hardcoded URLs** in your code to use `checkly-app.com`
+2. ✅ **Update any hardcoded URLs** in your code to use `opslytech.com`
 3. ✅ **Update marketing materials** with new domain
-4. ✅ **Set up email** (if needed) - e.g., hello@checkly-app.com
-5. ✅ **Configure redirects** (if needed) - Vercel handles www → root automatically
+4. ✅ **Set up email** (if needed) - e.g., hello@opslytech.com
+5. ✅ **Configure redirects** (if needed) - Vercel handles www → root
+   automatically
 
 ---
 
@@ -265,4 +271,5 @@ If your app uses absolute URLs, you may need to update environment variables:
 
 ---
 
-**Note:** The exact IP address and CNAME values may vary. Always check your Vercel dashboard for the current values to use.
+**Note:** The exact IP address and CNAME values may vary. Always check your
+Vercel dashboard for the current values to use.

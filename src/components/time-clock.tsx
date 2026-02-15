@@ -21,6 +21,10 @@ export function TimeClock({ profileId, siteId, onStatusChange }: TimeClockProps)
   const { clockIn, clockOut, isProcessing } = useOfflineAttendance();
 
   useEffect(() => {
+    if (!profileId) {
+      setLoading(false);
+      return;
+    }
     // First trigger a status check via the API to clean up any orphaned time_entries,
     // then fetch the (now-clean) status from the RPC
     fetch('/api/attendance/status')
@@ -41,6 +45,7 @@ export function TimeClock({ profileId, siteId, onStatusChange }: TimeClockProps)
   }, []);
 
   const fetchStatus = async () => {
+    if (!profileId) return;
     try {
       const { data, error } = await supabase.rpc('get_clock_status', { p_profile_id: profileId });
       if (error) {

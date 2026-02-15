@@ -229,9 +229,17 @@ export async function POST(req: Request) {
       lines.join("\n") +
       `\n\nTo accept a shift, open the app and go to Notifications.\n`;
     const htmlBody =
-      `<p>Open shifts have been posted for <strong>${siteName}</strong>.</p>` +
-      `<ul>${lines.map((l) => `<li>${l.replace(/^•\s*/, "")}</li>`).join("")}</ul>` +
-      `<p>To accept a shift, open the app and go to <strong>Notifications</strong>.</p>`;
+      `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 560px; margin: 0 auto; background: #1a1d24; border-radius: 16px; overflow: hidden;">` +
+      `<div style="background: linear-gradient(135deg, #D37E91 0%, #8B5CF6 100%); padding: 32px; text-align: center;">` +
+      `<div style="margin: 0 auto 16px; text-align: center;"><svg width="60" height="40" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="24" height="110" rx="12" fill="#1B2624"/><rect x="44" y="30" width="24" height="90" rx="12" fill="#8B2E3E"/><rect x="78" y="15" width="24" height="105" rx="12" fill="#D9868C"/><rect x="112" y="25" width="24" height="95" rx="12" fill="#5D8AA8"/><rect x="146" y="10" width="24" height="110" rx="12" fill="#87B0D6"/><rect x="180" y="20" width="24" height="100" rx="12" fill="#9AC297"/></svg></div>` +
+      `<h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700;">Open Shifts Available</h1>` +
+      `<p style="margin: 8px 0 0; color: rgba(255,255,255,0.85); font-size: 14px;">${siteName}</p>` +
+      `</div>` +
+      `<div style="padding: 28px 32px;">` +
+      `<p style="margin: 0 0 16px; color: rgba(255,255,255,0.85); font-size: 15px;">Open shifts have been posted for <strong style="color:#fff;">${siteName}</strong>.</p>` +
+      `<ul style="margin: 0 0 20px; padding-left: 20px; color: rgba(255,255,255,0.75); font-size: 14px; line-height: 1.8;">${lines.map((l) => `<li>${l.replace(/^•\s*/, "")}</li>`).join("")}</ul>` +
+      `<p style="margin: 0; color: rgba(255,255,255,0.6); font-size: 13px;">To accept a shift, open the app and go to <strong style="color:#D37E91;">Notifications</strong>.</p>` +
+      `</div></div>`;
 
     // 1) In-app notifications (offers)
     const notes = [];
