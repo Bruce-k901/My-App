@@ -1,40 +1,22 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import WelcomeHeader from "@/components/dashboard/WelcomeHeader";
 import { OpslyDashboard } from "@/components/dashboard/OpslyDashboard";
-import {
-  MobileHeader,
-  WeatherWidget,
-} from "@/components/mobile";
+import { MobileHomeScreen } from "@/components/mobile";
 import { useAppContext } from "@/context/AppContext";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function DashboardHomePage() {
   const router = useRouter();
-  const { companyId, loading, user, profile } = useAppContext();
+  const { companyId, loading, user } = useAppContext();
   const { isMobile, isHydrated } = useIsMobile();
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-
-  // Load notification preference from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem('opsly_notifications_enabled');
-    if (stored !== null) {
-      setNotificationsEnabled(stored === 'true');
-    }
-  }, []);
-
-  const handleNotificationsToggle = useCallback((enabled: boolean) => {
-    setNotificationsEnabled(enabled);
-    localStorage.setItem('opsly_notifications_enabled', String(enabled));
-  }, []);
 
   // Note: Users should always have a company after signup (created in auth callback)
   // This redirect is a safety net in case something went wrong during signup
   useEffect(() => {
     if (!loading && user && !companyId) {
-      // This can happen during first signup before company is created
       console.debug('User has no company yet (redirecting to business details to complete setup)');
       router.replace('/dashboard/business');
     }
@@ -49,32 +31,9 @@ export default function DashboardHomePage() {
     );
   }
 
-  // Mobile View - Show mobile-optimized dashboard
+  // Mobile View - Purpose-built mobile home screen
   if (isMobile) {
-    const userName = profile?.full_name ||
-      (profile?.first_name && profile?.last_name
-        ? `${profile.first_name} ${profile.last_name}`
-        : 'User');
-
-    return (
-      <div className="min-h-screen bg-[rgb(var(--surface-elevated))] text-theme-primary">
-        {/* Mobile Header - UNCHANGED */}
-        <MobileHeader
-          userName={userName}
-          unreadNotifications={0}
-          notificationsEnabled={notificationsEnabled}
-          onNotificationsToggle={handleNotificationsToggle}
-        />
-
-        <div className="px-4 space-y-4 pb-24">
-          {/* Weather Widget */}
-          <WeatherWidget />
-
-          {/* Opsly Dashboard - Mobile variant */}
-          <OpslyDashboard variant="mobile" />
-        </div>
-      </div>
-    );
+    return <MobileHomeScreen />;
   }
 
   // Desktop View

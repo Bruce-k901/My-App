@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Check } from '@/components/ui/icons';
 import { WidgetCard, CountBadge, MiniItem } from '../WidgetCard';
+import { useWidgetSize } from '../WidgetSizeContext';
 import { supabase } from '@/lib/supabase';
 
 interface LowStockWidgetProps {
@@ -69,7 +70,7 @@ export default function LowStockWidget({ siteId, companyId }: LowStockWidgetProp
           return parLevel > 0 && item.quantity < parLevel;
         });
 
-        const formatted: LowStockItem[] = lowItems.slice(0, 3).map((item: any) => {
+        const formatted: LowStockItem[] = lowItems.slice(0, 10).map((item: any) => {
           const stockItem = itemMap.get(item.stock_item_id);
           return {
             id: item.id,
@@ -90,6 +91,8 @@ export default function LowStockWidget({ siteId, companyId }: LowStockWidgetProp
 
     fetchLowStock();
   }, [companyId, siteId]);
+
+  const { maxItems } = useWidgetSize();
 
   if (loading) {
     return (
@@ -120,7 +123,7 @@ export default function LowStockWidget({ siteId, companyId }: LowStockWidgetProp
     <WidgetCard title="Low Stock Alerts" module="stockly" viewAllHref="/dashboard/stockly/stock-items">
       <CountBadge count={totalCount} label="items below reorder" status="warning" />
       <div className="mt-2">
-        {items.map((item) => (
+        {items.slice(0, maxItems).map((item) => (
           <MiniItem
             key={item.id}
             text={item.name}

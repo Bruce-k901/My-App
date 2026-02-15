@@ -4,7 +4,8 @@ import { Suspense, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useAppContext } from '@/context/AppContext';
-import { useEnabledModules, useDashboardPreferences } from '@/hooks/dashboard';
+import { useEnabledModules } from '@/hooks/dashboard';
+import { useDashboardPreferencesContext } from '@/context/DashboardPreferencesContext';
 import {
   WIDGET_REGISTRY,
   getDefaultWidgetsForRole,
@@ -32,7 +33,7 @@ function ChartErrorFallback({ error }: { error: Error }) {
 export function ChartSection({ variant }: ChartSectionProps) {
   const { companyId, siteId, profile } = useAppContext();
   const { enabledModules, loading: modulesLoading } = useEnabledModules();
-  const { preferences, loading: prefsLoading } = useDashboardPreferences();
+  const { preferences, loading: prefsLoading } = useDashboardPreferencesContext();
   const isMobile = variant === 'mobile';
 
   // Get all chart widgets from registry
@@ -77,17 +78,24 @@ export function ChartSection({ variant }: ChartSectionProps) {
       transition={{ duration: 0.4, delay: 0.1 }}
       className={cn('grid gap-3 mb-5', isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2')}
     >
-      {visibleCharts.map((widget) => {
+      {visibleCharts.map((widget, index) => {
         const WidgetComponent = widget.component;
         return (
-          <ErrorBoundary key={widget.id} FallbackComponent={ChartErrorFallback}>
-            <Suspense fallback={<ChartWidgetSkeleton />}>
-              <WidgetComponent
-                siteId={siteId || ''}
-                companyId={companyId || ''}
-              />
-            </Suspense>
-          </ErrorBoundary>
+          <motion.div
+            key={widget.id}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: index * 0.1 }}
+          >
+            <ErrorBoundary FallbackComponent={ChartErrorFallback}>
+              <Suspense fallback={<ChartWidgetSkeleton />}>
+                <WidgetComponent
+                  siteId={siteId || ''}
+                  companyId={companyId || ''}
+                />
+              </Suspense>
+            </ErrorBoundary>
+          </motion.div>
         );
       })}
     </motion.div>

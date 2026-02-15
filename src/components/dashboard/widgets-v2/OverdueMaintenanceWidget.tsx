@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Check } from '@/components/ui/icons';
 import { WidgetCard, CountBadge, MiniItem } from '../WidgetCard';
+import { useWidgetSize } from '../WidgetSizeContext';
 import { supabase } from '@/lib/supabase';
 
 interface OverdueMaintenanceWidgetProps {
@@ -92,7 +93,7 @@ export default function OverdueMaintenanceWidget({ siteId, companyId }: OverdueM
             };
           })
           .sort((a: OverdueMaintenance, b: OverdueMaintenance) => b.daysOverdue - a.daysOverdue)
-          .slice(0, 3);
+          .slice(0, 10);
 
         setTasks(formatted);
         setTotalCount(schedules.filter((s: any) => assetMap.has(s.asset_id)).length);
@@ -105,6 +106,8 @@ export default function OverdueMaintenanceWidget({ siteId, companyId }: OverdueM
 
     fetchOverdueMaintenance();
   }, [companyId, siteId]);
+
+  const { maxItems } = useWidgetSize();
 
   if (loading) {
     return (
@@ -134,7 +137,7 @@ export default function OverdueMaintenanceWidget({ siteId, companyId }: OverdueM
     <WidgetCard title="Overdue Maintenance" module="assetly" viewAllHref="/dashboard/assets">
       <CountBadge count={totalCount} label="overdue task" status="urgent" />
       <div className="mt-2">
-        {tasks.map((task) => (
+        {tasks.slice(0, maxItems).map((task) => (
           <MiniItem
             key={task.id}
             text={`${task.assetName} — ${task.taskName}`}

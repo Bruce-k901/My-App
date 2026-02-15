@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { WidgetCard } from '../WidgetCard';
+import { AnimatedCounter } from '../AnimatedCounter';
 import { supabase } from '@/lib/supabase';
 
 interface ComplianceScoreWidgetProps {
@@ -79,12 +81,17 @@ export default function ComplianceScoreWidget({ siteId, companyId }: ComplianceS
     fetchCompliance();
   }, [companyId, siteId]);
 
-  // Compliance ring component
+  // Compliance ring component with framer-motion animation
   const ComplianceRing = ({ value }: { value: number }) => {
     const r = 34;
     const circ = 2 * Math.PI * r;
     const offset = circ - (value / 100) * circ;
-    const color = value >= 90 ? '#34D399' : value >= 70 ? '#60A5FA' : '#F472B6';
+    // Use checkly module colours: good = checkly light, medium = checkly dark, low = teamly
+    const color = value >= 90
+      ? 'rgb(var(--module-checkly))'
+      : value >= 70
+      ? 'rgb(var(--module-stockly))'
+      : 'rgb(var(--module-teamly))';
 
     return (
       <div className="relative w-20 h-20">
@@ -97,7 +104,7 @@ export default function ComplianceScoreWidget({ siteId, companyId }: ComplianceS
             stroke="rgb(var(--border))"
             strokeWidth="5"
           />
-          <circle
+          <motion.circle
             cx="40"
             cy="40"
             r={r}
@@ -106,14 +113,15 @@ export default function ComplianceScoreWidget({ siteId, companyId }: ComplianceS
             strokeWidth="5"
             strokeLinecap="round"
             strokeDasharray={circ}
-            strokeDashoffset={offset}
+            initial={{ strokeDashoffset: circ }}
+            animate={{ strokeDashoffset: offset }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
             transform="rotate(-90 40 40)"
-            className="transition-all duration-1000"
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="text-xl font-bold" style={{ color }}>
-            {value}%
+            <AnimatedCounter value={value} suffix="%" />
           </span>
         </div>
       </div>
@@ -157,7 +165,7 @@ export default function ComplianceScoreWidget({ siteId, companyId }: ComplianceS
         <div>
           <div className="text-[10.5px] text-[rgb(var(--text-disabled))] mb-0.5">This week</div>
           <div
-            className={`text-[10.5px] ${change >= 0 ? 'text-module-fg' : 'text-blue-400'}`}
+            className={`text-[10.5px] ${change >= 0 ? 'text-module-fg' : 'text-checkly-dark dark:text-checkly'}`}
           >
             {change >= 0 ? '↑' : '↓'} {Math.abs(change)}% from last week
           </div>

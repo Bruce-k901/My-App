@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { WidgetCard, ProgressBar, MiniItem } from '../WidgetCard';
+import { useWidgetSize } from '../WidgetSizeContext';
 import { supabase } from '@/lib/supabase';
 
 interface TodaysChecksWidgetProps {
@@ -47,7 +48,7 @@ export default function TodaysChecksWidget({ siteId, companyId }: TodaysChecksWi
           .eq('company_id', companyId)
           .eq('due_date', today)
           .order('due_time', { ascending: true, nullsFirst: false })
-          .limit(3);
+          .limit(10);
 
         if (siteId && siteId !== 'all') {
           query = query.eq('site_id', siteId);
@@ -97,6 +98,8 @@ export default function TodaysChecksWidget({ siteId, companyId }: TodaysChecksWi
     fetchTodaysChecks();
   }, [companyId, siteId]);
 
+  const { maxItems } = useWidgetSize();
+
   if (loading) {
     return (
       <WidgetCard title="Today's Checks" module="checkly" viewAllHref="/dashboard/todays_tasks">
@@ -123,7 +126,7 @@ export default function TodaysChecksWidget({ siteId, companyId }: TodaysChecksWi
     <WidgetCard title="Today's Checks" module="checkly" viewAllHref="/dashboard/todays_tasks">
       <ProgressBar done={doneCount} total={totalCount} color="bg-teamly" />
       <div className="mt-2">
-        {checks.map((check) => (
+        {checks.slice(0, maxItems).map((check) => (
           <MiniItem
             key={check.id}
             text={check.name}

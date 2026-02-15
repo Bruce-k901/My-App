@@ -1429,6 +1429,17 @@ input[type="number"] {
 }
 
 /* ----------------------------- */
+/* Dashboard Drag-and-Drop        */
+/* ----------------------------- */
+.widget-dragging {
+  z-index: 50;
+}
+
+.drag-active * {
+  user-select: none;
+}
+
+/* ----------------------------- */
 /* Planly Print Styles           */
 /* ----------------------------- */
 

@@ -8,14 +8,18 @@ ALTER TABLE public.applications
 ADD COLUMN IF NOT EXISTS company_id UUID REFERENCES public.companies(id) ON DELETE CASCADE;
 
 -- Populate existing records (if any) by looking up via candidates
-UPDATE public.applications 
+UPDATE public.applications
 SET company_id = candidates.company_id
 FROM public.candidates
 WHERE applications.candidate_id = candidates.id
 AND applications.company_id IS NULL;
 
+-- Remove orphaned rows that couldn't be backfilled (no matching candidate or candidate has no company)
+DELETE FROM public.applications
+WHERE company_id IS NULL;
+
 -- Make it NOT NULL after populating
-ALTER TABLE public.applications 
+ALTER TABLE public.applications
 ALTER COLUMN company_id SET NOT NULL;
 
 -- Add index for performance

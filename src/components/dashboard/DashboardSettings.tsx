@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Settings, X, RotateCcw } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
-import { useDashboardPreferences } from '@/hooks/dashboard/useDashboardPreferences';
+import { useDashboardPreferencesContext } from '@/context/DashboardPreferencesContext';
 import { useEnabledModules } from '@/hooks/dashboard';
 import {
   WIDGET_REGISTRY,
@@ -19,7 +19,7 @@ import {
  */
 export function DashboardSettings() {
   const [isOpen, setIsOpen] = useState(false);
-  const { preferences, toggleWidget, resetToDefaults, loading } = useDashboardPreferences();
+  const { preferences, toggleWidget, resetToDefaults, loading } = useDashboardPreferencesContext();
   const { enabledModules } = useEnabledModules();
 
   const widgetsByModule = getWidgetsGroupedByModule();

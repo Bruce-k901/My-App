@@ -1,6 +1,7 @@
 'use client';
 
 import { WidgetCard } from '../WidgetCard';
+import { AnimatedCounter } from '../AnimatedCounter';
 import { useUnreadMessageCount } from '@/hooks/useUnreadMessageCount';
 import { usePanelStore } from '@/lib/stores/panel-store';
 
@@ -30,20 +31,19 @@ export default function UnreadMessagesWidget({ siteId, companyId }: UnreadMessag
   return (
     <WidgetCard title="Unread Messages" module="msgly">
       <div className="flex flex-col items-center py-2">
-        <span
+        <AnimatedCounter
+          value={unreadCount}
           className={`text-2xl font-bold ${
             unreadCount > 0 ? 'text-module-fg' : 'text-[rgb(var(--text-disabled))]'
           }`}
-        >
-          {unreadCount}
-        </span>
+        />
         <span className="text-[11px] text-[rgb(var(--text-disabled))] mb-3">
           {unreadCount === 1 ? 'unread message' : 'unread messages'}
         </span>
         <div className="flex gap-2">
           <button
             onClick={() => setMessagingOpen(true)}
-            className="flex items-center px-2.5 py-1.5 rounded-md bg-module-fg/10 border border-teal-400/30 text-module-fg text-[10.5px] font-medium hover:bg-module-fg/10 transition-colors"
+            className="flex items-center px-2.5 py-1.5 rounded-md bg-module-fg/10 border border-module-fg/30 text-module-fg text-[10.5px] font-medium hover:bg-module-fg/15 transition-colors"
           >
             Open Inbox
           </button>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { WidgetCard, CountBadge, MiniItem } from '../WidgetCard';
+import { useWidgetSize } from '../WidgetSizeContext';
 import { supabase } from '@/lib/supabase';
 
 interface PendingStockOrdersWidgetProps {
@@ -40,7 +41,7 @@ export default function PendingStockOrdersWidget({ siteId, companyId }: PendingS
           .eq('company_id', companyId)
           .in('status', ['pending_approval', 'approved', 'sent', 'acknowledged', 'partial_received'])
           .order('expected_delivery', { ascending: true })
-          .limit(3);
+          .limit(10);
 
         if (siteId && siteId !== 'all') {
           query = query.eq('site_id', siteId);
@@ -114,6 +115,8 @@ export default function PendingStockOrdersWidget({ siteId, companyId }: PendingS
     fetchPendingOrders();
   }, [companyId, siteId]);
 
+  const { maxItems } = useWidgetSize();
+
   if (loading) {
     return (
       <WidgetCard title="Pending Orders" module="stockly" viewAllHref="/dashboard/stockly/orders">
@@ -140,7 +143,7 @@ export default function PendingStockOrdersWidget({ siteId, companyId }: PendingS
     <WidgetCard title="Pending Orders" module="stockly" viewAllHref="/dashboard/stockly/orders">
       <CountBadge count={totalCount} label="awaiting delivery" status="warning" />
       <div className="mt-2">
-        {orders.map((order) => (
+        {orders.slice(0, maxItems).map((order) => (
           <MiniItem
             key={order.id}
             text={order.supplierName}

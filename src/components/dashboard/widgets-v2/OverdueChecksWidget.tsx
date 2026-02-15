@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Check } from '@/components/ui/icons';
 import { WidgetCard, CountBadge, MiniItem } from '../WidgetCard';
+import { useWidgetSize } from '../WidgetSizeContext';
 import { supabase } from '@/lib/supabase';
 
 interface OverdueChecksWidgetProps {
@@ -50,7 +51,7 @@ export default function OverdueChecksWidget({ siteId, companyId }: OverdueChecks
           .neq('status', 'completed')
           .or(`due_date.lt.${today},and(due_date.eq.${today},due_time.lt.${currentTime})`)
           .order('due_date', { ascending: true })
-          .limit(3);
+          .limit(10);
 
         if (siteId && siteId !== 'all') {
           query = query.eq('site_id', siteId);
@@ -113,6 +114,8 @@ export default function OverdueChecksWidget({ siteId, companyId }: OverdueChecks
     fetchOverdue();
   }, [companyId, siteId]);
 
+  const { maxItems } = useWidgetSize();
+
   if (loading) {
     return (
       <WidgetCard title="Overdue Checks" module="checkly" viewAllHref="/dashboard/todays_tasks?filter=overdue">
@@ -142,7 +145,7 @@ export default function OverdueChecksWidget({ siteId, companyId }: OverdueChecks
     <WidgetCard title="Overdue Checks" module="checkly" viewAllHref="/dashboard/todays_tasks?filter=overdue">
       <CountBadge count={totalCount} label="checks overdue" status="urgent" />
       <div className="mt-2">
-        {checks.map((check) => (
+        {checks.slice(0, maxItems).map((check) => (
           <MiniItem
             key={check.id}
             text={check.name}

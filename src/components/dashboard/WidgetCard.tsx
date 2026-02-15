@@ -2,9 +2,11 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { Maximize2 } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { MODULE_COLOURS, MODULE_BADGE_COLOURS, MODULE_LABELS, type ModuleId } from '@/config/widget-registry';
+import { AnimatedCounter } from './AnimatedCounter';
 
 interface WidgetCardProps {
   title: string;
@@ -37,13 +39,16 @@ export function WidgetCard({
   const moduleLabel = MODULE_LABELS[module];
 
   return (
-    <div
+    <motion.div
+      whileHover={{ y: -2 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
       className={cn(
         'bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D]',
         'border border-module-fg/[0.12] rounded-lg',
         'border-l-[3px]',
         borderColor,
         'flex flex-col h-full',
+        'hover:shadow-md hover:shadow-black/[0.04] dark:hover:shadow-black/[0.15]',
         className
       )}
       style={{ padding: 'var(--spacing-card)', gap: 'var(--spacing-row)' }}
@@ -90,7 +95,7 @@ export function WidgetCard({
 
       {/* Widget content */}
       <div className="flex-1">{children}</div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -125,8 +130,8 @@ interface CountBadgeProps {
 export function CountBadge({ count, label, status = 'urgent' }: CountBadgeProps) {
   const statusColors = {
     urgent: 'bg-teamly/10 text-teamly border-teamly/30',
-    warning: 'bg-blue-500/10 text-blue-400 border-blue-400/30',
-    good: 'bg-module-fg/10 text-module-fg border-emerald-400/30',
+    warning: 'bg-checkly/10 text-checkly-dark dark:text-checkly border-checkly/30',
+    good: 'bg-module-fg/10 text-module-fg border-module-fg/30',
     neutral: 'bg-black/[0.03] dark:bg-white/[0.03] text-[rgb(var(--text-disabled))] border-black/10 dark:border-white/10',
   };
 
@@ -138,7 +143,7 @@ export function CountBadge({ count, label, status = 'urgent' }: CountBadgeProps)
           statusColors[status]
         )}
       >
-        {count}
+        <AnimatedCounter value={count} />
       </span>
       <span className="text-[11px] text-[rgb(var(--text-disabled))]">{label}</span>
     </div>
@@ -158,7 +163,7 @@ interface MiniItemProps {
 export function MiniItem({ text, sub, status = 'neutral', href }: MiniItemProps) {
   const statusColors = {
     urgent: 'text-teamly',
-    warning: 'text-blue-400',
+    warning: 'text-checkly-dark dark:text-checkly',
     good: 'text-module-fg',
     neutral: 'text-[rgb(var(--text-disabled))]',
   };

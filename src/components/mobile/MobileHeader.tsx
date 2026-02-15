@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useSiteContext } from '@/contexts/SiteContext';
+import { haptics } from '@/lib/haptics';
 
 interface MobileHeaderProps {
   userName: string;
@@ -16,6 +17,7 @@ interface MobileHeaderProps {
   notificationsEnabled?: boolean;
   onNotificationsToggle?: (enabled: boolean) => void;
   showSiteSelector?: boolean;
+  onAvatarClick?: () => void;
 }
 
 export function MobileHeader({
@@ -27,6 +29,7 @@ export function MobileHeader({
   notificationsEnabled = true,
   onNotificationsToggle,
   showSiteSelector = true,
+  onAvatarClick,
 }: MobileHeaderProps) {
   const { companyId, profile, siteId } = useAppContext();
   const { setSelectedSite } = useSiteContext();
@@ -83,6 +86,12 @@ export function MobileHeader({
 
   const displaySiteName = propSiteName || currentSiteName;
 
+  const getInitials = (name: string) => {
+    const parts = name.split(' ');
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return name.substring(0, 2).toUpperCase();
+  };
+
   return (
     <header className="px-5 pt-4 pb-6 relative">
       <div className="flex items-start justify-between">
@@ -113,29 +122,39 @@ export function MobileHeader({
             </div>
           )}
         </div>
-        <button
-          onClick={() => {
-            if (onNotificationsToggle) {
-              onNotificationsToggle(!notificationsEnabled);
-            } else if (onNotificationClick) {
-              onNotificationClick();
-            }
-          }}
-          className={cn(
-            "relative p-2 rounded-full",
-            "transition-colors",
-            notificationsEnabled
-              ? "bg-[#D37E91]/15 hover:bg-[#D37E91]/25"
-              : "bg-white/5 hover:bg-white/10"
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              if (onNotificationsToggle) {
+                onNotificationsToggle(!notificationsEnabled);
+              } else if (onNotificationClick) {
+                onNotificationClick();
+              }
+            }}
+            className={cn(
+              "relative p-2 rounded-full",
+              "transition-colors",
+              notificationsEnabled
+                ? "bg-[#D37E91]/15 hover:bg-[#D37E91]/25"
+                : "bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10"
+            )}
+            title={notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
+          >
+            {notificationsEnabled ? (
+              <Bell size={20} className="text-[#D37E91]" />
+            ) : (
+              <BellOff size={20} className="text-theme-tertiary" />
+            )}
+          </button>
+          {onAvatarClick && (
+            <button
+              onClick={() => { haptics.medium(); onAvatarClick(); }}
+              className="w-9 h-9 rounded-full bg-[#D37E91] text-white text-sm font-bold flex items-center justify-center touch-manipulation active:scale-95 transition-transform"
+            >
+              {getInitials(userName)}
+            </button>
           )}
-          title={notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
-        >
-          {notificationsEnabled ? (
-            <Bell size={20} className="text-[#D37E91]" />
-          ) : (
-            <BellOff size={20} className="text-theme-tertiary" />
-          )}
-        </button>
+        </div>
       </div>
 
       {/* Site dropdown */}

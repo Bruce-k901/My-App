@@ -11,7 +11,7 @@ function safeLazy<P extends {}>(
   });
 }
 
-export type WidgetSize = 'small' | 'medium' | 'large' | 'wide';
+export type WidgetSize = 'small' | 'medium' | 'large' | 'wide' | 'tall';
 export type WidgetSection = 'charts' | 'operational';
 export type ModuleId = 'checkly' | 'stockly' | 'teamly' | 'planly' | 'assetly' | 'msgly';
 export type RoleId = 'Admin' | 'Owner' | 'Manager' | 'Staff';
@@ -30,8 +30,9 @@ export interface WidgetDefinition {
 export const WIDGET_SIZE_CLASSES: Record<WidgetSize, string> = {
   small: 'col-span-1',
   medium: 'col-span-1',
-  large: 'col-span-1 lg:col-span-2 row-span-2',
+  tall: 'col-span-1 row-span-2',
   wide: 'col-span-1 lg:col-span-2',
+  large: 'col-span-1 lg:col-span-2 row-span-2',
 };
 
 // ============================================================

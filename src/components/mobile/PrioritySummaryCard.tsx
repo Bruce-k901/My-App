@@ -6,6 +6,7 @@ import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { usePanelStore } from '@/lib/stores/panel-store';
+import { haptics } from '@/lib/haptics';
 
 interface SummaryData {
   tasksDue: number;
@@ -99,14 +100,14 @@ export function PrioritySummaryCard() {
 
   if (loading) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 animate-pulse">
+      <div className="backdrop-blur-xl bg-black/[0.03] dark:bg-white/[0.08] border border-black/[0.06] dark:border-white/[0.12] shadow-lg shadow-black/5 rounded-xl p-4 animate-pulse">
         <div className="h-16 bg-white/[0.05] rounded" />
       </div>
     );
   }
 
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+    <div className="backdrop-blur-xl bg-black/[0.03] dark:bg-white/[0.08] border border-black/[0.06] dark:border-white/[0.12] shadow-lg shadow-black/5 rounded-xl p-4">
       <h3 className="text-xs font-semibold text-theme-tertiary uppercase tracking-wider mb-3">
         Today's Overview
       </h3>
@@ -114,8 +115,8 @@ export function PrioritySummaryCard() {
       <div className="grid grid-cols-3 gap-3">
         {/* Tasks Due */}
         <button
-          onClick={() => router.push('/dashboard/todays_tasks')}
-          className="flex flex-col items-center p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] transition-colors"
+          onClick={() => { haptics.light(); router.push('/dashboard/todays_tasks'); }}
+          className="flex flex-col items-center p-3 rounded-lg backdrop-blur-sm bg-black/[0.02] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.10] hover:bg-black/[0.04] dark:hover:bg-white/[0.10] transition-colors"
         >
           <div className="relative">
             <CheckSquare className="w-6 h-6 text-[#D37E91] mb-1" />
@@ -131,8 +132,8 @@ export function PrioritySummaryCard() {
 
         {/* Messages */}
         <button
-          onClick={() => setMessagingOpen(true)}
-          className="flex flex-col items-center p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] transition-colors"
+          onClick={() => { haptics.light(); setMessagingOpen(true); }}
+          className="flex flex-col items-center p-3 rounded-lg backdrop-blur-sm bg-black/[0.02] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.10] hover:bg-black/[0.04] dark:hover:bg-white/[0.10] transition-colors"
         >
           <div className="relative">
             <MessageSquare className="w-6 h-6 text-amber-400 mb-1" />
@@ -149,15 +150,15 @@ export function PrioritySummaryCard() {
         {/* Next Shift / Overdue */}
         {summary.tasksOverdue > 0 ? (
           <button
-            onClick={() => router.push('/dashboard/todays_tasks?filter=overdue')}
-            className="flex flex-col items-center p-3 rounded-lg bg-red-500/10 hover:bg-red-500/20 transition-colors"
+            onClick={() => { haptics.light(); router.push('/dashboard/todays_tasks?filter=overdue'); }}
+            className="flex flex-col items-center p-3 rounded-lg backdrop-blur-sm bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition-colors"
           >
             <AlertTriangle className="w-6 h-6 text-red-400 mb-1" />
             <span className="text-xl font-bold text-red-400">{summary.tasksOverdue}</span>
             <span className="text-[10px] text-red-400">Overdue</span>
           </button>
         ) : (
-          <div className="flex flex-col items-center p-3 rounded-lg bg-white/[0.02]">
+          <div className="flex flex-col items-center p-3 rounded-lg backdrop-blur-sm bg-black/[0.02] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.10]">
             <Clock className="w-6 h-6 text-module-fg mb-1" />
             <span className="text-xl font-bold text-theme-primary">
               {summary.nextShift || '--:--'}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { WidgetCard, CountBadge, MiniItem } from '../WidgetCard';
+import { useWidgetSize } from '../WidgetSizeContext';
 import { supabase } from '@/lib/supabase';
 
 // Cache table availability to avoid repeated 400s when table doesn't exist
@@ -63,7 +64,7 @@ export default function TrainingExpiriesWidget({ siteId, companyId }: TrainingEx
         }));
 
         setTotalCount(allItems.length);
-        setItems(allItems.slice(0, 3));
+        setItems(allItems);
       } catch (err) {
         console.warn('[TrainingExpiries] Unexpected error:', err);
         tableAvailable = false;
@@ -74,6 +75,8 @@ export default function TrainingExpiriesWidget({ siteId, companyId }: TrainingEx
 
     fetchExpiringTraining();
   }, [companyId, siteId]);
+
+  const { maxItems } = useWidgetSize();
 
   if (loading) {
     return (
@@ -101,7 +104,7 @@ export default function TrainingExpiriesWidget({ siteId, companyId }: TrainingEx
     <WidgetCard title="Training Expiries" module="teamly" viewAllHref="/dashboard/people/training">
       <CountBadge count={totalCount} label="expiring within 30 days" status="warning" />
       <div className="mt-2">
-        {items.map((item) => (
+        {items.slice(0, maxItems).map((item) => (
           <MiniItem
             key={item.id}
             text={`${item.staffName} — ${item.trainingName}`}

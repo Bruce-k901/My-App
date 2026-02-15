@@ -13,7 +13,7 @@ export type ModuleId = 'checkly' | 'stockly' | 'teamly' | 'planly' | 'assetly' |
 /**
  * Widget size hints for grid layout
  */
-export type WidgetSize = 'small' | 'medium' | 'large' | 'wide';
+export type WidgetSize = 'small' | 'medium' | 'large' | 'wide' | 'tall';
 
 /**
  * Widget section for layout grouping
@@ -78,6 +78,8 @@ export interface DashboardPreferences {
   widgetOrder: string[];
   /** Array of widget IDs that are collapsed (mobile) */
   collapsedWidgets: string[];
+  /** Per-widget size overrides (widgetId → WidgetSize) */
+  widgetSizes: Record<string, WidgetSize>;
 }
 
 /**

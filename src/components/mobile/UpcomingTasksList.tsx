@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { CheckCircle2, Circle, Clock, ChevronRight } from '@/components/ui/icons';
+import { ThemedLottie } from '@/components/ui/ThemedLottie';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { haptics } from '@/lib/haptics';
 
 interface Task {
   id: string;
@@ -60,10 +62,12 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
   }, [companyId, siteId, limit]);
 
   const handleTaskClick = (taskId: string) => {
+    haptics.light();
     router.push(`/dashboard/tasks/${taskId}`);
   };
 
   const handleViewAll = () => {
+    haptics.light();
     router.push('/dashboard/todays_tasks');
   };
 
@@ -76,7 +80,7 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
           </h3>
         </div>
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="h-14 bg-white/[0.03] rounded-lg animate-pulse" />
+          <div key={i} className="h-14 bg-black/[0.03] dark:bg-white/[0.03] rounded-lg animate-pulse" />
         ))}
       </div>
     );
@@ -84,10 +88,16 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
 
   if (tasks.length === 0) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 text-center">
-        <CheckCircle2 className="w-10 h-10 text-module-fg mx-auto mb-2" />
-        <p className="text-sm font-medium text-theme-primary">All caught up!</p>
-        <p className="text-xs text-theme-tertiary">No pending tasks for today</p>
+      <div className="backdrop-blur-xl bg-black/[0.03] dark:bg-white/[0.08] border border-black/[0.06] dark:border-white/[0.12] shadow-lg shadow-black/5 rounded-xl p-6 text-center">
+        <ThemedLottie
+          src="/lottie/task-complete.json"
+          module="checkly"
+          width={160}
+          height={160}
+          loop
+        />
+        <p className="text-sm font-medium text-theme-primary mt-4">All caught up!</p>
+        <p className="text-xs text-theme-tertiary mt-1">No pending tasks for today</p>
       </div>
     );
   }
@@ -117,8 +127,8 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
               onClick={() => handleTaskClick(task.id)}
               className={cn(
                 "w-full flex items-center gap-3 p-3 rounded-lg transition-colors text-left",
-                "bg-white/[0.03] border border-white/[0.06]",
-                "hover:bg-white/[0.06] active:scale-[0.98]",
+                "backdrop-blur-sm bg-black/[0.02] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.10]",
+                "hover:bg-black/[0.04] dark:hover:bg-white/[0.10] active:scale-[0.98]",
                 isOverdue && "border-red-500/30 bg-red-500/5"
               )}
             >

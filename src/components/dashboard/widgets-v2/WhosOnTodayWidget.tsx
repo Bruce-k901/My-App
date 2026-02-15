@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { WidgetCard, MiniItem } from '../WidgetCard';
+import { AnimatedCounter } from '../AnimatedCounter';
+import { useWidgetSize } from '../WidgetSizeContext';
 import { supabase } from '@/lib/supabase';
 
 interface WhosOnTodayWidgetProps {
@@ -66,7 +68,7 @@ export default function WhosOnTodayWidget({ siteId, companyId }: WhosOnTodayWidg
         const all = records || [];
         setTotalCount(all.length);
 
-        const formatted: ClockedInStaff[] = all.slice(0, 3).map((r: any) => ({
+        const formatted: ClockedInStaff[] = all.slice(0, 10).map((r: any) => ({
           id: r.id,
           name: r.profiles?.full_name || 'Unknown',
           clockInTime: formatClockIn(r.clock_in_time),
@@ -82,6 +84,8 @@ export default function WhosOnTodayWidget({ siteId, companyId }: WhosOnTodayWidg
 
     fetchClockedIn();
   }, [companyId, siteId]);
+
+  const { maxItems } = useWidgetSize();
 
   if (loading) {
     return (
@@ -105,16 +109,16 @@ export default function WhosOnTodayWidget({ siteId, companyId }: WhosOnTodayWidg
     );
   }
 
-  const remaining = totalCount - 3;
+  const remaining = totalCount - maxItems;
 
   return (
     <WidgetCard title="Who's On Today" module="teamly" viewAllHref="/dashboard/people/schedule">
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-[22px] font-bold text-blue-400">{totalCount}</span>
+        <AnimatedCounter value={totalCount} className="text-[22px] font-bold text-teamly-dark dark:text-teamly" />
         <span className="text-[11px] text-[rgb(var(--text-disabled))]">clocked in</span>
       </div>
       <div>
-        {staff.map((person) => (
+        {staff.slice(0, maxItems).map((person) => (
           <MiniItem
             key={person.id}
             text={person.name}

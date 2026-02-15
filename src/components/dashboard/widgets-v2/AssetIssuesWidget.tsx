@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Check } from '@/components/ui/icons';
 import { WidgetCard, CountBadge, MiniItem } from '../WidgetCard';
+import { useWidgetSize } from '../WidgetSizeContext';
 import { supabase } from '@/lib/supabase';
 
 interface AssetIssuesWidgetProps {
@@ -47,7 +48,7 @@ export default function AssetIssuesWidget({ siteId, companyId }: AssetIssuesWidg
           .eq('company_id', companyId)
           .in('status', ['open', 'reopened', 'investigating'])
           .order('created_at', { ascending: false })
-          .limit(3);
+          .limit(10);
 
         if (siteId && siteId !== 'all') {
           query = query.eq('site_id', siteId);
@@ -110,6 +111,8 @@ export default function AssetIssuesWidget({ siteId, companyId }: AssetIssuesWidg
     fetchIssues();
   }, [companyId, siteId]);
 
+  const { maxItems } = useWidgetSize();
+
   if (loading) {
     return (
       <WidgetCard title="Asset Issues" module="assetly" viewAllHref="/dashboard/assets/callout-logs">
@@ -139,7 +142,7 @@ export default function AssetIssuesWidget({ siteId, companyId }: AssetIssuesWidg
     <WidgetCard title="Asset Issues" module="assetly" viewAllHref="/dashboard/assets/callout-logs">
       <CountBadge count={totalCount} label="open issues" status="warning" />
       <div className="mt-2">
-        {issues.map((issue) => (
+        {issues.slice(0, maxItems).map((issue) => (
           <MiniItem
             key={issue.id}
             text={`${issue.assetName} — ${issue.issue}`}
