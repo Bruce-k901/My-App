@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NodeViewWrapper } from '@tiptap/react';
-import { Upload, FileText, Download, X, File, FileImage, FileSpreadsheet } from 'lucide-react';
+import { Upload, FileText, Download, X, File, FileImage, FileSpreadsheet } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 
 interface AttachmentComponentProps {
@@ -105,7 +105,7 @@ export default function AttachmentComponent({ node, updateAttributes }: Attachme
     if (fileType.includes('word') || fileType.includes('document')) return <FileText className="text-blue-400" size={20} />;
     if (fileType.includes('sheet') || fileType.includes('excel')) return <FileSpreadsheet className="text-green-400" size={20} />;
     if (fileType.includes('image')) return <FileImage className="text-purple-400" size={20} />;
-    return <File className="text-neutral-400" size={20} />;
+    return <File className="text-theme-tertiary" size={20} />;
   };
 
   return (
@@ -121,8 +121,8 @@ export default function AttachmentComponent({ node, updateAttributes }: Attachme
               <div className="flex items-center gap-3">
                 {getFileIcon(node.attrs.fileType)}
                 <div>
-                  <p className="text-sm text-white font-medium">{node.attrs.fileName}</p>
-                  <p className="text-xs text-neutral-400">{formatFileSize(node.attrs.fileSize)}</p>
+                  <p className="text-sm text-theme-primary font-medium">{node.attrs.fileName}</p>
+                  <p className="text-xs text-theme-tertiary">{formatFileSize(node.attrs.fileSize)}</p>
                 </div>
               </div>
               
@@ -152,7 +152,7 @@ export default function AttachmentComponent({ node, updateAttributes }: Attachme
             {/* Upload Area */}
             <div className="border-2 border-dashed border-magenta-500/30 rounded-lg p-6 text-center hover:border-magenta-500/50 transition-colors">
               <FileText size={32} className="mx-auto text-magenta-400 mb-2" />
-              <p className="text-sm text-neutral-300 mb-3">
+              <p className="text-sm text-theme-tertiary mb-3">
                 Upload a document attachment
               </p>
               
@@ -168,7 +168,7 @@ export default function AttachmentComponent({ node, updateAttributes }: Attachme
                 />
               </label>
               
-              <p className="text-xs text-neutral-500 mt-2">
+              <p className="text-xs text-theme-tertiary mt-2">
                 PDF, Word, Excel, PowerPoint, TXT up to 10MB
               </p>
             </div>

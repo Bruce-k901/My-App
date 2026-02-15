@@ -7,6 +7,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "ghost" | "destructive" | "secondary" | "outline";
   fullWidth?: boolean;
   loading?: boolean;
+  asChild?: boolean;
 };
 
 export function Button({
@@ -16,6 +17,7 @@ export function Button({
   fullWidth,
   loading,
   disabled,
+  asChild = false,
   ...props
 }: ButtonProps) {
   const base = cn(
@@ -27,23 +29,27 @@ export function Button({
 
   const variants = {
     primary: cn(
-      "bg-white/[0.06] border border-white/[0.1] text-white",
-      "hover:bg-white/[0.12] hover:border-white/[0.25]",
-      "shadow-[0_0_10px_rgba(236,72,153,0.15)] hover:shadow-[0_0_14px_rgba(236,72,153,0.25)]",
+ "bg-theme-button border border-theme text-theme-primary",
+ "hover:bg-theme-button-hover hover:border-theme-hover dark:hover:border-white/[0.25]",
+      "shadow-[0_0_10px_rgba(211, 126, 145,0.15)] hover:shadow-[0_0_14px_rgba(211, 126, 145,0.25)]",
       "transition-all duration-150 ease-in-out backdrop-blur-md"
     ),
-    ghost:
-      "text-white bg-transparent border border-white/[0.1] hover:bg-white/[0.05]",
-    destructive:
+    ghost: cn(
+ "text-theme-primary bg-transparent border border-theme",
+ "hover:bg-theme-button"
+    ),
+    destructive: cn(
       "text-white bg-[#EF4444]/90 hover:bg-[#EF4444]",
+      "dark:bg-[#EF4444]/90 dark:hover:bg-[#EF4444]"
+    ),
     secondary: cn(
-      "bg-transparent text-[#EC4899] border border-[#EC4899]",
-      "hover:shadow-[0_0_12px_rgba(236,72,153,0.7)]",
+      "bg-transparent text-[#D37E91] dark:text-[#D37E91] border border-[#D37E91] dark:border-[#D37E91]",
+      "hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]",
       "transition-all duration-200 ease-in-out backdrop-blur-md"
     ),
     outline: cn(
-      "bg-transparent text-white border border-white/[0.2]",
-      "hover:border-[#EC4899]/50 hover:bg-white/[0.05]",
+ "bg-transparent text-theme-primary border border-theme-hover",
+ "hover:border-[#D37E91]/50 hover:bg-theme-button",
       "transition-all duration-150 ease-in-out backdrop-blur-md"
     ),
   } as const;
@@ -57,11 +63,26 @@ export function Button({
     children
   );
 
+  const buttonClasses = cn(base, variants[variant], fullWidth && "w-full", className);
+
+  // If asChild is true, clone the child element and apply button classes
+  if (asChild) {
+    const child = React.Children.only(children) as React.ReactElement;
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child as React.ReactElement<any>, {
+        ...(child.props as any),
+        ...props,
+        className: cn(buttonClasses, (child.props as any).className),
+        disabled: disabled || loading,
+      } as any);
+    }
+  }
+
   return (
     <button
       {...props}
       disabled={disabled || loading}
-      className={cn(base, variants[variant], fullWidth && "w-full", className)}
+      className={buttonClasses}
     >
       {content}
     </button>

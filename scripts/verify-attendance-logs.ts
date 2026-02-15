@@ -15,7 +15,8 @@ async function verifySetup() {
     
     // Test 1: Check if view exists
     console.log('Test 1: Checking if view exists...')
-    const { data: views, error: viewsError } = await supabase
+    // Type assertion: RPC function may not be in generated types
+    const { data: views, error: viewsError } = await (supabase as any)
       .rpc('verify_attendance_logs_setup')
     
     if (viewsError) {
@@ -36,7 +37,8 @@ async function verifySetup() {
     
     // Test 2: Try a SELECT query with clock_in_date
     console.log('\nTest 2: Testing SELECT query with clock_in_date...')
-    const { data: selectData, error: selectError } = await supabase
+    // Type assertion: attendance_logs may not be in generated types
+    const { data: selectData, error: selectError } = await (supabase as any)
       .from('attendance_logs')
       .select('id, clock_in_date')
       .eq('clock_in_date', new Date().toISOString().split('T')[0])
@@ -50,7 +52,8 @@ async function verifySetup() {
     
     // Test 3: Verify view is read-only (this should fail)
     console.log('\nTest 3: Verifying view is read-only...')
-    const { error: insertError } = await supabase
+    // Type assertion: attendance_logs may not be in generated types
+    const { error: insertError } = await (supabase as any)
       .from('attendance_logs')
       .insert({
         id: '00000000-0000-0000-0000-000000000000',
@@ -68,7 +71,8 @@ async function verifySetup() {
     
     // Test 4: Check functions use clock_in_date
     console.log('\nTest 4: Checking functions use clock_in_date...')
-    const { data: functions, error: funcError } = await supabase
+    // Type assertion: exec_sql may not be in generated types
+    const { data: functions, error: funcError } = await (supabase as any)
       .rpc('exec_sql', {
         query: `
           SELECT proname, prosrc 

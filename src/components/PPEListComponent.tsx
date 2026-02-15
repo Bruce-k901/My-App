@@ -1,6 +1,6 @@
 import { NodeViewWrapper } from "@tiptap/react";
 import { useState } from "react";
-import { Plus, X } from "lucide-react";
+import { Plus, X } from '@/components/ui/icons';
 
 interface PPEListComponentProps {
   node: {
@@ -57,7 +57,7 @@ export default function PPEListComponent({ node, updateAttributes, selected, get
       data-drag-handle
     >
       <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2 text-xs text-gray-400">
+        <div className="flex items-center gap-2 text-xs text-theme-tertiary">
           <span 
             className="cursor-grab select-none hover:text-magenta-400 transition-colors"
             contentEditable={false}
@@ -67,7 +67,7 @@ export default function PPEListComponent({ node, updateAttributes, selected, get
           </span>
           <span className="text-magenta-400 font-medium">🛡️ PPE List</span>
         </div>
-        <span className="text-[10px] text-gray-500 italic">Required gear</span>
+        <span className="text-[10px] text-theme-tertiary italic">Required gear</span>
       </div>
       
       <div className="flex gap-2 mb-2">
@@ -75,12 +75,12 @@ export default function PPEListComponent({ node, updateAttributes, selected, get
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className="flex-1 bg-neutral-800 border border-gray-600 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-magenta-400"
+                  className="flex-1 bg-neutral-800 border border-gray-600 rounded-xl px-3 py-2 text-sm text-theme-primary placeholder-gray-500 focus:outline-none focus:border-magenta-400"
                   placeholder="Add PPE item (e.g. gloves, apron, goggles)"
                 />
         <button 
           onClick={addItem} 
-          className="relative overflow-hidden group px-4 py-2 rounded-xl text-sm font-medium text-white"
+          className="relative overflow-hidden group px-4 py-2 rounded-xl text-sm font-medium text-theme-primary"
         >
           <span className="absolute inset-0 bg-gradient-to-r from-magenta-600/60 to-magenta-500/80 blur-sm group-hover:blur transition-all"></span>
           <span className="relative z-10">+ Add</span>
@@ -91,7 +91,7 @@ export default function PPEListComponent({ node, updateAttributes, selected, get
         <ul className="space-y-2">
           {items.map((item, i) => (
                     <li key={i} className="flex justify-between items-center bg-neutral-800 px-3 py-2 rounded-lg border border-gray-600/30">
-                      <span className="text-sm text-white">{item}</span>
+                      <span className="text-sm text-theme-primary">{item}</span>
               <button 
                 onClick={() => removeItem(i)} 
                 className="relative overflow-hidden group text-red-400 hover:text-red-600 text-xs p-1 rounded transition-colors"
@@ -106,7 +106,7 @@ export default function PPEListComponent({ node, updateAttributes, selected, get
           ))}
         </ul>
       ) : (
-        <p className="text-xs text-gray-500 italic mt-2">No PPE items added yet.</p>
+        <p className="text-xs text-theme-tertiary italic mt-2">No PPE items added yet.</p>
       )}
     </NodeViewWrapper>
   );

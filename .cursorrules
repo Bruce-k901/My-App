@@ -3,6 +3,19 @@
 ## Project Overview
 This is a Next.js 15 web application for managing health & safety, food safety, and operational compliance for hospitality venues. Built with TypeScript, Supabase, and modern React patterns.
 
+**Multi-Module Architecture:**
+The application consists of three interchangeable modules:
+- **Checkly**: Health & safety, food safety, compliance, and task management
+- **Stockly**: Inventory, stock management, and purchasing
+- **Teamly**: HR, people management, scheduling, payroll, and attendance
+
+These modules can be:
+- Used **standalone** (each module works independently)
+- **Bundled together** (all three in one installation)
+- **Bolted on** (modules added to existing installations)
+
+**CRITICAL:** All modules MUST share compatible database schemas to ensure interoperability.
+
 ## Tech Stack
 - **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript
@@ -71,7 +84,16 @@ const supabase = await createServerSupabaseClient();
 - Borders: `border-white/[0.06]` for card borders
 - Cards: `bg-white/[0.03]` with `border border-white/[0.06]`
 
-### 5. Button UX Language
+### 5. Dropdown/Select Menu Styling
+**REQUIRED:** All dropdown menus (`<select>` elements) MUST have:
+- Light text on dark backgrounds: `text-white` or `text-gray-100`
+- Dark background: `bg-white/[0.03]` or `bg-[#0B0D13]` or similar dark background
+- Proper contrast for readability
+- Option elements should also use dark backgrounds where possible (browser limitations apply)
+- Use the global CSS select styling in `globals.css` as a base
+- Example: `className="w-full px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#EC4899]/50"`
+
+### 6. Button UX Language
 **Standard Button Style:**
 - Background: `bg-transparent`
 - Text: `text-[#EC4899]` (magenta, NOT pink)
@@ -80,6 +102,222 @@ const supabase = await createServerSupabaseClient();
 - Transition: `transition-all duration-200 ease-in-out`
 
 **DO NOT USE:** Pink backgrounds (`bg-pink-500`) or solid pink buttons. All accent buttons should use magenta text with magenta border and glow on hover.
+
+### 6.5. STOCKLY MODULE STYLING
+
+Stockly (production/wholesale module) uses a distinct emerald theme to differentiate from Checkly's magenta:
+
+**Colors:**
+- Primary: Emerald (#10B981, emerald-500)
+- Primary hover: #059669 (emerald-600)
+- Accents: #34D399 (emerald-400)
+- Dark accents: #047857 (emerald-700)
+
+**Component Examples:**
+```tsx
+// Buttons
+<button className="bg-emerald-500 hover:bg-emerald-600 text-white">
+  Save
+</button>
+
+// Badges
+<span className="bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+  Active
+</span>
+
+// Cards
+<div className="bg-white/[0.03] border border-white/[0.06]">
+  {/* content */}
+</div>
+
+// Links
+<a className="text-emerald-400 hover:text-emerald-300">
+  View Details
+</a>
+
+// Focus states
+<input className="focus:ring-2 focus:ring-emerald-500/50" />
+```
+
+**Status Colors:**
+- Success: Emerald (bg-emerald-500/10, text-emerald-500)
+- Warning: Amber (bg-amber-500/10, text-amber-500)
+- Error: Red (bg-red-500/10, text-red-500)
+- Info: Blue (bg-blue-500/10, text-blue-500)
+
+**Navigation:**
+Stockly pages under `/dashboard/stockly` should use emerald highlights in navigation
+
+**Consistency:**
+- All Stockly components, badges, buttons, and interactive elements use emerald theme
+- All Checkly components continue using magenta theme (#EC4899)
+
+### 6.6. TEAMLY MODULE STYLING
+
+Teamly (HR/People module) uses Royal Blue theme to differentiate from other modules:
+
+**Colors:**
+- Primary Light: `#2563eb` (blue-600)
+- Primary Dark: `#60a5fa` (blue-400)
+- Light Mode: `bg-blue-600 hover:bg-blue-700 text-white`
+- Dark Mode: `dark:bg-blue-500 dark:hover:bg-blue-600 text-white`
+
+**Theme Conversion Patterns:**
+
+**Backgrounds:**
+- `bg-[#0f1220]` → `bg-white dark:bg-[#0f1220]`
+- `bg-[#171b2d]` → `bg-gray-50 dark:bg-[#171b2d]`
+- `bg-white/[0.03]` → `bg-gray-50 dark:bg-white/[0.03]`
+- `bg-white/[0.05]` → `bg-white dark:bg-white/[0.05]`
+- `bg-white/[0.06]` → `bg-white dark:bg-white/[0.06]`
+
+**Text:**
+- `text-white` → `text-gray-900 dark:text-white`
+- `text-white/80` → `text-gray-800 dark:text-white/80`
+- `text-white/70` → `text-gray-600 dark:text-white/70`
+- `text-white/60` → `text-gray-600 dark:text-white/60`
+- `text-white/50` → `text-gray-500 dark:text-white/50`
+
+**Borders:**
+- `border-white/[0.06]` → `border-gray-200 dark:border-white/[0.06]`
+- `border-white/[0.1]` → `border-gray-300 dark:border-white/[0.1]`
+
+**Component Examples:**
+```tsx
+// Primary Button
+<button className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white">
+  Save
+</button>
+
+// Secondary Button
+<button className="bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] text-gray-600 hover:text-gray-900 dark:text-white/60 dark:hover:text-white border border-gray-200 dark:border-white/[0.1]">
+  Cancel
+</button>
+
+// Cards
+<div className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-xl shadow-sm dark:shadow-none">
+  {/* content */}
+</div>
+
+// Input Fields
+<input className="bg-white dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20" />
+
+// Status Badges
+<span className="bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/20">
+  Active
+</span>
+
+// Sidebar Navigation (CRITICAL)
+// Only ONE item should be highlighted at a time - use exact pathname matching
+const isActive = pathname === item.href; // NOT pathname.includes()
+// Active: text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 font-medium
+// Inactive: text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.05]
+```
+
+**Status Colors:**
+- Success: `bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400`
+- Error: `bg-red-100 dark:bg-red-500/10 text-red-600 dark:text-red-400`
+- Warning: `bg-yellow-100 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-400`
+- Info: `bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400`
+
+**Navigation:**
+- Teamly pages under `/dashboard/people` should use blue highlights
+- Sidebar: Only exact pathname matches should be highlighted (not `includes()` or `startsWith()`)
+- Active state: `text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 font-medium`
+
+**Modals:**
+- Backdrop: `bg-black/30 dark:bg-black/50`
+- Container: `bg-white dark:bg-[#171b2d] border border-gray-200 dark:border-white/[0.1] rounded-2xl shadow-xl`
+- Header: `border-b border-gray-200 dark:border-white/[0.06]`
+
+**Tables:**
+- Header: `bg-gray-50 dark:bg-white/[0.02] text-gray-500 dark:text-white/60`
+- Row: `border-b border-gray-200 dark:border-white/[0.06] hover:bg-gray-50 dark:hover:bg-white/[0.02]`
+- Cell: `text-gray-700 dark:text-white/80`
+
+**Consistency:**
+- All Teamly components, badges, buttons, and interactive elements use Royal Blue theme
+- Always provide light mode equivalents for dark-only classes
+- Test in both light and dark modes
+
+### 7. Multi-Module Schema Compatibility
+**CRITICAL:** Checkly, Stockly, and Teamly are designed to work as:
+- **Standalone modules** (each can be used independently)
+- **Bundled together** (all three modules in one installation)
+- **Bolt-on modules** (modules can be added to existing installations)
+
+**Schema Design Requirements:**
+1. **Shared Core Tables**: All modules MUST use the same core table names and column names:
+   - `companies` - Company/organization data
+   - `sites` - Site/location data
+   - `profiles` - User profiles (NOT `users`, NOT `employees`)
+   - `user_roles` - Role assignments (use `profile_id`, NOT `user_id`)
+   - `roles` - Role definitions
+   - `permissions` - Permission definitions
+   - `departments` - Department structure
+   - `areas` / `company_areas` - Area definitions
+   - `regions` / `company_regions` - Region definitions
+
+2. **Consistent Column Names**: 
+   - User references: Always use `profile_id` (references `profiles.id`), NEVER `user_id` or `employee_id`
+   - Company references: Always use `company_id` (references `companies.id`)
+   - Site references: Always use `site_id` (references `sites.id`)
+   - Timestamps: Use `created_at`, `updated_at` (not `created`, `modified`, etc.)
+
+3. **Foreign Key Compatibility**:
+   - Before creating foreign keys, check if referenced tables exist
+   - Use conditional FK creation: `IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'table_name')`
+   - Handle both `areas`/`company_areas` and `regions`/`company_regions` naming variations
+
+4. **Migration Safety**:
+   - All migrations MUST be idempotent (can run multiple times safely)
+   - Use `CREATE TABLE IF NOT EXISTS` or `DO $$` blocks to check existence
+   - Use `DROP TABLE IF EXISTS` / `DROP INDEX IF EXISTS` / `DROP POLICY IF EXISTS` before creating
+   - Check for existing columns before adding: `IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE...)`
+
+5. **Table Naming Conflicts**:
+   - Before creating a table, check if it exists with a different schema
+   - If an incompatible table exists (e.g., old `user_roles` with `user_id`), drop and recreate
+   - Document schema migrations in migration comments
+
+6. **Module-Specific Tables**: 
+   - Use clear prefixes for module-specific tables (e.g., `teamly_shift_rules`, `stockly_stock_levels`, `checkly_tasks`)
+   - Shared tables should NOT have module prefixes
+
+**Example - Safe Table Creation:**
+```sql
+-- ✅ Good: Handles existing incompatible schema
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'user_roles'
+    AND EXISTS (
+      SELECT 1 FROM information_schema.columns 
+      WHERE table_name = 'user_roles' AND column_name = 'user_id'
+    )
+  ) THEN
+    DROP TABLE IF EXISTS user_roles CASCADE;
+  END IF;
+  
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'user_roles'
+  ) THEN
+    CREATE TABLE user_roles (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      profile_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+      -- ... rest of schema
+    );
+  END IF;
+END $$;
+```
+
+**Before Creating Any Table/Column:**
+1. Check if table/column already exists
+2. Check if it has compatible schema
+3. If incompatible, drop and recreate (or migrate data if needed)
+4. Always use `profile_id` for user references, never `user_id` or `employee_id`
 
 ## Code Style Guidelines
 

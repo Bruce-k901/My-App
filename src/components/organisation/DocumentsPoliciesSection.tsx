@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui";
 import UploadGlobalDocModal from "@/components/modals/UploadGlobalDocModal";
 import { useAppContext } from "@/context/AppContext";
-import { Trash2, X } from "lucide-react";
+import { Trash2, X, Archive, ArrowLeft, FileText, Edit } from '@/components/ui/icons';
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import DocumentReviewModal from "@/components/modals/DocumentReviewModal";
 
 type GlobalDoc = {
   id: string;
@@ -15,13 +18,25 @@ type GlobalDoc = {
   version?: string | null;
   expiry_date?: string | null;
   notes?: string | null;
-  file_path: string;
+  file_path: string | null;
   created_at?: string;
+  is_archived?: boolean;
+  is_placeholder?: boolean | null;
+  doc_key?: string | null;
 };
 
 export default function DocumentsPoliciesSection() {
-  const { companyId } = useAppContext();
+  const { companyId, company } = useAppContext();
+  
+  // Use selected company from context (for multi-company support)
+  const effectiveCompanyId = company?.id || companyId;
+  
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const documentIdParam = searchParams?.get('document_id');
+  const showArchived = searchParams?.get('archived') === 'true';
   const [open, setOpen] = useState(false);
+  const [replaceDoc, setReplaceDoc] = useState<GlobalDoc | null>(null);
   const [docs, setDocs] = useState<GlobalDoc[]>([]);
   const [latestDoc, setLatestDoc] = useState<GlobalDoc | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -29,9 +44,17 @@ export default function DocumentsPoliciesSection() {
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [selectedDocument, setSelectedDocument] = useState<GlobalDoc | null>(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+
+  const isPlaceholderFilePath = (filePath: unknown): boolean => {
+    if (!filePath) return true;
+    if (typeof filePath !== "string") return true;
+    return filePath.includes("/_onboarding_placeholders/");
+  };
 
   const load = useCallback(async () => {
-    if (!companyId) {
+    if (!effectiveCompanyId) {
       setLoading(false);
       setDocs([]);
       setLatestDoc(null);
@@ -41,18 +64,73 @@ export default function DocumentsPoliciesSection() {
     setLoading(true);
     setError(null);
     try {
-      const { data, error } = await supabase
+      // Build query - handle is_archived column gracefully
+      // First try with is_archived filter, fallback to without if column doesn't exist
+      const baseSelect = "id,category,name,version,expiry_date,notes,file_path,created_at";
+      const selectWithAll = `${baseSelect},is_archived,is_placeholder,doc_key`;
+      const selectNoArchive = `${baseSelect},is_placeholder,doc_key`;
+      const selectLegacy = baseSelect;
+
+      let query = supabase
         .from("global_documents")
-        .select("id,category,name,version,expiry_date,notes,file_path,created_at")
-        .eq("company_id", companyId)
-        .order("created_at", { ascending: false });
+        .select(selectWithAll)
+        .eq("company_id", effectiveCompanyId);
+      
+      // Try to filter by is_archived
+      if (showArchived) {
+        query = query.eq("is_archived", true);
+      } else {
+        // For active documents, show all (is_archived=false or null/undefined)
+        // We'll filter in JavaScript as fallback
+      }
+      
+      query = query.order("created_at", { ascending: false });
+      
+      let { data, error } = await query;
+      
+      // If error is about is_archived column not existing, retry without filter
+      if (error && (error.message?.includes('is_archived') || error.code === 'PGRST204')) {
+        console.log('is_archived column not found, querying without filter');
+        query = supabase
+          .from("global_documents")
+          .select(selectNoArchive)
+          .eq("company_id", effectiveCompanyId)
+          .order("created_at", { ascending: false });
+        
+        const retryResult = await query;
+        data = retryResult.data;
+        error = retryResult.error;
+      }
+
+      // If error is about newer columns not existing (is_placeholder/doc_key), retry legacy select
+      if (error && (String((error as any)?.message || '').includes('is_placeholder') || String((error as any)?.message || '').includes('doc_key') || (error as any)?.code === 'PGRST204')) {
+        query = supabase
+          .from("global_documents")
+          .select(selectLegacy)
+          .eq("company_id", effectiveCompanyId)
+          .order("created_at", { ascending: false });
+
+        const retryLegacy = await query;
+        data = retryLegacy.data;
+        error = retryLegacy.error;
+      }
         
       if (error) {
         setError(error.message);
         setDocs([]);
         setLatestDoc(null);
       } else {
-        const list = (data || []) as GlobalDoc[];
+        let list = (data || []) as GlobalDoc[];
+        
+        // Filter by is_archived in JavaScript (handles both DB filter and fallback)
+        if (!showArchived) {
+          // Show documents where is_archived is false, null, or undefined
+          list = list.filter(doc => !doc.is_archived);
+        } else {
+          // Show only archived documents
+          list = list.filter(doc => doc.is_archived === true);
+        }
+        
         setDocs(list);
         setLatestDoc(list[0] || null);
       }
@@ -63,7 +141,7 @@ export default function DocumentsPoliciesSection() {
     } finally {
       setLoading(false);
     }
-  }, [companyId]);
+  }, [effectiveCompanyId]);
 
   useEffect(() => {
     // Load (or reload) whenever company context changes
@@ -72,7 +150,7 @@ export default function DocumentsPoliciesSection() {
 
   // Live updates: re-fetch when global_documents changes for this company
   useEffect(() => {
-    if (!companyId) return;
+    if (!effectiveCompanyId) return;
     
     // Debounce realtime updates to prevent infinite loops
     let debounceTimeout: NodeJS.Timeout;
@@ -87,7 +165,7 @@ export default function DocumentsPoliciesSection() {
       .channel("global_documents_updates")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "global_documents", filter: `company_id=eq.${companyId}` },
+        { event: "*", schema: "public", table: "global_documents", filter: `company_id=eq.${effectiveCompanyId}` },
         debouncedLoad
       )
       .subscribe();
@@ -96,7 +174,7 @@ export default function DocumentsPoliciesSection() {
       clearTimeout(debounceTimeout);
       supabase.removeChannel(channel);
     };
-  }, [companyId, load]);
+  }, [effectiveCompanyId, load]);
   // Fade the highlight after 20 seconds
   useEffect(() => {
     if (!highlightId) return;
@@ -104,10 +182,82 @@ export default function DocumentsPoliciesSection() {
     return () => clearTimeout(timer);
   }, [highlightId]);
 
-  const getPublicUrl = (path: string) => {
-    // Paths are stored company-scoped: `${companyId}/folder/filename`
+  // Handle query params for navigation from tasks
+  useEffect(() => {
+    if (documentIdParam && docs.length > 0) {
+      const doc = docs.find(d => d.id === documentIdParam);
+      if (doc) {
+        // Highlight the document
+        setHighlightId(documentIdParam);
+        
+        // Scroll to the document after a short delay
+        setTimeout(() => {
+          const element = document.getElementById(`document-row-${documentIdParam}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Remove highlight after 5 seconds
+            setTimeout(() => {
+              setHighlightId(null);
+            }, 5000);
+          }
+        }, 500);
+      }
+    }
+  }, [documentIdParam, docs]);
+
+  const getPublicUrl = (path: string | null) => {
+    // Paths are stored company-scoped: `${effectiveCompanyId}/folder/filename`
+    if (!path || isPlaceholderFilePath(path)) return null;
     const { data } = supabase.storage.from("global_docs").getPublicUrl(path);
-    return data.publicUrl;
+    return data.publicUrl || null;
+  };
+
+  const handleArchive = async (doc: GlobalDoc) => {
+    try {
+      // Check if is_archived column exists by trying to update it
+      const { error: updateError } = await supabase
+        .from("global_documents")
+        .update({ is_archived: true })
+        .eq("id", doc.id);
+
+      if (updateError) {
+        // If column doesn't exist, show helpful message
+        if (updateError.message?.includes('is_archived') || updateError.code === 'PGRST204') {
+          toast.error("Archive feature requires database migration. Please run: add_is_archived_to_global_documents.sql");
+          return;
+        }
+        throw updateError;
+      }
+
+      toast.success("Document archived successfully");
+      load();
+    } catch (error: any) {
+      console.error("Error archiving document:", error);
+      toast.error(`Failed to archive document: ${error.message || "Unknown error"}`);
+    }
+  };
+
+  const handleUnarchive = async (doc: GlobalDoc) => {
+    try {
+      const { error: updateError } = await supabase
+        .from("global_documents")
+        .update({ is_archived: false })
+        .eq("id", doc.id);
+
+      if (updateError) {
+        if (updateError.message?.includes('is_archived') || updateError.code === 'PGRST204') {
+          toast.error("Unarchive feature requires database migration. Please run: add_is_archived_to_global_documents.sql");
+          return;
+        }
+        throw updateError;
+      }
+
+      toast.success("Document unarchived successfully");
+      load();
+    } catch (error: any) {
+      console.error("Error unarchiving document:", error);
+      toast.error(`Failed to unarchive document: ${error.message || "Unknown error"}`);
+    }
   };
 
   const handleDelete = async (doc: GlobalDoc) => {
@@ -173,22 +323,48 @@ export default function DocumentsPoliciesSection() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-white font-semibold">Global Documents</h3>
-        <Button onClick={() => setOpen(true)}>Upload Document</Button>
+        <div className="flex items-center gap-4">
+          {showArchived && (
+            <button
+              onClick={() => router.push('/dashboard/documents')}
+ className="flex items-center gap-2 text-gray-500 dark:text-theme-tertiary hover:text-gray-700 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to Documents</span>
+            </button>
+          )}
+          <h3 className="text-theme-primary font-semibold">
+            {showArchived ? "Archived Documents" : "Global Documents"}
+          </h3>
+        </div>
+        <div className="flex items-center gap-2">
+          {!showArchived && (
+            <Button
+              onClick={() => router.push('/dashboard/documents?archived=true')}
+              variant="outline"
+            >
+              <Archive className="h-4 w-4 mr-2" />
+              View Archived
+            </Button>
+          )}
+          {!showArchived && (
+            <Button onClick={() => { setReplaceDoc(null); setOpen(true); }}>Upload Document</Button>
+          )}
+        </div>
       </div>
 
       {/* EHO Requirements Helper */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+      <div className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-xl p-4">
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h4 className="text-sm font-semibold text-white mb-1">EHO Required Documents</h4>
-            <p className="text-xs text-white/60">
+            <h4 className="text-sm font-semibold text-theme-primary mb-1">EHO Required Documents</h4>
+            <p className="text-xs text-theme-tertiary">
               Upload these documents to improve your EHO Readiness Pack score
             </p>
           </div>
           <div className="text-right">
-            <div className="text-lg font-bold text-green-400">{uploadedDocs.length}</div>
-            <div className="text-xs text-white/60">of {expectedDocuments.length}</div>
+            <div className="text-lg font-bold text-green-600 dark:text-green-400">{uploadedDocs.length}</div>
+            <div className="text-xs text-theme-tertiary">of {expectedDocuments.length}</div>
           </div>
         </div>
         
@@ -200,20 +376,20 @@ export default function DocumentsPoliciesSection() {
                 key={doc.name}
                 className={`flex items-center gap-2 text-xs p-2 rounded ${
                   isUploaded
-                    ? 'bg-green-500/10 border border-green-500/30'
-                    : 'bg-white/[0.03] border border-white/[0.1]'
+                    ? 'bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30'
+                    : 'bg-gray-50 dark:bg-white/[0.03] border border-theme'
                 }`}
               >
                 {isUploaded ? (
-                  <span className="text-green-400">✓</span>
+                  <span className="text-green-600 dark:text-green-400">✓</span>
                 ) : (
-                  <span className="text-red-400">○</span>
+                  <span className="text-red-500 dark:text-red-400">○</span>
                 )}
-                <span className={`flex-1 ${isUploaded ? 'text-white/80' : 'text-white/60'}`}>
+                <span className={`flex-1 ${isUploaded ? 'text-theme-secondary' : 'text-theme-tertiary'}`}>
                   {doc.name}
                 </span>
                 {doc.required && (
-                  <span className="text-xs px-1.5 py-0.5 bg-red-500/20 text-red-400 rounded">Required</span>
+                  <span className="text-xs px-1.5 py-0.5 bg-red-100 dark:bg-red-500/20 text-red-500 dark:text-red-400 rounded">Required</span>
                 )}
               </div>
             )
@@ -221,8 +397,8 @@ export default function DocumentsPoliciesSection() {
         </div>
         
         {missingDocs.length > 0 && (
-          <div className="mt-3 pt-3 border-t border-white/[0.1]">
-            <p className="text-xs text-yellow-400">
+          <div className="mt-3 pt-3 border-t border-theme">
+            <p className="text-xs text-yellow-600 dark:text-yellow-400">
               ⚠ {missingDocs.length} required document{missingDocs.length > 1 ? 's' : ''} missing
             </p>
           </div>
@@ -232,75 +408,98 @@ export default function DocumentsPoliciesSection() {
       {/* Latest upload card */}
       {!loading && !error && latestDoc && (
         <div className="relative group">
-          {confirmDeleteId === latestDoc.id ? (
-            <div className="rounded-xl p-4 border border-red-500/50 bg-red-500/10">
-              <div className="text-white font-medium mb-2">Delete "{latestDoc.name}"?</div>
-              <div className="text-sm text-white/60 mb-3">This action cannot be undone.</div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => handleDelete(latestDoc)}
-                  disabled={deletingId === latestDoc.id}
-                  className="bg-red-500 hover:bg-red-600 text-white"
-                  size="sm"
-                >
-                  {deletingId === latestDoc.id ? "Deleting..." : "Delete"}
-                </Button>
-                <Button
-                  onClick={() => setConfirmDeleteId(null)}
-                  variant="ghost"
-                  size="sm"
-                  disabled={deletingId === latestDoc.id}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <>
-              <a
-                href={getPublicUrl(latestDoc.file_path)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-xl p-4 border border-pink-500/40 bg-white/[0.06] hover:border-pink-500/60 hover:bg-white/[0.08] transition-all duration-200 cursor-pointer pr-12"
+          <>
+            <div
+                className="block rounded-xl p-4 border border-[#D37E91] dark:border-[#D37E91]/40 bg-[#D37E91]/10 dark:bg-white/[0.06] hover:border-[#D37E91] dark:hover:border-[#D37E91]/60 hover:bg-[#D37E91]/10 dark:hover:bg-white/[0.08] transition-all duration-200 pr-12 group"
               >
-                <div>
-                  <div className="text-white font-medium">Latest Upload: {latestDoc.name}</div>
-                  <div className="text-slate-400 text-sm">
-                    {latestDoc.category} · {latestDoc.version || "v1"}
-                    {latestDoc.expiry_date ? ` · expires ${new Date(latestDoc.expiry_date).toLocaleDateString()}` : ""}
-                    {latestDoc.created_at ? ` · uploaded ${new Date(latestDoc.created_at).toLocaleDateString()}` : ""}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="text-theme-primary font-medium">Latest Upload: {latestDoc.name}</div>
+ <div className="text-gray-500 dark:text-theme-tertiary text-sm">
+                      {latestDoc.category} · {latestDoc.version || "v1"}
+                      {latestDoc.expiry_date ? ` · expires ${new Date(latestDoc.expiry_date).toLocaleDateString()}` : ""}
+                      {latestDoc.created_at ? ` · uploaded ${new Date(latestDoc.created_at).toLocaleDateString()}` : ""}
+                    </div>
+ {latestDoc.notes && <div className="text-gray-500 dark:text-theme-tertiary text-sm mt-1">{latestDoc.notes}</div>}
+                    {(!latestDoc.file_path || isPlaceholderFilePath(latestDoc.file_path) || latestDoc.is_placeholder) && (
+                      <div className="text-amber-600 dark:text-amber-300 text-xs mt-2">
+                        Placeholder document (no file uploaded yet)
+                      </div>
+                    )}
                   </div>
-                  {latestDoc.notes && <div className="text-slate-400 text-sm mt-1">{latestDoc.notes}</div>}
+                  <div className="flex items-center gap-3">
+                    {(!latestDoc.file_path || isPlaceholderFilePath(latestDoc.file_path) || latestDoc.is_placeholder) && !showArchived ? (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setReplaceDoc(latestDoc);
+                          setOpen(true);
+                        }}
+                        className="p-2.5 rounded-lg bg-[#D37E91]/10 hover:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/30 hover:border-[#D37E91]/50 transition-colors"
+                        title="Upload file for this placeholder document"
+                      >
+                        <FileText className="w-5 h-5" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!latestDoc.file_path || isPlaceholderFilePath(latestDoc.file_path)) return;
+                          setSelectedDocument(latestDoc);
+                          setShowReviewModal(true);
+                        }}
+                        className="p-2.5 rounded-lg bg-[#D37E91]/10 hover:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/30 hover:border-[#D37E91]/50 transition-colors"
+                        title="Edit document - update expiry date or upload new version"
+                        disabled={!latestDoc.file_path || isPlaceholderFilePath(latestDoc.file_path)}
+                      >
+                        <Edit className="w-5 h-5" />
+                      </button>
+                    )}
+                    {!showArchived && (
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleArchive(latestDoc);
+                        }}
+                        className="p-2.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 transition-colors"
+                        title="Archive document"
+                      >
+                        <Archive className="w-5 h-5" />
+                      </button>
+                    )}
+                    {showArchived && (
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleUnarchive(latestDoc);
+                        }}
+                        className="p-2.5 rounded-lg bg-green-500/10 hover:bg-module-fg/10 text-green-400 transition-colors"
+                        title="Unarchive document"
+                      >
+                        <ArrowLeft className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </a>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setConfirmDeleteId(latestDoc.id);
-                }}
-                className="absolute top-4 right-4 p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                disabled={deletingId === latestDoc.id}
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </>
-          )}
+              </div>
+          </>
         </div>
       )}
 
       {loading ? (
-        <p className="text-slate-400">Loading documents…</p>
+ <p className="text-gray-500 dark:text-theme-tertiary">Loading documents…</p>
       ) : error ? (
-        <p className="text-red-400">Error: {error}</p>
+        <p className="text-red-500 dark:text-red-400">Error: {error}</p>
       ) : docs.length === 0 ? (
-        <p className="text-slate-400">No documents yet. Upload one to get started.</p>
+ <p className="text-gray-500 dark:text-theme-tertiary">No documents yet. Upload one to get started.</p>
       ) : (
         <>
           {/* Info about renaming */}
           {docs.some(d => !expectedDocuments.find(ed => ed.name === d.name)) && (
-            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-4">
-              <p className="text-xs text-yellow-400">
+            <div className="bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/30 rounded-lg p-3 mb-4">
+              <p className="text-xs text-yellow-600 dark:text-yellow-400">
                 💡 <strong>Tip:</strong> Some documents may not match EHO requirements. 
                 When uploading new documents, use the "Document Type" selector to ensure they're recognized by the EHO Readiness Pack.
               </p>
@@ -309,76 +508,99 @@ export default function DocumentsPoliciesSection() {
           
           <ul className="space-y-2">
             {docs.filter((d) => d.id !== latestDoc?.id).map((d) => {
-              const url = getPublicUrl(d.file_path);
               const isNew = d.id === highlightId;
               const isEHORequired = expectedDocuments.find(ed => ed.name === d.name)
-              const isDeleting = deletingId === d.id
-              const showConfirm = confirmDeleteId === d.id
+              const needsUpload = !d.file_path || isPlaceholderFilePath(d.file_path) || d.is_placeholder
               
               return (
-                <li key={d.id} className="relative group">
-                  {showConfirm ? (
-                    <div className="rounded-xl p-4 border border-red-500/50 bg-red-500/10">
-                      <div className="text-white font-medium mb-2">Delete "{d.name}"?</div>
-                      <div className="text-sm text-white/60 mb-3">This action cannot be undone.</div>
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={() => handleDelete(d)}
-                          disabled={isDeleting}
-                          className="bg-red-500 hover:bg-red-600 text-white"
-                          size="sm"
-                        >
-                          {isDeleting ? "Deleting..." : "Delete"}
-                        </Button>
-                        <Button
-                          onClick={() => setConfirmDeleteId(null)}
-                          variant="ghost"
-                          size="sm"
-                          disabled={isDeleting}
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <a
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`block rounded-xl p-4 border ${isNew ? "border-pink-500" : isEHORequired ? "border-green-500/30" : "border-white/[0.1] hover:border-white/[0.2]"} ${isEHORequired ? "bg-green-500/5" : "bg-white/[0.06]"} hover:bg-white/[0.08] transition-all duration-200 cursor-pointer pr-12`}
+                <li
+                  key={d.id}
+                  id={`document-row-${d.id}`}
+                  className={`relative group ${isNew ? 'animate-pulse' : ''} ${
+                    isNew ? 'border-2 border-blue-500/60 bg-blue-500/10 rounded-xl' : ''
+                  }`}
+                >
+                  <>
+                    <div
+                        className={`block rounded-xl p-4 border ${isNew ? "border-blue-300 dark:border-blue-500/60 bg-blue-50 dark:bg-blue-500/10" : isEHORequired ? "border-green-200 dark:border-green-500/30" : "border-theme hover:border-gray-300 dark:hover:border-white/[0.2]"} ${isEHORequired && !isNew ? "bg-green-50 dark:bg-green-500/5" : !isNew ? "bg-white dark:bg-white/[0.06]" : ""} hover:bg-theme-surface-elevated dark:hover:bg-white/[0.08] transition-all duration-200 pr-12 group`}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <div className="text-white font-medium">{d.name}</div>
+                              <div className="text-theme-primary font-medium">{d.name}</div>
                               {isEHORequired && (
-                                <span className="text-xs px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded">EHO</span>
+                                <span className="text-xs px-1.5 py-0.5 bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 rounded">EHO</span>
+                              )}
+                              {needsUpload && (
+                                <span className="text-xs px-1.5 py-0.5 bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-300 rounded">
+                                  Placeholder
+                                </span>
                               )}
                             </div>
-                            <div className="text-slate-400 text-sm">
+ <div className="text-gray-500 dark:text-theme-tertiary text-sm">
                               {d.category} · {d.version || "v1"}
                               {d.expiry_date ? ` · expires ${new Date(d.expiry_date).toLocaleDateString()}` : ""}
                               {d.created_at ? ` · uploaded ${new Date(d.created_at).toLocaleDateString()}` : ""}
                             </div>
-                            {d.notes && <div className="text-slate-400 text-sm mt-1">{d.notes}</div>}
+ {d.notes && <div className="text-gray-500 dark:text-theme-tertiary text-sm mt-1">{d.notes}</div>}
+                          </div>
+                          <div className="flex items-center gap-3">
+                            {!showArchived && needsUpload && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setReplaceDoc(d);
+                                  setOpen(true);
+                                }}
+                                className="p-2.5 rounded-lg bg-[#D37E91]/10 hover:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/30 hover:border-[#D37E91]/50 transition-colors"
+                                title="Upload file for this placeholder document"
+                              >
+                                <FileText className="w-5 h-5" />
+                              </button>
+                            )}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (!d.file_path || isPlaceholderFilePath(d.file_path)) return;
+                                setSelectedDocument(d);
+                                setShowReviewModal(true);
+                              }}
+                              className="p-2.5 rounded-lg bg-[#D37E91]/10 hover:bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]/30 hover:border-[#D37E91]/50 transition-colors"
+                              title="Edit document - update expiry date or upload new version"
+                              disabled={!d.file_path || isPlaceholderFilePath(d.file_path)}
+                            >
+                              <Edit className="w-5 h-5" />
+                            </button>
+                            {!showArchived && (
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleArchive(d);
+                                }}
+                                className="p-2.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 transition-colors"
+                                title="Archive document"
+                              >
+                                <Archive className="w-5 h-5" />
+                              </button>
+                            )}
+                            {showArchived && (
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleUnarchive(d);
+                                }}
+                                className="p-2.5 rounded-lg bg-green-500/10 hover:bg-module-fg/10 text-green-400 transition-colors"
+                                title="Unarchive document"
+                              >
+                                <ArrowLeft className="w-5 h-5" />
+                              </button>
+                            )}
                           </div>
                         </div>
-                      </a>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setConfirmDeleteId(d.id);
-                        }}
-                        className="absolute top-4 right-4 p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                        disabled={isDeleting}
-                        title="Delete document"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </>
-                  )}
+                      </div>
+                  </>
                 </li>
               );
             })}
@@ -389,14 +611,39 @@ export default function DocumentsPoliciesSection() {
       {open && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
           <UploadGlobalDocModal
-            onClose={() => setOpen(false)}
+            existingDocumentId={replaceDoc?.id}
+            initialCategory={replaceDoc?.category}
+            initialName={replaceDoc?.name}
+            initialNotes={replaceDoc?.notes || ''}
+            onClose={() => { setOpen(false); setReplaceDoc(null); }}
             onSuccess={(newId) => {
               setOpen(false);
+              setReplaceDoc(null);
               setHighlightId(newId || null);
               load();
             }}
           />
         </div>
+      )}
+
+      {selectedDocument && selectedDocument.file_path && !isPlaceholderFilePath(selectedDocument.file_path) && (
+        <DocumentReviewModal
+          isOpen={showReviewModal}
+          onClose={() => {
+            setShowReviewModal(false)
+            setSelectedDocument(null)
+          }}
+          documentId={selectedDocument.id}
+          documentName={selectedDocument.name}
+          currentExpiryDate={selectedDocument.expiry_date || null}
+          currentVersion={selectedDocument.version || null}
+          currentFilePath={selectedDocument.file_path}
+          onSuccess={() => {
+            setShowReviewModal(false)
+            setSelectedDocument(null)
+            load()
+          }}
+        />
       )}
     </div>
   );

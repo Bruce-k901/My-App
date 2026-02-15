@@ -15,7 +15,7 @@ import { supabase } from '@/lib/supabase'
 
 export interface AttendanceLog {
   id: string
-  user_id: string
+  profile_id: string
   company_id: string
   site_id: string | null
   clock_in_at: string
@@ -43,7 +43,7 @@ export async function isUserClockedInToday(
     const { data: staffData, error: staffError } = await supabase
       .from('staff_attendance')
       .select('id')
-      .eq('user_id', userId)
+      .eq('profile_id', userId)
       .eq('site_id', siteId)
       .eq('shift_status', 'on_shift')
       .is('clock_out_time', null)
@@ -77,7 +77,7 @@ export async function getAttendanceLogForDate(
     const { data: staffData, error: staffError } = await supabase
       .from('staff_attendance')
       .select('*')
-      .eq('user_id', userId)
+      .eq('profile_id', userId)
       .eq('site_id', siteId)
       .maybeSingle()
 
@@ -85,7 +85,7 @@ export async function getAttendanceLogForDate(
       // Map staff_attendance to AttendanceLog format
       return {
         id: staffData.id,
-        user_id: staffData.user_id,
+        profile_id: staffData.profile_id,
         company_id: staffData.company_id,
         site_id: staffData.site_id,
         clock_in_at: staffData.clock_in_time,
@@ -130,7 +130,7 @@ export async function getActiveAttendanceLogsForSite(
       // Map staff_attendance to AttendanceLog format
       return staffData.map((item: any) => ({
         id: item.id,
-        user_id: item.user_id,
+        profile_id: item.profile_id,
         company_id: item.company_id,
         site_id: item.site_id,
         clock_in_at: item.clock_in_time,

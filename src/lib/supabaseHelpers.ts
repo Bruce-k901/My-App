@@ -76,6 +76,32 @@ export async function fetchCompanyData(
   return query;
 }
 
+/**
+ * Checks if a siteId is valid for filtering (not null, undefined, empty, or "all")
+ * @param siteId - The site ID to validate
+ * @returns true if siteId is a valid UUID for filtering
+ */
+export function isValidSiteIdForFilter(siteId: string | null | undefined): boolean {
+  return !!(siteId && siteId !== 'all' && siteId.trim() !== '');
+}
+
+/**
+ * Safely applies site_id filter to a Supabase query
+ * Only applies the filter if siteId is a valid UUID (not "all", null, or empty)
+ * @param query - The Supabase query builder
+ * @param siteId - The site ID to filter by (can be "all", null, or a UUID)
+ * @returns The query with site filter applied (if valid) or unchanged query
+ */
+export function applySiteFilter<T extends { eq: (column: string, value: any) => any }>(
+  query: T,
+  siteId: string | null | undefined
+): T {
+  if (isValidSiteIdForFilter(siteId)) {
+    return query.eq('site_id', siteId) as T;
+  }
+  return query;
+}
+
 export async function fetchSiteData(
   table: string,
   companyId: string,
@@ -86,8 +112,14 @@ export async function fetchSiteData(
   if (!companyId) {
     throw new Error("Company ID is required for data access");
   }
-  if (!siteId) {
-    throw new Error("Site ID is required for site-scoped data access");
+  // Allow "all" to mean fetch all sites (no site filter)
+  if (!siteId || siteId === 'all') {
+    // If siteId is "all" or empty, fetch all sites for the company
+    let query = supabase.from(table).select(select).eq("company_id", companyId);
+    Object.entries(filters).forEach(([key, value]) => {
+      query = query.eq(key, value);
+    });
+    return query;
   }
 
   let query = supabase.from(table).select(select).eq("company_id", companyId).eq("site_id", siteId);

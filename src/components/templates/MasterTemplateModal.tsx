@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Info } from 'lucide-react';
+import { X, Info } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
 import { getTemplateFeatures, featuresToEvidenceTypes } from '@/lib/template-features';
+import TimePicker from '@/components/ui/TimePicker';
 
 interface MasterTemplateModalProps {
   isOpen: boolean;
@@ -36,28 +37,27 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ id, name, description, enable
     <button
       onClick={onChange}
       className={`p-3 rounded border transition-all text-left ${enabled 
-        ? 'border-pink-500 bg-pink-500/10' 
-        : 'border-white/[0.1] bg-white/[0.02] hover:border-pink-500/50'}`
-      }
+        ? 'border-[#D37E91] bg-[#D37E91]/15 dark:bg-[#D37E91]/15' 
+        : 'border-theme bg-white dark:bg-white/[0.02] hover:border-[#D37E91]/50 dark:hover:border-[#D37E91]/50'}`}
     >
       <div className="flex items-start gap-2">
         <input
           type="checkbox"
           checked={enabled}
           onChange={() => {}}
-          className="mt-1 accent-pink-500"
+          className="mt-1 accent-[#D37E91]"
         />
         <div className="flex-1">
           <div className="flex items-center gap-1">
-            <span className="text-sm font-medium text-white">{name}</span>
+            <span className="text-sm font-medium text-theme-primary">{name}</span>
             <div className="group relative">
-              <Info className="w-4 h-4 text-pink-400" />
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-neutral-900 text-white text-xs rounded p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+              <Info className="w-4 h-4 text-[#D37E91] dark:text-[#D37E91]" />
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-theme-surface border border-theme text-theme-primary text-xs rounded p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
                 {description}
               </div>
             </div>
           </div>
-          <div className="text-xs text-white/60 mt-1">{description}</div>
+          <div className="text-xs text-theme-secondary mt-1">{description}</div>
         </div>
       </div>
     </button>
@@ -65,7 +65,7 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ id, name, description, enable
 };
 
 export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, mode = 'template' }: MasterTemplateModalProps) {
-  const { companyId, user } = useAppContext();
+  const { companyId, user, profile } = useAppContext();
   const [isSaving, setIsSaving] = useState(false);
   
   const [templateConfig, setTemplateConfig] = useState({
@@ -90,6 +90,11 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
   const [annualDate, setAnnualDate] = useState<string>(""); // MM-DD format
   const [nextInstanceDates, setNextInstanceDates] = useState<string[]>([]);
 
+  // Multi-site assignment state
+  const [applyToAllSites, setApplyToAllSites] = useState(false);
+  const [selectedSites, setSelectedSites] = useState<string[]>([]);
+  const [availableSites, setAvailableSites] = useState<Array<{id: string, name: string}>>([]);
+
   const [features, setFeatures] = useState({
     monitorCallout: false,
     checklist: false,
@@ -103,6 +108,63 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
     assetDropdown: false,
     sopUpload: false,
   });
+
+  // Load sites on modal open
+  useEffect(() => {
+    const loadSites = async () => {
+      if (!isOpen) {
+        console.log('🚫 Template builder site loading skipped: modal not open');
+        // Reset state when modal closes
+        setAvailableSites([]);
+        setSelectedSites([]);
+        setApplyToAllSites(false);
+        return;
+      }
+      
+      if (!companyId) {
+        console.log('🚫 Template builder site loading skipped: no companyId');
+        return;
+      }
+      
+      try {
+        console.log('🏢 Loading sites for template builder, companyId:', companyId, 'isOpen:', isOpen, 'home_site:', profile?.home_site);
+        const { data: sites, error } = await supabase
+          .from('sites')
+          .select('id, name')
+          .eq('company_id', companyId)
+          .order('name');
+        
+        if (sites && !error) {
+          console.log(`✅ Loaded ${sites.length} sites for template builder:`, sites.map(s => s.name));
+          setAvailableSites(sites);
+          
+          // Default to home site only (if available), otherwise empty
+          const homeSiteId = profile?.home_site;
+          if (homeSiteId && sites.some(s => s.id === homeSiteId)) {
+            console.log('🏠 Defaulting to home site only:', homeSiteId);
+            setSelectedSites([homeSiteId]);
+            setApplyToAllSites(false);
+          } else {
+            console.log('⚠️ No home site found or home site not in available sites, defaulting to empty selection');
+            setSelectedSites([]);
+            setApplyToAllSites(false);
+          }
+        } else {
+          console.error('❌ Error loading sites for template builder:', error);
+          setAvailableSites([]);
+          setSelectedSites([]);
+          setApplyToAllSites(false);
+        }
+      } catch (error) {
+        console.error('❌ Exception loading sites for template builder:', error);
+        setAvailableSites([]);
+        setSelectedSites([]);
+        setApplyToAllSites(false);
+      }
+    };
+    
+    loadSites();
+  }, [isOpen, companyId, profile?.home_site]);
 
   // Load template data when editing
   useEffect(() => {
@@ -161,7 +223,17 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
 
       // Use shared utility to determine features from template config
       const templateFeatures = getTemplateFeatures(editingTemplate);
-      
+
+      // Debug: Log evidence_types and detected features
+      console.log('📋 Loading template for editing:', {
+        templateId: editingTemplate.id,
+        templateName: editingTemplate.name,
+        evidence_types: editingTemplate.evidence_types,
+        evidence_types_type: typeof editingTemplate.evidence_types,
+        is_array: Array.isArray(editingTemplate.evidence_types),
+        detectedFeatures: templateFeatures
+      });
+
       setFeatures({
         monitorCallout: templateFeatures.monitorCallout,
         checklist: templateFeatures.checklist,
@@ -416,6 +488,19 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         checklist: features.checklist,
       });
 
+      // Debug: Log the features being saved
+      console.log('💾 Saving template with features:', {
+        selectedFeatures: {
+          tempLogs: features.tempLogs,
+          photoEvidence: features.photoEvidence,
+          passFail: features.passFail,
+          yesNoChecklist: features.yesNoChecklist,
+          checklist: features.checklist,
+        },
+        evidenceTypes: evidenceTypes,
+        evidenceTypesLength: evidenceTypes.length,
+      });
+
       // Prepare dayparts array - use selected dayparts, ensure it's always an array
       const dayparts = Array.isArray(selectedDayparts) && selectedDayparts.length > 0 
         ? selectedDayparts 
@@ -528,9 +613,26 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         evidence_types: evidenceTypes,
         requires_sop: features.sopUpload,
         requires_risk_assessment: features.raUpload,
-        is_active: true,
+        // CRITICAL: Set is_active = false for Custom Task Builder templates
+        // Templates should only generate tasks when added to "My Tasks" (which creates site_checklist entries)
+        // This prevents the old database cron from creating tasks for all sites
+        is_active: false,
         is_template_library: false, // User-created templates, not library templates
       };
+
+      // Set asset selection fields if asset dropdown feature is enabled
+      if (features.assetDropdown) {
+        templateData.repeatable_field_name = 'asset_id'; // Standard field name for asset selection
+        templateData.asset_type = 'equipment'; // Default asset type
+        console.log('✅ Setting asset selection fields:', {
+          repeatable_field_name: templateData.repeatable_field_name,
+          asset_type: templateData.asset_type
+        });
+      } else {
+        // Clear asset selection fields if feature is disabled
+        templateData.repeatable_field_name = null;
+        templateData.asset_type = null;
+      }
 
       // Add optional fields
       if (recurrencePattern) {
@@ -603,6 +705,46 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         
         savedTemplate = data;
         error = insertError;
+        
+        // CRITICAL: If only one site is selected, set site_id on the template
+        // This prevents the old database cron from creating tasks for ALL sites
+        // If multiple sites are selected, site_id remains NULL (template is company-wide)
+        if (savedTemplate && selectedSites.length === 1) {
+          const { error: updateError } = await supabase
+            .from('task_templates')
+            .update({ site_id: selectedSites[0] })
+            .eq('id', savedTemplate.id);
+          
+          if (updateError) {
+            console.error('Error setting template site_id:', updateError);
+            // Don't fail - template is created, just log the error
+          } else {
+            console.log(`Template site_id set to: ${selectedSites[0]}`);
+            // Update savedTemplate to reflect the change
+            savedTemplate.site_id = selectedSites[0];
+          }
+        }
+        
+        // Link template to selected sites (only for new templates)
+        // This is for future use - currently the system uses site_checklists
+        if (savedTemplate && selectedSites.length > 0) {
+          const siteAssignments = selectedSites.map(siteId => ({
+            template_id: savedTemplate.id,
+            site_id: siteId,
+            company_id: companyId
+          }));
+          
+          const { error: assignError } = await supabase
+            .from('template_site_assignments')
+            .insert(siteAssignments);
+          
+          if (assignError) {
+            console.error('Error creating site assignments:', assignError);
+            // Don't fail - template is created, just log the error
+          } else {
+            console.log(`Template assigned to ${selectedSites.length} sites`);
+          }
+        }
       }
 
       if (error) {
@@ -705,17 +847,103 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
     { id: 'sopUpload', name: 'SOP Upload', description: 'SOP documentation' },
   ];
 
+  // Multi-site selector component
+  const MultiSiteSelector = () => {
+    console.log('🔍 MultiSiteSelector component rendering:', { 
+      applyToAllSites, 
+      availableSitesCount: availableSites.length, 
+      selectedSitesCount: selectedSites.length,
+      availableSites: availableSites.map(s => s.name)
+    });
+    
+    if (availableSites.length === 0) {
+      return (
+        <div className="space-y-4 p-4 border border-theme rounded-lg bg-gray-50 dark:bg-white/[0.03]">
+          <div>
+            <h3 className="text-sm font-semibold text-theme-primary mb-2">Site Assignment</h3>
+            <p className="text-xs text-yellow-600 dark:text-yellow-400">
+              Loading sites... Please wait.
+            </p>
+          </div>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="space-y-4 p-4 border border-theme rounded-lg bg-gray-50 dark:bg-white/[0.03]">
+        <div>
+          <h3 className="text-sm font-semibold text-theme-primary mb-2">Site Assignment</h3>
+          <p className="text-xs text-theme-secondary mb-3">
+            Select which sites can use this template
+          </p>
+        </div>
+        
+        <label className="flex items-center space-x-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={applyToAllSites}
+            onChange={(e) => {
+              console.log('📝 Apply to all sites changed:', e.target.checked);
+              setApplyToAllSites(e.target.checked);
+              if (e.target.checked) {
+                const allSiteIds = availableSites.map(s => s.id);
+                console.log('✅ Selecting all sites:', allSiteIds);
+                setSelectedSites(allSiteIds);
+              }
+            }}
+            className="w-4 h-4 text-[#D37E91] border-gray-300 rounded focus:ring-[#D37E91]"
+          />
+          <span className="text-sm font-medium text-theme-primary">
+            Apply to all sites ({availableSites.length})
+          </span>
+        </label>
+        
+        {!applyToAllSites && availableSites.length > 0 && (
+          <div className="space-y-2 max-h-48 overflow-y-auto border border-theme rounded p-2 bg-white dark:bg-[#141823]">
+            {availableSites.map(site => (
+              <label key={site.id} className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selectedSites.includes(site.id)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedSites([...selectedSites, site.id]);
+                    } else {
+                      setSelectedSites(selectedSites.filter(id => id !== site.id));
+                    }
+                  }}
+                  className="w-4 h-4 text-[#D37E91] border-gray-300 rounded focus:ring-[#D37E91]"
+                />
+                <span className="text-sm text-theme-primary">{site.name}</span>
+              </label>
+            ))}
+          </div>
+        )}
+        
+        {!applyToAllSites && availableSites.length === 0 && (
+          <p className="text-xs text-yellow-600 dark:text-yellow-400">
+            No sites available. Please ensure you have sites configured for your company.
+          </p>
+        )}
+        
+        <p className="text-xs text-theme-tertiary">
+          {selectedSites.length} site{selectedSites.length !== 1 ? 's' : ''} selected
+        </p>
+      </div>
+    );
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 z-50">
-      <div className="bg-[#0f1220] rounded-xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-pink-500/20 flex flex-col">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
+      <div className="bg-white dark:bg-[#14161c] rounded-xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-theme shadow-2xl flex flex-col">
         {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-white/10 flex-shrink-0">
+        <div className="p-4 sm:p-6 border-b border-theme flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-pink-500 mb-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-theme-primary mb-2">
                 {editingTemplate ? 'Edit Template Configuration' : 'Template Builder'}
               </h1>
-              <p className="text-gray-400 text-sm sm:text-base">
+              <p className="text-theme-secondary text-sm sm:text-base">
                 {editingTemplate 
                   ? 'Modify template features and configuration. This will affect all future tasks created from this template.'
                   : 'Create comprehensive compliance task templates with all required elements'
@@ -724,7 +952,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-white/10 text-gray-400 flex-shrink-0"
+              className="p-2 rounded-lg hover:bg-theme-muted text-theme-secondary flex-shrink-0 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -732,34 +960,54 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         </div>
 
         {/* Content - Scrollable area */}
-        <div className="flex-1 overflow-y-auto bg-[#141823] min-h-0">
+        <div className="flex-1 overflow-y-auto bg-white dark:bg-[#14161c] min-h-0">
           <div className="p-4 sm:p-6">
           {/* Template Configuration */}
-          <div className="mb-6 pb-6 border-b border-white/10">
-            <h2 className="text-lg font-semibold text-white mb-1">Template Configuration</h2>
-            <p className="text-sm text-gray-400 mb-4">Define the basic information for your template</p>
+          <div className="mb-6 pb-6 border-b border-theme">
+            <h2 className="text-lg font-semibold text-theme-primary mb-1">Template Configuration</h2>
+            <p className="text-sm text-theme-secondary mb-4">Define the basic information for your template</p>
             
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Template Name</label>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Template Name</label>
               <input
                 type="text"
                 value={templateConfig.templateName}
                 onChange={(e) => setTemplateConfig(prev => ({ ...prev, templateName: e.target.value }))}
-                className="w-full p-2 border border-white/10 rounded bg-white/[0.05] text-white text-sm"
+ className="w-full p-2 border border-theme rounded bg-theme-surface ] text-theme-primary text-sm"
                 placeholder="Enter template name"
               />
             </div>
+
+            {/* Multi-Site Selector - Only show when creating new template */}
+            {(() => {
+              const shouldShow = !editingTemplate;
+              console.log('🔍 MultiSiteSelector render check:', { 
+                shouldShow, 
+                editingTemplate: !!editingTemplate,
+                editingTemplateId: editingTemplate?.id,
+                availableSitesCount: availableSites.length,
+                applyToAllSites,
+                selectedSitesCount: selectedSites.length
+              });
+              
+              if (!shouldShow) {
+                console.log('❌ MultiSiteSelector not showing: editingTemplate is set');
+                return null;
+              }
+              
+              return <MultiSiteSelector />;
+            })()}
 
             {/* Task Name and Description fields removed from builder - they will be shown in curated template view */}
           </div>
 
           {/* Frequency & Scheduling */}
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Frequency & Scheduling</h2>
+            <h2 className="text-lg font-semibold text-theme-primary mb-4">Frequency & Scheduling</h2>
             
             {/* Frequency Selection */}
             <div>
-              <label className="block text-sm font-medium mb-3">
+              <label className="block text-sm font-medium text-theme-primary mb-3">
                 Task Frequency
               </label>
               <select
@@ -777,7 +1025,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                     setNextInstanceDates([]);
                   }
                 }}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+ className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
               >
                 <option value="Daily">Daily</option>
                 <option value="Weekly">Weekly</option>
@@ -793,7 +1041,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             {/* Weekly Day Selection */}
             {templateConfig.frequency === 'Weekly' && (
               <div className="mt-4">
-                <label className="block text-sm font-medium mb-3">
+                <label className="block text-sm font-medium text-theme-primary mb-3">
                   Days of Week to Run Task
                 </label>
                 <div className="grid grid-cols-7 gap-2">
@@ -818,8 +1066,8 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       }}
                       className={`px-3 py-2 rounded-lg border text-center transition-all text-sm ${
                         weeklyDays.includes(day.value)
-                          ? "border-magenta-500 bg-magenta-500/10 text-magenta-400"
-                          : "border-neutral-800 bg-[#141823] text-slate-400 hover:border-neutral-700"
+                          ? "border-[#D37E91] bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91]"
+ :"border-gray-300 bg-white dark:bg-[#141823] text-gray-700 dark:text-theme-tertiary hover:border-gray-400 dark:hover:border-theme"
                       }`}
                     >
                       {day.label}
@@ -827,7 +1075,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                   ))}
                 </div>
                 {weeklyDays.length === 0 && (
-                  <p className="text-xs text-yellow-400 mt-2">Please select at least one day</p>
+                  <p className="text-xs text-amber-600 dark:text-yellow-400 mt-2">Please select at least one day</p>
                 )}
               </div>
             )}
@@ -836,7 +1084,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             {templateConfig.frequency === 'Monthly' && (
               <div className="mt-4 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-3">
+                  <label className="block text-sm font-medium text-theme-primary mb-3">
                     Monthly Schedule Option
                   </label>
                   <div className="space-y-3">
@@ -851,7 +1099,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                         }}
                         className="w-4 h-4 text-magenta-500"
                       />
-                      <label htmlFor="monthly_date" className="text-sm text-slate-200">
+                      <label htmlFor="monthly_date" className="text-sm text-gray-700 dark:text-theme-primary">
                         Specific Day of Month
                       </label>
                     </div>
@@ -863,7 +1111,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                         value={monthlyDay || ''}
                         onChange={(e) => setMonthlyDay(parseInt(e.target.value) || null)}
                         placeholder="Day (1-31)"
-                        className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 ml-7"
+                        className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-[#141823] border border-gray-300 dark:border-neutral-800 text-gray-900 dark:text-theme-primary ml-7"
                       />
                     )}
                     
@@ -877,9 +1125,9 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                           setMonthlyLastWeekday('friday');
                           setMonthlyDay(null);
                         }}
-                        className="w-4 h-4 text-magenta-500"
+                        className="w-4 h-4 text-[#D37E91] dark:text-magenta-500"
                       />
-                      <label htmlFor="monthly_last_weekday" className="text-sm text-slate-200">
+                      <label htmlFor="monthly_last_weekday" className="text-sm text-gray-700 dark:text-theme-primary">
                         Last Weekday of Month
                       </label>
                     </div>
@@ -887,7 +1135,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       <select
                         value={monthlyLastWeekday || 'friday'}
                         onChange={(e) => setMonthlyLastWeekday(e.target.value)}
-                        className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 ml-7"
+                        className="w-full px-4 py-2 text-sm rounded-lg bg-white dark:bg-[#141823] border border-gray-300 dark:border-neutral-800 text-gray-900 dark:text-theme-primary ml-7"
                       >
                         <option value="monday">Monday</option>
                         <option value="tuesday">Tuesday</option>
@@ -904,7 +1152,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             {/* Annual/Biannual/Quarterly Date Selection */}
             {(templateConfig.frequency === 'Annually' || templateConfig.frequency === 'Bi-Annually' || templateConfig.frequency === 'Quarterly') && (
               <div className="mt-4">
-                <label className="block text-sm font-medium mb-3">
+                <label className="block text-sm font-medium text-theme-primary mb-3">
                   {templateConfig.frequency === 'Annually' ? 'Annual' : templateConfig.frequency === 'Bi-Annually' ? 'Bi-annual' : 'Quarterly'} Date (Month-Day)
                 </label>
                 <input
@@ -921,19 +1169,19 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       setNextInstanceDates([]);
                     }
                   }}
-                  className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+ className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                 />
-                <p className="text-xs text-slate-400 mt-2">
+ <p className="text-xs text-gray-600 dark:text-theme-tertiary mt-2">
                   Tasks will be automatically scheduled for this date {templateConfig.frequency === 'Annually' ? 'each year' : templateConfig.frequency === 'Bi-Annually' ? 'every 6 months' : 'each quarter'}
                 </p>
                 
                 {/* Show next instance dates preview */}
                 {annualDate && nextInstanceDates.length > 0 && (
-                  <div className="mt-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                    <p className="text-xs font-medium text-green-400 mb-2">Next Scheduled Instances:</p>
+                  <div className="mt-3 p-3 bg-emerald-50 dark:bg-green-500/10 border border-emerald-200 dark:border-green-500/20 rounded-lg">
+                    <p className="text-xs font-medium text-emerald-700 dark:text-green-400 mb-2">Next Scheduled Instances:</p>
                     <div className="space-y-1">
                       {nextInstanceDates.map((dateStr, idx) => (
-                        <div key={idx} className="text-xs text-green-300">
+                        <div key={idx} className="text-xs text-module-fg dark:text-green-300">
                           {dateStr}
                         </div>
                       ))}
@@ -946,12 +1194,12 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             {/* Custom Frequency Options */}
             {templateConfig.frequency === 'Custom' && (
               <div className="mt-4 space-y-4">
-                <div className="p-4 bg-white/[0.02] border border-white/10 rounded-lg">
-                  <p className="text-sm text-orange-400 mb-3">Custom frequency - configure all options:</p>
+                <div className="p-4 bg-gray-50 dark:bg-white/[0.02] border border-theme rounded-lg">
+                  <p className="text-sm text-orange-600 dark:text-orange-400 mb-3">Custom frequency - configure all options:</p>
                   
                   {/* Days of week */}
                   <div className="mb-4">
-                    <label className="block text-sm font-medium mb-2">Days of Week (optional)</label>
+                    <label className="block text-sm font-medium text-theme-primary mb-2">Days of Week (optional)</label>
                     <div className="grid grid-cols-7 gap-2">
                       {[
                         { value: 0, label: 'Sun' },
@@ -974,8 +1222,8 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                           }}
                           className={`px-3 py-2 rounded-lg border text-center transition-all text-sm ${
                             weeklyDays.includes(day.value)
-                              ? "border-magenta-500 bg-magenta-500/10 text-magenta-400"
-                              : "border-neutral-800 bg-[#141823] text-slate-400 hover:border-neutral-700"
+                              ? "border-[#D37E91] bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91]"
+ :"border-gray-300 bg-white dark:bg-[#141823] text-gray-700 dark:text-theme-tertiary hover:border-gray-400 dark:hover:border-theme"
                           }`}
                         >
                           {day.label}
@@ -986,7 +1234,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
 
                   {/* Specific date */}
                   <div className="mb-4">
-                    <label className="block text-sm font-medium mb-2">Specific Date (optional)</label>
+                    <label className="block text-sm font-medium text-theme-primary mb-2">Specific Date (optional)</label>
                     <input
                       type="date"
                       value={annualDate ? `${new Date().getFullYear()}-${annualDate}` : ''}
@@ -999,7 +1247,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                           setAnnualDate('');
                         }
                       }}
-                      className="w-full px-4 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+ className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                     />
                   </div>
                 </div>
@@ -1009,7 +1257,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             {/* Day Parts Selection - Show for all frequencies */}
             {templateConfig.frequency !== 'On Demand' && (
               <div className="mt-4">
-                <label className="block text-sm font-medium mb-3">
+                <label className="block text-sm font-medium text-theme-primary mb-3">
                   When to Run Task (Day Parts)
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -1020,8 +1268,8 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                       onClick={() => toggleDaypart(part.value)}
                       className={`px-4 py-3 rounded-lg border text-center transition-all ${
                         selectedDayparts.includes(part.value)
-                          ? "border-magenta-500 bg-magenta-500/10 text-magenta-400"
-                          : "border-neutral-800 bg-[#141823] text-slate-400 hover:border-neutral-700"
+                          ? "border-[#D37E91] bg-[#D37E91]/15 text-[#D37E91] dark:text-[#D37E91]"
+ :"border-gray-300 bg-white dark:bg-[#141823] text-gray-700 dark:text-theme-tertiary hover:border-gray-400 dark:hover:border-theme"
                       }`}
                     >
                       <div className="text-sm font-medium">{part.label}</div>
@@ -1034,20 +1282,19 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             {/* Time Settings - Show if dayparts selected */}
             {selectedDayparts.length > 0 && templateConfig.frequency !== 'On Demand' && (
               <div className="mt-4">
-                <label className="block text-sm font-medium mb-3">
+                <label className="block text-sm font-medium text-theme-primary mb-3">
                   Check Times
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {selectedDayparts.map((dayPart) => (
                     <div key={dayPart}>
-                      <label className="block text-xs text-slate-400 mb-1 capitalize">
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1 capitalize">
                         {dayPart.replace('_', ' ')}
                       </label>
-                      <input
-                        type="time"
+                      <TimePicker
                         value={daypartTimes[dayPart] || ''}
-                        onChange={(e) => setDaypartTime(dayPart, e.target.value)}
-                        className="w-full px-3 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent [color-scheme:dark]"
+                        onChange={(value) => setDaypartTime(dayPart, value)}
+                        className="w-full"
                       />
                     </div>
                   ))}
@@ -1055,15 +1302,15 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
               </div>
             )}
 
-            <div className="mt-4 bg-green-500/10 border border-green-500/20 rounded p-3">
-              <p className="text-green-400 text-sm">Auto-captured: User, time, date, location - no input required</p>
+            <div className="mt-4 bg-emerald-50 dark:bg-green-500/10 border border-emerald-200 dark:border-green-500/20 rounded p-3">
+              <p className="text-emerald-700 dark:text-green-400 text-sm">Auto-captured: User, time, date, location - no input required</p>
             </div>
           </div>
 
           {/* Template Features */}
-          <div className="mb-6 pb-6 border-b border-white/10">
-            <h2 className="text-lg font-semibold text-white mb-1">Template Features</h2>
-            <p className="text-sm text-gray-400 mb-4">Select the features and requirements for this template</p>
+          <div className="mb-6 pb-6 border-b border-theme">
+            <h2 className="text-lg font-semibold text-theme-primary mb-1">Template Features</h2>
+            <p className="text-sm text-theme-secondary mb-4">Select the features and requirements for this template</p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {featureList.map((feature) => (
@@ -1084,18 +1331,18 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 p-4 sm:p-6 border-t border-white/10 bg-[#0f1220] flex-shrink-0">
+      {/* Footer */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 p-4 sm:p-6 border-t border-theme bg-white dark:bg-[#14161c] flex-shrink-0">
           <button
             onClick={onClose}
-            className="w-full sm:w-auto px-5 py-2 border border-white/10 rounded text-gray-300 hover:bg-white/10 transition-colors font-medium"
+            className="w-full sm:w-auto px-5 py-2 border border-theme rounded-lg text-theme-secondary hover:bg-theme-muted transition-colors font-medium"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="w-full sm:w-auto px-5 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/40"
+            className="w-full sm:w-auto px-5 py-2 bg-[#D37E91] hover:bg-[#D37E91] text-white rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
           >
             {isSaving 
               ? (editingTemplate ? 'Updating...' : 'Creating...')

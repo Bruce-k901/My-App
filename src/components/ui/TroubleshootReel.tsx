@@ -59,11 +59,11 @@ export default function TroubleshootReel({
         className="h-[300px] w-full bg-white/5 backdrop-blur-md rounded-md border border-magenta-500/20 overflow-y-auto scrollbar-hide"
       >
         {/* Header inside scrollable container */}
-        <div className="flex items-center justify-between p-3 border-b border-neutral-700/50 sticky top-0 bg-neutral-800 z-10">
-          <div className="flex-1 text-sm font-medium text-neutral-400">Question</div>
+        <div className="flex items-center justify-between p-3 border-b border-theme/50 sticky top-0 bg-neutral-800 z-10">
+          <div className="flex-1 text-sm font-medium text-theme-tertiary">Question</div>
           <div className="flex gap-8 w-20 -ml-6">
-            <div className="text-sm font-medium text-neutral-400 w-6 text-center">Yes</div>
-            <div className="text-sm font-medium text-neutral-400 w-6 text-center">No</div>
+            <div className="text-sm font-medium text-theme-tertiary w-6 text-center">Yes</div>
+            <div className="text-sm font-medium text-theme-tertiary w-6 text-center">No</div>
           </div>
         </div>
         
@@ -78,7 +78,7 @@ export default function TroubleshootReel({
                 className={`flex items-center justify-between p-2 rounded-md transition-all duration-300 ${
                   isAnswered 
                     ? 'bg-green-500/10 border border-green-500/30' 
-                    : 'bg-neutral-800/30 border border-neutral-700/50'
+                    : 'bg-neutral-800/30 border border-theme/50'
                 }`}
                 initial={false}
                 animate={{
@@ -92,7 +92,7 @@ export default function TroubleshootReel({
                 }}
               >
                 <span className={`text-sm font-medium transition-colors flex-1 ${
-                  isAnswered ? 'text-green-400' : 'text-neutral-300'
+                  isAnswered ? 'text-green-400' : 'text-theme-tertiary'
                 }`}>
                   {item}
                 </span>
@@ -198,7 +198,7 @@ export default function TroubleshootReel({
       </div>
       
       {/* Caption */}
-      <p className="text-xs text-neutral-400 text-center mt-2">
+      <p className="text-xs text-theme-tertiary text-center mt-2">
         {allCompleted 
           ? "All troubleshooting questions answered!" 
           : "Answer all questions to enable submission"

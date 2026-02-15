@@ -1,14 +1,18 @@
 -- Migration: 20250204000010_restore_fire_alarm_template.sql
 -- Description: Restores fire alarm template if missing and ensures repeatable_field_name = NULL
+-- Note: This migration will be skipped if task_templates table doesn't exist yet
 
 -- Check if template exists, if not, recreate it
+-- Only run if task_templates table exists
 DO $$
 DECLARE
   template_exists BOOLEAN;
   template_id_val UUID;
 BEGIN
-  -- Check if template exists
-  SELECT EXISTS(SELECT 1 FROM task_templates WHERE slug = 'fire_alarm_test_weekly') INTO template_exists;
+  -- Check if table exists first
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    -- Check if template exists
+    SELECT EXISTS(SELECT 1 FROM task_templates WHERE slug = 'fire_alarm_test_weekly') INTO template_exists;
   
   IF NOT template_exists THEN
     RAISE NOTICE 'Template not found, recreating fire alarm template...';
@@ -85,25 +89,29 @@ If any sounder or emergency light fails, report immediately to fire alarm contra
     
     RAISE NOTICE '✅ Fire alarm template created with ID: %', template_id_val;
     
-    -- Add template fields
-    INSERT INTO public.template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-    VALUES
-      (template_id_val, 'test_date', 'date', 'Test Date', true, 1, 'Date when the fire alarm test was performed'),
-      (template_id_val, 'fire_alarm_call_point', 'select', 'Fire Alarm Call Point', true, 2, 'Select the call point being tested this week. Rotate through all call points.'),
-      (template_id_val, 'alarm_activated', 'pass_fail', 'Alarm Activated Successfully', true, 3, 'PASS if alarm activated when call point was pressed. FAIL if alarm did not activate - this will trigger a fire engineer callout.'),
-      (template_id_val, 'all_staff_heard', 'pass_fail', 'All Staff Heard the Alarm', true, 4, 'PASS if all staff confirmed they heard the alarm. FAIL if alarm could not be heard in all areas.'),
-      (template_id_val, 'emergency_lighting_test', 'pass_fail', 'Emergency Lighting Test (Monthly)', false, 5, 'Test emergency lighting monthly. PASS if all emergency lights activate and are bright enough. FAIL if any lights are dim, flickering, or dead.'),
-      (template_id_val, 'issues', 'text', 'Issues or Observations', false, 6, 'Record any issues, observations, or additional notes about the test'),
-      (template_id_val, 'manager_initials', 'text', 'Tested By (Initials)', true, 7, 'Initials of the person who performed the test');
+    -- Add template fields (only if table exists)
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_fields') THEN
+      INSERT INTO public.template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+      VALUES
+        (template_id_val, 'test_date', 'date', 'Test Date', true, 1, 'Date when the fire alarm test was performed'),
+        (template_id_val, 'fire_alarm_call_point', 'select', 'Fire Alarm Call Point', true, 2, 'Select the call point being tested this week. Rotate through all call points.'),
+        (template_id_val, 'alarm_activated', 'pass_fail', 'Alarm Activated Successfully', true, 3, 'PASS if alarm activated when call point was pressed. FAIL if alarm did not activate - this will trigger a fire engineer callout.'),
+        (template_id_val, 'all_staff_heard', 'pass_fail', 'All Staff Heard the Alarm', true, 4, 'PASS if all staff confirmed they heard the alarm. FAIL if alarm could not be heard in all areas.'),
+        (template_id_val, 'emergency_lighting_test', 'pass_fail', 'Emergency Lighting Test (Monthly)', false, 5, 'Test emergency lighting monthly. PASS if all emergency lights activate and are bright enough. FAIL if any lights are dim, flickering, or dead.'),
+        (template_id_val, 'issues', 'text', 'Issues or Observations', false, 6, 'Record any issues, observations, or additional notes about the test'),
+        (template_id_val, 'manager_initials', 'text', 'Tested By (Initials)', true, 7, 'Initials of the person who performed the test');
+    END IF;
     
-    -- Add default call point labels
-    INSERT INTO public.template_repeatable_labels (template_id, label, label_value, is_default, display_order)
-    VALUES
-      (template_id_val, 'Call Point 1 - Front Entrance', 'Call Point 1 - Front Entrance', true, 1),
-      (template_id_val, 'Call Point 2 - Kitchen', 'Call Point 2 - Kitchen', true, 2),
-      (template_id_val, 'Call Point 3 - Bar Area', 'Call Point 3 - Bar Area', true, 3),
-      (template_id_val, 'Call Point 4 - Back Office', 'Call Point 4 - Back Office', true, 4),
-      (template_id_val, 'Call Point 5 - Storage Area', 'Call Point 5 - Storage Area', true, 5);
+    -- Add default call point labels (only if table exists)
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_repeatable_labels') THEN
+      INSERT INTO public.template_repeatable_labels (template_id, label, label_value, is_default, display_order)
+      VALUES
+        (template_id_val, 'Call Point 1 - Front Entrance', 'Call Point 1 - Front Entrance', true, 1),
+        (template_id_val, 'Call Point 2 - Kitchen', 'Call Point 2 - Kitchen', true, 2),
+        (template_id_val, 'Call Point 3 - Bar Area', 'Call Point 3 - Bar Area', true, 3),
+        (template_id_val, 'Call Point 4 - Back Office', 'Call Point 4 - Back Office', true, 4),
+        (template_id_val, 'Call Point 5 - Storage Area', 'Call Point 5 - Storage Area', true, 5);
+    END IF;
     
     RAISE NOTICE '✅ Template fields and call point labels created';
   ELSE
@@ -117,32 +125,40 @@ If any sounder or emergency light fails, report immediately to fire alarm contra
     
     RAISE NOTICE '✅ Template updated successfully';
   END IF;
+  ELSE
+    RAISE NOTICE '⚠️ task_templates table does not exist yet - skipping template restoration';
+  END IF;
 END $$;
 
--- Verify the template exists and has correct settings
+-- Verify the template exists and has correct settings (only if table exists)
 DO $$
 DECLARE
   template_count INTEGER;
   repeatable_field TEXT;
 BEGIN
-  -- Check if template exists
-  SELECT COUNT(*) INTO template_count
-  FROM task_templates 
-  WHERE slug = 'fire_alarm_test_weekly';
-  
-  IF template_count = 1 THEN
-    -- Get repeatable_field_name value
-    SELECT repeatable_field_name INTO repeatable_field
+  -- Check if table exists first
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    -- Check if template exists
+    SELECT COUNT(*) INTO template_count
     FROM task_templates 
     WHERE slug = 'fire_alarm_test_weekly';
     
-    IF repeatable_field IS NULL THEN
-      RAISE NOTICE '✅ Fire alarm template verified: repeatable_field_name is NULL (asset selection hidden)';
+    IF template_count = 1 THEN
+      -- Get repeatable_field_name value
+      SELECT repeatable_field_name INTO repeatable_field
+      FROM task_templates 
+      WHERE slug = 'fire_alarm_test_weekly';
+      
+      IF repeatable_field IS NULL THEN
+        RAISE NOTICE '✅ Fire alarm template verified: repeatable_field_name is NULL (asset selection hidden)';
+      ELSE
+        RAISE WARNING '⚠️ Fire alarm template has repeatable_field_name: %', repeatable_field;
+      END IF;
     ELSE
-      RAISE WARNING '⚠️ Fire alarm template has repeatable_field_name: %', repeatable_field;
+      RAISE NOTICE '⚠️ Fire alarm template not found after migration';
     END IF;
   ELSE
-    RAISE WARNING '⚠️ Fire alarm template not found after migration';
+    RAISE NOTICE '⚠️ task_templates table does not exist yet - skipping verification';
   END IF;
 END $$;
 

@@ -16,6 +16,10 @@ import { describe, test, expect, beforeAll } from 'vitest';
  */
 const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:3000';
 
+// Skip these tests in CI/build environments (they require a running server)
+// These are integration tests that should only run manually with TEST_BASE_URL set
+const shouldSkip = process.env.CI === 'true' || process.env.VERCEL === '1' || (!process.env.TEST_BASE_URL && process.env.NODE_ENV === 'production');
+
 /**
  * Helper to check if a route is accessible
  */
@@ -32,7 +36,7 @@ async function checkRoute(route: string): Promise<{ ok: boolean; status: number 
   }
 }
 
-describe('Critical User Journeys', () => {
+describe.skipIf(shouldSkip)('Critical User Journeys', () => {
   /**
    * Test 1: User can view all sites
    * This is a core feature - if this breaks, the app is unusable
@@ -73,13 +77,18 @@ describe('Critical User Journeys', () => {
    * Test 3: User can access tasks
    */
   describe('Task Management', () => {
-    test('Tasks page is accessible', async () => {
-      const { ok } = await checkRoute('/dashboard/tasks');
+    test('My Tasks page is accessible', async () => {
+      const { ok } = await checkRoute('/dashboard/my_tasks');
       expect(ok).toBe(true);
     });
 
-    test('Task templates page is accessible', async () => {
-      const { ok } = await checkRoute('/dashboard/tasks/templates');
+    test('My Templates page is accessible', async () => {
+      const { ok } = await checkRoute('/dashboard/my_templates');
+      expect(ok).toBe(true);
+    });
+
+    test('Today\'s Tasks page is accessible', async () => {
+      const { ok } = await checkRoute('/dashboard/todays_tasks');
       expect(ok).toBe(true);
     });
 

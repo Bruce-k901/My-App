@@ -2,7 +2,7 @@
 
 import CardHeader from '@/components/ui/CardHeader';
 import { Input, Select } from '@/components/ui';
-import { Eye, EyeOff, X, Archive, Save } from 'lucide-react';
+import { Eye, EyeOff, X, Archive, Save, Mail } from '@/components/ui/icons';
 import { useState } from 'react';
 import { components, layout } from '@/styles/uiTokens';
 import '@/styles/globals.css';
@@ -24,6 +24,7 @@ interface UserEntityCardProps {
   siteOptions: any[];
   onArchive: (_userId: string) => void;
   onUnarchive: (_userId: string) => void;
+  onSendInvite?: (_userId: string, _email: string) => void;
 }
 
 export default function UserEntityCard({
@@ -43,14 +44,15 @@ export default function UserEntityCard({
   siteOptions,
   onArchive,
   onUnarchive,
+  onSendInvite,
 }: UserEntityCardProps) {
   const [showPin, setShowPin] = useState(false);
 
   return (
     <div className="
-      bg-white/[0.05] border border-white/[0.1] rounded-xl p-3
+ bg-theme-surface ] border border-theme rounded-xl p-3
       transition-all duration-150 ease-in-out
-      hover:shadow-[0_0_15px_rgba(236,72,153,0.2)]
+      hover:shadow-module-glow
     ">
       <CardHeader 
         title={user.full_name || user.email || "—"} 
@@ -61,12 +63,12 @@ export default function UserEntityCard({
       />
 
       {isExpanded && editForm && (
-        <div className="px-4 pb-3 border-t border-white/[0.1]">
+        <div className="px-4 pb-3 border-t border-theme">
           <div className="p-4 space-y-4 overflow-visible">
             <div className="grid grid-cols-2 gap-3 overflow-visible relative z-auto">
               {/* Full Name */}
               <div>
-                <label className="text-xs text-neutral-400">Full Name</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">Full Name</label>
                 <Input
                   value={editForm.full_name}
                   onChange={(e) => onEditFormChange({ full_name: e.target.value })}
@@ -75,7 +77,7 @@ export default function UserEntityCard({
 
               {/* Email */}
               <div>
-                <label className="text-xs text-neutral-400">Email</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">Email</label>
                 <Input
                   value={editForm.email}
                   onChange={(e) => onEditFormChange({ email: e.target.value })}
@@ -84,7 +86,7 @@ export default function UserEntityCard({
 
               {/* Role */}
               <div>
-                <label className="text-xs text-neutral-400">Role</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">Role</label>
                 <Select
                   value={editForm.app_role}
                   options={roleOptions}
@@ -97,7 +99,7 @@ export default function UserEntityCard({
 
               {/* Position Title */}
               <div>
-                <label className="text-xs text-neutral-400">Position Title</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">Position Title</label>
                 <Select
                   value={editForm.position_title}
                   options={[
@@ -117,17 +119,30 @@ export default function UserEntityCard({
 
               {/* Site */}
               <div>
-                <label className="text-xs text-neutral-400">Site</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">Site Assignment</label>
                 <Select
-                  value={editForm.home_site}
-                  options={siteOptions}
-                  onValueChange={(val: string) => onEditFormChange({ home_site: val })}
+                  value={editForm.home_site || 'HEAD_OFFICE'}
+                  options={[
+                    { label: '🏢 Head Office (No Site)', value: 'HEAD_OFFICE' },
+                    ...siteOptions
+                  ]}
+                  onValueChange={(val: string) => {
+                    // If "Head Office" is selected, set both site fields to null
+                    if (val === 'HEAD_OFFICE') {
+                      onEditFormChange({ home_site: null, site_id: null });
+                    } else {
+                      onEditFormChange({ home_site: val });
+                    }
+                  }}
                 />
+ <p className="text-xs text-gray-500 dark:text-theme-tertiary mt-1">
+                  {editForm.home_site ? 'Site-based employee' : 'Head office / Executive'}
+                </p>
               </div>
 
               {/* BOH/FOH */}
               <div>
-                <label className="text-xs text-neutral-400">BOH/FOH</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">BOH/FOH</label>
                 <Select
                   value={editForm.boh_foh}
                   options={[
@@ -139,9 +154,24 @@ export default function UserEntityCard({
                 />
               </div>
 
+              {/* Status */}
+              <div>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">Status</label>
+                <Select
+                  value={editForm.status || 'onboarding'}
+                  options={[
+                    { value: "onboarding", label: "🔵 Onboarding" },
+                    { value: "active", label: "✅ Active" },
+                    { value: "inactive", label: "⏸️ Inactive" },
+                    { value: "on_leave", label: "🏖️ On Leave" }
+                  ]}
+                  onValueChange={(val: string) => onEditFormChange({ status: val })}
+                />
+              </div>
+
               {/* Phone */}
               <div>
-                <label className="text-xs text-neutral-400">Phone</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">Phone</label>
                 <Input
                   value={editForm.phone_number}
                   onChange={(e) => onEditFormChange({ phone_number: e.target.value })}
@@ -150,7 +180,7 @@ export default function UserEntityCard({
 
               {/* PIN Code */}
               <div>
-                <label className="text-xs text-neutral-400">PIN Code</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">PIN Code</label>
                 <div className={layout.pinFieldContainer}>
                   <div className={`relative ${layout.pinFieldWidth}`}>
                     <input
@@ -178,14 +208,14 @@ export default function UserEntityCard({
             </div>
 
             {/* Training Certificates Section */}
-            <div className="mt-6 pt-6 border-t border-white/[0.1]">
-              <h3 className="text-base font-semibold text-white mb-4">Training Certificates</h3>
+            <div className="mt-6 pt-6 border-t border-theme">
+              <h3 className="text-base font-semibold text-theme-primary mb-4">Training Certificates</h3>
               
               <div className="space-y-4">
                 {/* Food Safety */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-neutral-400">Food Safety Level</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">Food Safety Level</label>
                     <Select
                       value={editForm.food_safety_level ? editForm.food_safety_level.toString() : undefined}
                       placeholder="Select Level"
@@ -201,7 +231,7 @@ export default function UserEntityCard({
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-neutral-400">Food Safety Expiry Date</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">Food Safety Expiry Date</label>
                     <Input
                       type="date"
                       value={editForm.food_safety_expiry_date ? editForm.food_safety_expiry_date.split('T')[0] : ""}
@@ -213,7 +243,7 @@ export default function UserEntityCard({
                 {/* H&S */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-neutral-400">H&S Level</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">H&S Level</label>
                     <Select
                       value={editForm.h_and_s_level ? editForm.h_and_s_level.toString() : undefined}
                       placeholder="Select Level"
@@ -228,7 +258,7 @@ export default function UserEntityCard({
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-neutral-400">H&S Expiry Date</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">H&S Expiry Date</label>
                     <Input
                       type="date"
                       value={editForm.h_and_s_expiry_date ? editForm.h_and_s_expiry_date.split('T')[0] : ""}
@@ -240,21 +270,21 @@ export default function UserEntityCard({
                 {/* Fire Marshal */}
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="text-xs text-neutral-400 mb-2 block">Fire Marshal Trained</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary mb-2 block">Fire Marshal Trained</label>
                     <div className="flex items-center gap-2">
                       <input
                         type="checkbox"
                         checked={editForm.fire_marshal_trained || false}
                         onChange={(e) => onEditFormChange({ fire_marshal_trained: e.target.checked })}
-                        className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-pink-600 focus:ring-pink-500"
+                        className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-theme-button text-[#D37E91] focus:ring-[#D37E91]"
                       />
-                      <span className="text-xs text-neutral-400">
+ <span className="text-xs text-gray-500 dark:text-theme-tertiary">
                         {editForm.fire_marshal_trained ? "Yes" : "No"}
                       </span>
                     </div>
                   </div>
                   <div className="col-span-2">
-                    <label className="text-xs text-neutral-400">Fire Marshal Expiry Date</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">Fire Marshal Expiry Date</label>
                     <Input
                       type="date"
                       value={editForm.fire_marshal_expiry_date ? editForm.fire_marshal_expiry_date.split('T')[0] : ""}
@@ -267,21 +297,21 @@ export default function UserEntityCard({
                 {/* First Aid */}
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="text-xs text-neutral-400 mb-2 block">First Aid Trained</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary mb-2 block">First Aid Trained</label>
                     <div className="flex items-center gap-2">
                       <input
                         type="checkbox"
                         checked={editForm.first_aid_trained || false}
                         onChange={(e) => onEditFormChange({ first_aid_trained: e.target.checked })}
-                        className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-pink-600 focus:ring-pink-500"
+                        className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-theme-button text-[#D37E91] focus:ring-[#D37E91]"
                       />
-                      <span className="text-xs text-neutral-400">
+ <span className="text-xs text-gray-500 dark:text-theme-tertiary">
                         {editForm.first_aid_trained ? "Yes" : "No"}
                       </span>
                     </div>
                   </div>
                   <div className="col-span-2">
-                    <label className="text-xs text-neutral-400">First Aid Expiry Date</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">First Aid Expiry Date</label>
                     <Input
                       type="date"
                       value={editForm.first_aid_expiry_date ? editForm.first_aid_expiry_date.split('T')[0] : ""}
@@ -294,21 +324,21 @@ export default function UserEntityCard({
                 {/* COSSH */}
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="text-xs text-neutral-400 mb-2 block">COSSH Trained</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary mb-2 block">COSSH Trained</label>
                     <div className="flex items-center gap-2">
                       <input
                         type="checkbox"
                         checked={editForm.cossh_trained || false}
                         onChange={(e) => onEditFormChange({ cossh_trained: e.target.checked })}
-                        className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-pink-600 focus:ring-pink-500"
+                        className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 bg-theme-button text-[#D37E91] focus:ring-[#D37E91]"
                       />
-                      <span className="text-xs text-neutral-400">
+ <span className="text-xs text-gray-500 dark:text-theme-tertiary">
                         {editForm.cossh_trained ? "Yes" : "No"}
                       </span>
                     </div>
                   </div>
                   <div className="col-span-2">
-                    <label className="text-xs text-neutral-400">COSSH Expiry Date</label>
+ <label className="text-xs text-gray-500 dark:text-theme-tertiary">COSSH Expiry Date</label>
                     <Input
                       type="date"
                       value={editForm.cossh_expiry_date ? editForm.cossh_expiry_date.split('T')[0] : ""}
@@ -321,7 +351,7 @@ export default function UserEntityCard({
             </div>
 
             {/* Action Buttons */}
-            <div className={layout.buttonGroup}>
+            <div className="flex flex-wrap items-center gap-2 pt-4">
               <button
                 onClick={onSave}
                 className={components.saveButton}
@@ -336,11 +366,23 @@ export default function UserEntityCard({
                 <X size={18} />
               </button>
 
+              {/* Send Invite button */}
+              {onSendInvite && user.email && (
+                <button
+                  onClick={() => onSendInvite(user.id, user.email)}
+                  className="px-3 py-2 border border-[#D37E91] text-[#D37E91] rounded-md hover:shadow-module-glow transition-all duration-200 flex items-center gap-2"
+                  title="Send Invitation Email"
+                >
+                  <Mail size={18} />
+                  <span className="text-sm">Send Invite</span>
+                </button>
+              )}
+
               {/* Archive/Restore button */}
               {onUnarchive ? (
                 <button
                   onClick={() => onUnarchive(user.id)}
-                  className="px-3 py-2 border border-[#EC4899] text-[#EC4899] rounded-md hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] transition-all duration-200"
+                  className="px-3 py-2 border border-[#D37E91] text-[#D37E91] rounded-md hover:shadow-module-glow transition-all duration-200"
                   title="Restore User"
                 >
                   Restore
@@ -348,7 +390,8 @@ export default function UserEntityCard({
               ) : onArchive ? (
                 <button
                   onClick={() => onArchive(user.id)}
-                  className={components.archiveButton}
+                  className="px-3 py-2 border border-[#F97316] text-[#F97316] rounded-md hover:shadow-module-glow transition-all duration-200"
+                  title="Archive User"
                 >
                   <Archive size={18} />
                 </button>

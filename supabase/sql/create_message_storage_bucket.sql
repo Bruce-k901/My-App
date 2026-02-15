@@ -29,11 +29,10 @@ ON storage.objects FOR INSERT
 WITH CHECK (
   bucket_id = 'message_attachments'
   AND EXISTS (
-    SELECT 1 FROM public.conversation_participants cp
-    JOIN public.profiles p ON p.id = cp.user_id
-    WHERE cp.conversation_id = (storage.foldername(name))[1]::uuid
-      AND cp.user_id = auth.uid()
-      AND cp.left_at IS NULL
+    SELECT 1 FROM public.messaging_channel_members mcm
+    WHERE mcm.channel_id = (storage.foldername(name))[1]::uuid
+      AND mcm.profile_id = auth.uid()
+      AND mcm.left_at IS NULL
   )
 );
 
@@ -43,11 +42,11 @@ ON storage.objects FOR SELECT
 USING (
   bucket_id = 'message_attachments'
   AND EXISTS (
-    SELECT 1 FROM public.messages m
-    JOIN public.conversation_participants cp ON cp.conversation_id = m.conversation_id
+    SELECT 1 FROM public.messaging_messages m
+    JOIN public.messaging_channel_members mcm ON mcm.channel_id = m.channel_id
     WHERE m.file_url LIKE '%' || storage.objects.name
-      AND cp.user_id = auth.uid()
-      AND cp.left_at IS NULL
+      AND mcm.profile_id = auth.uid()
+      AND mcm.left_at IS NULL
   )
 );
 
@@ -57,9 +56,8 @@ ON storage.objects FOR DELETE
 USING (
   bucket_id = 'message_attachments'
   AND EXISTS (
-    SELECT 1 FROM public.messages m
+    SELECT 1 FROM public.messaging_messages m
     WHERE m.file_url LIKE '%' || storage.objects.name
-      AND m.sender_id = auth.uid()
+      AND m.sender_profile_id = auth.uid()
   )
 );
-

@@ -396,7 +396,7 @@ export default function TeamTable({ team, sites, onUpdated, onRemoved }: TeamTab
                   
                   
                   <span className="font-medium">{m.full_name || "—"}</span>
-                  <span className="text-slate-400 text-xs">{m.email}</span>
+                  <span className="text-theme-tertiary text-xs">{m.email}</span>
                 </div>
               </td>
               <td className="p-3">
@@ -425,7 +425,7 @@ export default function TeamTable({ team, sites, onUpdated, onRemoved }: TeamTab
                 </select>
               </td>
               <td className="p-3">
-                <span className={`text-xs ${m.active === false ? "text-slate-400" : "text-green-400"}`}>
+                <span className={`text-xs ${m.active === false ? "text-theme-tertiary" : "text-green-400"}`}>
                   {m.active === false ? "Inactive" : "Active/Invited"}
                 </span>
               </td>
@@ -442,7 +442,7 @@ export default function TeamTable({ team, sites, onUpdated, onRemoved }: TeamTab
           ))}
           {(!team || team.length === 0) && (
             <tr>
-              <td className="p-3 text-slate-400 text-sm" colSpan={5}>No team members yet.</td>
+              <td className="p-3 text-theme-tertiary text-sm" colSpan={5}>No team members yet.</td>
             </tr>
           )}
         </tbody>

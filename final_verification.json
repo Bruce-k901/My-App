@@ -1,0 +1,76 @@
+﻿{
+  "success": true,
+  "ready_notifications": 0,
+  "late_notifications": 0,
+  "total_notifications": 0,
+  "push_sent": 0,
+  "push_failed": 0,
+  "tasks_checked": 13,
+  "errors_count": 8,
+  "warnings_count": 3,
+  "execution_time_ms": 650,
+  "message": "Processed 13 tasks. Created 0 notifications. Push: 0 sent, 0 failed.",
+  "metrics": {
+    "startTime": 1770999892477,
+    "tasksChecked": 13,
+    "readyNotificationsCreated": 0,
+    "lateNotificationsCreated": 0,
+    "pushNotificationsSent": 0,
+    "pushNotificationsFailed": 0,
+    "errors": [
+      {
+        "taskId": "2ceffd80-4fd3-4dfa-b376-ee976cc0b6ee",
+        "error": "RPC error creating late notification: new row for relation \"notifications\" violates check constraint \"notifications_type_check\"",
+        "context": "create_task_notification_for_site (late)"
+      },
+      {
+        "taskId": "f21a3626-90f6-4513-9c6a-2eebbea07617",
+        "error": "RPC error creating late notification: new row for relation \"notifications\" violates check constraint \"notifications_type_check\"",
+        "context": "create_task_notification_for_site (late)"
+      },
+      {
+        "taskId": "5dd16b86-4a5d-46ca-8a8f-bacc3c40b8a2",
+        "error": "RPC error creating late notification: new row for relation \"notifications\" violates check constraint \"notifications_type_check\"",
+        "context": "create_task_notification_for_site (late)"
+      },
+      {
+        "taskId": "5209f410-c11f-4cec-a70b-ae7bd82e9c64",
+        "error": "RPC error creating late notification: new row for relation \"notifications\" violates check constraint \"notifications_type_check\"",
+        "context": "create_task_notification_for_site (late)"
+      },
+      {
+        "taskId": "bd627fa2-c037-4f8d-8701-41718cf41e57",
+        "error": "RPC error creating late notification: new row for relation \"notifications\" violates check constraint \"notifications_type_check\"",
+        "context": "create_task_notification_for_site (late)"
+      },
+      {
+        "taskId": "8dd5643e-e8e3-4acc-926c-21cb953ea7cc",
+        "error": "RPC error creating late notification: new row for relation \"notifications\" violates check constraint \"notifications_type_check\"",
+        "context": "create_task_notification_for_site (late)"
+      },
+      {
+        "taskId": "cdbbf4d6-3397-4448-9bd1-0aea7ad082a0",
+        "error": "RPC error creating late notification: new row for relation \"notifications\" violates check constraint \"notifications_type_check\"",
+        "context": "create_task_notification_for_site (late)"
+      },
+      {
+        "error": "Error fetching pending notifications: column notifications.push_sent does not exist",
+        "context": "Fetch pending notifications"
+      }
+    ],
+    "warnings": [
+      {
+        "taskId": "04334f06-438f-4278-81e0-9ab62abd847a",
+        "message": "Task is late but missing site_id"
+      },
+      {
+        "taskId": "58c204e0-b21e-4c34-a78e-277feb74411a",
+        "message": "Task is late but missing site_id"
+      },
+      {
+        "taskId": "61b6fb11-ce2b-48a6-9325-fa2197c33d07",
+        "message": "Task is late but missing site_id"
+      }
+    ]
+  }
+}

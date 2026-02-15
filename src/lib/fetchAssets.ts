@@ -49,6 +49,7 @@ export async function fetchAllAssets(companyId: string): Promise<AssetRecord[]> 
       ppm_contractor:ppm_contractor_id(id, name)
     `)
     .eq("company_id", companyId)
+    .eq("archived", false) // Exclude archived assets
     .order("name");
 
   if (error) {

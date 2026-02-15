@@ -120,7 +120,7 @@ export default function SOPComplianceComponent({ node, updateAttributes, editor 
           <h3 className="text-lg font-semibold text-magenta-400 flex items-center gap-2">
             🧩 Compliance Summary
           </h3>
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-theme-tertiary">
             Last evaluated: {formatEvaluationDate(evaluatedAt)}
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function SOPComplianceComponent({ node, updateAttributes, editor 
         {/* Progress Bar */}
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-300">
+            <span className="text-sm font-medium text-theme-tertiary">
               SOP Compliance: {overallScore}% {status.icon}
             </span>
             <span className={`text-sm font-medium ${status.color}`}>
@@ -145,7 +145,7 @@ export default function SOPComplianceComponent({ node, updateAttributes, editor 
               style={{ width: `${overallScore}%` }}
             />
           </div>
-          <div className="text-xs text-gray-400 mt-1">
+          <div className="text-xs text-theme-tertiary mt-1">
             {passedCount} / {totalCount} criteria met
           </div>
         </div>
@@ -162,17 +162,17 @@ export default function SOPComplianceComponent({ node, updateAttributes, editor 
                 className={`w-5 h-5 rounded border-2 flex items-center justify-center text-xs font-bold transition-colors ${
                   rule.passed 
                     ? 'bg-green-500 border-green-500 text-white' 
-                    : 'bg-transparent border-gray-500 text-gray-500 hover:border-gray-400'
+                    : 'bg-transparent border-gray-500 text-theme-tertiary hover:border-gray-400'
                 }`}
                 title={`Click to ${rule.passed ? 'uncheck' : 'check'} this rule`}
               >
                 {rule.passed ? '✓' : ''}
               </button>
-              <span className={`text-sm ${rule.passed ? 'text-gray-300' : 'text-gray-500'}`}>
+              <span className={`text-sm ${rule.passed ? 'text-theme-tertiary' : 'text-theme-tertiary'}`}>
                 {rule.label}
               </span>
               {rule.weight && (
-                <span className="text-xs text-gray-500 ml-auto">
+                <span className="text-xs text-theme-tertiary ml-auto">
                   {rule.weight}%
                 </span>
               )}
@@ -190,20 +190,20 @@ export default function SOPComplianceComponent({ node, updateAttributes, editor 
             className={`w-5 h-5 rounded border-2 flex items-center justify-center text-xs font-bold transition-colors ${
               verifiedByManager 
                 ? 'bg-magenta-500 border-magenta-500 text-white' 
-                : 'bg-transparent border-gray-500 text-gray-500 hover:border-gray-400'
+                : 'bg-transparent border-gray-500 text-theme-tertiary hover:border-gray-400'
             }`}
             title="Manager verification"
           >
             {verifiedByManager ? '✓' : ''}
           </button>
-          <span className={`text-sm font-medium ${verifiedByManager ? 'text-magenta-300' : 'text-gray-500'}`}>
+          <span className={`text-sm font-medium ${verifiedByManager ? 'text-magenta-300' : 'text-theme-tertiary'}`}>
             Manager verified and signed off
           </span>
         </div>
 
         {/* Footer */}
         <div className="mt-4 pt-3 border-t border-magenta-500/20">
-          <div className="text-xs text-gray-500 text-center">
+          <div className="text-xs text-theme-tertiary text-center">
             Auto-updated on document changes
           </div>
         </div>

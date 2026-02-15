@@ -46,8 +46,8 @@ export default function SimpleDashboardProvider({ children }: { children: React.
     return (
       <div className="min-h-[40vh] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-400 mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading dashboard...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D37E91] mx-auto mb-4"></div>
+          <p className="text-theme-tertiary">Loading dashboard...</p>
         </div>
       </div>
     );

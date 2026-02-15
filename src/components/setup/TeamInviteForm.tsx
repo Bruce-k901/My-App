@@ -75,7 +75,7 @@ export default function TeamInviteForm({ companyId, sites, onInvited }: InviteFo
     <form onSubmit={submit} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs text-slate-400 mb-1">First name</label>
+          <label className="block text-xs text-theme-tertiary mb-1">First name</label>
           <input
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
@@ -85,19 +85,19 @@ export default function TeamInviteForm({ companyId, sites, onInvited }: InviteFo
           {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
         </div>
         <div>
-          <label className="block text-xs text-slate-400 mb-1">Last name</label>
+          <label className="block text-xs text-theme-tertiary mb-1">Last name</label>
           <input value={lastName} onChange={(e) => setLastName(e.target.value)} className="input" placeholder="Doe" />
           {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs text-slate-400 mb-1">Email</label>
+          <label className="block text-xs text-theme-tertiary mb-1">Email</label>
           <input value={email} onChange={(e) => setEmail(e.target.value)} className="input" placeholder="jane@company.com" />
           {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
         </div>
         <div>
-          <label className="block text-xs text-slate-400 mb-1">Role</label>
+          <label className="block text-xs text-theme-tertiary mb-1">Role</label>
           <select value={role} onChange={(e) => setRole(e.target.value)} className="input">
             <option value="Staff">Staff</option>
             <option value="Manager">Manager</option>
@@ -107,7 +107,7 @@ export default function TeamInviteForm({ companyId, sites, onInvited }: InviteFo
         </div>
       </div>
       <div>
-        <label className="block text-xs text-slate-400 mb-1">Assigned Site</label>
+        <label className="block text-xs text-theme-tertiary mb-1">Assigned Site</label>
         <select value={siteId} onChange={(e) => setSiteId(e.target.value)} className="input">
           <option value="">Select a site</option>
           {sites?.map((s) => (

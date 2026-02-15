@@ -76,5 +76,10 @@ if (typeof window !== 'undefined') {
     }
   }, 300);
 
-  useAttemptStore.subscribe(persistSlice, save, { equalityFn: shallow });
+  // Zustand v4+: subscribe takes a listener function
+  // Use selector to get only the persistable state
+  useAttemptStore.subscribe((state) => {
+    const slice = persistSlice(state);
+    save(slice);
+  });
 }

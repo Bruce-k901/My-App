@@ -19,7 +19,7 @@ export default function KPIStats({ items }: { items: KPI[] }) {
       case "green":
         return "text-green-400";
       default:
-        return "text-white";
+        return "text-theme-primary";
     }
   };
 
@@ -27,7 +27,7 @@ export default function KPIStats({ items }: { items: KPI[] }) {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {items.map((kpi) => (
         <GlassCard key={kpi.title} className="text-left">
-          <p className="text-sm text-white/60 mb-1">{kpi.title}</p>
+          <p className="text-sm text-theme-tertiary mb-1">{kpi.title}</p>
           <p className={`text-2xl font-bold ${accentToClass(kpi.accent)}`}>{kpi.value}</p>
         </GlassCard>
       ))}

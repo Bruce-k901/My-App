@@ -27,9 +27,11 @@ export function ReactQueryProvider({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      {/* Show React Query DevTools in development */}
+      {/* Show React Query DevTools in development (hidden on print) */}
       {process.env.NODE_ENV === 'development' && (
-        <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+        <div className="print:hidden">
+          <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+        </div>
       )}
     </QueryClientProvider>
   );

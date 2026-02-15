@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stockly — Full Page Theming (Dark)</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    /* Stockly colours */
+    --mod: 120 154 153;         /* #789A99 light (used on dark bg) */
+    --mod-hex: #789A99;
+    --mod-dark-hex: #4e7d7c;    /* dark (used on light bg) */
+    --sidebar-bg: #0d1414;
+    --main-bg: #0d1414;         /* SAME as sidebar — unified */
+    --surface: rgba(120,154,153,0.04);
+    --surface-border: rgba(120,154,153,0.10);
+    --surface-hover: rgba(120,154,153,0.08);
+    --surface-active: rgba(120,154,153,0.12);
+    --text-primary: #e8e8e8;
+    --text-secondary: rgba(255,255,255,0.50);
+    --text-tertiary: rgba(255,255,255,0.30);
+    --divider: rgba(120,154,153,0.10);
+
+    /* Brand */
+    --brand-cta: #D37E91;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #111;
+    color: var(--text-primary);
+    padding: 1.5rem;
+  }
+
+  .page-label {
+    text-align: center;
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.12em; color: #666; margin-bottom: 1rem;
+  }
+
+  /* ═══════════════ APP FRAME ═══════════════ */
+  .app-frame {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* ═══════════════ HEADER ═══════════════ */
+  .top-header {
+    background: var(--main-bg);
+    border-bottom: 1px solid var(--divider);
+    padding: 0.5rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .logo-mark { display: flex; gap: 2px; align-items: flex-end; height: 24px; }
+  .logo-mark .bar { width: 4.5px; border-radius: 2.5px; }
+
+  .top-header .spacer { flex: 1; }
+
+  .search-box {
+    flex: 0 1 400px;
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.4rem 0.85rem;
+    background: rgba(120,154,153,0.04);
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    font-size: 0.75rem; color: var(--text-tertiary);
+  }
+  .search-box .kbd {
+    margin-left: auto;
+    font-size: 0.6rem;
+    padding: 0.1rem 0.35rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 3px;
+    color: var(--text-tertiary);
+  }
+
+  .header-actions {
+    display: flex; align-items: center; gap: 0.6rem; margin-left: auto;
+  }
+  .icon-btn {
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px; border: none; background: transparent;
+    color: var(--text-secondary); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .icon-btn:hover { background: var(--surface-hover); color: var(--mod-hex); }
+
+  .ask-ai-btn {
+    display: flex; align-items: center; gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    background: linear-gradient(135deg, var(--brand-cta), #b0607a);
+    color: white; border: none; border-radius: 8px;
+    font-size: 0.7rem; font-weight: 600; cursor: pointer;
+  }
+
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--brand-cta); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 700;
+  }
+
+  /* ═══════════════ MODULE BAR ═══════════════ */
+  .module-bar {
+    background: var(--main-bg);
+    border-bottom: 1px solid var(--divider);
+    display: flex;
+    align-items: center;
+    padding: 0 1.25rem;
+  }
+
+  .mod-tab {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.65rem 0.9rem;
+    font-size: 0.78rem; font-weight: 500;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+  .mod-tab:hover { color: var(--text-secondary); }
+  .mod-tab.active {
+    color: var(--mod-hex);
+    border-bottom-color: var(--mod-hex);
+    font-weight: 600;
+    background: rgba(120,154,153,0.06);
+  }
+
+  .clock-btn {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    background: #10B981; color: white;
+    border: none; border-radius: 8px;
+    font-size: 0.72rem; font-weight: 600; cursor: pointer;
+  }
+
+  /* ═══════════════ BODY LAYOUT ═══════════════ */
+  .body-layout {
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    min-height: 680px;
+  }
+
+  /* ═══════════════ SIDEBAR ═══════════════ */
+  .sidebar {
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--divider);
+    padding: 1rem 0.65rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .sidebar .logo-row {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.25rem 0.5rem 0.75rem;
+  }
+  .sidebar .logo-text {
+    font-size: 0.85rem; font-weight: 600; color: var(--mod-hex);
+  }
+
+  .sidebar .section-label {
+    font-size: 0.55rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: rgba(120,154,153,0.40);
+    padding: 0.65rem 0.55rem 0.25rem;
+  }
+
+  .nav-link {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.45rem 0.55rem; border-radius: 7px;
+    font-size: 0.76rem; color: var(--text-secondary);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .nav-link i { font-size: 16px; color: var(--text-tertiary); }
+  .nav-link:hover {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+  }
+  .nav-link:hover i { color: var(--mod-hex); }
+  .nav-link.active {
+    background: var(--surface-active);
+    color: var(--mod-hex);
+    font-weight: 500;
+  }
+  .nav-link.active i { color: var(--mod-hex); }
+
+  .sidebar .user-block {
+    margin-top: auto;
+    padding: 0.65rem 0.55rem;
+    border-top: 1px solid var(--divider);
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .sidebar .user-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--mod-hex); color: #0d1414;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; font-weight: 700;
+  }
+  .sidebar .user-name { font-size: 0.72rem; color: var(--text-primary); }
+  .sidebar .user-role { font-size: 0.6rem; color: var(--text-tertiary); }
+
+  /* ═══════════════ MAIN CONTENT ═══════════════ */
+  .main-content {
+    background: var(--main-bg);
+    padding: 1.5rem 1.75rem;
+    overflow-y: auto;
+  }
+
+  .page-title {
+    display: flex; align-items: center; gap: 0.6rem;
+    margin-bottom: 0.2rem;
+  }
+  .page-title h1 {
+    font-size: 1.4rem; font-weight: 700; color: var(--text-primary);
+  }
+  .page-title i { font-size: 24px; color: var(--mod-hex); }
+
+  .page-date {
+    font-size: 0.78rem; color: var(--text-tertiary);
+    display: flex; align-items: center; gap: 0.35rem;
+    margin-bottom: 1.25rem;
+  }
+
+  /* ═══════════════ ACTION CARDS ═══════════════ */
+  .action-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.65rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .action-card {
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    position: relative;
+  }
+
+  .action-card:hover {
+    background: var(--surface-hover);
+    border-color: var(--mod-hex);
+    transform: translateY(-1px);
+  }
+
+  /* ALL icons in module colour — no christmas lights */
+  .action-card .card-icon {
+    width: 38px; height: 38px;
+    border-radius: 9px;
+    background: rgba(120,154,153,0.10);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--mod-hex);
+  }
+
+  .action-card .card-title {
+    font-size: 0.82rem; font-weight: 600; color: var(--text-primary);
+  }
+  .action-card .card-desc {
+    font-size: 0.68rem; color: var(--text-tertiary); line-height: 1.3;
+  }
+  .action-card .card-arrow {
+    position: absolute;
+    bottom: 0.85rem; right: 0.85rem;
+    color: var(--text-tertiary);
+    font-size: 14px;
+    transition: color 0.15s;
+  }
+  .action-card:hover .card-arrow { color: var(--mod-hex); }
+
+  /* ═══════════════ ALERTS SECTION ═══════════════ */
+  .alerts-card {
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .alerts-header {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-size: 0.8rem; font-weight: 600; color: var(--text-primary);
+    margin-bottom: 0.6rem;
+  }
+  .alerts-header .count {
+    font-size: 0.65rem; color: var(--text-tertiary); font-weight: 400;
+  }
+
+  .alert-row {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.5rem 0;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-radius: 6px;
+    padding: 0.5rem 0.5rem;
+  }
+  .alert-row:hover { background: var(--surface-hover); }
+
+  .alert-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--mod-hex); flex-shrink: 0;
+  }
+  .alert-title { font-size: 0.78rem; font-weight: 500; }
+  .alert-desc { font-size: 0.68rem; color: var(--text-tertiary); }
+  .alert-arrow {
+    margin-left: auto; color: var(--text-tertiary); font-size: 14px;
+  }
+  .alert-row:hover .alert-arrow { color: var(--mod-hex); }
+
+  /* ═══════════════ STAT CARDS ═══════════════ */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.65rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    transition: all 0.15s;
+  }
+  .stat-card:hover { background: var(--surface-hover); border-color: rgba(120,154,153,0.18); }
+
+  .stat-label {
+    display: flex; align-items: center; gap: 0.35rem;
+    font-size: 0.7rem; color: var(--text-tertiary); margin-bottom: 0.4rem;
+  }
+  .stat-label i { font-size: 14px; color: var(--mod-hex); }
+
+  .stat-value {
+    font-size: 1.35rem; font-weight: 700; color: var(--mod-hex);
+  }
+  .stat-value.neutral { color: var(--text-secondary); }
+
+  /* ═══════════════ SEARCH BAR ═══════════════ */
+  .stock-search {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.65rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: 10px;
+    margin-bottom: 1.25rem;
+    font-size: 0.8rem; color: var(--text-tertiary);
+    cursor: text;
+    transition: border-color 0.15s;
+  }
+  .stock-search:hover { border-color: rgba(120,154,153,0.2); }
+  .stock-search i { color: var(--mod-hex); font-size: 16px; }
+
+  /* ═══════════════ QUICK LINKS ═══════════════ */
+  .link-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+
+  .link-row {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    font-size: 0.78rem; color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .link-row i { font-size: 16px; color: var(--mod-hex); }
+  .link-row .arrow {
+    margin-left: auto; font-size: 12px; color: var(--text-tertiary);
+  }
+  .link-row:hover {
+    background: var(--surface-hover);
+    border-color: rgba(120,154,153,0.18);
+    color: var(--text-primary);
+  }
+  .link-row:hover .arrow { color: var(--mod-hex); }
+
+  /* ═══════════════ COMPARISON STRIP ═══════════════ */
+  .comp-section {
+    margin-top: 3rem;
+    max-width: 1400px;
+    margin-left: auto; margin-right: auto;
+  }
+  .comp-label {
+    text-align: center;
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.12em; color: #555; margin-bottom: 1rem;
+  }
+
+  .icon-comp {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .icon-comp-box {
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .icon-comp-box h3 {
+    font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+
+  .icon-row-demo {
+    display: flex; gap: 0.75rem;
+  }
+
+  .demo-card {
+    border-radius: 10px;
+    padding: 0.85rem;
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    flex: 1;
+    transition: all 0.15s;
+  }
+
+  .demo-card .icon-box {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .demo-card .label { font-size: 0.6rem; }
+</style>
+</head>
+<body>
+
+<div class="page-label">Stockly — Dark Theme — Full Page Module Colour Treatment</div>
+
+<div class="app-frame">
+  <!-- ═══════════ HEADER ═══════════ -->
+  <div class="top-header">
+    <div class="logo-mark">
+      <div class="bar" style="height:19px;background:#1B2624;"></div>
+      <div class="bar" style="height:15px;background:#8B2E3E;"></div>
+      <div class="bar" style="height:18px;background:#D9868C;"></div>
+      <div class="bar" style="height:16px;background:#5D8AA8;"></div>
+      <div class="bar" style="height:19px;background:#87B0D6;"></div>
+      <div class="bar" style="height:17px;background:#9AC297;"></div>
+    </div>
+
+    <div class="search-box">
+      <i class="ph-thin ph-magnifying-glass" style="font-size:15px;"></i>
+      Search pages, modules, settings...
+      <span class="kbd">Ctrl K</span>
+    </div>
+
+    <div class="header-actions">
+      <button class="icon-btn"><i class="ph-thin ph-moon" style="font-size:18px;"></i></button>
+      <button class="icon-btn"><i class="ph-thin ph-chat-circle" style="font-size:18px;"></i></button>
+      <button class="icon-btn"><i class="ph-thin ph-calendar" style="font-size:18px;"></i></button>
+      <button class="ask-ai-btn"><i class="ph-thin ph-sparkle" style="font-size:13px;"></i> Ask AI</button>
+      <button class="icon-btn"><i class="ph-thin ph-list" style="font-size:18px;"></i></button>
+      <div class="avatar">B</div>
+    </div>
+  </div>
+
+  <!-- ═══════════ MODULE BAR ═══════════ -->
+  <div class="module-bar">
+    <div class="mod-tab"><i class="ph-thin ph-clipboard-text" style="font-size:15px;"></i> Checkly</div>
+    <div class="mod-tab active"><i class="ph-thin ph-package" style="font-size:15px;"></i> Stockly</div>
+    <div class="mod-tab"><i class="ph-thin ph-users-three" style="font-size:15px;"></i> Teamly</div>
+    <div class="mod-tab"><i class="ph-thin ph-wrench" style="font-size:15px;"></i> Assetly</div>
+    <div class="mod-tab"><i class="ph-thin ph-factory" style="font-size:15px;"></i> Planly</div>
+    <button class="clock-btn"><i class="ph-thin ph-clock" style="font-size:15px;"></i> Clock In</button>
+  </div>
+
+  <!-- ═══════════ BODY ═══════════ -->
+  <div class="body-layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="logo-row">
+        <div class="logo-mark" style="height:18px;">
+          <div class="bar" style="height:15px;background:#1B2624;width:3.5px;"></div>
+          <div class="bar" style="height:12px;background:#8B2E3E;width:3.5px;"></div>
+          <div class="bar" style="height:14px;background:#D9868C;width:3.5px;"></div>
+          <div class="bar" style="height:13px;background:#5D8AA8;width:3.5px;"></div>
+          <div class="bar" style="height:15px;background:#87B0D6;width:3.5px;"></div>
+          <div class="bar" style="height:14px;background:#9AC297;width:3.5px;"></div>
+        </div>
+        <span class="logo-text">stockly</span>
+      </div>
+
+      <div class="nav-link active"><i class="ph-thin ph-squares-four"></i> Dashboard</div>
+
+      <div class="section-label">Inventory</div>
+      <div class="nav-link"><i class="ph-thin ph-package"></i> Stock Items</div>
+      <div class="nav-link"><i class="ph-thin ph-warehouse"></i> Storage Areas</div>
+      <div class="nav-link"><i class="ph-thin ph-clipboard-text"></i> Stock Counts</div>
+
+      <div class="section-label">Purchasing</div>
+      <div class="nav-link"><i class="ph-thin ph-storefront"></i> Suppliers</div>
+      <div class="nav-link"><i class="ph-thin ph-shopping-cart"></i> Orders</div>
+      <div class="nav-link"><i class="ph-thin ph-truck"></i> Deliveries</div>
+      <div class="nav-link"><i class="ph-thin ph-file-text"></i> Credit Notes</div>
+
+      <div class="section-label">Operations</div>
+      <div class="nav-link"><i class="ph-thin ph-cooking-pot"></i> Recipes</div>
+      <div class="nav-link"><i class="ph-thin ph-trash"></i> Waste Log</div>
+
+      <div class="section-label">Reports</div>
+      <div class="nav-link"><i class="ph-thin ph-chart-bar"></i> Reports</div>
+
+      <div class="nav-link"><i class="ph-thin ph-gear-six"></i> Settings</div>
+
+      <div class="user-block">
+        <div class="user-avatar">BK</div>
+        <div>
+          <div class="user-name">Bruce Kamp</div>
+          <div class="user-role">Admin</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+      <div class="page-title">
+        <i class="ph-thin ph-package"></i>
+        <h1>Stockly</h1>
+      </div>
+      <div class="page-date">
+        <i class="ph-thin ph-clock" style="font-size:14px;"></i>
+        Wednesday 11 February
+      </div>
+
+      <!-- ACTION CARDS — ALL ICONS IN MODULE COLOUR -->
+      <div class="action-grid">
+        <div class="action-card">
+          <div class="card-icon"><i class="ph-thin ph-file-plus" style="font-size:20px;"></i></div>
+          <div class="card-title">New Order</div>
+          <div class="card-desc">Create purchase order</div>
+          <i class="ph-thin ph-arrow-right card-arrow"></i>
+        </div>
+        <div class="action-card">
+          <div class="card-icon"><i class="ph-thin ph-truck" style="font-size:20px;"></i></div>
+          <div class="card-title">Receive Delivery</div>
+          <div class="card-desc">Log incoming stock</div>
+          <i class="ph-thin ph-arrow-right card-arrow"></i>
+        </div>
+        <div class="action-card">
+          <div class="card-icon"><i class="ph-thin ph-trash" style="font-size:20px;"></i></div>
+          <div class="card-title">Record Waste</div>
+          <div class="card-desc">Log wastage or loss</div>
+          <i class="ph-thin ph-arrow-right card-arrow"></i>
+        </div>
+        <div class="action-card">
+          <div class="card-icon"><i class="ph-thin ph-user" style="font-size:20px;"></i></div>
+          <div class="card-title">Staff Purchase</div>
+          <div class="card-desc">Sell to team member</div>
+          <i class="ph-thin ph-arrow-right card-arrow"></i>
+        </div>
+        <div class="action-card">
+          <div class="card-icon"><i class="ph-thin ph-list-checks" style="font-size:20px;"></i></div>
+          <div class="card-title">Quick Count</div>
+          <div class="card-desc">Spot check items</div>
+          <i class="ph-thin ph-arrow-right card-arrow"></i>
+        </div>
+      </div>
+
+      <!-- ALERTS -->
+      <div class="alerts-card">
+        <div class="alerts-header">
+          <i class="ph-thin ph-warning" style="font-size:16px;color:var(--mod-hex);"></i>
+          Alerts <span class="count">(1)</span>
+        </div>
+        <div class="alert-row">
+          <div class="alert-dot"></div>
+          <div>
+            <div class="alert-title">2 active orders</div>
+            <div class="alert-desc">Purchase orders in progress</div>
+          </div>
+          <i class="ph-thin ph-arrow-right alert-arrow"></i>
+        </div>
+      </div>
+
+      <!-- STAT CARDS — VALUES IN MODULE COLOUR -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label"><i class="ph-thin ph-coin"></i> Stock Value</div>
+          <div class="stat-value">£216,325</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ph-thin ph-truck"></i> Deliveries Today</div>
+          <div class="stat-value">£0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ph-thin ph-trash"></i> Wastage Today</div>
+          <div class="stat-value">£0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="ph-thin ph-chart-line-up"></i> Latest GP</div>
+          <div class="stat-value neutral">–</div>
+        </div>
+      </div>
+
+      <!-- SEARCH -->
+      <div class="stock-search">
+        <i class="ph-thin ph-magnifying-glass"></i>
+        Quick search stock items...
+      </div>
+
+      <!-- QUICK LINKS -->
+      <div class="link-grid">
+        <div class="link-row"><i class="ph-thin ph-package"></i> Stock Items <i class="ph-thin ph-arrow-right arrow"></i></div>
+        <div class="link-row"><i class="ph-thin ph-storefront"></i> Suppliers <i class="ph-thin ph-arrow-right arrow"></i></div>
+        <div class="link-row"><i class="ph-thin ph-shopping-cart"></i> Orders <i class="ph-thin ph-arrow-right arrow"></i></div>
+        <div class="link-row"><i class="ph-thin ph-truck"></i> Deliveries <i class="ph-thin ph-arrow-right arrow"></i></div>
+        <div class="link-row"><i class="ph-thin ph-clipboard-text"></i> Stock Counts <i class="ph-thin ph-arrow-right arrow"></i></div>
+        <div class="link-row"><i class="ph-thin ph-cooking-pot"></i> Recipes <i class="ph-thin ph-arrow-right arrow"></i></div>
+        <div class="link-row"><i class="ph-thin ph-warehouse"></i> Storage Areas <i class="ph-thin ph-arrow-right arrow"></i></div>
+        <div class="link-row"><i class="ph-thin ph-chart-bar"></i> Reports <i class="ph-thin ph-arrow-right arrow"></i></div>
+        <div class="link-row"><i class="ph-thin ph-gear-six"></i> Settings <i class="ph-thin ph-arrow-right arrow"></i></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ ICON COMPARISON ═══════════ -->
+<div class="comp-section">
+  <div class="comp-label">Why Single Module Colour Icons Work Better</div>
+  <div class="icon-comp">
+    <div class="icon-comp-box" style="background:#0b0d13;">
+      <h3 style="color:#EF4444;">✗ Before — Mixed "Christmas Light" Icons</h3>
+      <div class="icon-row-demo">
+        <div class="demo-card" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);">
+          <div class="icon-box" style="color:#10B981;"><i class="ph-thin ph-file-plus" style="font-size:22px;"></i></div>
+          <div class="label" style="color:#888;">New Order</div>
+        </div>
+        <div class="demo-card" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);">
+          <div class="icon-box" style="color:#3B82F6;"><i class="ph-thin ph-truck" style="font-size:22px;"></i></div>
+          <div class="label" style="color:#888;">Receive</div>
+        </div>
+        <div class="demo-card" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);">
+          <div class="icon-box" style="color:#EF4444;"><i class="ph-thin ph-trash" style="font-size:22px;"></i></div>
+          <div class="label" style="color:#888;">Waste</div>
+        </div>
+        <div class="demo-card" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);">
+          <div class="icon-box" style="color:#10B981;"><i class="ph-thin ph-user" style="font-size:22px;"></i></div>
+          <div class="label" style="color:#888;">Staff</div>
+        </div>
+        <div class="demo-card" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);">
+          <div class="icon-box" style="color:#A855F7;"><i class="ph-thin ph-list-checks" style="font-size:22px;"></i></div>
+          <div class="label" style="color:#888;">Count</div>
+        </div>
+      </div>
+      <p style="font-size:0.65rem;color:#666;margin-top:0.75rem;">Random colours per icon. No visual cohesion. Looks like 5 different apps.</p>
+    </div>
+
+    <div class="icon-comp-box" style="background:#0d1414;">
+      <h3 style="color:#10B981;">✓ After — Unified Module Colour</h3>
+      <div class="icon-row-demo">
+        <div class="demo-card" style="background:rgba(120,154,153,0.04);border:1px solid rgba(120,154,153,0.10);">
+          <div class="icon-box" style="background:rgba(120,154,153,0.10);border-radius:8px;color:#789A99;"><i class="ph-thin ph-file-plus" style="font-size:22px;"></i></div>
+          <div class="label" style="color:#789A99;">New Order</div>
+        </div>
+        <div class="demo-card" style="background:rgba(120,154,153,0.04);border:1px solid rgba(120,154,153,0.10);">
+          <div class="icon-box" style="background:rgba(120,154,153,0.10);border-radius:8px;color:#789A99;"><i class="ph-thin ph-truck" style="font-size:22px;"></i></div>
+          <div class="label" style="color:#789A99;">Receive</div>
+        </div>
+        <div class="demo-card" style="background:rgba(120,154,153,0.04);border:1px solid rgba(120,154,153,0.10);">
+          <div class="icon-box" style="background:rgba(120,154,153,0.10);border-radius:8px;color:#789A99;"><i class="ph-thin ph-trash" style="font-size:22px;"></i></div>
+          <div class="label" style="color:#789A99;">Waste</div>
+        </div>
+        <div class="demo-card" style="background:rgba(120,154,153,0.04);border:1px solid rgba(120,154,153,0.10);">
+          <div class="icon-box" style="background:rgba(120,154,153,0.10);border-radius:8px;color:#789A99;"><i class="ph-thin ph-user" style="font-size:22px;"></i></div>
+          <div class="label" style="color:#789A99;">Staff</div>
+        </div>
+        <div class="demo-card" style="background:rgba(120,154,153,0.04);border:1px solid rgba(120,154,153,0.10);">
+          <div class="icon-box" style="background:rgba(120,154,153,0.10);border-radius:8px;color:#789A99;"><i class="ph-thin ph-list-checks" style="font-size:22px;"></i></div>
+          <div class="label" style="color:#789A99;">Count</div>
+        </div>
+      </div>
+      <p style="font-size:0.65rem;color:rgba(120,154,153,0.5);margin-top:0.75rem;">Every icon in Stockly's Aqua Mist. Cohesive. You instantly know you're in Stockly.</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

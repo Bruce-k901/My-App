@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { X } from 'lucide-react';
+import { X } from '@/components/ui/icons';
 import { MasterTemplateModal } from '@/components/templates/MasterTemplateModal';
 
 export default function TemplateBuilderPage() {
@@ -21,8 +21,8 @@ export default function TemplateBuilderPage() {
   return (
     <div className="p-8">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white mb-2">Template Builder</h1>
-        <p className="text-white/60">Create a custom task template</p>
+        <h1 className="text-3xl font-bold text-theme-primary mb-2">Template Builder</h1>
+        <p className="text-theme-tertiary">Create a custom task template</p>
       </div>
 
       <MasterTemplateModal 

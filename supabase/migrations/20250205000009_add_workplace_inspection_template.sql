@@ -1,20 +1,36 @@
 -- ============================================================================
 -- Migration: 20250205000009_add_workplace_inspection_template.sql
 -- Description: Comprehensive monthly health & safety workplace inspection
+-- Note: This migration will be skipped if task_templates table doesn't exist yet
 -- ============================================================================
 
--- Clean up existing template if it exists
-DELETE FROM template_repeatable_labels 
-WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'workplace_inspection');
+-- Clean up existing template if it exists (only if tables exist)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    -- Delete repeatable labels if table exists
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_repeatable_labels') THEN
+      DELETE FROM template_repeatable_labels 
+      WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'workplace_inspection');
+    END IF;
+    
+    -- Delete template fields if table exists
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_fields') THEN
+      DELETE FROM template_fields 
+      WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'workplace_inspection');
+    END IF;
+    
+    -- Delete template
+    DELETE FROM task_templates 
+    WHERE slug = 'workplace_inspection';
+  END IF;
+END $$;
 
-DELETE FROM template_fields 
-WHERE template_id IN (SELECT id FROM task_templates WHERE slug = 'workplace_inspection');
-
-DELETE FROM task_templates 
-WHERE slug = 'workplace_inspection';
-
--- Create comprehensive workplace inspection template
-INSERT INTO task_templates (
+-- Create comprehensive workplace inspection template (only if table exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    INSERT INTO task_templates (
   company_id,
   name,
   slug,
@@ -120,127 +136,167 @@ Special Requirements:
   TRUE,  -- Trigger contractor for serious safety issues
   'safety_consultant',
   TRUE,
-  FALSE,  -- No SOP upload required
-  FALSE   -- No risk assessment upload required
-);
+      FALSE,  -- No SOP upload required
+      FALSE   -- No risk assessment upload required
+    );
+  END IF;
+END $$;
 
--- Add template fields
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'inspection_date', 'date', 'Inspection Date', TRUE, 1, 
-  'Date when the workplace inspection was conducted.'
-FROM task_templates WHERE slug = 'workplace_inspection';
+-- Add template fields (only if both tables exist)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_fields') THEN
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'inspection_date', 'date', 'Inspection Date', TRUE, 1, 
+      'Date when the workplace inspection was conducted.'
+    FROM task_templates t
+    WHERE t.slug = 'workplace_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'inspection_date');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'inspected_by', 'text', 'Inspected By', TRUE, 2,
-  'Name of the manager conducting the inspection.'
-FROM task_templates WHERE slug = 'workplace_inspection';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'inspected_by', 'text', 'Inspected By', TRUE, 2,
+      'Name of the manager conducting the inspection.'
+    FROM task_templates t
+    WHERE t.slug = 'workplace_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'inspected_by');
 
--- FIXED: Select field with options in JSONB
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
-SELECT id, 'venue_area', 'select', 'Venue Area', TRUE, 3,
-  'Primary area being inspected (rotate through all areas monthly).',
-  jsonb_build_array(
-    jsonb_build_object('value', 'Main Kitchen & Storage', 'label', 'Main Kitchen & Storage'),
-    jsonb_build_object('value', 'Front of House & Bar', 'label', 'Front of House & Bar'),
-    jsonb_build_object('value', 'Staff & Admin Areas', 'label', 'Staff & Admin Areas'),
-    jsonb_build_object('value', 'External & Delivery Areas', 'label', 'External & Delivery Areas'),
-    jsonb_build_object('value', 'Full Venue Inspection', 'label', 'Full Venue Inspection')
-  )
-FROM task_templates WHERE slug = 'workplace_inspection';
+    -- FIXED: Select field with options in JSONB
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, options)
+    SELECT t.id, 'venue_area', 'select', 'Venue Area', TRUE, 3,
+      'Primary area being inspected (rotate through all areas monthly).',
+      jsonb_build_array(
+        jsonb_build_object('value', 'Main Kitchen & Storage', 'label', 'Main Kitchen & Storage'),
+        jsonb_build_object('value', 'Front of House & Bar', 'label', 'Front of House & Bar'),
+        jsonb_build_object('value', 'Staff & Admin Areas', 'label', 'Staff & Admin Areas'),
+        jsonb_build_object('value', 'External & Delivery Areas', 'label', 'External & Delivery Areas'),
+        jsonb_build_object('value', 'Full Venue Inspection', 'label', 'Full Venue Inspection')
+      )
+    FROM task_templates t
+    WHERE t.slug = 'workplace_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'venue_area');
 
--- Category Assessments
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'kitchen_safety_ok', 'pass_fail', 'Kitchen Safety - All Satisfactory', TRUE, 10,
-  'PASS if all kitchen safety items are satisfactory. FAIL if any critical kitchen hazards found.'
-FROM task_templates WHERE slug = 'workplace_inspection';
+    -- Category Assessments
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'kitchen_safety_ok', 'pass_fail', 'Kitchen Safety - All Satisfactory', TRUE, 10,
+      'PASS if all kitchen safety items are satisfactory. FAIL if any critical kitchen hazards found.'
+    FROM task_templates t
+    WHERE t.slug = 'workplace_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'kitchen_safety_ok');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'food_safety_ok', 'pass_fail', 'Food Safety & Hygiene - All Satisfactory', TRUE, 11,
-  'PASS if all food safety items are satisfactory. FAIL if any hygiene hazards found.'
-FROM task_templates WHERE slug = 'workplace_inspection';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'food_safety_ok', 'pass_fail', 'Food Safety & Hygiene - All Satisfactory', TRUE, 11,
+      'PASS if all food safety items are satisfactory. FAIL if any hygiene hazards found.'
+    FROM task_templates t
+    WHERE t.slug = 'workplace_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'food_safety_ok');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'front_of_house_ok', 'pass_fail', 'Front of House Safety - All Satisfactory', TRUE, 12,
-  'PASS if all front of house safety items are satisfactory. FAIL if any customer area hazards found.'
-FROM task_templates WHERE slug = 'workplace_inspection';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'front_of_house_ok', 'pass_fail', 'Front of House Safety - All Satisfactory', TRUE, 12,
+      'PASS if all front of house safety items are satisfactory. FAIL if any customer area hazards found.'
+    FROM task_templates t
+    WHERE t.slug = 'workplace_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'front_of_house_ok');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'staff_welfare_ok', 'pass_fail', 'Staff Welfare - All Satisfactory', TRUE, 13,
-  'PASS if all staff welfare items are satisfactory. FAIL if any staff facility issues found.'
-FROM task_templates WHERE slug = 'workplace_inspection';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'staff_welfare_ok', 'pass_fail', 'Staff Welfare - All Satisfactory', TRUE, 13,
+      'PASS if all staff welfare items are satisfactory. FAIL if any staff facility issues found.'
+    FROM task_templates t
+    WHERE t.slug = 'workplace_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'staff_welfare_ok');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'fire_safety_ok', 'pass_fail', 'Fire Safety - All Satisfactory', TRUE, 14,
-  'PASS if all fire safety items are satisfactory. FAIL if any fire safety issues found.'
-FROM task_templates WHERE slug = 'workplace_inspection';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'fire_safety_ok', 'pass_fail', 'Fire Safety - All Satisfactory', TRUE, 14,
+      'PASS if all fire safety items are satisfactory. FAIL if any fire safety issues found.'
+    FROM task_templates t
+    WHERE t.slug = 'workplace_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'fire_safety_ok');
 
--- Overall Assessment
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'overall_safety_ok', 'pass_fail', 'Overall Workplace Safety Assessment', TRUE, 20,
-  'PASS if workplace meets all health and safety standards. FAIL if critical safety issues found - will trigger safety consultant callout.'
-FROM task_templates WHERE slug = 'workplace_inspection';
+    -- Overall Assessment
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'overall_safety_ok', 'pass_fail', 'Overall Workplace Safety Assessment', TRUE, 20,
+      'PASS if workplace meets all health and safety standards. FAIL if critical safety issues found - will trigger safety consultant callout.'
+    FROM task_templates t
+    WHERE t.slug = 'workplace_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'overall_safety_ok');
 
--- Hazard Documentation
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
-SELECT id, 'hazards_found', 'text', 'Hazards Identified', FALSE, 21,
-  'List any safety hazards found during inspection. Be specific about location and risk.',
-  'e.g., Wet floor near dishwash area, blocked fire exit in storage, damaged electrical cable in kitchen...'
-FROM task_templates WHERE slug = 'workplace_inspection';
+    -- Hazard Documentation
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
+    SELECT t.id, 'hazards_found', 'text', 'Hazards Identified', FALSE, 21,
+      'List any safety hazards found during inspection. Be specific about location and risk.',
+      'e.g., Wet floor near dishwash area, blocked fire exit in storage, damaged electrical cable in kitchen...'
+    FROM task_templates t
+    WHERE t.slug = 'workplace_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'hazards_found');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
-SELECT id, 'corrective_actions', 'text', 'Corrective Actions Taken', FALSE, 22,
-  'Record immediate actions taken and any follow-up required.',
-  'e.g., Cleared blocked exit, arranged electrical repair, scheduled deep clean...'
-FROM task_templates WHERE slug = 'workplace_inspection';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text, placeholder)
+    SELECT t.id, 'corrective_actions', 'text', 'Corrective Actions Taken', FALSE, 22,
+      'Record immediate actions taken and any follow-up required.',
+      'e.g., Cleared blocked exit, arranged electrical repair, scheduled deep clean...'
+    FROM task_templates t
+    WHERE t.slug = 'workplace_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'corrective_actions');
 
-INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
-SELECT id, 'next_inspection_focus', 'text', 'Next Inspection Focus Area', FALSE, 23,
-  'Note any areas that need special attention in the next inspection.'
-FROM task_templates WHERE slug = 'workplace_inspection';
+    INSERT INTO template_fields (template_id, field_name, field_type, label, required, field_order, help_text)
+    SELECT t.id, 'next_inspection_focus', 'text', 'Next Inspection Focus Area', FALSE, 23,
+      'Note any areas that need special attention in the next inspection.'
+    FROM task_templates t
+    WHERE t.slug = 'workplace_inspection'
+      AND NOT EXISTS (SELECT 1 FROM template_fields tf WHERE tf.template_id = t.id AND tf.field_name = 'next_inspection_focus');
+  END IF;
+END $$;
 
--- Verification
+-- Verification (only if tables exist)
 DO $$
 DECLARE
   template_record RECORD;
   field_count INTEGER;
 BEGIN
-  SELECT * INTO template_record
-  FROM task_templates 
-  WHERE slug = 'workplace_inspection';
-  
-  SELECT COUNT(*) INTO field_count
-  FROM template_fields
-  WHERE template_id = template_record.id;
-  
-  IF template_record.id IS NOT NULL THEN
-    RAISE NOTICE '✅ Workplace Inspection template created successfully';
-    RAISE NOTICE '   Template ID: %', template_record.id;
-    RAISE NOTICE '   Category: %', template_record.category;
-    RAISE NOTICE '   Evidence types: %', template_record.evidence_types;
-    RAISE NOTICE '   Triggers contractor: %', template_record.triggers_contractor_on_failure;
-    RAISE NOTICE '   Contractor type: %', template_record.contractor_type;
-    RAISE NOTICE '   Template fields: %', field_count;
-    RAISE NOTICE '   ✓ Features: Comprehensive checklist (35 items) + Category assessments + Photos';
-    RAISE NOTICE '   ✓ Safety categories: Kitchen, Food, Front of House, Staff Welfare, Fire Safety';
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    SELECT * INTO template_record
+    FROM task_templates 
+    WHERE slug = 'workplace_inspection';
     
-    -- Check visibility windows
-    IF template_record.recurrence_pattern IS NOT NULL AND 
-       template_record.recurrence_pattern ? 'visibility_window_days_before' THEN
-      RAISE NOTICE '   ✓ Visibility window: % days before, % days after',
-        template_record.recurrence_pattern->>'visibility_window_days_before',
-        template_record.recurrence_pattern->>'visibility_window_days_after';
-      RAISE NOTICE '   ✓ Grace period: % days',
-        template_record.recurrence_pattern->>'grace_period_days';
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'template_fields') THEN
+      SELECT COUNT(*) INTO field_count
+      FROM template_fields
+      WHERE template_id = template_record.id;
+    ELSE
+      field_count := 0;
     END IF;
-    
-    -- Check default checklist items count
-    IF template_record.recurrence_pattern IS NOT NULL AND 
-       template_record.recurrence_pattern ? 'default_checklist_items' THEN
-      RAISE NOTICE '   ✓ Default checklist items: %',
-        jsonb_array_length(template_record.recurrence_pattern->'default_checklist_items');
+  
+    IF template_record.id IS NOT NULL THEN
+      RAISE NOTICE '✅ Workplace Inspection template created successfully';
+      RAISE NOTICE '   Template ID: %', template_record.id;
+      RAISE NOTICE '   Category: %', template_record.category;
+      RAISE NOTICE '   Evidence types: %', template_record.evidence_types;
+      RAISE NOTICE '   Triggers contractor: %', template_record.triggers_contractor_on_failure;
+      RAISE NOTICE '   Contractor type: %', template_record.contractor_type;
+      RAISE NOTICE '   Template fields: %', field_count;
+      RAISE NOTICE '   ✓ Features: Comprehensive checklist (35 items) + Category assessments + Photos';
+      RAISE NOTICE '   ✓ Safety categories: Kitchen, Food, Front of House, Staff Welfare, Fire Safety';
+      
+      -- Check visibility windows
+      IF template_record.recurrence_pattern IS NOT NULL AND 
+         template_record.recurrence_pattern ? 'visibility_window_days_before' THEN
+        RAISE NOTICE '   ✓ Visibility window: % days before, % days after',
+          template_record.recurrence_pattern->>'visibility_window_days_before',
+          template_record.recurrence_pattern->>'visibility_window_days_after';
+        RAISE NOTICE '   ✓ Grace period: % days',
+          template_record.recurrence_pattern->>'grace_period_days';
+      END IF;
+      
+      -- Check default checklist items count
+      IF template_record.recurrence_pattern IS NOT NULL AND 
+         template_record.recurrence_pattern ? 'default_checklist_items' THEN
+        RAISE NOTICE '   ✓ Default checklist items: %',
+          jsonb_array_length(template_record.recurrence_pattern->'default_checklist_items');
+      END IF;
+    ELSE
+      RAISE NOTICE '⚠️ Template not found (may not exist yet)';
     END IF;
   ELSE
-    RAISE WARNING '⚠️ Template creation may have failed. Template not found.';
+    RAISE NOTICE '⚠️ task_templates table does not exist yet - skipping verification';
   END IF;
 END $$;
 
