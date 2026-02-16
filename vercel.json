@@ -1,10 +1,18 @@
 {
   "functions": {
     "src/app/api/planly/production-plan/pdf/route.ts": {
+      "memory": 1536,
+      "maxDuration": 30
+    },
+    "src/app/api/planly/delivery-notes/pdf/route.ts": {
+      "memory": 1536,
       "maxDuration": 30
     },
     "src/app/api/cron/daily-digest/route.ts": {
       "maxDuration": 60
+    },
+    "src/app/api/cron/generate-tasks/route.ts": {
+      "maxDuration": 120
     }
   },
   "crons": [
@@ -15,6 +23,10 @@
     {
       "path": "/api/cron/health-check-reminders",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/generate-tasks",
+      "schedule": "0 4 * * *"
     },
     {
       "path": "/api/cron/daily-digest",
