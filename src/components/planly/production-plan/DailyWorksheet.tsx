@@ -539,7 +539,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
   // ── RENDER ──────────────────────────────────────────────────────────
 
   return (
-    <div className="ws-root space-y-4 print:space-y-2">
+    <div className="ws-root space-y-4 print:space-y-1">
 
       {/* ── DATE NAV ─────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between print:hidden">
@@ -563,9 +563,6 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
         </div>
       </div>
 
-      {/* Print header - Page 1 */}
-      <div className="hidden print:block print:mb-1"><h1 className="text-[10px] font-bold">Packing Plan — {format(selectedDate, 'EEEE d MMM yyyy')}</h1></div>
-
       {!hasAnyData && (
         <Sec title="No Orders" sub={todayDisplay}>
           <p className="text-theme-tertiary text-center py-6">No orders for today or tomorrow. Navigate to a date with orders.</p>
@@ -576,12 +573,15 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
         <>
 
           {/* ═══════════════════════════════════════════════════════════════
-              SECTION 1: PACKING PLAN — TODAY's delivery orders
+              PAGE 1: PACKING PLAN — TODAY's delivery orders
+              Wrapped in .packing-page so CSS can break-after: page
               ═══════════════════════════════════════════════════════════════ */}
-          <Sec title="Packing Plan" sub={packing ? `${planToday!.delivery_orders.length} orders | ${packing.grand} items — for ${todayDisplay}` : ''}>
+          <div className="packing-page">
+            <div className="hidden print:block print:mb-1"><h1 className="text-[10px] font-bold">Packing Plan — {format(selectedDate, 'EEEE d MMM yyyy')}</h1></div>
+            <Sec title="Packing Plan" sub={packing ? `${planToday!.delivery_orders.length} orders | ${packing.grand} items — for ${todayDisplay}` : ''}>
             {packing ? (
               <div className="overflow-x-auto">
-                <table className="w-full text-xs border-collapse border border-gray-300 dark:border-white/20 table-fixed">
+                <table className="w-full text-xs border-collapse border border-gray-300 dark:border-white/20 table-fixed print:table-auto">
                   <thead>
                     <tr className="border-b-2 border-gray-500 dark:border-white/40 bg-gray-100 dark:bg-white/5">
                       <th className="text-left py-0.5 px-1.5 text-theme-secondary font-bold sticky left-0 bg-theme-muted z-10 w-[140px] print:w-[100px] border-r-2 border-gray-400 dark:border-white/30 text-[10px] print:text-[8px]">Product</th>
@@ -654,10 +654,8 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                 No orders to pack today
               </p>
             )}
-          </Sec>
-
-          {/* Page break for print - Packing Plan on page 1, rest on page 2 */}
-          <div className="hidden print:block print:page-break-after-always" />
+            </Sec>
+          </div>
 
           {/* Page 2 header for print */}
           <div className="hidden print:block print:mb-1">
@@ -668,7 +666,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
               SECTION 2: PREP ROW — 4-column grid (or 3 if no frozen)
               Frozen Packing | Dough Sheets | Cookie Prep | Dough Mix
               ═══════════════════════════════════════════════════════════════ */}
-          <div className={`grid grid-cols-1 gap-3 print:gap-2 ${(frozenPackingTasks || frozenOrdersFallback) ? 'md:grid-cols-4 print:grid-cols-4' : 'md:grid-cols-3 print:grid-cols-3'}`}>
+          <div className={`grid grid-cols-1 gap-3 print:gap-1 items-start print:items-stretch ${(frozenPackingTasks || frozenOrdersFallback) ? 'md:grid-cols-4 print:grid-cols-4' : 'md:grid-cols-3 print:grid-cols-3'}`}>
             {/* Frozen Packing - for TOMORROW's frozen deliveries */}
             {(frozenPackingTasks || frozenOrdersFallback) && (
               <div className="ws-section border-2 border-blue-300 dark:border-blue-500/30 rounded-lg p-2.5 print:p-1 bg-blue-50 dark:bg-blue-900/20 shadow-sm">
@@ -852,7 +850,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
               Tray layout gets 2/3 width, Cross-check gets 1/3 width
               ═══════════════════════════════════════════════════════════════ */}
           {(trayGrids && trayGrids.length > 0) && (
-            <div className="tray-confirmation-grid grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4 print:gap-2">
+            <div className="tray-confirmation-grid grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4 print:gap-1">
               {/* Consolidated Tray Layout - all destination groups in one table */}
               <Sec title="Tray Layout" sub={`${tomorrowDisplay} — ${trayGrids.reduce((s, dg) => s + dg.totalItems, 0)} items`}>
                 {(() => {
@@ -1031,9 +1029,9 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
       {/* ── Print Styles ─────────────────────────────────────────────── */}
       <style jsx global>{`
         @media print {
-          /* Page setup — zero margin eliminates browser headers/footers */
+          /* ===== PAGE SETUP ===== */
           @page {
-            margin: 0;
+            margin: 1cm;
             size: A4 landscape;
           }
 
@@ -1046,32 +1044,42 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
             print-color-adjust: exact !important;
           }
 
-          /* Hide app chrome — Tailwind print: classes handle the rest */
+          /* ===== HIDE APP CHROME ===== */
           nav, header, aside, footer,
           [role="navigation"], [role="banner"],
           .no-print {
             display: none !important;
           }
 
-          /* Reset app-shell layout */
-          main {
-            margin: 0 !important;
-            padding: 1mm !important;
+          /* ===== BUST ALL WIDTH CONSTRAINTS ===== */
+          /* Tailwind .container caps max-width — remove it */
+          main,
+          main > *,
+          .container {
             width: 100% !important;
-            max-width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
           }
 
           .ws-root {
             width: 100% !important;
-            padding: 0 !important;
+            max-width: none !important;
+            padding: 0 5mm !important;
             margin: 0 !important;
-            gap: 1mm !important;
+            box-sizing: border-box !important;
           }
 
-          /* Compact section cards for density */
+          .ws-root > *,
+          .ws-root .grid {
+            max-width: none !important;
+          }
+
+          /* ===== SECTION CARDS ===== */
           .ws-section {
             padding: 1mm !important;
-            margin-bottom: 1mm !important;
+            margin-bottom: 0.5mm !important;
+            border-radius: 2px !important;
           }
 
           .ws-section > div:first-child {
@@ -1079,28 +1087,40 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
             padding-bottom: 0 !important;
           }
 
-          /* Compact grids */
+          /* ===== TABLES — auto-size columns to content ===== */
+          .ws-root table {
+            table-layout: auto !important;
+          }
+
+          /* ===== PRODUCT NAME COLUMNS — never wrap ===== */
+          .ws-root td:first-child,
+          .ws-root th:first-child {
+            white-space: nowrap !important;
+          }
+
+          /* ===== TRAY + CONFIRMATION SIDE-BY-SIDE ===== */
           .tray-confirmation-grid {
+            grid-template-columns: 2fr 1fr !important;
             gap: 1mm !important;
+            width: 100% !important;
           }
 
-          /* Page break support */
-          .print\\:page-break-after-always {
-            page-break-after: always !important;
+          /* ===== PAGE 1: PACKING PLAN ONLY ===== */
+          .packing-page {
             break-after: page !important;
+            page-break-after: always !important;
           }
 
-          /* Scrollable areas must be visible in print */
+          /* ===== OVERFLOW / STICKY FIXES ===== */
           .overflow-x-auto, .overflow-auto {
             overflow: visible !important;
           }
 
-          /* Sticky columns break print layout */
           .sticky {
             position: static !important;
           }
 
-          /* Force dark: classes to light values */
+          /* ===== DARK MODE → LIGHT ===== */
           .dark\\:bg-gray-900, .dark\\:bg-gray-900\\/50,
           .dark\\:bg-white\\/\\[0\\.02\\], .dark\\:bg-white\\/\\[0\\.03\\],
           .dark\\:bg-white\\/5 {
