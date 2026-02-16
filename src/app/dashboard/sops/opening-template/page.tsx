@@ -84,17 +84,23 @@ export default function OpeningProcedureTemplatePage() {
     try {
       setLoading(true);
       
-      const [equipmentResult, disposablesResult, sitesResult] = await Promise.all([
+      const [equipmentResult, assetsResult, disposablesResult, sitesResult] = await Promise.all([
         supabase.from('equipment_library').select('id, equipment_name, category').eq('company_id', companyId).order('equipment_name'),
+        supabase.from('assets').select('id, name, category').eq('company_id', companyId).eq('archived', false).order('name'),
         supabase.from('disposables_library').select('id, item_name').eq('company_id', companyId).order('item_name'),
         supabase.from('sites').select('id, name').eq('company_id', companyId).order('name')
       ]);
-      
+
       if (equipmentResult.error) throw equipmentResult.error;
       if (disposablesResult.error) throw disposablesResult.error;
       if (sitesResult.error) throw sitesResult.error;
-      
-      setEquipmentLibrary(equipmentResult.data || []);
+
+      // Merge equipment library and assets into unified list
+      const mergedEquipment = [
+        ...(equipmentResult.data || []),
+        ...(assetsResult.data || []).map(a => ({ id: a.id, equipment_name: a.name, category: a.category, _source: 'assets' }))
+      ];
+      setEquipmentLibrary(mergedEquipment);
       setDisposablesLibrary(disposablesResult.data || []);
       setSites(sitesResult.data || []);
     } catch (error) {

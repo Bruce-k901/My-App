@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { getRAVersioningInfo, createRAVersionPayload } from '@/lib/utils/raVersioning';
+import SmartSearch from '@/components/SmartSearch';
 
 const HAZARD_CATEGORIES = [
   'Slips, Trips & Falls',
@@ -115,6 +116,10 @@ function GeneralRiskAssessmentTemplateContent() {
   // PPE requirements
   const [selectedPPE, setSelectedPPE] = useState([]);
 
+  // Equipment requirements
+  const [selectedEquipment, setSelectedEquipment] = useState<any[]>([]);
+  const [recentEquipment, setRecentEquipment] = useState<any[]>([]);
+
   // Training requirements
   const [trainingNeeded, setTrainingNeeded] = useState("");
   const [trainingProvider, setTrainingProvider] = useState("");
@@ -212,6 +217,10 @@ function GeneralRiskAssessmentTemplateContent() {
           setSelectedPPE(assessmentData.selectedPPE);
         }
 
+        if (assessmentData.selectedEquipment && Array.isArray(assessmentData.selectedEquipment)) {
+          setSelectedEquipment(assessmentData.selectedEquipment);
+        }
+
         if (assessmentData.training) {
           setTrainingNeeded(assessmentData.training.trainingNeeded || false);
           setTrainingProvider(assessmentData.training.trainingProvider || '');
@@ -270,9 +279,13 @@ function GeneralRiskAssessmentTemplateContent() {
     const highestScore = Math.max(...riskScores, 0);
     const highestRisk = getRiskLevel(highestScore);
 
+    // Strip _sourceTable from equipment items before persisting
+    const cleanEquipment = selectedEquipment.map(({ _sourceTable, ...rest }) => rest);
+
     const assessmentData = {
       hazards,
       selectedPPE,
+      selectedEquipment: cleanEquipment,
       training: { trainingNeeded, trainingProvider, trainingFrequency, lastTrainingDate },
       review: { reviewFrequency, assessorSignature, managerApproval, managerApprovalDate }
     };
@@ -303,12 +316,13 @@ function GeneralRiskAssessmentTemplateContent() {
           assessment_data: assessmentData,
           linked_sops: hazards.map(h => h.linkedSOP).filter(Boolean),
           linked_ppe: selectedPPE,
+          linked_equipment: cleanEquipment.map(e => e.id),
           highest_risk_level: highestRisk.level,
           total_hazards: hazards.length,
           hazards_controlled: hazards.filter(h => h.status === 'Complete').length,
           created_by: profile?.auth_user_id || null
         };
-        
+
         const insertData = createRAVersionPayload(baseData, versioningInfo, profile, false);
         
         const { data, error } = await supabase
@@ -335,12 +349,13 @@ function GeneralRiskAssessmentTemplateContent() {
           assessment_data: assessmentData,
           linked_sops: hazards.map(h => h.linkedSOP).filter(Boolean),
           linked_ppe: selectedPPE,
+          linked_equipment: cleanEquipment.map(e => e.id),
           highest_risk_level: highestRisk.level,
           total_hazards: hazards.length,
           hazards_controlled: hazards.filter(h => h.status === 'Complete').length,
           created_by: profile?.auth_user_id || null
         };
-        
+
         const insertData = createRAVersionPayload(baseData, { newVersion: '1.0', versionNumber: 1, parentId: null, newRefCode: refCode }, profile, true);
         
         const { data, error } = await supabase
@@ -603,6 +618,46 @@ function GeneralRiskAssessmentTemplateContent() {
           <option value="">Select PPE...</option>
           {ppeLibrary.filter(p => !selectedPPE.includes(p.id)).map(p => <option key={p.id} value={p.id}>{p.item_name}</option>)}
         </select>
+      </section>
+
+      {/* Equipment */}
+      <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-module-fg dark:text-magenta-400 mb-4">Equipment</h2>
+        <p className="text-xs text-gray-600 dark:text-theme-tertiary mb-4">
+          Identify equipment relevant to this risk assessment
+        </p>
+
+        {/* Selected equipment chips */}
+        <div className="flex flex-wrap gap-2 mb-3">
+          {selectedEquipment.map((equip, idx) => (
+            <div key={equip.id || idx} className="px-3 py-1 bg-amber-500/20 border border-amber-500/40 rounded-full text-sm text-amber-400 flex items-center gap-2">
+              {equip.equipment_name || equip.name}
+              {equip._sourceTable && (
+                <span className="text-[10px] opacity-60">
+                  ({equip._sourceTable === 'assets' ? 'Asset' : 'Library'})
+                </span>
+              )}
+              <button onClick={() => setSelectedEquipment(selectedEquipment.filter((_, i) => i !== idx))} className="text-amber-300 hover:text-amber-200">
+                <XCircle size={14} />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* SmartSearch for equipment */}
+        <SmartSearch
+          libraryTable="equipment_library"
+          additionalTables={["assets"]}
+          placeholder="Search equipment or assets..."
+          onSelect={(item) => {
+            if (!selectedEquipment.some(e => e.id === item.id)) {
+              setSelectedEquipment([...selectedEquipment, item]);
+            }
+          }}
+          allowMultiple={true}
+          recentItems={recentEquipment}
+          currentSelected={selectedEquipment}
+        />
       </section>
 
       {/* Training Requirements */}

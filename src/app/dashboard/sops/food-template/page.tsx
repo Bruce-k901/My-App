@@ -915,12 +915,16 @@ function FoodSOPTemplatePageContent() {
       return [equip, ...filtered].slice(0, 5);
     });
 
-    setEquipment(equipment.map(eq => 
-      eq.id === targetId 
-        ? { 
-            ...eq, 
-            item: equip.equipment_name,
-            colour_code: equip.colour_code || eq.colour_code
+    // Handle items from either equipment_library or assets table
+    const equipmentName = equip.equipment_name || equip.name || '';
+    const colourCode = equip.colour_code || '';
+
+    setEquipment(equipment.map(eq =>
+      eq.id === targetId
+        ? {
+            ...eq,
+            item: equipmentName,
+            colour_code: colourCode || eq.colour_code
           }
         : eq
     ));
@@ -1542,7 +1546,8 @@ function FoodSOPTemplatePageContent() {
  {index === 0 && <label className="block text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mb-1">Equipment Item</label>}
                 <SmartSearch
                   libraryTable="equipment_library"
-                  placeholder={eq.item ? eq.item : "Search equipment..."}
+                  additionalTables={["assets"]}
+                  placeholder={eq.item ? eq.item : "Search equipment or assets..."}
                   onSelect={(equip) => handleEquipmentSelect(equip, eq.id)}
                   recentItems={recentEquipment}
                   allowMultiple={false}

@@ -17,6 +17,8 @@ import {
   Clock,
   FileCode,
   ShieldCheck,
+  Wrench,
+  Package,
 } from '@/components/ui/icons';
 import { useState, useEffect } from 'react';
 import { useSidebarMode } from '@/hooks/useSidebarMode';
@@ -129,6 +131,21 @@ const navItems: NavItem[] = [
       { label: 'Customer Complaints', href: '/dashboard/incidents/customer-complaints', icon: AlertTriangle },
       { label: 'Staff Sickness', href: '/dashboard/incidents/staff-sickness', icon: AlertTriangle },
       { label: 'Incident Log', href: '/dashboard/incidents/storage', icon: FileText },
+    ],
+  },
+  {
+    type: 'section',
+    label: 'EQUIPMENT',
+    icon: Wrench,
+  },
+  {
+    type: 'parent',
+    label: 'Equipment',
+    href: '/dashboard/equipment',
+    icon: Wrench,
+    children: [
+      { label: 'Equipment Library', href: '/dashboard/equipment', icon: Wrench },
+      { label: 'Assets', href: '/dashboard/equipment/assets', icon: Package },
     ],
   },
   {

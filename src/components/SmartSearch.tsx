@@ -5,8 +5,18 @@ import { X, ChevronDown, Star, Clock } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 
+// Table config for multi-table support
+const TABLE_CONFIG: Record<string, { nameColumn: string; displayLabel: string }> = {
+  equipment_library: { nameColumn: 'equipment_name', displayLabel: 'Equipment' },
+  assets: { nameColumn: 'name', displayLabel: 'Asset' },
+  ingredients_library: { nameColumn: 'ingredient_name', displayLabel: 'Ingredient' },
+  chemicals_library: { nameColumn: 'product_name', displayLabel: 'Chemical' },
+  ppe_library: { nameColumn: 'item_name', displayLabel: 'PPE' },
+};
+
 interface SmartSearchProps {
   libraryTable: string;
+  additionalTables?: string[];
   placeholder?: string;
   categoryFilters?: string[];
   onSelect: (item: any) => void;
@@ -18,6 +28,7 @@ interface SmartSearchProps {
 
 export default function SmartSearch({
   libraryTable,
+  additionalTables,
   placeholder = "Search...",
   categoryFilters = [],
   onSelect,
@@ -43,10 +54,8 @@ export default function SmartSearch({
     try {
       setLoading(true);
       // Determine the correct column name for ordering based on table
-      const orderColumn = libraryTable === 'ingredients_library' ? 'ingredient_name' : 
-                         libraryTable === 'chemicals_library' ? 'product_name' :
-                         libraryTable === 'equipment_library' ? 'equipment_name' : 'item_name';
-      
+      const orderColumn = TABLE_CONFIG[libraryTable]?.nameColumn || 'item_name';
+
       const { data, error } = await supabase
         .from(libraryTable)
         .select('*')
@@ -54,13 +63,39 @@ export default function SmartSearch({
         .order(orderColumn);
 
       if (error) throw error;
-      setResults(data || []);
+
+      // Tag primary results with source table
+      let allResults = (data || []).map((item: any) => ({ ...item, _sourceTable: libraryTable }));
+
+      // Fetch additional tables if specified
+      if (additionalTables && additionalTables.length > 0) {
+        for (const table of additionalTables) {
+          const tableOrderCol = TABLE_CONFIG[table]?.nameColumn || 'item_name';
+          let query = supabase
+            .from(table)
+            .select('*')
+            .eq('company_id', companyId)
+            .order(tableOrderCol);
+
+          // Filter out archived assets
+          if (table === 'assets') {
+            query = query.eq('archived', false);
+          }
+
+          const { data: extraData, error: extraError } = await query;
+          if (!extraError && extraData) {
+            allResults = [...allResults, ...extraData.map((item: any) => ({ ...item, _sourceTable: table }))];
+          }
+        }
+      }
+
+      setResults(allResults);
     } catch (error) {
       console.error('Error loading items:', error);
     } finally {
       setLoading(false);
     }
-  }, [companyId, libraryTable]);
+  }, [companyId, libraryTable, additionalTables]);
 
   useEffect(() => {
     loadItems();
@@ -68,9 +103,13 @@ export default function SmartSearch({
 
   // Helper functions
   const getDisplayName = (item: any) => {
-    if (libraryTable === 'ingredients_library') return item.ingredient_name;
-    return item.item_name || item.product_name || item.equipment_name || '';
+    const table = item._sourceTable || libraryTable;
+    const config = TABLE_CONFIG[table];
+    if (config) return item[config.nameColumn] || '';
+    return item.item_name || item.product_name || item.equipment_name || item.name || '';
   };
+
+  const hasMultipleTables = additionalTables && additionalTables.length > 0;
 
   // Filter results based on search and category
   const filteredResults = results.filter(item => {
@@ -263,6 +302,11 @@ export default function SmartSearch({
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-[rgb(var(--text-primary))] dark:text-white truncate">
                         {getDisplayName(item)}
+                        {hasMultipleTables && item._sourceTable && (
+                          <span className="ml-2 px-1.5 py-0.5 text-[10px] rounded bg-[rgb(var(--surface))] dark:bg-neutral-700 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary font-normal">
+                            {TABLE_CONFIG[item._sourceTable]?.displayLabel || item._sourceTable}
+                          </span>
+                        )}
                       </span>
                       {isSelected && (
                         <ChevronDown size={16} className="text-magenta-400 flex-shrink-0" />
