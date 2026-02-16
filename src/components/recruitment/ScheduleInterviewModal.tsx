@@ -141,7 +141,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
                 className={`p-4 rounded-lg border-2 transition-all ${
                   interviewType === 'in-person'
                     ? 'border-[#D37E91] bg-[#D37E91]/10'
-                    : 'border-white/10 bg-white/5 hover:bg-white/10'
+                    : 'border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10'
                 }`}
               >
                 <Building2 className="w-6 h-6 mx-auto mb-2 text-theme-secondary" />
@@ -152,7 +152,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
                 className={`p-4 rounded-lg border-2 transition-all ${
                   interviewType === 'video'
                     ? 'border-[#D37E91] bg-[#D37E91]/10'
-                    : 'border-white/10 bg-white/5 hover:bg-white/10'
+                    : 'border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10'
                 }`}
               >
                 <Video className="w-6 h-6 mx-auto mb-2 text-theme-secondary" />
@@ -163,7 +163,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
                 className={`p-4 rounded-lg border-2 transition-all ${
                   interviewType === 'phone'
                     ? 'border-[#D37E91] bg-[#D37E91]/10'
-                    : 'border-white/10 bg-white/5 hover:bg-white/10'
+                    : 'border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10'
                 }`}
               >
                 <Phone className="w-6 h-6 mx-auto mb-2 text-theme-secondary" />
@@ -184,7 +184,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91]"
+                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91]"
               />
             </div>
             <div>
@@ -211,7 +211,7 @@ export default function ScheduleInterviewModal({ candidate, application, company
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder={interviewType === 'video' ? 'Zoom/Teams link' : interviewType === 'phone' ? 'We will call you' : 'Office address'}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
+              className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
             />
           </div>
 
@@ -225,12 +225,12 @@ export default function ScheduleInterviewModal({ candidate, application, company
               onChange={(e) => setAdditionalInfo(e.target.value)}
               placeholder="e.g., What to bring, who will interview you, parking info..."
               rows={3}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] resize-none"
+              className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] resize-none"
             />
           </div>
 
           {/* Send Email Toggle */}
-          <div className="flex items-center gap-3 p-4 bg-white/5 rounded-lg border border-white/10">
+          <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10">
             <input
               type="checkbox"
               id="send-email"
@@ -245,11 +245,11 @@ export default function ScheduleInterviewModal({ candidate, application, company
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-white/[0.06] bg-white/[0.02]">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-white/[0.06] bg-gray-50 dark:bg-white/[0.02]">
           <button
             onClick={onClose}
             disabled={saving}
-            className="px-4 py-2 rounded-lg text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-theme-primary disabled:opacity-50"
+            className="px-4 py-2 rounded-lg text-sm bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-200 dark:border-white/10 text-theme-primary disabled:opacity-50"
           >
             Cancel
           </button>

@@ -1454,10 +1454,9 @@ input[type="number"] {
     display: block !important;
   }
 
-  /* Reset page margins */
+  /* Reset page margins — component-level styles override size/orientation */
   @page {
-    margin: 1cm;
-    size: A4 portrait;
+    margin: 0;
   }
 
   /* Ensure tables don't break across pages */

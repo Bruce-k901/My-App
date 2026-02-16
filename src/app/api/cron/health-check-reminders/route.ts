@@ -3,17 +3,22 @@ import { getSupabaseAdmin } from '@/lib/supabaseAdmin'
 import { escalateOverdueItems } from '@/lib/health-check/escalation'
 
 /**
- * POST /api/cron/health-check-reminders
- * Hourly cron job to process pending health check reminders and
+ * GET /api/cron/health-check-reminders
+ * Daily cron job to process pending health check reminders and
  * check for overdue delegated items needing escalation.
+ * Schedule: Daily at 3 AM UTC (configured in vercel.json)
+ * Vercel cron jobs invoke routes via GET.
  */
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization')
     const cronSecret = process.env.CRON_SECRET
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+      console.error('[Cron] Health check reminders: unauthorized request')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    console.log('[Cron] Health check reminders starting...')
 
     const supabase = getSupabaseAdmin()
     const now = new Date().toISOString()
@@ -119,10 +124,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Allow GET for dev testing
-export async function GET(request: NextRequest) {
-  if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json({ error: 'Method not allowed in production' }, { status: 405 })
-  }
-  return POST(request)
+// Allow POST for manual triggers
+export async function POST(request: NextRequest) {
+  return GET(request)
 }

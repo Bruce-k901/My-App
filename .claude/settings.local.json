@@ -97,7 +97,20 @@
       "Bash(test:*)",
       "mcp__claude_ai_Vercel__list_teams",
       "mcp__claude_ai_Vercel__list_projects",
-      "mcp__claude_ai_Vercel__get_project"
+      "mcp__claude_ai_Vercel__get_project",
+      "Bash(npx vercel:*)",
+      "mcp__claude_ai_Vercel__get_deployment_build_logs",
+      "WebFetch(domain:api.resend.com)",
+      "WebFetch(domain:resend-status.com)",
+      "Bash(nslookup:*)",
+      "mcp__claude_ai_Vercel__search_vercel_documentation",
+      "Bash(npx next dev:*)",
+      "Bash(python3 -m json.tool:*)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:gist.github.com)",
+      "Bash(.md)",
+      "Bash(.txt \")",
+      "Bash(npx sharp-cli:*)"
     ]
   }
 }

@@ -280,7 +280,7 @@ Apply here: ${getPublicJobUrl()}
               value={job.status}
               onChange={(e) => handleStatusChange(e.target.value)}
               disabled={changingStatus}
- className="px-4 py-2 rounded-lg text-sm bg-gray-100 dark:bg-white/5 border border-theme text-theme-primary focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 pr-10 appearance-none cursor-pointer disabled:opacity-50 [&>option]:bg-[#1a1d24] [&>option]:text-theme-primary [&>option]:"
+ className="px-4 py-2 rounded-lg text-sm bg-gray-100 dark:bg-white/5 border border-theme text-theme-primary focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 pr-10 appearance-none cursor-pointer disabled:opacity-50 [&>option]:bg-white dark:[&>option]:bg-[#1a1d24] [&>option]:text-theme-primary"
             >
               <option value="draft">📝 Draft</option>
               <option value="open">🟢 Open</option>
@@ -545,7 +545,7 @@ Apply here: ${getPublicJobUrl()}
               {(!job.is_published || job.status !== 'open') && (
                 <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
                   <p className="text-yellow-400 text-sm font-medium mb-1">Job Not Published</p>
-                  <p className="text-yellow-300/70 text-xs">
+                  <p className="text-yellow-600/70 dark:text-yellow-300/70 text-xs">
                     Please publish this job before sharing. The share links will only work for published jobs.
                   </p>
                   <Link

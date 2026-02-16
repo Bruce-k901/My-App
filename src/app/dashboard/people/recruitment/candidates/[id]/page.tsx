@@ -1042,7 +1042,7 @@ export default function CandidateProfilePage() {
                           <div className="flex items-start gap-3">
                             <div className="flex flex-col items-center">
                               <div className="w-2 h-2 rounded-full bg-blue-500 mt-1" />
-                              <div className="w-0.5 h-full bg-white/10 min-h-[20px]" />
+                              <div className="w-0.5 h-full bg-gray-300 dark:bg-white/10 min-h-[20px]" />
                             </div>
                             <div className="flex-1 pb-3">
                               <div className="flex items-center gap-2 mb-1">
@@ -1092,8 +1092,8 @@ export default function CandidateProfilePage() {
                             return (
                               <div key={idx} className="flex items-start gap-3">
                                 <div className="flex flex-col items-center">
-                                  <div className={`w-2 h-2 rounded-full ${statusColors[entry.status] || 'bg-white/40'} mt-1`} />
-                                  {!isLast && <div className="w-0.5 h-full bg-white/10 min-h-[20px]" />}
+                                  <div className={`w-2 h-2 rounded-full ${statusColors[entry.status] || 'bg-gray-400 dark:bg-white/40'} mt-1`} />
+                                  {!isLast && <div className="w-0.5 h-full bg-gray-300 dark:bg-white/10 min-h-[20px]" />}
                                 </div>
                                 <div className="flex-1 pb-3">
                                   <div className="flex items-center gap-2 mb-1">

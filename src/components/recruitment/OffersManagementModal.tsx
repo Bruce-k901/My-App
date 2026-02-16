@@ -22,6 +22,26 @@ type OfferLetter = {
   accepted_at: string | null
   declined_at: string | null
   position_title: string
+  site_id: string | null
+  site: {
+    name: string
+    address: any
+    postcode: string | null
+  } | null
+}
+
+function formatAddress(address: any, postcode?: string | null): string {
+  if (!address && !postcode) return ''
+  if (typeof address === 'string') return address
+
+  const parts: string[] = []
+  if (address?.line1) parts.push(address.line1)
+  if (address?.line2) parts.push(address.line2)
+  if (address?.city) parts.push(address.city)
+  if (address?.postcode) parts.push(address.postcode)
+  else if (postcode) parts.push(postcode)
+
+  return parts.join(', ')
 }
 
 type OffersManagementModalProps = {
@@ -69,7 +89,7 @@ export default function OffersManagementModal({
       // Approach 1: Direct query
       const { data: directOffers, error: directError } = await supabase
         .from('offer_letters')
-        .select('*')
+        .select('*, site:sites(name, address, postcode)')
         .eq('application_id', application.id)
         .order('created_at', { ascending: false })
 
@@ -205,6 +225,9 @@ export default function OffersManagementModal({
         .eq('id', application.id)
         .single()
 
+      const siteName = offer.site?.name || ''
+      const siteAddress = offer.site ? formatAddress(offer.site.address, offer.site.postcode) : ''
+
       const response = await fetch('/api/recruitment/send-offer-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -221,6 +244,9 @@ export default function OffersManagementModal({
           contractHours: offer.contract_hours,
           applicationId: application.id,
           confirmationToken: appData?.confirmation_token,
+          siteName,
+          siteAddress,
+          department: application.boh_foh,
         }),
       })
 
@@ -249,9 +275,9 @@ export default function OffersManagementModal({
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-        <div className="bg-[#14161c] border border-white/10 rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="bg-white dark:bg-[#14161c] border border-gray-200 dark:border-white/10 rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-white/[0.06] sticky top-0 bg-[#14161c] z-10">
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-white/[0.06] sticky top-0 bg-white dark:bg-[#14161c] z-10">
             <div>
               <h2 className="text-xl font-semibold text-theme-primary">Manage Offers</h2>
               <p className="text-sm text-theme-tertiary mt-1">
@@ -268,7 +294,7 @@ export default function OffersManagementModal({
               </button>
               <button
                 onClick={onClose}
-                className="p-2 rounded-lg hover:bg-white/5 text-theme-tertiary hover:text-white"
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-theme-tertiary hover:text-theme-primary"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -297,7 +323,7 @@ export default function OffersManagementModal({
               <div className="text-theme-tertiary text-xs mt-4">
                 If you expected to see offers here, this may be due to RLS policies.
                 <br />
-                Please ensure you have run: <code className="bg-white/5 px-1 rounded">supabase/sql/fix_offer_letters_rls.sql</code>
+                Please ensure you have run: <code className="bg-gray-100 dark:bg-white/5 px-1 rounded">supabase/sql/fix_offer_letters_rls.sql</code>
               </div>
             </div>
           ) : (
@@ -306,7 +332,7 @@ export default function OffersManagementModal({
                 {offers.map((offer) => (
                   <div
                     key={offer.id}
-                    className="p-4 rounded-lg bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.03] transition-all"
+                    className="p-4 rounded-lg bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05] hover:bg-gray-100 dark:hover:bg-white/[0.03] transition-all"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
@@ -371,7 +397,7 @@ export default function OffersManagementModal({
                         </div>
 
                         {offer.offer_token && (
-                          <div className="mt-3 p-2 bg-white/[0.02] rounded text-xs">
+                          <div className="mt-3 p-2 bg-gray-50 dark:bg-white/[0.02] rounded text-xs">
                             <span className="text-theme-tertiary">Offer Link: </span>
                             <code className="text-[#D37E91] break-all">
                               {window.location.origin}/recruitment/offers/{offer.offer_token}

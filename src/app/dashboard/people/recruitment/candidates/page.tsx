@@ -216,7 +216,7 @@ export default function CandidatesPage() {
           <select
             value={filterJob}
             onChange={(e) => setFilterJob(e.target.value)}
- className="px-3 py-2 bg-gray-100 dark:bg-white/5 border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 [&>option]:bg-[#1a1d24] [&>option]:text-theme-primary [&>option]: min-w-[200px]"
+ className="px-3 py-2 bg-gray-100 dark:bg-white/5 border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 [&>option]:bg-white dark:[&>option]:bg-[#1a1d24] [&>option]:text-theme-primary min-w-[200px]"
           >
             <option value="all">All Jobs</option>
             {jobs.map(job => (

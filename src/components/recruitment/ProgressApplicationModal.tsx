@@ -493,7 +493,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                     className={`p-4 rounded-lg border-2 transition-all ${
                       progression === 'progress'
                         ? 'border-green-500 bg-green-500/10'
-                        : 'border-white/10 bg-white/5 hover:bg-white/10'
+                        : 'border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10'
                     }`}
                   >
                     <ThumbsUp className="w-6 h-6 mx-auto mb-2 text-green-400" />
@@ -506,7 +506,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                     className={`p-4 rounded-lg border-2 transition-all ${
                       progression === 'reject'
                         ? 'border-red-500 bg-red-500/10'
-                        : 'border-white/10 bg-white/5 hover:bg-white/10'
+                        : 'border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10'
                     }`}
                   >
                     <ThumbsDown className="w-6 h-6 mx-auto mb-2 text-red-400" />
@@ -530,7 +530,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                           className={`w-10 h-10 rounded-lg border-2 transition-all ${
                             num <= rating
                               ? 'border-yellow-500 bg-yellow-500/20 text-yellow-400'
-                              : 'border-white/10 bg-white/5 text-theme-tertiary hover:bg-white/10'
+                              : 'border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5 text-theme-tertiary hover:bg-gray-200 dark:hover:bg-white/10'
                           }`}
                         >
                           ★
@@ -574,7 +574,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
 
                   {/* Trial Scheduling (Interview → Trial progression only) */}
                   {mode === 'interview' && (
-                    <div className="mt-6 pt-6 border-t border-white/[0.06]">
+                    <div className="mt-6 pt-6 border-t border-gray-200 dark:border-white/[0.06]">
                       <h3 className="text-theme-primary font-semibold text-base mb-4">
                         📅 Schedule Trial Shift
                       </h3>
@@ -590,7 +590,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                               type="date"
                               value={trialDate}
                               onChange={(e) => setTrialDate(e.target.value)}
-                              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91]"
+                              className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91]"
                             />
                           </div>
                           <div>
@@ -614,7 +614,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                           <select
                             value={trialDuration}
                             onChange={(e) => setTrialDuration(e.target.value)}
-                            className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91] [&>option]:bg-[#1a1d24] [&>option]:text-white"
+                            className="w-full px-3 py-2 bg-gray-100 dark:bg-[#1a1d24] border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91] [&>option]:bg-white dark:[&>option]:bg-[#1a1d24] [&>option]:text-theme-primary"
                           >
                             <option value="2">2 hours</option>
                             <option value="3">3 hours</option>
@@ -634,7 +634,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                             <select
                               value={trialSiteId}
                               onChange={(e) => setTrialSiteId(e.target.value)}
-                              className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91] [&>option]:bg-[#1a1d24] [&>option]:text-white"
+                              className="w-full px-3 py-2 bg-gray-100 dark:bg-[#1a1d24] border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91] [&>option]:bg-white dark:[&>option]:bg-[#1a1d24] [&>option]:text-theme-primary"
                             >
                               <option value="">Select a site...</option>
                               {sites.map(site => (
@@ -650,7 +650,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                                 value={trialSiteId}
                                 onChange={(e) => setTrialSiteId(e.target.value)}
                                 placeholder="e.g., Main Kitchen, 123 High Street, London"
-                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
+                                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                               />
                               <p className="text-xs text-theme-tertiary mt-1">
                                 💡 No sites found. Enter location manually or set up sites in your company settings.
@@ -675,7 +675,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                               value={trialContactPerson}
                               onChange={(e) => setTrialContactPerson(e.target.value)}
                               disabled={!trialSiteId}
-                              className="w-full px-3 py-2 bg-[#1a1d24] border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#D37E91] disabled:opacity-50 disabled:cursor-not-allowed [&>option]:bg-[#1a1d24] [&>option]:text-white"
+                              className="w-full px-3 py-2 bg-gray-100 dark:bg-[#1a1d24] border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-[#D37E91] disabled:opacity-50 disabled:cursor-not-allowed [&>option]:bg-white dark:[&>option]:bg-[#1a1d24] [&>option]:text-theme-primary"
                             >
                               <option value="">{trialSiteId ? 'Select contact person...' : 'Select a site first'}</option>
                               {siteStaff.map(person => (
@@ -691,7 +691,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                                 value={trialContactPerson}
                                 onChange={(e) => setTrialContactPerson(e.target.value)}
                                 placeholder="e.g., John Smith (Manager)"
-                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
+                                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                               />
                               {trialSiteId && siteStaff.length === 0 && !loadingSiteStaff && (
                                 <p className="text-xs text-theme-tertiary mt-1">
@@ -712,7 +712,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                             value={trialWhatToBring}
                             onChange={(e) => setTrialWhatToBring(e.target.value)}
                             placeholder="e.g., Black shoes, apron, ID, etc."
-                            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
+                            className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                           />
                         </div>
 
@@ -731,15 +731,15 @@ export default function ProgressApplicationModal({ candidate, application, compa
                         </div>
 
                         {/* Payment Terms Section */}
-                        <div className="pt-4 border-t border-white/[0.06]">
+                        <div className="pt-4 border-t border-gray-200 dark:border-white/[0.06]">
                           <h4 className="text-theme-primary font-medium text-sm mb-3">💰 Payment Agreement</h4>
                           
                           {/* Payment Terms Radio */}
                           <div className="space-y-2 mb-4">
-                            <label className={`flex items-start gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer hover:bg-white/5 ${
-                              trialPaymentTerms === 'unpaid' 
-                                ? 'border-blue-500 bg-blue-500/10' 
-                                : 'border-white/10'
+                            <label className={`flex items-start gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 ${
+                              trialPaymentTerms === 'unpaid'
+                                ? 'border-blue-500 bg-blue-500/10'
+                                : 'border-gray-200 dark:border-white/10'
                             }`}>
                               <input
                                 type="radio"
@@ -755,10 +755,10 @@ export default function ProgressApplicationModal({ candidate, application, compa
                               </div>
                             </label>
 
-                            <label className={`flex items-start gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer hover:bg-white/5 ${
-                              trialPaymentTerms === 'paid' 
-                                ? 'border-green-500 bg-green-500/10' 
-                                : 'border-white/10'
+                            <label className={`flex items-start gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 ${
+                              trialPaymentTerms === 'paid'
+                                ? 'border-green-500 bg-green-500/10'
+                                : 'border-gray-200 dark:border-white/10'
                             }`}>
                               <input
                                 type="radio"
@@ -774,10 +774,10 @@ export default function ProgressApplicationModal({ candidate, application, compa
                               </div>
                             </label>
 
-                            <label className={`flex items-start gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer hover:bg-white/5 ${
-                              trialPaymentTerms === 'paid_if_hired' 
-                                ? 'border-purple-500 bg-purple-500/10' 
-                                : 'border-white/10'
+                            <label className={`flex items-start gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 ${
+                              trialPaymentTerms === 'paid_if_hired'
+                                ? 'border-purple-500 bg-purple-500/10'
+                                : 'border-gray-200 dark:border-white/10'
                             }`}>
                               <input
                                 type="radio"
@@ -806,7 +806,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                                 value={trialPaymentRate}
                                 onChange={(e) => setTrialPaymentRate(e.target.value)}
                                 placeholder="e.g., 11.50"
-                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
+                                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91]"
                               />
                             </div>
                           )}
@@ -827,13 +827,13 @@ export default function ProgressApplicationModal({ candidate, application, compa
                         </div>
 
                         {/* Add to Rota Option */}
-                        <div className="pt-4 border-t border-white/[0.06]">
+                        <div className="pt-4 border-t border-gray-200 dark:border-white/[0.06]">
                           <label className="flex items-center gap-3 cursor-pointer">
                             <input
                               type="checkbox"
                               checked={addToRota}
                               onChange={(e) => setAddToRota(e.target.checked)}
-                              className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#D37E91] focus:ring-[#D37E91]"
+                              className="w-4 h-4 rounded border-gray-300 dark:border-white/20 bg-gray-100 dark:bg-white/5 text-[#D37E91] focus:ring-[#D37E91]"
                             />
                             <div>
                               <div className="text-theme-primary text-sm font-medium">
@@ -861,7 +861,7 @@ export default function ProgressApplicationModal({ candidate, application, compa
                     onChange={(e) => setRejectionMessage(e.target.value)}
                     placeholder="Optional personal message to include in rejection email..."
                     rows={4}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] resize-none"
+                    className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] resize-none"
                   />
                 </div>
               )}
@@ -878,13 +878,13 @@ export default function ProgressApplicationModal({ candidate, application, compa
                 onChange={(e) => setRejectionMessage(e.target.value)}
                 placeholder="You can add a personal message here, or leave blank for the standard rejection email..."
                 rows={4}
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] resize-none"
+                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-[#D37E91] resize-none"
               />
             </div>
           )}
 
           {/* Send Email Toggle */}
-          <div className="flex items-center gap-3 p-4 bg-white/5 rounded-lg border border-white/10">
+          <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10">
             <input
               type="checkbox"
               id="send-rejection-email"
@@ -899,11 +899,11 @@ export default function ProgressApplicationModal({ candidate, application, compa
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-white/[0.06] bg-white/[0.02]">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-white/[0.06] bg-gray-50 dark:bg-white/[0.02]">
           <button
             onClick={onClose}
             disabled={saving}
-            className="px-4 py-2 rounded-lg text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-theme-primary disabled:opacity-50"
+            className="px-4 py-2 rounded-lg text-sm bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-200 dark:border-white/10 text-theme-primary disabled:opacity-50"
           >
             Cancel
           </button>

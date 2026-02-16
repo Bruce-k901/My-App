@@ -3,23 +3,22 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { addDays, format } from 'date-fns';
 
 /**
- * POST /api/cron/generate-standing-orders
- * Daily cron job to auto-generate orders from standing orders
- *
- * This endpoint should be called once per day (e.g., 6 AM) to generate orders
- * for the next 7 days from active standing orders.
- *
- * Authorization: Requires CRON_SECRET in headers for security
+ * GET /api/cron/generate-standing-orders
+ * Daily cron job to auto-generate orders from standing orders.
+ * Generates orders for the next 7 days from active standing orders.
+ * Vercel cron jobs invoke routes via GET.
  */
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    // Verify cron secret for security
     const authHeader = request.headers.get('authorization');
     const cronSecret = process.env.CRON_SECRET;
 
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+      console.error('[Cron] Generate standing orders: unauthorized request');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    console.log('[Cron] Generate standing orders starting...');
 
     const supabase = await createServerSupabaseClient();
 
@@ -126,10 +125,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Allow GET for testing/manual trigger (in development only)
-export async function GET(request: NextRequest) {
-  if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json({ error: 'Method not allowed in production' }, { status: 405 });
-  }
-  return POST(request);
+// Allow POST for manual triggers
+export async function POST(request: NextRequest) {
+  return GET(request);
 }

@@ -1,11 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { X, Send, Loader2 } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import Select from '@/components/ui/Select'
+
+type Site = {
+  id: string
+  name: string
+  address: any
+  postcode: string | null
+}
 
 type SendOfferModalProps = {
   isOpen: boolean
@@ -26,6 +33,20 @@ type SendOfferModalProps = {
   managerId: string
 }
 
+function formatAddress(address: any, postcode?: string | null): string {
+  if (!address && !postcode) return ''
+  if (typeof address === 'string') return address
+
+  const parts: string[] = []
+  if (address?.line1) parts.push(address.line1)
+  if (address?.line2) parts.push(address.line2)
+  if (address?.city) parts.push(address.city)
+  if (address?.postcode) parts.push(address.postcode)
+  else if (postcode) parts.push(postcode)
+
+  return parts.join(', ')
+}
+
 export default function SendOfferModal({
   isOpen,
   onClose,
@@ -42,6 +63,41 @@ export default function SendOfferModal({
   const [payRate, setPayRate] = useState('')
   const [contractHours, setContractHours] = useState('')
   const [contractType, setContractType] = useState<'permanent' | 'fixed_term' | 'zero_hours' | 'casual'>('permanent')
+
+  // Site state
+  const [sites, setSites] = useState<Site[]>([])
+  const [selectedSiteId, setSelectedSiteId] = useState('')
+
+  // Load sites on mount
+  useEffect(() => {
+    if (isOpen && companyId) {
+      loadSites()
+    }
+  }, [isOpen, companyId])
+
+  const loadSites = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('sites')
+        .select('id, name, address, postcode')
+        .eq('company_id', companyId)
+        .order('name')
+
+      if (error) throw error
+      setSites(data || [])
+
+      // Auto-select if only one site
+      if (data && data.length === 1) {
+        setSelectedSiteId(data[0].id)
+      }
+    } catch (error: any) {
+      console.error('Failed to load sites:', error)
+    }
+  }
+
+  const selectedSite = sites.find(s => s.id === selectedSiteId)
+  const siteName = selectedSite?.name || ''
+  const siteAddress = selectedSite ? formatAddress(selectedSite.address, selectedSite.postcode) : ''
 
   const handleSend = async () => {
     if (!startDate || !payRate) {
@@ -77,6 +133,7 @@ export default function SendOfferModal({
           sent_at: new Date().toISOString(),
           expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
           created_by: managerId,
+          site_id: selectedSiteId || null,
         })
         .select()
         .single()
@@ -100,7 +157,7 @@ export default function SendOfferModal({
 
       // Send email with offer link
       const offerUrl = `${window.location.origin}/recruitment/offers/${token}`
-      
+
       try {
         const emailResponse = await fetch('/api/recruitment/send-offer-email', {
           method: 'POST',
@@ -118,6 +175,9 @@ export default function SendOfferModal({
             contractHours,
             applicationId: application.id,
             confirmationToken: appData?.confirmation_token,
+            siteName,
+            siteAddress,
+            department: application.boh_foh,
           }),
         })
 
@@ -127,7 +187,7 @@ export default function SendOfferModal({
         }
 
         const emailResult = await emailResponse.json()
-        
+
         // Check if email was actually sent or just logged
         if (emailResult.skipped) {
           toast.warning('Offer created, but email service not configured')
@@ -144,7 +204,7 @@ export default function SendOfferModal({
 
       onClose()
       router.refresh()
-      
+
       // Trigger a custom event to notify parent components
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('offer-created', { detail: { applicationId: application.id } }))
@@ -161,9 +221,9 @@ export default function SendOfferModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-[#14161c] border border-white/10 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-[#14161c] border border-gray-200 dark:border-white/10 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-white/[0.06]">
           <div>
             <h2 className="text-xl font-semibold text-theme-primary">Send Offer Letter</h2>
             <p className="text-sm text-theme-tertiary mt-1">
@@ -172,7 +232,7 @@ export default function SendOfferModal({
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-white/5 text-theme-tertiary hover:text-white"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-theme-tertiary hover:text-theme-primary"
           >
             <X className="w-5 h-5" />
           </button>
@@ -181,7 +241,7 @@ export default function SendOfferModal({
         {/* Form */}
         <div className="p-6 space-y-6">
           {/* Position Summary */}
-          <div className="bg-white/[0.02] border border-white/[0.05] rounded-lg p-4">
+          <div className="bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.05] rounded-lg p-4">
             <div className="text-xs text-theme-tertiary mb-2">Position Details</div>
             <div className="text-theme-primary font-medium">{application.job_title}</div>
             <div className="flex items-center gap-2 mt-2">
@@ -194,6 +254,28 @@ export default function SendOfferModal({
             </div>
           </div>
 
+          {/* Site Selector */}
+          {sites.length > 0 && (
+            <div>
+              <label className="text-xs text-theme-tertiary block mb-1">Site / Location</label>
+              <Select
+                value={selectedSiteId}
+                onValueChange={(v) => setSelectedSiteId(v)}
+                options={[
+                  { label: 'Select a site...', value: '' },
+                  ...sites.map(s => ({
+                    label: s.name,
+                    value: s.id,
+                  })),
+                ]}
+                className="w-full"
+              />
+              {selectedSite && siteAddress && (
+                <p className="text-xs text-theme-tertiary mt-1">{siteAddress}</p>
+              )}
+            </div>
+          )}
+
           {/* Start Date */}
           <div>
             <label className="text-xs text-theme-tertiary block mb-1">Start Date *</label>
@@ -202,7 +284,7 @@ export default function SendOfferModal({
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               min={new Date().toISOString().split('T')[0]}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary text-sm"
+              className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary text-sm"
             />
           </div>
 
@@ -217,7 +299,7 @@ export default function SendOfferModal({
               value={payRate}
               onChange={(e) => setPayRate(e.target.value)}
               placeholder={application.pay_type === 'hourly' ? '12.50' : '28000'}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary text-sm"
+              className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary text-sm"
             />
           </div>
 
@@ -248,16 +330,17 @@ export default function SendOfferModal({
                 value={contractHours}
                 onChange={(e) => setContractHours(e.target.value)}
                 placeholder="40"
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary text-sm"
+                className="w-full px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-theme-primary text-sm"
               />
             </div>
           </div>
 
           {/* Preview */}
           <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-4">
-            <div className="text-xs text-blue-300 font-medium mb-2">📋 Offer Summary</div>
+            <div className="text-xs text-blue-600 dark:text-blue-300 font-medium mb-2">Offer Summary</div>
             <div className="text-sm text-theme-secondary space-y-1">
               <div>Position: <strong>{application.job_title}</strong></div>
+              {siteName && <div>Site: <strong>{siteName}</strong></div>}
               <div>Start Date: <strong>{startDate || 'Not set'}</strong></div>
               <div>
                 Pay: <strong>£{payRate || '0'}{application.pay_type === 'hourly' ? '/hour' : '/year'}</strong>
@@ -267,23 +350,23 @@ export default function SendOfferModal({
           </div>
 
           {/* Info */}
-          <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-lg p-3 text-xs text-yellow-200/80">
-            💡 The candidate will receive an email with a link to accept this offer. Once accepted, their profile will be automatically created and they'll be sent to onboarding.
+          <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-lg p-3 text-xs text-yellow-700 dark:text-yellow-200/80">
+            The candidate will receive an email with a link to accept this offer. Once accepted, their profile will be automatically created and they'll be sent to onboarding.
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-white/[0.06]">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-white/[0.06]">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-theme-secondary"
+            className="px-4 py-2 rounded-lg text-sm bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-200 dark:border-white/10 text-theme-secondary"
           >
             Cancel
           </button>
           <button
             onClick={handleSend}
             disabled={sending || !startDate || !payRate}
-            className="px-4 py-2 rounded-lg text-sm bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] transition-all disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 rounded-lg text-sm bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211,126,145,0.7)] transition-all disabled:opacity-50 flex items-center gap-2"
           >
             {sending ? (
               <>

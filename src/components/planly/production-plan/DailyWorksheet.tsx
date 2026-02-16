@@ -17,7 +17,7 @@ import { format, addDays, subDays } from 'date-fns';
 import {
   ChevronLeft,
   ChevronRight,
-  Download,
+  Printer,
   RefreshCw,
   Loader2,
 } from '@/components/ui/icons';
@@ -135,7 +135,6 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
   const [mixSheetDayAfter, setMixSheetDayAfter] = useState<MixSheetRes | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   // Date strings for API calls
   const todayStr = format(selectedDate, 'yyyy-MM-dd');
@@ -513,36 +512,10 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
   const todayDayName = format(selectedDate, 'EEEE');
   const tomorrowDayName = format(addDays(selectedDate, 1), 'EEEE');
 
-  // ── PDF Download Handler (via Puppeteer API) ────────────────────────
+  // ── Print Handler ──────────────────────────────────────────────────
 
-  const handleDownloadPDF = async () => {
-    if (isGeneratingPDF) return;
-
-    setIsGeneratingPDF(true);
-    try {
-      const res = await fetch(
-        `/api/planly/production-plan/pdf?date=${todayStr}&siteId=${siteId}`
-      );
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(err.error || `PDF generation failed (${res.status})`);
-      }
-
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `daily-worksheet-${todayStr}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('PDF generation failed:', err);
-    } finally {
-      setIsGeneratingPDF(false);
-    }
+  const handlePrint = () => {
+    window.print();
   };
 
   // ── Loading / Error ─────────────────────────────────────────────────
@@ -583,18 +556,9 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={loadData}><RefreshCw className="h-4 w-4" /></Button>
-          <Button size="sm" onClick={handleDownloadPDF} disabled={isGeneratingPDF || loading}>
-            {isGeneratingPDF ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Download className="h-4 w-4 mr-2" />
-                Download PDF
-              </>
-            )}
+          <Button size="sm" onClick={handlePrint} disabled={loading}>
+            <Printer className="h-4 w-4 mr-2" />
+            Print
           </Button>
         </div>
       </div>
@@ -1067,6 +1031,21 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
       {/* ── Print Styles ─────────────────────────────────────────────── */}
       <style jsx global>{`
         @media print {
+          /* Page setup — zero margin eliminates browser headers/footers */
+          @page {
+            margin: 0;
+            size: A4 landscape;
+          }
+
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+            color: black !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+
           /* Hide app chrome — Tailwind print: classes handle the rest */
           nav, header, aside, footer,
           [role="navigation"], [role="banner"],
@@ -1077,32 +1056,38 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
           /* Reset app-shell layout */
           main {
             margin: 0 !important;
-            padding: 2px !important;
+            padding: 1mm !important;
             width: 100% !important;
             max-width: 100% !important;
-          }
-
-          @page {
-            margin: 2mm;
-            size: A4 landscape;
-          }
-
-          html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-            background: white !important;
-            color: black !important;
           }
 
           .ws-root {
             width: 100% !important;
             padding: 0 !important;
             margin: 0 !important;
+            gap: 1mm !important;
+          }
+
+          /* Compact section cards for density */
+          .ws-section {
+            padding: 1mm !important;
+            margin-bottom: 1mm !important;
+          }
+
+          .ws-section > div:first-child {
+            margin-bottom: 0.5mm !important;
+            padding-bottom: 0 !important;
+          }
+
+          /* Compact grids */
+          .tray-confirmation-grid {
+            gap: 1mm !important;
           }
 
           /* Page break support */
           .print\\:page-break-after-always {
             page-break-after: always !important;
+            break-after: page !important;
           }
 
           /* Scrollable areas must be visible in print */
@@ -1110,7 +1095,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
             overflow: visible !important;
           }
 
-          /* Sticky columns break PDF layout */
+          /* Sticky columns break print layout */
           .sticky {
             position: static !important;
           }

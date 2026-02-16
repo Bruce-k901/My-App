@@ -35,11 +35,8 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
     switch (taskData.source_type) {
       case 'certificate_expiry':
       case 'training_certificate':
-        // Link to training page with profile_id query param
-        if (taskData.profile_id) {
-          return `/dashboard/training?profile_id=${taskData.profile_id}&certificate_type=${taskData.certificate_type || ''}`
-        }
-        return '/dashboard/training'
+        // Link to compliance matrix page
+        return '/dashboard/people/training/matrix'
       
       case 'sop_review':
         // Link to SOPs list with sop_id query param

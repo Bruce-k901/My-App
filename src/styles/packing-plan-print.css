@@ -21,9 +21,9 @@
     print-color-adjust: exact !important;
   }
 
-  /* ===== PAGE SETUP - Minimal margins, maximize paper ===== */
+  /* ===== PAGE SETUP - Zero margins to eliminate browser headers/footers ===== */
   @page {
-    margin: 0.5cm;
+    margin: 0;
     size: A4 landscape;
   }
 
@@ -82,7 +82,7 @@
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 auto !important;
-    padding: 0.5cm !important;
+    padding: 2mm !important;
   }
 
   /* ===== PRINT HEADER ===== */
@@ -91,8 +91,8 @@
     flex-direction: row !important;
     align-items: center !important;
     gap: 8px !important;
-    margin-bottom: 0.3cm !important;
-    padding-bottom: 0.2cm !important;
+    margin-bottom: 1mm !important;
+    padding-bottom: 1mm !important;
     border-bottom: 1.5pt solid black !important;
     background: white !important;
     color: black !important;
@@ -297,7 +297,7 @@
   /* ===== GRIDS ===== */
   .grid {
     display: grid !important;
-    gap: 0.2cm !important;
+    gap: 1mm !important;
   }
 
   .print\:grid-cols-2 {
@@ -315,7 +315,7 @@
   /* ===== TRAY + CONFIRMATION: 2/3 + 1/3 ===== */
   .tray-confirmation-grid {
     grid-template-columns: 2fr 1fr !important;
-    gap: 0.3cm !important;
+    gap: 2mm !important;
   }
 
   /* ===== SEPARATOR BORDERS ===== */
@@ -336,13 +336,13 @@
     color: black !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
-    margin-bottom: 0.2cm !important;
-    padding: 0.3cm !important;
+    margin-bottom: 1mm !important;
+    padding: 1mm !important;
   }
 
   .ws-section > div:first-child {
-    margin-bottom: 0.2cm !important;
-    padding-bottom: 0.1cm !important;
+    margin-bottom: 1mm !important;
+    padding-bottom: 0 !important;
     border-bottom: 1pt solid #666 !important;
   }
 

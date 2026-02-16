@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
-  Download,
+  Printer,
   Lock,
   Calendar,
   Package,
@@ -755,8 +755,6 @@ function CookieLayoutSection({ cookies }: { cookies?: CookieRequirement[] }) {
 export default function ProductionPlanPage() {
   const { siteId } = useAppContext();
   const [selectedDate, setSelectedDate] = useState(getTodayString());
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-
   const { plan, isLoading: planLoading, error: planError } = useProductionPlan(selectedDate, siteId);
   const { mixSheet, isLoading: mixSheetLoading } = useMixSheet(selectedDate, siteId);
   const { trayLayout, isLoading: trayLayoutLoading } = useTrayLayout(selectedDate, siteId);
@@ -781,34 +779,8 @@ export default function ProductionPlanPage() {
     setSelectedDate(getTodayString());
   };
 
-  const handleDownloadPDF = async () => {
-    if (isGeneratingPDF) return;
-
-    setIsGeneratingPDF(true);
-    try {
-      const res = await fetch(
-        `/api/planly/production-plan/pdf?date=${selectedDate}&siteId=${siteId}`
-      );
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(err.error || `PDF generation failed (${res.status})`);
-      }
-
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `production-plan-${selectedDate}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('PDF generation failed:', error);
-    } finally {
-      setIsGeneratingPDF(false);
-    }
+  const handlePrint = () => {
+    window.print();
   };
 
   if (!siteId) {
@@ -860,19 +832,10 @@ export default function ProductionPlanPage() {
           </div>
         )}
 
-        {/* Download PDF Button */}
-        <Button onClick={handleDownloadPDF} disabled={isGeneratingPDF || isLoading} className="gap-2">
-          {isGeneratingPDF ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            <>
-              <Download className="h-4 w-4" />
-              Download PDF
-            </>
-          )}
+        {/* Print Button */}
+        <Button onClick={handlePrint} disabled={isLoading} className="gap-2">
+          <Printer className="h-4 w-4" />
+          Print
         </Button>
       </div>
 

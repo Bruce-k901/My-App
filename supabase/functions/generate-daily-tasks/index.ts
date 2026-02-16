@@ -343,13 +343,15 @@ try {
 
   if (ppmTemplate) {
     for (const asset of ppmAssets || []) {
-      // Check if PPM task already exists for this asset (including completed)
+      // Check if PPM task already exists for this asset (including completed and missed)
       const { data: existingPpmTask } = await supabase
         .from("checklist_tasks")
         .select("id")
-        .eq("task_data->>source_type", "ppm_overdue")
-        .eq("task_data->>source_id", asset.id)
-        .in("status", ["pending", "in_progress", "completed"])
+        .contains("task_data", {
+          source_type: "ppm_overdue",
+          source_id: asset.id
+        })
+        .in("status", ["pending", "in_progress", "completed", "missed"])
         .limit(1);
 
       if (existingPpmTask && existingPpmTask.length > 0) {
@@ -400,6 +402,14 @@ try {
       const thirtyDaysString = thirtyDaysFromNow.toISOString().split("T")[0];
       // Get certificate renewal template
       const { data: certTemplate } = await supabase.from("task_templates").select("id").eq("slug", "certificate-renewal-generic").single();
+      // Map cert type to training_courses code for cross-checking against training_records
+      const certTypeToCode = {
+        food_safety: ["FS-L2", "FS-L3"],
+        h_and_s: ["HS-L2"],
+        fire_marshal: ["FIRE"],
+        first_aid: ["FAW"],
+        cossh: ["COSHH", "ALLERGY"]
+      };
       if (certTemplate) {
         const { data: allProfiles } = await supabase.from("profiles").select("id, full_name, site_id, company_id, home_site, food_safety_expiry_date, h_and_s_expiry_date, fire_marshal_expiry_date, first_aid_expiry_date, cossh_expiry_date, food_safety_level, h_and_s_level");
         for (const profile of allProfiles || []){
@@ -440,16 +450,46 @@ try {
             const daysUntilExpiry = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
             // Create task if expiry is within 30 days OR already expired (up to 1 year overdue)
             if (daysUntilExpiry < -365 || daysUntilExpiry > 30) continue;
+            // Cross-check training_records: if a valid (non-expired) record exists, the profile
+            // field is stale — skip task generation. training_records is the source of truth.
+            const courseCodes = certTypeToCode[cert.type] || [];
+            if (courseCodes.length > 0) {
+              const { data: validTrainingCourses } = await supabase
+                .from("training_courses")
+                .select("id")
+                .eq("company_id", profile.company_id)
+                .in("code", courseCodes);
+              const validCourseIds = (validTrainingCourses || []).map(c => c.id);
+              if (validCourseIds.length > 0) {
+                const { data: validRecord } = await supabase
+                  .from("training_records")
+                  .select("id, expiry_date")
+                  .eq("profile_id", profile.id)
+                  .eq("status", "completed")
+                  .in("course_id", validCourseIds)
+                  .gt("expiry_date", thirtyDaysString)
+                  .limit(1);
+                if (validRecord && validRecord.length > 0) {
+                  // Training record shows this cert is still valid — skip
+                  continue;
+                }
+              }
+            }
             const levelText = cert.level ? ` Level ${cert.level}` : "";
             const isExpired = daysUntilExpiry < 0;
             const taskName = isExpired
               ? `EXPIRED ${cert.label}${levelText} Certificate: ${profile.full_name || "Staff Member"}`
               : `${cert.label}${levelText} Certificate Expiring: ${profile.full_name || "Staff Member"}`;
-            // Check if ANY existing task (pending, in_progress, or completed) exists for this cert
-            const { data: existing } = await supabase.from("checklist_tasks").select("id").eq("task_data->>source_type", "certificate_expiry").eq("task_data->>certificate_type", cert.type).eq("task_data->>profile_id", profile.id).in("status", [
+            // Check if ANY existing task (pending, in_progress, completed, or missed) exists for this cert
+            const { data: existing } = await supabase.from("checklist_tasks").select("id").contains("task_data", {
+              source_type: "certificate_expiry",
+              certificate_type: cert.type,
+              profile_id: profile.id
+            }).in("status", [
               "pending",
               "in_progress",
-              "completed"
+              "completed",
+              "missed"
             ]).limit(1);
             if (existing && existing.length > 0) continue;
             // Use actual expiry date as due_date for upcoming, today for already expired
@@ -613,13 +653,15 @@ try {
           ? `EXPIRED Training: ${course.name} - ${profile.full_name || "Staff Member"}`
           : `Training Expiring: ${course.name} - ${profile.full_name || "Staff Member"}`;
 
-        // Check if task already exists for this training record (including completed)
+        // Check if task already exists for this training record (including completed and missed)
         const { data: existing } = await supabase
           .from("checklist_tasks")
           .select("id")
-          .eq("task_data->>source_type", "training_certificate")
-          .eq("task_data->>training_record_id", record.id)
-          .in("status", ["pending", "in_progress", "completed"])
+          .contains("task_data", {
+            source_type: "training_certificate",
+            training_record_id: record.id
+          })
+          .in("status", ["pending", "in_progress", "completed", "missed"])
           .limit(1);
         if (existing && existing.length > 0) continue;
 
