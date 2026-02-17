@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { Clock, CheckCircle2, AlertCircle, Calendar, RefreshCw, Loader2, Sunrise, Sun, Sunset, Moon } from '@/components/ui/icons'
+import { Clock, CheckCircle2, AlertCircle, Calendar, RefreshCw, Loader2, Sunrise, Sun, Sunset, Moon, WifiOff } from '@/components/ui/icons'
 import { supabase } from '@/lib/supabase'
 import { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 import ChecklistsHeader from '@/components/checklists/ChecklistsHeader'
@@ -15,6 +15,7 @@ import { toast } from 'sonner'
 import { enrichTemplateWithDefinition } from '@/lib/templates/enrich-template'
 import { calculateTaskTiming } from '@/utils/taskTiming'
 import { triggerTaskGeneration } from '@/lib/task-generation'
+import { useOfflineTaskCache } from '@/hooks/checkly/useOfflineTaskCache'
 
 // Daypart chronological order (for sorting)
 const DAYPART_ORDER: Record<string, number> = {
@@ -116,6 +117,7 @@ export default function DailyChecklistPage() {
   const [breachActions, setBreachActions] = useState<TemperatureBreachAction[]>([])
   const [breachLoading, setBreachLoading] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+  const { isOnline, isCachedData, cacheTasks, getCachedTasks, markLiveData } = useOfflineTaskCache()
   // Use ref to store latest fetchTodaysTasks function
   const fetchTodaysTasksRef = useRef<() => Promise<void>>()
 
@@ -247,9 +249,21 @@ export default function DailyChecklistPage() {
       setLoading(true)
       const today = new Date()
       const todayStr = today.toISOString().split('T')[0]
-      
+
+      // OFFLINE: If offline, load from IndexedDB cache
+      if (!isOnline) {
+        const filterSite = selectedSiteId && selectedSiteId !== 'all' ? selectedSiteId : siteId
+        const cached = await getCachedTasks(companyId, filterSite, todayStr)
+        if (cached) {
+          setTasks(cached.tasks)
+          setCompletedTasks(cached.completedTasks)
+          setLoading(false)
+          return
+        }
+      }
+
       console.log('🔍 Fetching tasks for:', { today: todayStr, siteId, companyId })
-      
+
       // Get user's home site - "Today's Tasks" should only show tasks from "My Tasks" (home site tasks)
       // NOT tasks directly from templates or active tasks
       const { data: { user } } = await supabase.auth.getUser();
@@ -1602,6 +1616,12 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
       
       setTasks(activeTasks)
       setCompletedTasks(completedTasksWithRecords)
+      // Cache tasks for offline use (fire-and-forget)
+      markLiveData()
+      cacheTasks(companyId, filterSiteId, todayStr, {
+        tasks: activeTasks,
+        completedTasks: completedTasksWithRecords
+      })
       await loadBreachActions()
     } catch (error: any) {
       // Enhanced error logging with better serialization
@@ -1641,7 +1661,7 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
     // Note: loadBreachActions is called at the end but doesn't need to be in dependencies
     // since it's just a side effect, not used in the logic
      
-  }, [companyId, siteId]) // Dependencies for fetchTodaysTasks
+  }, [companyId, siteId, isOnline]) // Dependencies for fetchTodaysTasks
 
   // Update ref whenever fetchTodaysTasks changes
   useEffect(() => {
@@ -1662,7 +1682,7 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
       setTasks([])
     }
      
-  }, [siteId, companyId]) // Only depend on the actual values, not the callback functions
+  }, [siteId, companyId, isOnline]) // Re-fetch when online status changes (auto-refresh on reconnect)
 
   // Listen for refresh events (e.g., after clock-in)
   useEffect(() => {
@@ -1836,6 +1856,14 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
           </button>
         </div>
       </div>
+
+      {/* Offline cache indicator */}
+      {isCachedData && (
+        <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-sm">
+          <WifiOff className="w-4 h-4 flex-shrink-0" />
+          <span>You're offline. Showing cached tasks.</span>
+        </div>
+      )}
 
       {/* Tasks List */}
       {loading ? (

@@ -471,8 +471,8 @@ export default function OnboardingPage() {
                     video tutorials, and comprehensive documentation to ensure your success.
                   </p>
                   <div className="flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm">
-                    <a href="mailto:support@opsly.app" className="text-white/70 hover:text-white transition-colors">
-                      support@opsly.app
+                    <a href="mailto:hello@opslytech.com" className="text-white/70 hover:text-white transition-colors">
+                      hello@opslytech.com
                     </a>
                     <span className="text-theme-secondary">•</span>
                     <a href="tel:+441234567890" className="text-white/70 hover:text-white transition-colors">

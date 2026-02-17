@@ -8,6 +8,8 @@ import { supabase } from '@/lib/supabase';
 import type { ChecklistTask, TaskCompletionPayload, OutOfRangeAsset } from '@/types/task-completion.types';
 import { useToast } from '@/components/ui/ToastProvider';
 import { useAppContext } from '@/context/AppContext';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { queueWrite } from '@/lib/offline/db';
 
 interface UseTaskSubmissionResult {
   submitTask: (payload: TaskCompletionPayload) => Promise<boolean>;
@@ -23,6 +25,7 @@ export function useTaskSubmission(
   const [error, setError] = useState<string | null>(null);
   const { showToast } = useToast();
   const { profile, companyId, siteId } = useAppContext();
+  const { isOnline } = useOnlineStatus();
 
   // Ref-based guard to prevent duplicate submissions (synchronous check)
   const isSubmittingRef = useRef(false);
@@ -51,6 +54,47 @@ export function useTaskSubmission(
 
       if (!isValidUuid(effectiveSiteId)) {
         console.warn(`⚠️ Invalid siteId "${siteId}" and task.site_id "${task.site_id}" - skipping temperature log creation`);
+      }
+
+      // Offline fallback: queue task completion for sync when back online
+      if (!isOnline) {
+        console.log('📴 Offline — queuing task completion for sync:', payload.taskId);
+
+        const completionRecord = {
+          task_id: payload.taskId,
+          company_id: companyId,
+          site_id: effectiveSiteId || null,
+          completed_by: profile.id,
+          completed_at: payload.completedAt,
+          completion_data: {
+            ...payload.formData,
+            equipment_list: payload.equipmentList || [],
+            temperature_records: payload.temperatureRecords || [],
+            out_of_range_assets: payload.outOfRangeAssets || [],
+          },
+        };
+
+        await queueWrite(
+          'complete_task',
+          '/api/tasks/complete',
+          completionRecord,
+          'checkly'
+        );
+
+        showToast({
+          title: 'Saved offline',
+          description: 'Task will sync automatically when you reconnect.',
+          type: 'info',
+        });
+
+        window.dispatchEvent(
+          new CustomEvent('task-completed', {
+            detail: { taskId: payload.taskId, completedAt: payload.completedAt, offline: true },
+          })
+        );
+
+        onComplete();
+        return true;
       }
 
       // 1. Upload photos (if any)
@@ -200,6 +244,58 @@ export function useTaskSubmission(
 
     } catch (err: any) {
       console.error('❌ Task submission error:', err);
+
+      // Detect network errors (offline or connection dropped) and queue for later
+      const isNetworkError =
+        err.message?.includes('Load failed') ||
+        err.message?.includes('Failed to fetch') ||
+        err.message?.includes('NetworkError') ||
+        err.name === 'TypeError';
+
+      if (isNetworkError) {
+        console.log('📴 Network error detected — queuing task for offline sync');
+
+        try {
+          const completionRecord = {
+            task_id: payload.taskId,
+            company_id: companyId,
+            site_id: (isValidUuid(siteId) ? siteId : task.site_id) || null,
+            completed_by: profile?.id,
+            completed_at: payload.completedAt,
+            completion_data: {
+              ...payload.formData,
+              equipment_list: payload.equipmentList || [],
+              temperature_records: payload.temperatureRecords || [],
+              out_of_range_assets: payload.outOfRangeAssets || [],
+            },
+          };
+
+          await queueWrite(
+            'complete_task',
+            '/api/tasks/complete',
+            completionRecord,
+            'checkly'
+          );
+
+          showToast({
+            title: 'Saved offline',
+            description: 'Task will sync automatically when you reconnect.',
+            type: 'info',
+          });
+
+          window.dispatchEvent(
+            new CustomEvent('task-completed', {
+              detail: { taskId: payload.taskId, completedAt: payload.completedAt, offline: true },
+            })
+          );
+
+          onComplete();
+          return true;
+        } catch (queueErr) {
+          console.error('❌ Failed to queue task offline:', queueErr);
+        }
+      }
+
       setError(err.message || 'Failed to complete task');
 
       showToast({

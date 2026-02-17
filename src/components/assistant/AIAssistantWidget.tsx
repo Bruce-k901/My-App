@@ -553,7 +553,7 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
       const errorMessage: Message = {
         id: crypto.randomUUID(),
         role: 'assistant',
-        content: `Sorry, I couldn't create the ticket: ${error.message}. Please try again or contact support directly at support@opsly.app`,
+        content: `Sorry, I couldn't create the ticket: ${error.message}. Please try again or contact support directly at hello@opslytech.com`,
         timestamp: new Date(),
         isError: true
       };
@@ -1179,7 +1179,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
   
   // Open email client
   const openEmailSupport = () => {
-    window.location.href = 'mailto:support@opsly.app?subject=Support Request from Opsly Assistant';
+    window.location.href = 'mailto:hello@opslytech.com?subject=Support Request from Opsly Assistant';
   };
   
   // Format message content (basic markdown-like formatting)
@@ -1668,7 +1668,7 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                           }`}
                       >
                         <Mail className="w-4 h-4" />
-                        <span>Email: support@opsly.app</span>
+                        <span>Email: hello@opslytech.com</span>
                       </button>
                       <button
                         onClick={goToSupportPage}

@@ -111,7 +111,7 @@ export default function TermsPage() {
           <p className="text-theme-tertiary mb-3">
             <strong className="text-theme-primary">Data Export:</strong> Upon cancellation or termination, you may request a 
             full export of your data. We will provide your data in JSON format within 30 days of your request. 
-            Data export requests can be made through your billing dashboard or by emailing support@opsly.app.
+            Data export requests can be made through your billing dashboard or by emailing hello@opslytech.com.
           </p>
           <p className="text-theme-tertiary">
             We may terminate access if you breach these Terms or misuse the platform. Upon termination, your access 

@@ -147,13 +147,13 @@ export default function AttendancePage() {
           <p className="text-theme-secondary">Track working hours and attendance</p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-3">
           <div className="flex rounded-lg overflow-hidden border border-theme">
             <button
               onClick={() => setViewMode('today')}
               className={`px-4 py-2 text-sm transition-colors ${
-                viewMode === 'today' 
-                  ? 'bg-transparent border border-module-fg text-module-fg' 
+                viewMode === 'today'
+                  ? 'bg-transparent border border-module-fg text-module-fg'
  :'bg-theme-surface text-theme-secondary hover:text-theme-primary'
               }`}
             >
@@ -162,15 +162,15 @@ export default function AttendancePage() {
             <button
               onClick={() => setViewMode('week')}
               className={`px-4 py-2 text-sm transition-colors ${
-                viewMode === 'week' 
-                  ? 'bg-transparent border border-module-fg text-module-fg' 
+                viewMode === 'week'
+                  ? 'bg-transparent border border-module-fg text-module-fg'
  :'bg-theme-surface text-theme-secondary hover:text-theme-primary'
               }`}
             >
               Week
             </button>
           </div>
-          
+
           <Link
             href="/dashboard/people/attendance"
             className="px-4 py-2 bg-theme-button hover:bg-theme-button-hover border border-theme text-theme-secondary hover:text-theme-primary rounded-lg transition-all duration-200 ease-in-out"

@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { TicketStatusBadge } from '@/components/tickets/TicketStatusBadge';
 import { TicketPriorityBadge } from '@/components/tickets/TicketPriorityBadge';
 import { TicketModuleBadge } from '@/components/tickets/TicketModuleBadge';
 import { TicketTypeBadge } from '@/components/tickets/TicketTypeBadge';
+import { ChevronLeft } from '@/components/ui/icons';
 import { formatDistanceToNow } from 'date-fns';
 import type { TicketListItem } from '@/types/tickets';
 
@@ -16,6 +18,7 @@ import type { TicketListItem } from '@/types/tickets';
 // ============================================================================
 
 export default function MyTicketsPage() {
+  const router = useRouter();
   const [tickets, setTickets] = useState<TicketListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -59,11 +62,20 @@ export default function MyTicketsPage() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Back to Help */}
+      <button
+        onClick={() => router.push('/dashboard/help')}
+        className="flex items-center gap-1.5 text-sm text-theme-tertiary hover:text-theme-primary transition-colors"
+      >
+        <ChevronLeft className="w-4 h-4" />
+        Back to Help
+      </button>
+
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-theme-primary">My Support Tickets</h1>
         <p className="text-theme-secondary mt-1">
-          View and track your support requests
+          Tickets you&apos;ve submitted to the support team
         </p>
       </div>
 
@@ -152,7 +164,7 @@ export default function MyTicketsPage() {
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0 text-sm text-theme-tertiary">
-                    <div className="mb-1">Assigned to: {ticket.assigned_to_name}</div>
+                    <div className="mb-1">Handled by: {ticket.assigned_to_name}</div>
                     <div className="mb-1">
                       {ticket.comment_count} {ticket.comment_count === 1 ? 'reply' : 'replies'}
                     </div>

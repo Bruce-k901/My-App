@@ -57,7 +57,7 @@ export default function SupportPage() {
               <h3 className="text-lg font-medium text-theme-primary mb-2">Email Support</h3>
               <p className="text-theme-tertiary text-sm mb-4">Get help via email within 24 hours</p>
               <a 
-                href="mailto:support@opsly.app"
+                href="mailto:hello@opslytech.com"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-module-fg/[0.25] border border-module-fg/[0.40] rounded-lg text-module-fg hover:bg-module-fg/[0.35] transition-colors"
               >
                 <Mail className="w-4 h-4" />
@@ -70,7 +70,7 @@ export default function SupportPage() {
               <h3 className="text-lg font-medium text-theme-primary mb-2">Phone Support</h3>
               <p className="text-theme-tertiary text-sm mb-4">Speak with our support team</p>
               <a 
-                href="tel:+1234567890"
+                href="tel:+4407891710002"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 border border-blue-500/40 rounded-lg text-blue-300 hover:bg-module-fg/10 transition-colors"
               >
                 <Phone className="w-4 h-4" />

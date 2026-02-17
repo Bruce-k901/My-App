@@ -81,25 +81,25 @@ export function TaskAlertToast({
 
   return (
     <div
-      className={`w-[356px] rounded-lg border p-4 shadow-lg ${
+      className={`w-[400px] rounded-xl border-2 p-5 shadow-xl ${
         isOverdue
-          ? 'border-red-300 dark:border-red-500/30 bg-red-50 dark:bg-red-950/90 text-red-900 dark:text-red-50'
-          : 'border-blue-300 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-950/90 text-blue-900 dark:text-blue-50'
+          ? 'border-red-300 dark:border-red-500/40 bg-red-50 dark:bg-red-950/90 text-red-900 dark:text-red-50'
+          : 'border-blue-300 dark:border-blue-500/40 bg-blue-50 dark:bg-blue-950/90 text-blue-900 dark:text-blue-50'
       }`}
     >
       {/* Header */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-2.5">
           {isOverdue ? (
-            <AlertTriangle className="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
+            <AlertTriangle className="h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
           ) : (
-            <Clock className="h-4 w-4 shrink-0 text-blue-600 dark:text-blue-400" />
+            <Clock className="h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
           )}
-          <span className="text-sm font-semibold">
+          <span className="text-base font-bold">
             {isOverdue ? 'Task Overdue' : 'Task Due'}
           </span>
           {isPriority && (
-            <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none ${
+            <span className={`rounded px-2 py-0.5 text-[11px] font-bold uppercase leading-none ${
               priority === 'critical'
                 ? 'bg-red-200 dark:bg-red-500/30 text-red-700 dark:text-red-200'
                 : 'bg-orange-200 dark:bg-orange-500/30 text-orange-700 dark:text-orange-200'
@@ -110,17 +110,17 @@ export function TaskAlertToast({
         </div>
         <button
           onClick={handleDismiss}
-          className="shrink-0 rounded p-0.5 hover:bg-black/10 dark:hover:bg-white/10"
+          className="shrink-0 rounded p-1 hover:bg-black/10 dark:hover:bg-white/10"
           aria-label="Dismiss"
         >
-          <X className="h-3.5 w-3.5 opacity-60" />
+          <X className="h-4 w-4 opacity-60" />
         </button>
       </div>
 
       {/* Task info */}
-      <div className="mt-2">
-        <p className="text-sm font-medium leading-snug">{taskName}</p>
-        <div className={`mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs ${isOverdue ? 'text-red-600 dark:text-red-300' : 'text-blue-600 dark:text-blue-300'}`}>
+      <div className="mt-3">
+        <p className="text-[15px] font-semibold leading-snug">{taskName}</p>
+        <div className={`mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm ${isOverdue ? 'text-red-600 dark:text-red-300' : 'text-blue-600 dark:text-blue-300'}`}>
           <span>{isOverdue ? formatOverdue(overdueMinutes) : `Due at ${dueTime}`}</span>
           {categoryLabel && (
             <>
@@ -136,27 +136,27 @@ export function TaskAlertToast({
           )}
         </div>
         {assignedToRole && (
-          <p className={`mt-0.5 text-[11px] ${isOverdue ? 'text-red-500 dark:text-red-400' : 'text-blue-500 dark:text-blue-400'}`}>
+          <p className={`mt-1 text-xs ${isOverdue ? 'text-red-500 dark:text-red-400' : 'text-blue-500 dark:text-blue-400'}`}>
             Assigned to: {assignedToRole}
           </p>
         )}
       </div>
 
       {/* Snooze buttons */}
-      <div className="mt-3 flex items-center gap-1.5">
-        <BellOff className={`h-3 w-3 shrink-0 ${isOverdue ? 'text-red-500 dark:text-red-400' : 'text-blue-500 dark:text-blue-400'}`} />
-        <span className={`text-xs ${isOverdue ? 'text-red-600 dark:text-red-300' : 'text-blue-600 dark:text-blue-300'}`}>Snooze:</span>
-        {[15, 30, 60].map((mins) => (
+      <div className="mt-4 flex items-center gap-2">
+        <BellOff className={`h-4 w-4 shrink-0 ${isOverdue ? 'text-red-500 dark:text-red-400' : 'text-blue-500 dark:text-blue-400'}`} />
+        <span className={`text-sm font-medium ${isOverdue ? 'text-red-600 dark:text-red-300' : 'text-blue-600 dark:text-blue-300'}`}>Snooze:</span>
+        {[15, 30].map((mins) => (
           <button
             key={mins}
             onClick={() => handleSnooze(mins)}
-            className={`rounded px-2 py-0.5 text-xs font-medium transition-colors ${
+            className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition-colors ${
               isOverdue
                 ? 'bg-red-200 dark:bg-red-900/80 text-red-700 dark:text-red-200 hover:bg-red-300 dark:hover:bg-red-800'
                 : 'bg-blue-200 dark:bg-blue-900/80 text-blue-700 dark:text-blue-200 hover:bg-blue-300 dark:hover:bg-blue-800'
             }`}
           >
-            {mins < 60 ? `${mins}m` : '1hr'}
+            {mins} min
           </button>
         ))}
       </div>
@@ -164,14 +164,14 @@ export function TaskAlertToast({
       {/* Go to task */}
       <button
         onClick={handleGoToTask}
-        className={`mt-3 flex w-full items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-semibold transition-colors ${
+        className={`mt-4 flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-bold transition-colors ${
           isOverdue
             ? 'bg-red-200 dark:bg-red-500/20 text-red-700 dark:text-red-200 hover:bg-red-300 dark:hover:bg-red-500/30'
             : 'bg-blue-200 dark:bg-blue-500/20 text-blue-700 dark:text-blue-200 hover:bg-blue-300 dark:hover:bg-blue-500/30'
         }`}
       >
         Go to Task
-        <ArrowRight className="h-3 w-3" />
+        <ArrowRight className="h-4 w-4" />
       </button>
     </div>
   );

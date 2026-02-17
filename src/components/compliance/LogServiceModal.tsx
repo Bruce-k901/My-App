@@ -34,11 +34,11 @@ export default function LogServiceModal({
   const { companyId, siteId } = useAppContext()
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && companyId) {
       loadAsset()
       loadContractors()
     }
-  }, [isOpen, assetId])
+  }, [isOpen, assetId, companyId])
 
   const loadAsset = async () => {
     try {
@@ -59,6 +59,7 @@ export default function LogServiceModal({
   }
 
   const loadContractors = async () => {
+    if (!companyId) return
     try {
       const { data, error } = await supabase
         .from('contractors')
