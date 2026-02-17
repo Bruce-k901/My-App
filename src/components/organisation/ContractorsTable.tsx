@@ -271,51 +271,51 @@ export default function ContractorsTable() {
 
       {modalOpen && editing && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="w-full max-w-2xl rounded-xl bg-[#0f1220] border border-white/[0.08] p-4">
+          <div className="w-full max-w-2xl rounded-xl bg-white dark:bg-[#0f1220] border border-black/10 dark:border-white/[0.08] p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="text-theme-primary font-semibold">{editing.id ? "Edit Contractor" : "Add Contractor"}</div>
-              <button onClick={() => setModalOpen(false)} className="text-theme-secondary hover:text-white">✕</button>
+              <button onClick={() => setModalOpen(false)} className="text-theme-secondary hover:text-theme-primary">✕</button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-theme-secondary">Category</span>
-                <input className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.category} onChange={(e) => setEditing({ ...editing, category: e.target.value })} />
+                <input className="bg-gray-50 dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.category} onChange={(e) => setEditing({ ...editing, category: e.target.value })} />
               </label>
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-theme-secondary">Name</span>
-                <input className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} />
+                <input className="bg-gray-50 dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} />
               </label>
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-theme-secondary">Contact Name</span>
-                <input className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.contact_name || ""} onChange={(e) => setEditing({ ...editing, contact_name: e.target.value })} />
+                <input className="bg-gray-50 dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.contact_name || ""} onChange={(e) => setEditing({ ...editing, contact_name: e.target.value })} />
               </label>
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-theme-secondary">Email</span>
-                <input className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.email || ""} onChange={(e) => setEditing({ ...editing, email: e.target.value })} />
+                <input className="bg-gray-50 dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.email || ""} onChange={(e) => setEditing({ ...editing, email: e.target.value })} />
               </label>
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-theme-secondary">Phone</span>
-                <input className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.phone || ""} onChange={(e) => setEditing({ ...editing, phone: e.target.value })} />
+                <input className="bg-gray-50 dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.phone || ""} onChange={(e) => setEditing({ ...editing, phone: e.target.value })} />
               </label>
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-theme-secondary">OOH Contact</span>
-                <input className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.ooh || ""} onChange={(e) => setEditing({ ...editing, ooh: e.target.value })} />
+                <input className="bg-gray-50 dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.ooh || ""} onChange={(e) => setEditing({ ...editing, ooh: e.target.value })} />
               </label>
               <label className="md:col-span-2 flex flex-col gap-1">
                 <span className="text-sm text-theme-secondary">Address</span>
-                <textarea className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary" rows={2} value={editing.address || ""} onChange={(e) => setEditing({ ...editing, address: e.target.value })} />
+                <textarea className="bg-gray-50 dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded px-3 py-2 text-theme-primary" rows={2} value={editing.address || ""} onChange={(e) => setEditing({ ...editing, address: e.target.value })} />
               </label>
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-theme-secondary">Contract Start</span>
-                <input type="date" className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.contract_start || ""} onChange={(e) => setEditing({ ...editing, contract_start: e.target.value })} />
+                <input type="date" className="bg-gray-50 dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.contract_start || ""} onChange={(e) => setEditing({ ...editing, contract_start: e.target.value })} />
               </label>
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-theme-secondary">Contract Expiry</span>
-                <input type="date" className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.contract_expiry || ""} onChange={(e) => setEditing({ ...editing, contract_expiry: e.target.value })} />
+                <input type="date" className="bg-gray-50 dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded px-3 py-2 text-theme-primary" value={editing.contract_expiry || ""} onChange={(e) => setEditing({ ...editing, contract_expiry: e.target.value })} />
               </label>
               <label className="md:col-span-2 flex flex-col gap-1">
                 <span className="text-sm text-theme-secondary">Notes</span>
-                <textarea className="bg-white/[0.06] border border-white/[0.1] rounded px-3 py-2 text-theme-primary" rows={3} value={editing.notes || ""} onChange={(e) => setEditing({ ...editing, notes: e.target.value })} />
+                <textarea className="bg-gray-50 dark:bg-white/[0.06] border border-gray-300 dark:border-white/[0.1] rounded px-3 py-2 text-theme-primary" rows={3} value={editing.notes || ""} onChange={(e) => setEditing({ ...editing, notes: e.target.value })} />
               </label>
             </div>
             <div className="mt-4 flex gap-3 justify-end">

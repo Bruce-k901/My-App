@@ -3465,7 +3465,7 @@ export default function RotaBuilderPage() {
     try {
       const targetDateStr = targetDate || shift.shift_date;
       const staffMember = shift.profile_id ? staff.find(s => s.id === shift.profile_id) : null;
-      const cost = staffMember ? Math.round(getShiftNetHours(shift) * staffMember.hourly_rate * 100) : 0;
+      const cost = staffMember ? Math.round(getShiftNetHours(shift) * staffMember.hourly_rate) : 0;
 
       const { error } = await supabase.from('rota_shifts').insert({
         rota_id: rota.id,
@@ -4055,19 +4055,19 @@ export default function RotaBuilderPage() {
 
     // Calculate totals for the day
     const totalHours = dayShifts.reduce((sum, s) => sum + getShiftNetHours(s), 0);
-    const totalCost = dayShifts.reduce((sum, s) => sum + (s.estimated_cost || 0), 0) / 100;
+    const totalCost = dayShifts.reduce((sum, s) => sum + getShiftCostPence(s), 0) / 100;
 
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-white">
+      <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-theme-primary">
         {/* Mobile Header */}
-        <div className="sticky top-0 z-20 bg-[#0a0a0a] border-b border-white/10">
+        <div className="sticky top-0 z-20 bg-white dark:bg-[#0a0a0a] border-b border-black/10 dark:border-white/10">
           {/* Site Selector */}
           {sites.length > 1 && (
             <div className="px-4 pt-4 pb-2">
               <select
                 value={selectedSite || ''}
                 onChange={(e) => setSelectedSite(e.target.value)}
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-theme-primary text-sm"
+                className="w-full px-3 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl text-theme-primary text-sm"
               >
                 {sites.map(site => (
                   <option key={site.id} value={site.id}>{site.name}</option>
@@ -4080,14 +4080,14 @@ export default function RotaBuilderPage() {
           <div className="px-4 py-3 flex items-center justify-between">
             <button
               onClick={goToPrevDay}
-              className="p-2 rounded-full bg-white/5 active:bg-white/10"
+              className="p-2 rounded-full bg-black/5 dark:bg-white/5 active:bg-black/10 dark:active:bg-white/10"
             >
               <ChevronLeft className="w-5 h-5 text-theme-primary" />
             </button>
 
             <div className="flex-1 text-center">
               <button onClick={goToToday} className="inline-flex flex-col items-center">
-                <span className={`text-lg font-semibold ${isToday ? 'text-purple-400' : 'text-theme-primary'}`}>
+                <span className={`text-lg font-semibold ${isToday ? 'text-purple-600 dark:text-purple-400' : 'text-theme-primary'}`}>
                   {mobileSelectedDay.toLocaleDateString('en-GB', { weekday: 'long' })}
                 </span>
                 <span className="text-sm text-theme-tertiary">
@@ -4098,7 +4098,7 @@ export default function RotaBuilderPage() {
 
             <button
               onClick={goToNextDay}
-              className="p-2 rounded-full bg-white/5 active:bg-white/10"
+              className="p-2 rounded-full bg-black/5 dark:bg-white/5 active:bg-black/10 dark:active:bg-white/10"
             >
               <ChevronRight className="w-5 h-5 text-theme-primary" />
             </button>
@@ -4135,7 +4135,7 @@ export default function RotaBuilderPage() {
               <p className="text-theme-tertiary text-sm">This location is closed on this day</p>
             </div>
           ) : dayShifts.length === 0 ? (
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
+            <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-6 text-center">
               <div className="text-theme-tertiary text-lg mb-1">No shifts scheduled</div>
               <p className="text-theme-disabled text-sm">No shifts have been added for this day yet</p>
             </div>
@@ -4161,7 +4161,7 @@ export default function RotaBuilderPage() {
                         return (
                           <div
                             key={shift.id}
-                            className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-3"
+                            className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3 flex items-center gap-3"
                           >
                             {/* Color indicator */}
                             <div
@@ -4178,7 +4178,7 @@ export default function RotaBuilderPage() {
                                   className="w-10 h-10 rounded-full object-cover"
                                 />
                               ) : (
-                                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-theme-tertiary text-sm font-medium">
+                                <div className="w-10 h-10 rounded-full bg-black/10 dark:bg-white/10 flex items-center justify-center text-theme-tertiary text-sm font-medium">
                                   {staffMember?.full_name?.charAt(0) || '?'}
                                 </div>
                               )}
@@ -4286,7 +4286,7 @@ export default function RotaBuilderPage() {
         </div>
 
         {/* Quick Day Selector - Bottom */}
-        <div className="fixed bottom-20 left-0 right-0 bg-[#0a0a0a]/95 backdrop-blur border-t border-white/10 px-4 py-3">
+        <div className="fixed bottom-20 left-0 right-0 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur border-t border-black/10 dark:border-white/10 px-4 py-3">
           <div className="flex items-center justify-between gap-1">
             {weekDays.map((day) => {
               const dayStr = day.toISOString().split('T')[0];
@@ -4300,8 +4300,8 @@ export default function RotaBuilderPage() {
                   onClick={() => setMobileSelectedDay(day)}
                   className={`flex-1 py-2 px-1 rounded-lg text-center transition-colors ${
                     isSelected
-                      ? 'bg-purple-500/20 border border-purple-500/50'
-                      : 'bg-white/5 border border-transparent'
+                      ? 'bg-purple-100 dark:bg-purple-500/20 border border-purple-300 dark:border-purple-500/50'
+                      : 'bg-black/5 dark:bg-white/5 border border-transparent'
                   }`}
                 >
                   <div className={`text-[10px] uppercase ${isSelected ? 'text-module-fg' : dayIsToday ? 'text-module-fg' : 'text-theme-tertiary'}`}>
@@ -4311,7 +4311,7 @@ export default function RotaBuilderPage() {
                     {day.getDate()}
                   </div>
                   {dayShiftCount > 0 && (
-                    <div className={`text-[9px] ${isSelected ? 'text-purple-300' : 'text-theme-tertiary'}`}>
+                    <div className={`text-[9px] ${isSelected ? 'text-purple-600 dark:text-purple-300' : 'text-theme-tertiary'}`}>
                       {dayShiftCount}
                     </div>
                   )}

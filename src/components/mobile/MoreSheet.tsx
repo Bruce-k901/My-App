@@ -55,31 +55,31 @@ export function MoreSheet() {
       <div
         className={cn(
           "fixed inset-x-0 bottom-0 z-50",
-          "bg-[#1a1a1f] text-white rounded-t-3xl",
-          "max-h-[80vh] overflow-hidden",
+          "bg-white dark:bg-[#1a1a1f] text-theme-primary rounded-t-3xl",
+          "max-h-[70vh] overflow-hidden",
           "animate-in slide-in-from-bottom duration-300",
           "pb-[env(safe-area-inset-bottom)]"
         )}
       >
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-2">
-          <div className="w-10 h-1 bg-white/20 rounded-full" />
+          <div className="w-10 h-1 bg-black/20 dark:bg-white/20 rounded-full" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pb-4 border-b border-white/10">
+        <div className="flex items-center justify-between px-5 pb-4 border-b border-black/10 dark:border-white/10">
           <h2 className="text-lg font-semibold text-theme-primary">Quick Access</h2>
           <button
             onClick={closeMoreSheet}
-            className="p-2 -mr-2 rounded-full hover:bg-white/10 transition-colors"
+            className="p-2 -mr-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
           >
             <X size={20} className="text-theme-tertiary" />
           </button>
         </div>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto max-h-[calc(80vh-80px)] overscroll-contain">
-          <div className="px-5 py-4 space-y-6">
+        <div className="overflow-y-auto max-h-[calc(70vh-80px)] overscroll-contain">
+          <div className="px-5 pt-3 pb-2 space-y-4">
 
             {/* Quick Actions */}
             <section>
@@ -111,7 +111,7 @@ export function MoreSheet() {
             ))}
 
             {/* Settings */}
-            <section className="pt-2 border-t border-white/10">
+            <section className="pt-2 border-t border-black/10 dark:border-white/10">
               <h3 className="text-xs font-semibold text-theme-tertiary uppercase tracking-wider mb-3">
                 Settings
               </h3>

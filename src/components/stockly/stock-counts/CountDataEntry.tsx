@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import Input from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -8,6 +8,11 @@ import { StockCountItem, LibraryType } from '@/lib/types/stockly';
 import { CheckCircle, Loader2, Save, ArrowRight, ArrowUp } from '@/components/ui/icons';
 import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
+import { AnimatePresence } from 'framer-motion';
+import { useMobileDetect } from '@/hooks/useMobileDetect';
+import CalculatorKeypad from './CalculatorKeypad';
+import MobileItemSearch from './MobileItemSearch';
+import { cn } from '@/lib/utils';
 
 interface CountDataEntryProps {
   countId: string;
@@ -29,14 +34,20 @@ export default function CountDataEntry({
   onUpdate,
 }: CountDataEntryProps) {
   const { companyId } = useAppContext();
+  const { isMobile } = useMobileDetect();
   const [selectedLibrary, setSelectedLibrary] = useState<LibraryType | null>(null);
 
   // REMOVED: Debug useEffect was causing re-renders
-  
+
   const [editingValues, setEditingValues] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState<string | null>(null);
   const [savingLibrary, setSavingLibrary] = useState<LibraryType | null>(null); // Track which library is being saved
   const inputRefs = useRef<Record<string, HTMLInputElement>>({});
+
+  // Mobile calculator keypad state
+  const [activeItemIndex, setActiveItemIndex] = useState(0);
+  const [showKeypad, setShowKeypad] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const getLibraryName = (type: LibraryType): string => {
     // Handle both formats: 'ingredients' and 'ingredients_library'
@@ -87,8 +98,45 @@ export default function CountDataEntry({
     return aName.localeCompare(bName);
   });
 
-  // REMOVED: Auto-focus is causing cursor jumping issues
-  // Users can manually click the first input if needed
+  // Search-filtered items for display (search filters the visible list)
+  const searchFilteredItems = useMemo(() => {
+    if (!searchQuery.trim()) return sortedItems;
+    const q = searchQuery.toLowerCase();
+    return sortedItems.filter(item => {
+      const name = (item.ingredient as any)?.ingredient_name ||
+                   (item.ingredient as any)?.name || '';
+      return name.toLowerCase().includes(q);
+    });
+  }, [sortedItems, searchQuery]);
+
+  // Keypad confirm handler — writes value and advances to next item
+  const handleKeypadConfirm = useCallback((value: number) => {
+    const activeItem = sortedItems[activeItemIndex];
+    if (!activeItem) return;
+
+    // Write value to editingValues (same state desktop inputs use)
+    setEditingValues(prev => ({
+      ...prev,
+      [activeItem.id]: value.toString(),
+    }));
+
+    // Advance to next item
+    const nextIndex = activeItemIndex + 1;
+    if (nextIndex < sortedItems.length) {
+      setActiveItemIndex(nextIndex);
+      // Scroll next row into view above the keypad
+      const nextItem = sortedItems[nextIndex];
+      const nextInput = inputRefs.current[nextItem.id];
+      if (nextInput) {
+        requestAnimationFrame(() => {
+          nextInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      }
+    } else {
+      // Last item — close keypad
+      setShowKeypad(false);
+    }
+  }, [activeItemIndex, sortedItems]);
 
   const handleCountChange = (itemId: string, value: string) => {
     setEditingValues(prev => ({
@@ -561,6 +609,9 @@ export default function CountDataEntry({
                 onClick={() => {
                   console.log('Selecting library:', stat.type);
                   setSelectedLibrary(stat.type);
+                  setSearchQuery('');
+                  setShowKeypad(false);
+                  setActiveItemIndex(0);
                 }}
                 className={`px-5 py-3 rounded-lg text-sm font-semibold transition-all min-w-[140px] ${
                   selectedLibrary === stat.type
@@ -582,6 +633,9 @@ export default function CountDataEntry({
                   onClick={() => {
                     console.log('Selecting library from librariesIncluded:', libType);
                     setSelectedLibrary(libType);
+                    setSearchQuery('');
+                    setShowKeypad(false);
+                    setActiveItemIndex(0);
                   }}
                   className={`px-5 py-3 rounded-lg text-sm font-semibold transition-all min-w-[140px] ${
                     selectedLibrary === libType
@@ -628,8 +682,8 @@ export default function CountDataEntry({
         );
       })()}
 
-      {/* Keyboard Shortcuts - Front and Center */}
-      <div className="bg-emerald-50 dark:bg-emerald-600/20 border-2 border-emerald-500 dark:border-emerald-400 rounded-lg p-4 shadow-lg">
+      {/* Keyboard Shortcuts - Front and Center (desktop only) */}
+      <div className={cn("bg-emerald-50 dark:bg-emerald-600/20 border-2 border-emerald-500 dark:border-emerald-400 rounded-lg p-4 shadow-lg", isMobile && "hidden")}>
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
@@ -681,8 +735,21 @@ export default function CountDataEntry({
           const libCounted = libItems.filter(i => i.status === 'counted').length;
           const libProgress = libItems.length > 0 ? Math.round((libCounted / libItems.length) * 100) : 0;
 
+          // Use search-filtered items for display, full list for navigation
+          const displayItems = searchQuery.trim() ? searchFilteredItems : libItems;
+
           return (
           <div key={libType} className="space-y-3">
+            {/* Quick Search */}
+            <MobileItemSearch
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onClear={() => setSearchQuery('')}
+              totalCount={libItems.length}
+              filteredCount={searchFilteredItems.length}
+              placeholder={`Search ${getLibraryName(libTypeTyped)} items...`}
+            />
+
             {/* Table for this library */}
             <div className="bg-theme-surface border border-theme rounded-lg overflow-hidden">
               <div className="overflow-x-auto">
@@ -692,26 +759,26 @@ export default function CountDataEntry({
                       <th className="px-4 py-3 text-left text-sm font-medium text-theme-secondary">
                         Item Name
                       </th>
-                      <th className="px-4 py-3 text-right text-sm font-medium text-theme-secondary">
+                      <th className={cn("px-4 py-3 text-right text-sm font-medium text-theme-secondary", isMobile && "hidden")}>
                         Expected
                       </th>
                       <th className="px-4 py-3 text-left text-sm font-medium text-theme-secondary w-48">
                         Count
                       </th>
-                      <th className="px-4 py-3 text-center text-sm font-medium text-theme-secondary w-16">
+                      <th className={cn("px-4 py-3 text-center text-sm font-medium text-theme-secondary w-16", isMobile && "hidden")}>
                         Status
                       </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-white/[0.06]">
-                    {libItems.length === 0 ? (
+                    {displayItems.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="px-4 py-8 text-center text-theme-tertiary">
-                          No items found
+                        <td colSpan={isMobile ? 2 : 4} className="px-4 py-8 text-center text-theme-tertiary">
+                          {searchQuery.trim() ? 'No items match your search' : 'No items found'}
                         </td>
                       </tr>
                     ) : (
-                      libItems.map((item, localIndex) => {
+                      displayItems.map((item, localIndex) => {
                         const ingredientName = (item.ingredient as any)?.ingredient_name || 
                                              (item.ingredient as any)?.name || 
                                              'Unknown';
@@ -721,14 +788,27 @@ export default function CountDataEntry({
                         const isCounted = item.status === 'counted';
                         // Use local index within current library section for navigation
 
+                        const isActiveKeypadItem = isMobile && showKeypad && sortedItems[activeItemIndex]?.id === item.id;
+
                         return (
-                          <tr 
+                          <tr
                             key={item.id}
-                            className={`hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02] ${
-                              isCounted ? 'bg-emerald-50/50 dark:bg-emerald-500/5' : ''
-                            }`}
+                            className={cn(
+                              'hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02]',
+                              isCounted && 'bg-emerald-50/50 dark:bg-emerald-500/5',
+                              isActiveKeypadItem && 'bg-emerald-100/80 dark:bg-emerald-500/15 ring-2 ring-emerald-500/50 ring-inset'
+                            )}
                           >
-                            <td className="px-4 py-3">
+                            <td
+                              className={cn("px-4 py-3", isMobile && "cursor-pointer")}
+                              onClick={() => {
+                                if (isMobile) {
+                                  const idx = sortedItems.findIndex(si => si.id === item.id);
+                                  setActiveItemIndex(idx >= 0 ? idx : 0);
+                                  setShowKeypad(true);
+                                }
+                              }}
+                            >
                               <div className="flex flex-col gap-1">
                                 <span className="text-theme-primary font-medium">
                                   {ingredientName}
@@ -745,7 +825,7 @@ export default function CountDataEntry({
                                 )}
                               </div>
                             </td>
-                            <td className="px-4 py-3 text-right">
+                            <td className={cn("px-4 py-3 text-right", isMobile && "hidden")}>
                               <span className="text-theme-secondary text-sm">
                                 {item.theoretical_closing || 0} {item.unit_of_measurement || ''}
                               </span>
@@ -787,11 +867,20 @@ export default function CountDataEntry({
                                     // localIndex is the actual position in the rendered array
                                     handleKeyDown(e, item, localIndex, libItems);
                                   }}
+                                  readOnly={isMobile}
                                   onFocus={(e) => {
-                                    // Select all text on focus for easy replacement (Excel-like)
-                                    e.target.select();
+                                    if (isMobile) {
+                                      // On mobile: open calculator keypad instead of native keyboard
+                                      const idx = sortedItems.findIndex(si => si.id === item.id);
+                                      setActiveItemIndex(idx >= 0 ? idx : 0);
+                                      setShowKeypad(true);
+                                      e.target.blur(); // Prevent native keyboard
+                                    } else {
+                                      // Desktop: select all text for easy replacement (Excel-like)
+                                      e.target.select();
+                                    }
                                   }}
-                                  placeholder="Press Enter to continue..."
+                                  placeholder={isMobile ? "Tap to count" : "Press Enter to continue..."}
                                   autoComplete="off"
                                   disabled={saving === item.id}
  className="bg-theme-surface ] border-theme text-theme-primary focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 disabled:opacity-50"
@@ -801,7 +890,7 @@ export default function CountDataEntry({
                                 </span>
                               </div>
                             </td>
-                            <td className="px-4 py-3 text-center">
+                            <td className={cn("px-4 py-3 text-center", isMobile && "hidden")}>
                               {isCounted && (
                                 <CheckCircle className="h-5 w-5 text-module-fg mx-auto" />
                               )}
@@ -850,15 +939,17 @@ export default function CountDataEntry({
         });
       })()}
 
-      {/* Instructions */}
-      <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-lg p-4">
-        <p className="text-sm text-blue-700 dark:text-blue-400">
-          <strong>Tip:</strong> Select a library tab above to focus on counting items from that library. Use <kbd className="px-1.5 py-0.5 bg-white dark:bg-white/10 border border-gray-300 dark:border-white/20 rounded text-xs text-theme-secondary">Tab</kbd> or <kbd className="px-1.5 py-0.5 bg-white dark:bg-white/10 border border-gray-300 dark:border-white/20 rounded text-xs text-theme-secondary">Enter</kbd> to move to the next item. Click the "Save" button at the bottom of each library section when you're ready to save your counts.
-        </p>
-      </div>
+      {/* Instructions (desktop only) */}
+      {!isMobile && (
+        <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-lg p-4">
+          <p className="text-sm text-blue-700 dark:text-blue-400">
+            <strong>Tip:</strong> Select a library tab above to focus on counting items from that library. Use <kbd className="px-1.5 py-0.5 bg-white dark:bg-white/10 border border-gray-300 dark:border-white/20 rounded text-xs text-theme-secondary">Tab</kbd> or <kbd className="px-1.5 py-0.5 bg-white dark:bg-white/10 border border-gray-300 dark:border-white/20 rounded text-xs text-theme-secondary">Enter</kbd> to move to the next item. Click the "Save" button at the bottom of each library section when you're ready to save your counts.
+          </p>
+        </div>
+      )}
 
-      {/* Floating Action Buttons */}
-      {selectedLibrary && sortedItems.length > 0 && (
+      {/* Floating Action Buttons (hidden when mobile keypad is open) */}
+      {selectedLibrary && sortedItems.length > 0 && !(isMobile && showKeypad) && (
         <div className="fixed bottom-24 right-6 z-50 flex flex-col gap-3">
           {/* Back to Top Button */}
           <Button
@@ -885,6 +976,33 @@ export default function CountDataEntry({
             <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
+      )}
+
+      {/* Bottom padding when mobile keypad is open */}
+      {isMobile && showKeypad && <div className="h-80" />}
+
+      {/* Mobile Calculator Keypad */}
+      {isMobile && (
+        <AnimatePresence>
+          {showKeypad && sortedItems[activeItemIndex] && (
+            <CalculatorKeypad
+              key={sortedItems[activeItemIndex].id}
+              itemName={
+                (sortedItems[activeItemIndex].ingredient as any)?.ingredient_name ||
+                (sortedItems[activeItemIndex].ingredient as any)?.name || 'Unknown'
+              }
+              unit={sortedItems[activeItemIndex].unit_of_measurement || ''}
+              expectedQty={sortedItems[activeItemIndex].theoretical_closing}
+              initialValue={
+                editingValues[sortedItems[activeItemIndex].id] ||
+                sortedItems[activeItemIndex].counted_quantity?.toString() || ''
+              }
+              onConfirm={handleKeypadConfirm}
+              onDismiss={() => setShowKeypad(false)}
+              isLastItem={activeItemIndex >= sortedItems.length - 1}
+            />
+          )}
+        </AnimatePresence>
       )}
     </div>
   );

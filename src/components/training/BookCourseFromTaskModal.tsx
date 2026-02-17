@@ -137,13 +137,13 @@ export function BookCourseFromTaskModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-neutral-800 rounded-lg border border-theme w-full max-w-md shadow-xl">
+      <div className="bg-theme-surface rounded-lg border border-theme w-full max-w-md shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-theme">
           <h2 className="text-xl font-semibold text-theme-primary">Book Course</h2>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-neutral-700 rounded-lg transition-colors"
+            className="p-1 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg transition-colors"
             disabled={booking}
           >
             <X className="w-5 h-5 text-theme-tertiary" />
@@ -172,7 +172,7 @@ export function BookCourseFromTaskModal({
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-4 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-neutral-700 border border-gray-300 dark:border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-[#D37E91] focus:border-transparent"
                 disabled={booking}
               />
               <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-theme-tertiary pointer-events-none" />
@@ -217,7 +217,7 @@ export function BookCourseFromTaskModal({
           <button
             onClick={onClose}
             disabled={booking}
-            className="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-theme-primary rounded-lg transition-colors disabled:opacity-50"
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-theme-primary rounded-lg transition-colors disabled:opacity-50"
           >
             Cancel
           </button>

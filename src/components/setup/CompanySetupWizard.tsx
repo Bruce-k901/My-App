@@ -546,7 +546,7 @@ function ImportTemplates({ busy, setBusy, setError, companyId, siteId, onDone }:
             <button
               type="button"
               key={opt.id}
-              className={`text-left rounded-lg border p-3 ${library === opt.id ? "border-magenta-400 bg-magenta-400/10" : "border-neutral-800 bg-[#0f1220]"}`}
+              className={`text-left rounded-lg border p-3 ${library === opt.id ? "border-magenta-400 bg-magenta-400/10" : "border-black/10 dark:border-neutral-800 bg-white dark:bg-[#0f1220]"}`}
               onClick={() => setLibrary(opt.id)}
             >
               <p className="font-medium">{opt.name}</p>
@@ -554,7 +554,7 @@ function ImportTemplates({ busy, setBusy, setError, companyId, siteId, onDone }:
             </button>
           ))}
         </div>
-        <div className="rounded-lg border border-neutral-800 p-3 bg-[#0f1220]">
+        <div className="rounded-lg border border-black/10 dark:border-neutral-800 p-3 bg-white dark:bg-[#0f1220]">
           <p className="text-xs text-theme-tertiary">Preview templates:</p>
           <ul className="mt-2 text-sm text-theme-secondary list-disc list-inside">
             {library === "kitchen" && ["Daily opening checks", "Food prep hygiene", "Fridge temp logs"].map((t) => <li key={t}>{t}</li>)}

@@ -36,7 +36,7 @@ export function PassFailFeature({
 
   return (
     <>
-      <div className="border-t border-white/10 pt-6">
+      <div className="border-t border-black/10 dark:border-white/10 pt-6">
         <h2 className="text-lg font-semibold text-theme-primary mb-4">Pass/Fail Assessment</h2>
         <div className="flex gap-4">
           <button
@@ -45,7 +45,7 @@ export function PassFailFeature({
             className={`flex-1 px-4 py-3 rounded-lg border-2 transition-colors ${
               status === 'pass'
                 ? 'bg-green-500/20 border-green-500 text-green-400'
-                : 'bg-[#0f1220] border-neutral-800 text-white hover:border-green-500/50'
+                : 'bg-gray-50 dark:bg-[#0f1220] border-gray-300 dark:border-neutral-800 text-theme-primary hover:border-green-500/50'
             }`}
           >
             Pass
@@ -56,7 +56,7 @@ export function PassFailFeature({
             className={`flex-1 px-4 py-3 rounded-lg border-2 transition-colors ${
               status === 'fail'
                 ? 'bg-red-500/20 border-red-500 text-red-400'
-                : 'bg-[#0f1220] border-neutral-800 text-white hover:border-red-500/50'
+                : 'bg-gray-50 dark:bg-[#0f1220] border-gray-300 dark:border-neutral-800 text-theme-primary hover:border-red-500/50'
             }`}
           >
             Fail

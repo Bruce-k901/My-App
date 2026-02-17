@@ -118,7 +118,7 @@ export function AssignCourseModal({
                 type="date"
                 value={deadlineDate}
                 onChange={(e) => setDeadlineDate(e.target.value)}
-                className="w-full rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-magenta-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-[#0f1220] px-3 py-2 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-magenta-500"
                 min={new Date().toISOString().split('T')[0]}
               />
             </div>

@@ -44,7 +44,7 @@ export default function SetupLayout({ children, stepLabel, activeStep }: { child
   }, [company?.id, router]);
   return (
     <div className="min-h-screen bg-neutral-950 text-theme-primary">
-      <header className="px-6 py-3 bg-[#0f1220]">
+      <header className="px-6 py-3 bg-white dark:bg-[#0f1220]">
         <div className="max-w-5xl mx-auto">
           <SetupHeader />
         </div>

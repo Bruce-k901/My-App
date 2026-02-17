@@ -200,7 +200,7 @@ export default function ConfirmCoursePage() {
                 value={confirmedName}
                 onChange={(e) => setConfirmedName(e.target.value)}
                 required
-                className="w-full rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-magenta-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-[#0f1220] px-3 py-2 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-magenta-500"
                 placeholder="Enter your full name"
               />
             </div>
@@ -214,7 +214,7 @@ export default function ConfirmCoursePage() {
                   id="site"
                   value={confirmedSiteId}
                   onChange={(e) => setConfirmedSiteId(e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-[#0f1220] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-magenta-500"
+                  className="w-full rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-[#0f1220] px-3 py-2 text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-magenta-500"
                 >
                   <option value="">Select a site</option>
                   {sites.map((site) => (
@@ -232,7 +232,7 @@ export default function ConfirmCoursePage() {
                   type="checkbox"
                   checked={acknowledged}
                   onChange={(e) => setAcknowledged(e.target.checked)}
-                  className="mt-1 h-4 w-4 rounded border-white/20 bg-[#0f1220] text-magenta-500 focus:ring-2 focus:ring-magenta-500"
+                  className="mt-1 h-4 w-4 rounded border-gray-300 dark:border-white/20 bg-white dark:bg-[#0f1220] text-magenta-500 focus:ring-2 focus:ring-magenta-500"
                   required
                 />
                 <span className="text-sm text-amber-200">

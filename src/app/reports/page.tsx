@@ -91,7 +91,7 @@ export default function ReportsPage() {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="ml-2 text-sm rounded bg-[#0f1220] border border-neutral-800 p-2 text-theme-primary"
+              className="ml-2 text-sm rounded bg-white dark:bg-[#0f1220] border border-black/10 dark:border-neutral-800 p-2 text-theme-primary"
             />
           </label>
           <label className="text-sm text-theme-secondary">
@@ -101,7 +101,7 @@ export default function ReportsPage() {
               value={siteFilter}
               placeholder="Optional: filter by site_id"
               onChange={(e) => setSiteFilter(e.target.value)}
-              className="ml-2 text-sm rounded bg-[#0f1220] border border-neutral-800 p-2 text-theme-primary w-64"
+              className="ml-2 text-sm rounded bg-white dark:bg-[#0f1220] border border-black/10 dark:border-neutral-800 p-2 text-theme-primary w-64"
             />
           </label>
         </div>

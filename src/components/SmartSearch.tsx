@@ -233,7 +233,7 @@ export default function SmartSearch({
             className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
               selectedCategory === "All"
                 ? "bg-magenta-500 text-white"
-                : "bg-neutral-800 text-theme-tertiary hover:bg-neutral-700"
+                : "bg-gray-100 dark:bg-neutral-800 text-theme-tertiary hover:bg-gray-200 dark:hover:bg-neutral-700"
             }`}
           >
             All ({results.length})
@@ -249,7 +249,7 @@ export default function SmartSearch({
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                   selectedCategory === cat
                     ? "bg-magenta-500 text-white"
-                    : "bg-neutral-800 text-theme-tertiary hover:bg-neutral-700"
+                    : "bg-gray-100 dark:bg-neutral-800 text-theme-tertiary hover:bg-gray-200 dark:hover:bg-neutral-700"
                 }`}
               >
                 {cat} ({count})

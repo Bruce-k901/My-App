@@ -931,7 +931,7 @@ ${validCallPoints.map(cp => {
       </div>
 
       {isExpanded && (
-        <div className="border-t border-gray-200 dark:border-neutral-800 p-6 bg-[#0f1220]">
+        <div className="border-t border-gray-200 dark:border-neutral-800 p-6 bg-white dark:bg-[#0f1220]">
           <div className="space-y-6">
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -961,7 +961,7 @@ ${validCallPoints.map(cp => {
                       placeholder="Call Point Name (e.g., CP1, Main Entrance, Kitchen)"
                       value={row.callPointName}
                       onChange={(e) => updateCallPointRow(row.id, 'callPointName', e.target.value)}
-                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-theme-primary placeholder:text-theme-tertiary"
+                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-white dark:bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-theme-primary placeholder:text-theme-tertiary"
                     />
                     
                     {/* Location Input */}
@@ -970,7 +970,7 @@ ${validCallPoints.map(cp => {
                       placeholder="Location (e.g., Ground Floor, Reception)"
                       value={row.location}
                       onChange={(e) => updateCallPointRow(row.id, 'location', e.target.value)}
-                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-theme-primary placeholder:text-theme-tertiary"
+                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-white dark:bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-theme-primary placeholder:text-theme-tertiary"
                     />
 
                     {/* Delete Button */}

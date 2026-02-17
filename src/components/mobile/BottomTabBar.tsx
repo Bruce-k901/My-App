@@ -45,8 +45,8 @@ export function BottomTabBar() {
     <nav
       className={cn(
         "fixed bottom-0 left-0 right-0 z-50",
-        "bg-[#1a1a1f]/95 backdrop-blur-lg",
-        "border-t border-white/10",
+        "bg-white/95 dark:bg-[#1a1a1f]/95 backdrop-blur-lg",
+        "border-t border-black/10 dark:border-white/10",
         "pb-[env(safe-area-inset-bottom)]",
         "lg:hidden" // Hide on desktop
       )}

@@ -164,11 +164,11 @@ export function MobileHeader({
             className="fixed inset-0 z-40"
             onClick={() => setShowSiteDropdown(false)}
           />
-          <div className="absolute left-5 right-5 mt-2 bg-[#1a1a1f] border border-white/10 rounded-xl shadow-xl z-50 max-h-[50vh] overflow-y-auto">
+          <div className="absolute left-5 right-5 mt-2 bg-white dark:bg-[#1a1a1f] border border-black/10 dark:border-white/10 rounded-xl shadow-xl z-50 max-h-[50vh] overflow-y-auto">
             <button
               onClick={() => handleSiteSelect('all')}
               className={cn(
-                "w-full px-4 py-3 text-left flex items-center justify-between border-b border-white/10",
+                "w-full px-4 py-3 text-left flex items-center justify-between border-b border-black/10 dark:border-white/10",
                 (siteId === 'all' || !siteId) ? 'text-[#D37E91]' : 'text-theme-primary'
               )}
             >
@@ -180,7 +180,7 @@ export function MobileHeader({
                 key={site.id}
                 onClick={() => handleSiteSelect(site.id)}
                 className={cn(
-                  "w-full px-4 py-3 text-left flex items-center justify-between border-b border-white/5 last:border-0",
+                  "w-full px-4 py-3 text-left flex items-center justify-between border-b border-black/5 dark:border-white/5 last:border-0",
                   siteId === site.id ? 'text-[#D37E91]' : 'text-theme-secondary'
                 )}
               >

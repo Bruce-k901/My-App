@@ -167,7 +167,7 @@ const isOverdue = taskType === 'ppm_service_overdue' || taskData?.source_type ==
             </div>
             <button
               onClick={onClose}
- className="text-gray-500 dark:text-theme-tertiary hover:text-gray-700 transition-colors"
+ className="text-theme-tertiary hover:text-gray-700 transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
@@ -180,11 +180,11 @@ const isOverdue = taskType === 'ppm_service_overdue' || taskData?.source_type ==
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold text-theme-primary mb-1">{asset?.name || taskData.asset_name}</h3>
- <p className="text-sm text-gray-500 dark:text-theme-tertiary">
+ <p className="text-sm text-theme-tertiary">
                     Category: {asset?.category || taskData.asset_category}
                   </p>
                   {asset?.serial_number && (
- <p className="text-sm text-gray-500 dark:text-theme-tertiary">
+ <p className="text-sm text-theme-tertiary">
                       Serial: {asset.serial_number}
                     </p>
                   )}
@@ -200,23 +200,23 @@ const isOverdue = taskType === 'ppm_service_overdue' || taskData?.source_type ==
 
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div>
- <p className="text-xs text-gray-500 dark:text-theme-tertiary mb-1">Service Due</p>
+ <p className="text-xs text-theme-tertiary mb-1">Service Due</p>
                   <div className="flex items-center gap-2">
- <Calendar className="w-4 h-4 text-gray-400 dark:text-theme-tertiary"/>
+ <Calendar className="w-4 h-4 text-theme-tertiary"/>
                     <p className="text-sm text-theme-primary">
                       {asset?.next_service_date
                         ? new Date(asset.next_service_date).toLocaleDateString()
                         : 'Not set'}
                     </p>
                     {daysUntil !== null && daysUntil > 0 && (
- <span className="text-xs text-gray-500 dark:text-theme-tertiary">({daysUntil} days)</span>
+ <span className="text-xs text-theme-tertiary">({daysUntil} days)</span>
                     )}
                   </div>
                 </div>
                 <div>
- <p className="text-xs text-gray-500 dark:text-theme-tertiary mb-1">Last Service</p>
+ <p className="text-xs text-theme-tertiary mb-1">Last Service</p>
                   <div className="flex items-center gap-2">
- <Clock className="w-4 h-4 text-gray-400 dark:text-theme-tertiary"/>
+ <Clock className="w-4 h-4 text-theme-tertiary"/>
                     <p className="text-sm text-theme-primary">
                       {asset?.last_service_date
                         ? new Date(asset.last_service_date).toLocaleDateString()
@@ -225,13 +225,13 @@ const isOverdue = taskType === 'ppm_service_overdue' || taskData?.source_type ==
                   </div>
                 </div>
                 <div>
- <p className="text-xs text-gray-500 dark:text-theme-tertiary mb-1">Frequency</p>
+ <p className="text-xs text-theme-tertiary mb-1">Frequency</p>
                   <p className="text-sm text-theme-primary">
                     Every {asset?.ppm_frequency_months || taskData.ppm_frequency_months} months
                   </p>
                 </div>
                 <div>
- <p className="text-xs text-gray-500 dark:text-theme-tertiary mb-1">Contractor</p>
+ <p className="text-xs text-theme-tertiary mb-1">Contractor</p>
                   <p className="text-sm text-theme-primary">
                     {contractor?.name || taskData.contractor_name || 'Not assigned'}
                   </p>
@@ -241,7 +241,7 @@ const isOverdue = taskType === 'ppm_service_overdue' || taskData?.source_type ==
 
             {/* Actions Grid */}
             <div>
-              <h4 className="text-sm font-medium text-gray-600 dark:text-neutral-300 mb-4 uppercase tracking-wide">
+              <h4 className="text-sm font-medium text-theme-tertiary mb-4 uppercase tracking-wide">
                 Actions
               </h4>
               <div className="grid grid-cols-2 gap-4">
@@ -274,39 +274,39 @@ const isOverdue = taskType === 'ppm_service_overdue' || taskData?.source_type ==
 
                 <button
                   onClick={handleContactContractor}
-                  className="bg-theme-muted hover:bg-gray-200 dark:hover:bg-neutral-700 border border-theme rounded-lg p-4 text-left transition-colors"
+                  className="bg-theme-muted hover:bg-theme-hover border border-theme rounded-lg p-4 text-left transition-colors"
                 >
                   <div className="flex items-center gap-3 mb-2">
- <Phone className="w-5 h-5 text-gray-500 dark:text-theme-tertiary"/>
+ <Phone className="w-5 h-5 text-theme-tertiary"/>
                     <span className="font-medium text-theme-primary">Contact Contractor</span>
                   </div>
- <p className="text-xs text-gray-500 dark:text-theme-tertiary">
+ <p className="text-xs text-theme-tertiary">
                     Send message to {contractor?.name || 'contractor'}
                   </p>
                 </button>
 
                 <button
                   onClick={handleReschedule}
-                  className="bg-theme-muted hover:bg-gray-200 dark:hover:bg-neutral-700 border border-theme rounded-lg p-4 text-left transition-colors"
+                  className="bg-theme-muted hover:bg-theme-hover border border-theme rounded-lg p-4 text-left transition-colors"
                 >
                   <div className="flex items-center gap-3 mb-2">
- <Calendar className="w-5 h-5 text-gray-500 dark:text-theme-tertiary"/>
+ <Calendar className="w-5 h-5 text-theme-tertiary"/>
                     <span className="font-medium text-theme-primary">Reschedule</span>
                   </div>
- <p className="text-xs text-gray-500 dark:text-theme-tertiary">
+ <p className="text-xs text-theme-tertiary">
                     Change next service date
                   </p>
                 </button>
 
                 <button
                   onClick={handleViewAsset}
-                  className="bg-theme-muted hover:bg-gray-200 dark:hover:bg-neutral-700 border border-theme rounded-lg p-4 text-left transition-colors col-span-2"
+                  className="bg-theme-muted hover:bg-theme-hover border border-theme rounded-lg p-4 text-left transition-colors col-span-2"
                 >
                   <div className="flex items-center gap-3 mb-2">
- <ExternalLink className="w-5 h-5 text-gray-500 dark:text-theme-tertiary"/>
+ <ExternalLink className="w-5 h-5 text-theme-tertiary"/>
                     <span className="font-medium text-theme-primary">View Asset</span>
                   </div>
- <p className="text-xs text-gray-500 dark:text-theme-tertiary">
+ <p className="text-xs text-theme-tertiary">
                     Open full asset details
                   </p>
                 </button>
@@ -316,7 +316,7 @@ const isOverdue = taskType === 'ppm_service_overdue' || taskData?.source_type ==
             {/* Service History */}
             {serviceHistory.length > 0 && (
               <div>
-                <h4 className="text-sm font-medium text-gray-600 dark:text-neutral-300 mb-4 uppercase tracking-wide">
+                <h4 className="text-sm font-medium text-theme-tertiary mb-4 uppercase tracking-wide">
                   Service History
                 </h4>
                 <div className="space-y-2">
@@ -331,12 +331,12 @@ const isOverdue = taskType === 'ppm_service_overdue' || taskData?.source_type ==
                             {new Date(event.service_date).toLocaleDateString()}
                           </p>
                           {event.contractors && (
- <p className="text-xs text-gray-500 dark:text-theme-tertiary mt-1">
+ <p className="text-xs text-theme-tertiary mt-1">
                               {event.contractors.name}
                             </p>
                           )}
                           {event.notes && (
-                            <p className="text-xs text-gray-600 dark:text-neutral-300 mt-2">
+                            <p className="text-xs text-theme-tertiary mt-2">
                               {event.notes}
                             </p>
                           )}

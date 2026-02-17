@@ -113,7 +113,7 @@ export default function ContractorCard({
                   {contractor.site_names.map((siteName, idx) => (
                     <span
                       key={idx}
-                      className="px-2 py-1 text-xs rounded bg-slate-700 text-theme-primary"
+                      className="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-slate-700 text-theme-primary"
                     >
                       {siteName}
                     </span>

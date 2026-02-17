@@ -237,14 +237,14 @@ export function ClockInButton() {
       {/* Clock Out Confirmation */}
       {showClockOutConfirm && (
         <div className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center" style={{ minHeight: '100vh' }} onClick={handleCloseClockOutConfirm}>
-          <div className="bg-neutral-900 p-6 rounded-lg border border-theme shadow-lg max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-theme-surface p-6 rounded-lg border border-theme shadow-lg max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-semibold text-theme-primary mb-4">Clock Out</h2>
             <p className="text-theme-tertiary mb-6">Are you sure you want to clock out?</p>
             <div className="flex justify-end gap-3">
               <button
                 type="button"
                 onClick={handleCloseClockOutConfirm}
-                className="px-4 py-2 border border-neutral-600 text-theme-tertiary hover:bg-neutral-800 rounded"
+                className="px-4 py-2 border border-gray-300 dark:border-neutral-600 text-theme-tertiary hover:bg-gray-100 dark:hover:bg-neutral-800 rounded"
               >
                 Cancel
               </button>

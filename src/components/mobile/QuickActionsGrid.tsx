@@ -47,16 +47,16 @@ const moduleActions: Record<string, QuickAction[]> = {
     { id: 'waste', icon: Trash2, label: 'Record Waste', href: '/dashboard/stockly/waste', color: '#f44336' },
     { id: 'count', icon: CheckSquare, label: 'Stock Count', href: '/dashboard/stockly/stock-counts', color: '#10B981' },
     { id: 'stock', icon: Eye, label: 'View Stock', href: '/dashboard/stockly/stock-items', color: '#10B981' },
+    { id: 'suppliers', icon: Package, label: 'Suppliers', href: '/dashboard/stockly/suppliers', color: '#10B981' },
   ],
   assetly: [
     { id: 'callout', icon: Wrench, label: 'Place Callout', href: '/dashboard/assets/callout-logs', color: '#f44336' },
     { id: 'assets', icon: Eye, label: 'View Assets', href: '/dashboard/assets', color: '#0EA5E9' },
+    { id: 'contractors', icon: Wrench, label: 'Contractors', href: '/dashboard/assets/contractors', color: '#0EA5E9' },
   ],
   teamly: [
     { id: 'leave', icon: Calendar, label: 'Request Leave', href: '/dashboard/people/leave/request', color: '#8B5CF6' },
     { id: 'directory', icon: Users, label: 'Staff Cards', href: '/dashboard/people/directory', color: '#8B5CF6' },
-    { id: 'contractors', icon: Wrench, label: 'Contractors', href: '/dashboard/people/contractors', color: '#8B5CF6' },
-    { id: 'suppliers', icon: Package, label: 'Suppliers', href: '/dashboard/stockly/suppliers', color: '#10B981' },
   ],
   msgly: [
     { id: 'messages', icon: MessageSquare, label: 'Messages', href: '/dashboard/messaging', color: '#F59E0B' },
@@ -108,7 +108,7 @@ export function QuickActionsGrid({ section, userRole }: QuickActionsGridProps) {
           onClick={() => handleActionClick(action)}
           className={cn(
             "flex flex-col items-center p-3 rounded-xl",
-            "bg-white/5 hover:bg-white/10",
+            "bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10",
             "transition-all active:scale-95",
             "touch-manipulation"
           )}

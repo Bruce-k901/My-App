@@ -53,7 +53,7 @@ export function PWAInstallSection() {
   const needsManualInstall = browser.isDuckDuckGo || (!status.isInstallable && status.isSupported);
 
   return (
-    <div className="p-4 rounded border border-neutral-800 bg-[#0f1220]">
+    <div className="p-4 rounded border border-black/10 dark:border-neutral-800 bg-gray-50 dark:bg-[#0f1220]">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
@@ -81,7 +81,7 @@ export function PWAInstallSection() {
               </Button>
 
               {showInstructions && (
-                <div className="mt-3 p-3 rounded bg-slate-900/50 border border-slate-700">
+                <div className="mt-3 p-3 rounded bg-gray-100 dark:bg-slate-900/50 border border-black/10 dark:border-slate-700">
                   {browser.isIOS ? (
                     <div className="space-y-2 text-sm text-theme-secondary">
                       <p className="font-semibold text-theme-primary mb-2">iOS Installation Steps:</p>

@@ -362,7 +362,7 @@ export function NewStockCountModal({ isOpen, onClose, onSuccess }: NewStockCount
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0f1220] border-neutral-800">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-[#0f1220] border-black/10 dark:border-neutral-800">
         <DialogHeader>
           <DialogTitle className="text-theme-primary text-xl font-semibold">Start New Stock Count</DialogTitle>
         </DialogHeader>

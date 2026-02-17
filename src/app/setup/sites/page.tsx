@@ -171,7 +171,7 @@ function SitesContent() {
       )}
 
       {role === "Admin" && formOpen && (
-        <form onSubmit={(e) => submit(e)} className="space-y-3 rounded-lg border border-neutral-800 p-4 bg-[#0f1220]">
+        <form onSubmit={(e) => submit(e)} className="space-y-3 rounded-lg border border-black/10 dark:border-neutral-800 p-4 bg-white dark:bg-[#0f1220]">
           <input className="input" placeholder="Site name" value={name} onChange={(e) => setName(e.target.value)} />
           <textarea className="input" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -213,7 +213,7 @@ function SitesContent() {
         ) : (
           <div className="space-y-2">
             {sites.map((s) => (
-              <div key={s.id} className="rounded border border-neutral-800 p-3 bg-[#0f1220] flex items-center justify-between">
+              <div key={s.id} className="rounded border border-black/10 dark:border-neutral-800 p-3 bg-white dark:bg-[#0f1220] flex items-center justify-between">
                 <div>
                   <p className="font-medium">{s.name}</p>
                   <p className="text-xs text-theme-tertiary">{s.address}</p>

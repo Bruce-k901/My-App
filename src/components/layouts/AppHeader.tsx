@@ -133,8 +133,8 @@ function NotificationBell() {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-[#0f1220] border border-neutral-800 rounded shadow-lg z-50">
-          <div className="px-3 py-2 flex items-center justify-between border-b border-neutral-800">
+        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-[#0f1220] border border-black/10 dark:border-neutral-800 rounded shadow-lg z-50">
+          <div className="px-3 py-2 flex items-center justify-between border-b border-black/10 dark:border-neutral-800">
             <span className="text-sm text-theme-secondary">Notifications</span>
             <Link href="/notifications" className="text-xs text-magenta-300 hover:text-magenta-200">View all</Link>
           </div>
@@ -143,7 +143,7 @@ function NotificationBell() {
               <li className="p-3 text-sm text-theme-tertiary">No recent notifications.</li>
             ) : (
               latest.map((n) => (
-                <li key={n.id} className="p-3 border-b border-neutral-800 last:border-b-0">
+                <li key={n.id} className="p-3 border-b border-black/10 dark:border-neutral-800 last:border-b-0">
                   <div className="flex items-center gap-2">
                     <span className={`text-xs ${sevBadge(n.severity)}`}>{n.type}</span>
                     <span className="text-xs text-theme-tertiary ml-auto">{new Date(n.created_at).toLocaleTimeString()}</span>
@@ -190,7 +190,7 @@ export default function AppHeader() {
         <Link href="/account" className="btn-gradient text-sm font-semibold">
           Account
         </Link>
-        <Link href="/logout" className="text-theme-tertiary hover:text-white text-sm">
+        <Link href="/logout" className="text-theme-tertiary hover:text-theme-primary text-sm">
           Logout
         </Link>
       </div>

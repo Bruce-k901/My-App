@@ -260,9 +260,9 @@ export default function PPMFollowupModal({ task, isOpen, onClose, onComplete }: 
   return (
     <>
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-neutral-900 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="bg-theme-surface rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-theme">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-theme sticky top-0 bg-neutral-900 z-10">
+          <div className="flex items-center justify-between p-6 border-b border-theme sticky top-0 bg-theme-surface z-10">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-module-fg/10 rounded-lg">
                 <FileText className="w-6 h-6 text-module-fg" />
@@ -274,7 +274,7 @@ export default function PPMFollowupModal({ task, isOpen, onClose, onComplete }: 
             </div>
             <button
               onClick={onClose}
-              className="text-theme-tertiary hover:text-white transition-colors"
+              className="text-theme-tertiary hover:text-theme-primary transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
@@ -283,7 +283,7 @@ export default function PPMFollowupModal({ task, isOpen, onClose, onComplete }: 
           {/* Content */}
           <div className="p-6 space-y-6">
             {/* Asset Info */}
-            <div className="bg-neutral-800 rounded-lg p-5 border border-theme">
+            <div className="bg-theme-muted rounded-lg p-5 border border-theme">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold text-theme-primary mb-1">
@@ -347,7 +347,7 @@ export default function PPMFollowupModal({ task, isOpen, onClose, onComplete }: 
 
             {/* Callout Details */}
             {callout && (
-              <div className="bg-neutral-800 rounded-lg p-5 border border-theme">
+              <div className="bg-theme-muted rounded-lg p-5 border border-theme">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-sm font-medium text-theme-primary">Original Callout</h4>
                   <a
@@ -378,7 +378,7 @@ export default function PPMFollowupModal({ task, isOpen, onClose, onComplete }: 
               {/* Two Clear Options */}
               <div className="grid grid-cols-1 gap-4">
                 {/* Option 1: Service NOT complete yet - Add progress note */}
-                <div className="bg-neutral-800 rounded-lg p-5 border border-theme">
+                <div className="bg-theme-muted rounded-lg p-5 border border-theme">
                   <h5 className="text-base font-medium text-theme-primary mb-3">Service Not Complete Yet</h5>
                   <p className="text-sm text-theme-tertiary mb-4">Add a progress note to track status</p>
 
@@ -387,13 +387,13 @@ export default function PPMFollowupModal({ task, isOpen, onClose, onComplete }: 
                     onChange={(e) => setNotes(e.target.value)}
                     rows={3}
                     placeholder="e.g., Contractor confirmed for Friday, Parts ordered, Waiting for engineer..."
-                    className="w-full px-3 py-2 bg-neutral-900 border border-theme rounded-lg text-theme-primary placeholder-neutral-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none mb-3"
+                    className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-theme-tertiary focus:border-module-fg focus:ring-2 focus:ring-module-fg/20 focus:outline-none mb-3"
                   />
 
                   <button
                     onClick={handleAddNotes}
                     disabled={loading || !notes.trim()}
-                    className="w-full px-4 py-3 bg-yellow-600 hover:bg-yellow-700 disabled:bg-neutral-700 disabled:text-theme-tertiary text-white rounded-lg transition-colors font-medium"
+                    className="w-full px-4 py-3 bg-amber-600 hover:bg-amber-700 dark:bg-amber-600 dark:hover:bg-amber-700 disabled:bg-neutral-300 dark:disabled:bg-neutral-700 disabled:text-theme-tertiary text-white rounded-lg transition-colors font-medium"
                   >
                     {loading ? 'Saving...' : 'Update Task & Close'}
                   </button>
@@ -401,7 +401,7 @@ export default function PPMFollowupModal({ task, isOpen, onClose, onComplete }: 
                 </div>
 
                 {/* Option 2: Service IS complete - Log it */}
-                <div className="bg-neutral-800 rounded-lg p-5 border border-green-700/30 bg-green-500/5">
+                <div className="bg-green-50 dark:bg-green-500/5 rounded-lg p-5 border border-green-300 dark:border-green-700/30">
                   <h5 className="text-base font-medium text-theme-primary mb-3">Service Complete</h5>
                   <p className="text-sm text-theme-tertiary mb-4">Log the completed service and upload documentation</p>
 
@@ -416,7 +416,7 @@ export default function PPMFollowupModal({ task, isOpen, onClose, onComplete }: 
 
               {/* Show callout notes if they exist */}
               {callout?.notes && (
-                <div className="bg-neutral-800 rounded-lg p-4 border border-theme">
+                <div className="bg-theme-muted rounded-lg p-4 border border-theme">
                   <h5 className="text-sm font-medium text-theme-primary mb-2">Previous Updates</h5>
                   <p className="text-sm text-theme-tertiary whitespace-pre-wrap">{callout.notes}</p>
                 </div>

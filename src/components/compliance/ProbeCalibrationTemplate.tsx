@@ -587,7 +587,7 @@ ${validEquipment.map(eq => {
       </div>
 
       {isExpanded && (
-        <div className="border-t border-gray-200 dark:border-neutral-800 p-6 bg-[#0f1220]">
+        <div className="border-t border-gray-200 dark:border-neutral-800 p-6 bg-white dark:bg-[#0f1220]">
           <div className="space-y-6">
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -611,7 +611,7 @@ ${validEquipment.map(eq => {
                     <select
                       value={row.assetId}
                       onChange={(e) => updateEquipmentRow(row.id, 'assetId', e.target.value)}
-                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-theme-primary"
+                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-white dark:bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-theme-primary"
                     >
                       <option value="">Select temperature probe...</option>
                       {assets.length === 0 ? (
@@ -630,7 +630,7 @@ ${validEquipment.map(eq => {
                       placeholder="Nickname"
                       value={row.nickname}
                       onChange={(e) => updateEquipmentRow(row.id, 'nickname', e.target.value)}
-                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-theme-primary placeholder:text-theme-tertiary"
+                      className="flex-1 px-3 py-2 text-sm rounded-lg bg-white dark:bg-[#0f1220] border border-gray-200 dark:border-neutral-800 text-theme-primary placeholder:text-theme-tertiary"
                     />
 
                     {equipmentRows.length > 1 && (

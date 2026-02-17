@@ -73,7 +73,7 @@ export function InstallPrompt() {
   // Show manual instructions for DuckDuckGo or unsupported browsers
   if (showManualInstructions && browserInfo) {
     return (
-      <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-slate-800/95 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-xl z-50 animate-in slide-in-from-bottom-4">
+      <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border border-black/10 dark:border-slate-700 rounded-lg p-4 shadow-xl z-50 animate-in slide-in-from-bottom-4">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0">
             <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
@@ -136,7 +136,7 @@ export function InstallPrompt() {
                 onClick={handleDismiss} 
                 variant="ghost" 
                 size="sm"
-                className="text-theme-tertiary hover:text-white"
+                className="text-theme-tertiary hover:text-theme-primary"
               >
                 <X className="h-4 w-4 mr-2" />
                 Got it
@@ -150,7 +150,7 @@ export function InstallPrompt() {
 
   // Standard install prompt for supported browsers
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-slate-800/95 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-xl z-50 animate-in slide-in-from-bottom-4">
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border border-black/10 dark:border-slate-700 rounded-lg p-4 shadow-xl z-50 animate-in slide-in-from-bottom-4">
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0">
           <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
@@ -175,7 +175,7 @@ export function InstallPrompt() {
               onClick={handleDismiss} 
               variant="ghost" 
               size="sm"
-              className="text-theme-tertiary hover:text-white"
+              className="text-theme-tertiary hover:text-theme-primary"
             >
               <X className="h-4 w-4" />
             </Button>
