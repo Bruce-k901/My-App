@@ -29,6 +29,7 @@ interface UseGlobalTaskAlertsOptions {
   companyId: string | null;
   siteId: string | null;
   userId: string | null;
+  userRole?: string | null;
   enabled?: boolean;
   checkIntervalMs?: number;
 }
@@ -37,6 +38,7 @@ export function useGlobalTaskAlerts({
   companyId,
   siteId,
   userId,
+  userRole,
   enabled = true,
   checkIntervalMs = 60000,
 }: UseGlobalTaskAlertsOptions) {
@@ -77,7 +79,7 @@ export function useGlobalTaskAlerts({
 
     let query = supabase
       .from('checklist_tasks')
-      .select('id, status, due_date, due_time, custom_name, template_id, priority, daypart, assigned_to_role, task_data')
+      .select('id, status, due_date, due_time, custom_name, template_id, priority, daypart, assigned_to_role, assigned_to_user_id, task_data')
       .eq('company_id', companyId)
       .eq('due_date', today)
       .in('status', ['pending', 'in_progress'])
@@ -85,6 +87,19 @@ export function useGlobalTaskAlerts({
 
     if (siteId && siteId !== 'all') {
       query = query.eq('site_id', siteId);
+    }
+
+    // Filter by role/user: admins and managers see everything,
+    // other roles only see tasks assigned to their role, to them specifically, or unassigned
+    const role = userRole?.toLowerCase();
+    const isAdminOrManager = role === 'admin' || role === 'manager' || role === 'owner' || role === 'general_manager';
+    if (!isAdminOrManager && role) {
+      // Show tasks that are: assigned to this role, assigned to this user, or unassigned
+      const filters = [`assigned_to_role.is.null,assigned_to_role.eq.${role}`];
+      if (userId) {
+        filters.push(`assigned_to_user_id.eq.${userId}`);
+      }
+      query = query.or(filters.join(','));
     }
 
     const { data, error } = await query;
@@ -98,7 +113,7 @@ export function useGlobalTaskAlerts({
     return ((data || []) as TaskSummary[]).filter(
       (t) => t.task_data?.source === 'cron' || !t.template_id
     );
-  }, [companyId, siteId]);
+  }, [companyId, siteId, userId, userRole]);
 
   const resolveTemplateNames = useCallback(async (tasks: TaskSummary[]) => {
     const missingIds = tasks

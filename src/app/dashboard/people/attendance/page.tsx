@@ -79,16 +79,29 @@ export default function AttendancePage() {
     setLoading(false);
   };
 
-  // Filter data by selected site
+  // Filter data by selected site and role
+  // Staff members should only see their own attendance data
   const filteredDailyData = useMemo(() => {
-    if (!siteProfileIds) return dailyData;
-    return dailyData.filter(d => siteProfileIds.has(d.profile_id));
-  }, [dailyData, siteProfileIds]);
+    let data = dailyData;
+    if (siteProfileIds) {
+      data = data.filter(d => siteProfileIds.has(d.profile_id));
+    }
+    if (!isManager && profile?.id) {
+      data = data.filter(d => d.profile_id === profile.id);
+    }
+    return data;
+  }, [dailyData, siteProfileIds, isManager, profile?.id]);
 
   const filteredWeeklyData = useMemo(() => {
-    if (!siteProfileIds) return weeklyData;
-    return weeklyData.filter(d => siteProfileIds.has(d.profile_id));
-  }, [weeklyData, siteProfileIds]);
+    let data = weeklyData;
+    if (siteProfileIds) {
+      data = data.filter(d => siteProfileIds.has(d.profile_id));
+    }
+    if (!isManager && profile?.id) {
+      data = data.filter(d => d.profile_id === profile.id);
+    }
+    return data;
+  }, [weeklyData, siteProfileIds, isManager, profile?.id]);
 
   const getWeekStart = (date: Date) => {
     const d = new Date(date);
@@ -139,7 +152,7 @@ export default function AttendancePage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-x-hidden">
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
@@ -212,9 +225,9 @@ export default function AttendancePage() {
             </button>
           </div>
 
-          {/* Stats */}
-          {viewMode === 'today' ? (
-            <div className="grid grid-cols-4 gap-4">
+          {/* Stats - only show team stats for managers */}
+          {viewMode === 'today' && isManager ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
  <div className="bg-theme-surface border border-theme rounded-lg p-4 text-center shadow-sm dark:shadow-none">
                 <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mx-auto mb-1" />
                 <p className="text-2xl font-bold text-theme-primary">{stats.present}</p>
@@ -236,7 +249,7 @@ export default function AttendancePage() {
                 <p className="text-xs text-theme-secondary">On Break</p>
               </div>
             </div>
-          ) : (
+          ) : viewMode === 'week' && isManager ? (
             <div className="grid grid-cols-3 gap-4">
  <div className="bg-theme-surface border border-theme rounded-lg p-4 text-center shadow-sm dark:shadow-none">
                 <Clock className="w-5 h-5 text-module-fg mx-auto mb-1" />
@@ -254,7 +267,7 @@ export default function AttendancePage() {
                 <p className="text-xs text-theme-secondary">Avg/Person</p>
               </div>
             </div>
-          )}
+          ) : null}
 
           {/* Data Table */}
           {loading ? (
@@ -262,31 +275,31 @@ export default function AttendancePage() {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-module-fg" />
             </div>
           ) : viewMode === 'today' ? (
- <div className="bg-theme-surface border border-theme rounded-lg overflow-hidden shadow-sm dark:shadow-none">
-              <table className="w-full">
+ <div className="bg-theme-surface border border-theme rounded-lg overflow-hidden overflow-x-auto shadow-sm dark:shadow-none">
+              <table className="w-full min-w-[480px]">
                 <thead className="bg-theme-button">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-theme-tertiary">Employee</th>
-                    <th className="px-4 py-3 text-center text-sm font-medium text-theme-tertiary">Status</th>
-                    <th className="px-4 py-3 text-center text-sm font-medium text-theme-tertiary">Clock In</th>
-                    <th className="px-4 py-3 text-center text-sm font-medium text-theme-tertiary">Clock Out</th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-theme-tertiary">Hours</th>
+                    <th className="px-3 sm:px-4 py-3 text-left text-sm font-medium text-theme-tertiary">Employee</th>
+                    <th className="px-2 sm:px-4 py-3 text-center text-sm font-medium text-theme-tertiary">Status</th>
+                    <th className="px-2 sm:px-4 py-3 text-center text-sm font-medium text-theme-tertiary">Clock In</th>
+                    <th className="px-2 sm:px-4 py-3 text-center text-sm font-medium text-theme-tertiary">Clock Out</th>
+                    <th className="px-3 sm:px-4 py-3 text-right text-sm font-medium text-theme-tertiary">Hours</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-theme">
                   {filteredDailyData.map((row) => (
                     <tr key={row.profile_id} className="hover:bg-theme-hover transition-colors">
-                      <td className="px-4 py-3">
+                      <td className="px-3 sm:px-4 py-3">
                         <p className="text-theme-primary font-medium">{row.employee_name}</p>
                         <p className="text-theme-tertiary text-xs">{row.position_title}</p>
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-2 sm:px-4 py-3 text-center">
                         {getStatusBadge(row.status, row.is_late, row.is_on_break)}
                       </td>
-                      <td className="px-4 py-3 text-center text-theme-secondary">
+                      <td className="px-2 sm:px-4 py-3 text-center text-theme-secondary text-sm">
                         {formatTime(row.clock_in)}
                       </td>
-                      <td className="px-4 py-3 text-center text-theme-secondary">
+                      <td className="px-2 sm:px-4 py-3 text-center text-theme-secondary text-sm">
                         <span className="inline-flex items-center gap-1">
                           {formatTime(row.clock_out)}
                           {row.notes?.includes('Auto clocked out') && (
@@ -296,7 +309,7 @@ export default function AttendancePage() {
                           )}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right text-theme-primary font-medium">
+                      <td className="px-3 sm:px-4 py-3 text-right text-theme-primary font-medium text-sm">
                         {row.hours_worked?.toFixed(1) || '-'}h
                       </td>
                     </tr>

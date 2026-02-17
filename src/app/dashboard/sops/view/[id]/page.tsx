@@ -857,27 +857,31 @@ export default function SOPViewPage() {
  <div className="min-h-screen bg-[rgb(var(--background-primary))] print:bg-theme-surface">
       {/* Header - Hidden when printing */}
       <div className="no-print sticky top-0 z-10 bg-[rgb(var(--background-primary))] dark:bg-neutral-900 border-b border-[rgb(var(--border))] dark:border-theme">
-        <div className="max-w-5xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <button
               onClick={() => router.push('/dashboard/sops/list')}
- className="flex items-center gap-2 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors"
+ className="flex items-center gap-2 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors self-start"
             >
               <ArrowLeft size={20} />
               <span>Back to SOPs</span>
             </button>
-            <div className="flex items-center gap-4">
-              {/* Recipe Scaling Multiplier - More Prominent */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+              {/* Recipe Scaling Multiplier */}
               {printData?.recipe && (
-                <div className="flex items-center gap-3 px-5 py-3 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 rounded-xl border-2 border-module-fg dark:border-module-fg/70 shadow-lg shadow-module-fg/20 dark:shadow-module-fg/30">
-                  <label htmlFor="multiplier" className="text-base font-semibold text-[rgb(var(--text-primary))] dark:text-white whitespace-nowrap">
+                <div className="flex items-center gap-3 px-4 sm:px-5 py-2.5 sm:py-3 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 rounded-xl border-2 border-module-fg dark:border-module-fg/70 shadow-lg shadow-module-fg/20 dark:shadow-module-fg/30">
+                  <label htmlFor="multiplier" className="text-sm sm:text-base font-semibold text-[rgb(var(--text-primary))] dark:text-white whitespace-nowrap">
                     Portions:
                   </label>
                   <input
                     id="multiplier"
                     type="text"
                     inputMode="decimal"
+                    pattern="[0-9]*\.?[0-9]*"
+                    autoComplete="off"
+                    autoCorrect="off"
                     value={multiplierInput}
+                    onFocus={(e) => e.target.select()}
                     onChange={(e) => {
                       const inputValue = e.target.value;
                       // Allow empty string, numbers, and decimal point
@@ -903,9 +907,9 @@ export default function SOPViewPage() {
                         setMultiplier(clampedValue);
                       }
                     }}
-                    className="w-28 bg-[rgb(var(--background-primary))] dark:bg-neutral-900 border-2 border-module-fg dark:border-module-fg rounded-lg px-3 py-2 text-lg font-bold text-[rgb(var(--text-primary))] dark:text-white focus:border-module-fg dark:focus:border-module-fg focus:outline-none focus:ring-2 focus:ring-module-fg/40 dark:focus:ring-module-fg/40"
+                    className="w-20 sm:w-28 bg-[rgb(var(--background-primary))] dark:bg-neutral-900 border-2 border-module-fg dark:border-module-fg rounded-lg px-3 py-2 text-lg font-bold text-[rgb(var(--text-primary))] dark:text-white focus:border-module-fg dark:focus:border-module-fg focus:outline-none focus:ring-2 focus:ring-module-fg/40 dark:focus:ring-module-fg/40"
                   />
-                  <span className="text-base font-bold text-module-fg dark:text-module-fg">
+                  <span className="text-sm sm:text-base font-bold text-module-fg dark:text-module-fg">
                     ×{multiplier.toFixed(1)}
                   </span>
                 </div>
@@ -924,12 +928,12 @@ export default function SOPViewPage() {
                   onClick={handleManualSync}
                   disabled={syncing}
                   className="gap-2"
-                  title={printData?.recipe?.code 
-                    ? `Sync recipe ingredients (will find recipe by code: ${printData.recipe.code})` 
+                  title={printData?.recipe?.code
+                    ? `Sync recipe ingredients (will find recipe by code: ${printData.recipe.code})`
                     : "Sync recipe ingredients to SOP"}
                 >
                   <RefreshCw size={16} className={syncing ? 'animate-spin' : ''} />
-                  {syncing ? 'Syncing...' : 'Sync Recipe'}
+                  <span className="hidden sm:inline">{syncing ? 'Syncing...' : 'Sync Recipe'}</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -938,7 +942,7 @@ export default function SOPViewPage() {
                   className="gap-2"
                 >
                   <Edit size={16} />
-                  Edit
+                  <span className="hidden sm:inline">Edit</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -947,7 +951,7 @@ export default function SOPViewPage() {
                   className="gap-2"
                 >
                   <Printer size={16} />
-                  Print / PDF
+                  <span className="hidden sm:inline">Print / PDF</span>
                 </Button>
               </div>
             </div>
@@ -956,7 +960,7 @@ export default function SOPViewPage() {
       </div>
 
       {/* Content - Use Print Template */}
-      <div className="max-w-5xl mx-auto px-6 py-8 print:px-0 print:py-4">
+      <div className="max-w-5xl mx-auto px-2 sm:px-6 py-4 sm:py-8 print:px-0 print:py-4 overflow-x-hidden">
         {printData ? (
           <SOPPrintTemplate 
             sop={printData}

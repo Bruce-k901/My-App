@@ -424,24 +424,40 @@ export const SOPPrintTemplate: React.FC<SOPPrintTemplateProps> = ({
 
         @media screen {
           .sop-print-container {
-            max-width: 210mm;
+            max-width: min(210mm, 100%);
             margin: 0 auto;
-            padding: 20px;
+            padding: 12px;
             background: white;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             font-family: 'Arial', sans-serif;
             font-size: 10pt;
             line-height: 1.4;
             color: #000;
+            overflow-x: hidden;
+            box-sizing: border-box;
+          }
+
+          @media (min-width: 640px) {
+            .sop-print-container {
+              padding: 20px;
+            }
           }
 
           .sop-header {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+            flex-direction: column;
+            gap: 8px;
             border-bottom: 2px solid #000;
             padding-bottom: 8px;
             margin-bottom: 12px;
+          }
+
+          @media (min-width: 480px) {
+            .sop-header {
+              flex-direction: row;
+              justify-content: space-between;
+              align-items: flex-start;
+            }
           }
 
           .company-info {
@@ -496,9 +512,16 @@ export const SOPPrintTemplate: React.FC<SOPPrintTemplateProps> = ({
 
           .doc-control-grid {
             display: grid;
-            grid-template-columns: 120px 1fr 120px 1fr;
-            gap: 4px 12px;
+            grid-template-columns: 100px 1fr;
+            gap: 4px 8px;
             font-size: 9pt;
+          }
+
+          @media (min-width: 480px) {
+            .doc-control-grid {
+              grid-template-columns: 120px 1fr 120px 1fr;
+              gap: 4px 12px;
+            }
           }
 
           .doc-control-label {
@@ -569,24 +592,51 @@ export const SOPPrintTemplate: React.FC<SOPPrintTemplateProps> = ({
             border-bottom: 1px solid #000;
           }
 
+          .ingredients-table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 12px;
+          }
+
           .ingredients-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 12px;
-            font-size: 9pt;
+            font-size: 8pt;
+            min-width: 360px;
+          }
+
+          @media (min-width: 480px) {
+            .ingredients-table {
+              font-size: 9pt;
+              min-width: unset;
+            }
           }
 
           .ingredients-table th {
             border: 1px solid #000;
-            padding: 4px 6px;
+            padding: 3px 4px;
             text-align: left;
             font-weight: bold;
             background: #f0f0f0;
+            white-space: nowrap;
+          }
+
+          @media (min-width: 480px) {
+            .ingredients-table th {
+              padding: 4px 6px;
+            }
           }
 
           .ingredients-table td {
             border: 1px solid #333;
-            padding: 4px 6px;
+            padding: 3px 4px;
+            word-break: break-word;
+          }
+
+          @media (min-width: 480px) {
+            .ingredients-table td {
+              padding: 4px 6px;
+            }
           }
 
           .ingredients-table .qty-cell {
@@ -600,8 +650,17 @@ export const SOPPrintTemplate: React.FC<SOPPrintTemplateProps> = ({
             background: #f8f9fa;
             font-weight: bold;
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
-            font-size: 9pt;
+            gap: 4px;
+            font-size: 8pt;
+          }
+
+          @media (min-width: 480px) {
+            .ingredients-footer {
+              font-size: 9pt;
+              flex-wrap: nowrap;
+            }
           }
 
           .equipment-list {
@@ -625,22 +684,32 @@ export const SOPPrintTemplate: React.FC<SOPPrintTemplateProps> = ({
 
           .step-number {
             flex-shrink: 0;
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             border: 2px solid #000;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 11pt;
-            margin-right: 10px;
+            font-size: 10pt;
+            margin-right: 8px;
+          }
+
+          @media (min-width: 480px) {
+            .step-number {
+              width: 28px;
+              height: 28px;
+              font-size: 11pt;
+              margin-right: 10px;
+            }
           }
 
           .step-content {
             flex: 1;
             font-size: 9pt;
             line-height: 1.5;
+            overflow-wrap: break-word;
           }
 
           .quality-checks {
@@ -686,9 +755,15 @@ export const SOPPrintTemplate: React.FC<SOPPrintTemplateProps> = ({
 
           .storage-grid {
             display: grid;
-            grid-template-columns: 100px 1fr;
+            grid-template-columns: 80px 1fr;
             gap: 4px 8px;
             font-size: 9pt;
+          }
+
+          @media (min-width: 480px) {
+            .storage-grid {
+              grid-template-columns: 100px 1fr;
+            }
           }
 
           .storage-label {
@@ -702,6 +777,7 @@ export const SOPPrintTemplate: React.FC<SOPPrintTemplateProps> = ({
             font-weight: bold;
             font-size: 9pt;
             text-align: center;
+            word-break: break-word;
           }
 
           .sop-footer {
@@ -713,9 +789,16 @@ export const SOPPrintTemplate: React.FC<SOPPrintTemplateProps> = ({
 
           .signature-section {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: 1fr;
+            gap: 12px;
             margin-bottom: 12px;
+          }
+
+          @media (min-width: 480px) {
+            .signature-section {
+              grid-template-columns: 1fr 1fr;
+              gap: 20px;
+            }
           }
 
           .signature-block {
@@ -730,9 +813,19 @@ export const SOPPrintTemplate: React.FC<SOPPrintTemplateProps> = ({
 
           .footer-meta {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
+            gap: 4px;
             padding-top: 8px;
             border-top: 1px solid #000;
+            font-size: 7pt;
+          }
+
+          @media (min-width: 480px) {
+            .footer-meta {
+              flex-wrap: nowrap;
+              font-size: 8pt;
+            }
           }
         }
       `}</style>
@@ -803,6 +896,7 @@ export const SOPPrintTemplate: React.FC<SOPPrintTemplateProps> = ({
       {sop.ingredients && sop.ingredients.length > 0 && (
         <div className="avoid-break">
           <h2 className="section-header">Ingredients</h2>
+          <div className="ingredients-table-wrapper">
           <table className="ingredients-table">
             <thead>
               <tr>
@@ -835,6 +929,7 @@ export const SOPPrintTemplate: React.FC<SOPPrintTemplateProps> = ({
               })}
             </tbody>
           </table>
+          </div>
           <div className="ingredients-footer">
             <span>TOTAL RECIPE COST: £{(sop.recipe?.total_cost || 0).toFixed(2)}</span>
             <span>YIELD: {(() => {

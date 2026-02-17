@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { format, addDays, startOfDay, isSameDay } from "date-fns";
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, MessageSquare, Plus, X, CheckCircle2, Send, Bell, FileText, Users, History, Zap, Phone, CheckSquare } from "@/components/ui/icons";
+import { CalendarDays, ChevronLeft, ChevronRight, Clock, MessageSquare, Plus, X, CheckCircle2, Send, Bell, FileText, Users, History, Zap, Phone, CheckSquare, Trash2 } from "@/components/ui/icons";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useAppContext } from "@/context/AppContext";
@@ -864,10 +864,11 @@ export default function ManagerCalendarPage() {
       ...mobileTasks.map(t => ({ ...t, itemType: 'task' as const, time: t.dueTime || '09:00' })),
       ...mobileTasksFromTable.map(t => ({
         id: t.id,
-        title: t.task_name || t.checklist_templates?.name || 'Task',
+        title: t.title || 'Task',
         itemType: 'tableTask' as const,
         time: t.due_time || '09:00',
         status: t.status,
+        priority: t.priority,
         metadata: t.metadata
       })),
       ...mobileReminders.map(r => ({ ...r, itemType: 'reminder' as const, time: r.time || '09:00' })),
@@ -906,15 +907,50 @@ export default function ManagerCalendarPage() {
       return CheckCircle2;
     };
 
+    const handleMobileItemTap = (item: any) => {
+      if (item.itemType === 'tableTask') {
+        // Task from tasks table - open modal with existing data
+        const taskFromTable = tasksFromTable.find(t => t.id === item.id);
+        if (taskFromTable) {
+          setModalContext({
+            source: 'calendar',
+            taskId: item.id,
+            existingData: taskFromTable,
+          });
+          setCreateTaskModalOpen(true);
+        }
+      } else if (item.itemType === 'task') {
+        // Handover task - open modal pre-filled
+        setModalContext({
+          source: 'calendar',
+          preSelectedDate: new Date(item.dueDate || mobileDateStr),
+        });
+        setCreateTaskModalOpen(true);
+      }
+      // Reminders don't open a modal (no edit UI for them)
+    };
+
+    const handleMobileItemDelete = (item: any) => {
+      if (item.itemType === 'task') {
+        removeTask(item.id);
+      } else if (item.itemType === 'reminder') {
+        removeReminder(item.id);
+      }
+      // tableTask items are managed via the modal/system, not deleted inline
+    };
+
     const renderMobileItem = (item: any) => {
       const Icon = getItemIcon(item);
       const color = getItemColor(item);
       const isCompleted = item.status === 'completed';
+      const canTap = item.itemType === 'task' || item.itemType === 'tableTask';
+      const canDelete = item.itemType === 'task' || item.itemType === 'reminder';
 
       return (
         <div
           key={item.id}
-          className={`bg-theme-button border border-theme rounded-xl p-4 ${isCompleted ? 'opacity-60' : ''}`}
+          onClick={() => canTap && handleMobileItemTap(item)}
+          className={`bg-theme-button border border-theme rounded-xl p-4 ${isCompleted ? 'opacity-60' : ''} ${canTap ? 'active:bg-gray-50 dark:active:bg-white/5 cursor-pointer' : ''}`}
         >
           <div className="flex items-start gap-3">
             <div className="p-2 rounded-lg flex-shrink-0" style={{ backgroundColor: `${color}20` }}>
@@ -933,8 +969,29 @@ export default function ManagerCalendarPage() {
                   {item.time ? format(new Date(`2000-01-01T${item.time}`), 'h:mm a') : 'All day'}
                 </span>
                 {item.itemType === 'reminder' && <span className="text-amber-500 dark:text-amber-400">Reminder</span>}
+                {item.priority && (
+                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                    item.priority === 'high' ? 'bg-red-500/10 text-red-500 dark:text-red-400' :
+                    item.priority === 'medium' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
+                    'bg-blue-500/10 text-blue-500 dark:text-blue-400'
+                  }`}>
+                    {item.priority}
+                  </span>
+                )}
               </div>
             </div>
+            {canDelete && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMobileItemDelete(item);
+                }}
+                className="p-2 rounded-lg text-gray-400 dark:text-white/20 active:bg-red-500/10 active:text-red-500 dark:active:text-red-400 flex-shrink-0"
+                aria-label="Delete"
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
           </div>
         </div>
       );
@@ -975,6 +1032,8 @@ export default function ManagerCalendarPage() {
               const day = addDays(startOfDay(new Date()), i - 3);
               const isSelected = isSameDay(day, mobileSelectedDay);
               const dayIsToday = isSameDay(day, new Date());
+              const dayEvents = getEventsForDate(day);
+              const hasEvents = dayEvents.length > 0;
               return (
                 <button
                   key={i}
@@ -989,6 +1048,13 @@ export default function ManagerCalendarPage() {
                   <div className={`text-sm font-medium ${isSelected ? 'text-theme-primary' : 'text-theme-secondary'}`}>
                     {format(day, 'd')}
                   </div>
+                  {hasEvents && (
+                    <div className="flex justify-center gap-0.5 mt-1">
+                      {dayEvents.slice(0, 3).map((_, idx) => (
+                        <div key={idx} className={`w-1 h-1 rounded-full ${isSelected ? 'bg-module-fg' : 'bg-theme-tertiary'}`} />
+                      ))}
+                    </div>
+                  )}
                 </button>
               );
             })}
@@ -996,7 +1062,7 @@ export default function ManagerCalendarPage() {
         </div>
 
         {/* Content */}
-        <div className="px-4 py-4 pb-24">
+        <div className="px-4 py-4 pb-32">
           {/* Notes for the day */}
           {mobileNotes && (
             <div className="mb-6 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl p-4">
@@ -1024,6 +1090,49 @@ export default function ManagerCalendarPage() {
             </>
           )}
         </div>
+
+        {/* Floating Action Button */}
+        <button
+          onClick={() => {
+            setModalContext({
+              source: 'manual',
+              preSelectedDate: mobileSelectedDay,
+            });
+            setCreateTaskModalOpen(true);
+          }}
+          className="
+            fixed z-40
+            w-14 h-14
+            rounded-full
+            bg-[#FF6B9D] hover:bg-[#FF6B9D]/80
+            shadow-lg
+            flex items-center justify-center
+            text-white
+            transition-all duration-200
+            active:scale-95 touch-manipulation
+            right-5
+            bottom-[calc(6rem+env(safe-area-inset-bottom))]
+          "
+          aria-label="Create task"
+        >
+          <Plus className="w-7 h-7" />
+        </button>
+
+        {/* Create Task Modal */}
+        <CreateTaskModal
+          isOpen={createTaskModalOpen}
+          onClose={() => {
+            setCreateTaskModalOpen(false);
+            setModalContext(undefined);
+          }}
+          context={modalContext}
+          onTaskCreated={(task) => {
+            loadCalendarData();
+            toast.success(`${task.metadata?.task_type || 'Task'} created successfully!`);
+            setCreateTaskModalOpen(false);
+            setModalContext(undefined);
+          }}
+        />
       </div>
     );
   }

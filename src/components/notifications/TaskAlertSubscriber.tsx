@@ -16,6 +16,7 @@ export function TaskAlertSubscriber() {
     companyId,
     siteId,
     userId: userId || profile?.id || null,
+    userRole: profile?.app_role || null,
     enabled: !!profile && !!companyId,
     checkIntervalMs: 60000,
   });
