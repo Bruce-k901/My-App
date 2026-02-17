@@ -531,13 +531,13 @@ export default function WasteLogPage() {
       return;
     }
 
-    // Validate all lines
-    const invalidLines = wasteLines.filter(line => 
-      !line.stock_item_id || line.quantity <= 0
+    // Filter to lines with valid stock items and quantity > 0 (skip zero-qty template items)
+    const validLines = wasteLines.filter(line =>
+      line.stock_item_id && line.quantity > 0
     );
-    
-    if (invalidLines.length > 0) {
-      toast.error('Please ensure all items have valid quantities');
+
+    if (validLines.length === 0) {
+      toast.error('Please ensure at least one item has a quantity greater than 0');
       return;
     }
 
@@ -550,7 +550,7 @@ export default function WasteLogPage() {
 
     try {
       // Normalize all reasons
-      const normalizedLines = wasteLines.map(line => ({
+      const normalizedLines = validLines.map(line => ({
         ...line,
         reason: normalizeWasteReason(line.reason)
       }));
@@ -776,7 +776,8 @@ export default function WasteLogPage() {
             quantity,
             default_reason,
             notes,
-            display_order
+            display_order,
+            stock_items(id, name, stock_unit)
           )
         `)
         .eq('company_id', companyId)
