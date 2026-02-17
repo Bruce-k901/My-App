@@ -315,29 +315,30 @@ function IncidentsPageContent() {
   const activeTabInfo = getActiveTabInfo();
 
   return (
-    <div className="w-full bg-theme-surface-elevated min-h-screen">
-      <div className="max-w-7xl mx-auto p-6">
+    <div className="w-full bg-theme-surface-elevated min-h-screen overflow-x-hidden">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-theme-primary mb-2 flex items-center gap-3">
-              <AlertTriangle className="w-8 h-8 text-red-600 dark:text-module-fg" />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-3xl font-bold text-theme-primary mb-1 sm:mb-2 flex items-center gap-2 sm:gap-3">
+              <AlertTriangle className="w-6 h-6 sm:w-8 sm:h-8 text-red-600 dark:text-module-fg flex-shrink-0" />
               Incident Reports
             </h1>
-            <p className="text-theme-secondary">Track and manage safety incidents and accidents</p>
+            <p className="text-theme-secondary text-sm sm:text-base">Track and manage safety incidents and accidents</p>
           </div>
           <Button
             onClick={handleReportIncident}
-            className="bg-module-fg hover:bg-module-fg/90 text-white dark:bg-red-600 dark:hover:bg-red-700"
+            className="bg-module-fg hover:bg-module-fg/90 text-white dark:bg-red-600 dark:hover:bg-red-700 flex-shrink-0 text-sm sm:text-base whitespace-nowrap"
           >
-            <Plus className="w-4 h-4 mr-2" />
-            {activeTab === 'staff_sickness' ? 'Log Sickness' : 'Report Incident'}
+            <Plus className="w-4 h-4 mr-1 sm:mr-2" />
+            <span className="sm:hidden">{activeTab === 'staff_sickness' ? 'Log' : 'Report'}</span>
+            <span className="hidden sm:inline">{activeTab === 'staff_sickness' ? 'Log Sickness' : 'Report Incident'}</span>
           </Button>
         </div>
 
         {/* Incident Type Tabs */}
-        <div className="bg-theme-surface border border-theme rounded-lg p-2 mb-6">
-          <div className="flex flex-wrap gap-2">
+        <div className="bg-theme-surface border border-theme rounded-lg p-1.5 sm:p-2 mb-6">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-1.5 sm:gap-2">
             {INCIDENT_TABS.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -345,19 +346,19 @@ function IncidentsPageContent() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${
+                  className={`flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-lg transition-all text-sm sm:text-base ${
                     isActive
                       ? 'bg-module-fg/10 dark:bg-module-fg/25 text-module-fg dark:text-module-fg border border-module-fg/[0.30] dark:border-module-fg/[0.30]'
                       : 'text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.05] hover:text-theme-primary'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? tab.color : ''}`} />
-                  <span className="font-medium">{tab.label}</span>
+                  <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? tab.color : ''}`} />
+                  <span className="font-medium truncate">{tab.label}</span>
                 </button>
               );
             })}
           </div>
-          <p className="text-sm text-theme-tertiary mt-2 px-2">
+          <p className="text-xs sm:text-sm text-theme-tertiary mt-2 px-2 hidden sm:block">
             {activeTabInfo.description}
           </p>
         </div>
@@ -459,38 +460,38 @@ function IncidentsPageContent() {
             )}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {filteredIncidents.map((incident) => (
               <div
                 key={incident.id}
-                className="bg-theme-surface border border-theme rounded-lg p-6 hover:bg-theme-hover transition-colors"
+                className="bg-theme-surface border border-theme rounded-lg p-4 sm:p-6 hover:bg-theme-hover transition-colors"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-theme-primary mb-2">{incident.title}</h3>
-                    <p className="text-theme-secondary text-sm mb-3">{incident.description}</p>
-                    <div className="flex items-center gap-4 text-sm text-theme-tertiary">
-                      <span>Reported by: {incident.reported_by}</span>
-                      <span>•</span>
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-3 sm:mb-4">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base sm:text-lg font-semibold text-theme-primary mb-1 sm:mb-2 truncate">{incident.title}</h3>
+                    <p className="text-theme-secondary text-sm mb-2 sm:mb-3 line-clamp-2">{incident.description}</p>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-theme-tertiary">
+                      <span className="truncate max-w-[150px]">By: {incident.reported_by}</span>
+                      <span className="hidden sm:inline">•</span>
                       <span>{new Date(incident.reported_date || incident.reported_at).toLocaleDateString()}</span>
                       {incident.site_name && (
                         <>
-                          <span>•</span>
-                          <span>{incident.site_name}</span>
+                          <span className="hidden sm:inline">•</span>
+                          <span className="truncate max-w-[120px]">{incident.site_name}</span>
                         </>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <span className={`px-3 py-1 rounded-md text-xs font-medium border ${getSeverityColor(incident.severity)}`}>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className={`px-2 sm:px-3 py-1 rounded-md text-[10px] sm:text-xs font-medium border ${getSeverityColor(incident.severity)}`}>
                       {(incident.severity || 'UNKNOWN').toUpperCase()}
                     </span>
-                    <span className={`px-3 py-1 rounded-md text-xs font-medium border ${getStatusColor(incident.status)}`}>
+                    <span className={`px-2 sm:px-3 py-1 rounded-md text-[10px] sm:text-xs font-medium border ${getStatusColor(incident.status)}`}>
                       {(incident.status || 'UNKNOWN').toUpperCase()}
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 pt-4 border-t border-theme">
+                <div className="flex items-center gap-2 pt-3 sm:pt-4 border-t border-theme">
                   <Button
                     onClick={() => {
                       setViewingIncident(incident);
@@ -498,10 +499,10 @@ function IncidentsPageContent() {
                     }}
                     variant="outline"
                     size="sm"
-                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted"
+                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted text-xs sm:text-sm"
                   >
-                    <Eye className="w-4 h-4 mr-2" />
-                    View Report
+                    <Eye className="w-4 h-4 mr-1 sm:mr-2" />
+                    View
                   </Button>
                   <Button
                     onClick={async () => {
@@ -515,10 +516,11 @@ function IncidentsPageContent() {
                     }}
                     variant="outline"
                     size="sm"
-                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted"
+                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted text-xs sm:text-sm"
                   >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download
+                    <Download className="w-4 h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Download</span>
+                    <span className="sm:hidden">PDF</span>
                   </Button>
                 </div>
               </div>

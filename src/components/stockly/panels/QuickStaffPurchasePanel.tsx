@@ -15,6 +15,7 @@ import {
 
 interface StaffMember {
   id: string;
+  auth_user_id: string;
   name: string;
   email: string;
 }
@@ -67,11 +68,13 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
   
   const [staffId, setStaffId] = useState('');
   const [staffName, setStaffName] = useState('');
+  const [staffSearch, setStaffSearch] = useState('');
+  const [showStaffSearch, setShowStaffSearch] = useState(false);
   const [lines, setLines] = useState<PurchaseLine[]>([]);
   const [discountPercent, setDiscountPercent] = useState(50);
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [notes, setNotes] = useState('');
-  
+
   const [showItemSearch, setShowItemSearch] = useState(false);
   const [itemSearch, setItemSearch] = useState('');
 
@@ -83,22 +86,24 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
   }, [companyId]);
 
   async function loadStaffMembers() {
-    // Load users with roles in this company
-    const { data } = await supabase
-      .from('user_roles')
-      .select(`
-        user_id,
-        users:user_id(id, email, raw_user_meta_data)
-      `)
-      .eq('company_id', companyId);
-    
-    // Fallback: just use current user if we can't load staff list
-    const members = (data || []).map(d => ({
-      id: (d.users as any)?.id || d.user_id,
-      name: (d.users as any)?.raw_user_meta_data?.full_name || (d.users as any)?.email || 'Staff Member',
-      email: (d.users as any)?.email || ''
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, auth_user_id, full_name, email')
+      .eq('company_id', companyId)
+      .order('full_name');
+
+    if (error) {
+      console.error('Error loading staff:', error);
+      return;
+    }
+
+    const members = (data || []).map(p => ({
+      id: p.id,
+      auth_user_id: p.auth_user_id || p.id,
+      name: p.full_name || p.email || 'Staff Member',
+      email: p.email || ''
     }));
-    
+
     setStaffMembers(members);
   }
 
@@ -274,31 +279,54 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
     <div className="flex flex-col h-full">
       <div className="p-6 space-y-4 flex-1 overflow-y-auto">
         {/* Staff Selection */}
-        <div>
+        <div className="relative">
           <label className="block text-sm font-medium text-theme-secondary mb-1">Staff Member *</label>
-          {staffMembers.length > 0 ? (
-            <select
-              value={staffId}
-              onChange={(e) => {
-                setStaffId(e.target.value);
-                const member = staffMembers.find(m => m.id === e.target.value);
-                setStaffName(member?.name || '');
-              }}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-magenta-500"
-            >
-              <option value="">Select staff member...</option>
-              {staffMembers.map(member => (
-                <option key={member.id} value={member.id}>{member.name}</option>
-              ))}
-            </select>
-          ) : (
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-tertiary" size={16} />
             <input
               type="text"
-              value={staffName}
-              onChange={(e) => setStaffName(e.target.value)}
-              placeholder="Enter staff name..."
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-magenta-500"
+              value={showStaffSearch ? staffSearch : staffName}
+              onChange={(e) => {
+                setStaffSearch(e.target.value);
+                if (!showStaffSearch) setShowStaffSearch(true);
+              }}
+              onFocus={() => setShowStaffSearch(true)}
+              placeholder="Search staff..."
+              className="w-full pl-9 pr-8 py-2 bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-magenta-500"
             />
+            {staffName && (
+              <button
+                onClick={() => { setStaffId(''); setStaffName(''); setStaffSearch(''); }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-theme-tertiary hover:text-theme-primary"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
+          {showStaffSearch && (
+            <div className="absolute z-10 w-full mt-1 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-600 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+              {staffMembers
+                .filter(m => !staffSearch || m.name.toLowerCase().includes(staffSearch.toLowerCase()) || m.email.toLowerCase().includes(staffSearch.toLowerCase()))
+                .slice(0, 15)
+                .map(member => (
+                  <button
+                    key={member.id}
+                    onClick={() => {
+                      setStaffId(member.auth_user_id);
+                      setStaffName(member.name);
+                      setStaffSearch('');
+                      setShowStaffSearch(false);
+                    }}
+                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-white/5 text-sm"
+                  >
+                    <div className="text-theme-primary font-medium">{member.name}</div>
+                    {member.email && <div className="text-xs text-theme-tertiary">{member.email}</div>}
+                  </button>
+                ))}
+              {staffMembers.filter(m => !staffSearch || m.name.toLowerCase().includes(staffSearch.toLowerCase())).length === 0 && (
+                <p className="p-3 text-center text-theme-tertiary text-sm">No staff found</p>
+              )}
+            </div>
           )}
         </div>
 
@@ -313,7 +341,7 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
                 className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
                   discountPercent === option.value
                     ? 'bg-magenta-500/20 text-magenta-400 border border-magenta-500/50'
-                    : 'bg-white/5 text-theme-tertiary border border-transparent hover:bg-white/10'
+                    : 'bg-gray-100 dark:bg-white/5 text-theme-tertiary border border-transparent hover:bg-gray-200 dark:hover:bg-white/10'
                 }`}
               >
                 {option.label}
@@ -336,8 +364,8 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
           </div>
 
           {lines.length === 0 ? (
-            <div className="border border-dashed border-white/10 rounded-lg p-8 text-center">
-              <ShoppingBag className="w-10 h-10 text-white/20 mx-auto mb-2" />
+            <div className="border border-dashed border-gray-300 dark:border-white/10 rounded-lg p-8 text-center">
+              <ShoppingBag className="w-10 h-10 text-gray-300 dark:text-white/20 mx-auto mb-2" />
               <p className="text-theme-tertiary text-sm">No items added</p>
               <button
                 onClick={() => setShowItemSearch(true)}
@@ -349,7 +377,7 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
           ) : (
             <div className="space-y-2">
               {lines.map((line, idx) => (
-                <div key={idx} className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
+                <div key={idx} className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-neutral-700 rounded-lg p-3">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-theme-primary font-medium">{line.name}</p>
                     <button
@@ -363,14 +391,14 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => updateLine(idx, { quantity: Math.max(1, line.quantity - 1) })}
-                        className="w-8 h-8 rounded bg-white/5 hover:bg-white/10 text-theme-primary flex items-center justify-center"
+                        className="w-8 h-8 rounded bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-theme-primary flex items-center justify-center"
                       >
                         -
                       </button>
                       <span className="text-theme-primary w-8 text-center">{line.quantity}</span>
                       <button
                         onClick={() => updateLine(idx, { quantity: line.quantity + 1 })}
-                        className="w-8 h-8 rounded bg-white/5 hover:bg-white/10 text-theme-primary flex items-center justify-center"
+                        className="w-8 h-8 rounded bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-theme-primary flex items-center justify-center"
                       >
                         +
                       </button>
@@ -402,7 +430,7 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
                   className={`px-3 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors ${
                     paymentMethod === method.value
                       ? 'bg-magenta-500/20 text-magenta-400 border border-magenta-500/50'
-                      : 'bg-white/5 text-theme-tertiary border border-transparent hover:bg-white/10'
+                      : 'bg-gray-100 dark:bg-white/5 text-theme-tertiary border border-transparent hover:bg-gray-200 dark:hover:bg-white/10'
                   }`}
                 >
                   <span>{method.icon}</span>
@@ -422,14 +450,14 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Optional notes..."
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-magenta-500"
+              className="w-full px-3 py-2 bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-magenta-500"
             />
           </div>
         )}
 
         {/* Totals */}
         {lines.length > 0 && (
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 space-y-2">
+          <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-neutral-700 rounded-lg p-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-theme-tertiary">Cost Value</span>
               <span className="text-theme-tertiary">£{totalCost.toFixed(2)}</span>
@@ -440,7 +468,7 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
                 <span className="text-green-400">-£{totalDiscount.toFixed(2)}</span>
               </div>
             )}
-            <div className="flex justify-between text-lg font-semibold border-t border-white/10 pt-2">
+            <div className="flex justify-between text-lg font-semibold border-t border-gray-200 dark:border-neutral-600 pt-2">
               <span className="text-theme-primary">
                 {paymentMethod === 'free' ? 'Comped' : 'To Pay'}
               </span>
@@ -453,10 +481,10 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-white/10 flex items-center gap-3">
+      <div className="p-4 border-t border-gray-200 dark:border-white/10 flex items-center gap-3">
         <button
           onClick={onCancel}
-          className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-theme-primary rounded-lg transition-colors"
+          className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-theme-primary rounded-lg transition-colors"
         >
           Cancel
         </button>
@@ -476,9 +504,9 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
 
       {/* Item Search Modal */}
       {showItemSearch && (
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 pt-20">
-          <div className="bg-[#1a1a2e] border border-white/10 rounded-xl w-full max-w-md max-h-[60vh] flex flex-col">
-            <div className="p-4 border-b border-white/10 flex items-center gap-3">
+        <div className="absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 pt-20">
+          <div className="bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-neutral-700 rounded-xl w-full max-w-md max-h-[60vh] flex flex-col shadow-xl">
+            <div className="p-4 border-b border-gray-200 dark:border-neutral-700 flex items-center gap-3">
               <Search className="w-5 h-5 text-theme-tertiary" />
               <input
                 type="text"
@@ -488,7 +516,7 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
                 autoFocus
                 className="flex-1 bg-transparent text-theme-primary placeholder:text-theme-tertiary focus:outline-none"
               />
-              <button onClick={() => setShowItemSearch(false)} className="text-theme-tertiary hover:text-white">
+              <button onClick={() => setShowItemSearch(false)} className="text-theme-tertiary hover:text-theme-primary">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -497,7 +525,7 @@ export default function QuickStaffPurchasePanel({ onComplete, onCancel }: QuickS
                 <button
                   key={item.id}
                   onClick={() => addLine(item)}
-                  className="w-full px-3 py-2 flex items-center justify-between hover:bg-white/5 rounded-lg text-left"
+                  className="w-full px-3 py-2 flex items-center justify-between hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg text-left"
                 >
                   <div>
                     <span className="text-theme-primary">{item.name}</span>

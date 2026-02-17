@@ -376,7 +376,7 @@ export default function QuickWastePanel({ onComplete, onCancel, taskId }: QuickW
             type="date"
             value={wastageDate}
             onChange={(e) => setWastageDate(e.target.value)}
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-magenta-500"
+            className="w-full px-3 py-2 bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg text-theme-primary focus:outline-none focus:border-magenta-500"
           />
         </div>
 
@@ -394,8 +394,8 @@ export default function QuickWastePanel({ onComplete, onCancel, taskId }: QuickW
           </div>
 
           {lines.length === 0 ? (
-            <div className="border border-dashed border-white/10 rounded-lg p-8 text-center">
-              <Trash2 className="w-10 h-10 text-white/20 mx-auto mb-2" />
+            <div className="border border-dashed border-gray-300 dark:border-white/10 rounded-lg p-8 text-center">
+              <Trash2 className="w-10 h-10 text-gray-300 dark:text-white/20 mx-auto mb-2" />
               <p className="text-theme-tertiary text-sm">No waste items added</p>
               <button
                 onClick={() => setShowItemSearch(true)}
@@ -407,8 +407,8 @@ export default function QuickWastePanel({ onComplete, onCancel, taskId }: QuickW
           ) : (
             <div className="space-y-3">
               {lines.map((line, idx) => (
-                <div key={idx} className={`bg-white/[0.03] border rounded-lg p-3 ${
-                  line.stock_warning ? 'border-red-500/50 bg-red-500/5' : 'border-white/[0.06]'
+                <div key={idx} className={`bg-gray-50 dark:bg-white/[0.03] border rounded-lg p-3 ${
+                  line.stock_warning ? 'border-red-500/50 bg-red-50 dark:bg-red-500/5' : 'border-gray-200 dark:border-neutral-700'
                 }`}>
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
@@ -443,8 +443,8 @@ export default function QuickWastePanel({ onComplete, onCancel, taskId }: QuickW
                         min="0"
                         value={line.quantity}
                         onChange={(e) => updateLine(idx, { quantity: parseFloat(e.target.value) || 0 })}
-                        className={`w-full px-2 py-1 bg-white/5 border rounded text-theme-primary text-sm ${
-                          line.stock_warning ? 'border-red-500/50' : 'border-white/10'
+                        className={`w-full px-2 py-1 bg-theme-surface border rounded text-theme-primary text-sm ${
+                          line.stock_warning ? 'border-red-500/50' : 'border-gray-200 dark:border-neutral-600'
                         }`}
                       />
                     </div>
@@ -466,7 +466,7 @@ export default function QuickWastePanel({ onComplete, onCancel, taskId }: QuickW
                           className={`px-2 py-1 rounded text-xs flex items-center gap-1 transition-colors ${
                             line.reason === reason.value
                               ? 'bg-magenta-500/20 text-magenta-400 border border-magenta-500/50'
-                              : 'bg-white/5 text-theme-tertiary border border-transparent hover:bg-white/10'
+                              : 'bg-gray-100 dark:bg-white/5 text-theme-tertiary border border-transparent hover:bg-gray-200 dark:hover:bg-white/10'
                           }`}
                         >
                           <span>{reason.icon}</span>
@@ -483,7 +483,7 @@ export default function QuickWastePanel({ onComplete, onCancel, taskId }: QuickW
                       value={line.notes}
                       onChange={(e) => updateLine(idx, { notes: e.target.value })}
                       placeholder="Optional details..."
-                      className="w-full px-2 py-1 bg-white/5 border border-white/10 rounded text-theme-primary text-sm placeholder:text-theme-disabled"
+                      className="w-full px-2 py-1 bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded text-theme-primary text-sm placeholder:text-theme-disabled"
                     />
                   </div>
                 </div>
@@ -505,11 +505,11 @@ export default function QuickWastePanel({ onComplete, onCancel, taskId }: QuickW
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-white/10 flex items-center gap-3">
+      <div className="p-4 border-t border-gray-200 dark:border-white/10 flex items-center gap-3">
         <button
           onClick={onCancel}
-          className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-theme-primary rounded-lg transition-colors"
-        >
+          className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-theme-primary rounded-lg transition-colors"
+>
           Cancel
         </button>
         <button
@@ -537,18 +537,18 @@ export default function QuickWastePanel({ onComplete, onCancel, taskId }: QuickW
             }
           }}
         >
-          <div 
-            className="bg-[#1a1a2e] border border-white/20 rounded-xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl"
+          <div
+            className="bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-neutral-600 rounded-xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-4 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+            <div className="p-4 border-b border-gray-200 dark:border-neutral-700 flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-theme-primary">Select Item from Libraries</h3>
                 <p className="text-sm text-theme-tertiary mt-1">Search across all libraries or existing stock items</p>
               </div>
-              <button 
-                onClick={() => setShowItemSearch(false)} 
-                className="text-theme-tertiary hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg"
+              <button
+                onClick={() => setShowItemSearch(false)}
+                className="text-theme-tertiary hover:text-theme-primary transition-colors p-2 hover:bg-black/5 dark:hover:bg-white/10 rounded-lg"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />

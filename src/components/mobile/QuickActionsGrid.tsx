@@ -107,25 +107,26 @@ export function QuickActionsGrid({ section, userRole }: QuickActionsGridProps) {
   if (filteredActions.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-4 gap-3">
+    <div className="grid grid-cols-4 gap-2">
       {filteredActions.map((action) => (
         <button
           key={action.id}
           onClick={() => handleActionClick(action)}
           className={cn(
-            "flex flex-col items-center p-3 rounded-xl",
-            "bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10",
+            "flex flex-col items-center p-2 rounded-xl",
+            "bg-gray-100 dark:bg-white/[0.08] hover:bg-gray-200 dark:hover:bg-white/[0.14]",
+            "border border-gray-200/60 dark:border-white/[0.08]",
             "transition-all active:scale-95",
             "touch-manipulation"
           )}
         >
           <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center mb-2"
-            style={{ backgroundColor: `${action.color}20` }}
+            className="w-10 h-10 rounded-lg flex items-center justify-center mb-1"
+            style={{ backgroundColor: `${action.color}25` }}
           >
-            <action.icon size={22} style={{ color: action.color }} />
+            <action.icon size={20} style={{ color: action.color }} />
           </div>
-          <span className="text-[11px] font-medium text-center text-theme-tertiary leading-tight">
+          <span className="text-[11px] font-medium text-center text-theme-secondary leading-tight">
             {action.label}
           </span>
         </button>

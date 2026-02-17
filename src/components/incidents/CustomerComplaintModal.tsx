@@ -362,42 +362,43 @@ export function CustomerComplaintModal({
       <div className="bg-white dark:bg-[#14161c] border border-theme rounded-xl shadow-2xl w-full max-w-3xl lg:max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-theme">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-50 dark:bg-red-500/20 rounded-lg">
-              <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="p-1.5 sm:p-2 bg-red-50 dark:bg-red-500/20 rounded-lg flex-shrink-0">
+              <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 dark:text-red-400" />
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-theme-primary">Customer Complaint</h2>
-              <p className="text-sm text-theme-secondary">Log and track customer complaints</p>
+            <div className="min-w-0">
+              <h2 className="text-lg sm:text-2xl font-bold text-theme-primary truncate">Customer Complaint</h2>
+              <p className="text-xs sm:text-sm text-theme-secondary hidden sm:block">Log and track customer complaints</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-theme-muted rounded-lg transition-colors"
+            className="p-2 hover:bg-theme-muted rounded-lg transition-colors flex-shrink-0"
           >
             <X className="w-5 h-5 text-theme-secondary" />
           </button>
         </div>
 
         {/* Progress Steps */}
-        <div className="px-6 py-4 border-b border-theme bg-gray-50 dark:bg-white/[0.02]">
-          <div className="flex items-center gap-4">
+        <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-theme bg-gray-50 dark:bg-white/[0.02]">
+          <div className="flex items-center gap-1 sm:gap-4">
             <button
               onClick={() => setActiveSection('details')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors flex-1 sm:flex-none justify-center sm:justify-start ${
                 activeSection === 'details'
                   ? 'bg-[#D37E91]/20 dark:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91]'
                   : 'text-theme-secondary hover:text-theme-primary dark:hover:text-theme-secondary'
               }`}
             >
-              <FileText className="w-4 h-4" />
-              <span className="text-sm font-medium">Complaint Details</span>
+              <FileText className="w-4 h-4 flex-shrink-0" />
+              <span className="text-xs sm:text-sm font-medium hidden sm:inline">Complaint Details</span>
+              <span className="text-xs font-medium sm:hidden">Details</span>
             </button>
-            <div className="h-4 w-px bg-gray-300 dark:bg-white/20" />
+            <div className="h-4 w-px bg-gray-300 dark:bg-white/20 flex-shrink-0 hidden sm:block" />
             <button
               onClick={() => canProceedToFollowUp && setActiveSection('followup')}
               disabled={!canProceedToFollowUp}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors flex-1 sm:flex-none justify-center sm:justify-start ${
                 activeSection === 'followup'
                   ? 'bg-[#D37E91]/20 dark:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91]'
                   : canProceedToFollowUp
@@ -405,14 +406,15 @@ export function CustomerComplaintModal({
                   : 'text-theme-tertiary/30 cursor-not-allowed'
               }`}
             >
-              <CheckCircle2 className="w-4 h-4" />
-              <span className="text-sm font-medium">Follow-up Actions</span>
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+              <span className="text-xs sm:text-sm font-medium hidden sm:inline">Follow-up Actions</span>
+              <span className="text-xs font-medium sm:hidden">Follow-up</span>
             </button>
-            <div className="h-4 w-px bg-gray-300 dark:bg-white/20" />
+            <div className="h-4 w-px bg-gray-300 dark:bg-white/20 flex-shrink-0 hidden sm:block" />
             <button
               onClick={() => canProceedToReview && setActiveSection('review')}
               disabled={!canProceedToReview}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors flex-1 sm:flex-none justify-center sm:justify-start ${
                 activeSection === 'review'
                   ? 'bg-[#D37E91]/20 dark:bg-[#D37E91]/25 text-[#D37E91] dark:text-[#D37E91]'
                   : canProceedToReview
@@ -420,14 +422,15 @@ export function CustomerComplaintModal({
                   : 'text-theme-tertiary/30 cursor-not-allowed'
               }`}
             >
-              <MessageSquare className="w-4 h-4" />
-              <span className="text-sm font-medium">Review & Save</span>
+              <MessageSquare className="w-4 h-4 flex-shrink-0" />
+              <span className="text-xs sm:text-sm font-medium hidden sm:inline">Review & Save</span>
+              <span className="text-xs font-medium sm:hidden">Review</span>
             </button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           {activeSection === 'details' && (
             <div className="space-y-6">
               {/* Customer Information */}
@@ -893,7 +896,7 @@ export function CustomerComplaintModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t border-theme bg-gray-50 dark:bg-white/[0.02]">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-t border-theme bg-gray-50 dark:bg-white/[0.02]">
           <div className="flex gap-2">
             {activeSection !== 'details' && (
               <Button

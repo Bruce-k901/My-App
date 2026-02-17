@@ -216,7 +216,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
             <select
               value={supplierId}
               onChange={(e) => setSupplierId(e.target.value)}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-magenta-500"
+              className="w-full px-3 py-2 bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg text-theme-primary focus:outline-none focus:border-magenta-500"
             >
               <option value="">Select supplier...</option>
               {suppliers.map(s => (
@@ -231,7 +231,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
               value={invoiceNumber}
               onChange={(e) => setInvoiceNumber(e.target.value)}
               placeholder="Optional"
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-magenta-500"
+              className="w-full px-3 py-2 bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg text-theme-primary placeholder:text-theme-disabled focus:outline-none focus:border-magenta-500"
             />
           </div>
         </div>
@@ -242,7 +242,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
             type="date"
             value={deliveryDate}
             onChange={(e) => setDeliveryDate(e.target.value)}
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary focus:outline-none focus:border-magenta-500"
+            className="w-full px-3 py-2 bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg text-theme-primary focus:outline-none focus:border-magenta-500"
           />
         </div>
 
@@ -260,8 +260,8 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
           </div>
 
           {lines.length === 0 ? (
-            <div className="border border-dashed border-white/10 rounded-lg p-8 text-center">
-              <Truck className="w-10 h-10 text-white/20 mx-auto mb-2" />
+            <div className="border border-dashed border-gray-300 dark:border-white/10 rounded-lg p-8 text-center">
+              <Truck className="w-10 h-10 text-gray-300 dark:text-white/20 mx-auto mb-2" />
               <p className="text-theme-tertiary text-sm">No items added yet</p>
               <button
                 onClick={() => setShowItemSearch(true)}
@@ -273,7 +273,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
           ) : (
             <div className="space-y-2">
               {lines.map((line, idx) => (
-                <div key={idx} className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
+                <div key={idx} className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-neutral-700 rounded-lg p-3">
                   <div className="flex items-start gap-3">
                     <div className="flex-1">
                       <p className="text-theme-primary font-medium text-sm">{line.name}</p>
@@ -285,7 +285,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
                             step="0.01"
                             value={line.quantity}
                             onChange={(e) => updateLine(idx, { quantity: parseFloat(e.target.value) || 0 })}
-                            className="w-full px-2 py-1 bg-white/5 border border-white/10 rounded text-theme-primary text-sm"
+                            className="w-full px-2 py-1 bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded text-theme-primary text-sm"
                           />
                         </div>
                         <div>
@@ -295,7 +295,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
                             step="0.01"
                             value={line.unit_price}
                             onChange={(e) => updateLine(idx, { unit_price: parseFloat(e.target.value) || 0 })}
-                            className="w-full px-2 py-1 bg-white/5 border border-white/10 rounded text-theme-primary text-sm"
+                            className="w-full px-2 py-1 bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded text-theme-primary text-sm"
                           />
                         </div>
                         <div>
@@ -321,7 +321,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
 
         {/* Totals */}
         {lines.length > 0 && (
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 space-y-2">
+          <div className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-neutral-700 rounded-lg p-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-theme-tertiary">Subtotal</span>
               <span className="text-theme-primary">£{subtotal.toFixed(2)}</span>
@@ -330,7 +330,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
               <span className="text-theme-tertiary">VAT (20%)</span>
               <span className="text-theme-primary">£{vat.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-lg font-semibold border-t border-white/10 pt-2">
+            <div className="flex justify-between text-lg font-semibold border-t border-gray-200 dark:border-neutral-600 pt-2">
               <span className="text-theme-primary">Total</span>
               <span className="text-theme-primary">£{total.toFixed(2)}</span>
             </div>
@@ -339,11 +339,11 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-white/10 flex items-center gap-3">
+      <div className="p-4 border-t border-gray-200 dark:border-white/10 flex items-center gap-3">
         <button
           onClick={onCancel}
-          className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 text-theme-primary rounded-lg transition-colors"
-        >
+          className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-theme-primary rounded-lg transition-colors"
+>
           Cancel
         </button>
         <button
@@ -362,9 +362,9 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
 
       {/* Item Search Modal */}
       {showItemSearch && (
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 pt-20">
-          <div className="bg-[#1a1a2e] border border-white/10 rounded-xl w-full max-w-md max-h-[60vh] flex flex-col">
-            <div className="p-4 border-b border-white/10 flex items-center gap-3">
+        <div className="absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 pt-20">
+          <div className="bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-neutral-700 rounded-xl w-full max-w-md max-h-[60vh] flex flex-col shadow-xl">
+            <div className="p-4 border-b border-gray-200 dark:border-neutral-700 flex items-center gap-3">
               <Search className="w-5 h-5 text-theme-tertiary" />
               <input
                 type="text"
@@ -374,7 +374,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
                 autoFocus
                 className="flex-1 bg-transparent text-theme-primary placeholder:text-theme-tertiary focus:outline-none"
               />
-              <button onClick={() => setShowItemSearch(false)} className="text-theme-tertiary hover:text-white">
+              <button onClick={() => setShowItemSearch(false)} className="text-theme-tertiary hover:text-theme-primary">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -383,7 +383,7 @@ export default function QuickDeliveryPanel({ onComplete, onCancel }: QuickDelive
                 <button
                   key={item.id}
                   onClick={() => addLine(item)}
-                  className="w-full px-3 py-2 flex items-center justify-between hover:bg-white/5 rounded-lg text-left"
+                  className="w-full px-3 py-2 flex items-center justify-between hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg text-left"
                 >
                   <span className="text-theme-primary">{item.name}</span>
                   <span className="text-theme-tertiary text-sm">{item.stock_unit}</span>

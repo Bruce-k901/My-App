@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { X, Building2, FileText, ShieldCheck, BarChart3, Settings, User, CreditCard, LogOut, Users, MapPin, Rocket, Archive, Shield, LifeBuoy } from '@/components/ui/icons'
+import { X, Building2, FileText, ShieldCheck, BarChart3, Settings, User, CreditCard, LogOut, Users, MapPin, Rocket, Archive, Shield, LifeBuoy, BookOpen } from '@/components/ui/icons'
 import { useAppContext } from '@/context/AppContext'
 import { getMenuItemsByRole, COLORS } from './navigation'
 
@@ -26,6 +26,8 @@ const iconMap: Record<string, any> = {
   'eho-readiness': ShieldCheck,
   'my-tickets': LifeBuoy,
   archive: Archive,
+  'guide-manager': BookOpen,
+  'guide-staff': BookOpen,
   // Settings (2 items)
   settings: Settings,
   billing: CreditCard,

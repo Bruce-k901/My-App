@@ -241,37 +241,38 @@ export default function DeliveriesPage() {
 
   return (
     <div className="w-full bg-theme-surface-elevated min-h-screen">
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link 
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+            <Link
               href="/dashboard/stockly"
- className="p-2 rounded-lg bg-theme-surface ] hover:bg-theme-muted border border-theme text-theme-secondary hover:text-theme-primary transition-colors"
+              className="p-2 rounded-lg bg-theme-surface hover:bg-theme-muted border border-theme text-theme-secondary hover:text-theme-primary transition-colors flex-shrink-0"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <div>
-              <h1 className="text-3xl font-bold text-theme-primary mb-2 flex items-center gap-3">
-                <Calendar className="w-8 h-8 text-module-fg" />
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-3xl font-bold text-theme-primary flex items-center gap-2 sm:gap-3">
+                <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-module-fg flex-shrink-0" />
                 Deliveries
               </h1>
-              <p className="text-theme-secondary text-sm mt-1">
+              <p className="text-theme-secondary text-xs sm:text-sm mt-1">
                 Manage delivery receipts and invoices
               </p>
             </div>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3 flex-shrink-0">
             <button
               onClick={() => setIsManualModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out text-sm"
             >
-              <Plus className="w-5 h-5" />
-              Add Delivery
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Add Delivery</span>
+              <span className="sm:hidden">Add</span>
             </button>
             <button
               onClick={() => setIsUploadModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out"
+              className="hidden sm:flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out text-sm"
             >
               <Plus className="w-5 h-5" />
               Upload Invoice
@@ -280,9 +281,9 @@ export default function DeliveriesPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-theme-surface border border-theme rounded-xl p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="relative">
+        <div className="bg-theme-surface border border-theme rounded-xl p-3 sm:p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div className="relative sm:col-span-2 lg:col-span-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-tertiary" size={18} />
             <Input
               type="text"
@@ -307,19 +308,23 @@ export default function DeliveriesPage() {
             placeholder="Filter by supplier"
           />
 
-          <Input
-            type="date"
-            placeholder="Start date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
+          <div className="hidden sm:block">
+            <Input
+              type="date"
+              placeholder="Start date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </div>
 
-          <Input
-            type="date"
-            placeholder="End date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
+          <div className="hidden sm:block">
+            <Input
+              type="date"
+              placeholder="End date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
           </div>
         </div>
 
@@ -353,25 +358,25 @@ export default function DeliveriesPage() {
               <table className="w-full">
                 <thead className="bg-theme-button border-b border-theme">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
+                    <th className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
+                    <th className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Supplier
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
+                    <th className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Invoice #
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
+                    <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Items
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Total
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
+                    <th className="hidden sm:table-cell px-4 py-3 text-right text-xs font-medium text-theme-secondary/60 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -383,25 +388,25 @@ export default function DeliveriesPage() {
                       className="hover:bg-theme-hover transition-colors cursor-pointer"
                       onClick={() => router.push(`/dashboard/stockly/deliveries/${delivery.id}`)}
                     >
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-primary">
+                      <td className="px-3 sm:px-4 py-3 sm:py-4 whitespace-nowrap text-sm text-theme-primary">
                         {formatDate(delivery.delivery_date)}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-primary">
+                      <td className="px-3 sm:px-4 py-3 sm:py-4 whitespace-nowrap text-sm text-theme-primary">
                         {delivery.supplier?.name || '—'}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-secondary">
+                      <td className="px-3 sm:px-4 py-3 sm:py-4 whitespace-nowrap text-sm text-theme-secondary">
                         {delivery.invoice_number || '—'}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-secondary">
+                      <td className="hidden md:table-cell px-4 py-4 whitespace-nowrap text-sm text-theme-secondary">
                         {delivery.lines?.[0]?.count || 0} items
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-theme-primary font-medium">
+                      <td className="hidden sm:table-cell px-4 py-4 whitespace-nowrap text-sm text-theme-primary font-medium">
                         {formatCurrency(delivery.total)}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
+                      <td className="hidden sm:table-cell px-4 py-4 whitespace-nowrap">
                         {getStatusBadge(delivery.status)}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-right text-sm">
+                      <td className="hidden sm:table-cell px-4 py-4 whitespace-nowrap text-right text-sm">
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={(e) => {

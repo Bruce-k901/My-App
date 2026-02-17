@@ -599,19 +599,19 @@ export function EmergencyIncidentModal({
       <div className="absolute right-0 top-0 h-full w-full max-w-3xl lg:max-w-4xl bg-white dark:bg-[#1a1d2e] border-l border-red-300 dark:border-red-500/30 shadow-2xl overflow-y-auto animate-slideInRight">
         <div className="p-4 sm:p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-red-200 dark:border-red-500/20">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-50 dark:bg-red-500/20 rounded-lg">
-              <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
+        <div className="flex items-center justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-red-200 dark:border-red-500/20">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="p-1.5 sm:p-2 bg-red-50 dark:bg-red-500/20 rounded-lg flex-shrink-0">
+              <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 dark:text-red-400" />
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-theme-primary">Emergency Incident Report</h2>
-              <p className="text-sm text-theme-secondary">Report workplace accidents, injuries, and near misses</p>
+            <div className="min-w-0">
+              <h2 className="text-lg sm:text-2xl font-bold text-theme-primary truncate">Emergency Incident Report</h2>
+              <p className="text-xs sm:text-sm text-theme-secondary hidden sm:block">Report workplace accidents, injuries, and near misses</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-theme-tertiary hover:text-theme-primary transition-colors p-2 hover:bg-theme-muted rounded-lg"
+            className="text-theme-tertiary hover:text-theme-primary transition-colors p-2 hover:bg-theme-muted rounded-lg flex-shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -633,7 +633,7 @@ export function EmergencyIncidentModal({
           </div>
         </div>
 
-        <div className="space-y-6 max-h-[calc(100vh-300px)] overflow-y-auto pr-2">
+        <div className="space-y-6 max-h-[calc(100vh-220px)] sm:max-h-[calc(100vh-300px)] overflow-y-auto pr-1 sm:pr-2">
           {/* Incident Details */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-theme-primary border-b border-theme pb-2">Incident Details</h3>
@@ -1238,28 +1238,32 @@ export function EmergencyIncidentModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-theme">
+        <div className="flex items-center justify-between mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-theme gap-2">
           <Button
             onClick={onClose}
             variant="outline"
+            className="text-sm sm:text-base"
           >
             Cancel
           </Button>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Button
               onClick={handleDownloadReport}
               variant="outline"
               disabled={saving || generatingReport || !lastSavedIncidentId}
+              className="text-sm sm:text-base"
             >
-              <Download className="w-4 h-4 mr-2" />
-              {generatingReport ? 'Preparing...' : 'Download Report'}
+              <Download className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">{generatingReport ? 'Preparing...' : 'Download Report'}</span>
+              <span className="sm:hidden">{generatingReport ? '...' : 'PDF'}</span>
             </Button>
             <Button
               onClick={handleSave}
               disabled={saving}
               variant="destructive"
+              className="text-sm sm:text-base"
             >
-              {saving ? 'Saving...' : 'Save Incident Report'}
+              {saving ? 'Saving...' : <><span className="hidden sm:inline">Save Incident Report</span><span className="sm:hidden">Save</span></>}
             </Button>
           </div>
         </div>

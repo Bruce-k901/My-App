@@ -63,9 +63,9 @@ export default function SlideOutPanel({
           className={`w-screen ${widthClasses[width]} transform transition-transform duration-300 ease-out`}
           style={{ transform: isOpen ? 'translateX(0)' : 'translateX(100%)' }}
         >
-          <div className="h-full flex flex-col bg-[#0f0f1a] border-l border-white/10 shadow-2xl">
+          <div className="h-full flex flex-col bg-[rgb(var(--background))] dark:bg-[#0f0f1a] border-l border-gray-200 dark:border-white/10 shadow-2xl">
             {/* Header */}
-            <div className="px-6 py-4 border-b border-white/10 flex items-start justify-between">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-white/10 flex items-start justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-theme-primary">{title}</h2>
                 {subtitle && (
@@ -74,7 +74,7 @@ export default function SlideOutPanel({
               </div>
               <button
                 onClick={onClose}
-                className="p-2 -mr-2 rounded-lg hover:bg-white/5 text-theme-tertiary hover:text-white transition-colors"
+                className="p-2 -mr-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-theme-tertiary hover:text-theme-primary transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>

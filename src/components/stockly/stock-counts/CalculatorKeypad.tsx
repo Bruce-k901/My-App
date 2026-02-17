@@ -83,7 +83,7 @@ export default function CalculatorKeypad({
       animate={{ y: 0 }}
       exit={{ y: '100%' }}
       transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-      className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-[#1a1a1f] border-t-2 border-emerald-500/30 rounded-t-2xl shadow-2xl"
+      className="fixed bottom-0 left-0 right-0 z-[60] bg-white dark:bg-[#1a1a1f] border-t-2 border-emerald-500/30 rounded-t-2xl shadow-2xl"
     >
       {/* Display Area */}
       <div className="px-4 pt-3 pb-2">

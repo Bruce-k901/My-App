@@ -214,23 +214,24 @@ export default function CustomerComplaintsPage() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-theme-primary mb-2 flex items-center gap-3">
-              <AlertTriangle className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-3xl font-bold text-theme-primary mb-1 sm:mb-2 flex items-center gap-2 sm:gap-3">
+              <AlertTriangle className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
               Customer Complaints
             </h1>
-            <p className="text-theme-secondary">Track and manage customer complaints and feedback</p>
+            <p className="text-theme-secondary text-sm sm:text-base">Track and manage customer complaints and feedback</p>
           </div>
           <Button
             onClick={() => setIsIncidentModalOpen(true)}
-            className="bg-red-600 hover:bg-red-700 text-white"
+            className="bg-red-600 hover:bg-red-700 text-white flex-shrink-0 text-sm sm:text-base whitespace-nowrap"
           >
-            <Plus className="w-4 h-4 mr-2" />
-            Log Complaint
+            <Plus className="w-4 h-4 mr-1 sm:mr-2" />
+            <span className="sm:hidden">Log</span>
+            <span className="hidden sm:inline">Log Complaint</span>
           </Button>
         </div>
 
@@ -311,38 +312,38 @@ export default function CustomerComplaintsPage() {
             )}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {filteredComplaints.map((complaint) => (
               <div
                 key={complaint.id}
-                className="bg-theme-surface border border-theme rounded-lg p-6 hover:bg-theme-hover transition-colors"
+                className="bg-theme-surface border border-theme rounded-lg p-4 sm:p-6 hover:bg-theme-hover transition-colors"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-theme-primary mb-2">{complaint.title}</h3>
-                    <p className="text-theme-secondary text-sm mb-3">{complaint.description}</p>
-                    <div className="flex items-center gap-4 text-sm text-theme-secondary/50">
-                      <span>Reported by: {complaint.reported_by}</span>
-                      <span>•</span>
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-3 sm:mb-4">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base sm:text-lg font-semibold text-theme-primary mb-1 sm:mb-2 truncate">{complaint.title}</h3>
+                    <p className="text-theme-secondary text-sm mb-2 sm:mb-3 line-clamp-2">{complaint.description}</p>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-theme-secondary/50">
+                      <span className="truncate max-w-[150px]">By: {complaint.reported_by}</span>
+                      <span className="hidden sm:inline">•</span>
                       <span>{new Date(complaint.reported_date || complaint.reported_at).toLocaleDateString()}</span>
                       {complaint.site_name && (
                         <>
-                          <span>•</span>
-                          <span>{complaint.site_name}</span>
+                          <span className="hidden sm:inline">•</span>
+                          <span className="truncate max-w-[120px]">{complaint.site_name}</span>
                         </>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <span className={`px-3 py-1 rounded-md text-xs font-medium border ${getSeverityColor(complaint.severity)}`}>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className={`px-2 sm:px-3 py-1 rounded-md text-[10px] sm:text-xs font-medium border ${getSeverityColor(complaint.severity)}`}>
                       {complaint.severity.toUpperCase()}
                     </span>
-                    <span className={`px-3 py-1 rounded-md text-xs font-medium border ${getStatusColor(complaint.status)}`}>
+                    <span className={`px-2 sm:px-3 py-1 rounded-md text-[10px] sm:text-xs font-medium border ${getStatusColor(complaint.status)}`}>
                       {complaint.status.toUpperCase()}
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 pt-4 border-t border-theme">
+                <div className="flex items-center gap-2 pt-3 sm:pt-4 border-t border-theme">
                   <Button
                     onClick={() => {
                       setViewingComplaint(complaint);
@@ -350,10 +351,10 @@ export default function CustomerComplaintsPage() {
                     }}
                     variant="outline"
                     size="sm"
-                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted"
+                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted text-xs sm:text-sm"
                   >
-                    <Eye className="w-4 h-4 mr-2" />
-                    View Report
+                    <Eye className="w-4 h-4 mr-1 sm:mr-2" />
+                    View
                   </Button>
                   <Button
                     onClick={async () => {
@@ -367,10 +368,11 @@ export default function CustomerComplaintsPage() {
                     }}
                     variant="outline"
                     size="sm"
-                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted"
+                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted text-xs sm:text-sm"
                   >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download
+                    <Download className="w-4 h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Download</span>
+                    <span className="sm:hidden">PDF</span>
                   </Button>
                 </div>
               </div>

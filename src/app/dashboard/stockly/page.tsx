@@ -52,7 +52,7 @@ interface DayStats {
 type PanelType = 'delivery' | 'waste' | 'staff' | 'count' | null;
 
 export default function StocklyDashboard() {
-  const { companyId, siteId } = useAppContext();
+  const { companyId, siteId, role } = useAppContext();
   const [loading, setLoading] = useState(true);
   
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -354,11 +354,13 @@ export default function StocklyDashboard() {
     }).format(value);
   };
 
+  const isManager = role && role !== 'Staff';
+
   const quickActions = [
     { id: 'order', title: 'New Order', description: 'Create purchase order', icon: FileText, href: '/dashboard/stockly/orders/new' },
     { id: 'delivery', title: 'Receive Delivery', description: 'Log incoming stock', icon: Truck },
     { id: 'waste', title: 'Record Waste', description: 'Log wastage or loss', icon: Trash2 },
-    { id: 'staff', title: 'Staff Purchase', description: 'Sell to team member', icon: User },
+    ...(isManager ? [{ id: 'staff', title: 'Staff Purchase', description: 'Sell to team member', icon: User }] : []),
     { id: 'count', title: 'Quick Count', description: 'Spot check items', icon: ClipboardList }
   ];
 

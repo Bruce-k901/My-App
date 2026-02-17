@@ -35,7 +35,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
   return (
     <div
       id="dialog-overlay"
-      className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center"
+      className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center overflow-hidden"
       onMouseDown={handleBackdropClick}
       style={{ zIndex: 9999 }}
     >
@@ -51,7 +51,7 @@ export function DialogContent({ children, className = '', style }: DialogContent
   // Only apply default max-w-md if className doesn't specify a max-width
   // Check for any max-w class (including arbitrary values like max-w-[3600px])
   const hasCustomMaxWidth = /max-w-/.test(className);
-  const base = `bg-white dark:bg-[#0B0D13] p-4 sm:p-6 rounded-lg border border-theme shadow-lg w-full ${hasCustomMaxWidth ? '' : 'max-w-md'} max-h-[90vh] sm:max-h-[85vh] overflow-y-auto mx-4 sm:mx-0`;
+  const base = `bg-white dark:bg-[#0B0D13] p-4 sm:p-6 rounded-lg border border-theme shadow-lg w-[calc(100vw-2rem)] ${hasCustomMaxWidth ? '' : 'max-w-md'} max-h-[90vh] sm:max-h-[85vh] overflow-y-auto`;
   // Put className last so custom max-w classes can override base styles
   return (
     <div style={style} className={`${base} ${className}`}>

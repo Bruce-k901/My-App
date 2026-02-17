@@ -157,7 +157,7 @@ export default function FoodPoisoningPage() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -255,38 +255,38 @@ export default function FoodPoisoningPage() {
             )}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {filteredIncidents.map((incident) => (
               <div
                 key={incident.id}
-                className="bg-theme-surface border border-theme rounded-lg p-6 hover:bg-theme-hover transition-colors"
+                className="bg-theme-surface border border-theme rounded-lg p-4 sm:p-6 hover:bg-theme-hover transition-colors"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-theme-primary mb-2">{incident.title}</h3>
-                    <p className="text-theme-secondary text-sm mb-3">{incident.description}</p>
-                    <div className="flex items-center gap-4 text-sm text-theme-secondary/50">
-                      <span>Reported by: {incident.reported_by}</span>
-                      <span>•</span>
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-3 sm:mb-4">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base sm:text-lg font-semibold text-theme-primary mb-1 sm:mb-2 truncate">{incident.title}</h3>
+                    <p className="text-theme-secondary text-sm mb-2 sm:mb-3 line-clamp-2">{incident.description}</p>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-theme-secondary/50">
+                      <span className="truncate max-w-[150px]">By: {incident.reported_by}</span>
+                      <span className="hidden sm:inline">•</span>
                       <span>{new Date(incident.reported_date || incident.reported_at).toLocaleDateString()}</span>
                       {incident.site_name && (
                         <>
-                          <span>•</span>
-                          <span>{incident.site_name}</span>
+                          <span className="hidden sm:inline">•</span>
+                          <span className="truncate max-w-[120px]">{incident.site_name}</span>
                         </>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <span className={`px-3 py-1 rounded-md text-xs font-medium border ${getSeverityColor(incident.severity)}`}>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className={`px-2 sm:px-3 py-1 rounded-md text-[10px] sm:text-xs font-medium border ${getSeverityColor(incident.severity)}`}>
                       {incident.severity.toUpperCase()}
                     </span>
-                    <span className={`px-3 py-1 rounded-md text-xs font-medium border ${getStatusColor(incident.status)}`}>
+                    <span className={`px-2 sm:px-3 py-1 rounded-md text-[10px] sm:text-xs font-medium border ${getStatusColor(incident.status)}`}>
                       {incident.status.toUpperCase()}
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 pt-4 border-t border-theme">
+                <div className="flex items-center gap-2 pt-3 sm:pt-4 border-t border-theme">
                   <Button
                     onClick={() => {
                       setViewingIncident(incident);
@@ -294,10 +294,10 @@ export default function FoodPoisoningPage() {
                     }}
                     variant="outline"
                     size="sm"
-                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted"
+                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted text-xs sm:text-sm"
                   >
-                    <Eye className="w-4 h-4 mr-2" />
-                    View Report
+                    <Eye className="w-4 h-4 mr-1 sm:mr-2" />
+                    View
                   </Button>
                   <Button
                     onClick={async () => {
@@ -311,10 +311,11 @@ export default function FoodPoisoningPage() {
                     }}
                     variant="outline"
                     size="sm"
-                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted"
+                    className="text-theme-secondary border-gray-300 dark:border-white/20 hover:bg-theme-muted text-xs sm:text-sm"
                   >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download
+                    <Download className="w-4 h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Download</span>
+                    <span className="sm:hidden">PDF</span>
                   </Button>
                 </div>
               </div>

@@ -51,6 +51,8 @@ export const BURGER_MENU_SECTIONS: MenuSection[] = [
       { id: 'eho-readiness', label: 'EHO Readiness', path: '/dashboard/eho-report', icon: 'ShieldCheck' },
       { id: 'my-tickets', label: 'My Tickets', path: '/dashboard/support/my-tickets', icon: 'LifeBuoy' },
       { id: 'archive', label: 'Archive Center', path: '/dashboard/archive', icon: 'Archive' },
+      { id: 'guide-manager', label: 'Manager Guide', path: '/dashboard/guide/manager', icon: 'BookOpen' },
+      { id: 'guide-staff', label: 'Staff Guide', path: '/dashboard/guide/staff', icon: 'BookOpen' },
     ]
   },
   {
@@ -98,7 +100,7 @@ export const getMenuItemsByRole = (role: 'admin' | 'manager' | 'team'): MenuSect
       })
   }
 
-  // Team role: Workspace (Reports, EHO Readiness, My Tickets, Archive Center), Account
+  // Team role: Workspace (Reports, EHO Readiness, My Tickets, Archive Center, Staff Guide), Account
   return allSections
     .filter(section => ['workspace', 'account'].includes(section.id))
     .map(section => {
@@ -106,7 +108,7 @@ export const getMenuItemsByRole = (role: 'admin' | 'manager' | 'team'): MenuSect
         return {
           ...section,
           items: section.items.filter(item =>
-            ['reports', 'eho-readiness', 'my-tickets', 'archive'].includes(item.id)
+            ['reports', 'eho-readiness', 'my-tickets', 'archive', 'guide-staff'].includes(item.id)
           )
         }
       }

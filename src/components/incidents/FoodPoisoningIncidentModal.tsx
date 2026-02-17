@@ -291,19 +291,19 @@ export function FoodPoisoningIncidentModal({
       <div className="absolute right-0 top-0 h-full w-full max-w-3xl lg:max-w-4xl bg-white dark:bg-[#1a1d2e] border-l border-orange-300 dark:border-orange-500/30 shadow-2xl overflow-y-auto animate-slideInRight">
         <div className="p-4 sm:p-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6 pb-4 border-b border-orange-200 dark:border-orange-500/20">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-50 dark:bg-orange-500/20 rounded-lg">
-                <UtensilsCrossed className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+          <div className="flex items-center justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-orange-200 dark:border-orange-500/20">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <div className="p-1.5 sm:p-2 bg-orange-50 dark:bg-orange-500/20 rounded-lg flex-shrink-0">
+                <UtensilsCrossed className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 dark:text-orange-400" />
               </div>
-              <div>
-                <h2 className="text-2xl font-bold text-theme-primary">Food Poisoning Incident Report</h2>
-                <p className="text-sm text-theme-secondary">Complete investigation form and guide for food poisoning incidents</p>
+              <div className="min-w-0">
+                <h2 className="text-lg sm:text-2xl font-bold text-theme-primary truncate">Food Poisoning Report</h2>
+                <p className="text-xs sm:text-sm text-theme-secondary hidden sm:block">Complete investigation form and guide for food poisoning incidents</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="text-theme-tertiary hover:text-theme-primary transition-colors p-2 hover:bg-theme-muted rounded-lg"
+              className="text-theme-tertiary hover:text-theme-primary transition-colors p-2 hover:bg-theme-muted rounded-lg flex-shrink-0"
             >
               <X className="w-5 h-5" />
             </button>
@@ -320,7 +320,7 @@ export function FoodPoisoningIncidentModal({
             </div>
           </div>
 
-          <div className="space-y-8 max-h-[calc(100vh-350px)] overflow-y-auto pr-2">
+          <div className="space-y-6 sm:space-y-8 max-h-[calc(100vh-250px)] sm:max-h-[calc(100vh-350px)] overflow-y-auto pr-1 sm:pr-2">
             {/* SECTION 1: Basic Information */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-4">
@@ -773,19 +773,20 @@ export function FoodPoisoningIncidentModal({
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-between mt-6 pt-4 border-t border-theme">
+          <div className="flex items-center justify-between mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-theme">
             <Button
               onClick={onClose}
               variant="outline"
+              className="text-sm sm:text-base"
             >
               Cancel
             </Button>
             <Button
               onClick={handleSave}
               disabled={saving}
-              className="bg-orange-600 hover:bg-orange-700 text-white"
+              className="bg-orange-600 hover:bg-orange-700 text-white text-sm sm:text-base"
             >
-              {saving ? 'Saving...' : 'Save & Create Investigation Task'}
+              {saving ? 'Saving...' : <><span className="hidden sm:inline">Save & Create Investigation Task</span><span className="sm:hidden">Save Report</span></>}
             </Button>
           </div>
         </div>

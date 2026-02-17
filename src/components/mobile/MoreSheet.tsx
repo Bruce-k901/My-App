@@ -58,7 +58,7 @@ export function MoreSheet() {
         className={cn(
           "fixed inset-x-0 bottom-0 z-50",
           "bg-white dark:bg-[#1a1a1f] text-theme-primary rounded-t-3xl",
-          "max-h-[70vh] overflow-hidden",
+          "max-h-[85vh] overflow-hidden",
           "animate-in slide-in-from-bottom duration-300",
           "pb-[env(safe-area-inset-bottom)]"
         )}
@@ -80,12 +80,12 @@ export function MoreSheet() {
         </div>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto max-h-[calc(70vh-80px)] overscroll-contain">
-          <div className="px-5 pt-3 pb-2 space-y-4">
+        <div className="overflow-y-auto max-h-[calc(85vh-80px)] overscroll-contain">
+          <div className="px-5 pt-2 pb-2 space-y-3">
 
             {/* Quick Actions */}
             <section>
-              <h3 className="text-xs font-semibold text-theme-tertiary uppercase tracking-wider mb-3">
+              <h3 className="text-[10px] font-semibold text-theme-tertiary uppercase tracking-wider mb-2">
                 Priority Actions
               </h3>
               <QuickActionsGrid section="quick" />
@@ -94,17 +94,17 @@ export function MoreSheet() {
             {/* Module Sections */}
             {moduleSections.map((module) => (
               <section key={module.id}>
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-1.5 mb-2">
                   <div
-                    className="w-6 h-6 rounded-md flex items-center justify-center"
+                    className="w-5 h-5 rounded flex items-center justify-center"
                     style={{ backgroundColor: `${module.color}20` }}
                   >
-                    <module.icon size={14} style={{ color: module.color }} />
+                    <module.icon size={12} style={{ color: module.color }} />
                   </div>
-                  <h3 className="text-xs font-semibold text-theme-tertiary uppercase tracking-wider">
+                  <h3 className="text-[10px] font-semibold text-theme-tertiary uppercase tracking-wider">
                     {module.label}
                   </h3>
-                  <span className="text-xs text-theme-secondary">
+                  <span className="text-[10px] text-theme-secondary">
                     {module.subtitle}
                   </span>
                 </div>
@@ -114,7 +114,7 @@ export function MoreSheet() {
 
             {/* Settings */}
             <section className="pt-2 border-t border-black/10 dark:border-white/10">
-              <h3 className="text-xs font-semibold text-theme-tertiary uppercase tracking-wider mb-3">
+              <h3 className="text-[10px] font-semibold text-theme-tertiary uppercase tracking-wider mb-2">
                 Settings
               </h3>
               <QuickActionsGrid section="settings" />

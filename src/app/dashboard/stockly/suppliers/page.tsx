@@ -344,30 +344,31 @@ export default function SuppliersPage() {
 
   return (
     <div className="w-full bg-theme-surface-elevated min-h-screen">
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link 
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+            <Link
                 href="/dashboard/stockly"
- className="p-2 rounded-lg bg-theme-surface ] hover:bg-theme-muted border border-theme text-theme-secondary hover:text-theme-primary transition-colors"
+                className="p-2 rounded-lg bg-theme-surface hover:bg-theme-muted border border-theme text-theme-secondary hover:text-theme-primary transition-colors flex-shrink-0"
               >
                 <ArrowLeft className="w-5 h-5" />
               </Link>
-            <div>
-              <h1 className="text-3xl font-bold text-theme-primary mb-2 flex items-center gap-3">
-                <Building2 className="w-8 h-8 text-module-fg" />
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-3xl font-bold text-theme-primary flex items-center gap-2 sm:gap-3">
+                <Building2 className="w-6 h-6 sm:w-8 sm:h-8 text-module-fg flex-shrink-0" />
                 Suppliers
               </h1>
-              <p className="text-theme-secondary text-sm mt-1">Manage your supplier contacts and ordering information</p>
+              <p className="text-theme-secondary text-xs sm:text-sm mt-1">Manage your supplier contacts and ordering information</p>
             </div>
           </div>
           <button
             onClick={openAddModal}
-            className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out text-sm flex-shrink-0"
           >
-            <Plus className="w-5 h-5" />
-            Add Supplier
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Add Supplier</span>
+            <span className="sm:hidden">Add</span>
           </button>
         </div>
 
