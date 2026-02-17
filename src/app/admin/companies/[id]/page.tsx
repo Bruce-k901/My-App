@@ -157,7 +157,7 @@ export default function CompanyDetailPage() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.push('/admin/companies')}
-            className="p-2 hover:bg-white/[0.1] rounded-lg text-theme-tertiary hover:text-white transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg text-theme-tertiary hover:text-theme-primary transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -183,33 +183,33 @@ export default function CompanyDetailPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-5">
           <div className="flex items-center gap-3 mb-3">
-            <Users className="w-5 h-5 text-blue-400" />
+            <Users className="w-5 h-5 text-blue-500" />
             <span className="text-theme-tertiary text-sm">Users</span>
           </div>
           <div className="text-2xl font-bold text-theme-primary">{users.length}</div>
         </div>
 
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-5">
           <div className="flex items-center gap-3 mb-3">
-            <MapPin className="w-5 h-5 text-green-400" />
+            <MapPin className="w-5 h-5 text-green-600" />
             <span className="text-theme-tertiary text-sm">Sites</span>
           </div>
           <div className="text-2xl font-bold text-theme-primary">{sites.length}</div>
         </div>
 
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-5">
           <div className="flex items-center gap-3 mb-3">
-            <ClipboardList className="w-5 h-5 text-purple-400" />
+            <ClipboardList className="w-5 h-5 text-purple-500" />
             <span className="text-theme-tertiary text-sm">Total Tasks</span>
           </div>
           <div className="text-2xl font-bold text-theme-primary">{taskStats.total}</div>
         </div>
 
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-5">
           <div className="flex items-center gap-3 mb-3">
-            <CheckCircle2 className="w-5 h-5 text-green-400" />
+            <CheckCircle2 className="w-5 h-5 text-green-600" />
             <span className="text-theme-tertiary text-sm">Completion Rate</span>
           </div>
           <div className="text-2xl font-bold text-theme-primary">{completionRate}%</div>
@@ -218,14 +218,14 @@ export default function CompanyDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Users List */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
           <h2 className="text-xl font-semibold text-theme-primary mb-4 flex items-center gap-2">
             <Users className="w-5 h-5 text-theme-tertiary" />
             Users ({users.length})
           </h2>
           <div className="space-y-3 max-h-[400px] overflow-y-auto">
             {users.map(user => (
-              <div key={user.id} className="flex items-center justify-between p-3 bg-white/[0.03] rounded-lg">
+              <div key={user.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div>
                   <div className="text-theme-primary font-medium">{user.full_name || 'No name'}</div>
                   <div className="text-theme-tertiary text-sm flex items-center gap-1">
@@ -253,14 +253,14 @@ export default function CompanyDetailPage() {
         {/* Sites & Task Breakdown */}
         <div className="space-y-6">
           {/* Sites */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+          <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
             <h2 className="text-xl font-semibold text-theme-primary mb-4 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-theme-tertiary" />
               Sites ({sites.length})
             </h2>
             <div className="space-y-2">
               {sites.map(site => (
-                <div key={site.id} className="p-3 bg-white/[0.03] rounded-lg text-theme-primary">
+                <div key={site.id} className="p-3 bg-gray-50 rounded-lg text-theme-primary">
                   {site.name}
                 </div>
               ))}
@@ -271,25 +271,25 @@ export default function CompanyDetailPage() {
           </div>
 
           {/* Task Breakdown */}
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+          <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
             <h2 className="text-xl font-semibold text-theme-primary mb-4">Task Breakdown</h2>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-green-400">
+                <div className="flex items-center gap-2 text-green-600">
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Completed</span>
                 </div>
                 <span className="text-theme-primary font-semibold">{taskStats.completed}</span>
               </div>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-yellow-400">
+                <div className="flex items-center gap-2 text-yellow-600">
                   <Clock className="w-4 h-4" />
                   <span>Pending</span>
                 </div>
                 <span className="text-theme-primary font-semibold">{taskStats.pending}</span>
               </div>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-red-400">
+                <div className="flex items-center gap-2 text-red-600">
                   <AlertTriangle className="w-4 h-4" />
                   <span>Missed</span>
                 </div>

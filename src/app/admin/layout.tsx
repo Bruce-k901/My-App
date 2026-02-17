@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { AdminFaviconSetter } from '@/components/admin/AdminFaviconSetter';
 import { useTicketCount } from '@/hooks/tickets/useTicketCount';
+import Image from 'next/image';
 import {
-  Shield,
   LayoutDashboard,
   Building2,
   Users,
@@ -18,7 +18,8 @@ import {
   Eye,
   X,
   ArrowLeft,
-  LifeBuoy
+  LifeBuoy,
+  Inbox
 } from '@/components/ui/icons';
 
 interface AdminLayoutProps {
@@ -32,11 +33,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [viewingAsCompany, setViewingAsCompany] = useState<{ id: string; name: string } | null>(null);
   const { count: ticketCount } = useTicketCount();
 
-  // Admin is always dark — force dark class on HTML element
-  // (handles client-side navigation from dashboard which may be in light mode)
+  // Admin uses light theme
   useEffect(() => {
-    document.documentElement.classList.add('dark');
-    document.documentElement.classList.remove('light');
+    document.documentElement.classList.add('light');
+    document.documentElement.classList.remove('dark');
+    return () => {
+      // Restore dark when leaving admin
+      document.documentElement.classList.remove('light');
+    };
   }, []);
 
   useEffect(() => {
@@ -107,7 +111,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   // Show loading while checking auth
   if (isAdmin === null && pathname !== '/admin/login') {
     return (
-      <div className="h-screen bg-[#0B0D13] flex items-center justify-center">
+      <div className="h-screen bg-[#FAFAF7] flex items-center justify-center">
         <div className="text-theme-tertiary">Verifying access...</div>
       </div>
     );
@@ -124,21 +128,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { href: '/admin/users', icon: Users, label: 'All Users' },
     { href: '/admin/tasks', icon: ClipboardList, label: 'Task Analytics' },
     { href: '/admin/tickets', icon: LifeBuoy, label: 'Support Tickets' },
+    { href: '/admin/contact', icon: Inbox, label: 'Contact Submissions' },
     { href: '/admin/settings', icon: Settings, label: 'Settings' },
   ];
 
   return (
     <>
       <AdminFaviconSetter />
-      <div className="h-screen bg-[#0B0D13] flex overflow-hidden">
+      <div className="h-screen bg-[#FAFAF7] flex overflow-hidden">
       {/* Fixed Sidebar */}
-      <aside className="w-64 bg-white/[0.03] border-r border-white/[0.06] flex flex-col flex-shrink-0">
+      <aside className="w-64 bg-white border-r border-gray-200 shadow-sm flex flex-col flex-shrink-0">
         {/* Logo Header */}
-        <div className="p-6 border-b border-white/[0.06] flex-shrink-0">
+        <div className="p-6 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[#D37E91]/20 flex items-center justify-center">
-              <Shield className="w-5 h-5 text-[#D37E91]" />
-            </div>
+            <Image src="/icon-192x192.png" alt="Opsly" width={40} height={40} className="rounded-lg" />
             <div>
               <div className="text-theme-primary font-semibold">Opsly Admin</div>
               <div className="text-theme-tertiary text-xs">Platform Control</div>
@@ -160,7 +163,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   isActive
                     ? 'bg-[#D37E91]/10 text-[#D37E91] border border-[#D37E91]/20'
-                    : 'text-theme-tertiary hover:bg-white/[0.06] hover:text-white'
+                    : 'text-theme-tertiary hover:bg-black/[0.04] hover:text-theme-primary'
                 }`}
               >
                 <item.icon className="w-5 h-5" />
@@ -177,17 +180,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </nav>
 
         {/* Footer - Fixed */}
-        <div className="p-4 border-t border-white/[0.06] flex-shrink-0 space-y-1">
+        <div className="p-4 border-t border-gray-200 flex-shrink-0 space-y-1">
           <Link
             href="/dashboard"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-theme-tertiary hover:bg-white/[0.06] hover:text-white w-full transition-colors"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-theme-tertiary hover:bg-black/[0.04] hover:text-theme-primary w-full transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             <span className="font-medium">Back to Dashboard</span>
           </Link>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-theme-tertiary hover:bg-white/[0.06] hover:text-white w-full transition-colors"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-theme-tertiary hover:bg-black/[0.04] hover:text-theme-primary w-full transition-colors"
           >
             <LogOut className="w-5 h-5" />
             <span className="font-medium">Sign Out</span>
@@ -199,16 +202,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* View As Banner - Fixed at top */}
         {viewingAsCompany && (
-          <div className="bg-orange-500/20 border-b border-orange-500/40 px-6 py-3 flex items-center justify-between flex-shrink-0">
+          <div className="bg-orange-50 border-b border-orange-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-3">
-              <Eye className="w-5 h-5 text-orange-400" />
-              <span className="text-orange-200">
+              <Eye className="w-5 h-5 text-orange-500" />
+              <span className="text-orange-700">
                 <span className="font-semibold">Viewing as:</span> {viewingAsCompany.name}
               </span>
             </div>
             <button
               onClick={exitViewAs}
-              className="flex items-center gap-2 px-3 py-1.5 bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/40 rounded-lg text-orange-200 text-sm transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 bg-orange-100 hover:bg-orange-200 border border-orange-300 rounded-lg text-orange-700 text-sm transition-colors"
             >
               <X className="w-4 h-4" />
               Exit View

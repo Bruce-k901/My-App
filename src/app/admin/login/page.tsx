@@ -59,21 +59,21 @@ export default function AdminLoginPage() {
   return (
     <>
       <AdminFaviconSetter />
-      <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#FAFAF7] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo/Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#D37E91]/10 mb-4">
-            <Shield className="w-8 h-8 text-[#D37E91]" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4 overflow-hidden">
+            <img src="/icon-192x192.png" alt="Opsly" className="w-12 h-12 rounded-lg" />
           </div>
           <h1 className="text-2xl font-bold text-theme-primary">Opsly Admin</h1>
           <p className="text-theme-tertiary mt-2">Platform Administration Portal</p>
         </div>
 
         {/* Login Form */}
-        <form onSubmit={handleLogin} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 space-y-4">
+        <form onSubmit={handleLogin} className="bg-white border border-gray-200 rounded-xl p-6 space-y-4 shadow-sm">
           {error && (
-            <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               {error}
             </div>
@@ -88,7 +88,7 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
+              className="w-full px-4 py-3 bg-gray-50 border border-black/[0.12] rounded-lg text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
               placeholder="admin@opsly.app"
             />
           </div>
@@ -102,7 +102,7 @@ export default function AdminLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
+              className="w-full px-4 py-3 bg-gray-50 border border-black/[0.12] rounded-lg text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
               placeholder="••••••••"
             />
           </div>

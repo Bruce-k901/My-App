@@ -91,7 +91,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
   if (error || !ticket) {
     return (
       <div>
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-600">
           {error || 'Ticket not found'}
         </div>
         <Link
@@ -109,7 +109,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
       {/* Back button */}
       <Link
         href="/admin/tickets"
-        className="inline-flex items-center gap-2 text-theme-tertiary hover:text-white transition-colors"
+        className="inline-flex items-center gap-2 text-theme-tertiary hover:text-theme-primary transition-colors"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -118,7 +118,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
       </Link>
 
       {/* Header */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
+      <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-6">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-theme-primary mb-2">
@@ -189,7 +189,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
 
         {/* Page URL */}
         {ticket.page_url && (
-          <div className="mt-4 pt-4 border-t border-white/[0.06]">
+          <div className="mt-4 pt-4 border-t border-gray-200">
             <span className="text-sm text-theme-tertiary">Page URL:</span>
             <a
               href={ticket.page_url}
@@ -204,13 +204,13 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
       </div>
 
       {/* Original Description */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
+      <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-6">
         <h2 className="text-lg font-semibold text-theme-primary mb-3">Description</h2>
         <p className="text-theme-secondary whitespace-pre-wrap">{ticket.description}</p>
 
         {/* Initial attachments (screenshots) */}
         {ticket.attachments && ticket.attachments.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-white/[0.06]">
+          <div className="mt-4 pt-4 border-t border-gray-200">
             <h3 className="text-sm font-medium text-theme-secondary mb-2">Attachments:</h3>
             <div className="flex flex-wrap gap-2">
               {ticket.attachments.map((attachment) => (
@@ -219,7 +219,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
                   href={`/api/attachments/${attachment.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.06] border border-white/[0.06] text-sm text-theme-secondary hover:bg-white/[0.09] transition-colors"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-sm text-theme-secondary hover:bg-gray-100 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -238,7 +238,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
       </div>
 
       {/* Conversation Thread */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-6">
+      <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-6">
         <h2 className="text-lg font-semibold text-theme-primary mb-4">
           Conversation ({ticket.comment_count})
         </h2>

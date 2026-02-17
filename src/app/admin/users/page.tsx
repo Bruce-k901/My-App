@@ -86,9 +86,9 @@ export default function AdminUsersPage() {
   const getRoleBadgeColor = (role: string, isAdmin: boolean) => {
     if (isAdmin) return 'bg-[#D37E91]/20 text-[#D37E91] border-[#D37E91]/30';
     switch (role?.toLowerCase()) {
-      case 'owner': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-      case 'admin': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      case 'manager': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'owner': return 'bg-purple-50 text-purple-600 border-purple-200';
+      case 'admin': return 'bg-blue-50 text-blue-600 border-blue-200';
+      case 'manager': return 'bg-green-50 text-green-600 border-green-200';
       default: return 'bg-theme-surface-elevated0/20 text-theme-tertiary border-gray-500/30';
     }
   };
@@ -122,15 +122,15 @@ export default function AdminUsersPage() {
           placeholder="Search by name, email, or company..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-xl text-theme-primary placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
+          className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-black/[0.12] rounded-xl text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
         />
       </div>
 
       {/* Users Table */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
+      <div className="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/[0.06]">
+            <tr className="border-b border-gray-200">
               <th className="text-left p-4 text-theme-tertiary font-medium">User</th>
               <th className="text-left p-4 text-theme-tertiary font-medium">Company</th>
               <th className="text-left p-4 text-theme-tertiary font-medium">Role</th>
@@ -140,10 +140,10 @@ export default function AdminUsersPage() {
           </thead>
           <tbody>
             {filteredUsers.map(user => (
-              <tr key={user.id} className="border-b border-white/[0.03] hover:bg-white/[0.03]">
+              <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
                 <td className="p-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-white/[0.1] flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                       {user.is_platform_admin ? (
                         <Shield className="w-5 h-5 text-[#D37E91]" />
                       ) : (
@@ -190,7 +190,7 @@ export default function AdminUsersPage() {
 
         {filteredUsers.length === 0 && (
           <div className="text-center py-12">
-            <Users className="w-12 h-12 text-white/20 mx-auto mb-4" />
+            <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
             <p className="text-theme-tertiary">
               {searchTerm ? 'No users match your search' : 'No users found'}
             </p>

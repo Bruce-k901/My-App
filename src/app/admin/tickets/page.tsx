@@ -68,7 +68,7 @@ export default function AdminTicketsPage() {
         </div>
         <Link
           href="/api/admin/tickets/export"
-          className="px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-theme-primary hover:bg-white/[0.09] transition-colors"
+          className="px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-theme-primary hover:bg-gray-100 transition-colors"
         >
           Export CSV
         </Link>
@@ -77,21 +77,21 @@ export default function AdminTicketsPage() {
       {/* Stats Cards */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
+          <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-4">
             <div className="text-sm text-theme-tertiary">Total Tickets</div>
             <div className="text-2xl font-bold text-theme-primary mt-1">{stats.total}</div>
           </div>
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
+          <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-4">
             <div className="text-sm text-theme-tertiary">Open</div>
-            <div className="text-2xl font-bold text-blue-400 mt-1">{stats.open}</div>
+            <div className="text-2xl font-bold text-blue-600 mt-1">{stats.open}</div>
           </div>
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
+          <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-4">
             <div className="text-sm text-theme-tertiary">In Progress</div>
-            <div className="text-2xl font-bold text-yellow-400 mt-1">{stats.in_progress}</div>
+            <div className="text-2xl font-bold text-yellow-600 mt-1">{stats.in_progress}</div>
           </div>
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
+          <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-4">
             <div className="text-sm text-theme-tertiary">High Priority</div>
-            <div className="text-2xl font-bold text-orange-400 mt-1">
+            <div className="text-2xl font-bold text-orange-600 mt-1">
               {stats.high_priority + stats.urgent_priority}
             </div>
           </div>
@@ -99,7 +99,7 @@ export default function AdminTicketsPage() {
       )}
 
       {/* Search and Filters */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 space-y-4">
+      <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-4 space-y-4">
         {/* Search */}
         <div className="flex gap-2">
           <input
@@ -108,7 +108,7 @@ export default function AdminTicketsPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             placeholder="Search tickets..."
-            className="flex-1 px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-theme-primary placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]"
+            className="flex-1 px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]"
           />
           <button
             onClick={handleSearch}
@@ -128,7 +128,7 @@ export default function AdminTicketsPage() {
               className={`px-3 py-1 rounded-lg text-sm border transition-colors ${
                 filters.status?.includes(status as any)
                   ? 'bg-[#D37E91] text-white border-[#D37E91]'
-                  : 'bg-white/[0.06] text-theme-secondary border-white/[0.06] hover:border-[#D37E91]/50'
+                  : 'bg-gray-50 text-theme-secondary border-gray-200 hover:border-[#D37E91]/50'
               }`}
             >
               {status === 'in_progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}
@@ -146,7 +146,7 @@ export default function AdminTicketsPage() {
       </div>
 
       {/* Tickets List */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg">
+      <div className="bg-white border border-gray-200 shadow-sm rounded-lg">
         {isLoading ? (
           <div className="p-8 text-center text-theme-tertiary">Loading tickets...</div>
         ) : error ? (
@@ -157,12 +157,12 @@ export default function AdminTicketsPage() {
           </div>
         ) : (
           <>
-            <div className="divide-y divide-white/[0.06]">
+            <div className="divide-y divide-black/[0.06]">
               {tickets.map((ticket) => (
                 <Link
                   key={ticket.id}
                   href={`/admin/tickets/${ticket.id}`}
-                  className="block p-4 hover:bg-white/[0.06] transition-colors"
+                  className="block p-4 hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
@@ -204,7 +204,7 @@ export default function AdminTicketsPage() {
 
             {/* Pagination */}
             {total > 20 && (
-              <div className="p-4 border-t border-white/[0.06] flex items-center justify-between">
+              <div className="p-4 border-t border-gray-200 flex items-center justify-between">
                 <div className="text-sm text-theme-tertiary">
                   Showing {(page - 1) * 20 + 1}-{Math.min(page * 20, total)} of {total} tickets
                 </div>
@@ -212,14 +212,14 @@ export default function AdminTicketsPage() {
                   <button
                     onClick={prevPage}
                     disabled={page === 1}
-                    className="px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-theme-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/[0.09] transition-colors"
+                    className="px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-theme-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
                   >
                     Previous
                   </button>
                   <button
                     onClick={nextPage}
                     disabled={!hasMore}
-                    className="px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-theme-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/[0.09] transition-colors"
+                    className="px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-theme-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
                   >
                     Next
                   </button>

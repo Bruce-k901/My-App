@@ -141,7 +141,7 @@ export default function AdminCompaniesPage() {
           placeholder="Search companies..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-xl text-theme-primary placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
+          className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-black/[0.12] rounded-xl text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/40 focus:border-[#D37E91]/40"
         />
       </div>
 
@@ -150,16 +150,16 @@ export default function AdminCompaniesPage() {
         {filteredCompanies.map((company) => {
           const health = getHealthIndicator(company);
           const healthColors = {
-            green: 'bg-green-500/10 text-green-400 border-green-500/20',
-            yellow: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-            red: 'bg-red-500/10 text-red-400 border-red-500/20',
-            gray: 'bg-theme-surface-elevated0/10 text-theme-tertiary border-gray-500/20'
+            green: 'bg-green-50 text-green-600 border-green-200',
+            yellow: 'bg-yellow-50 text-yellow-600 border-yellow-200',
+            red: 'bg-red-50 text-red-600 border-red-200',
+            gray: 'bg-gray-50 text-theme-tertiary border-gray-200'
           };
 
           return (
             <div
               key={company.id}
-              className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 hover:bg-white/[0.06] transition-colors"
+              className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 hover:bg-gray-50 transition-colors"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -205,14 +205,14 @@ export default function AdminCompaniesPage() {
                       <div className="text-theme-tertiary text-xs">Total Tasks</div>
                     </div>
                     <div className="text-center">
-                      <div className="flex items-center gap-1 text-green-400">
+                      <div className="flex items-center gap-1 text-green-600">
                         <CheckCircle2 className="w-4 h-4" />
                         <span className="font-semibold">{company.completed_today}</span>
                       </div>
                       <div className="text-theme-tertiary text-xs">Done Today</div>
                     </div>
                     <div className="text-center">
-                      <div className="flex items-center gap-1 text-yellow-400">
+                      <div className="flex items-center gap-1 text-yellow-600">
                         <AlertCircle className="w-4 h-4" />
                         <span className="font-semibold">{company.pending_today}</span>
                       </div>
@@ -231,7 +231,7 @@ export default function AdminCompaniesPage() {
                     </button>
                     <button
                       onClick={() => router.push(`/admin/companies/${company.id}`)}
-                      className="p-2 hover:bg-white/[0.1] rounded-lg text-theme-tertiary hover:text-white transition-colors"
+                      className="p-2 hover:bg-gray-100 rounded-lg text-theme-tertiary hover:text-theme-primary transition-colors"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>
@@ -244,7 +244,7 @@ export default function AdminCompaniesPage() {
 
         {filteredCompanies.length === 0 && (
           <div className="text-center py-12">
-            <Building2 className="w-12 h-12 text-white/20 mx-auto mb-4" />
+            <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-4" />
             <p className="text-theme-tertiary">
               {searchTerm ? 'No companies match your search' : 'No companies registered yet'}
             </p>

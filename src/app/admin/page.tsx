@@ -534,7 +534,7 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link
           href="/admin/health-check-test"
-          className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/[0.06] rounded-xl hover:bg-white/[0.05] hover:border-module-fg/30 transition-all group"
+          className="flex items-center gap-4 p-4 bg-white border border-gray-200 shadow-sm rounded-xl hover:bg-gray-50 hover:border-module-fg/30 transition-all group"
         >
           <div className="p-3 bg-module-fg/10 rounded-lg">
             <HeartPulse className="w-6 h-6 text-module-fg" />
@@ -550,7 +550,7 @@ export default function AdminDashboardPage() {
       {/* Primary Stats Grid - 4 Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Companies */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 hover:bg-white/[0.05] transition-colors">
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 hover:bg-gray-50 transition-colors">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-[#D37E91]/10 rounded-lg">
               <Building2 className="w-6 h-6 text-[#D37E91]" />
@@ -566,7 +566,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Total Users */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 hover:bg-white/[0.05] transition-colors">
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 hover:bg-gray-50 transition-colors">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-blue-500/10 rounded-lg">
               <Users className="w-6 h-6 text-blue-400" />
@@ -582,7 +582,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Pending Tasks */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 hover:bg-white/[0.05] transition-colors">
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 hover:bg-gray-50 transition-colors">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-yellow-500/10 rounded-lg">
               <ClipboardCheck className="w-6 h-6 text-yellow-400" />
@@ -601,7 +601,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Missed Tasks */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 hover:bg-white/[0.05] transition-colors">
+        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 hover:bg-gray-50 transition-colors">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-red-500/10 rounded-lg">
               <AlertCircle className="w-6 h-6 text-red-400" />
@@ -617,7 +617,7 @@ export default function AdminDashboardPage() {
         <h2 className="text-xl font-semibold text-theme-primary">Platform Metrics</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {/* Active SOPs */}
-          <Link href="/admin/companies" className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors group">
+          <Link href="/admin/companies" className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 hover:bg-gray-50 transition-colors group">
             <div className="flex items-center gap-2 mb-3">
               <FileText className="w-4 h-4 text-purple-400" />
               <span className="text-xs text-theme-tertiary font-medium">Active SOPs</span>
@@ -629,7 +629,7 @@ export default function AdminDashboardPage() {
           </Link>
 
           {/* Risk Assessments */}
-          <Link href="/admin/companies" className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors group">
+          <Link href="/admin/companies" className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 hover:bg-gray-50 transition-colors group">
             <div className="flex items-center gap-2 mb-3">
               <ShieldAlert className="w-4 h-4 text-orange-400" />
               <span className="text-xs text-theme-tertiary font-medium">Risk Assessments</span>
@@ -641,7 +641,7 @@ export default function AdminDashboardPage() {
           </Link>
 
           {/* Assets */}
-          <Link href="/admin/companies" className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors group">
+          <Link href="/admin/companies" className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 hover:bg-gray-50 transition-colors group">
             <div className="flex items-center gap-2 mb-3">
               <Wrench className="w-4 h-4 text-module-fg" />
               <span className="text-xs text-theme-tertiary font-medium">Assets</span>
@@ -653,7 +653,7 @@ export default function AdminDashboardPage() {
           </Link>
 
           {/* Messages */}
-          <Link href="/admin/companies" className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors group">
+          <Link href="/admin/companies" className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 hover:bg-gray-50 transition-colors group">
             <div className="flex items-center gap-2 mb-3">
               <MessageSquare className="w-4 h-4 text-green-400" />
               <span className="text-xs text-theme-tertiary font-medium">Messages</span>
@@ -665,7 +665,7 @@ export default function AdminDashboardPage() {
           </Link>
 
           {/* Callouts */}
-          <Link href="/admin/companies" className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors group">
+          <Link href="/admin/companies" className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 hover:bg-gray-50 transition-colors group">
             <div className="flex items-center gap-2 mb-3">
               <Phone className="w-4 h-4 text-red-400" />
               <span className="text-xs text-theme-tertiary font-medium">Callouts</span>
@@ -677,7 +677,7 @@ export default function AdminDashboardPage() {
           </Link>
 
           {/* Sites */}
-          <Link href="/admin/companies" className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.05] transition-colors group">
+          <Link href="/admin/companies" className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 hover:bg-gray-50 transition-colors group">
             <div className="flex items-center gap-2 mb-3">
               <Building2 className="w-4 h-4 text-module-fg" />
               <span className="text-xs text-theme-tertiary font-medium">Sites</span>
@@ -691,51 +691,51 @@ export default function AdminDashboardPage() {
       <div className="space-y-4">
         <h2 className="text-xl font-semibold text-theme-primary">Additional Statistics</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="text-xs text-theme-tertiary mb-1 font-medium">Total Tasks</div>
               <div className="text-xl font-semibold text-theme-primary">{stats.total_tasks}</div>
             </div>
-            <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="text-xs text-theme-tertiary mb-1 font-medium">Active Tasks</div>
               <div className="text-xl font-semibold text-blue-400">{stats.active_tasks}</div>
             </div>
-            <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="text-xs text-theme-tertiary mb-1 font-medium">Completed Tasks</div>
               <div className="text-xl font-semibold text-green-400">{stats.completed_tasks}</div>
             </div>
-            <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="text-xs text-theme-tertiary mb-1 font-medium">Completions Today</div>
               <div className="text-xl font-semibold text-theme-primary">{stats.completions_today}</div>
             </div>
-            <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="text-xs text-theme-tertiary mb-1 font-medium">Library Templates</div>
               <div className="text-xl font-semibold text-theme-primary">{stats.library_templates}</div>
             </div>
-            <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="text-xs text-theme-tertiary mb-1 font-medium">Custom Templates</div>
               <div className="text-xl font-semibold text-theme-primary">{stats.custom_templates}</div>
             </div>
-            <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="text-xs text-theme-tertiary mb-1 font-medium">Active Users (Week)</div>
               <div className="text-xl font-semibold text-theme-primary">{stats.active_users_this_week}</div>
             </div>
-            <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="text-xs text-theme-tertiary mb-1 font-medium">Messages (Week)</div>
               <div className="text-xl font-semibold text-theme-primary">{stats.messages_this_week}</div>
             </div>
-            <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="text-xs text-theme-tertiary mb-1 font-medium">Callouts (Week)</div>
               <div className="text-xl font-semibold text-theme-primary">{stats.callouts_this_week}</div>
             </div>
-            <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="text-xs text-theme-tertiary mb-1 font-medium">Active RAs</div>
               <div className="text-xl font-semibold text-theme-primary">{stats.active_risk_assessments}</div>
             </div>
-            <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="text-xs text-theme-tertiary mb-1 font-medium">Active Assets</div>
               <div className="text-xl font-semibold text-theme-primary">{stats.active_assets}</div>
             </div>
-            <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="text-xs text-theme-tertiary mb-1 font-medium">Message Channels</div>
               <div className="text-xl font-semibold text-theme-primary">{stats.total_channels}</div>
             </div>
@@ -743,7 +743,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* EHO Readiness Scores Section */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+      <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-[#D37E91]/10 rounded-lg">
@@ -790,7 +790,7 @@ export default function AdminDashboardPage() {
               <Link
                 key={company.id}
                 href={`/admin/companies/${company.id}`}
-                className="flex items-center justify-between p-4 bg-white/[0.02] rounded-lg hover:bg-white/[0.04] transition-colors group"
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
               >
                 <div className="flex items-center gap-4">
                   {/* EHO Score Badge */}

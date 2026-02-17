@@ -4,8 +4,8 @@
   "description": "Platform administration portal for Opsly",
   "start_url": "/admin/login",
   "display": "standalone",
-  "background_color": "#0B0D13",
-  "theme_color": "#EC4899",
+  "background_color": "#FAFAF7",
+  "theme_color": "#D37E91",
   "orientation": "portrait-primary",
   "scope": "/admin",
   "icons": [

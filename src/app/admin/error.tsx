@@ -15,8 +15,8 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center p-4">
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 max-w-md w-full">
+    <div className="min-h-screen bg-[#FAFAF7] flex items-center justify-center p-4">
+      <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-8 max-w-md w-full shadow-sm">
         <h2 className="text-2xl font-bold text-theme-primary mb-4">Something went wrong!</h2>
         <p className="text-theme-tertiary mb-6">{error.message || 'An unexpected error occurred'}</p>
         <div className="flex gap-4">
