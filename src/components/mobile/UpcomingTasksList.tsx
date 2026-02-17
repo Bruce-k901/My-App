@@ -63,7 +63,7 @@ export function UpcomingTasksList({ limit = 5 }: UpcomingTasksListProps) {
 
   const handleTaskClick = (taskId: string) => {
     haptics.light();
-    router.push(`/dashboard/tasks/${taskId}`);
+    router.push(`/dashboard/tasks/view/${taskId}`);
   };
 
   const handleViewAll = () => {
