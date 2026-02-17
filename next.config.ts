@@ -39,33 +39,30 @@ const nextConfig: NextConfig = {
       };
     }
 
-    // Production: aggressive obfuscation + strip console/debugger
+    // Production: strip console/debugger statements
     if (!dev) {
       config.devtool = false; // No source map hints in compiled JS
 
       if (!isServer) {
         const TerserPlugin = require("terser-webpack-plugin");
-        config.optimization = {
-          ...config.optimization,
-          minimizer: [
-            new TerserPlugin({
-              terserOptions: {
-                compress: {
-                  drop_console: true,
-                  drop_debugger: true,
-                  passes: 2,
-                },
-                mangle: {
-                  toplevel: true,
-                },
-                format: {
-                  comments: false,
-                },
+        // IMPORTANT: Push to existing minimizer array — do NOT replace it.
+        // Next.js configures its own minimizer (SWC/Terser) with safe defaults.
+        // Replacing the array breaks the webpack runtime and causes production crashes.
+        config.optimization.minimizer = config.optimization.minimizer || [];
+        config.optimization.minimizer.push(
+          new TerserPlugin({
+            terserOptions: {
+              compress: {
+                drop_console: true,
+                drop_debugger: true,
               },
-              extractComments: false,
-            }),
-          ],
-        };
+              format: {
+                comments: false,
+              },
+            },
+            extractComments: false,
+          }),
+        );
 
         // Bundle analyzer
         const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
