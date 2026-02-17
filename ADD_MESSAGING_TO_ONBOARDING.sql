@@ -87,7 +87,7 @@ BEGIN
     END;
   END IF;
   
-  -- Add user as member (ignore if already exists)
+  -- Add user as member (reactivate if previously left)
   INSERT INTO public.messaging_channel_members (
     channel_id,
     profile_id,
@@ -96,12 +96,12 @@ BEGIN
   VALUES (
     default_channel_id,
     NEW.id,
-    CASE 
+    CASE
       WHEN NEW.app_role IN ('Admin', 'Owner') THEN 'admin'
       ELSE 'member'
     END
   )
-  ON CONFLICT (channel_id, profile_id) DO NOTHING;
+  ON CONFLICT (channel_id, profile_id) DO UPDATE SET left_at = NULL;
   
   RETURN NEW;
 END;

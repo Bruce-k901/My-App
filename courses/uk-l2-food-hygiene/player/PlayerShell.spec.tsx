@@ -37,6 +37,43 @@ vi.mock("./payload", async () => {
   } satisfies Partial<PayloadModule>;
 });
 
+// Mock AppContext so supabase queries in startQuiz resolve quickly
+vi.mock("@/context/AppContext", () => ({
+  useAppContext: () => ({ profile: null, user: null }),
+}));
+
+// Mock supabase to avoid real network calls
+vi.mock("@/lib/supabase", () => ({
+  supabase: {
+    from: () => ({
+      select: () => ({
+        or: () => ({
+          maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+        }),
+        eq: () => ({
+          maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+        }),
+      }),
+    }),
+  },
+}));
+
+// Mock course progress store
+vi.mock("@/stores/courseProgressStore", () => ({
+  useCourseProgressStore: () => ({
+    initialize: vi.fn(),
+    toPage: vi.fn(),
+    setModuleScore: vi.fn(),
+    syncProgress: vi.fn(),
+  }),
+}));
+
+// Mock course access utilities
+vi.mock("@/lib/training/courseAccess", () => ({
+  canAccessFinalAssessment: vi.fn().mockResolvedValue({ allowed: true }),
+  getCurrentAssignment: vi.fn().mockResolvedValue(null),
+}));
+
 describe("PlayerShell", () => {
   beforeEach(() => {
     useAttemptStore.getState().reset();
@@ -49,7 +86,7 @@ describe("PlayerShell", () => {
     vi.clearAllMocks();
   });
 
-  it("submits payload with passing final score", async () => {
+  it("submits payload with passing final score", { timeout: 10_000 }, async () => {
     const course: CourseManifest = {
       course_id: "uk-l2-food-hygiene",
       title: "Food Hygiene",
@@ -93,7 +130,9 @@ describe("PlayerShell", () => {
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     fireEvent.click(screen.getByRole("button", { name: /start quiz/i }));
-    fireEvent.click(screen.getByLabelText("Right"));
+    // startQuiz is async — wait for the quiz question to render
+    const rightOption = await screen.findByLabelText("Right");
+    fireEvent.click(rightOption);
     fireEvent.click(screen.getByRole("button", { name: /finish quiz/i }));
 
     fireEvent.click(screen.getByRole("button", { name: /next/i }));

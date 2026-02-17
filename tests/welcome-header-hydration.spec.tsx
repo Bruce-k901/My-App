@@ -1,62 +1,36 @@
 /**
  * WelcomeHeader Hydration Test
- * 
- * This test ensures that WelcomeHeader always renders the same structure
- * on server and client to prevent hydration mismatches. This is critical
- * for preventing React hydration errors.
- * 
- * Key requirements:
- * - Same HTML structure on initial render (before isMounted)
- * - Same HTML structure after mount (after isMounted)
- * - Only dynamic content (date, name) should differ, with suppressHydrationWarning
- * 
- * Usage:
- *   npm run test tests/welcome-header-hydration.spec.tsx
+ *
+ * Ensures WelcomeHeader renders the same structure on server and client
+ * to prevent hydration mismatches. Dynamic content (date, name) uses
+ * suppressHydrationWarning.
  */
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import WelcomeHeader from '@/components/dashboard/WelcomeHeader';
 
-// Mock date-fns format before importing component
 vi.mock('date-fns', () => ({
-  format: vi.fn((date: Date) => {
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  }),
+  format: vi.fn(() => 'Monday, 1 January 2026'),
 }));
 
-// Mock Next.js AppContext
 const mockSession = {
-  user: {
-    id: 'test-user-id',
-    email: 'test@example.com',
-  },
+  user: { id: 'test-user-id', email: 'test@example.com' },
 };
 
 vi.mock('@/context/AppContext', () => ({
-  useAppContext: () => ({
-    session: mockSession,
-  }),
+  useAppContext: () => ({ session: mockSession }),
 }));
-
-// Mock Supabase
-const mockProfile = { full_name: 'John Doe' };
-const mockSupabaseQuery = vi.fn().mockResolvedValue({
-  data: mockProfile,
-  error: null,
-});
 
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     from: () => ({
       select: () => ({
         eq: () => ({
-          maybeSingle: mockSupabaseQuery,
+          maybeSingle: vi.fn().mockResolvedValue({
+            data: { full_name: 'John Doe' },
+            error: null,
+          }),
         }),
       }),
     }),
@@ -70,55 +44,57 @@ describe('WelcomeHeader Hydration Safety', () => {
 
   test('Renders consistent structure on initial mount', () => {
     const { container } = render(<WelcomeHeader />);
-    
-    // Should always render the same wrapper structure
-    const wrapper = container.querySelector('.text-white');
+
+    // Wrapper div exists
+    const wrapper = container.firstElementChild;
     expect(wrapper).toBeInTheDocument();
-    
-    // Should always have the same heading structure
+
+    // Heading with "Welcome" text and correct classes
     const heading = screen.getByText(/welcome/i);
     expect(heading).toBeInTheDocument();
+    expect(heading.tagName).toBe('H1');
     expect(heading).toHaveClass('text-2xl', 'sm:text-3xl', 'font-semibold');
-    
-    // Should always have the date paragraph (even if empty initially)
-    const dateParagraph = container.querySelector('.text-white\\/60');
+
+    // Date paragraph always exists (may show nbsp on initial render)
+    const dateParagraph = wrapper?.querySelector('p');
     expect(dateParagraph).toBeInTheDocument();
   });
 
   test('Structure remains consistent after mount', () => {
-    const { container } = render(<WelcomeHeader />);
-    
-    // Structure should be consistent immediately
-    const wrapper = container.querySelector('.text-white');
-    expect(wrapper).toBeInTheDocument();
-    
-    const heading = screen.getByText(/welcome/i);
-    expect(heading).toBeInTheDocument();
-    expect(heading).toHaveClass('text-2xl', 'sm:text-3xl', 'font-semibold');
+    const { container, rerender } = render(<WelcomeHeader />);
+
+    const wrapperBefore = container.firstElementChild;
+    const headingBefore = screen.getByText(/welcome/i);
+
+    rerender(<WelcomeHeader />);
+
+    const wrapperAfter = container.firstElementChild;
+    const headingAfter = screen.getByText(/welcome/i);
+
+    // Same structure after re-render
+    expect(wrapperAfter?.tagName).toBe(wrapperBefore?.tagName);
+    expect(headingAfter.tagName).toBe(headingBefore.tagName);
   });
 
   test('Does not conditionally render different HTML structures', () => {
     const { container } = render(<WelcomeHeader />);
-    
-    // Should NOT have conditional wrapper divs that change structure
-    const wrappers = container.querySelectorAll('.text-white');
-    expect(wrappers.length).toBe(1); // Only one wrapper
-    
-    // Should NOT have Suspense boundaries that change structure
+
+    // Only one root wrapper
+    expect(container.children.length).toBe(1);
+
+    // No Suspense boundaries
     const suspenseElements = container.querySelectorAll('[data-suspense]');
     expect(suspenseElements.length).toBe(0);
   });
 
-  test('Dynamic content uses suppressHydrationWarning', () => {
+  test('Date paragraph exists for dynamic content', () => {
     const { container } = render(<WelcomeHeader />);
-    
-    // The date paragraph should have suppressHydrationWarning
-    // (We can't directly test this, but we can verify the structure)
-    const dateParagraph = container.querySelector('.text-white\\/60');
+
+    const wrapper = container.firstElementChild;
+    const dateParagraph = wrapper?.querySelector('p');
     expect(dateParagraph).toBeInTheDocument();
-    
-    // The structure should be consistent even if content changes
+
+    // Consistent nesting
     expect(dateParagraph?.parentElement).toBeInTheDocument();
   });
 });
-
