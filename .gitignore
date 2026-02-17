@@ -46,7 +46,6 @@ Logo/
 
 # Temporary favicon files
 public/favicon.png
-public/site.webmanifest
 public/web-app-manifest-*.png
 
 # MCP configuration with sensitive credentials

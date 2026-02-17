@@ -602,7 +602,7 @@ export default function AlertsFeed() {
   }
 
   return (
-    <div className="bg-white/[0.03] border border-module-fg/[0.12] rounded-xl p-6 space-y-4">
+    <div className="bg-white dark:bg-white/[0.03] border border-black/10 dark:border-module-fg/[0.12] rounded-xl p-6 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -630,8 +630,8 @@ export default function AlertsFeed() {
           )}
           
           {error && (
-            <div className="bg-red-500/10 border border-red-500/40 rounded-lg p-3">
-              <p className="text-sm text-red-400">{error}</p>
+            <div className="bg-red-100 dark:bg-red-500/10 border border-red-300 dark:border-red-500/40 rounded-lg p-3">
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
           )}
           

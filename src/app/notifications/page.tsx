@@ -26,11 +26,11 @@ type Notification = {
 function severityBadge(sev?: string) {
   switch (sev) {
     case "critical":
-      return "bg-red-100 text-red-700";
+      return "bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400";
     case "warning":
-      return "bg-amber-100 text-amber-700";
+      return "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400";
     default:
-      return "bg-blue-100 text-blue-700";
+      return "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400";
   }
 }
 
@@ -155,7 +155,7 @@ function NotificationsInner() {
     <section className="px-6 py-8 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">Notifications</h1>
-        <Link href="/dashboard" className="text-sm text-theme-tertiary hover:text-white">Back to Dashboard</Link>
+        <Link href="/dashboard" className="text-sm text-theme-tertiary hover:text-theme-primary">Back to Dashboard</Link>
       </div>
 
       {loading ? (
@@ -163,7 +163,7 @@ function NotificationsInner() {
       ) : items.length === 0 ? (
         <p className="text-theme-tertiary">No notifications yet.</p>
       ) : (
-        <ul className="divide-y divide-neutral-800 rounded border border-neutral-800 bg-[#0f1220]">
+        <ul className="divide-y divide-black/10 dark:divide-neutral-800 rounded border border-black/10 dark:border-neutral-800 bg-white dark:bg-[#0f1220]">
           {items.slice(0, limit).map((n) => (
             <li key={n.id} className="p-4 flex items-start gap-3">
               <div className="text-xl leading-none">{typeIcon(n.type)}</div>
@@ -171,7 +171,7 @@ function NotificationsInner() {
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{n.title}</span>
                   {n.severity && <span className={`text-xs px-2 py-0.5 rounded ${severityBadge(n.severity)}`}>{n.severity}</span>}
-                  {!n.read && <span className="text-xs px-2 py-0.5 rounded bg-magenta-500/20 text-magenta-300">new</span>}
+                  {!n.read && <span className="text-xs px-2 py-0.5 rounded bg-magenta-500/20 text-magenta-600 dark:text-magenta-300">new</span>}
                   <span className="ml-auto text-xs text-theme-tertiary">{timeAgo(n.created_at)}</span>
                 </div>
                 <p className="text-sm text-theme-secondary mt-1 whitespace-pre-line">{n.message}</p>
@@ -187,12 +187,12 @@ function NotificationsInner() {
                     </button>
                   )}
                   {!n.read && (
-                    <button onClick={() => markSeen(n.id)} className="text-xs text-theme-secondary hover:text-white underline">
+                    <button onClick={() => markSeen(n.id)} className="text-xs text-theme-secondary hover:text-theme-primary underline">
                       Mark as read
                     </button>
                   )}
                   {n.link && (
-                    <Link href={n.link} className="text-xs text-magenta-300 hover:text-magenta-200 underline">
+                    <Link href={n.link} className="text-xs text-magenta-600 dark:text-magenta-300 hover:text-magenta-500 dark:hover:text-magenta-200 underline">
                       View details
                     </Link>
                   )}

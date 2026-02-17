@@ -138,7 +138,7 @@ export async function registerPushSubscription(): Promise<boolean> {
     const subscriptionKeys = subscriptionData.keys;
     
     const subscriptionPayload = {
-      user_id: user.id,
+      profile_id: user.id,
       endpoint: subscription.endpoint,
       p256dh: subscriptionKeys.p256dh,
       auth: subscriptionKeys.auth,
