@@ -349,11 +349,10 @@ select {
 }
 
 /* Global Select/Dropdown Styling - Theme-aware */
-/* Note: Native select option styling is limited by browser, but we ensure the select itself is styled */
+/* Base rules have NO !important so inline styles on components can override */
 select {
-  color: rgb(var(--text-primary)) !important;
-  background-color: rgb(var(--surface)) !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23111113' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  color: rgb(var(--text-primary));
+  background-color: rgb(var(--surface));
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   background-size: 1em 1em;
@@ -371,6 +370,14 @@ select {
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+/* .light MUST come after .dark so it wins when both classes are on <html> */
+html.light select {
+  color: #111113 !important;
+  background-color: #ffffff !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  border: 1px solid #9ca3af !important;
+}
+
 select:focus {
   outline: none;
   border-color: #d37e91;
@@ -383,9 +390,10 @@ select:disabled {
 }
 
 /* Style option elements for better theme support */
+/* Base rule has NO !important so .light/.dark overrides work */
 select option {
-  background-color: rgb(var(--surface-elevated)) !important;
-  color: rgb(var(--text-primary)) !important;
+  background-color: rgb(var(--surface-elevated));
+  color: rgb(var(--text-primary));
   padding: 0.5rem;
 }
 
@@ -394,15 +402,21 @@ select option {
   color: white !important;
 }
 
+/* .light MUST come after .dark so it wins when both classes are on <html> */
+html.light select option {
+  background-color: #ffffff !important;
+  color: #111113 !important;
+}
+
 /* Firefox specific option styling */
 @-moz-document url-prefix() {
-  select option {
-    background-color: rgb(var(--surface-elevated));
-    color: rgb(var(--text-primary));
-  }
   .dark select option {
     background-color: #0b0d13;
     color: white;
+  }
+  html.light select option {
+    background-color: #ffffff;
+    color: #111113;
   }
 }
 
@@ -1489,4 +1503,21 @@ input[type="number"] {
   .production-worksheet-print {
     page-break-after: always;
   }
+}
+
+/* ─── IP Protection: Disable Text Selection ─── */
+/* Active when body has .no-select-app (production only) */
+body.no-select-app {
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* Re-enable selection for interactive elements */
+body.no-select-app input,
+body.no-select-app textarea,
+body.no-select-app [contenteditable="true"],
+body.no-select-app select,
+body.no-select-app code,
+body.no-select-app pre {
+  -webkit-user-select: text;
+  user-select: text;
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { sendTicketNotificationDM } from '@/lib/messaging/ticket-bridge';
 
 // ============================================================================
 // ADMIN TICKET DETAIL API
@@ -220,7 +221,7 @@ export async function PATCH(
     // Get ticket to check permissions
     const { data: ticket } = await supabase
       .from('support_tickets')
-      .select('company_id, created_by, assigned_to')
+      .select('company_id, created_by, assigned_to, title, module, status')
       .eq('id', ticketId)
       .single();
 
@@ -261,6 +262,24 @@ export async function PATCH(
     if (updateError) {
       console.error('Error updating ticket:', updateError);
       return NextResponse.json({ error: updateError.message }, { status: 500 });
+    }
+
+    // Send resolution DM when ticket is resolved or closed
+    const wasNotResolved = ticket.status !== 'resolved' && ticket.status !== 'closed';
+    const isNowResolved = status === 'resolved' || status === 'closed';
+    if (wasNotResolved && isNowResolved && ticket.created_by !== user.id) {
+      const statusLabel = status === 'resolved' ? 'resolved' : 'closed';
+      sendTicketNotificationDM({
+        ticketId,
+        ticketTitle: ticket.title || 'Support Ticket',
+        ticketModule: ticket.module,
+        companyId: ticket.company_id,
+        senderId: user.id,
+        recipientId: ticket.created_by,
+        content: `Your ticket has been ${statusLabel}. If you have any further questions, feel free to reply.`,
+        isAdminReply: true,
+        eventType: 'resolution',
+      });
     }
 
     return NextResponse.json({ success: true, ticket: updatedTicket });

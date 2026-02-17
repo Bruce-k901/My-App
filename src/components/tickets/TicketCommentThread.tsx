@@ -50,7 +50,7 @@ export function TicketCommentThread({
           ))}
         </div>
       ) : (
-        <div className="text-center py-8 text-theme-tertiary">
+        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
           <svg
             className="w-12 h-12 mx-auto mb-3 opacity-50"
             fill="none"
@@ -69,7 +69,7 @@ export function TicketCommentThread({
       )}
 
       {/* Reply input */}
-      <div className="border-t border-white/[0.06] pt-6">
+      <div className="border-t border-gray-300 dark:border-white/[0.12] pt-6">
         <TicketCommentInput
           ticketId={ticketId}
           onSubmit={onAddComment}

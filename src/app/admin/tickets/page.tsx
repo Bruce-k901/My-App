@@ -61,14 +61,14 @@ export default function AdminTicketsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-theme-primary">Support Tickets</h1>
-          <p className="text-theme-tertiary mt-1">
+          <h1 className="text-3xl font-bold text-gray-900">Support Tickets</h1>
+          <p className="text-gray-500 mt-1">
             Manage and respond to customer support requests
           </p>
         </div>
         <Link
           href="/api/admin/tickets/export"
-          className="px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-theme-primary hover:bg-gray-100 transition-colors"
+          className="px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 hover:bg-gray-100 transition-colors"
         >
           Export CSV
         </Link>
@@ -78,19 +78,19 @@ export default function AdminTicketsPage() {
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-4">
-            <div className="text-sm text-theme-tertiary">Total Tickets</div>
-            <div className="text-2xl font-bold text-theme-primary mt-1">{stats.total}</div>
+            <div className="text-sm text-gray-500">Total Tickets</div>
+            <div className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</div>
           </div>
           <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-4">
-            <div className="text-sm text-theme-tertiary">Open</div>
+            <div className="text-sm text-gray-500">Open</div>
             <div className="text-2xl font-bold text-blue-600 mt-1">{stats.open}</div>
           </div>
           <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-4">
-            <div className="text-sm text-theme-tertiary">In Progress</div>
+            <div className="text-sm text-gray-500">In Progress</div>
             <div className="text-2xl font-bold text-yellow-600 mt-1">{stats.in_progress}</div>
           </div>
           <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-4">
-            <div className="text-sm text-theme-tertiary">High Priority</div>
+            <div className="text-sm text-gray-500">High Priority</div>
             <div className="text-2xl font-bold text-orange-600 mt-1">
               {stats.high_priority + stats.urgent_priority}
             </div>
@@ -108,7 +108,7 @@ export default function AdminTicketsPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             placeholder="Search tickets..."
-            className="flex-1 px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]"
+            className="flex-1 px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D37E91]"
           />
           <button
             onClick={handleSearch}
@@ -120,7 +120,7 @@ export default function AdminTicketsPage() {
 
         {/* Status filters */}
         <div className="flex flex-wrap gap-2">
-          <span className="text-sm text-theme-tertiary">Filter by status:</span>
+          <span className="text-sm text-gray-500">Filter by status:</span>
           {['open', 'in_progress', 'resolved', 'closed'].map((status) => (
             <button
               key={status}
@@ -128,7 +128,7 @@ export default function AdminTicketsPage() {
               className={`px-3 py-1 rounded-lg text-sm border transition-colors ${
                 filters.status?.includes(status as any)
                   ? 'bg-[#D37E91] text-white border-[#D37E91]'
-                  : 'bg-gray-50 text-theme-secondary border-gray-200 hover:border-[#D37E91]/50'
+                  : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-[#D37E91]/50'
               }`}
             >
               {status === 'in_progress' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1)}
@@ -148,16 +148,16 @@ export default function AdminTicketsPage() {
       {/* Tickets List */}
       <div className="bg-white border border-gray-200 shadow-sm rounded-lg">
         {isLoading ? (
-          <div className="p-8 text-center text-theme-tertiary">Loading tickets...</div>
+          <div className="p-8 text-center text-gray-500">Loading tickets...</div>
         ) : error ? (
           <div className="p-8 text-center text-red-400">{error}</div>
         ) : tickets.length === 0 ? (
-          <div className="p-8 text-center text-theme-tertiary">
+          <div className="p-8 text-center text-gray-500">
             No tickets found. Try adjusting your filters.
           </div>
         ) : (
           <>
-            <div className="divide-y divide-black/[0.06]">
+            <div className="divide-y divide-gray-200">
               {tickets.map((ticket) => (
                 <Link
                   key={ticket.id}
@@ -167,7 +167,7 @@ export default function AdminTicketsPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-lg font-semibold text-theme-primary truncate">
+                        <h3 className="text-lg font-semibold text-gray-900 truncate">
                           {ticket.title}
                         </h3>
                         {ticket.unread_count > 0 && (
@@ -176,7 +176,7 @@ export default function AdminTicketsPage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-theme-tertiary line-clamp-2 mb-3">
+                      <p className="text-sm text-gray-500 line-clamp-2 mb-3">
                         {ticket.description}
                       </p>
                       <div className="flex flex-wrap items-center gap-2">
@@ -186,7 +186,7 @@ export default function AdminTicketsPage() {
                         <TicketModuleBadge module={ticket.module} />
                       </div>
                     </div>
-                    <div className="text-right flex-shrink-0 text-sm text-theme-tertiary">
+                    <div className="text-right flex-shrink-0 text-sm text-gray-500">
                       <div className="mb-1">{ticket.company_name}</div>
                       <div className="mb-1">Created by: {ticket.created_by_name}</div>
                       {ticket.assigned_to_name && (
@@ -205,21 +205,21 @@ export default function AdminTicketsPage() {
             {/* Pagination */}
             {total > 20 && (
               <div className="p-4 border-t border-gray-200 flex items-center justify-between">
-                <div className="text-sm text-theme-tertiary">
+                <div className="text-sm text-gray-500">
                   Showing {(page - 1) * 20 + 1}-{Math.min(page * 20, total)} of {total} tickets
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={prevPage}
                     disabled={page === 1}
-                    className="px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-theme-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+                    className="px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
                   >
                     Previous
                   </button>
                   <button
                     onClick={nextPage}
                     disabled={!hasMore}
-                    className="px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-theme-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+                    className="px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
                   >
                     Next
                   </button>

@@ -18,6 +18,8 @@ import {
   Eye,
   MessageSquare,
   Send,
+  FileText,
+  Shield,
   type LucideIcon
 } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
@@ -42,6 +44,10 @@ const quickActions: QuickAction[] = [
 
 // Module-specific actions (Planly removed from mobile - desktop only)
 const moduleActions: Record<string, QuickAction[]> = {
+  checkly: [
+    { id: 'sops', icon: FileText, label: 'SOPs', href: '/dashboard/sops/list', color: '#F1E194' },
+    { id: 'risk-assessments', icon: Shield, label: 'Risk Assessments', href: '/dashboard/risk-assessments', color: '#F1E194' },
+  ],
   stockly: [
     { id: 'receive', icon: Package, label: 'Receive Delivery', href: '/dashboard/stockly/deliveries', color: '#10B981' },
     { id: 'waste', icon: Trash2, label: 'Record Waste', href: '/dashboard/stockly/waste', color: '#f44336' },
@@ -71,7 +77,7 @@ const settingsActions: QuickAction[] = [
 ];
 
 interface QuickActionsGridProps {
-  section: 'quick' | 'stockly' | 'assetly' | 'teamly' | 'msgly' | 'settings';
+  section: 'quick' | 'checkly' | 'stockly' | 'assetly' | 'teamly' | 'msgly' | 'settings';
   userRole?: string;
 }
 

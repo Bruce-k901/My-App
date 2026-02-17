@@ -22,8 +22,8 @@ const PRIORITY_CONFIG: Record<TicketPriority, {
 }> = {
   low: {
     label: 'Low',
-    bgColor: 'bg-theme-surface-elevated0/10',
-    textColor: 'text-theme-secondary',
+    bgColor: 'bg-gray-100 dark:bg-gray-500/10',
+    textColor: 'text-gray-600 dark:text-gray-400',
     borderColor: 'border-gray-500/20',
     icon: '▾',
   },

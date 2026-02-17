@@ -33,13 +33,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [viewingAsCompany, setViewingAsCompany] = useState<{ id: string; name: string } | null>(null);
   const { count: ticketCount } = useTicketCount();
 
-  // Admin uses light theme
+  // Admin uses light theme — set data attribute to prevent UserPreferencesContext from overriding
   useEffect(() => {
-    document.documentElement.classList.add('light');
-    document.documentElement.classList.remove('dark');
+    const root = document.documentElement;
+    root.dataset.themeOverride = 'light';
+    root.classList.add('light');
+    root.classList.remove('dark');
     return () => {
-      // Restore dark when leaving admin
-      document.documentElement.classList.remove('light');
+      delete root.dataset.themeOverride;
+      root.classList.remove('light');
     };
   }, []);
 
@@ -112,7 +114,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   if (isAdmin === null && pathname !== '/admin/login') {
     return (
       <div className="h-screen bg-[#FAFAF7] flex items-center justify-center">
-        <div className="text-theme-tertiary">Verifying access...</div>
+        <div className="text-gray-500">Verifying access...</div>
       </div>
     );
   }
@@ -143,8 +145,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="flex items-center gap-3">
             <Image src="/icon-192x192.png" alt="Opsly" width={40} height={40} className="rounded-lg" />
             <div>
-              <div className="text-theme-primary font-semibold">Opsly Admin</div>
-              <div className="text-theme-tertiary text-xs">Platform Control</div>
+              <div className="text-gray-900 font-semibold">Opsly Admin</div>
+              <div className="text-gray-500 text-xs">Platform Control</div>
             </div>
           </div>
         </div>
@@ -163,7 +165,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   isActive
                     ? 'bg-[#D37E91]/10 text-[#D37E91] border border-[#D37E91]/20'
-                    : 'text-theme-tertiary hover:bg-black/[0.04] hover:text-theme-primary'
+                    : 'text-gray-500 hover:bg-black/[0.04] hover:text-gray-900'
                 }`}
               >
                 <item.icon className="w-5 h-5" />
@@ -183,14 +185,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="p-4 border-t border-gray-200 flex-shrink-0 space-y-1">
           <Link
             href="/dashboard"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-theme-tertiary hover:bg-black/[0.04] hover:text-theme-primary w-full transition-colors"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-500 hover:bg-black/[0.04] hover:text-gray-900 w-full transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             <span className="font-medium">Back to Dashboard</span>
           </Link>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-theme-tertiary hover:bg-black/[0.04] hover:text-theme-primary w-full transition-colors"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-500 hover:bg-black/[0.04] hover:text-gray-900 w-full transition-colors"
           >
             <LogOut className="w-5 h-5" />
             <span className="font-medium">Sign Out</span>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { sendTicketNotificationDM } from '@/lib/messaging/ticket-bridge';
 
 // ============================================================================
 // TICKET COMMENTS API
@@ -136,7 +137,7 @@ export async function POST(
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
     const body = await request.json();
-    const { content, is_internal = false } = body;
+    const { content, is_internal = false, source } = body;
 
     if (!content || content.trim().length === 0) {
       return NextResponse.json({ error: 'Content is required' }, { status: 400 });
@@ -145,7 +146,7 @@ export async function POST(
     // Check ticket access
     const { data: ticket } = await supabase
       .from('support_tickets')
-      .select('company_id, created_by, assigned_to')
+      .select('company_id, created_by, assigned_to, title, module')
       .eq('id', ticketId)
       .single();
 
@@ -197,6 +198,23 @@ export async function POST(
       ...comment,
       author: authorProfile || null,
     };
+
+    // Send Msgly DM for non-internal replies (skip if source is msgly to prevent loops)
+    if (!is_internal && source !== 'msgly' && ticket.created_by !== user.id) {
+      sendTicketNotificationDM({
+        ticketId,
+        ticketTitle: ticket.title || 'Support Ticket',
+        ticketModule: ticket.module,
+        companyId: ticket.company_id,
+        senderId: user.id,
+        recipientId: ticket.created_by,
+        content: content.trim(),
+        commentId: comment.id,
+        senderName: authorProfile?.full_name || authorProfile?.email,
+        isAdminReply: true,
+        eventType: 'comment',
+      });
+    }
 
     return NextResponse.json({ success: true, comment: commentWithAuthor });
 

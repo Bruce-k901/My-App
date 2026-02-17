@@ -477,6 +477,17 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                       </div>
                     )}
 
+                    {/* Ticket source badge */}
+                    {message.metadata?.source === 'ticket_comment' && message.metadata?.ticket_title && (
+                      <a
+                        href={message.metadata.ticket_link || `/dashboard/support/my-tickets/${message.metadata.ticket_id}`}
+                        className="flex items-center gap-1.5 text-xs mt-2 text-[#D37E91] hover:underline"
+                      >
+                        <span>🎫</span>
+                        <span>{message.metadata.ticket_title}</span>
+                      </a>
+                    )}
+
                     <div className="flex items-center justify-between mt-1">
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-theme-secondary">

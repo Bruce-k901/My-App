@@ -62,19 +62,21 @@ function applyCSSEffects(prefs: UserPreferences) {
   // High contrast
   root.classList.toggle('high-contrast', prefs.high_contrast === 'high');
 
-  // Theme (system/light/dark)
-  const theme = prefs.theme ?? 'dark';
-  let resolvedTheme: 'light' | 'dark' = 'dark';
-  if (theme === 'system') {
-    resolvedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
-  } else {
-    resolvedTheme = theme;
+  // Theme (system/light/dark) — skip if admin layout owns the theme
+  if (!root.dataset.themeOverride) {
+    const theme = prefs.theme ?? 'dark';
+    let resolvedTheme: 'light' | 'dark' = 'dark';
+    if (theme === 'system') {
+      resolvedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+    } else {
+      resolvedTheme = theme;
+    }
+    root.classList.remove('dark', 'light');
+    root.classList.add(resolvedTheme);
+    try { localStorage.setItem('theme', theme); } catch {}
   }
-  root.classList.remove('dark', 'light');
-  root.classList.add(resolvedTheme);
-  try { localStorage.setItem('theme', theme); } catch {}
 }
 
 interface UserPreferencesContextType {

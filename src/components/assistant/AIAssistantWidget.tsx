@@ -527,7 +527,7 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
   };
 
   // Handle ticket modal submission
-  const handleTicketModalSubmit = async (description: string, screenshot?: string) => {
+  const handleTicketModalSubmit = async (title: string, description: string, screenshot?: string) => {
     if (!pendingTicket) return;
 
     setShowTicketModal(false);
@@ -535,7 +535,7 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
 
     try {
       const result = await createTicket(
-        pendingTicket.title,
+        title,
         description,
         pendingTicket.type,
         screenshot

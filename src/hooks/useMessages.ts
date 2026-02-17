@@ -604,6 +604,21 @@ export function useMessages({
         }
       }
 
+      // Sync reply to ticket if parent message came from a ticket
+      if (replyToId && insertResult?.id) {
+        const parentMsg = messages.find((m) => m.id === replyToId);
+        if (parentMsg?.metadata?.source === 'ticket_comment' && parentMsg.metadata?.ticket_id) {
+          fetch('/api/tickets/sync-from-msgly', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              messageId: insertResult.id,
+              parentMessageId: replyToId,
+            }),
+          }).catch((err) => console.error('ticket sync failed:', err));
+        }
+      }
+
       // Replace temp message with real message
       // Use sender info from optimistic update (we know it's correct)
       const enrichedMessage: Message = {

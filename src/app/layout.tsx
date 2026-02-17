@@ -17,6 +17,7 @@ import { TaskAlertSubscriber } from "@/components/notifications/TaskAlertSubscri
 import { SuppressConsoleWarnings } from "@/components/dev/SuppressConsoleWarnings";
 import { ConditionalGlobalComponents } from "@/components/layout/ConditionalGlobalComponents";
 import { UserPreferencesProvider } from "@/context/UserPreferencesContext";
+import { Watermark } from "@/components/security/Watermark";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -97,7 +98,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   
                   // Force dark mode on all non-dashboard pages (marketing, login, signup, etc.)
                   // Light mode should only be available once users land on the dashboard
-                  const isDashboardPage = currentPath.startsWith('/dashboard') || 
+                  const isDashboardPage = currentPath.startsWith('/dashboard') ||
+                                         currentPath.startsWith('/app') ||
                                          currentPath.startsWith('/api') ||
                                          currentPath.startsWith('/_next') ||
                                          currentPath.startsWith('/learn');
@@ -155,6 +157,101 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             `,
           }}
         />
+        {/* Production: Disable React DevTools + block dev tools shortcuts */}
+        {process.env.NODE_ENV === 'production' && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function() {
+                  'use strict';
+                  // Neuter React DevTools before React loads
+                  var noop = function(){};
+                  var fakeHook = { inject: noop, checkDCE: noop, onCommitFiberRoot: noop, onCommitFiberUnmount: noop, supportsFiber: true, renderers: new Map() };
+                  Object.defineProperty(window, '__REACT_DEVTOOLS_GLOBAL_HOOK__', {
+                    get: function() { return fakeHook; },
+                    set: noop,
+                    configurable: false
+                  });
+
+                  // Block dev tools keyboard shortcuts and right-click
+                  document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+                  document.addEventListener('keydown', function(e) {
+                    // F12
+                    if (e.key === 'F12') { e.preventDefault(); return false; }
+                    // Ctrl+Shift+I / Cmd+Shift+I (Inspector)
+                    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'I') { e.preventDefault(); return false; }
+                    // Ctrl+Shift+J / Cmd+Shift+J (Console)
+                    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'J') { e.preventDefault(); return false; }
+                    // Ctrl+Shift+C / Cmd+Shift+C (Element picker)
+                    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') { e.preventDefault(); return false; }
+                    // Ctrl+U / Cmd+U (View source)
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'u') { e.preventDefault(); return false; }
+                    // Ctrl+S / Cmd+S (Save page)
+                    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); return false; }
+                  });
+
+                  // Periodically clear console with warning
+                  setInterval(function() {
+                    console.clear();
+                    console.log('%cStop!', 'color:red;font-size:40px;font-weight:bold');
+                    console.log('%cThis is a protected application. Unauthorized access is prohibited.', 'color:red;font-size:14px');
+                  }, 2000);
+                })();
+              `,
+            }}
+          />
+        )}
+        {/* Production: Obfuscate URLs in address bar */}
+        {process.env.NODE_ENV === 'production' && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function() {
+                  'use strict';
+                  var RC = {
+                    organization:"og",business:"bz",users:"u",sites:"st",training:"tr",
+                    documents:"dc",tasks:"tk",my_templates:"mt",my_tasks:"my",todays_tasks:"td",
+                    sops:"so","risk-assessments":"ra",libraries:"lb",assets:"at",ppm:"pm",
+                    courses:"cr",logs:"lg",people:"pe",stockly:"s",messaging:"mg",calendar:"cl",
+                    reports:"rp","eho-report":"eh",billing:"bl",settings:"x",support:"sp",
+                    incidents:"in",checklists:"ch","coshh-data":"cd",help:"h",planly:"p",
+                    compliance:"cm","compliance-templates":"ct",equipment:"eq",admin:"ad",
+                    archive:"av","archived-assets":"aa","sfbb-library":"sf",onboarding:"ob"
+                  };
+                  function obfuscate(url) {
+                    if (!url || typeof url !== 'string') return url;
+                    try {
+                      var u = new URL(url, location.origin);
+                      var p = u.pathname;
+                      if (p === '/dashboard') {
+                        u.pathname = '/app';
+                        return u.pathname + u.search + u.hash;
+                      }
+                      if (p.startsWith('/dashboard/')) {
+                        var segs = p.slice(11).split('/').filter(Boolean);
+                        if (segs.length > 0 && RC[segs[0]]) {
+                          segs[0] = RC[segs[0]];
+                          u.pathname = '/app/' + segs.join('/');
+                          return u.pathname + u.search + u.hash;
+                        }
+                      }
+                    } catch(e) {}
+                    return url;
+                  }
+                  var origPush = history.pushState.bind(history);
+                  var origReplace = history.replaceState.bind(history);
+                  history.pushState = function(s, t, u) { return origPush(s, t, u ? obfuscate(String(u)) : u); };
+                  history.replaceState = function(s, t, u) { return origReplace(s, t, u ? obfuscate(String(u)) : u); };
+                  // Transform current URL immediately
+                  var cur = obfuscate(location.pathname + location.search + location.hash);
+                  if (cur !== location.pathname + location.search + location.hash) {
+                    origReplace(history.state, '', cur);
+                  }
+                })();
+              `,
+            }}
+          />
+        )}
         {/* Early script to suppress preload warnings before any resources load */}
         <script
           dangerouslySetInnerHTML={{
@@ -282,7 +379,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="shortcut icon" href="/favicon.ico" />
       </head>
-      <body className={`bg-[#F5F5F2] dark:bg-neutral-950 text-theme-primary font-sans ${poppins.variable}`} suppressHydrationWarning>
+      <body className={`bg-[#F5F5F2] dark:bg-neutral-950 text-theme-primary font-sans ${poppins.variable}${process.env.NODE_ENV === 'production' ? ' no-select-app' : ''}`} suppressHydrationWarning>
         <ErrorBoundaryWrapper>
           <ReactQueryProvider>
             <QueryProvider>
@@ -302,6 +399,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   
                   {/* Global components - only shown on dashboard pages */}
                   <ConditionalGlobalComponents />
+                  {process.env.NODE_ENV === 'production' && <Watermark />}
                 </SiteContextProvider>
                 </UserPreferencesProvider>
               </AppProvider>

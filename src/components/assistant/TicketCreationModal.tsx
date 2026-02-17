@@ -6,7 +6,7 @@ import { X, AlertTriangle, Lightbulb, HelpCircle, Eraser, Square } from '@/compo
 interface TicketCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (description: string, screenshot?: string) => void;
+  onSubmit: (title: string, description: string, screenshot?: string) => void;
   initialTitle: string;
   type: 'issue' | 'idea' | 'question';
   screenshot?: string;
@@ -28,6 +28,7 @@ export function TicketCreationModal({
   type,
   screenshot
 }: TicketCreationModalProps) {
+  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [blurAreas, setBlurAreas] = useState<BlurArea[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -194,6 +195,10 @@ export function TicketCreationModal({
   };
 
   const handleSubmit = () => {
+    if (!title.trim()) {
+      alert('Please enter a subject for your ticket.');
+      return;
+    }
     if (!description.trim()) {
       alert('Please enter a description for your ticket.');
       return;
@@ -205,24 +210,21 @@ export function TicketCreationModal({
       finalScreenshot = canvasRef.current.toDataURL('image/png', 0.9);
     }
 
-    onSubmit(description, finalScreenshot);
+    onSubmit(title.trim(), description, finalScreenshot);
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-4xl max-h-[90vh] overflow-hidden bg-white dark:bg-gray-800 rounded-lg shadow-2xl flex flex-col">
+    <div className="fixed inset-0 z-[10001] flex items-center justify-center sm:pr-[480px] bg-black/50 backdrop-blur-sm">
+      <div className="w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden bg-white dark:bg-gray-800 rounded-lg shadow-2xl flex flex-col">
         {/* Header */}
         <div className={`flex items-center justify-between p-4 border-b ${config.border} ${config.bg}`}>
           <div className="flex items-center gap-3">
             <Icon className={`h-6 w-6 ${config.color}`} />
-            <div>
-              <h2 className="text-lg font-semibold text-theme-primary">
-                Create {type.charAt(0).toUpperCase() + type.slice(1)} Ticket
-              </h2>
-              <p className="text-sm text-theme-secondary">{initialTitle}</p>
-            </div>
+            <h2 className="text-lg font-semibold text-theme-primary">
+              Create {type.charAt(0).toUpperCase() + type.slice(1)} Ticket
+            </h2>
           </div>
           <button
             onClick={onClose}
@@ -234,6 +236,23 @@ export function TicketCreationModal({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {/* Subject */}
+          <div>
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
+              Subject
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder={type === 'idea' ? 'Brief summary of your idea...' : 'Brief summary of the issue...'}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
+                       bg-white dark:bg-gray-900 text-theme-primary
+                       focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              autoFocus
+            />
+          </div>
+
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-theme-secondary mb-2">
@@ -248,7 +267,6 @@ export function TicketCreationModal({
                        focus:ring-2 focus:ring-blue-500 focus:border-transparent
                        resize-none"
               rows={4}
-              autoFocus
             />
           </div>
 
@@ -315,8 +333,8 @@ export function TicketCreationModal({
           </button>
           <button
             onClick={handleSubmit}
-            disabled={!description.trim()}
-            className="px-4 py-2 text-sm font-medium text-white bg-module-fg hover:bg-module-fg/90
+            disabled={!title.trim() || !description.trim()}
+            className="px-4 py-2 text-sm font-medium text-gray-900 bg-module-fg hover:bg-module-fg/90
                      rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Create Ticket

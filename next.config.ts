@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true, // Re-enabled for better Fast Refresh support
+  productionBrowserSourceMaps: false,
   // App Router is enabled by default in Next 15; no experimental flag needed
   // Ensure SSR build (not static export)
   // output: "standalone", // Only for production builds - causes issues in dev mode
@@ -38,16 +39,44 @@ const nextConfig: NextConfig = {
       };
     }
 
-    // Add bundle analyzer for production builds
-    if (!dev && !isServer) {
-      const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-      config.plugins.push(
-        new BundleAnalyzerPlugin({
-          analyzerMode: "static",
-          openAnalyzer: false,
-          reportFilename: "bundle-analyzer-report.html",
-        }),
-      );
+    // Production: aggressive obfuscation + strip console/debugger
+    if (!dev) {
+      config.devtool = false; // No source map hints in compiled JS
+
+      if (!isServer) {
+        const TerserPlugin = require("terser-webpack-plugin");
+        config.optimization = {
+          ...config.optimization,
+          minimizer: [
+            new TerserPlugin({
+              terserOptions: {
+                compress: {
+                  drop_console: true,
+                  drop_debugger: true,
+                  passes: 2,
+                },
+                mangle: {
+                  toplevel: true,
+                },
+                format: {
+                  comments: false,
+                },
+              },
+              extractComments: false,
+            }),
+          ],
+        };
+
+        // Bundle analyzer
+        const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+        config.plugins.push(
+          new BundleAnalyzerPlugin({
+            analyzerMode: "static",
+            openAnalyzer: false,
+            reportFilename: "bundle-analyzer-report.html",
+          }),
+        );
+      }
     }
     return config;
   },

@@ -29,8 +29,8 @@ export function useTicket({ ticketId, isAdmin = false }: UseTicketOptions): UseT
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTicket = useCallback(async () => {
-    setIsLoading(true);
+  const fetchTicket = useCallback(async (showLoading = true) => {
+    if (showLoading) setIsLoading(true);
     setError(null);
 
     try {
@@ -48,7 +48,7 @@ export function useTicket({ ticketId, isAdmin = false }: UseTicketOptions): UseT
       setError(err.message || 'Failed to load ticket');
       setTicket(null);
     } finally {
-      setIsLoading(false);
+      if (showLoading) setIsLoading(false);
     }
   }, [ticketId, isAdmin]);
 
@@ -134,8 +134,8 @@ export function useTicket({ ticketId, isAdmin = false }: UseTicketOptions): UseT
       await fetch(`/api/admin/tickets/${ticketId}/mark-read`, {
         method: 'POST',
       });
-      // Refetch to update unread count
-      await fetchTicket();
+      // Silently refetch to update unread count (no loading flicker)
+      await fetchTicket(false);
     } catch (err: any) {
       console.error('Error marking ticket as read:', err);
       // Non-critical, don't throw

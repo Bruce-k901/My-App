@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { Search, FileText, CheckCircle, AlertCircle, Archive, Edit, Eye, ChevronDown, ChevronUp, FileBox } from '@/components/ui/icons';
+import { Search, FileText, CheckCircle, AlertCircle, Archive, Edit, Eye, ChevronDown, ChevronUp, FileBox, ArrowLeft } from '@/components/ui/icons';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 const CATEGORY_GROUPS = {
   'FOH': {
@@ -44,6 +45,7 @@ function SOPsListContent() {
   const router = useRouter();
   const { companyId } = useAppContext();
   const { showToast } = useToast();
+  const { isMobile } = useIsMobile();
   const searchParams = useSearchParams();
   const sopIdParam = searchParams?.get('sop_id');
   
@@ -265,6 +267,8 @@ function SOPsListContent() {
     const matchesSearch = sop.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          sop.ref_code.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = filterStatus === 'all' || sop.status === filterStatus;
+    // On mobile, only show published SOPs
+    if (isMobile && sop.status !== 'Published') return false;
     return matchesSearch && matchesStatus;
   });
 
@@ -284,6 +288,19 @@ function SOPsListContent() {
 
   return (
     <div className="space-y-3 sm:space-y-4 md:space-y-6">
+      {/* Mobile Header */}
+      {isMobile && (
+        <div className="flex items-center gap-3 px-1 pt-2">
+          <button onClick={() => router.back()} className="p-2 -ml-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
+            <ArrowLeft size={20} className="text-theme-primary" />
+          </button>
+          <div>
+            <h1 className="text-xl font-bold text-theme-primary">SOPs</h1>
+            <p className="text-xs text-theme-tertiary">{filteredSOPs.length} published procedure{filteredSOPs.length !== 1 ? 's' : ''}</p>
+          </div>
+        </div>
+      )}
+
       {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 md:gap-4">
         <div className="flex-1 relative">
@@ -296,23 +313,27 @@ function SOPsListContent() {
             className="w-full bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 text-sm sm:text-base text-[rgb(var(--text-primary))] dark:text-white placeholder-[rgb(var(--text-tertiary))] dark:placeholder-neutral-400"
           />
         </div>
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-[rgb(var(--text-primary))] dark:text-white"
-        >
-          <option value="all">All Status</option>
-          <option value="Published">Published</option>
-          <option value="Draft">Draft</option>
-        </select>
-        <button
-          onClick={() => router.push('/dashboard/sops/archive')}
-          className="px-3 sm:px-4 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-700 hover:bg-theme-surface-elevated dark:hover:bg-neutral-600 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg text-[rgb(var(--text-secondary))] dark:text-neutral-300 flex items-center justify-center gap-2 transition-colors text-sm sm:text-base"
-        >
-          <Archive size={16} />
-          <span className="hidden sm:inline">Archived SOPs</span>
-          <span className="sm:hidden">Archive</span>
-        </button>
+        {!isMobile && (
+          <>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-[rgb(var(--text-primary))] dark:text-white"
+            >
+              <option value="all">All Status</option>
+              <option value="Published">Published</option>
+              <option value="Draft">Draft</option>
+            </select>
+            <button
+              onClick={() => router.push('/dashboard/sops/archive')}
+              className="px-3 sm:px-4 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-700 hover:bg-theme-surface-elevated dark:hover:bg-neutral-600 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg text-[rgb(var(--text-secondary))] dark:text-neutral-300 flex items-center justify-center gap-2 transition-colors text-sm sm:text-base"
+            >
+              <Archive size={16} />
+              <span className="hidden sm:inline">Archived SOPs</span>
+              <span className="sm:hidden">Archive</span>
+            </button>
+          </>
+        )}
       </div>
 
       {/* SOPs List */}
@@ -392,6 +413,7 @@ function SOPsListContent() {
                               </div>
                             </div>
                           </div>
+                          {!isMobile && (
                           <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 flex-shrink-0">
  <div className="text-right text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hidden sm:block">
                               <div>Created {new Date(sop.created_at).toLocaleDateString()}</div>
@@ -422,6 +444,7 @@ function SOPsListContent() {
                               </button>
                             </div>
                           </div>
+                          )}
                         </div>
                       );
                     })}

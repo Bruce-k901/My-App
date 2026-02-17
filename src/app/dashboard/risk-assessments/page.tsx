@@ -2,15 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, AlertTriangle, CheckCircle, Calendar, Edit, FileBox, FileText, Shield } from '@/components/ui/icons';
+import { Search, AlertTriangle, CheckCircle, Calendar, Edit, FileBox, FileText, Shield, ArrowLeft } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 export default function RiskAssessmentsPage() {
   const router = useRouter();
   const { companyId } = useAppContext();
   const { showToast } = useToast();
+  const { isMobile } = useIsMobile();
   
   const [riskAssessments, setRiskAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -88,6 +90,8 @@ export default function RiskAssessmentsPage() {
                          ra.ref_code.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = filterStatus === 'all' || ra.status === filterStatus;
     const matchesType = filterType === 'all' || ra.template_type === filterType;
+    // On mobile, only show published RAs
+    if (isMobile && ra.status !== 'Published') return false;
     return matchesSearch && matchesStatus && matchesType;
   });
 
@@ -125,7 +129,21 @@ export default function RiskAssessmentsPage() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Stats Cards - Improved Design */}
+      {/* Mobile Header */}
+      {isMobile && (
+        <div className="flex items-center gap-3 px-1 pt-2">
+          <button onClick={() => router.back()} className="p-2 -ml-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
+            <ArrowLeft size={20} className="text-theme-primary" />
+          </button>
+          <div>
+            <h1 className="text-xl font-bold text-theme-primary">Risk Assessments</h1>
+            <p className="text-xs text-theme-tertiary">{filteredAssessments.length} published assessment{filteredAssessments.length !== 1 ? 's' : ''}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Stats Cards - Desktop only */}
+      {!isMobile && (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="bg-theme-surface/50 border border-theme rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-[0_0_20px_rgba(var(--module-fg),0.15)] hover:border-module-fg/30 dark:hover:border-magenta-500/30 group">
           <div className="flex items-center justify-between mb-3">
@@ -135,7 +153,7 @@ export default function RiskAssessmentsPage() {
           <div className="text-3xl font-bold text-theme-primary">{stats.total}</div>
  <div className="text-xs text-gray-500 dark:text-theme-tertiary mt-1">Active assessments</div>
         </div>
-        
+
         <div className={`bg-theme-surface/50 ${stats.overdue > 0 ? 'bg-red-50 dark:from-red-500/10 dark:to-red-600/5' : ''} border ${stats.overdue > 0 ? 'border-red-200 dark:border-red-500/30' : 'border-theme'} rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-module-glow group`}>
           <div className="flex items-center justify-between mb-3">
  <div className={`text-sm font-medium ${stats.overdue > 0 ?'text-red-700 dark:text-red-300':'text-gray-600 dark:text-theme-tertiary'}`}>Overdue</div>
@@ -148,7 +166,7 @@ export default function RiskAssessmentsPage() {
             {stats.overdue > 0 ? 'Requires attention' : 'All up to date'}
           </div>
         </div>
-        
+
         <div className={`bg-theme-surface/50 ${stats.highRisk > 0 ? 'bg-orange-50 dark:from-orange-500/10 dark:to-orange-600/5' : ''} border ${stats.highRisk > 0 ? 'border-orange-200 dark:border-orange-500/30' : 'border-theme'} rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-module-glow group`}>
           <div className="flex items-center justify-between mb-3">
  <div className={`text-sm font-medium ${stats.highRisk > 0 ?'text-orange-700 dark:text-orange-300':'text-gray-600 dark:text-theme-tertiary'}`}>High Risk</div>
@@ -161,7 +179,7 @@ export default function RiskAssessmentsPage() {
             {stats.highRisk > 0 ? 'Needs review' : 'Low risk levels'}
           </div>
         </div>
-        
+
         <div className="bg-green-50 dark:bg-gradient-to-br dark:from-green-500/10 dark:to-green-600/5 border border-green-200 dark:border-green-500/20 rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-module-glow hover:border-green-300 dark:hover:border-green-500/30 group">
           <div className="flex items-center justify-between mb-3">
             <div className="text-green-700 dark:text-green-300 text-sm font-medium">Published</div>
@@ -171,9 +189,10 @@ export default function RiskAssessmentsPage() {
           <div className="text-xs text-green-700/70 dark:text-green-300/70 mt-1">Active & published</div>
         </div>
       </div>
+      )}
 
-      {/* Overdue Banner */}
-      {stats.overdue > 0 && (
+      {/* Overdue Banner - Desktop only */}
+      {!isMobile && stats.overdue > 0 && (
         <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-center gap-3">
           <AlertTriangle size={20} className="text-red-600 dark:text-red-400 flex-shrink-0" />
           <div className="flex-1">
@@ -185,6 +204,7 @@ export default function RiskAssessmentsPage() {
 
       {/* Risk Assessments List */}
       <div>
+        {!isMobile && (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4">
           <h2 className="text-xl font-semibold text-theme-primary">Risk Assessments</h2>
           <div className="flex items-center gap-3 sm:gap-4">
@@ -199,6 +219,7 @@ export default function RiskAssessmentsPage() {
             </button>
           </div>
         </div>
+        )}
 
         {/* Search and Filters */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 md:gap-4 mb-4">
@@ -212,6 +233,8 @@ export default function RiskAssessmentsPage() {
               className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 text-sm sm:text-base text-theme-primary placeholder-gray-400 dark:placeholder-neutral-400"
             />
           </div>
+          {!isMobile && (
+          <>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
@@ -231,6 +254,8 @@ export default function RiskAssessmentsPage() {
             <option value="general">General</option>
             <option value="coshh">COSHH</option>
           </select>
+          </>
+          )}
         </div>
 
         {/* Risk Assessments List */}
@@ -289,11 +314,12 @@ export default function RiskAssessmentsPage() {
                         )}
                       </div>
                     </div>
+                    {!isMobile && (
                     <div className="flex items-center justify-end sm:justify-start gap-2 sm:ml-4 flex-shrink-0">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          const templatePath = assessment.template_type === 'coshh' 
+                          const templatePath = assessment.template_type === 'coshh'
                             ? '/dashboard/risk-assessments/coshh-template'
                             : '/dashboard/risk-assessments/general-template';
                           router.push(`${templatePath}?edit=${assessment.id}`);
@@ -354,6 +380,7 @@ export default function RiskAssessmentsPage() {
                         )}
                       </button>
                     </div>
+                    )}
                   </div>
                 </div>
               );

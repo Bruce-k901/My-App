@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { sendTicketNotificationDM } from '@/lib/messaging/ticket-bridge';
 
 // ============================================================================
 // USER TICKET COMMENTS API
@@ -22,7 +23,7 @@ export async function POST(
 
     const ticketId = params.id;
     const body = await request.json();
-    const { content } = body;
+    const { content, source } = body;
 
     if (!content || content.trim().length === 0) {
       return NextResponse.json({ error: 'Content is required' }, { status: 400 });
@@ -31,7 +32,7 @@ export async function POST(
     // Check ticket access - user must be creator or assigned
     const { data: ticket } = await supabase
       .from('support_tickets')
-      .select('created_by, assigned_to')
+      .select('created_by, assigned_to, title, module, company_id')
       .eq('id', ticketId)
       .single();
 
@@ -66,6 +67,27 @@ export async function POST(
     if (commentError) {
       console.error('Error creating comment:', commentError);
       return NextResponse.json({ error: commentError.message }, { status: 500 });
+    }
+
+    // Send Msgly DM to the assigned admin (skip if source is msgly to prevent loops)
+    if (source !== 'msgly') {
+      const recipientId = ticket.assigned_to || null;
+      if (recipientId && recipientId !== user.id) {
+        const authorData = (comment as any)?.author;
+        sendTicketNotificationDM({
+          ticketId,
+          ticketTitle: ticket.title || 'Support Ticket',
+          ticketModule: ticket.module,
+          companyId: ticket.company_id,
+          senderId: user.id,
+          recipientId,
+          content: content.trim(),
+          commentId: comment.id,
+          senderName: authorData?.full_name || authorData?.email,
+          isAdminReply: false,
+          eventType: 'comment',
+        });
+      }
     }
 
     return NextResponse.json({ success: true, comment });

@@ -12,9 +12,11 @@ import {
   Wrench,         // Assetly
   Users,          // Teamly
   MessageSquare,  // Msgly
+  ClipboardList,  // Checkly
 } from '@/components/ui/icons';
 
 const moduleSections = [
+  { id: 'checkly', label: 'Checkly', subtitle: 'Compliance', icon: ClipboardList, color: '#F1E194' },
   { id: 'stockly', label: 'Stockly', subtitle: 'Inventory', icon: Package, color: '#10B981' },
   { id: 'assetly', label: 'Assetly', subtitle: 'Assets', icon: Wrench, color: '#0EA5E9' },
   { id: 'teamly', label: 'Teamly', subtitle: 'People', icon: Users, color: '#8B5CF6' },
