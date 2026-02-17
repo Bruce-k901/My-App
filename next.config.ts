@@ -21,6 +21,11 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
+  // Strip console.* and debugger from production bundles via SWC (safe, built-in)
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
+  },
+
   // CSS optimization disabled in dev to prevent preload warnings
   // These warnings are harmless but annoying - they occur due to HMR in development
   experimental: {
@@ -39,32 +44,12 @@ const nextConfig: NextConfig = {
       };
     }
 
-    // Production: strip console/debugger statements
+    // Production: disable source maps in compiled JS
     if (!dev) {
-      config.devtool = false; // No source map hints in compiled JS
+      config.devtool = false;
 
+      // Bundle analyzer (client-side only)
       if (!isServer) {
-        const TerserPlugin = require("terser-webpack-plugin");
-        // IMPORTANT: Push to existing minimizer array — do NOT replace it.
-        // Next.js configures its own minimizer (SWC/Terser) with safe defaults.
-        // Replacing the array breaks the webpack runtime and causes production crashes.
-        config.optimization.minimizer = config.optimization.minimizer || [];
-        config.optimization.minimizer.push(
-          new TerserPlugin({
-            terserOptions: {
-              compress: {
-                drop_console: true,
-                drop_debugger: true,
-              },
-              format: {
-                comments: false,
-              },
-            },
-            extractComments: false,
-          }),
-        );
-
-        // Bundle analyzer
         const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
         config.plugins.push(
           new BundleAnalyzerPlugin({

@@ -1,36 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { CODE_TO_MODULE } from "@/config/route-codes";
 
 export async function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-
-  // ── URL Obfuscation: rewrite /app/:code/:path* → /dashboard/:module/:path* ──
-  // This handles incoming requests to obfuscated URLs (shared links, bookmarks)
-  if (pathname === "/app" || pathname.startsWith("/app/")) {
-    const rest = pathname.slice("/app".length);
-    if (!rest || rest === "/") {
-      const url = req.nextUrl.clone();
-      url.pathname = "/dashboard";
-      const res = NextResponse.rewrite(url);
-      await refreshSession(req, res);
-      return res;
-    }
-    const segments = rest.split("/").filter(Boolean);
-    const code = segments[0];
-    const module = CODE_TO_MODULE[code];
-    if (module) {
-      const subPath = segments.slice(1).join("/");
-      const url = req.nextUrl.clone();
-      url.pathname = `/dashboard/${module}${subPath ? `/${subPath}` : ""}`;
-      const res = NextResponse.rewrite(url);
-      await refreshSession(req, res);
-      return res;
-    }
-  }
-
-  // ── Default: Supabase session refresh ──
   const res = NextResponse.next();
   await refreshSession(req, res);
   return res;
