@@ -492,6 +492,132 @@ export interface ProductionCCPRecord {
   recorded_by_profile?: { full_name: string } | null;
 }
 
+// @salsa - SALSA Compliance: Phase 4 types
+// ============================================================================
+// Traceability + Recall Types (SALSA Phase 4)
+// ============================================================================
+
+export type RecallType = 'recall' | 'withdrawal';
+export type RecallSeverity = 'class_1' | 'class_2' | 'class_3';
+export type RecallStatus = 'draft' | 'active' | 'investigating' | 'notified' | 'resolved' | 'closed';
+export type RecallBatchAction = 'quarantined' | 'destroyed' | 'returned' | 'released' | 'pending';
+
+export interface Recall {
+  id: string;
+  company_id: string;
+  site_id: string | null;
+  recall_code: string;
+  title: string;
+  description: string | null;
+  recall_type: RecallType;
+  severity: RecallSeverity;
+  status: RecallStatus;
+  reason: string | null;
+  root_cause: string | null;
+  corrective_actions: string | null;
+  initiated_at: string;
+  initiated_by: string | null;
+  resolved_at: string | null;
+  closed_at: string | null;
+  fsa_notified: boolean;
+  fsa_notified_at: string | null;
+  fsa_reference: string | null;
+  salsa_notified: boolean;
+  salsa_notified_at: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+  // Joined
+  affected_batches?: RecallAffectedBatch[];
+  notifications?: RecallNotification[];
+}
+
+export interface RecallAffectedBatch {
+  id: string;
+  company_id: string;
+  recall_id: string;
+  stock_batch_id: string;
+  batch_type: 'raw_material' | 'finished_product';
+  quantity_affected: number | null;
+  quantity_recovered: number | null;
+  action_taken: RecallBatchAction;
+  notes: string | null;
+  added_at: string;
+  // Joined
+  stock_batch?: StockBatch | null;
+}
+
+export interface RecallNotification {
+  id: string;
+  company_id: string;
+  recall_id: string;
+  customer_id: string | null;
+  customer_name: string;
+  contact_email: string | null;
+  contact_phone: string | null;
+  notification_method: string | null;
+  notified_at: string | null;
+  notified_by: string | null;
+  response_received: boolean;
+  response_notes: string | null;
+  stock_returned: boolean;
+  stock_return_quantity: number | null;
+  created_at: string;
+}
+
+export interface BatchDispatchRecord {
+  id: string;
+  company_id: string;
+  site_id: string | null;
+  stock_batch_id: string;
+  order_id: string | null;
+  customer_id: string | null;
+  customer_name: string;
+  dispatch_date: string;
+  quantity: number;
+  unit: string | null;
+  delivery_note_reference: string | null;
+  created_at: string;
+  created_by: string | null;
+  // Joined
+  stock_batch?: StockBatch | null;
+}
+
+// Traceability report types
+export interface TraceNode {
+  type: 'supplier' | 'raw_material_batch' | 'production_batch' | 'finished_product_batch' | 'customer';
+  id: string;
+  label: string;
+  sublabel?: string;
+  date?: string;
+  quantity?: number;
+  unit?: string;
+  allergens?: string[];
+  status?: string;
+}
+
+export interface TraceLink {
+  from: string;
+  to: string;
+  label?: string;
+  quantity?: number;
+}
+
+export interface TraceResult {
+  nodes: TraceNode[];
+  links: TraceLink[];
+  batch: StockBatch;
+  direction: 'forward' | 'backward';
+  mass_balance?: {
+    total_input: number;
+    total_output: number;
+    variance: number;
+    variance_percent: number;
+    unit: string;
+  };
+}
+
 export interface ProductSpecificationHistory {
   id: string;
   spec_id: string;
@@ -513,5 +639,57 @@ export interface ProductSpecificationHistory {
   archived_by?: string | null;
   // Joined data
   archived_by_profile?: { full_name: string } | null;
+}
+
+// @salsa - SALSA Compliance: Phase 5 — Calibration + Non-Conformance types
+
+export interface AssetCalibration {
+  id: string;
+  company_id: string;
+  site_id: string | null;
+  asset_id: string;
+  calibration_date: string;
+  next_calibration_due: string | null;
+  calibrated_by: string;
+  certificate_reference: string | null;
+  certificate_url: string | null;
+  method: string | null;
+  readings: Record<string, number> | null;
+  result: 'pass' | 'fail' | 'adjusted';
+  notes: string | null;
+  created_at: string;
+  created_by: string | null;
+}
+
+export type NonConformanceCategory = 'hygiene' | 'temperature' | 'cleaning' | 'documentation' | 'allergen' | 'pest_control' | 'supplier' | 'traceability' | 'calibration' | 'labelling' | 'other';
+export type NonConformanceSeverity = 'minor' | 'major' | 'critical';
+export type NonConformanceSource = 'internal_audit' | 'external_audit' | 'customer_complaint' | 'staff_observation' | 'monitoring' | 'other';
+export type NonConformanceStatus = 'open' | 'investigating' | 'corrective_action' | 'verification' | 'closed';
+
+export interface NonConformance {
+  id: string;
+  company_id: string;
+  site_id: string | null;
+  nc_code: string;
+  title: string;
+  description: string | null;
+  category: NonConformanceCategory;
+  severity: NonConformanceSeverity;
+  source: NonConformanceSource;
+  source_reference: string | null;
+  status: NonConformanceStatus;
+  root_cause: string | null;
+  corrective_action: string | null;
+  corrective_action_due: string | null;
+  corrective_action_completed_at: string | null;
+  corrective_action_verified_by: string | null;
+  corrective_action_evidence: string | null;
+  preventive_action: string | null;
+  raised_by: string | null;
+  raised_at: string;
+  closed_at: string | null;
+  closed_by: string | null;
+  created_at: string;
+  updated_at: string;
 }
 

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Edit2, Save, X, Archive, Paperclip, Trash2, ChevronUp, Edit3, Wrench, Phone, Layers } from '@/components/ui/icons';
 import { supabase } from "@/lib/supabase";
+import CalibrationPanel from '@/components/stockly/CalibrationPanel'; // @salsa
 import { useAppContext } from "@/context/AppContext";
 import { useToast } from "@/components/ui/ToastProvider";
 import { calculateAssetAge, calculateNextServiceDate } from "@/lib/utils/dateUtils";
@@ -527,6 +528,18 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
               </div>
             </div>
           </div>
+
+          {/* @salsa — Section F: Calibration History (for temperature probes and other calibratable equipment) */}
+          {(asset.category === 'temperature_probes' || asset.category === 'refrigeration_equipment') && (
+            <div>
+              <h3 className="text-base font-semibold tracking-wide text-module-fg border-t border-theme mt-6 pt-3 bg-gradient-to-r from-cyan-50 dark:from-cyan-500/10 to-transparent px-2 py-1 rounded">
+                Calibration History
+              </h3>
+              <div className="mt-4">
+                <CalibrationPanel assetId={asset.id} assetName={asset.name} />
+              </div>
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex items-center justify-end pt-6 border-t border-theme mt-6">

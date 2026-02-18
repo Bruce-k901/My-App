@@ -1105,6 +1105,131 @@ const COMPLIANCE_MODULE_TEMPLATES_V2: ComplianceTemplate[] = [
     complianceStandard: "Manual Handling Operations Regulations 1992",
     isCritical: false,
   }),
+  // --- SALSA Compliance Templates --- @salsa
+  buildComplianceTemplate({
+    slug: "salsa_annual_food_safety_review",
+    name: "Annual SALSA Food Safety Review",
+    description:
+      "Comprehensive annual review of all five SALSA standard sections — prerequisite controls, HACCP, management systems, GMP, and supplier approval.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "annually",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["yes_no_checklist", "text_note"],
+    complianceStandard: "SALSA Issue 6",
+    isCritical: true,
+    workflowType: "checklist_verify",
+    workflowConfig: {
+      verificationRules: { requiresSignature: true },
+    },
+  }),
+  buildComplianceTemplate({
+    slug: "salsa_mock_recall_exercise",
+    name: "Mock Recall Exercise",
+    description:
+      "Annual mock recall to demonstrate traceability capability within 4 hours. SALSA requires this as evidence of recall readiness.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "annually",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["yes_no_checklist", "text_note"],
+    complianceStandard: "SALSA Issue 6",
+    isCritical: true,
+    workflowType: "checklist_verify",
+    workflowConfig: {
+      verificationRules: { requiresSignature: true },
+    },
+    instructions:
+      "Use the automated mock recall tool at /dashboard/stockly/traceability to run forward and backward traces. Record batch code, time taken, and customer count.",
+  }),
+  buildComplianceTemplate({
+    slug: "salsa_food_fraud_assessment",
+    name: "Food Fraud Vulnerability Assessment",
+    description:
+      "Annual assessment of food fraud risks per SALSA requirement. Covers authenticity, substitution, dilution, and supply chain vulnerabilities.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "annually",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["yes_no_checklist", "text_note"],
+    complianceStandard: "SALSA Issue 6",
+    isCritical: false,
+    workflowType: "checklist_verify",
+  }),
+  buildComplianceTemplate({
+    slug: "salsa_haccp_plan_review",
+    name: "HACCP Plan Review",
+    description:
+      "Annual review of the HACCP plan to verify it remains current and effective. SALSA requires documented evidence of regular HACCP review.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "annually",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["yes_no_checklist", "text_note"],
+    complianceStandard: "SALSA Issue 6",
+    isCritical: true,
+    workflowType: "checklist_verify",
+    workflowConfig: {
+      verificationRules: { requiresSignature: true },
+    },
+  }),
+  buildComplianceTemplate({
+    slug: "salsa_internal_audit",
+    name: "Internal Food Safety Audit",
+    description:
+      "Quarterly internal audit of food safety practices. Covers hygiene, cleaning, temperature control, allergen handling, and documentation.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "quarterly",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["yes_no_checklist", "text_note", "photo"],
+    complianceStandard: "SALSA Issue 6",
+    isCritical: true,
+    workflowType: "checklist_verify",
+    workflowConfig: {
+      verificationRules: { requiresPhoto: true, requiresSignature: true },
+    },
+  }),
+  buildComplianceTemplate({
+    slug: "salsa_supplier_approval_review",
+    name: "Supplier Approval Review",
+    description:
+      "Annual review of supplier approval status. Verify certificates, specs, and risk ratings are current for all approved suppliers.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "annually",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["yes_no_checklist", "text_note"],
+    complianceStandard: "SALSA Issue 6",
+    isCritical: false,
+    workflowType: "document_track",
+    workflowConfig: {
+      trackingRules: { expiryWarningDays: 30 },
+    },
+    instructions:
+      "Review approved supplier list at /dashboard/stockly/suppliers/approved-list. Check all certificates are current and risk ratings up to date.",
+  }),
+  buildComplianceTemplate({
+    slug: "salsa_goods_in_verification",
+    name: "Goods-In Inspection Verification",
+    description:
+      "Weekly verification that goods-in procedures are being followed correctly — temperature checks, batch codes captured, condition assessments completed.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "weekly",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["yes_no_checklist", "text_note"],
+    complianceStandard: "SALSA Issue 6",
+    isCritical: false,
+    workflowType: "checklist_verify",
+  }),
 ]
 
 export const COMPLIANCE_MODULE_TEMPLATES = COMPLIANCE_MODULE_TEMPLATES_V2

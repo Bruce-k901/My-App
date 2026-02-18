@@ -163,7 +163,7 @@ export default function BatchListPage() {
 
         {/* Status filter tabs */}
         <div className="flex items-center gap-1 bg-theme-bg-secondary rounded-lg p-1">
-          {(['all', 'active', 'depleted', 'expired', 'quarantined'] as const).map((s) => (
+          {(['all', 'active', 'depleted', 'expired', 'quarantined', 'recalled'] as const).map((s) => (
             <button
               key={s}
               onClick={() => setStatusFilter(s)}

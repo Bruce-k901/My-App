@@ -23,6 +23,8 @@ import {
 import type { BatchMovement, BatchStatus } from '@/lib/types/stockly';
 // @salsa — Shared allergen utility for badge labels
 import { allergenKeyToLabel } from '@/lib/stockly/allergens';
+// @salsa — Phase 4: Dispatch record form
+import DispatchRecordForm from '@/components/stockly/DispatchRecordForm';
 
 interface BatchDetailDrawerProps {
   batchId: string;
@@ -58,6 +60,7 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
   const [adjustQty, setAdjustQty] = useState('');
   const [adjustReason, setAdjustReason] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [showDispatch, setShowDispatch] = useState(false); // @salsa Phase 4
 
   // @salsa — Fetch batch detail
   useEffect(() => {
@@ -206,6 +209,24 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
             </div>
           </div>
 
+          {/* @salsa Phase 4 — Recall/quarantine badge */}
+          {(batch.status === 'quarantined' || batch.status === 'recalled') && (
+            <div className={`flex items-center gap-2 p-3 rounded-lg border ${
+              batch.status === 'recalled'
+                ? 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700'
+                : 'bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-700'
+            }`}>
+              <Shield className={`w-4 h-4 ${
+                batch.status === 'recalled' ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'
+              }`} />
+              <span className={`text-sm font-medium ${
+                batch.status === 'recalled' ? 'text-red-700 dark:text-red-400' : 'text-amber-700 dark:text-amber-400'
+              }`}>
+                This batch has been {batch.status}
+              </span>
+            </div>
+          )}
+
           {/* Expiry dates */}
           {(batch.use_by_date || batch.best_before_date) && (
             <div className="bg-theme-bg-secondary rounded-lg p-3 space-y-2">
@@ -325,6 +346,27 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
                   Quarantine
                 </Button>
               </div>
+
+              {/* @salsa Phase 4 — Dispatch action */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowDispatch(!showDispatch)}
+                className="w-full"
+              >
+                <Truck className="w-3.5 h-3.5 mr-1" /> Record Dispatch
+              </Button>
+
+              {/* Dispatch form */}
+              {showDispatch && (
+                <DispatchRecordForm
+                  stockBatchId={batchId}
+                  stockBatchCode={batch.batch_code}
+                  unit={batch.unit}
+                  onClose={() => setShowDispatch(false)}
+                  onSaved={onUpdated}
+                />
+              )}
 
               {/* Adjustment form */}
               {adjusting && (

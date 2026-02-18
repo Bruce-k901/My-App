@@ -34,6 +34,9 @@ import {
   Store,
   Link as LinkIcon,
   Layers, // @salsa — batch tracking nav icon
+  Shield, // @salsa — recalls nav icon
+  AlertTriangle, // @salsa — non-conformances nav icon
+  ShieldCheck, // @salsa — SALSA dashboard nav icon
 } from '@/components/ui/icons';
 import { useState, useEffect } from 'react';
 import { useSidebarMode } from '@/hooks/useSidebarMode';
@@ -144,6 +147,37 @@ const navItems: NavItem[] = [
     label: 'Waste Log',
     href: '/dashboard/stockly/waste',
     icon: Trash2,
+  },
+  // @salsa — Phase 4: Traceability and Recalls
+  {
+    type: 'section',
+    label: 'COMPLIANCE',
+    icon: Shield,
+  },
+  {
+    type: 'link',
+    label: 'Traceability',
+    href: '/dashboard/stockly/traceability',
+    icon: GitCompare,
+  },
+  {
+    type: 'link',
+    label: 'Recalls',
+    href: '/dashboard/stockly/recalls',
+    icon: Shield,
+  },
+  // @salsa — Phase 5: Non-Conformances and SALSA Dashboard
+  {
+    type: 'link',
+    label: 'Non-Conformances',
+    href: '/dashboard/stockly/non-conformances',
+    icon: AlertTriangle,
+  },
+  {
+    type: 'link',
+    label: 'SALSA Dashboard',
+    href: '/dashboard/stockly/salsa',
+    icon: ShieldCheck,
   },
   {
     type: 'parent',

@@ -1,7 +1,7 @@
 # SALSA Compliance — Implementation Progress
 
 **Last updated:** 2026-02-18
-**Current phase:** Phase 3 — Production Batch Records + Planly Integration
+**Current phase:** Phase 5 — Compliance Templates + Calibration + Audit Readiness + Polish
 **Status:** Code Complete — Pending Migration + Testing
 
 ---
@@ -15,8 +15,8 @@
 | Phase 1 | Batch Tracking Core + Enhanced Goods-In                  | 4–5       | **Code Complete** |
 | Phase 2 | Supplier Approval + Product Specs + Allergen Enhancement | 3–4       | **Code Complete** |
 | Phase 3 | Production Batch Records + Planly Integration            | 3–4       | **Code Complete** |
-| Phase 4 | Traceability Reports + Recall Workflow                   | 5–7       | Not Started       |
-| Phase 5 | Compliance Templates + Calibration + Polish              | 2–3       | Not Started       |
+| Phase 4 | Traceability Reports + Recall Workflow                   | 5–7       | **Code Complete** |
+| Phase 5 | Compliance Templates + Calibration + Polish              | 2–3       | **Code Complete** |
 
 ---
 
@@ -145,6 +145,47 @@
 
 ---
 
+## Phase 4 — File Inventory
+
+### New Files Created
+
+| File                                                                | Purpose                                                                                                             | Status |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------ |
+| `supabase/migrations/20260222000000_salsa_traceability_recalls.sql` | DB schema (recalls, recall_affected_batches, recall_notifications, batch_dispatch_records) + views + triggers + RLS | Done   |
+| `src/app/api/stockly/traceability/forward/route.ts`                 | Forward trace API: raw material → production → finished goods → customers                                           | Done   |
+| `src/app/api/stockly/traceability/backward/route.ts`                | Backward trace API: finished product → production → raw materials → suppliers                                       | Done   |
+| `src/app/api/stockly/dispatch-records/route.ts`                     | Dispatch records list + create API                                                                                  | Done   |
+| `src/app/api/stockly/recalls/route.ts`                              | Recalls list + create API                                                                                           | Done   |
+| `src/app/api/stockly/recalls/[id]/route.ts`                         | Recall detail GET + PATCH (status, investigation, regulatory)                                                       | Done   |
+| `src/app/api/stockly/recalls/[id]/batches/route.ts`                 | Add/remove affected batches with auto-quarantine                                                                    | Done   |
+| `src/app/api/stockly/recalls/[id]/notify/route.ts`                  | Record customer notification                                                                                        | Done   |
+| `src/app/api/stockly/recalls/[id]/trace/route.ts`                   | Auto-trace affected batches to find downstream customers                                                            | Done   |
+| `src/app/api/stockly/recalls/[id]/report/route.ts`                  | Generate recall report data for PDF/print                                                                           | Done   |
+| `src/app/dashboard/stockly/traceability/page.tsx`                   | Traceability report page with mock recall exercise                                                                  | Done   |
+| `src/app/dashboard/stockly/recalls/page.tsx`                        | Recall list page with status filters                                                                                | Done   |
+| `src/app/dashboard/stockly/recalls/new/page.tsx`                    | New recall creation page                                                                                            | Done   |
+| `src/app/dashboard/stockly/recalls/[id]/page.tsx`                   | Recall detail page (Overview/Batches/Notifications/Trace/Report tabs)                                               | Done   |
+| `src/components/stockly/TraceSearchBar.tsx`                         | Batch code search with autocomplete and direction toggle                                                            | Done   |
+| `src/components/stockly/TraceabilityTree.tsx`                       | Visual trace tree with horizontal node cards and connecting lines                                                   | Done   |
+| `src/components/stockly/MassBalanceCard.tsx`                        | Mass balance summary (input vs output vs variance)                                                                  | Done   |
+| `src/components/stockly/RecallForm.tsx`                             | Reusable recall create/edit form                                                                                    | Done   |
+| `src/components/stockly/RecallAffectedBatchesPanel.tsx`             | Manage affected batches with batch search and auto-quarantine                                                       | Done   |
+| `src/components/stockly/RecallNotificationsPanel.tsx`               | Track customer notifications (method, response, dates)                                                              | Done   |
+| `src/components/stockly/RecallReportView.tsx`                       | Print-friendly recall report with all sections                                                                      | Done   |
+| `src/components/stockly/DispatchRecordForm.tsx`                     | Quick form to record batch dispatch to customer                                                                     | Done   |
+| `src/lib/recall-report-pdf.ts`                                      | HTML recall report generation utility for browser print                                                             | Done   |
+
+### Existing Files Modified
+
+| File                                           | Change                                                                                                               | Status |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------ |
+| `src/lib/types/stockly.ts`                     | Added: Recall, RecallAffectedBatch, RecallNotification, BatchDispatchRecord, TraceNode, TraceLink, TraceResult types | Done   |
+| `src/components/stockly/sidebar-nav.tsx`       | Added: COMPLIANCE section with "Traceability" and "Recalls" nav items, Shield icon import                            | Done   |
+| `src/components/stockly/BatchDetailDrawer.tsx` | Added: dispatch action button (DispatchRecordForm), recall/quarantine status badge                                   | Done   |
+| `src/app/dashboard/stockly/batches/page.tsx`   | Added: "recalled" status to filter tabs                                                                              | Done   |
+
+---
+
 ## Remaining Before Go-Live
 
 ### Phase 1
@@ -166,6 +207,28 @@
    - Production batch list → verify date/status filters work
    - Planly sidebar shows "Production Batches" link
    - BatchDetailDrawer shows production batch link when relevant
+
+### Phase 4
+
+1. **Run migration** — `supabase/migrations/20260222000000_salsa_traceability_recalls.sql`
+2. **Build test** — `npm run build -- --webpack` to verify no compile errors
+3. **Manual testing:**
+   - Enter raw material batch code → forward trace shows production → finished goods → customers
+   - Enter finished product batch code → backward trace shows raw materials → suppliers
+   - Mass balance displays correct input vs output quantities
+   - Create dispatch record from BatchDetailDrawer → appears in traceability forward trace
+   - Create recall → add affected batches → verify auto-quarantine + batch_movement created
+   - Run auto-trace on recall → identifies downstream customers from affected batches
+   - Record customer notifications → track method, response, dates
+   - Update root cause and corrective actions
+   - Mark FSA/SALSA as notified
+   - Recall report generates correctly with all sections, printable
+   - Status workflow: draft → active → investigating → notified → resolved → closed
+   - Mock recall exercise: starts timer, runs both traces, shows completion time
+   - Stockly sidebar shows COMPLIANCE section with Traceability and Recalls links
+   - BatchDetailDrawer shows recall badge for quarantined/recalled batches
+   - BatchDetailDrawer shows dispatch action button
+   - Batches page shows "Recalled" filter tab
 
 ### Phase 2
 
@@ -220,6 +283,13 @@
 - `production_ccp_records` — CCP measurements (cooking_temp/cooling_temp/cooling_time/metal_detection/ph_level/other)
 - `stock_batches.production_batch_id` — FK added (was nullable placeholder from Phase 1)
 
+### Database Tables (Phase 4)
+
+- `recalls` — recall/withdrawal event records (status: draft/active/investigating/notified/resolved/closed)
+- `recall_affected_batches` — junction linking recalls to affected stock batches with action tracking
+- `recall_notifications` — customer notification tracking (method, response, dates)
+- `batch_dispatch_records` — links finished product batches to customer deliveries (the traceability missing link)
+
 ### Key Code Paths
 
 - **Batch creation:** ManualDeliveryModal → POST `/api/stockly/batches` → inserts stock_batches + batch_movements
@@ -230,3 +300,61 @@
 - **Input consumption:** ProductionInputManager → POST `.../inputs` → batch_movements (consumed_production) + quantity update
 - **Output recording:** ProductionOutputRecorder → POST `.../outputs` → creates stock_batch with production_batch_id + batch_movements (received)
 - **Batch completion:** Complete button → POST `.../complete` → aggregates allergens from inputs, calculates yield from outputs
+- **Forward trace:** Traceability page → GET `/api/stockly/traceability/forward?batchId=` → supplier → raw material → production → finished goods → customers
+- **Backward trace:** Traceability page → GET `/api/stockly/traceability/backward?batchId=` → customers ← finished goods ← production ← raw materials ← suppliers
+- **Dispatch recording:** BatchDetailDrawer → POST `/api/stockly/dispatch-records` → links stock_batch to customer
+- **Recall creation:** New recall page → POST `/api/stockly/recalls` → creates recall in draft status
+- **Recall quarantine:** Add affected batch → POST `.../batches` → auto-quarantines stock_batch + creates batch_movement
+- **Recall trace:** Trace tab → GET `.../trace` → identifies all downstream customers from affected batches
+- **Mock recall exercise:** Traceability page → starts timer → runs both forward + backward traces → records completion time
+
+---
+
+## Phase 5 — File Inventory
+
+### New Files Created
+
+| File                                                                      | Purpose                                                                   | Status |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------ |
+| `supabase/migrations/20260223000000_salsa_calibration_nonconformance.sql` | DB schema (asset_calibrations, non_conformances) + views + triggers + RLS | Done   |
+| `src/app/api/stockly/calibrations/route.ts`                               | Calibration records list + create API                                     | Done   |
+| `src/app/api/stockly/calibrations/[id]/route.ts`                          | Calibration detail GET + PATCH + DELETE                                   | Done   |
+| `src/app/api/stockly/calibrations/overdue/route.ts`                       | Overdue/due-soon calibrations + never-calibrated probes                   | Done   |
+| `src/app/api/stockly/non-conformances/route.ts`                           | Non-conformance list + create (auto NC code) API                          | Done   |
+| `src/app/api/stockly/non-conformances/[id]/route.ts`                      | NC detail GET + PATCH with auto status transitions                        | Done   |
+| `src/app/api/stockly/non-conformances/generate-code/route.ts`             | NC code generation: NC-{YYYY}-{SEQ}                                       | Done   |
+| `src/app/api/stockly/salsa/audit-summary/route.ts`                        | SALSA audit readiness aggregate data (7 sections)                         | Done   |
+| `src/app/api/cron/salsa-compliance-check/route.ts`                        | Daily cron: overdue calibrations, NCs, recall delays, expiring docs       | Done   |
+| `src/app/dashboard/stockly/salsa/page.tsx`                                | SALSA audit readiness dashboard (7 summary cards, print)                  | Done   |
+| `src/app/dashboard/stockly/non-conformances/page.tsx`                     | NC register list (status tabs, filters, severity badges)                  | Done   |
+| `src/app/dashboard/stockly/non-conformances/[id]/page.tsx`                | NC detail (5-step workflow, corrective action, closure)                   | Done   |
+| `src/components/stockly/NonConformanceStatusBadge.tsx`                    | Colour-coded NC status badge                                              | Done   |
+| `src/components/stockly/NonConformanceForm.tsx`                           | NC create/edit form                                                       | Done   |
+| `src/components/stockly/CalibrationForm.tsx`                              | Calibration record create form                                            | Done   |
+| `src/components/stockly/CalibrationPanel.tsx`                             | Embeddable calibration panel for asset detail pages                       | Done   |
+| `src/components/stockly/SALSAAuditSummary.tsx`                            | 7-section summary component for SALSA dashboard                           | Done   |
+
+### Existing Files Modified
+
+| File                                     | Change                                                                                                    | Status |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------ |
+| `src/lib/types/stockly.ts`               | Added: AssetCalibration, NonConformance, NonConformanceCategory/Severity/Source/Status types              | Done   |
+| `src/data/compliance-templates.ts`       | Added: 7 SALSA compliance templates to COMPLIANCE_MODULE_TEMPLATES_V2                                     | Done   |
+| `src/components/stockly/sidebar-nav.tsx` | Added: Non-Conformances + SALSA Dashboard nav items under COMPLIANCE, AlertTriangle + ShieldCheck imports | Done   |
+| `src/components/assets/AssetCard.tsx`    | Added: CalibrationPanel section for temperature_probes and refrigeration_equipment                        | Done   |
+| `vercel.json`                            | Added: 3 cron jobs (batch-expiry-alerts, supplier-review-reminders, salsa-compliance-check)               | Done   |
+| `docs/salsa-progress.md`                 | Added: Phase 5 file inventory, updated status                                                             | Done   |
+
+### Database Tables (Phase 5)
+
+- `asset_calibrations` — formal calibration certificate records per asset (FK to public.assets)
+- `non_conformances` — non-conformance register with 5-step corrective action workflow (NC-{YYYY}-{SEQ} codes)
+
+### Key Code Paths (Phase 5)
+
+- **Calibration recording:** CalibrationPanel → POST `/api/stockly/calibrations` → inserts asset_calibrations
+- **Overdue calibrations:** Cron / CalibrationPanel → GET `.../overdue` → assets where next_calibration_due < today
+- **NC creation:** NC list page → POST `/api/stockly/non-conformances` → auto-generates NC code, inserts record
+- **NC workflow:** NC detail page → PATCH `.../[id]` → auto status transitions (root_cause → investigating, corrective_action → corrective_action, completed → verification, closed → closed)
+- **SALSA dashboard:** SALSA page → GET `/api/stockly/salsa/audit-summary` → aggregate stats across 7 SALSA areas
+- **Compliance check cron:** Daily 5am UTC → checks calibrations, NCs, recalls, supplier docs → creates notifications
