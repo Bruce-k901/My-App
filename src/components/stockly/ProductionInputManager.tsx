@@ -201,7 +201,7 @@ export default function ProductionInputManager({
           {inputs.map(input => (
             <div
               key={input.id}
-              className="flex items-center justify-between p-3 bg-theme-bg-secondary rounded-lg border border-theme-border"
+              className="flex items-center justify-between p-3 bg-theme-surface-elevated rounded-lg border border-theme"
             >
               <div className="flex-1">
                 <div className="flex items-center gap-2">
@@ -265,7 +265,7 @@ export default function ProductionInputManager({
       {isEditable && !showAddForm && (
         <button
           onClick={() => setShowAddForm(true)}
-          className="flex items-center gap-2 w-full px-3 py-2 border border-dashed border-theme-border rounded-lg text-sm text-theme-tertiary hover:text-theme-secondary hover:border-stockly-dark/30 dark:hover:border-stockly/30 transition-colors"
+          className="flex items-center gap-2 w-full px-3 py-2 border border-dashed border-theme rounded-lg text-sm text-theme-tertiary hover:text-theme-secondary hover:border-stockly-dark/30 dark:hover:border-stockly/30 transition-colors"
         >
           <Plus className="w-4 h-4" />
           Add Input Batch
@@ -273,9 +273,9 @@ export default function ProductionInputManager({
       )}
 
       {showAddForm && (
-        <div className="p-4 bg-theme-bg-secondary border border-theme-border rounded-lg space-y-3">
+        <div className="p-4 bg-theme-surface-elevated border border-theme rounded-lg space-y-3">
           {/* Input type toggle */}
-          <div className="flex bg-theme-bg-primary rounded-lg p-1 border border-theme-border">
+          <div className="flex bg-theme-surface rounded-lg p-1 border border-theme">
             <button
               onClick={() => { setInputType('stock'); setSelectedReworkBatch(null); setSelectedBatchId(null); }}
               className={`flex-1 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
@@ -309,7 +309,7 @@ export default function ProductionInputManager({
                     setSelectedStockItemId(e.target.value || null);
                     setSelectedBatchId(null);
                   }}
-                  className="w-full px-3 py-2 bg-theme-bg-primary border border-theme-border rounded-lg text-sm text-theme-primary"
+                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-sm text-theme-primary"
                 >
                   <option value="">Select item...</option>
                   {stockItems.map(item => (
@@ -343,7 +343,7 @@ export default function ProductionInputManager({
                     const batch = reworkBatches.find(b => b.id === e.target.value);
                     setSelectedReworkBatch(batch || null);
                   }}
-                  className="w-full px-3 py-2 bg-theme-bg-primary border border-theme-border rounded-lg text-sm text-theme-primary"
+                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-sm text-theme-primary"
                 >
                   <option value="">Select rework batch...</option>
                   {reworkBatches.map(b => (
@@ -374,7 +374,7 @@ export default function ProductionInputManager({
               step="0.001"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="w-full px-3 py-2 bg-theme-bg-primary border border-theme-border rounded-lg text-sm text-theme-primary"
+              className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-sm text-theme-primary"
               placeholder="0.000"
             />
           </div>
@@ -389,7 +389,7 @@ export default function ProductionInputManager({
             </button>
             <button
               onClick={resetForm}
-              className="px-4 py-2 border border-theme-border rounded-lg text-sm text-theme-secondary hover:bg-theme-bg-secondary"
+              className="px-4 py-2 border border-theme rounded-lg text-sm text-theme-secondary hover:bg-theme-surface-elevated"
             >
               Cancel
             </button>

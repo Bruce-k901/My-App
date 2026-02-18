@@ -69,7 +69,7 @@ export default function ProductionBatchesPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
-        <div className="flex bg-theme-bg-secondary rounded-lg p-1 border border-theme-border">
+        <div className="flex bg-theme-surface-elevated rounded-lg p-1 border border-theme">
           {STATUS_TABS.map(tab => (
             <button
               key={tab.value}
@@ -91,7 +91,7 @@ export default function ProductionBatchesPage() {
             type="date"
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
-            className="px-3 py-1.5 bg-theme-bg-secondary border border-theme-border rounded-lg text-xs text-theme-primary"
+            className="px-3 py-1.5 bg-theme-surface-elevated border border-theme rounded-lg text-xs text-theme-primary"
           />
           {dateFilter && (
             <button
@@ -108,7 +108,7 @@ export default function ProductionBatchesPage() {
       {loading ? (
         <div className="space-y-3">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-24 bg-theme-bg-secondary rounded-lg animate-pulse" />
+            <div key={i} className="h-24 bg-theme-surface-elevated rounded-lg animate-pulse" />
           ))}
         </div>
       ) : batches.length === 0 ? (

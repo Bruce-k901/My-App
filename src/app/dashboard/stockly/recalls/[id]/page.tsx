@@ -187,7 +187,7 @@ export default function RecallDetailPage({ params }: { params: Promise<{ id: str
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-theme-border">
+      <div className="flex gap-1 border-b border-theme">
         {tabs.map((t) => (
           <button
             key={t.value}
@@ -207,7 +207,7 @@ export default function RecallDetailPage({ params }: { params: Promise<{ id: str
       {tab === 'overview' && (
         <div className="space-y-6">
           {/* Status flow */}
-          <div className="bg-theme-bg-secondary rounded-lg p-4 border border-theme-border">
+          <div className="bg-theme-surface-elevated rounded-lg p-4 border border-theme">
             <h3 className="text-sm font-medium text-theme-tertiary uppercase mb-3">Workflow</h3>
             <div className="flex items-center gap-1">
               {STATUS_FLOW.map((s, i) => {
@@ -220,7 +220,7 @@ export default function RecallDetailPage({ params }: { params: Promise<{ id: str
                         ? 'bg-stockly-dark dark:bg-stockly text-white dark:text-gray-900'
                         : isPast
                         ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
-                        : 'bg-theme-bg-primary text-theme-tertiary'
+                        : 'bg-theme-surface text-theme-tertiary'
                     }`}>
                       {isPast && <CheckCircle className="w-3 h-3 inline mr-1" />}
                       {STATUS_LABELS[s]}
@@ -236,7 +236,7 @@ export default function RecallDetailPage({ params }: { params: Promise<{ id: str
 
           {/* Details grid */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-theme-bg-secondary rounded-lg p-4 border border-theme-border space-y-3">
+            <div className="bg-theme-surface-elevated rounded-lg p-4 border border-theme space-y-3">
               <h3 className="text-sm font-medium text-theme-tertiary uppercase">Details</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between"><span className="text-theme-secondary">Type</span><span className="text-theme-primary capitalize">{recall.recall_type}</span></div>
@@ -247,7 +247,7 @@ export default function RecallDetailPage({ params }: { params: Promise<{ id: str
               </div>
             </div>
 
-            <div className="bg-theme-bg-secondary rounded-lg p-4 border border-theme-border space-y-3">
+            <div className="bg-theme-surface-elevated rounded-lg p-4 border border-theme space-y-3">
               <h3 className="text-sm font-medium text-theme-tertiary uppercase">Regulatory</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between items-center">
@@ -272,7 +272,7 @@ export default function RecallDetailPage({ params }: { params: Promise<{ id: str
           </div>
 
           {/* Investigation fields */}
-          <div className="bg-theme-bg-secondary rounded-lg p-4 border border-theme-border space-y-3">
+          <div className="bg-theme-surface-elevated rounded-lg p-4 border border-theme space-y-3">
             <h3 className="text-sm font-medium text-theme-tertiary uppercase">Investigation</h3>
             <div className="space-y-3">
               <div>
@@ -281,7 +281,7 @@ export default function RecallDetailPage({ params }: { params: Promise<{ id: str
                   value={rootCause}
                   onChange={(e) => setRootCause(e.target.value)}
                   rows={2}
-                  className="w-full px-3 py-2 rounded border border-theme-border bg-theme-bg-primary text-theme-primary text-sm"
+                  className="w-full px-3 py-2 rounded border border-theme bg-theme-surface text-theme-primary text-sm"
                 />
               </div>
               <div>
@@ -290,7 +290,7 @@ export default function RecallDetailPage({ params }: { params: Promise<{ id: str
                   value={correctiveActions}
                   onChange={(e) => setCorrectiveActions(e.target.value)}
                   rows={2}
-                  className="w-full px-3 py-2 rounded border border-theme-border bg-theme-bg-primary text-theme-primary text-sm"
+                  className="w-full px-3 py-2 rounded border border-theme bg-theme-surface text-theme-primary text-sm"
                 />
               </div>
               <div>
@@ -299,7 +299,7 @@ export default function RecallDetailPage({ params }: { params: Promise<{ id: str
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
-                  className="w-full px-3 py-2 rounded border border-theme-border bg-theme-bg-primary text-theme-primary text-sm"
+                  className="w-full px-3 py-2 rounded border border-theme bg-theme-surface text-theme-primary text-sm"
                 />
               </div>
               <Button
@@ -348,7 +348,7 @@ export default function RecallDetailPage({ params }: { params: Promise<{ id: str
 
           {traceResults && (
             <div className="space-y-4">
-              <div className="bg-theme-bg-secondary rounded-lg p-4 border border-theme-border">
+              <div className="bg-theme-surface-elevated rounded-lg p-4 border border-theme">
                 <p className="text-sm text-theme-secondary mb-2">
                   Traced {traceResults.batches_traced} affected batch(es). Found {traceResults.customers.length} potentially affected customer(s).
                 </p>
@@ -357,7 +357,7 @@ export default function RecallDetailPage({ params }: { params: Promise<{ id: str
               {traceResults.customers.length > 0 && (
                 <div className="space-y-2">
                   {traceResults.customers.map((c: any, i: number) => (
-                    <div key={i} className="p-3 bg-theme-bg-secondary rounded-lg border border-theme-border">
+                    <div key={i} className="p-3 bg-theme-surface-elevated rounded-lg border border-theme">
                       <div className="flex items-center justify-between">
                         <span className="font-medium text-sm text-theme-primary">{c.customer_name}</span>
                         <span className="text-xs text-theme-tertiary">Total: {c.total_quantity} units</span>

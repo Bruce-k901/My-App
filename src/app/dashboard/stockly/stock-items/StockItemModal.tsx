@@ -16,7 +16,7 @@ import ProductSpecPanel from '@/components/stockly/ProductSpecPanel';
 
 // Section Header Component
 const SectionHeader = ({ children }: { children: React.ReactNode }) => (
-  <div className="text-xs font-semibold uppercase tracking-wide text-theme-tertiary border-b border-gray-700 pb-2 mb-4">
+  <div className="text-xs font-semibold uppercase tracking-wide text-theme-tertiary border-b border-gray-300 dark:border-gray-700 pb-2 mb-4">
     {children}
   </div>
 );
@@ -408,11 +408,11 @@ export default function StockItemModal({
                     </label>
                     <Input
                       {...register('name')}
-                      className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
+                      className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
                       placeholder="e.g., Chicken Breast"
                     />
                     {errors.name && (
-                      <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>
+                      <p className="text-xs text-red-600 dark:text-red-400 mt-1">{errors.name.message}</p>
                     )}
                   </div>
 
@@ -431,7 +431,7 @@ export default function StockItemModal({
                         />
                       </div>
                       {errors.category && (
-                        <p className="text-xs text-red-400 mt-1">{errors.category.message}</p>
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">{errors.category.message}</p>
                       )}
                     </div>
                     <div className="col-span-5">
@@ -440,7 +440,7 @@ export default function StockItemModal({
                       </label>
                       <Input
                         {...register('sku')}
-                        className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
+                        className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
                         placeholder="SKU code"
                       />
                     </div>
@@ -454,7 +454,7 @@ export default function StockItemModal({
                     <textarea
                       {...register('description')}
                       rows={3}
-                      className="w-full h-24 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30 resize-none"
+                      className="w-full h-24 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30 resize-none"
                       placeholder="Item description"
                     />
                   </div>
@@ -466,7 +466,7 @@ export default function StockItemModal({
                         type="checkbox"
                         {...register('purchasable')}
                         defaultChecked
-                        className="w-4 h-4 rounded bg-gray-800/50 border-gray-700 text-emerald-500 focus:ring-emerald-500"
+                        className="w-4 h-4 rounded bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-emerald-500 focus:ring-emerald-500"
                       />
                       <span className="text-sm text-theme-tertiary">Purchasable from suppliers</span>
                     </label>
@@ -474,7 +474,7 @@ export default function StockItemModal({
                       <input
                         type="checkbox"
                         {...register('is_prep_item')}
-                        className="w-4 h-4 rounded bg-gray-800/50 border-gray-700 text-emerald-500 focus:ring-emerald-500"
+                        className="w-4 h-4 rounded bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-emerald-500 focus:ring-emerald-500"
                       />
                       <span className="text-sm text-theme-tertiary">Made in-house (prep item)</span>
                     </label>
@@ -497,15 +497,15 @@ export default function StockItemModal({
                         type="number"
                         step="0.001"
                         disabled={isPrepItem}
-                        className={`h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
-                          isPrepItem 
-                            ? 'bg-gray-800/30 cursor-not-allowed opacity-50' 
+                        className={`h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                          isPrepItem
+                            ? 'bg-gray-100 dark:bg-gray-800/30 cursor-not-allowed opacity-50'
                             : 'hover:border-module-fg/30'
                         }`}
                         placeholder="e.g., 25"
                       />
                       {errors.pack_size && (
-                        <p className="text-xs text-red-400 mt-1">{errors.pack_size.message}</p>
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">{errors.pack_size.message}</p>
                       )}
                     </div>
                     <div className="col-span-4">
@@ -517,15 +517,15 @@ export default function StockItemModal({
                         type="number"
                         step="0.01"
                         disabled={isPrepItem}
-                        className={`h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
-                          isPrepItem 
-                            ? 'bg-gray-800/30 cursor-not-allowed opacity-50' 
+                        className={`h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
+                          isPrepItem
+                            ? 'bg-gray-100 dark:bg-gray-800/30 cursor-not-allowed opacity-50'
                             : 'hover:border-module-fg/30'
                         }`}
                         placeholder="e.g., 50.00"
                       />
                       {errors.pack_cost && (
-                        <p className="text-xs text-red-400 mt-1">{errors.pack_cost.message}</p>
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">{errors.pack_cost.message}</p>
                       )}
                     </div>
                     <div className="col-span-4">
@@ -536,7 +536,7 @@ export default function StockItemModal({
                         value={unitCostDisplay}
                         readOnly
                         disabled
-                        className="h-10 rounded-md bg-gray-800/30 border border-gray-700 text-sm italic text-theme-tertiary px-3 py-2 cursor-not-allowed placeholder:text-theme-tertiary"
+                        className="h-10 rounded-md bg-gray-100 dark:bg-gray-800/30 border border-gray-300 dark:border-gray-700 text-sm italic text-theme-tertiary px-3 py-2 cursor-not-allowed placeholder:text-theme-tertiary"
                         placeholder="Auto-calculated"
                       />
                     </div>
@@ -572,7 +572,7 @@ export default function StockItemModal({
                       type="checkbox"
                       {...register('track_stock')}
                       defaultChecked
-                      className="w-4 h-4 rounded bg-gray-800/50 border-gray-700 text-emerald-500 focus:ring-emerald-500"
+                      className="w-4 h-4 rounded bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-emerald-500 focus:ring-emerald-500"
                     />
                     <span className="text-sm text-theme-tertiary">Track Stock</span>
                   </label>
@@ -592,7 +592,7 @@ export default function StockItemModal({
                           />
                         </div>
                       {errors.base_unit && (
-                        <p className="text-xs text-red-400 mt-1">{errors.base_unit.message}</p>
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">{errors.base_unit.message}</p>
                       )}
                     </div>
                     {watch('track_stock') && (
@@ -605,7 +605,7 @@ export default function StockItemModal({
                             {...register('par_level')}
                             type="number"
                             step="0.001"
-                            className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
+                            className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
                             placeholder="Min level"
                           />
                         </div>
@@ -617,7 +617,7 @@ export default function StockItemModal({
                             {...register('reorder_qty')}
                             type="number"
                             step="0.001"
-                            className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
+                            className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
                             placeholder="Reorder amount"
                           />
                         </div>
@@ -638,7 +638,7 @@ export default function StockItemModal({
                         step="0.01"
                         min="1"
                         max="100"
-                        className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
+                        className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
                         placeholder="100"
                       />
                     </div>
@@ -648,7 +648,7 @@ export default function StockItemModal({
                       </label>
                       <Input
                         {...register('yield_notes')}
-                        className="h-10 rounded-md bg-gray-800/50 border border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
+                        className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-sm text-theme-primary px-3 py-2 placeholder:text-theme-tertiary focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 hover:border-module-fg/30"
                         placeholder="Notes about yield calculation"
                       />
                     </div>
@@ -668,7 +668,7 @@ export default function StockItemModal({
                       <input
                         type="checkbox"
                         {...register(`allergen_${allergen.key}` as any)}
-                        className="w-4 h-4 rounded bg-gray-800/50 border-gray-700 text-emerald-500 focus:ring-emerald-500"
+                        className="w-4 h-4 rounded bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-emerald-500 focus:ring-emerald-500"
                       />
                       <span className="text-sm text-theme-tertiary">{allergen.label}</span>
                     </label>
@@ -691,7 +691,7 @@ export default function StockItemModal({
           )}
 
           {/* FOOTER */}
-          <div className="flex justify-center gap-4 mt-6 pt-4 border-t border-gray-700">
+          <div className="flex justify-center gap-4 mt-6 pt-4 border-t border-gray-300 dark:border-gray-700">
             <Button
               type="submit"
               disabled={isSubmitting}
@@ -719,7 +719,7 @@ export default function StockItemModal({
               variant="outline"
               onClick={onClose}
               disabled={isSubmitting}
-              className="min-w-[160px] h-11 border-gray-700 text-theme-tertiary hover:bg-gray-800/50 hover:border-gray-600 transition-all duration-200 disabled:opacity-50"
+              className="min-w-[160px] h-11 border-gray-300 dark:border-gray-700 text-theme-tertiary hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:border-gray-400 dark:hover:border-gray-600 transition-all duration-200 disabled:opacity-50"
             >
               Cancel
             </Button>

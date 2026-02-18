@@ -91,8 +91,8 @@ export default function BatchListPage() {
       const { data, error } = await query.limit(100);
 
       if (error) {
-        if (error.code === '42P01') {
-          // Table doesn't exist yet — graceful handling
+        if (error.code === '42P01' || error.code === '42501') {
+          // Table doesn't exist or permissions not yet applied — graceful handling
           setBatches([]);
         } else {
           console.error('Error fetching batches:', error);
@@ -162,14 +162,14 @@ export default function BatchListPage() {
         </div>
 
         {/* Status filter tabs */}
-        <div className="flex items-center gap-1 bg-theme-bg-secondary rounded-lg p-1">
+        <div className="flex items-center gap-1 bg-theme-surface-elevated rounded-lg p-1">
           {(['all', 'active', 'depleted', 'expired', 'quarantined', 'recalled'] as const).map((s) => (
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
                 statusFilter === s
-                  ? 'bg-white dark:bg-theme-bg-primary text-theme-primary shadow-sm'
+                  ? 'bg-white dark:bg-theme-surface text-theme-primary shadow-sm'
                   : 'text-theme-secondary hover:text-theme-primary'
               }`}
             >
@@ -185,7 +185,7 @@ export default function BatchListPage() {
           <Loader2 className="w-6 h-6 animate-spin text-stockly-dark dark:text-stockly" />
         </div>
       ) : batches.length === 0 ? (
-        <div className="text-center py-12 bg-theme-bg-secondary rounded-xl border border-theme-border">
+        <div className="text-center py-12 bg-theme-surface-elevated rounded-xl border border-theme">
           <Layers className="w-10 h-10 mx-auto mb-3 text-theme-tertiary" />
           <h3 className="font-medium text-theme-primary mb-1">No batches found</h3>
           <p className="text-sm text-theme-secondary">
@@ -193,12 +193,12 @@ export default function BatchListPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-theme-bg-secondary rounded-xl border border-theme-border overflow-hidden">
+        <div className="bg-theme-surface-elevated rounded-xl border border-theme overflow-hidden">
           {/* Desktop table */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-theme-border text-left">
+                <tr className="border-b border-theme text-left">
                   <th className="px-4 py-3 font-medium text-theme-secondary">Batch Code</th>
                   <th className="px-4 py-3 font-medium text-theme-secondary">Stock Item</th>
                   <th className="px-4 py-3 font-medium text-theme-secondary text-right">Remaining</th>
@@ -216,7 +216,7 @@ export default function BatchListPage() {
                     <tr
                       key={batch.id}
                       onClick={() => setSelectedBatchId(batch.id)}
-                      className="border-b border-theme-border last:border-0 hover:bg-theme-bg-primary/50 cursor-pointer transition-colors"
+                      className="border-b border-theme last:border-0 hover:bg-theme-surface/50 cursor-pointer transition-colors"
                     >
                       <td className="px-4 py-3">
                         <span className="font-mono font-medium text-theme-primary">{batch.batch_code}</span>
@@ -261,7 +261,7 @@ export default function BatchListPage() {
           </div>
 
           {/* Mobile cards */}
-          <div className="md:hidden divide-y divide-theme-border">
+          <div className="md:hidden divide-y divide-[rgb(var(--border))]">
             {batches.map((batch) => {
               const expiry = getExpiryStatus(batch.use_by_date, batch.best_before_date);
               const statusCfg = STATUS_CONFIG[batch.status];
@@ -270,7 +270,7 @@ export default function BatchListPage() {
                 <div
                   key={batch.id}
                   onClick={() => setSelectedBatchId(batch.id)}
-                  className="p-4 hover:bg-theme-bg-primary/50 cursor-pointer transition-colors"
+                  className="p-4 hover:bg-theme-surface/50 cursor-pointer transition-colors"
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div>

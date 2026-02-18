@@ -67,7 +67,7 @@ export default function NewRecallPage() {
       </div>
 
       {/* Form */}
-      <div className="bg-theme-bg-primary border border-theme-border rounded-lg p-6">
+      <div className="bg-theme-surface border border-theme rounded-lg p-6">
         <RecallForm onSubmit={handleCreate} loading={loading} />
       </div>
     </div>

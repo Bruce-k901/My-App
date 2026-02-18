@@ -103,7 +103,7 @@ export default function RecallAffectedBatchesPanel({ recallId, affectedBatches, 
 
       {/* Add batch form */}
       {adding && (
-        <div className="bg-theme-bg-secondary rounded-lg p-3 space-y-2 border border-theme-border">
+        <div className="bg-theme-surface-elevated rounded-lg p-3 space-y-2 border border-theme">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-tertiary" />
             <input
@@ -111,7 +111,7 @@ export default function RecallAffectedBatchesPanel({ recallId, affectedBatches, 
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
               placeholder="Search batch code..."
-              className="w-full pl-10 pr-4 py-2 rounded border border-theme-border bg-theme-bg-primary text-theme-primary text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded border border-theme bg-theme-surface text-theme-primary text-sm"
             />
           </div>
           {suggestions.length > 0 && (
@@ -125,8 +125,8 @@ export default function RecallAffectedBatchesPanel({ recallId, affectedBatches, 
                     disabled={alreadyAdded || submitting}
                     className={`w-full text-left px-3 py-2 rounded text-sm flex items-center justify-between transition-colors ${
                       alreadyAdded
-                        ? 'opacity-50 cursor-not-allowed bg-theme-bg-secondary'
-                        : 'hover:bg-theme-bg-secondary'
+                        ? 'opacity-50 cursor-not-allowed bg-theme-surface-elevated'
+                        : 'hover:bg-theme-surface-elevated'
                     }`}
                   >
                     <div>
@@ -159,14 +159,14 @@ export default function RecallAffectedBatchesPanel({ recallId, affectedBatches, 
             const action = ACTION_LABELS[ab.action_taken] || ACTION_LABELS.pending;
 
             return (
-              <div key={ab.id} className="flex items-center justify-between p-3 bg-theme-bg-secondary rounded-lg border border-theme-border">
+              <div key={ab.id} className="flex items-center justify-between p-3 bg-theme-surface-elevated rounded-lg border border-theme">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-medium text-sm text-theme-primary">{sb?.batch_code || 'Unknown'}</span>
                     <span className={`text-xs px-1.5 py-0.5 rounded ${action.color}`}>
                       {action.label}
                     </span>
-                    <span className="text-xs px-1.5 py-0.5 rounded bg-theme-bg-primary text-theme-tertiary capitalize">
+                    <span className="text-xs px-1.5 py-0.5 rounded bg-theme-surface text-theme-tertiary capitalize">
                       {ab.batch_type.replace('_', ' ')}
                     </span>
                   </div>

@@ -105,7 +105,7 @@ export default function ProductionBatchForm({
         <select
           value={recipeId}
           onChange={(e) => setRecipeId(e.target.value)}
-          className="w-full px-3 py-2 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary"
+          className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
         >
           <option value="">No recipe (manual batch)</option>
           {recipes.map(r => (
@@ -126,7 +126,7 @@ export default function ProductionBatchForm({
           value={productionDate}
           onChange={(e) => setProductionDate(e.target.value)}
           required
-          className="w-full px-3 py-2 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary"
+          className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
         />
       </div>
 
@@ -138,7 +138,7 @@ export default function ProductionBatchForm({
             step="0.001"
             value={plannedQuantity}
             onChange={(e) => setPlannedQuantity(e.target.value)}
-            className="w-full px-3 py-2 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary"
+            className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
             placeholder="0.000"
           />
         </div>
@@ -148,7 +148,7 @@ export default function ProductionBatchForm({
             type="text"
             value={unit}
             onChange={(e) => setUnit(e.target.value)}
-            className="w-full px-3 py-2 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary"
+            className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
             placeholder="kg, units, etc."
           />
         </div>
@@ -160,7 +160,7 @@ export default function ProductionBatchForm({
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
-          className="w-full px-3 py-2 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary"
+          className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
           placeholder="Optional production notes..."
         />
       </div>

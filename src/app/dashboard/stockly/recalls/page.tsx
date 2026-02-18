@@ -88,14 +88,14 @@ export default function RecallsPage() {
       </div>
 
       {/* Status tabs */}
-      <div className="flex gap-1 bg-theme-bg-secondary rounded-lg p-1 overflow-x-auto">
+      <div className="flex gap-1 bg-theme-surface-elevated rounded-lg p-1 overflow-x-auto">
         {statusTabs.map((tab) => (
           <button
             key={tab.value}
             onClick={() => setStatusFilter(tab.value)}
             className={`px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${
               statusFilter === tab.value
-                ? 'bg-theme-bg-primary text-theme-primary shadow-sm'
+                ? 'bg-theme-surface text-theme-primary shadow-sm'
                 : 'text-theme-tertiary hover:text-theme-secondary'
             }`}
           >
@@ -129,7 +129,7 @@ export default function RecallsPage() {
               <Link
                 key={recall.id}
                 href={`/dashboard/stockly/recalls/${recall.id}`}
-                className="block p-4 bg-theme-bg-primary border border-theme-border rounded-lg hover:border-stockly-dark/30 dark:hover:border-stockly/30 transition-colors"
+                className="block p-4 bg-theme-surface border border-theme rounded-lg hover:border-stockly-dark/30 dark:hover:border-stockly/30 transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">

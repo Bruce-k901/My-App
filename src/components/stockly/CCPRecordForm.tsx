@@ -69,7 +69,7 @@ export default function CCPRecordForm({ productionBatchId, onSaved, onCancel }: 
         <select
           value={ccpType}
           onChange={(e) => handleTypeChange(e.target.value as CCPType)}
-          className="w-full px-3 py-2 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary"
+          className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
         >
           {CCP_TYPE_OPTIONS.map(opt => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -86,7 +86,7 @@ export default function CCPRecordForm({ productionBatchId, onSaved, onCancel }: 
             type="text"
             value={targetValue}
             onChange={(e) => setTargetValue(e.target.value)}
-            className="w-full px-3 py-2 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary"
+            className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
             placeholder="e.g. 75"
           />
         </div>
@@ -98,7 +98,7 @@ export default function CCPRecordForm({ productionBatchId, onSaved, onCancel }: 
             type="text"
             value={actualValue}
             onChange={(e) => setActualValue(e.target.value)}
-            className="w-full px-3 py-2 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary"
+            className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
             placeholder="e.g. 78"
           />
         </div>
@@ -113,7 +113,7 @@ export default function CCPRecordForm({ productionBatchId, onSaved, onCancel }: 
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm border transition-colors ${
               isWithinSpec === true
                 ? 'bg-emerald-100 border-emerald-300 text-emerald-700 dark:bg-emerald-900/30 dark:border-emerald-700 dark:text-emerald-400'
-                : 'border-theme-border text-theme-tertiary hover:bg-theme-bg-secondary'
+                : 'border-theme text-theme-tertiary hover:bg-theme-surface-elevated'
             }`}
           >
             <CheckCircle className="w-4 h-4" />
@@ -125,7 +125,7 @@ export default function CCPRecordForm({ productionBatchId, onSaved, onCancel }: 
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm border transition-colors ${
               isWithinSpec === false
                 ? 'bg-red-100 border-red-300 text-red-700 dark:bg-red-900/30 dark:border-red-700 dark:text-red-400'
-                : 'border-theme-border text-theme-tertiary hover:bg-theme-bg-secondary'
+                : 'border-theme text-theme-tertiary hover:bg-theme-surface-elevated'
             }`}
           >
             <AlertTriangle className="w-4 h-4" />
@@ -141,7 +141,7 @@ export default function CCPRecordForm({ productionBatchId, onSaved, onCancel }: 
             value={correctiveAction}
             onChange={(e) => setCorrectiveAction(e.target.value)}
             rows={3}
-            className="w-full px-3 py-2 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary"
+            className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
             placeholder="Describe the corrective action taken..."
           />
         </div>
@@ -158,7 +158,7 @@ export default function CCPRecordForm({ productionBatchId, onSaved, onCancel }: 
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-theme-border rounded-lg text-sm text-theme-secondary hover:bg-theme-bg-secondary"
+          className="px-4 py-2 border border-theme rounded-lg text-sm text-theme-secondary hover:bg-theme-surface-elevated"
         >
           Cancel
         </button>

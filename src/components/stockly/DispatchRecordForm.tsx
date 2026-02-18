@@ -80,7 +80,7 @@ export default function DispatchRecordForm({ stockBatchId, stockBatchCode, unit,
   }
 
   return (
-    <div className="bg-theme-bg-secondary rounded-lg p-4 border border-theme-border space-y-3">
+    <div className="bg-theme-surface-elevated rounded-lg p-4 border border-theme space-y-3">
       <div className="flex items-center gap-2 mb-1">
         <Truck className="w-4 h-4 text-stockly-dark dark:text-stockly" />
         <h3 className="text-sm font-medium text-theme-primary">Record Dispatch — {stockBatchCode}</h3>
@@ -97,16 +97,16 @@ export default function DispatchRecordForm({ stockBatchId, stockBatchCode, unit,
             onFocus={() => customers.length > 0 && setShowCustomers(true)}
             required
             placeholder="Search customer..."
-            className="w-full px-3 py-1.5 rounded border border-theme-border bg-theme-bg-primary text-theme-primary text-sm"
+            className="w-full px-3 py-1.5 rounded border border-theme bg-theme-surface text-theme-primary text-sm"
           />
           {showCustomers && customers.length > 0 && (
-            <div className="absolute z-10 mt-1 w-full bg-theme-bg-primary border border-theme-border rounded shadow-lg max-h-40 overflow-y-auto">
+            <div className="absolute z-10 mt-1 w-full bg-theme-surface border border-theme rounded shadow-lg max-h-40 overflow-y-auto">
               {customers.map((c) => (
                 <button
                   key={c.id}
                   type="button"
                   onClick={() => { setCustomerName(c.name); setCustomerId(c.id); setShowCustomers(false); }}
-                  className="w-full text-left px-3 py-2 hover:bg-theme-bg-secondary text-sm text-theme-primary"
+                  className="w-full text-left px-3 py-2 hover:bg-theme-surface-elevated text-sm text-theme-primary"
                 >
                   {c.name}
                 </button>
@@ -123,7 +123,7 @@ export default function DispatchRecordForm({ stockBatchId, stockBatchCode, unit,
               value={dispatchDate}
               onChange={(e) => setDispatchDate(e.target.value)}
               required
-              className="w-full px-3 py-1.5 rounded border border-theme-border bg-theme-bg-primary text-theme-primary text-sm"
+              className="w-full px-3 py-1.5 rounded border border-theme bg-theme-surface text-theme-primary text-sm"
             />
           </div>
           <div>
@@ -135,7 +135,7 @@ export default function DispatchRecordForm({ stockBatchId, stockBatchCode, unit,
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
                 required
-                className="flex-1 px-3 py-1.5 rounded border border-theme-border bg-theme-bg-primary text-theme-primary text-sm"
+                className="flex-1 px-3 py-1.5 rounded border border-theme bg-theme-surface text-theme-primary text-sm"
               />
               {unit && <span className="text-xs text-theme-tertiary">{unit}</span>}
             </div>
@@ -147,7 +147,7 @@ export default function DispatchRecordForm({ stockBatchId, stockBatchCode, unit,
               value={deliveryNoteRef}
               onChange={(e) => setDeliveryNoteRef(e.target.value)}
               placeholder="DN-001"
-              className="w-full px-3 py-1.5 rounded border border-theme-border bg-theme-bg-primary text-theme-primary text-sm"
+              className="w-full px-3 py-1.5 rounded border border-theme bg-theme-surface text-theme-primary text-sm"
             />
           </div>
         </div>

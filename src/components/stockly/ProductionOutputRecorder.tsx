@@ -164,7 +164,7 @@ export default function ProductionOutputRecorder({
         <select
           value={stockItemId}
           onChange={(e) => handleStockItemChange(e.target.value)}
-          className="w-full px-3 py-2 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary"
+          className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
         >
           <option value="">Select stock item...</option>
           {stockItems.map(item => (
@@ -181,7 +181,7 @@ export default function ProductionOutputRecorder({
             step="0.001"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
-            className="w-full px-3 py-2 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary"
+            className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
             placeholder="0.000"
           />
         </div>
@@ -191,7 +191,7 @@ export default function ProductionOutputRecorder({
             type="text"
             value={unit}
             onChange={(e) => setUnit(e.target.value)}
-            className="w-full px-3 py-2 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary"
+            className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
             placeholder="kg, units, etc."
           />
         </div>
@@ -205,7 +205,7 @@ export default function ProductionOutputRecorder({
           type="text"
           value={batchCode}
           onChange={(e) => setBatchCode(e.target.value)}
-          className="w-full px-3 py-2 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary"
+          className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
           placeholder="Leave empty to auto-generate"
         />
       </div>
@@ -224,7 +224,7 @@ export default function ProductionOutputRecorder({
             type="date"
             value={useByDate}
             onChange={(e) => setUseByDate(e.target.value)}
-            className="w-full px-3 py-2 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary"
+            className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
           />
         </div>
         <div>
@@ -233,7 +233,7 @@ export default function ProductionOutputRecorder({
             type="date"
             value={bestBeforeDate}
             onChange={(e) => setBestBeforeDate(e.target.value)}
-            className="w-full px-3 py-2 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary"
+            className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
           />
         </div>
       </div>
@@ -256,7 +256,7 @@ export default function ProductionOutputRecorder({
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-theme-border rounded-lg text-sm text-theme-secondary hover:bg-theme-bg-secondary"
+          className="px-4 py-2 border border-theme rounded-lg text-sm text-theme-secondary hover:bg-theme-surface-elevated"
         >
           Cancel
         </button>

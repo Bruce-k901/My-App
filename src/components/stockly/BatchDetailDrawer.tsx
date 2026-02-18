@@ -160,7 +160,7 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
     return (
       <div className="fixed inset-0 z-50 flex">
         <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-        <div className="ml-auto w-full max-w-md bg-theme-bg-primary shadow-xl flex items-center justify-center">
+        <div className="ml-auto w-full max-w-md bg-theme-surface shadow-xl flex items-center justify-center">
           <Loader2 className="w-6 h-6 animate-spin text-stockly-dark dark:text-stockly" />
         </div>
       </div>
@@ -177,14 +177,14 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
   return (
     <div className="fixed inset-0 z-50 flex">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="ml-auto w-full max-w-md bg-theme-bg-primary shadow-xl flex flex-col h-full overflow-hidden">
+      <div className="ml-auto w-full max-w-md bg-theme-surface shadow-xl flex flex-col h-full overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-theme-border">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-theme">
           <div>
             <h2 className="font-mono font-bold text-theme-primary">{batch.batch_code}</h2>
             <p className="text-sm text-theme-secondary">{stockItem?.name || 'Unknown item'}</p>
           </div>
-          <button onClick={onClose} className="p-1 rounded hover:bg-theme-bg-secondary transition-colors">
+          <button onClick={onClose} className="p-1 rounded hover:bg-theme-surface-elevated transition-colors">
             <X className="w-5 h-5 text-theme-secondary" />
           </button>
         </div>
@@ -193,14 +193,14 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {/* Status + Quantity */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-theme-bg-secondary rounded-lg p-3">
+            <div className="bg-theme-surface-elevated rounded-lg p-3">
               <p className="text-xs text-theme-tertiary mb-1">Remaining</p>
               <p className="text-xl font-bold text-theme-primary">
                 {batch.quantity_remaining} <span className="text-sm font-normal text-theme-tertiary">{batch.unit}</span>
               </p>
               <p className="text-xs text-theme-tertiary">of {batch.quantity_received} received</p>
             </div>
-            <div className="bg-theme-bg-secondary rounded-lg p-3">
+            <div className="bg-theme-surface-elevated rounded-lg p-3">
               <p className="text-xs text-theme-tertiary mb-1">Status</p>
               <p className={`text-lg font-bold capitalize ${
                 batch.status === 'active' ? 'text-emerald-600 dark:text-emerald-400' :
@@ -232,7 +232,7 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
 
           {/* Expiry dates */}
           {(batch.use_by_date || batch.best_before_date) && (
-            <div className="bg-theme-bg-secondary rounded-lg p-3 space-y-2">
+            <div className="bg-theme-surface-elevated rounded-lg p-3 space-y-2">
               <p className="text-xs font-medium text-theme-tertiary uppercase">Expiry Dates</p>
               {batch.use_by_date && (
                 <div className="flex items-center justify-between">
@@ -255,7 +255,7 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
 
           {/* @salsa — Allergen badges */}
           {batch.allergens && batch.allergens.length > 0 && (
-            <div className="bg-theme-bg-secondary rounded-lg p-3 space-y-2">
+            <div className="bg-theme-surface-elevated rounded-lg p-3 space-y-2">
               <p className="text-xs font-medium text-theme-tertiary uppercase flex items-center gap-1.5">
                 <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
                 Allergens
@@ -288,7 +288,7 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
           )}
 
           {/* Receipt info */}
-          <div className="bg-theme-bg-secondary rounded-lg p-3 space-y-2">
+          <div className="bg-theme-surface-elevated rounded-lg p-3 space-y-2">
             <p className="text-xs font-medium text-theme-tertiary uppercase">Receipt Details</p>
             {supplier?.name && (
               <div className="flex items-center justify-between">
@@ -373,7 +373,7 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
 
               {/* Adjustment form */}
               {adjusting && (
-                <div className="bg-theme-bg-secondary rounded-lg p-3 space-y-2">
+                <div className="bg-theme-surface-elevated rounded-lg p-3 space-y-2">
                   <div className="flex gap-2">
                     <input
                       type="number"
@@ -381,7 +381,7 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
                       placeholder="Qty (+/-)"
                       value={adjustQty}
                       onChange={(e) => setAdjustQty(e.target.value)}
-                      className="flex-1 px-3 py-1.5 text-sm rounded border border-theme-border bg-theme-bg-primary text-theme-primary"
+                      className="flex-1 px-3 py-1.5 text-sm rounded border border-theme bg-theme-surface text-theme-primary"
                     />
                     <span className="flex items-center text-sm text-theme-tertiary">{batch.unit}</span>
                   </div>
@@ -390,7 +390,7 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
                     placeholder="Reason for adjustment (required)"
                     value={adjustReason}
                     onChange={(e) => setAdjustReason(e.target.value)}
-                    className="w-full px-3 py-1.5 text-sm rounded border border-theme-border bg-theme-bg-primary text-theme-primary"
+                    className="w-full px-3 py-1.5 text-sm rounded border border-theme bg-theme-surface text-theme-primary"
                   />
                   <div className="flex gap-2">
                     <Button size="sm" onClick={handleAdjust} disabled={updating || !adjustQty || !adjustReason.trim()}>
@@ -417,7 +417,7 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
                   const isPositive = mov.quantity > 0;
 
                   return (
-                    <div key={mov.id} className="flex items-start gap-3 bg-theme-bg-secondary rounded-lg p-3">
+                    <div key={mov.id} className="flex items-start gap-3 bg-theme-surface-elevated rounded-lg p-3">
                       <div className={`p-1.5 rounded ${isPositive ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
                         <Icon className={`w-3.5 h-3.5 ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`} />
                       </div>

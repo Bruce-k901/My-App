@@ -140,7 +140,7 @@ export default function TraceabilityPage() {
           {traceResult && (
             <button
               onClick={() => window.print()}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-theme-border text-theme-secondary hover:bg-theme-bg-secondary text-sm font-medium transition-colors print:hidden"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-theme text-theme-secondary hover:bg-theme-surface-elevated text-sm font-medium transition-colors print:hidden"
             >
               <Printer className="w-4 h-4" />
               Print
@@ -175,7 +175,7 @@ export default function TraceabilityPage() {
       )}
 
       {/* Search bar */}
-      <div className="bg-theme-bg-primary border border-theme-border rounded-lg p-4 print:hidden">
+      <div className="bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700/50 rounded-lg p-4 print:hidden">
         <TraceSearchBar onTrace={handleTrace} loading={loading} />
       </div>
 
@@ -222,7 +222,7 @@ export default function TraceabilityPage() {
           </div>
 
           {/* Tree visualization */}
-          <div className="bg-theme-bg-primary border border-theme-border rounded-lg p-4 overflow-x-auto print:border-0 print:p-0">
+          <div className="bg-theme-surface border border-theme rounded-lg p-4 overflow-x-auto print:border-0 print:p-0">
             <TraceabilityTree
               nodes={traceResult.nodes}
               links={traceResult.links}
@@ -250,7 +250,7 @@ export default function TraceabilityPage() {
                   (complementary direction)
                 </span>
               </h2>
-              <div className="bg-theme-bg-primary border border-theme-border rounded-lg p-4 overflow-x-auto print:border-0 print:p-0">
+              <div className="bg-theme-surface border border-theme rounded-lg p-4 overflow-x-auto print:border-0 print:p-0">
                 <TraceabilityTree
                   nodes={backwardResult.nodes}
                   links={backwardResult.links}

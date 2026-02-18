@@ -13,7 +13,7 @@ export default function MassBalanceCard({ totalInput, totalOutput, variance, var
   const isAcceptable = Math.abs(variancePercent) <= 5;
 
   return (
-    <div className="bg-theme-bg-secondary rounded-lg p-4 border border-theme-border">
+    <div className="bg-theme-surface-elevated rounded-lg p-4 border border-theme">
       <h3 className="text-sm font-medium text-theme-tertiary uppercase mb-3">Mass Balance</h3>
       <div className="grid grid-cols-4 gap-4">
         <div>

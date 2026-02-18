@@ -47,7 +47,7 @@ export default function ProductionBatchTracker({ selectedDate, siteId }: Product
     return (
       <div className="space-y-2 p-4">
         {[1, 2].map(i => (
-          <div key={i} className="h-16 bg-theme-bg-secondary rounded-lg animate-pulse" />
+          <div key={i} className="h-16 bg-theme-surface-elevated rounded-lg animate-pulse" />
         ))}
       </div>
     );
@@ -92,7 +92,7 @@ export default function ProductionBatchTracker({ selectedDate, siteId }: Product
           <Link
             key={batch.id}
             href={`/dashboard/stockly/production-batches/${batch.id}`}
-            className="flex items-center justify-between p-3 bg-theme-bg-secondary border border-theme-border rounded-lg hover:border-stockly-dark/20 dark:hover:border-stockly/20 transition-colors group"
+            className="flex items-center justify-between p-3 bg-theme-surface-elevated border border-theme rounded-lg hover:border-stockly-dark/20 dark:hover:border-stockly/20 transition-colors group"
           >
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">

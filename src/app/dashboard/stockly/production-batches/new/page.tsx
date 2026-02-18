@@ -32,7 +32,7 @@ export default function NewProductionBatchPage() {
         <p className="text-sm text-theme-tertiary mt-1">Create a new production run to track inputs, outputs, and CCP records</p>
       </div>
 
-      <div className="bg-theme-bg-primary border border-theme-border rounded-lg p-6">
+      <div className="bg-theme-surface border border-theme rounded-lg p-6">
         <ProductionBatchForm
           onCreated={(batch) => router.push(`/dashboard/stockly/production-batches/${batch.id}`)}
           defaultRecipeId={defaultRecipeId}

@@ -48,7 +48,7 @@ export default function RecallReportView({ recallId }: RecallReportViewProps) {
       <div className="flex justify-end print:hidden">
         <button
           onClick={() => window.print()}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-theme-border text-theme-secondary hover:bg-theme-bg-secondary text-sm font-medium transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-theme text-theme-secondary hover:bg-theme-surface-elevated text-sm font-medium transition-colors"
         >
           <Printer className="w-4 h-4" />
           Print Report
@@ -56,7 +56,7 @@ export default function RecallReportView({ recallId }: RecallReportViewProps) {
       </div>
 
       {/* Report content (print-friendly) */}
-      <div className="bg-white dark:bg-theme-bg-primary rounded-lg border border-theme-border p-6 print:border-0 print:shadow-none print:p-0 space-y-6 print:text-black">
+      <div className="bg-white dark:bg-theme-surface rounded-lg border border-theme p-6 print:border-0 print:shadow-none print:p-0 space-y-6 print:text-black">
         {/* Header */}
         <div className="border-b-2 border-red-500 pb-4">
           <h1 className="text-2xl font-bold text-red-700 dark:text-red-400 print:text-red-700">

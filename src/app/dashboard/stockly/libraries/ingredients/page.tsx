@@ -966,7 +966,7 @@ export default function IngredientsLibraryPage() {
 
   // Get Planly badge status for all ingredients
   const ingredientIds = useMemo(() =>
-    ingredients.map((ing: any) => ing.id).filter(Boolean),
+    ingredients.map((ing: any) => ing.id).filter((id: string) => id && !id.startsWith('temp-')),
     [ingredients]
   );
   const { statusMap: planlyStatusMap } = usePlanlyBadgeStatusBulk(ingredientIds);

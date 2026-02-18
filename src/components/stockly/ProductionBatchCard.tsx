@@ -28,7 +28,7 @@ export default function ProductionBatchCard({ batch, onClick }: ProductionBatchC
   return (
     <div
       onClick={onClick}
-      className="bg-theme-bg-primary border border-theme-border rounded-lg p-4 hover:border-stockly-dark/30 dark:hover:border-stockly/30 transition-colors cursor-pointer"
+      className="bg-theme-surface border border-theme rounded-lg p-4 hover:border-stockly-dark/30 dark:hover:border-stockly/30 transition-colors cursor-pointer"
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">

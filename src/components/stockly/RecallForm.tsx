@@ -57,7 +57,7 @@ export default function RecallForm({ onSubmit, loading, initialData }: RecallFor
             onChange={(e) => setRecallCode(e.target.value)}
             required
             placeholder="RC-2026-0218-001"
-            className="flex-1 px-3 py-2 rounded-lg border border-theme-border bg-theme-bg-primary text-theme-primary focus:outline-none focus:ring-2 focus:ring-stockly-dark/30 dark:focus:ring-stockly/30"
+            className="flex-1 px-3 py-2 rounded-lg border border-theme bg-theme-surface text-theme-primary focus:outline-none focus:ring-2 focus:ring-stockly-dark/30 dark:focus:ring-stockly/30"
           />
           <Button type="button" variant="outline" size="sm" onClick={generateCode}>
             Generate
@@ -74,7 +74,7 @@ export default function RecallForm({ onSubmit, loading, initialData }: RecallFor
           onChange={(e) => setTitle(e.target.value)}
           required
           placeholder="Brief description of the recall"
-          className="w-full px-3 py-2 rounded-lg border border-theme-border bg-theme-bg-primary text-theme-primary focus:outline-none focus:ring-2 focus:ring-stockly-dark/30 dark:focus:ring-stockly/30"
+          className="w-full px-3 py-2 rounded-lg border border-theme bg-theme-surface text-theme-primary focus:outline-none focus:ring-2 focus:ring-stockly-dark/30 dark:focus:ring-stockly/30"
         />
       </div>
 
@@ -85,7 +85,7 @@ export default function RecallForm({ onSubmit, loading, initialData }: RecallFor
           <select
             value={recallType}
             onChange={(e) => setRecallType(e.target.value as any)}
-            className="w-full px-3 py-2 rounded-lg border border-theme-border bg-theme-bg-primary text-theme-primary focus:outline-none focus:ring-2 focus:ring-stockly-dark/30 dark:focus:ring-stockly/30"
+            className="w-full px-3 py-2 rounded-lg border border-theme bg-theme-surface text-theme-primary focus:outline-none focus:ring-2 focus:ring-stockly-dark/30 dark:focus:ring-stockly/30"
           >
             <option value="recall">Recall (consumer level — safety issue)</option>
             <option value="withdrawal">Withdrawal (trade level — quality issue)</option>
@@ -96,7 +96,7 @@ export default function RecallForm({ onSubmit, loading, initialData }: RecallFor
           <select
             value={severity}
             onChange={(e) => setSeverity(e.target.value as any)}
-            className="w-full px-3 py-2 rounded-lg border border-theme-border bg-theme-bg-primary text-theme-primary focus:outline-none focus:ring-2 focus:ring-stockly-dark/30 dark:focus:ring-stockly/30"
+            className="w-full px-3 py-2 rounded-lg border border-theme bg-theme-surface text-theme-primary focus:outline-none focus:ring-2 focus:ring-stockly-dark/30 dark:focus:ring-stockly/30"
           >
             <option value="class_1">Class 1 — Serious health risk</option>
             <option value="class_2">Class 2 — May cause illness</option>
@@ -113,7 +113,7 @@ export default function RecallForm({ onSubmit, loading, initialData }: RecallFor
           onChange={(e) => setReason(e.target.value)}
           rows={2}
           placeholder="Why is this recall being initiated?"
-          className="w-full px-3 py-2 rounded-lg border border-theme-border bg-theme-bg-primary text-theme-primary focus:outline-none focus:ring-2 focus:ring-stockly-dark/30 dark:focus:ring-stockly/30"
+          className="w-full px-3 py-2 rounded-lg border border-theme bg-theme-surface text-theme-primary focus:outline-none focus:ring-2 focus:ring-stockly-dark/30 dark:focus:ring-stockly/30"
         />
       </div>
 
@@ -125,7 +125,7 @@ export default function RecallForm({ onSubmit, loading, initialData }: RecallFor
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
           placeholder="Additional details about the recall..."
-          className="w-full px-3 py-2 rounded-lg border border-theme-border bg-theme-bg-primary text-theme-primary focus:outline-none focus:ring-2 focus:ring-stockly-dark/30 dark:focus:ring-stockly/30"
+          className="w-full px-3 py-2 rounded-lg border border-theme bg-theme-surface text-theme-primary focus:outline-none focus:ring-2 focus:ring-stockly-dark/30 dark:focus:ring-stockly/30"
         />
       </div>
 

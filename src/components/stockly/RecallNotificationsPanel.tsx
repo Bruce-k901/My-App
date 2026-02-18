@@ -87,7 +87,7 @@ export default function RecallNotificationsPanel({ recallId, notifications, onUp
 
       {/* Add notification form */}
       {adding && (
-        <form onSubmit={handleSubmit} className="bg-theme-bg-secondary rounded-lg p-4 space-y-3 border border-theme-border">
+        <form onSubmit={handleSubmit} className="bg-theme-surface-elevated rounded-lg p-4 space-y-3 border border-theme">
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-theme-secondary mb-1">Customer Name</label>
@@ -96,7 +96,7 @@ export default function RecallNotificationsPanel({ recallId, notifications, onUp
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 required
-                className="w-full px-3 py-1.5 rounded border border-theme-border bg-theme-bg-primary text-theme-primary text-sm"
+                className="w-full px-3 py-1.5 rounded border border-theme bg-theme-surface text-theme-primary text-sm"
               />
             </div>
             <div>
@@ -104,7 +104,7 @@ export default function RecallNotificationsPanel({ recallId, notifications, onUp
               <select
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
-                className="w-full px-3 py-1.5 rounded border border-theme-border bg-theme-bg-primary text-theme-primary text-sm"
+                className="w-full px-3 py-1.5 rounded border border-theme bg-theme-surface text-theme-primary text-sm"
               >
                 <option value="phone">Phone</option>
                 <option value="email">Email</option>
@@ -121,7 +121,7 @@ export default function RecallNotificationsPanel({ recallId, notifications, onUp
                 type="email"
                 value={contactEmail}
                 onChange={(e) => setContactEmail(e.target.value)}
-                className="w-full px-3 py-1.5 rounded border border-theme-border bg-theme-bg-primary text-theme-primary text-sm"
+                className="w-full px-3 py-1.5 rounded border border-theme bg-theme-surface text-theme-primary text-sm"
               />
             </div>
             <div>
@@ -130,7 +130,7 @@ export default function RecallNotificationsPanel({ recallId, notifications, onUp
                 type="tel"
                 value={contactPhone}
                 onChange={(e) => setContactPhone(e.target.value)}
-                className="w-full px-3 py-1.5 rounded border border-theme-border bg-theme-bg-primary text-theme-primary text-sm"
+                className="w-full px-3 py-1.5 rounded border border-theme bg-theme-surface text-theme-primary text-sm"
               />
             </div>
           </div>
@@ -141,7 +141,7 @@ export default function RecallNotificationsPanel({ recallId, notifications, onUp
               value={responseNotes}
               onChange={(e) => setResponseNotes(e.target.value)}
               placeholder="Response or notes..."
-              className="w-full px-3 py-1.5 rounded border border-theme-border bg-theme-bg-primary text-theme-primary text-sm"
+              className="w-full px-3 py-1.5 rounded border border-theme bg-theme-surface text-theme-primary text-sm"
             />
           </div>
           <div className="flex gap-2">
@@ -160,11 +160,11 @@ export default function RecallNotificationsPanel({ recallId, notifications, onUp
       ) : (
         <div className="space-y-2">
           {notifications.map((n) => (
-            <div key={n.id} className="flex items-center justify-between p-3 bg-theme-bg-secondary rounded-lg border border-theme-border">
+            <div key={n.id} className="flex items-center justify-between p-3 bg-theme-surface-elevated rounded-lg border border-theme">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-sm text-theme-primary">{n.customer_name}</span>
-                  <span className="text-xs px-1.5 py-0.5 rounded bg-theme-bg-primary text-theme-tertiary">
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-theme-surface text-theme-tertiary">
                     {METHOD_LABELS[n.notification_method || ''] || n.notification_method || 'Unknown'}
                   </span>
                   {n.response_received ? (

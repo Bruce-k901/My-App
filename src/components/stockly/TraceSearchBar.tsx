@@ -73,18 +73,18 @@ export default function TraceSearchBar({ onTrace, loading }: TraceSearchBarProps
             onChange={(e) => { setSearch(e.target.value); setSelectedBatchId(null); }}
             onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
             placeholder="Enter batch code..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-theme-border bg-theme-bg-primary text-theme-primary placeholder-theme-tertiary focus:outline-none focus:ring-2 focus:ring-stockly-dark/30 dark:focus:ring-stockly/30"
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50 text-theme-primary placeholder-theme-tertiary focus:outline-none focus:ring-2 focus:ring-stockly-dark/30 dark:focus:ring-stockly/30"
           />
 
           {/* Suggestions dropdown */}
           {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute z-20 mt-1 w-full bg-theme-bg-primary border border-theme-border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute z-20 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
               {suggestions.map((s) => (
                 <button
                   key={s.id}
                   type="button"
                   onClick={() => handleSelect(s)}
-                  className="w-full text-left px-4 py-2.5 hover:bg-theme-bg-secondary transition-colors flex items-center justify-between"
+                  className="w-full text-left px-4 py-2.5 hover:bg-theme-surface-elevated transition-colors flex items-center justify-between"
                 >
                   <div>
                     <span className="font-mono font-medium text-theme-primary">{s.batch_code}</span>
@@ -104,14 +104,14 @@ export default function TraceSearchBar({ onTrace, loading }: TraceSearchBarProps
         </div>
 
         {/* Direction toggle */}
-        <div className="flex rounded-lg border border-theme-border overflow-hidden">
+        <div className="flex rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden">
           <button
             type="button"
             onClick={() => setDirection('forward')}
             className={`px-3 py-2 text-sm font-medium flex items-center gap-1.5 transition-colors ${
               direction === 'forward'
                 ? 'bg-stockly-dark/10 dark:bg-stockly/10 text-stockly-dark dark:text-stockly'
-                : 'text-theme-secondary hover:bg-theme-bg-secondary'
+                : 'bg-gray-50 dark:bg-gray-800/50 text-theme-secondary hover:bg-gray-100 dark:hover:bg-gray-700/50'
             }`}
           >
             <ArrowRight className="w-4 h-4" /> Forward
@@ -119,10 +119,10 @@ export default function TraceSearchBar({ onTrace, loading }: TraceSearchBarProps
           <button
             type="button"
             onClick={() => setDirection('backward')}
-            className={`px-3 py-2 text-sm font-medium flex items-center gap-1.5 transition-colors border-l border-theme-border ${
+            className={`px-3 py-2 text-sm font-medium flex items-center gap-1.5 transition-colors border-l border-gray-300 dark:border-gray-600 ${
               direction === 'backward'
                 ? 'bg-stockly-dark/10 dark:bg-stockly/10 text-stockly-dark dark:text-stockly'
-                : 'text-theme-secondary hover:bg-theme-bg-secondary'
+                : 'bg-gray-50 dark:bg-gray-800/50 text-theme-secondary hover:bg-gray-100 dark:hover:bg-gray-700/50'
             }`}
           >
             <ArrowLeft className="w-4 h-4" /> Backward

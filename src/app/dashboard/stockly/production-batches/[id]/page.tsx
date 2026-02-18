@@ -72,8 +72,8 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
   if (loading) {
     return (
       <div className="p-6 max-w-4xl mx-auto">
-        <div className="h-8 w-48 bg-theme-bg-secondary rounded animate-pulse mb-6" />
-        <div className="h-64 bg-theme-bg-secondary rounded-lg animate-pulse" />
+        <div className="h-8 w-48 bg-theme-surface-elevated rounded animate-pulse mb-6" />
+        <div className="h-64 bg-theme-surface-elevated rounded-lg animate-pulse" />
       </div>
     );
   }
@@ -162,7 +162,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-theme-border mb-6">
+      <div className="flex border-b border-theme mb-6">
         {TABS.map(tab => (
           <button
             key={tab}
@@ -186,19 +186,19 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
         <div className="space-y-6">
           {/* Quantities */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-theme-bg-secondary border border-theme-border rounded-lg p-4">
+            <div className="bg-theme-surface-elevated border border-theme rounded-lg p-4">
               <p className="text-xs text-theme-tertiary mb-1">Planned Qty</p>
               <p className="text-lg font-semibold text-theme-primary">
                 {batch.planned_quantity ?? '—'} {batch.unit || ''}
               </p>
             </div>
-            <div className="bg-theme-bg-secondary border border-theme-border rounded-lg p-4">
+            <div className="bg-theme-surface-elevated border border-theme rounded-lg p-4">
               <p className="text-xs text-theme-tertiary mb-1">Actual Qty</p>
               <p className="text-lg font-semibold text-theme-primary">
                 {batch.actual_quantity ?? '—'} {batch.unit || ''}
               </p>
             </div>
-            <div className="bg-theme-bg-secondary border border-theme-border rounded-lg p-4">
+            <div className="bg-theme-surface-elevated border border-theme rounded-lg p-4">
               <p className="text-xs text-theme-tertiary mb-1">Yield</p>
               <p className="text-lg font-semibold text-theme-primary">
                 {batch.planned_quantity && batch.actual_quantity
@@ -206,7 +206,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
                   : '—'}
               </p>
             </div>
-            <div className="bg-theme-bg-secondary border border-theme-border rounded-lg p-4">
+            <div className="bg-theme-surface-elevated border border-theme rounded-lg p-4">
               <p className="text-xs text-theme-tertiary mb-1">Inputs / Outputs</p>
               <p className="text-lg font-semibold text-theme-primary">
                 {batch.inputs?.length || 0} / {batch.outputs?.length || 0}
@@ -216,7 +216,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
 
           {/* Allergens */}
           {(batch.allergens && batch.allergens.length > 0) || (batch.may_contain_allergens && batch.may_contain_allergens.length > 0) ? (
-            <div className="bg-theme-bg-secondary border border-theme-border rounded-lg p-4">
+            <div className="bg-theme-surface-elevated border border-theme rounded-lg p-4">
               <h3 className="text-sm font-medium text-theme-secondary mb-2 flex items-center gap-1.5">
                 <AlertTriangle className="w-4 h-4 text-red-500" />
                 Allergens
@@ -249,7 +249,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
           ) : null}
 
           {/* Timing */}
-          <div className="bg-theme-bg-secondary border border-theme-border rounded-lg p-4">
+          <div className="bg-theme-surface-elevated border border-theme rounded-lg p-4">
             <h3 className="text-sm font-medium text-theme-secondary mb-2">Timing</h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
@@ -265,7 +265,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
 
           {/* Notes */}
           {batch.notes && (
-            <div className="bg-theme-bg-secondary border border-theme-border rounded-lg p-4">
+            <div className="bg-theme-surface-elevated border border-theme rounded-lg p-4">
               <h3 className="text-sm font-medium text-theme-secondary mb-1">Notes</h3>
               <p className="text-sm text-theme-primary whitespace-pre-wrap">{batch.notes}</p>
             </div>
@@ -291,7 +291,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
           {batch.outputs && batch.outputs.length > 0 ? (
             <div className="space-y-2">
               {batch.outputs.map(output => (
-                <div key={output.id} className="flex items-center justify-between p-3 bg-theme-bg-secondary border border-theme-border rounded-lg">
+                <div key={output.id} className="flex items-center justify-between p-3 bg-theme-surface-elevated border border-theme rounded-lg">
                   <div>
                     <div className="flex items-center gap-2">
                       <Package className="w-4 h-4 text-stockly-dark dark:text-stockly" />
@@ -314,7 +314,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
           {isEditable && !showOutputForm && (
             <button
               onClick={() => setShowOutputForm(true)}
-              className="flex items-center gap-2 w-full px-3 py-2 border border-dashed border-theme-border rounded-lg text-sm text-theme-tertiary hover:text-theme-secondary hover:border-stockly-dark/30 dark:hover:border-stockly/30 transition-colors"
+              className="flex items-center gap-2 w-full px-3 py-2 border border-dashed border-theme rounded-lg text-sm text-theme-tertiary hover:text-theme-secondary hover:border-stockly-dark/30 dark:hover:border-stockly/30 transition-colors"
             >
               <Plus className="w-4 h-4" />
               Record Output
@@ -322,7 +322,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
           )}
 
           {showOutputForm && (
-            <div className="bg-theme-bg-secondary border border-theme-border rounded-lg p-4">
+            <div className="bg-theme-surface-elevated border border-theme rounded-lg p-4">
               <ProductionOutputRecorder
                 productionBatchId={batch.id}
                 companyId={batch.company_id}
@@ -344,7 +344,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
           {batch.ccp_records && batch.ccp_records.length > 0 ? (
             <div className="space-y-2">
               {batch.ccp_records.map(record => (
-                <div key={record.id} className="p-3 bg-theme-bg-secondary border border-theme-border rounded-lg">
+                <div key={record.id} className="p-3 bg-theme-surface-elevated border border-theme rounded-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Thermometer className="w-4 h-4 text-theme-tertiary" />
@@ -384,7 +384,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
           {isEditable && !showCCPForm && (
             <button
               onClick={() => setShowCCPForm(true)}
-              className="flex items-center gap-2 w-full px-3 py-2 border border-dashed border-theme-border rounded-lg text-sm text-theme-tertiary hover:text-theme-secondary hover:border-stockly-dark/30 dark:hover:border-stockly/30 transition-colors"
+              className="flex items-center gap-2 w-full px-3 py-2 border border-dashed border-theme rounded-lg text-sm text-theme-tertiary hover:text-theme-secondary hover:border-stockly-dark/30 dark:hover:border-stockly/30 transition-colors"
             >
               <Plus className="w-4 h-4" />
               Record CCP Measurement
@@ -392,7 +392,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
           )}
 
           {showCCPForm && (
-            <div className="bg-theme-bg-secondary border border-theme-border rounded-lg p-4">
+            <div className="bg-theme-surface-elevated border border-theme rounded-lg p-4">
               <CCPRecordForm
                 productionBatchId={batch.id}
                 onSaved={() => {

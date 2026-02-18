@@ -127,8 +127,8 @@ export default function BatchSelector({
           className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg border transition-colors ${
             !selectedBatchId && required && batches.length > 0
               ? 'border-red-300 dark:border-red-700'
-              : 'border-theme-border'
-          } bg-theme-bg-primary text-theme-primary hover:border-stockly-dark/30 dark:hover:border-stockly/30`}
+              : 'border-theme'
+          } bg-theme-surface text-theme-primary hover:border-stockly-dark/30 dark:hover:border-stockly/30`}
         >
           <div className="flex items-center gap-2">
             <Layers className="w-4 h-4 text-theme-tertiary" />
@@ -153,10 +153,10 @@ export default function BatchSelector({
         {isOpen && (
           <>
             <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-            <div className="absolute z-50 mt-1 w-full bg-theme-bg-primary border border-theme-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+            <div className="absolute z-50 mt-1 w-full bg-theme-surface border border-theme rounded-lg shadow-lg max-h-48 overflow-y-auto">
               {/* FIFO hint */}
               {batches.length > 1 && (
-                <div className="px-3 py-1.5 text-xs text-theme-tertiary bg-theme-bg-secondary border-b border-theme-border">
+                <div className="px-3 py-1.5 text-xs text-theme-tertiary bg-theme-surface-elevated border-b border-theme">
                   Ordered by expiry date (FIFO — use oldest first)
                 </div>
               )}
@@ -168,7 +168,7 @@ export default function BatchSelector({
                     onSelect(batch.id, batch);
                     setIsOpen(false);
                   }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-theme-bg-secondary transition-colors ${
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-theme-surface-elevated transition-colors ${
                     batch.id === selectedBatchId ? 'bg-stockly-dark/5 dark:bg-stockly/10' : ''
                   } ${index === 0 && batches.length > 1 ? 'border-l-2 border-l-emerald-500' : ''}`}
                 >

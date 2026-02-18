@@ -277,7 +277,7 @@ export function IntegrationsTab() {
                           value={configForm[field.key] || ''}
                           onChange={(e) => setConfigForm({ ...configForm, [field.key]: e.target.value })}
                           placeholder={field.placeholder}
-                          className="w-full px-3 py-1.5 bg-theme-bg-secondary border border-theme-border rounded-lg text-sm text-theme-primary placeholder-gray-400 dark:placeholder-white/30"
+                          className="w-full px-3 py-1.5 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary placeholder-gray-400 dark:placeholder-white/30"
                         />
                       </div>
                     ))}
@@ -292,7 +292,7 @@ export function IntegrationsTab() {
                       </button>
                       <button
                         onClick={() => setConfiguringType(null)}
-                        className="px-3 py-1.5 border border-theme rounded-lg text-sm text-theme-secondary hover:bg-theme-bg-secondary"
+                        className="px-3 py-1.5 border border-theme rounded-lg text-sm text-theme-secondary hover:bg-theme-surface-elevated"
                       >
                         Cancel
                       </button>
