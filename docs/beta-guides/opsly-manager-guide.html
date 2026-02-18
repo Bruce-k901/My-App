@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opsly Manager Guide — Teamly &amp; Checkly</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --opsly-dark: #110f0d;
+    --opsly-bg: #1a1715;
+    --opsly-card: #242120;
+    --opsly-border: #3a3633;
+    --opsly-text: #f5f0eb;
+    --opsly-muted: #a09890;
+    --checkly: #F1E194;
+    --checkly-dark: #5B0E14;
+    --teamly: #D37E91;
+    --teamly-dark: #C28FA3;
+    --brand-cta: #D37E91;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --error: #EF4444;
+    --info: #3B82F6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #ffffff;
+    color: #1a1a1a;
+    font-size: 11pt;
+    line-height: 1.6;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  @media print {
+    body { font-size: 10pt; }
+    .page-break { page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+    .cover-page { page-break-after: always; }
+  }
+
+  /* Cover Page */
+  .cover-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--opsly-dark) 0%, #2a2420 50%, var(--opsly-dark) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-page::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(211,126,145,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(241,225,148,0.06) 0%, transparent 60%);
+  }
+  .cover-logo {
+    font-size: 64px;
+    font-weight: 800;
+    color: var(--opsly-text);
+    letter-spacing: -2px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .cover-logo span { color: var(--brand-cta); }
+  .cover-subtitle {
+    font-size: 14px;
+    color: var(--opsly-muted);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-bottom: 60px;
+    position: relative;
+  }
+  .cover-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--opsly-text);
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .cover-edition {
+    font-size: 16px;
+    color: var(--opsly-muted);
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .cover-modules {
+    display: flex;
+    gap: 20px;
+    position: relative;
+  }
+  .cover-module-badge {
+    padding: 10px 28px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+  .cover-module-badge.teamly {
+    background: rgba(211,126,145,0.15);
+    color: var(--teamly);
+    border: 1px solid rgba(211,126,145,0.3);
+  }
+  .cover-module-badge.checkly {
+    background: rgba(241,225,148,0.15);
+    color: var(--checkly);
+    border: 1px solid rgba(241,225,148,0.3);
+  }
+  .cover-footer {
+    position: absolute;
+    bottom: 40px;
+    color: var(--opsly-muted);
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  /* Content Pages */
+  .content { max-width: 800px; margin: 0 auto; padding: 40px; }
+
+  /* Section Headers */
+  .section-header {
+    padding: 20px 0;
+    margin: 40px 0 24px 0;
+    border-bottom: 3px solid;
+  }
+  .section-header.teamly { border-color: var(--teamly); }
+  .section-header.checkly { border-color: var(--checkly); }
+  .section-header.general { border-color: var(--opsly-dark); }
+  .section-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--opsly-dark);
+    margin-bottom: 4px;
+  }
+  .section-header .module-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  .section-header .module-label.teamly { color: var(--teamly-dark); }
+  .section-header .module-label.checkly { color: var(--checkly-dark); }
+  .section-header .module-label.general { color: #666; }
+
+  h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 28px 0 12px 0;
+  }
+  h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin: 20px 0 8px 0;
+  }
+  p { margin-bottom: 10px; color: #333; }
+  ul, ol { margin: 8px 0 16px 24px; color: #333; }
+  li { margin-bottom: 6px; }
+
+  /* Instruction Steps */
+  .steps { margin: 16px 0; counter-reset: step-counter; }
+  .step {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+    padding: 14px 16px;
+    background: #f8f7f5;
+    border-radius: 8px;
+    border-left: 3px solid #ddd;
+    counter-increment: step-counter;
+  }
+  .step.teamly { border-left-color: var(--teamly); }
+  .step.checkly { border-left-color: var(--checkly); }
+  .step-number {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+    color: white;
+  }
+  .step-number.teamly { background: var(--teamly); }
+  .step-number.checkly { background: var(--checkly); color: var(--opsly-dark); }
+  .step-number.general { background: var(--opsly-dark); }
+  .step-content { flex: 1; }
+  .step-content strong { display: block; margin-bottom: 4px; color: #1a1a1a; }
+  .step-content p { margin-bottom: 4px; font-size: 10.5pt; }
+
+  /* Info Boxes */
+  .info-box {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 16px 0;
+    font-size: 10.5pt;
+  }
+  .info-box.tip {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+  }
+  .info-box.warning {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #92400e;
+  }
+  .info-box.note {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+  }
+  .info-box strong { display: block; margin-bottom: 4px; }
+
+  /* Navigation Path */
+  .nav-path {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f3f2f0;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 10pt;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: #555;
+    margin: 4px 0;
+  }
+  .nav-path .sep { color: #bbb; margin: 0 2px; }
+
+  /* Table of Contents */
+  .toc {
+    background: #f8f7f5;
+    border-radius: 12px;
+    padding: 30px 36px;
+    margin: 30px 0;
+  }
+  .toc h3 {
+    font-size: 18px;
+    margin: 0 0 16px 0;
+    color: var(--opsly-dark);
+  }
+  .toc-section {
+    margin-bottom: 16px;
+  }
+  .toc-section-title {
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+  }
+  .toc-section-title.teamly { color: var(--teamly-dark); border-bottom: 2px solid var(--teamly); display: inline-block; }
+  .toc-section-title.checkly { color: var(--checkly-dark); border-bottom: 2px solid var(--checkly); display: inline-block; }
+  .toc-section-title.general { color: #666; border-bottom: 2px solid #ccc; display: inline-block; }
+  .toc ol { margin: 4px 0 0 20px; }
+  .toc li { margin-bottom: 3px; font-size: 10.5pt; color: #444; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 20px 0;
+    font-size: 10pt;
+  }
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e3df;
+  }
+  th {
+    background: #f3f2f0;
+    font-weight: 600;
+    font-size: 9.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #555;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  /* Keyboard/UI element highlights */
+  .ui-element {
+    background: #e8e6e2;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 9.5pt;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* Divider */
+  hr {
+    border: none;
+    border-top: 1px solid #e5e3df;
+    margin: 30px 0;
+  }
+
+  .page-footer {
+    text-align: center;
+    padding: 40px 0;
+    color: #999;
+    font-size: 9pt;
+    border-top: 1px solid #e5e3df;
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== COVER PAGE ==================== -->
+<div class="cover-page">
+  <div class="cover-logo">opsly<span>.</span></div>
+  <div class="cover-subtitle">Operations Platform</div>
+  <div class="cover-title">Manager Guide</div>
+  <div class="cover-edition">Beta Edition &mdash; February 2026</div>
+  <div class="cover-modules">
+    <div class="cover-module-badge teamly">TEAMLY</div>
+    <div class="cover-module-badge checkly">CHECKLY</div>
+  </div>
+  <div class="cover-footer">CONFIDENTIAL &mdash; FOR BETA PARTNERS ONLY</div>
+</div>
+
+<!-- ==================== CONTENTS ==================== -->
+<div class="content">
+
+<div class="toc">
+  <h3>Contents</h3>
+
+  <div class="toc-section">
+    <div class="toc-section-title general">Getting Started</div>
+    <ol>
+      <li>Logging In &amp; First-Time Setup</li>
+      <li>Navigating the App</li>
+      <li>Site Filtering &amp; Context</li>
+      <li>Your Profile &amp; Settings</li>
+    </ol>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-section-title teamly">Teamly &mdash; People &amp; Rotas</div>
+    <ol start="5">
+      <li>Adding Employees</li>
+      <li>Managing Employee Profiles</li>
+      <li>Departments &amp; Org Structure</li>
+      <li>Setting Shift Rules (Working Time Directive)</li>
+      <li>Building Rotas</li>
+      <li>Staff Availability &amp; Requests</li>
+      <li>Leave Management</li>
+      <li>Time &amp; Attendance</li>
+      <li>Training &amp; Compliance</li>
+      <li>Onboarding New Starters</li>
+      <li>Teamly Settings Reference</li>
+    </ol>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-section-title checkly">Checkly &mdash; Compliance &amp; Tasks</div>
+    <ol start="16">
+      <li>Understanding Task Templates</li>
+      <li>Setting Up Compliance Templates</li>
+      <li>Creating Custom Templates</li>
+      <li>Scheduling Tasks for Your Site</li>
+      <li>Managing Equipment for Temperature Checks</li>
+      <li>Reviewing Completed Tasks</li>
+      <li>Temperature Logs &amp; Breach Actions</li>
+      <li>EHO Readiness Reports</li>
+      <li>Checkly Reports &amp; Analytics</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ==================== GETTING STARTED ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header general">
+  <div class="module-label general">Getting Started</div>
+  <h2>1. Logging In &amp; First-Time Setup</h2>
+</div>
+
+<p>You will receive an email invitation from Opsly with a link to set up your account.</p>
+
+<div class="steps">
+  <div class="step" style="border-left-color: var(--opsly-dark);">
+    <div class="step-number general">1</div>
+    <div class="step-content">
+      <strong>Open the invitation email</strong>
+      <p>Click the setup link. You'll be taken to the account setup page.</p>
+    </div>
+  </div>
+  <div class="step" style="border-left-color: var(--opsly-dark);">
+    <div class="step-number general">2</div>
+    <div class="step-content">
+      <strong>Set your password</strong>
+      <p>Choose a secure password (minimum 6 characters). You can use the password generator if you prefer.</p>
+    </div>
+  </div>
+  <div class="step" style="border-left-color: var(--opsly-dark);">
+    <div class="step-number general">3</div>
+    <div class="step-content">
+      <strong>Set your 4-digit PIN</strong>
+      <p>This PIN is used for quick actions within the app (e.g. completing tasks, clocking in).</p>
+    </div>
+  </div>
+  <div class="step" style="border-left-color: var(--opsly-dark);">
+    <div class="step-number general">4</div>
+    <div class="step-content">
+      <strong>Log in</strong>
+      <p>Go to your Opsly URL and sign in with your email and password. You will land on the Dashboard.</p>
+    </div>
+  </div>
+</div>
+
+<div class="info-box tip">
+  <strong>Tip: Install as an App</strong>
+  Opsly works as a Progressive Web App (PWA). On your phone, open the site in your browser and tap "Add to Home Screen" to install it like a native app. You'll get a full-screen experience with quick launch.
+</div>
+
+<div class="section-header general">
+  <div class="module-label general">Getting Started</div>
+  <h2>2. Navigating the App</h2>
+</div>
+
+<h3>Desktop Layout</h3>
+<p>The app has three main navigation elements:</p>
+
+<table>
+  <tr>
+    <th>Element</th>
+    <th>Location</th>
+    <th>What It Does</th>
+  </tr>
+  <tr>
+    <td><strong>Header Bar</strong></td>
+    <td>Top of screen</td>
+    <td>Site filter, search, notifications, messages, theme toggle, profile, &ldquo;Ask Opsly&rdquo; AI assistant</td>
+  </tr>
+  <tr>
+    <td><strong>Module Bar</strong></td>
+    <td>Below header</td>
+    <td>Switch between modules: <strong>Checkly</strong>, Stockly, <strong>Teamly</strong>, Assetly, Planly. Also has the Clock In/Out button.</td>
+  </tr>
+  <tr>
+    <td><strong>Sidebar</strong></td>
+    <td>Left side</td>
+    <td>Context-sensitive &mdash; shows navigation for whichever module you're in. Can be collapsed or pinned.</td>
+  </tr>
+</table>
+
+<p>The <span class="ui-element">&#9776; Menu</span> button (top-right) opens the burger menu for Organisation settings, Reports, Workspace items, and Account settings.</p>
+
+<h3>Mobile Layout</h3>
+<p>On mobile, the app uses a dedicated mobile interface:</p>
+<ul>
+  <li><strong>Bottom tab bar</strong> with 5 tabs: Home, Tasks, Calendar, Rota, More</li>
+  <li><strong>More</strong> opens a sheet with quick actions and links to all modules</li>
+  <li>Tap your <strong>avatar</strong> (top-right) for profile, site switching, and logout</li>
+</ul>
+
+<div class="section-header general">
+  <div class="module-label general">Getting Started</div>
+  <h2>3. Site Filtering &amp; Context</h2>
+</div>
+
+<p>If your business has multiple sites, the <strong>Site Filter</strong> dropdown in the header controls which site's data you see throughout the app. Set it to a specific site or choose <strong>&ldquo;All Sites&rdquo;</strong> to see everything.</p>
+
+<div class="info-box note">
+  <strong>Note:</strong> Staff members only see data for their assigned home site. The site filter is primarily for managers and admins who oversee multiple locations.
+</div>
+
+<div class="section-header general">
+  <div class="module-label general">Getting Started</div>
+  <h2>4. Your Profile &amp; Settings</h2>
+</div>
+
+<p>Access your settings from the burger menu <span class="ui-element">&#9776;</span> &rarr; <span class="ui-element">Settings</span>.</p>
+
+<table>
+  <tr>
+    <th>Tab</th>
+    <th>What You Can Do</th>
+  </tr>
+  <tr>
+    <td><strong>Profile</strong></td>
+    <td>Update your name, phone number, position title, home site, and password</td>
+  </tr>
+  <tr>
+    <td><strong>Appearance</strong></td>
+    <td>Switch between dark and light theme</td>
+  </tr>
+  <tr>
+    <td><strong>Notifications</strong></td>
+    <td>Configure email digests and in-app alerts for incidents, tasks, and temperature warnings</td>
+  </tr>
+  <tr>
+    <td><strong>Company</strong></td>
+    <td>Upload company logo, update billing info (admin only)</td>
+  </tr>
+</table>
+
+<!-- ==================== TEAMLY ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; People &amp; Rotas</div>
+  <h2>5. Adding Employees</h2>
+</div>
+
+<p>Navigate to Teamly by clicking <span class="ui-element">Teamly</span> in the Module Bar. In the sidebar, go to <strong>Employees</strong>.</p>
+
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Employees <span class="sep">&rsaquo;</span> Add Employee</div>
+
+<div class="steps">
+  <div class="step teamly">
+    <div class="step-number teamly">1</div>
+    <div class="step-content">
+      <strong>Click &ldquo;Add Employee&rdquo;</strong>
+      <p>You'll be asked to choose the type: <strong>Head Office / Executive</strong> (streamlined form) or <strong>Site-Based</strong> (full form with site assignment).</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">2</div>
+    <div class="step-content">
+      <strong>Fill in core details</strong>
+      <p>Full name, email address, phone number, job title, and site assignment are the essentials. The email is used for their login.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">3</div>
+    <div class="step-content">
+      <strong>Set their role</strong>
+      <p>Choose the access level: <strong>Admin</strong> (full access), <strong>Manager</strong> (team management), or <strong>Staff</strong> (personal use only). This controls what they can see and do in the app.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">4</div>
+    <div class="step-content">
+      <strong>Set employment details</strong>
+      <p>Employment type (full-time, part-time, casual, etc.), contracted hours, start date, and BOH/FOH designation.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">5</div>
+    <div class="step-content">
+      <strong>Send invitation</strong>
+      <p>The employee will receive an email to set up their password and PIN. They can then log in and access the app.</p>
+    </div>
+  </div>
+</div>
+
+<div class="info-box tip">
+  <strong>Tip:</strong> You can add employees in bulk by providing a staff list to us during setup &mdash; we'll import them for you so they're ready to go on day one.
+</div>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; People &amp; Rotas</div>
+  <h2>6. Managing Employee Profiles</h2>
+</div>
+
+<p>Click any employee name in the directory to open their full profile. The profile is organised into tabs:</p>
+
+<table>
+  <tr>
+    <th>Tab</th>
+    <th>What It Contains</th>
+  </tr>
+  <tr>
+    <td><strong>Overview</strong></td>
+    <td>Position, department, site, contact info, emergency contacts. All fields editable inline.</td>
+  </tr>
+  <tr>
+    <td><strong>Documents</strong></td>
+    <td>Uploaded files (contracts, right-to-work, certifications)</td>
+  </tr>
+  <tr>
+    <td><strong>Leave</strong></td>
+    <td>Leave history, balances, and pending requests for this employee</td>
+  </tr>
+  <tr>
+    <td><strong>Training</strong></td>
+    <td>Training records and certification status with expiry tracking</td>
+  </tr>
+  <tr>
+    <td><strong>Attendance</strong></td>
+    <td>Clock-in/out history and attendance records</td>
+  </tr>
+  <tr>
+    <td><strong>Notes</strong></td>
+    <td>Manager notes and HR notes (private)</td>
+  </tr>
+  <tr>
+    <td><strong>Pay</strong></td>
+    <td>Pay rate, salary, pay frequency, bank details</td>
+  </tr>
+</table>
+
+<p>You can also edit key fields directly from the profile overview: position, department, site assignment, contracted hours, hourly rate, and reporting manager.</p>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; People &amp; Rotas</div>
+  <h2>7. Departments &amp; Org Structure</h2>
+</div>
+
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Settings <span class="sep">&rsaquo;</span> Departments</div>
+
+<p>Create departments to organise your team (e.g. Kitchen, Front of House, Bar, Management). Departments can be hierarchical &mdash; a department can sit under a parent department.</p>
+
+<p>You can also view the <strong>Org Chart</strong> via <span class="nav-path">Teamly <span class="sep">&rsaquo;</span> Employees <span class="sep">&rsaquo;</span> Org Chart</span> to see reporting lines and team structure visually.</p>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; People &amp; Rotas</div>
+  <h2>8. Setting Shift Rules (Working Time Directive)</h2>
+</div>
+
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Settings <span class="sep">&rsaquo;</span> Shift Rules</div>
+
+<p>Shift rules ensure your rotas comply with the Working Time Directive. Default values are pre-configured but you should review them for your business:</p>
+
+<table>
+  <tr>
+    <th>Rule</th>
+    <th>Default</th>
+    <th>What It Means</th>
+  </tr>
+  <tr>
+    <td>Max weekly hours</td>
+    <td>48 hours</td>
+    <td>Maximum average hours per week (over 17-week reference period)</td>
+  </tr>
+  <tr>
+    <td>Min rest between shifts</td>
+    <td>11 hours</td>
+    <td>Minimum gap between end of one shift and start of the next</td>
+  </tr>
+  <tr>
+    <td>Weekly rest</td>
+    <td>24 hours per week</td>
+    <td>Minimum continuous rest period per week</td>
+  </tr>
+  <tr>
+    <td>Break threshold</td>
+    <td>6 hours</td>
+    <td>Shift length after which a break is required</td>
+  </tr>
+  <tr>
+    <td>Break duration</td>
+    <td>20 minutes</td>
+    <td>Minimum break length when threshold is exceeded</td>
+  </tr>
+  <tr>
+    <td>Paid breaks</td>
+    <td>No</td>
+    <td>Whether breaks are paid or unpaid</td>
+  </tr>
+  <tr>
+    <td>Night shift window</td>
+    <td>23:00 &ndash; 06:00</td>
+    <td>Hours considered &ldquo;night work&rdquo;</td>
+  </tr>
+  <tr>
+    <td>Max night shift hours</td>
+    <td>8 hours</td>
+    <td>Maximum shift length during night window</td>
+  </tr>
+</table>
+
+<p>The system will warn you on the rota if any shift assignment breaches these rules.</p>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; People &amp; Rotas</div>
+  <h2>9. Building Rotas</h2>
+</div>
+
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Schedule <span class="sep">&rsaquo;</span> Rota</div>
+
+<p>The Rota is a weekly drag-and-drop schedule planner. Here's how to build one:</p>
+
+<div class="steps">
+  <div class="step teamly">
+    <div class="step-number teamly">1</div>
+    <div class="step-content">
+      <strong>Select the week</strong>
+      <p>Use the week navigator at the top. Weeks always start on Monday.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">2</div>
+    <div class="step-content">
+      <strong>Add shifts</strong>
+      <p>Click on any cell in the grid (employee row + day column) to create a shift. Choose a shift pattern (e.g. Morning 06:00&ndash;14:00, Evening 16:00&ndash;00:00) or set custom times.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">3</div>
+    <div class="step-content">
+      <strong>Drag and drop</strong>
+      <p>Move shifts between days or employees by dragging them. The system prevents double-booking automatically.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">4</div>
+    <div class="step-content">
+      <strong>Review labour costs</strong>
+      <p>The rota shows running totals of labour cost (based on hourly rates and shift hours). You can set a target labour cost and target covers for the week.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">5</div>
+    <div class="step-content">
+      <strong>Copy a week</strong>
+      <p>Use the <span class="ui-element">Copy Week</span> button to duplicate a rota to another week &mdash; great for repeating patterns.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">6</div>
+    <div class="step-content">
+      <strong>Publish</strong>
+      <p>When you're happy, publish the rota. Staff will be notified and can view their shifts in the app.</p>
+    </div>
+  </div>
+</div>
+
+<div class="info-box note">
+  <strong>Shift Patterns:</strong> Six default patterns are pre-loaded (Morning, Day, Afternoon, Evening, Close, Split). You can create custom patterns in Teamly Settings with your own names, times, colours, and break durations.
+</div>
+
+<div class="info-box warning">
+  <strong>WTD Warnings:</strong> If a shift breaches the Working Time Directive rules (e.g. less than 11 hours rest between shifts), the system will flag it on the rota. You can still proceed, but the warning is logged.
+</div>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; People &amp; Rotas</div>
+  <h2>10. Staff Availability &amp; Requests</h2>
+</div>
+
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Schedule <span class="sep">&rsaquo;</span> Availability</div>
+
+<p>Staff can set their own availability, which is visible when you're building the rota.</p>
+
+<h4>Two types of availability:</h4>
+<ul>
+  <li><strong>Recurring</strong> &mdash; weekly patterns (e.g. &ldquo;available Monday&ndash;Friday 09:00&ndash;18:00&rdquo;)</li>
+  <li><strong>Specific dates</strong> &mdash; overrides for particular days (e.g. &ldquo;unavailable 15th March&rdquo;)</li>
+</ul>
+
+<p>Staff can also mark times as <strong>preferred</strong> and set maximum hours per day.</p>
+
+<h4>Availability Requests</h4>
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Schedule <span class="sep">&rsaquo;</span> Availability <span class="sep">&rsaquo;</span> Requests</div>
+<p>When staff submit availability changes, they appear here for manager approval.</p>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; People &amp; Rotas</div>
+  <h2>11. Leave Management</h2>
+</div>
+
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Leave</div>
+
+<h3>Leave Overview</h3>
+<p>Shows a monthly calendar of approved leave plus a list of pending requests. From here you can <strong>approve</strong> or <strong>decline</strong> leave requests with an optional reason.</p>
+
+<h3>Leave Balances</h3>
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Leave <span class="sep">&rsaquo;</span> Balances</div>
+<p>View and manage leave entitlements for all employees:</p>
+<ul>
+  <li>Entitled days, carried over, taken, pending, and remaining</li>
+  <li>Filter by leave type, employee, or site</li>
+  <li>Supports both day-based and hourly leave calculations</li>
+</ul>
+
+<h3>Team Calendar</h3>
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Leave <span class="sep">&rsaquo;</span> Team Calendar</div>
+<p>At-a-glance view of who is off and when, across the whole team.</p>
+
+<div class="info-box note">
+  <strong>Default Leave Types:</strong> Seven types are pre-configured: Annual Leave, Sick Leave, TOIL, Unpaid Leave, Compassionate Leave, Maternity Leave, Paternity Leave. Each can be customised (paid/unpaid, requires approval, half-days, carry-over rules, etc.).
+</div>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; People &amp; Rotas</div>
+  <h2>12. Time &amp; Attendance</h2>
+</div>
+
+<h3>Clock In / Out</h3>
+<p>The <span class="ui-element">Clock In</span> button is always available in the Module Bar (top-right on desktop). Staff clock in at the start of their shift and out when they finish.</p>
+
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Attendance <span class="sep">&rsaquo;</span> Time Clock</div>
+<p>This page shows today's clock-in records. You can view by day or by week.</p>
+
+<h3>Timesheets</h3>
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Attendance <span class="sep">&rsaquo;</span> Timesheets</div>
+<p>Weekly timesheet sign-off. As a manager, you can:</p>
+<ul>
+  <li>Review hours for each employee against their scheduled shifts</li>
+  <li>Lock/unlock timesheets</li>
+  <li>Approve timesheets for payroll submission</li>
+</ul>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; People &amp; Rotas</div>
+  <h2>13. Training &amp; Compliance</h2>
+</div>
+
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Training</div>
+
+<h3>Training Overview</h3>
+<p>Dashboard showing certification status across five categories:</p>
+<ul>
+  <li>Food Safety (Levels 1&ndash;4)</li>
+  <li>Health &amp; Safety</li>
+  <li>Fire Marshal</li>
+  <li>First Aid</li>
+  <li>COSHH / Allergen Awareness</li>
+</ul>
+<p>Expiring and expired certifications are highlighted with alerts.</p>
+
+<h3>Compliance Matrix</h3>
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Training <span class="sep">&rsaquo;</span> Compliance Matrix</div>
+<p>A grid showing every employee against every required course, with colour-coded status (valid, expiring, expired, not started). This is your one-stop view for audit readiness.</p>
+
+<h3>Recording Training</h3>
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Training <span class="sep">&rsaquo;</span> Record Training</div>
+<p>Log a completed training course for any employee: select the course, enter the completion date, expiry date, and certificate reference.</p>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; People &amp; Rotas</div>
+  <h2>14. Onboarding New Starters</h2>
+</div>
+
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Onboarding</div>
+
+<h3>Setting Up Onboarding Packs</h3>
+<div class="steps">
+  <div class="step teamly">
+    <div class="step-number teamly">1</div>
+    <div class="step-content">
+      <strong>Upload company documents</strong>
+      <p>Go to <strong>Company Docs</strong> and upload your standard onboarding documents (handbook, policies, contracts, uniform guide, etc.).</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">2</div>
+    <div class="step-content">
+      <strong>Create an onboarding pack</strong>
+      <p>Go to <strong>Packs</strong> and create a pack. You can filter packs by staff type (BOH/FOH) and employment type (full-time/part-time). Select which documents to include.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">3</div>
+    <div class="step-content">
+      <strong>Assign to new starters</strong>
+      <p>The <strong>People to Onboard</strong> page shows employees who haven't been assigned a pack. Assign the appropriate pack to each new starter.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">4</div>
+    <div class="step-content">
+      <strong>Staff acknowledge their documents</strong>
+      <p>New starters see their assigned pack under <strong>My Docs</strong>. They can download, read, and acknowledge each document.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; People &amp; Rotas</div>
+  <h2>15. Teamly Settings Reference</h2>
+</div>
+
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Settings</div>
+
+<table>
+  <tr>
+    <th>Setting</th>
+    <th>What You Configure</th>
+  </tr>
+  <tr>
+    <td><strong>General</strong></td>
+    <td>Company working hours, standard business hours per day, planned closures</td>
+  </tr>
+  <tr>
+    <td><strong>Sites</strong></td>
+    <td>Site details, addresses, operating hours, timezone, general manager assignment</td>
+  </tr>
+  <tr>
+    <td><strong>Departments</strong></td>
+    <td>Department structure (hierarchical), contact details per department</td>
+  </tr>
+  <tr>
+    <td><strong>Areas &amp; Regions</strong></td>
+    <td>Geographic grouping of sites, regional and area manager assignments</td>
+  </tr>
+  <tr>
+    <td><strong>Approval Workflows</strong></td>
+    <td>Approval chains for rota, payroll, leave, and expenses</td>
+  </tr>
+  <tr>
+    <td><strong>Roles &amp; Permissions</strong></td>
+    <td>Custom roles with granular permissions matrix</td>
+  </tr>
+  <tr>
+    <td><strong>Shift Rules</strong></td>
+    <td>Working Time Directive compliance settings (see Section 8)</td>
+  </tr>
+  <tr>
+    <td><strong>Notifications</strong></td>
+    <td>Notification channels and types: shift reminders, rota published, leave requests, timesheet reminders, etc.</td>
+  </tr>
+</table>
+
+<!-- ==================== CHECKLY ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header checkly">
+  <div class="module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
+  <h2>16. Understanding Task Templates</h2>
+</div>
+
+<p>Checkly is built around <strong>task templates</strong>. A template defines a repeating check or task (e.g. &ldquo;Open Kitchen Temperature Check&rdquo;, &ldquo;End of Day Cleaning Checklist&rdquo;). Each template specifies:</p>
+
+<ul>
+  <li><strong>Category</strong> &mdash; Food Safety, Health &amp; Safety, Fire Safety, Cleaning, Compliance, or Maintenance</li>
+  <li><strong>Frequency</strong> &mdash; Daily, Weekly, Monthly, Annually, On Demand, or Once</li>
+  <li><strong>Daypart</strong> &mdash; When in the day: Before Open, During Service, After Service, or Anytime</li>
+  <li><strong>Fields</strong> &mdash; What data needs to be captured: checklists, temperatures, yes/no questions, photos, signatures, notes</li>
+  <li><strong>Compliance Standard</strong> &mdash; Which standard it satisfies (e.g. HACCP, Safer Food Better Business, Food Safety Act 1990, Natasha's Law)</li>
+  <li><strong>Critical flag</strong> &mdash; Whether it's a critical control point</li>
+</ul>
+
+<p>There are two sources of templates:</p>
+<ol>
+  <li><strong>Compliance Library</strong> &mdash; Pre-built templates covering standard EHO requirements (ready to use)</li>
+  <li><strong>Custom Templates</strong> &mdash; Templates you create yourself for your specific business needs</li>
+</ol>
+
+<div class="section-header checkly">
+  <div class="module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
+  <h2>17. Setting Up Compliance Templates</h2>
+</div>
+
+<div class="nav-path">Checkly <span class="sep">&rsaquo;</span> Templates <span class="sep">&rsaquo;</span> Compliance Templates</div>
+
+<p>The Compliance Library contains pre-built templates for standard EHO requirements. These cover the checks you'd typically need for an inspection.</p>
+
+<div class="steps">
+  <div class="step checkly">
+    <div class="step-number checkly">1</div>
+    <div class="step-content">
+      <strong>Browse the library</strong>
+      <p>Templates are shown as cards with their category, frequency, compliance standard, and whether they're critical. Use the search bar or category filter to find what you need.</p>
+    </div>
+  </div>
+  <div class="step checkly">
+    <div class="step-number checkly">2</div>
+    <div class="step-content">
+      <strong>Click &ldquo;Use Template&rdquo;</strong>
+      <p>This opens the scheduling modal where you configure how and when this task runs at your site.</p>
+    </div>
+  </div>
+  <div class="step checkly">
+    <div class="step-number checkly">3</div>
+    <div class="step-content">
+      <strong>Set the schedule</strong>
+      <p>Choose which dayparts it should appear in (e.g. Before Open at 07:00, During Service at 12:00) and which days of the week. For temperature checks, configure which equipment to monitor (see Section 20).</p>
+    </div>
+  </div>
+  <div class="step checkly">
+    <div class="step-number checkly">4</div>
+    <div class="step-content">
+      <strong>Activate</strong>
+      <p>Once saved, the system will automatically generate task instances according to your schedule. They'll appear in Today's Tasks for your staff.</p>
+    </div>
+  </div>
+</div>
+
+<div class="info-box tip">
+  <strong>Tip:</strong> A green badge on a template card showing &ldquo;X in use&rdquo; means it's already active at your site. You can have multiple schedules for the same template (e.g. temperature checks at different times).
+</div>
+
+<div class="section-header checkly">
+  <div class="module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
+  <h2>18. Creating Custom Templates</h2>
+</div>
+
+<div class="nav-path">Checkly <span class="sep">&rsaquo;</span> Templates <span class="sep">&rsaquo;</span> Custom Templates</div>
+
+<p>If you need a check that isn't in the compliance library, create your own:</p>
+
+<div class="steps">
+  <div class="step checkly">
+    <div class="step-number checkly">1</div>
+    <div class="step-content">
+      <strong>Click the + button</strong>
+      <p>This opens the Template Builder.</p>
+    </div>
+  </div>
+  <div class="step checkly">
+    <div class="step-number checkly">2</div>
+    <div class="step-content">
+      <strong>Define the template</strong>
+      <p>Give it a name, select a category, set the frequency and dayparts, and add instructions for staff.</p>
+    </div>
+  </div>
+  <div class="step checkly">
+    <div class="step-number checkly">3</div>
+    <div class="step-content">
+      <strong>Add fields</strong>
+      <p>Build the checklist by adding fields. Available field types:</p>
+      <ul>
+        <li><strong>Checklist item</strong> &mdash; tick/untick</li>
+        <li><strong>Yes / No</strong> &mdash; pass/fail question</li>
+        <li><strong>Temperature</strong> &mdash; number entry with min/max thresholds</li>
+        <li><strong>Number</strong> &mdash; any numeric value with optional warn/fail thresholds</li>
+        <li><strong>Text</strong> &mdash; free-text entry</li>
+        <li><strong>Photo</strong> &mdash; camera/upload</li>
+        <li><strong>Signature</strong> &mdash; sign-off</li>
+        <li><strong>Date / Time</strong> &mdash; date or time picker</li>
+        <li><strong>Select</strong> &mdash; dropdown choice</li>
+      </ul>
+    </div>
+  </div>
+  <div class="step checkly">
+    <div class="step-number checkly">4</div>
+    <div class="step-content">
+      <strong>Set evidence requirements</strong>
+      <p>Specify what evidence types are required (photo, signature, notes, etc.).</p>
+    </div>
+  </div>
+  <div class="step checkly">
+    <div class="step-number checkly">5</div>
+    <div class="step-content">
+      <strong>Save and schedule</strong>
+      <p>Save the template, then click it to schedule it at your site (same process as compliance templates).</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-header checkly">
+  <div class="module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
+  <h2>19. Scheduling Tasks for Your Site</h2>
+</div>
+
+<div class="nav-path">Checkly <span class="sep">&rsaquo;</span> Tasks <span class="sep">&rsaquo;</span> My Tasks</div>
+
+<p>The <strong>My Tasks</strong> page shows all active task schedules (site checklists) for your site. Each entry represents a recurring task with its configuration.</p>
+
+<h4>What you can do here:</h4>
+<ul>
+  <li><strong>View</strong> all active task schedules with their frequency, times, and equipment</li>
+  <li><strong>Edit</strong> a schedule &mdash; change times, days, equipment configuration</li>
+  <li><strong>Delete</strong> a schedule &mdash; stops generating future tasks (existing completed tasks are preserved in the audit trail)</li>
+</ul>
+
+<div class="info-box note">
+  <strong>How task generation works:</strong> A background process runs daily and creates individual task instances from your schedules. For example, if you have &ldquo;Fridge Temperature Check&rdquo; scheduled daily at 07:00, 12:00, and 17:00, three task cards will appear in Today's Tasks each day.
+</div>
+
+<div class="section-header checkly">
+  <div class="module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
+  <h2>20. Managing Equipment for Temperature Checks</h2>
+</div>
+
+<p>For temperature-based tasks, you need to tell the system which pieces of equipment to monitor.</p>
+
+<div class="steps">
+  <div class="step checkly">
+    <div class="step-number checkly">1</div>
+    <div class="step-content">
+      <strong>Register your equipment</strong>
+      <p>Go to <span class="nav-path">Checkly <span class="sep">&rsaquo;</span> Equipment <span class="sep">&rsaquo;</span> Assets</span> and add each piece of equipment (fridges, freezers, hot-hold units, dishwashers, etc.). Give each a nickname (e.g. &ldquo;Walk-in Fridge&rdquo;, &ldquo;Bar Fridge 1&rdquo;).</p>
+    </div>
+  </div>
+  <div class="step checkly">
+    <div class="step-number checkly">2</div>
+    <div class="step-content">
+      <strong>Set temperature ranges</strong>
+      <p>For each piece of equipment, set the acceptable min and max temperatures. The system handles inverted ranges for freezers automatically (e.g. &minus;22&deg;C to &minus;18&deg;C).</p>
+    </div>
+  </div>
+  <div class="step checkly">
+    <div class="step-number checkly">3</div>
+    <div class="step-content">
+      <strong>Link to task schedules</strong>
+      <p>When scheduling a temperature check template, you'll be asked to configure which equipment it covers. Select the relevant assets and they'll appear as individual fields when staff complete the task.</p>
+    </div>
+  </div>
+</div>
+
+<div class="info-box warning">
+  <strong>Temperature Breaches:</strong> If a recorded temperature falls outside the acceptable range, the system automatically flags it and creates a follow-up action. This may trigger a re-check task or a contractor callout, depending on your configuration.
+</div>
+
+<div class="section-header checkly">
+  <div class="module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
+  <h2>21. Reviewing Completed Tasks</h2>
+</div>
+
+<div class="nav-path">Checkly <span class="sep">&rsaquo;</span> Tasks <span class="sep">&rsaquo;</span> Completed</div>
+
+<p>This is your audit trail. Every completed (and missed) task is recorded here with full details.</p>
+
+<h4>Filtering options:</h4>
+<ul>
+  <li><strong>Task Type</strong> &mdash; filter by category</li>
+  <li><strong>Completed By</strong> &mdash; filter by staff member</li>
+  <li><strong>Status</strong> &mdash; All, With Issues, Missed, Late, Outside Time Window, No Issues</li>
+</ul>
+
+<p>Click any completed task to open the <strong>Task Detail</strong> view showing:</p>
+<ul>
+  <li>Completion timestamp and who completed it</li>
+  <li>Duration (how long it took)</li>
+  <li>All captured data: checklist items, temperatures, yes/no answers</li>
+  <li>Photo evidence (click to view full-screen)</li>
+  <li>Whether it was flagged, and the flag reason</li>
+  <li>Linked waste records (if applicable)</li>
+</ul>
+
+<div class="section-header checkly">
+  <div class="module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
+  <h2>22. Temperature Logs &amp; Breach Actions</h2>
+</div>
+
+<div class="nav-path">Checkly <span class="sep">&rsaquo;</span> Logs <span class="sep">&rsaquo;</span> Temperature Logs</div>
+
+<p>A dedicated view of all temperature readings across your equipment, with trend charts.</p>
+
+<h4>What you see:</h4>
+<ul>
+  <li>Each reading shows: equipment name, temperature, status (In Range / Out of Range / Not Recorded), who recorded it, and when</li>
+  <li>Trend sparklines per piece of equipment</li>
+  <li>Filter by equipment, date range, or status</li>
+  <li>Export / download capability</li>
+</ul>
+
+<h4>Breach Actions</h4>
+<p>When a temperature breach is detected:</p>
+<ol>
+  <li>The system creates a follow-up action automatically</li>
+  <li>It appears in <strong>Today's Tasks</strong> under &ldquo;Temperature Breach Follow-ups&rdquo;</li>
+  <li>Depending on configuration, it may trigger a contractor callout (e.g. for a faulty fridge)</li>
+  <li>The breach and its resolution are tracked until closed</li>
+</ol>
+
+<div class="section-header checkly">
+  <div class="module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
+  <h2>23. EHO Readiness Reports</h2>
+</div>
+
+<div class="nav-path">&#9776; Menu <span class="sep">&rsaquo;</span> Workspace <span class="sep">&rsaquo;</span> EHO Readiness</div>
+
+<p>Generate a compliance readiness report ahead of an Environmental Health Officer visit.</p>
+
+<div class="steps">
+  <div class="step checkly">
+    <div class="step-number checkly">1</div>
+    <div class="step-content">
+      <strong>Select your site and date range</strong>
+      <p>Choose the site and the period you want to report on.</p>
+    </div>
+  </div>
+  <div class="step checkly">
+    <div class="step-number checkly">2</div>
+    <div class="step-content">
+      <strong>Review the readiness score</strong>
+      <p>The report shows an overall compliance readiness percentage and a breakdown by category: total tasks, completed, missed, completion rate, average completion time, and flagged completions.</p>
+    </div>
+  </div>
+  <div class="step checkly">
+    <div class="step-number checkly">3</div>
+    <div class="step-content">
+      <strong>Download or archive</strong>
+      <p>Export the report as a file or archive it for future reference.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-header checkly">
+  <div class="module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
+  <h2>24. Checkly Reports &amp; Analytics</h2>
+</div>
+
+<div class="nav-path">&#9776; Menu <span class="sep">&rsaquo;</span> Workspace <span class="sep">&rsaquo;</span> Reports <span class="sep">&rsaquo;</span> Checkly tab</div>
+
+<p>The Checkly Reports page provides five analytical views:</p>
+
+<table>
+  <tr>
+    <th>Tab</th>
+    <th>What It Shows</th>
+  </tr>
+  <tr>
+    <td><strong>Compliance</strong></td>
+    <td>KPI metrics: total tasks, completion rate, missed rate, flagged rate</td>
+  </tr>
+  <tr>
+    <td><strong>Assets</strong></td>
+    <td>Per-asset task completion performance &mdash; which equipment is well-monitored and which isn't</td>
+  </tr>
+  <tr>
+    <td><strong>Tasks</strong></td>
+    <td>Completion rate trends over time, task performance analytics</td>
+  </tr>
+  <tr>
+    <td><strong>Temperature</strong></td>
+    <td>Temperature compliance rates, breach frequency, in-range percentages</td>
+  </tr>
+  <tr>
+    <td><strong>Incidents</strong></td>
+    <td>Incident data: food poisoning, customer complaints, staff sickness, storage incidents</td>
+  </tr>
+</table>
+
+<p>All reports support date range filtering and site filtering.</p>
+
+<hr>
+
+<div class="info-box tip">
+  <strong>Need help?</strong>
+  <ul style="margin-top: 8px;">
+    <li><strong>In-app:</strong> Click the &ldquo;Ask Opsly&rdquo; button (top-right) for AI-assisted help</li>
+    <li><strong>Help Centre:</strong> &#9776; Menu &rarr; Help &amp; Support</li>
+    <li><strong>Email:</strong> hello@opslytech.com</li>
+    <li><strong>Phone:</strong> +44 07891 710002 (Mon&ndash;Fri 9am&ndash;6pm)</li>
+  </ul>
+</div>
+
+<div class="page-footer">
+  opsly. &mdash; Manager Guide &mdash; Beta Edition February 2026<br>
+  &copy; 2026 Opsly Technologies Ltd. All rights reserved. Confidential.
+</div>
+
+</div>
+</body>
+</html>

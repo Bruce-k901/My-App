@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opsly Staff Guide — Teamly &amp; Checkly</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --opsly-dark: #110f0d;
+    --opsly-text: #f5f0eb;
+    --opsly-muted: #a09890;
+    --checkly: #F1E194;
+    --checkly-dark: #5B0E14;
+    --teamly: #D37E91;
+    --teamly-dark: #C28FA3;
+    --brand-cta: #D37E91;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --error: #EF4444;
+    --info: #3B82F6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #ffffff;
+    color: #1a1a1a;
+    font-size: 11pt;
+    line-height: 1.6;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  @media print {
+    body { font-size: 10pt; }
+    .page-break { page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+    .cover-page { page-break-after: always; }
+  }
+
+  /* Cover Page */
+  .cover-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--opsly-dark) 0%, #2a2420 50%, var(--opsly-dark) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-page::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(211,126,145,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(241,225,148,0.06) 0%, transparent 60%);
+  }
+  .cover-logo {
+    font-size: 64px;
+    font-weight: 800;
+    color: var(--opsly-text);
+    letter-spacing: -2px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .cover-logo span { color: var(--brand-cta); }
+  .cover-subtitle {
+    font-size: 14px;
+    color: var(--opsly-muted);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-bottom: 60px;
+    position: relative;
+  }
+  .cover-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--opsly-text);
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .cover-edition {
+    font-size: 16px;
+    color: var(--opsly-muted);
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .cover-modules {
+    display: flex;
+    gap: 20px;
+    position: relative;
+  }
+  .cover-module-badge {
+    padding: 10px 28px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+  .cover-module-badge.teamly {
+    background: rgba(211,126,145,0.15);
+    color: var(--teamly);
+    border: 1px solid rgba(211,126,145,0.3);
+  }
+  .cover-module-badge.checkly {
+    background: rgba(241,225,148,0.15);
+    color: var(--checkly);
+    border: 1px solid rgba(241,225,148,0.3);
+  }
+  .cover-footer {
+    position: absolute;
+    bottom: 40px;
+    color: var(--opsly-muted);
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  /* Content */
+  .content { max-width: 800px; margin: 0 auto; padding: 40px; }
+
+  .section-header {
+    padding: 20px 0;
+    margin: 40px 0 24px 0;
+    border-bottom: 3px solid;
+  }
+  .section-header:first-child { margin-top: 0; }
+  .section-header.teamly { border-color: var(--teamly); }
+  .section-header.checkly { border-color: var(--checkly); }
+  .section-header.general { border-color: var(--opsly-dark); }
+  .section-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--opsly-dark);
+    margin-bottom: 4px;
+  }
+  .section-header .module-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  .section-header .module-label.teamly { color: var(--teamly-dark); }
+  .section-header .module-label.checkly { color: var(--checkly-dark); }
+  .section-header .module-label.general { color: #666; }
+
+  h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 28px 0 12px 0;
+  }
+  h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin: 20px 0 8px 0;
+  }
+  p { margin-bottom: 10px; color: #333; }
+  ul, ol { margin: 8px 0 16px 24px; color: #333; }
+  li { margin-bottom: 6px; }
+
+  .steps { margin: 16px 0; }
+  .step {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+    padding: 14px 16px;
+    background: #f8f7f5;
+    border-radius: 8px;
+    border-left: 3px solid #ddd;
+  }
+  .step.teamly { border-left-color: var(--teamly); }
+  .step.checkly { border-left-color: var(--checkly); }
+  .step-number {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+    color: white;
+  }
+  .step-number.teamly { background: var(--teamly); }
+  .step-number.checkly { background: var(--checkly); color: var(--opsly-dark); }
+  .step-number.general { background: var(--opsly-dark); }
+  .step-content { flex: 1; }
+  .step-content strong { display: block; margin-bottom: 4px; color: #1a1a1a; }
+  .step-content p { margin-bottom: 4px; font-size: 10.5pt; }
+
+  .info-box {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 16px 0;
+    font-size: 10.5pt;
+  }
+  .info-box.tip {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+  }
+  .info-box.warning {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #92400e;
+  }
+  .info-box.note {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+  }
+  .info-box strong { display: block; margin-bottom: 4px; }
+
+  .nav-path {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f3f2f0;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 10pt;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: #555;
+    margin: 4px 0;
+  }
+  .nav-path .sep { color: #bbb; margin: 0 2px; }
+
+  .toc {
+    background: #f8f7f5;
+    border-radius: 12px;
+    padding: 30px 36px;
+    margin: 30px 0;
+  }
+  .toc h3 {
+    font-size: 18px;
+    margin: 0 0 16px 0;
+    color: var(--opsly-dark);
+  }
+  .toc-section { margin-bottom: 16px; }
+  .toc-section-title {
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+  }
+  .toc-section-title.teamly { color: var(--teamly-dark); border-bottom: 2px solid var(--teamly); display: inline-block; }
+  .toc-section-title.checkly { color: var(--checkly-dark); border-bottom: 2px solid var(--checkly); display: inline-block; }
+  .toc-section-title.general { color: #666; border-bottom: 2px solid #ccc; display: inline-block; }
+  .toc ol { margin: 4px 0 0 20px; }
+  .toc li { margin-bottom: 3px; font-size: 10.5pt; color: #444; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 20px 0;
+    font-size: 10pt;
+  }
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e3df;
+  }
+  th {
+    background: #f3f2f0;
+    font-weight: 600;
+    font-size: 9.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #555;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  .ui-element {
+    background: #e8e6e2;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 9.5pt;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* Quick Reference Card */
+  .quick-ref {
+    border: 2px solid #e5e3df;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 20px 0;
+  }
+  .quick-ref h3 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+  }
+  .quick-ref-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .quick-ref-item {
+    background: #f8f7f5;
+    padding: 12px 16px;
+    border-radius: 8px;
+  }
+  .quick-ref-item strong {
+    display: block;
+    font-size: 10pt;
+    margin-bottom: 4px;
+    color: #1a1a1a;
+  }
+  .quick-ref-item span {
+    font-size: 9.5pt;
+    color: #666;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e5e3df;
+    margin: 30px 0;
+  }
+
+  .page-footer {
+    text-align: center;
+    padding: 40px 0;
+    color: #999;
+    font-size: 9pt;
+    border-top: 1px solid #e5e3df;
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== COVER PAGE ==================== -->
+<div class="cover-page">
+  <div class="cover-logo">opsly<span>.</span></div>
+  <div class="cover-subtitle">Operations Platform</div>
+  <div class="cover-title">Staff Guide</div>
+  <div class="cover-edition">Beta Edition &mdash; February 2026</div>
+  <div class="cover-modules">
+    <div class="cover-module-badge teamly">TEAMLY</div>
+    <div class="cover-module-badge checkly">CHECKLY</div>
+  </div>
+  <div class="cover-footer">CONFIDENTIAL &mdash; FOR BETA PARTNERS ONLY</div>
+</div>
+
+<!-- ==================== CONTENTS ==================== -->
+<div class="content">
+
+<div class="toc">
+  <h3>Contents</h3>
+
+  <div class="toc-section">
+    <div class="toc-section-title general">Getting Started</div>
+    <ol>
+      <li>Setting Up Your Account</li>
+      <li>Finding Your Way Around</li>
+      <li>Your Profile &amp; Settings</li>
+      <li>Installing on Your Phone</li>
+    </ol>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-section-title checkly">Checkly &mdash; Your Daily Tasks</div>
+    <ol start="5">
+      <li>Viewing Today's Tasks</li>
+      <li>Completing a Task</li>
+      <li>Temperature Checks</li>
+      <li>Taking Photo Evidence</li>
+      <li>Flagging Issues</li>
+    </ol>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-section-title teamly">Teamly &mdash; Your Shifts &amp; Time Off</div>
+    <ol start="10">
+      <li>Viewing Your Rota</li>
+      <li>Clocking In &amp; Out</li>
+      <li>Setting Your Availability</li>
+      <li>Requesting Leave</li>
+      <li>Checking Your Leave Balance</li>
+      <li>Your Training Records</li>
+      <li>Onboarding Documents</li>
+    </ol>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-section-title general">Quick Reference</div>
+    <ol start="17">
+      <li>Daily Checklist</li>
+      <li>Getting Help</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ==================== GETTING STARTED ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header general">
+  <div class="module-label general">Getting Started</div>
+  <h2>1. Setting Up Your Account</h2>
+</div>
+
+<p>Your manager will add you to the system and you'll receive an email from Opsly to set up your account.</p>
+
+<div class="steps">
+  <div class="step" style="border-left-color: var(--opsly-dark);">
+    <div class="step-number general">1</div>
+    <div class="step-content">
+      <strong>Check your email</strong>
+      <p>Look for an invitation email from Opsly. Click the setup link inside.</p>
+    </div>
+  </div>
+  <div class="step" style="border-left-color: var(--opsly-dark);">
+    <div class="step-number general">2</div>
+    <div class="step-content">
+      <strong>Create your password</strong>
+      <p>Choose a password you'll remember (minimum 6 characters). There's a password generator button if you want a suggestion.</p>
+    </div>
+  </div>
+  <div class="step" style="border-left-color: var(--opsly-dark);">
+    <div class="step-number general">3</div>
+    <div class="step-content">
+      <strong>Set your 4-digit PIN</strong>
+      <p>Choose a PIN you'll remember &mdash; you'll use this for quick actions like completing tasks and clocking in.</p>
+    </div>
+  </div>
+  <div class="step" style="border-left-color: var(--opsly-dark);">
+    <div class="step-number general">4</div>
+    <div class="step-content">
+      <strong>Log in</strong>
+      <p>Go to your Opsly URL and sign in with your email and password. You'll see the home screen with your tasks and schedule.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-header general">
+  <div class="module-label general">Getting Started</div>
+  <h2>2. Finding Your Way Around</h2>
+</div>
+
+<h3>On Your Phone (recommended for daily use)</h3>
+<p>The bottom of the screen has 5 tabs:</p>
+
+<table>
+  <tr>
+    <th>Tab</th>
+    <th>What It Does</th>
+  </tr>
+  <tr>
+    <td><strong>Home</strong></td>
+    <td>Your dashboard &mdash; weather, priority items, upcoming tasks, activity feed</td>
+  </tr>
+  <tr>
+    <td><strong>Tasks</strong></td>
+    <td>Today's compliance tasks that need completing (Checkly)</td>
+  </tr>
+  <tr>
+    <td><strong>Calendar</strong></td>
+    <td>Your shifts and leave in calendar view</td>
+  </tr>
+  <tr>
+    <td><strong>Rota</strong></td>
+    <td>The weekly rota showing your shifts</td>
+  </tr>
+  <tr>
+    <td><strong>More</strong></td>
+    <td>Quick actions (clock in, report incident, temp check) and links to everything else</td>
+  </tr>
+</table>
+
+<p>Tap your <strong>avatar</strong> (top-right) to access your profile, switch sites (if you work at more than one), change theme, or log out.</p>
+
+<h3>On Desktop</h3>
+<p>Use the <strong>Module Bar</strong> at the top to switch between <strong>Checkly</strong> (tasks) and <strong>Teamly</strong> (shifts/leave). A sidebar on the left shows navigation for whichever module you're in.</p>
+
+<div class="section-header general">
+  <div class="module-label general">Getting Started</div>
+  <h2>3. Your Profile &amp; Settings</h2>
+</div>
+
+<p>You can update your personal details at any time:</p>
+
+<ul>
+  <li><strong>Phone:</strong> Tap avatar &rarr; Settings &rarr; Profile</li>
+  <li><strong>Password:</strong> Settings &rarr; Profile &rarr; Change Password</li>
+  <li><strong>Theme:</strong> Switch between dark mode and light mode in Settings &rarr; Appearance (or via the theme toggle in the header)</li>
+  <li><strong>Notifications:</strong> Choose which email alerts you receive in Settings &rarr; Notifications</li>
+</ul>
+
+<div class="info-box note">
+  <strong>Note:</strong> Your name, email, job title, and site assignment are managed by your manager. If any of these are wrong, let your manager know.
+</div>
+
+<div class="section-header general">
+  <div class="module-label general">Getting Started</div>
+  <h2>4. Installing on Your Phone</h2>
+</div>
+
+<p>Opsly works best when installed as an app on your phone. Here's how:</p>
+
+<h4>iPhone (Safari)</h4>
+<ol>
+  <li>Open Opsly in Safari</li>
+  <li>Tap the <strong>Share</strong> button (square with arrow)</li>
+  <li>Scroll down and tap <strong>&ldquo;Add to Home Screen&rdquo;</strong></li>
+  <li>Tap <strong>&ldquo;Add&rdquo;</strong></li>
+</ol>
+
+<h4>Android (Chrome)</h4>
+<ol>
+  <li>Open Opsly in Chrome</li>
+  <li>Tap the <strong>three dots</strong> menu (top-right)</li>
+  <li>Tap <strong>&ldquo;Add to Home screen&rdquo;</strong> or <strong>&ldquo;Install app&rdquo;</strong></li>
+  <li>Tap <strong>&ldquo;Install&rdquo;</strong></li>
+</ol>
+
+<p>Once installed, Opsly will open full-screen like a regular app &mdash; no browser bars.</p>
+
+<!-- ==================== CHECKLY ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header checkly">
+  <div class="module-label checkly">Checkly &mdash; Your Daily Tasks</div>
+  <h2>5. Viewing Today's Tasks</h2>
+</div>
+
+<p>Your daily compliance tasks are in the <strong>Tasks</strong> tab (mobile) or under <span class="nav-path">Checkly <span class="sep">&rsaquo;</span> Today's Tasks</span> (desktop).</p>
+
+<p>Tasks are organised by time of day:</p>
+<table>
+  <tr>
+    <th>Daypart</th>
+    <th>Time</th>
+    <th>Examples</th>
+  </tr>
+  <tr>
+    <td><strong>Morning</strong></td>
+    <td>5am &ndash; 12pm</td>
+    <td>Opening checks, morning temperature logs</td>
+  </tr>
+  <tr>
+    <td><strong>Afternoon</strong></td>
+    <td>12pm &ndash; 5pm</td>
+    <td>Midday temperature checks, cleaning tasks</td>
+  </tr>
+  <tr>
+    <td><strong>Evening</strong></td>
+    <td>5pm &ndash; 10pm</td>
+    <td>Evening checks, close-down tasks</td>
+  </tr>
+  <tr>
+    <td><strong>Night</strong></td>
+    <td>10pm &ndash; 5am</td>
+    <td>End-of-night cleaning, security checks</td>
+  </tr>
+</table>
+
+<p>Each task card shows the task name, category, and due time. Tasks that are due soon are shown first.</p>
+
+<div class="info-box note">
+  <strong>Note:</strong> You only see tasks that are due around now. Tasks for later in the day will appear when it's time to do them.
+</div>
+
+<div class="section-header checkly">
+  <div class="module-label checkly">Checkly &mdash; Your Daily Tasks</div>
+  <h2>6. Completing a Task</h2>
+</div>
+
+<p>Tap on any task card to open it. The completion form will guide you through what needs to be done.</p>
+
+<div class="steps">
+  <div class="step checkly">
+    <div class="step-number checkly">1</div>
+    <div class="step-content">
+      <strong>Read the instructions</strong>
+      <p>At the top of the form, you'll see instructions explaining what to check and how.</p>
+    </div>
+  </div>
+  <div class="step checkly">
+    <div class="step-number checkly">2</div>
+    <div class="step-content">
+      <strong>Work through each item</strong>
+      <p>The form will have a mix of items depending on the task:</p>
+      <ul>
+        <li><strong>Checklist items</strong> &mdash; tick each one as you complete it</li>
+        <li><strong>Yes / No questions</strong> &mdash; answer honestly (e.g. &ldquo;Is the hand wash basin stocked?&rdquo;)</li>
+        <li><strong>Temperature readings</strong> &mdash; enter the reading from your thermometer (see Section 7)</li>
+        <li><strong>Photos</strong> &mdash; take a photo as evidence (see Section 8)</li>
+        <li><strong>Notes</strong> &mdash; add any observations or comments</li>
+      </ul>
+    </div>
+  </div>
+  <div class="step checkly">
+    <div class="step-number checkly">3</div>
+    <div class="step-content">
+      <strong>Submit</strong>
+      <p>Once all required fields are completed, tap <strong>Submit</strong>. The task will move to the Completed section. Your name and the time are recorded automatically.</p>
+    </div>
+  </div>
+</div>
+
+<div class="info-box tip">
+  <strong>Tip:</strong> The system tracks how long each task takes (from when you open it to when you submit). This is just for reporting &mdash; take the time you need to do it properly.
+</div>
+
+<div class="section-header checkly">
+  <div class="module-label checkly">Checkly &mdash; Your Daily Tasks</div>
+  <h2>7. Temperature Checks</h2>
+</div>
+
+<p>For temperature tasks, you'll see a list of equipment (e.g. &ldquo;Walk-in Fridge&rdquo;, &ldquo;Freezer 1&rdquo;, &ldquo;Hot Hold Unit&rdquo;). For each one:</p>
+
+<div class="steps">
+  <div class="step checkly">
+    <div class="step-number checkly">1</div>
+    <div class="step-content">
+      <strong>Take the reading</strong>
+      <p>Use your probe thermometer or check the unit's display.</p>
+    </div>
+  </div>
+  <div class="step checkly">
+    <div class="step-number checkly">2</div>
+    <div class="step-content">
+      <strong>Enter the temperature</strong>
+      <p>Type the reading into the field. The system will immediately show you whether it's <strong style="color: #10B981;">In Range</strong> (green) or <strong style="color: #EF4444;">Out of Range</strong> (red).</p>
+    </div>
+  </div>
+  <div class="step checkly">
+    <div class="step-number checkly">3</div>
+    <div class="step-content">
+      <strong>If it's out of range</strong>
+      <p>Don't panic. Record the actual reading &mdash; the system will handle the rest. It may ask you to re-check later or your manager will be notified. Add a note explaining anything relevant (e.g. &ldquo;door was left open, closed and will recheck in 30 mins&rdquo;).</p>
+    </div>
+  </div>
+</div>
+
+<div class="info-box warning">
+  <strong>Important:</strong> Always record the actual temperature, even if it's out of range. Never &ldquo;fudge&rdquo; a reading &mdash; the system is designed to help you manage breaches, not punish them. Honest recording protects you and the business.
+</div>
+
+<div class="section-header checkly">
+  <div class="module-label checkly">Checkly &mdash; Your Daily Tasks</div>
+  <h2>8. Taking Photo Evidence</h2>
+</div>
+
+<p>Some tasks require photo evidence (e.g. cleaning completion, probe calibration, delivery checks).</p>
+
+<ul>
+  <li>Tap the <strong>camera icon</strong> or <strong>&ldquo;Add Photo&rdquo;</strong> button</li>
+  <li>Take a clear photo showing what's being evidenced</li>
+  <li>You can add multiple photos if needed</li>
+  <li>Photos are uploaded and stored securely &mdash; they're visible to managers in the audit trail</li>
+</ul>
+
+<div class="info-box tip">
+  <strong>Tip:</strong> Make sure photos are clear and well-lit. A blurry or dark photo won't serve as good evidence if needed for an audit.
+</div>
+
+<div class="section-header checkly">
+  <div class="module-label checkly">Checkly &mdash; Your Daily Tasks</div>
+  <h2>9. Flagging Issues</h2>
+</div>
+
+<p>If you spot a problem while completing a task, you can <strong>flag it</strong>:</p>
+
+<ul>
+  <li>Look for the <strong>flag option</strong> on the completion form</li>
+  <li>Turn it on and enter a brief <strong>reason</strong> (e.g. &ldquo;grease trap needs emptying&rdquo;, &ldquo;fire exit blocked by delivery&rdquo;)</li>
+  <li>You can still submit the task &mdash; the flag alerts your manager that something needs attention</li>
+</ul>
+
+<p>Flagged tasks are highlighted in the completed tasks list and in reports, so your manager can follow up.</p>
+
+<!-- ==================== TEAMLY ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; Your Shifts &amp; Time Off</div>
+  <h2>10. Viewing Your Rota</h2>
+</div>
+
+<p>Your shifts are in the <strong>Rota</strong> tab (mobile) or under <span class="nav-path">Teamly <span class="sep">&rsaquo;</span> Schedule <span class="sep">&rsaquo;</span> Rota</span> (desktop).</p>
+
+<p>The rota shows a weekly view with your shifts for each day. Each shift shows:</p>
+<ul>
+  <li>Start time and finish time</li>
+  <li>Break duration</li>
+  <li>Which section/role you're covering</li>
+  <li>Any notes from your manager</li>
+</ul>
+
+<p>You can also see your shifts in the <strong>Calendar</strong> tab alongside any approved leave.</p>
+
+<div class="info-box note">
+  <strong>Note:</strong> You'll receive a notification when your manager publishes a new rota. Until it's published, shifts are in draft and may change.
+</div>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; Your Shifts &amp; Time Off</div>
+  <h2>11. Clocking In &amp; Out</h2>
+</div>
+
+<p>Clock in when you arrive for your shift and out when you leave.</p>
+
+<h4>On mobile:</h4>
+<div class="steps">
+  <div class="step teamly">
+    <div class="step-number teamly">1</div>
+    <div class="step-content">
+      <strong>Tap &ldquo;More&rdquo; (bottom tab)</strong>
+      <p>The <strong>Clock In</strong> button is one of the priority actions at the top.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">2</div>
+    <div class="step-content">
+      <strong>Tap &ldquo;Clock In&rdquo;</strong>
+      <p>Your clock-in time is recorded. The button changes to &ldquo;Clock Out&rdquo;.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">3</div>
+    <div class="step-content">
+      <strong>Clock out at the end of your shift</strong>
+      <p>Tap &ldquo;Clock Out&rdquo; when your shift ends. Your hours are recorded for the timesheet.</p>
+    </div>
+  </div>
+</div>
+
+<h4>On desktop:</h4>
+<p>The <span class="ui-element">Clock In</span> button is in the Module Bar (top-right, always visible).</p>
+
+<div class="info-box warning">
+  <strong>Don't forget to clock out!</strong> If you forget, your manager will need to manually adjust your timesheet. Get into the habit of clocking out before you leave.
+</div>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; Your Shifts &amp; Time Off</div>
+  <h2>12. Setting Your Availability</h2>
+</div>
+
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Schedule <span class="sep">&rsaquo;</span> Availability</div>
+
+<p>Let your manager know when you can and can't work:</p>
+
+<h4>Recurring availability (your regular pattern):</h4>
+<p>Set your general weekly pattern, e.g. &ldquo;available Monday to Friday, 8am to 6pm&rdquo;. This repeats every week and helps your manager build the rota.</p>
+
+<h4>Specific date overrides:</h4>
+<p>Need a specific day off or have a commitment on a particular date? Add a date-specific override, e.g. &ldquo;unavailable Saturday 8th March&rdquo;.</p>
+
+<p>You can also mark preferred times and set a maximum hours per day.</p>
+
+<div class="info-box note">
+  <strong>Note:</strong> Availability changes may need manager approval. Once submitted, they'll appear as pending until approved.
+</div>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; Your Shifts &amp; Time Off</div>
+  <h2>13. Requesting Leave</h2>
+</div>
+
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Leave <span class="sep">&rsaquo;</span> Request Leave</div>
+
+<div class="steps">
+  <div class="step teamly">
+    <div class="step-number teamly">1</div>
+    <div class="step-content">
+      <strong>Choose the leave type</strong>
+      <p>Select from: Annual Leave, Sick Leave, TOIL, Unpaid Leave, Compassionate Leave, or others as configured by your manager.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">2</div>
+    <div class="step-content">
+      <strong>Select your dates</strong>
+      <p>Pick the start and end dates. Half-days are available for some leave types.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">3</div>
+    <div class="step-content">
+      <strong>Check your balance</strong>
+      <p>The system shows your remaining leave balance before you submit, so you know exactly how many days you have left.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">4</div>
+    <div class="step-content">
+      <strong>Add a reason (optional)</strong>
+      <p>You can add a note for your manager if needed.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">5</div>
+    <div class="step-content">
+      <strong>Submit</strong>
+      <p>Your request will be sent to your manager for approval. You'll be notified when it's approved or declined.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; Your Shifts &amp; Time Off</div>
+  <h2>14. Checking Your Leave Balance</h2>
+</div>
+
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Leave <span class="sep">&rsaquo;</span> Balances</div>
+
+<p>View how many leave days you have:</p>
+<ul>
+  <li><strong>Entitled</strong> &mdash; your total annual allowance</li>
+  <li><strong>Carried over</strong> &mdash; days carried from last year</li>
+  <li><strong>Taken</strong> &mdash; days already used</li>
+  <li><strong>Pending</strong> &mdash; days requested but not yet approved</li>
+  <li><strong>Remaining</strong> &mdash; days still available</li>
+</ul>
+
+<p>You can also see the <strong>Team Calendar</strong> (<span class="nav-path">Teamly <span class="sep">&rsaquo;</span> Leave <span class="sep">&rsaquo;</span> Team Calendar</span>) to see when your colleagues are off &mdash; helpful for planning your own requests.</p>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; Your Shifts &amp; Time Off</div>
+  <h2>15. Your Training Records</h2>
+</div>
+
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Training</div>
+
+<p>Your training and certification status is tracked in the app. You can view:</p>
+<ul>
+  <li>Which courses you've completed</li>
+  <li>Certificate expiry dates</li>
+  <li>Which courses are due for renewal</li>
+</ul>
+
+<p>Categories tracked include: Food Safety, Health &amp; Safety, Fire Marshal, First Aid, and COSHH/Allergen Awareness.</p>
+
+<div class="info-box note">
+  <strong>Note:</strong> Your manager records training completions for you. If you've completed a course and it's not showing, let your manager know so they can log it.
+</div>
+
+<div class="section-header teamly">
+  <div class="module-label teamly">Teamly &mdash; Your Shifts &amp; Time Off</div>
+  <h2>16. Onboarding Documents</h2>
+</div>
+
+<div class="nav-path">Teamly <span class="sep">&rsaquo;</span> Onboarding <span class="sep">&rsaquo;</span> My Docs</div>
+
+<p>If you're a new starter, your manager will assign you an onboarding pack containing important documents (employee handbook, policies, contracts, etc.).</p>
+
+<div class="steps">
+  <div class="step teamly">
+    <div class="step-number teamly">1</div>
+    <div class="step-content">
+      <strong>Go to My Docs</strong>
+      <p>You'll see a list of documents assigned to you.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">2</div>
+    <div class="step-content">
+      <strong>Read each document</strong>
+      <p>Download and read them carefully &mdash; they contain important information about your role, policies, and procedures.</p>
+    </div>
+  </div>
+  <div class="step teamly">
+    <div class="step-number teamly">3</div>
+    <div class="step-content">
+      <strong>Acknowledge</strong>
+      <p>Once you've read a document, mark it as acknowledged. Your manager can see which documents you've completed.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== QUICK REFERENCE ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header general">
+  <div class="module-label general">Quick Reference</div>
+  <h2>17. Your Daily Checklist</h2>
+</div>
+
+<p>Here's a quick summary of what to do each day:</p>
+
+<div class="quick-ref">
+  <h3>Start of Shift</h3>
+  <div class="quick-ref-grid">
+    <div class="quick-ref-item">
+      <strong>Clock In</strong>
+      <span>More tab &rarr; Clock In</span>
+    </div>
+    <div class="quick-ref-item">
+      <strong>Check Tasks</strong>
+      <span>Tasks tab &rarr; see what's due</span>
+    </div>
+  </div>
+</div>
+
+<div class="quick-ref">
+  <h3>During Your Shift</h3>
+  <div class="quick-ref-grid">
+    <div class="quick-ref-item">
+      <strong>Complete Tasks</strong>
+      <span>Tap each task &rarr; fill in &rarr; submit</span>
+    </div>
+    <div class="quick-ref-item">
+      <strong>Temperature Checks</strong>
+      <span>Record actual readings &mdash; always honest</span>
+    </div>
+    <div class="quick-ref-item">
+      <strong>Photo Evidence</strong>
+      <span>Clear, well-lit photos when required</span>
+    </div>
+    <div class="quick-ref-item">
+      <strong>Flag Issues</strong>
+      <span>Use the flag option if something's wrong</span>
+    </div>
+  </div>
+</div>
+
+<div class="quick-ref">
+  <h3>End of Shift</h3>
+  <div class="quick-ref-grid">
+    <div class="quick-ref-item">
+      <strong>Complete Remaining Tasks</strong>
+      <span>Finish any evening/closing tasks assigned to you</span>
+    </div>
+    <div class="quick-ref-item">
+      <strong>Clock Out</strong>
+      <span>More tab &rarr; Clock Out (don't forget!)</span>
+    </div>
+  </div>
+</div>
+
+<div class="quick-ref">
+  <h3>When You Need To</h3>
+  <div class="quick-ref-grid">
+    <div class="quick-ref-item">
+      <strong>Request Leave</strong>
+      <span>Teamly &rarr; Leave &rarr; Request</span>
+    </div>
+    <div class="quick-ref-item">
+      <strong>Set Availability</strong>
+      <span>Teamly &rarr; Schedule &rarr; Availability</span>
+    </div>
+    <div class="quick-ref-item">
+      <strong>Check Rota</strong>
+      <span>Rota tab or Calendar tab</span>
+    </div>
+    <div class="quick-ref-item">
+      <strong>View Leave Balance</strong>
+      <span>Teamly &rarr; Leave &rarr; Balances</span>
+    </div>
+  </div>
+</div>
+
+<div class="section-header general">
+  <div class="module-label general">Quick Reference</div>
+  <h2>18. Getting Help</h2>
+</div>
+
+<p>If you're stuck or something isn't working:</p>
+
+<table>
+  <tr>
+    <th>Method</th>
+    <th>How</th>
+  </tr>
+  <tr>
+    <td><strong>Ask Opsly (AI)</strong></td>
+    <td>Tap the &ldquo;Ask Opsly&rdquo; button (top-right on desktop, or in the More sheet on mobile). Describe your question and the AI assistant will help.</td>
+  </tr>
+  <tr>
+    <td><strong>Help Centre</strong></td>
+    <td>Menu &rarr; Help &amp; Support. Browse guides, common tasks, and quick tips.</td>
+  </tr>
+  <tr>
+    <td><strong>Ask your manager</strong></td>
+    <td>For anything specific to your site, your manager is your first point of contact.</td>
+  </tr>
+  <tr>
+    <td><strong>Email support</strong></td>
+    <td>hello@opslytech.com (response within 24 hours)</td>
+  </tr>
+  <tr>
+    <td><strong>Phone support</strong></td>
+    <td>+44 07891 710002 (Mon&ndash;Fri, 9am&ndash;6pm)</td>
+  </tr>
+</table>
+
+<hr>
+
+<div class="info-box tip">
+  <strong>Welcome to Opsly!</strong>
+  The app is designed to make your daily work easier. Tasks guide you through exactly what needs to be done, the rota keeps you up to date on your shifts, and everything is recorded so there's no more paper checklists or guesswork. If something doesn't seem right, just flag it &mdash; that's what the system is for.
+</div>
+
+<div class="page-footer">
+  opsly. &mdash; Staff Guide &mdash; Beta Edition February 2026<br>
+  &copy; 2026 Opsly Technologies Ltd. All rights reserved. Confidential.
+</div>
+
+</div>
+</body>
+</html>
