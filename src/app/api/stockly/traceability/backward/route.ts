@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
           quantity: batch.quantity_received,
         });
 
-        // 3. Find production inputs → raw material batches
+        // 3. Find production inputs → raw material batches (including rework)
         const { data: inputs } = await supabase
           .from('production_batch_inputs')
           .select('*, stock_batch:stock_batches(*, stock_item:stock_items(id, name, stock_unit))')
@@ -132,9 +132,40 @@ export async function GET(request: NextRequest) {
             links.push({
               from: sbNodeId,
               to: pbNodeId,
-              label: 'Input',
+              label: (input as any).is_rework ? 'Rework Input' : 'Input',
               quantity: input.actual_quantity || input.planned_quantity,
             });
+
+            // @salsa — Rework chain: if this input was rework, trace back to its source production batch
+            if ((input as any).is_rework && sb.production_batch_id) {
+              const { data: reworkPb } = await supabase
+                .from('production_batches')
+                .select('*, recipe:recipes(id, name)')
+                .eq('id', sb.production_batch_id)
+                .single();
+
+              if (reworkPb) {
+                const reworkPbNodeId = `production-${reworkPb.id}`;
+                if (!nodes.find(n => n.id === reworkPbNodeId)) {
+                  nodes.push({
+                    type: 'production_batch',
+                    id: reworkPbNodeId,
+                    label: reworkPb.batch_code,
+                    sublabel: (reworkPb as any).recipe?.name || 'Production (rework source)',
+                    date: reworkPb.production_date,
+                    status: reworkPb.status,
+                  });
+                }
+                if (!links.find(l => l.from === reworkPbNodeId && l.to === sbNodeId)) {
+                  links.push({
+                    from: reworkPbNodeId,
+                    to: sbNodeId,
+                    label: 'Rework Output',
+                    quantity: sb.quantity_received,
+                  });
+                }
+              }
+            }
 
             // 4. Find supplier for each raw material batch
             if (sb.delivery_line_id) {

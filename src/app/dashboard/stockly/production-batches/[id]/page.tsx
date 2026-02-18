@@ -5,9 +5,9 @@ import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { ProductionBatch, ProductionBatchStatus } from '@/lib/types/stockly';
 import { allergenKeyToLabel } from '@/lib/stockly/allergens';
-import ProductionInputManager from '@/components/planly/ProductionInputManager';
-import ProductionOutputRecorder from '@/components/planly/ProductionOutputRecorder';
-import CCPRecordForm from '@/components/planly/CCPRecordForm';
+import ProductionInputManager from '@/components/stockly/ProductionInputManager';
+import ProductionOutputRecorder from '@/components/stockly/ProductionOutputRecorder';
+import CCPRecordForm from '@/components/stockly/CCPRecordForm';
 import {
   ArrowLeft, Layers, ChefHat, Calendar, Clock, CheckCircle, XCircle,
   Play, Square, Thermometer, Package, AlertTriangle, Plus,
@@ -82,7 +82,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
     return (
       <div className="p-6 max-w-4xl mx-auto text-center py-12">
         <p className="text-theme-secondary">Production batch not found</p>
-        <button onClick={() => router.back()} className="mt-4 text-sm text-planly-dark dark:text-planly">Go back</button>
+        <button onClick={() => router.back()} className="mt-4 text-sm text-stockly-dark dark:text-stockly">Go back</button>
       </div>
     );
   }
@@ -95,7 +95,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
     <div className="p-6 max-w-4xl mx-auto">
       {/* Back button */}
       <button
-        onClick={() => router.push('/dashboard/planly/production-batches')}
+        onClick={() => router.push('/dashboard/stockly/production-batches')}
         className="flex items-center gap-1 text-sm text-theme-tertiary hover:text-theme-secondary mb-4 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
@@ -107,7 +107,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
         <div>
           <div className="flex items-center gap-3 mb-1">
             <h1 className="text-2xl font-bold text-theme-primary flex items-center gap-2">
-              <Layers className="w-6 h-6 text-planly-dark dark:text-planly" />
+              <Layers className="w-6 h-6 text-stockly-dark dark:text-stockly" />
               {batch.batch_code}
             </h1>
             <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}>
@@ -169,7 +169,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               activeTab === tab
-                ? 'border-planly-dark dark:border-planly text-planly-dark dark:text-planly'
+                ? 'border-stockly-dark dark:border-stockly text-stockly-dark dark:text-stockly'
                 : 'border-transparent text-theme-tertiary hover:text-theme-secondary'
             }`}
           >
@@ -294,7 +294,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
                 <div key={output.id} className="flex items-center justify-between p-3 bg-theme-bg-secondary border border-theme-border rounded-lg">
                   <div>
                     <div className="flex items-center gap-2">
-                      <Package className="w-4 h-4 text-planly-dark dark:text-planly" />
+                      <Package className="w-4 h-4 text-stockly-dark dark:text-stockly" />
                       <span className="text-sm font-medium text-theme-primary">{output.stock_item?.name || 'Unknown'}</span>
                       <span className="text-xs font-mono text-theme-tertiary">{output.batch_code}</span>
                     </div>
@@ -314,7 +314,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
           {isEditable && !showOutputForm && (
             <button
               onClick={() => setShowOutputForm(true)}
-              className="flex items-center gap-2 w-full px-3 py-2 border border-dashed border-theme-border rounded-lg text-sm text-theme-tertiary hover:text-theme-secondary hover:border-planly-dark/30 dark:hover:border-planly/30 transition-colors"
+              className="flex items-center gap-2 w-full px-3 py-2 border border-dashed border-theme-border rounded-lg text-sm text-theme-tertiary hover:text-theme-secondary hover:border-stockly-dark/30 dark:hover:border-stockly/30 transition-colors"
             >
               <Plus className="w-4 h-4" />
               Record Output
@@ -326,6 +326,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
               <ProductionOutputRecorder
                 productionBatchId={batch.id}
                 companyId={batch.company_id}
+                productionDate={batch.production_date}
                 onSaved={() => {
                   setShowOutputForm(false);
                   loadBatch();
@@ -383,7 +384,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
           {isEditable && !showCCPForm && (
             <button
               onClick={() => setShowCCPForm(true)}
-              className="flex items-center gap-2 w-full px-3 py-2 border border-dashed border-theme-border rounded-lg text-sm text-theme-tertiary hover:text-theme-secondary hover:border-planly-dark/30 dark:hover:border-planly/30 transition-colors"
+              className="flex items-center gap-2 w-full px-3 py-2 border border-dashed border-theme-border rounded-lg text-sm text-theme-tertiary hover:text-theme-secondary hover:border-stockly-dark/30 dark:hover:border-stockly/30 transition-colors"
             >
               <Plus className="w-4 h-4" />
               Record CCP Measurement

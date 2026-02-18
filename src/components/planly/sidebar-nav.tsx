@@ -20,7 +20,6 @@ import {
   Wand2,
   ExternalLink,
   MessageSquare,
-  Layers,
 } from '@/components/ui/icons';
 import { useState, useEffect } from 'react';
 import { useSidebarMode } from '@/hooks/useSidebarMode';
@@ -72,12 +71,6 @@ const navItems: NavItem[] = [
     label: 'Delivery Schedule',
     href: '/dashboard/planly/delivery-schedule',
     icon: MapPin,
-  },
-  {
-    type: 'link',
-    label: 'Production Batches',
-    href: '/dashboard/planly/production-batches',
-    icon: Layers,
   },
   {
     type: 'section',

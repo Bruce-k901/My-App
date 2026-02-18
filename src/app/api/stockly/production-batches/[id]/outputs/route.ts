@@ -20,7 +20,7 @@ export async function POST(
     // Verify production batch exists
     const { data: batch, error: batchError } = await supabase
       .from('production_batches')
-      .select('id, company_id, site_id, status')
+      .select('id, company_id, site_id, status, production_date')
       .eq('id', id)
       .single();
 
@@ -33,6 +33,33 @@ export async function POST(
     }
 
     const { data: { user } } = await supabase.auth.getUser();
+
+    // @salsa — Shelf-life validation: reject use_by_date that exceeds product spec
+    if (use_by_date) {
+      const { data: specs } = await supabase
+        .from('product_specifications')
+        .select('shelf_life_days, shelf_life_unit')
+        .eq('stock_item_id', stock_item_id)
+        .eq('status', 'active')
+        .order('updated_at', { ascending: false })
+        .limit(1);
+
+      const activeSpec = specs?.[0];
+      if (activeSpec?.shelf_life_days && batch.production_date) {
+        const prodDate = new Date(batch.production_date);
+        const maxUseBy = new Date(prodDate);
+        maxUseBy.setDate(maxUseBy.getDate() + activeSpec.shelf_life_days);
+
+        const providedUseBy = new Date(use_by_date);
+        if (providedUseBy > maxUseBy) {
+          return NextResponse.json({
+            error: `Use-by date exceeds the maximum shelf life of ${activeSpec.shelf_life_days} ${activeSpec.shelf_life_unit || 'days'} from production date`,
+            code: 'SHELF_LIFE_EXCEEDED',
+            max_use_by_date: maxUseBy.toISOString().split('T')[0],
+          }, { status: 400 });
+        }
+      }
+    }
 
     // Generate output batch code
     const outputBatchCode = manualCode || await generateBatchCode(supabase, batch.company_id, {

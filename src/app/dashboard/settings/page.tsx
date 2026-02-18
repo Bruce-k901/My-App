@@ -5,12 +5,13 @@ import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
-import { User, Bell, Building2, Lock, Mail, Save, Eye, EyeOff, Upload, Image as ImageIcon, Palette, Workflow, Accessibility, Loader2, Send, CheckCircle } from '@/components/ui/icons';
+import { User, Bell, Building2, Lock, Mail, Save, Eye, EyeOff, Upload, Image as ImageIcon, Palette, Workflow, Accessibility, Loader2, Send, CheckCircle, Plug } from '@/components/ui/icons';
 import SiteSelector from '@/components/ui/SiteSelector';
 import { AlertSettingsCard } from '@/components/settings/AlertSettingsCard';
 import { AppearanceTab } from '@/components/settings/AppearanceTab';
 import { WorkflowTab } from '@/components/settings/WorkflowTab';
 import { AccessibilityTab } from '@/components/settings/AccessibilityTab';
+import { IntegrationsTab } from '@/components/settings/IntegrationsTab';
 
 type ProfileSettings = {
   user_id: string;
@@ -23,7 +24,7 @@ type ProfileSettings = {
   sound_vibration: boolean;
 };
 
-type Tab = 'profile' | 'appearance' | 'notifications' | 'workflow' | 'accessibility' | 'company';
+type Tab = 'profile' | 'appearance' | 'notifications' | 'workflow' | 'accessibility' | 'integrations' | 'company';
 
 export default function SettingsPage() {
   const { profile, companyId, siteId, company, role, userId } = useAppContext();
@@ -356,6 +357,7 @@ export default function SettingsPage() {
     { id: 'notifications' as Tab, label: 'Notifications', icon: Bell },
     { id: 'workflow' as Tab, label: 'Workflow', icon: Workflow },
     { id: 'accessibility' as Tab, label: 'Accessibility', icon: Accessibility },
+    { id: 'integrations' as Tab, label: 'Integrations', icon: Plug },
     ...(role === 'Admin' ? [{ id: 'company' as Tab, label: 'Company', icon: Building2 }] : []),
   ];
 
@@ -724,6 +726,9 @@ export default function SettingsPage() {
 
       {/* Accessibility Tab */}
       {activeTab === 'accessibility' && <AccessibilityTab />}
+
+      {/* Integrations Tab */}
+      {activeTab === 'integrations' && <IntegrationsTab />}
 
       {/* Company Tab (Admin only) */}
       {activeTab === 'company' && role === 'Admin' && (

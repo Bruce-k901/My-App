@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
     });
     totalInput += batch.quantity_received || 0;
 
-    // 3. Find production_batch_inputs where this batch was consumed
+    // 3. Find production_batch_inputs where this batch was consumed (including rework)
     const { data: inputs } = await supabase
       .from('production_batch_inputs')
       .select('*, production_batch:production_batches(id, batch_code, production_date, status, recipe:recipes(id, name))')
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
         links.push({
           from: `batch-${batch.id}`,
           to: pbNodeId,
-          label: 'Input',
+          label: (input as any).is_rework ? 'Rework Input' : 'Input',
           quantity: input.actual_quantity || input.planned_quantity,
         });
 

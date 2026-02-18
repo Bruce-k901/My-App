@@ -28,11 +28,11 @@ export default function ProductionBatchCard({ batch, onClick }: ProductionBatchC
   return (
     <div
       onClick={onClick}
-      className="bg-theme-bg-primary border border-theme-border rounded-lg p-4 hover:border-planly-dark/30 dark:hover:border-planly/30 transition-colors cursor-pointer"
+      className="bg-theme-bg-primary border border-theme-border rounded-lg p-4 hover:border-stockly-dark/30 dark:hover:border-stockly/30 transition-colors cursor-pointer"
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-planly-dark dark:text-planly" />
+          <Layers className="w-4 h-4 text-stockly-dark dark:text-stockly" />
           <span className="font-mono text-sm font-medium text-theme-primary">{batch.batch_code}</span>
         </div>
         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${statusConfig.color}`}>

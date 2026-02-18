@@ -168,7 +168,7 @@ export default function ProductionBatchForm({
       <button
         type="submit"
         disabled={saving || !productionDate}
-        className="w-full px-4 py-2.5 bg-planly-dark dark:bg-planly text-white dark:text-gray-900 rounded-lg text-sm font-medium disabled:opacity-50"
+        className="w-full px-4 py-2.5 bg-stockly-dark dark:bg-stockly text-white dark:text-gray-900 rounded-lg text-sm font-medium disabled:opacity-50"
       >
         {saving ? 'Creating...' : 'Create Production Batch'}
       </button>

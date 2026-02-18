@@ -2,7 +2,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import ProductionBatchForm from '@/components/planly/ProductionBatchForm';
+import ProductionBatchForm from '@/components/stockly/ProductionBatchForm';
 import { ArrowLeft, Layers } from '@/components/ui/icons';
 
 export default function NewProductionBatchPage() {
@@ -26,7 +26,7 @@ export default function NewProductionBatchPage() {
 
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-theme-primary flex items-center gap-2">
-          <Layers className="w-6 h-6 text-planly-dark dark:text-planly" />
+          <Layers className="w-6 h-6 text-stockly-dark dark:text-stockly" />
           New Production Batch
         </h1>
         <p className="text-sm text-theme-tertiary mt-1">Create a new production run to track inputs, outputs, and CCP records</p>
@@ -34,7 +34,7 @@ export default function NewProductionBatchPage() {
 
       <div className="bg-theme-bg-primary border border-theme-border rounded-lg p-6">
         <ProductionBatchForm
-          onCreated={(batch) => router.push(`/dashboard/planly/production-batches/${batch.id}`)}
+          onCreated={(batch) => router.push(`/dashboard/stockly/production-batches/${batch.id}`)}
           defaultRecipeId={defaultRecipeId}
           defaultDate={defaultDate}
           defaultQuantity={defaultQuantity}

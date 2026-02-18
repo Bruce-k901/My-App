@@ -151,7 +151,7 @@ export default function CCPRecordForm({ productionBatchId, onSaved, onCancel }: 
         <button
           type="submit"
           disabled={saving || !actualValue}
-          className="flex-1 px-4 py-2 bg-planly-dark dark:bg-planly text-white dark:text-gray-900 rounded-lg text-sm font-medium disabled:opacity-50"
+          className="flex-1 px-4 py-2 bg-stockly-dark dark:bg-stockly text-white dark:text-gray-900 rounded-lg text-sm font-medium disabled:opacity-50"
         >
           {saving ? 'Saving...' : 'Record CCP'}
         </button>

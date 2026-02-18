@@ -10,7 +10,7 @@ export async function POST(
     const { id } = await params;
     const supabase = await createServerSupabaseClient();
     const body = await request.json();
-    const { stock_batch_id, stock_item_id, planned_quantity, actual_quantity, unit } = body;
+    const { stock_batch_id, stock_item_id, planned_quantity, actual_quantity, unit, is_rework, rework_source_batch_id } = body;
 
     if (!stock_batch_id || !stock_item_id) {
       return NextResponse.json({ error: 'stock_batch_id and stock_item_id are required' }, { status: 400 });
@@ -72,6 +72,8 @@ export async function POST(
         actual_quantity: actual_quantity || null,
         unit: unit || null,
         added_by: user?.id || null,
+        is_rework: is_rework || false,
+        rework_source_batch_id: rework_source_batch_id || null,
       })
       .select(`
         *,
@@ -89,11 +91,11 @@ export async function POST(
       company_id: batch.company_id,
       site_id: batch.site_id,
       batch_id: stock_batch_id,
-      movement_type: 'consumed_production',
+      movement_type: is_rework ? 'rework' : 'consumed_production',
       quantity: -quantity,
       reference_type: 'production_batch',
       reference_id: id,
-      notes: `Consumed for production batch ${batch.company_id}`,
+      notes: is_rework ? `Rework material used in production batch` : `Consumed for production batch`,
       created_by: user?.id || null,
     });
 

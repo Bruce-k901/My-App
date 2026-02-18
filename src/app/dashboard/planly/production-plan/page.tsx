@@ -18,6 +18,7 @@ import {
   Clock,
   Truck,
   AlertCircle,
+  Layers,
 } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -39,6 +40,7 @@ import {
   TrayLayoutEquipment,
 } from '@/types/planly';
 import { cn } from '@/lib/utils';
+import ProductionBatchTracker from '@/components/planly/ProductionBatchTracker';
 
 // Aggregate products across orders for Daily Book table
 interface ProductRow {
@@ -871,7 +873,14 @@ export default function ProductionPlanPage() {
         {/* Section 4: Production Tasks */}
         {plan && <ProductionTasksSection tasks={plan.production_tasks} date={selectedDate} />}
 
-        {/* Section 5: Legacy Supplementary Info */}
+        {/* Section 5: Batch Tracking (links to Stockly) */}
+        <div className="no-print">
+          <CollapsibleSection title="Batch Tracking" icon={Layers} defaultOpen={false}>
+            <ProductionBatchTracker selectedDate={selectedDate} siteId={siteId} />
+          </CollapsibleSection>
+        </div>
+
+        {/* Section 6: Legacy Supplementary Info */}
         {plan && ((plan.tray_setup?.length || 0) > 0 || (plan.cookie_layout?.length || 0) > 0) && (
           <CollapsibleSection title="Additional Info" icon={Cookie} defaultOpen={false}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

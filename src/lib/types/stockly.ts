@@ -16,7 +16,8 @@ export type BatchMovementType =
   | 'consumed_waste'
   | 'adjustment'
   | 'transfer'
-  | 'recalled';
+  | 'recalled'
+  | 'rework';
 
 export interface StockBatch {
   id: string;
@@ -455,9 +456,13 @@ export interface ProductionBatchInput {
   unit: string | null;
   added_at: string;
   added_by: string | null;
+  // @salsa — Rework tracking
+  is_rework: boolean;
+  rework_source_batch_id: string | null;
   // Joined data
   stock_batch?: StockBatch | null;
   stock_item?: { id: string; name: string; stock_unit?: string | null } | null;
+  rework_source_batch?: { id: string; batch_code: string; production_date: string } | null;
 }
 
 export interface ProductionBatchOutput {

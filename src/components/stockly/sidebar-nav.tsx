@@ -148,6 +148,13 @@ const navItems: NavItem[] = [
     href: '/dashboard/stockly/waste',
     icon: Trash2,
   },
+  // @salsa — Production batch tracking
+  {
+    type: 'link',
+    label: 'Production Batches',
+    href: '/dashboard/stockly/production-batches',
+    icon: Layers,
+  },
   // @salsa — Phase 4: Traceability and Recalls
   {
     type: 'section',

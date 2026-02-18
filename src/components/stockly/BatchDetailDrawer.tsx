@@ -19,6 +19,7 @@ import {
   Shield,
   Layers,
   ExternalLink,
+  RefreshCw,
 } from '@/components/ui/icons';
 import type { BatchMovement, BatchStatus } from '@/lib/types/stockly';
 // @salsa — Shared allergen utility for badge labels
@@ -40,6 +41,7 @@ const MOVEMENT_ICONS: Record<string, React.ElementType> = {
   adjustment: ArrowUp,
   transfer: Package,
   recalled: Shield,
+  rework: RefreshCw,
 };
 
 const MOVEMENT_LABELS: Record<string, string> = {
@@ -49,6 +51,7 @@ const MOVEMENT_LABELS: Record<string, string> = {
   adjustment: 'Adjusted',
   transfer: 'Transferred',
   recalled: 'Recalled',
+  rework: 'Used as rework',
 };
 
 export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: BatchDetailDrawerProps) {
@@ -273,14 +276,14 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
           {/* @salsa — Production batch link (Phase 3) */}
           {batch.production_batch_id && (
             <a
-              href={`/dashboard/planly/production-batches/${batch.production_batch_id}`}
-              className="flex items-center justify-between p-3 bg-planly-dark/5 dark:bg-planly/5 border border-planly-dark/20 dark:border-planly/20 rounded-lg hover:bg-planly-dark/10 dark:hover:bg-planly/10 transition-colors"
+              href={`/dashboard/stockly/production-batches/${batch.production_batch_id}`}
+              className="flex items-center justify-between p-3 bg-stockly-dark/5 dark:bg-stockly/5 border border-stockly-dark/20 dark:border-stockly/20 rounded-lg hover:bg-stockly-dark/10 dark:hover:bg-stockly/10 transition-colors"
             >
               <div className="flex items-center gap-2">
-                <Layers className="w-4 h-4 text-planly-dark dark:text-planly" />
-                <span className="text-sm font-medium text-planly-dark dark:text-planly">Production Batch</span>
+                <Layers className="w-4 h-4 text-stockly-dark dark:text-stockly" />
+                <span className="text-sm font-medium text-stockly-dark dark:text-stockly">Production Batch</span>
               </div>
-              <ExternalLink className="w-3.5 h-3.5 text-planly-dark dark:text-planly" />
+              <ExternalLink className="w-3.5 h-3.5 text-stockly-dark dark:text-stockly" />
             </a>
           )}
 

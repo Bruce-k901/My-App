@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
-import ProductionBatchCard from '@/components/planly/ProductionBatchCard';
+import ProductionBatchCard from '@/components/stockly/ProductionBatchCard';
 import { ProductionBatch, ProductionBatchStatus } from '@/lib/types/stockly';
 import { Plus, Layers, Calendar, Filter } from '@/components/ui/icons';
 
@@ -53,14 +53,14 @@ export default function ProductionBatchesPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-theme-primary flex items-center gap-2">
-            <Layers className="w-6 h-6 text-planly-dark dark:text-planly" />
+            <Layers className="w-6 h-6 text-stockly-dark dark:text-stockly" />
             Production Batches
           </h1>
           <p className="text-sm text-theme-tertiary mt-1">Track production runs, inputs, outputs, and CCP records</p>
         </div>
         <button
-          onClick={() => router.push('/dashboard/planly/production-batches/new')}
-          className="flex items-center gap-2 px-4 py-2 bg-planly-dark dark:bg-planly text-white dark:text-gray-900 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+          onClick={() => router.push('/dashboard/stockly/production-batches/new')}
+          className="flex items-center gap-2 px-4 py-2 bg-stockly-dark dark:bg-stockly text-white dark:text-gray-900 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
         >
           <Plus className="w-4 h-4" />
           New Batch
@@ -76,7 +76,7 @@ export default function ProductionBatchesPage() {
               onClick={() => setStatusFilter(tab.value)}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 statusFilter === tab.value
-                  ? 'bg-planly-dark dark:bg-planly text-white dark:text-gray-900'
+                  ? 'bg-stockly-dark dark:bg-stockly text-white dark:text-gray-900'
                   : 'text-theme-tertiary hover:text-theme-secondary'
               }`}
             >
@@ -127,7 +127,7 @@ export default function ProductionBatchesPage() {
             <ProductionBatchCard
               key={batch.id}
               batch={batch}
-              onClick={() => router.push(`/dashboard/planly/production-batches/${batch.id}`)}
+              onClick={() => router.push(`/dashboard/stockly/production-batches/${batch.id}`)}
             />
           ))}
         </div>
