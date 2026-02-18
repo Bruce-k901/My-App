@@ -1506,11 +1506,11 @@ export function TaskFromTemplateModal({
     }
 
     // siteId is required by the database schema
-    // The database trigger will try to set it from the user's profile if missing,
-    // but if the profile doesn't have a site_id, we need to show an error
-    if (!siteId) {
-      toast.error('Site information is required to create tasks. Please ensure you are assigned to a site or contact your administrator.');
-      console.error('❌ Missing siteId:', { companyId, siteId, profile });
+    // Use taskSiteId (selected in modal) first, then fall back to context siteId
+    const effectiveSiteIdForValidation = taskSiteId || siteId;
+    if (!effectiveSiteIdForValidation) {
+      toast.error('Please select a site before creating a task.');
+      console.error('❌ Missing siteId:', { companyId, siteId, taskSiteId, profile });
       return;
     }
 

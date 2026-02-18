@@ -147,7 +147,7 @@ function SetupContent() {
 
   if (step === 'loading') {
     return (
-      <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[rgb(var(--background))] flex items-center justify-center p-4">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-module-fg mx-auto mb-4" />
           <p className="text-theme-tertiary">Validating invitation...</p>
@@ -158,16 +158,16 @@ function SetupContent() {
 
   if (step === 'invalid') {
     return (
-      <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
-          <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+      <div className="min-h-screen bg-[rgb(var(--background))] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-theme-button border border-theme rounded-xl p-8 text-center">
+          <AlertCircle className="w-12 h-12 text-red-600 dark:text-red-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-theme-primary mb-2">Invalid Invitation</h1>
           <p className="text-theme-tertiary mb-6">
             This invitation link is invalid or has expired. Please contact your supplier for a new invitation.
           </p>
           <Button
             onClick={() => router.push('/login')}
-            className="bg-transparent text-module-fg border border-emerald-500 hover:shadow-module-glow"
+            className="bg-transparent text-module-fg border border-module-fg hover:shadow-module-glow"
           >
             Go to Login
           </Button>
@@ -178,8 +178,8 @@ function SetupContent() {
 
   if (step === 'success') {
     return (
-      <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
+      <div className="min-h-screen bg-[rgb(var(--background))] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-theme-button border border-theme rounded-xl p-8 text-center">
           <CheckCircle2 className="w-12 h-12 text-module-fg mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-theme-primary mb-2">Account Created!</h1>
           <p className="text-theme-tertiary mb-6">
@@ -191,8 +191,8 @@ function SetupContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white/[0.03] border border-white/[0.06] rounded-xl p-8">
+    <div className="min-h-screen bg-[rgb(var(--background))] flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-theme-button border border-theme rounded-xl p-8">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-theme-primary mb-2">Welcome to Okja Bakery</h1>
           <p className="text-theme-tertiary">Set up your customer portal account</p>
@@ -206,7 +206,7 @@ function SetupContent() {
               type="email"
               value={customerEmail}
               disabled
-              className="bg-white/[0.03] text-theme-tertiary cursor-not-allowed focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
+              className="bg-theme-button text-theme-tertiary cursor-not-allowed focus-visible:ring-module-fg/50 focus-visible:border-module-fg/30"
             />
             <p className="text-xs text-theme-tertiary mt-1">This email will be used to log in</p>
           </div>
@@ -214,7 +214,7 @@ function SetupContent() {
           {/* Password */}
           <div>
             <label className="block text-sm text-theme-secondary mb-1.5">
-              Create Password <span className="text-red-400">*</span>
+              Create Password <span className="text-red-600 dark:text-red-400">*</span>
             </label>
             <Input
               type="password"
@@ -222,10 +222,10 @@ function SetupContent() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter password (min 8 characters)"
               required
-              className="focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
+              className="focus-visible:ring-module-fg/50 focus-visible:border-module-fg/30"
             />
             {errors.password && (
-              <p className="text-xs text-red-400 mt-1">{errors.password}</p>
+              <p className="text-xs text-red-600 dark:text-red-400 mt-1">{errors.password}</p>
             )}
             <p className="text-xs text-theme-tertiary mt-1">Password must be at least 8 characters</p>
           </div>
@@ -233,7 +233,7 @@ function SetupContent() {
           {/* Confirm Password */}
           <div>
             <label className="block text-sm text-theme-secondary mb-1.5">
-              Confirm Password <span className="text-red-400">*</span>
+              Confirm Password <span className="text-red-600 dark:text-red-400">*</span>
             </label>
             <Input
               type="password"
@@ -241,23 +241,23 @@ function SetupContent() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm your password"
               required
-              className="focus-visible:ring-emerald-500/50 focus-visible:border-module-fg/30"
+              className="focus-visible:ring-module-fg/50 focus-visible:border-module-fg/30"
             />
             {errors.confirmPassword && (
-              <p className="text-xs text-red-400 mt-1">{errors.confirmPassword}</p>
+              <p className="text-xs text-red-600 dark:text-red-400 mt-1">{errors.confirmPassword}</p>
             )}
           </div>
 
           {errors.general && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-              <p className="text-sm text-red-400">{errors.general}</p>
+            <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-lg p-3">
+              <p className="text-sm text-red-600 dark:text-red-400">{errors.general}</p>
             </div>
           )}
 
           <Button
             type="submit"
             loading={loading}
-            className="w-full bg-transparent text-module-fg border border-emerald-500 hover:shadow-module-glow"
+            className="w-full bg-transparent text-module-fg border border-module-fg hover:shadow-module-glow"
           >
             Create Account
           </Button>
@@ -271,7 +271,7 @@ export default function CustomerSetupPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center">
+        <div className="min-h-screen bg-[rgb(var(--background))] flex items-center justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-module-fg" />
         </div>
       }

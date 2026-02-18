@@ -24,8 +24,10 @@ import {
   X,
   Check,
   AlertTriangle,
-  ArrowLeft
+  ArrowLeft,
+  Layers, // @salsa — batch tracking settings icon
 } from '@/components/ui/icons';
+import { previewBatchCodeFormat } from '@/lib/stockly/batch-codes'; // @salsa
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -62,6 +64,13 @@ interface StocklySettings {
   date_format: string;
   week_start_day: string;
   default_report_days: number;
+
+  // @salsa — Batch Tracking
+  batch_code_format: string;
+  batch_code_auto_generate: boolean;
+  require_temp_for_chilled: boolean;
+  expiry_warning_days_use_by: number;
+  expiry_warning_days_best_before: number;
 }
 
 const DEFAULT_SETTINGS: StocklySettings = {
@@ -83,7 +92,13 @@ const DEFAULT_SETTINGS: StocklySettings = {
   menu_categories: ['Starters', 'Mains', 'Desserts', 'Sides', 'Drinks', 'Cocktails', 'Wine', 'Coffee', 'Kids', 'Specials'],
   date_format: 'DD/MM/YYYY',
   week_start_day: 'monday',
-  default_report_days: 30
+  default_report_days: 30,
+  // @salsa — Batch Tracking defaults
+  batch_code_format: '{YYYY}-{MMDD}-{SEQ}',
+  batch_code_auto_generate: true,
+  require_temp_for_chilled: false,
+  expiry_warning_days_use_by: 3,
+  expiry_warning_days_best_before: 7,
 };
 
 const PAYMENT_METHOD_OPTIONS = [
@@ -229,6 +244,7 @@ export default function StocklySettingsPage() {
     { id: 'waste', label: 'Waste', icon: Trash2 },
     { id: 'categories', label: 'Categories', icon: Tags },
     { id: 'display', label: 'Display', icon: Eye },
+    { id: 'batches', label: 'Batch Tracking', icon: Layers }, // @salsa
   ];
 
   if (loading) {
@@ -697,6 +713,99 @@ export default function StocklySettingsPage() {
                       {days} days
                     </button>
                   ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* @salsa — Batch Tracking */}
+          {activeSection === 'batches' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-semibold text-theme-primary mb-1">Batch Tracking</h2>
+                <p className="text-theme-tertiary text-sm">SALSA compliance — configure batch codes and expiry alerts</p>
+              </div>
+
+              {/* Auto-generate toggle */}
+              <label className="flex items-center justify-between p-4 bg-theme-surface rounded-lg cursor-pointer">
+                <div>
+                  <span className="text-theme-primary font-medium">Auto-generate Batch Codes</span>
+                  <p className="text-theme-tertiary text-sm">Automatically assign batch codes when deliveries are received</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={settings.batch_code_auto_generate}
+                  onChange={(e) => updateSetting('batch_code_auto_generate', e.target.checked)}
+                  className="w-5 h-5 rounded border-theme bg-theme-button text-stockly-dark dark:text-stockly focus:ring-stockly-dark dark:focus:ring-stockly"
+                />
+              </label>
+
+              {/* Batch code format */}
+              {settings.batch_code_auto_generate && (
+                <div>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">Batch Code Format</label>
+                  <input
+                    type="text"
+                    value={settings.batch_code_format}
+                    onChange={(e) => updateSetting('batch_code_format', e.target.value)}
+                    className="w-full px-3 py-2 bg-theme-button border border-theme rounded-lg text-theme-primary font-mono focus:outline-none focus:border-stockly-dark dark:focus:border-stockly"
+                    placeholder="{YYYY}-{MMDD}-{SEQ}"
+                  />
+                  <p className="text-xs text-theme-tertiary mt-1.5">
+                    Preview: <span className="font-mono font-medium text-theme-secondary">{previewBatchCodeFormat(settings.batch_code_format)}</span>
+                  </p>
+                  <p className="text-xs text-theme-tertiary mt-1">
+                    Tokens: {'{SITE}'} = site name, {'{YYYY}'} = year, {'{MMDD}'} = month+day, {'{SEQ}'} = daily sequence
+                  </p>
+                </div>
+              )}
+
+              {/* Temperature requirement */}
+              <label className="flex items-center justify-between p-4 bg-theme-surface rounded-lg cursor-pointer">
+                <div>
+                  <span className="text-theme-primary font-medium">Require Temperature for Chilled/Frozen</span>
+                  <p className="text-theme-tertiary text-sm">Block delivery receipt without a temperature reading for chilled or frozen items</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={settings.require_temp_for_chilled}
+                  onChange={(e) => updateSetting('require_temp_for_chilled', e.target.checked)}
+                  className="w-5 h-5 rounded border-theme bg-theme-button text-stockly-dark dark:text-stockly focus:ring-stockly-dark dark:focus:ring-stockly"
+                />
+              </label>
+
+              {/* Expiry warning days */}
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">Use-By Warning Days</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="0"
+                      max="30"
+                      value={settings.expiry_warning_days_use_by}
+                      onChange={(e) => updateSetting('expiry_warning_days_use_by', parseInt(e.target.value) || 3)}
+                      className="w-full px-3 py-2 pr-12 bg-theme-button border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-stockly-dark dark:focus:border-stockly"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-tertiary">days</span>
+                  </div>
+                  <p className="text-xs text-theme-tertiary mt-1">Safety-critical — creates urgent alerts</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">Best-Before Warning Days</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="0"
+                      max="60"
+                      value={settings.expiry_warning_days_best_before}
+                      onChange={(e) => updateSetting('expiry_warning_days_best_before', parseInt(e.target.value) || 7)}
+                      className="w-full px-3 py-2 pr-12 bg-theme-button border border-theme rounded-lg text-theme-primary focus:outline-none focus:border-stockly-dark dark:focus:border-stockly"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-tertiary">days</span>
+                  </div>
+                  <p className="text-xs text-theme-tertiary mt-1">Quality — creates softer warnings</p>
                 </div>
               </div>
             </div>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { resolveCustomer, getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * GET /api/customer/issues
@@ -8,25 +9,20 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get customer record from planly
-    const { data: customer } = await supabase
-      .from('planly_customers')
-      .select('id, site_id')
-      .eq('email', user.email?.toLowerCase() || '')
-      .eq('is_active', true)
-      .maybeSingle();
-
+    const customer = await resolveCustomer(request, supabase, user);
     if (!customer) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
 
-    const { data: issues, error: issuesError } = await supabase
+    const admin = getCustomerAdmin();
+
+    const { data: issues, error: issuesError } = await admin
       .from('order_book_issues')
       .select(`
         *,
@@ -63,26 +59,21 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get customer record from planly
-    const { data: customer } = await supabase
-      .from('planly_customers')
-      .select('id, site_id')
-      .eq('email', user.email?.toLowerCase() || '')
-      .eq('is_active', true)
-      .maybeSingle();
-
+    const customer = await resolveCustomer(request, supabase, user);
     if (!customer) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
 
+    const admin = getCustomerAdmin();
+
     // Get company_id from site
-    const { data: site } = await supabase
+    const { data: site } = await admin
       .from('sites')
       .select('company_id')
       .eq('id', customer.site_id)
@@ -106,7 +97,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data: issue, error: issueError } = await supabase
+    const { data: issue, error: issueError } = await admin
       .from('order_book_issues')
       .insert({
         company_id: site?.company_id,

@@ -52,8 +52,10 @@ export default function WasteLogPage() {
     try {
       setLoading(true);
       
-      // Get customer profile first to verify access
-      const customerResponse = await fetch('/api/customer/profile');
+      // Get customer profile first to verify access (supports admin preview)
+      const previewId = typeof window !== 'undefined' ? sessionStorage.getItem('admin_preview_customer_id') : null;
+      const profileUrl = previewId ? `/api/customer/profile?customer_id=${previewId}` : '/api/customer/profile';
+      const customerResponse = await fetch(profileUrl);
       if (!customerResponse.ok) throw new Error('Failed to load customer');
 
       const customerResult = await customerResponse.json();
@@ -117,7 +119,10 @@ export default function WasteLogPage() {
     if (!orderId) return;
     
     try {
-      const response = await fetch(`/api/customer/waste/log?order_id=${orderId}`);
+      const previewId = typeof window !== 'undefined' ? sessionStorage.getItem('admin_preview_customer_id') : null;
+      const logParams = new URLSearchParams({ order_id: orderId! });
+      if (previewId) logParams.set('customer_id', previewId);
+      const response = await fetch(`/api/customer/waste/log?${logParams}`);
       if (response.ok) {
         const result = await response.json();
         if (result.data && result.data.items) {
@@ -136,7 +141,9 @@ export default function WasteLogPage() {
   async function loadPendingOrders() {
     try {
       setLoading(true);
-      const response = await fetch('/api/customer/waste/pending');
+      const previewId = typeof window !== 'undefined' ? sessionStorage.getItem('admin_preview_customer_id') : null;
+      const pendingUrl = previewId ? `/api/customer/waste/pending?customer_id=${previewId}` : '/api/customer/waste/pending';
+      const response = await fetch(pendingUrl);
       if (!response.ok) throw new Error('Failed to load pending orders');
       
       const result = await response.json();
@@ -235,7 +242,9 @@ export default function WasteLogPage() {
         unit_price: item.unit_price,
       }));
 
-      const response = await fetch('/api/customer/waste/log', {
+      const previewIdForSubmit = typeof window !== 'undefined' ? sessionStorage.getItem('admin_preview_customer_id') : null;
+      const submitUrl = previewIdForSubmit ? `/api/customer/waste/log?customer_id=${previewIdForSubmit}` : '/api/customer/waste/log';
+      const response = await fetch(submitUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -268,7 +277,7 @@ export default function WasteLogPage() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+          <Loader2 className="w-8 h-8 text-module-fg animate-spin" />
         </div>
       </div>
     );
@@ -277,7 +286,7 @@ export default function WasteLogPage() {
   if (!order) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
+        <div className="bg-theme-button border border-theme rounded-xl p-8 text-center">
           <p className="text-theme-tertiary mb-4">No order found</p>
           <Link href="/customer/dashboard">
             <Button variant="secondary">Back to Dashboard</Button>
@@ -294,28 +303,40 @@ export default function WasteLogPage() {
   const wasteCost = order.items.reduce((sum, item) => sum + calculateWasteCost(item), 0);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
+    <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
       {/* Header */}
-      <div className="mb-6">
-        <Link href="/customer/dashboard" className="inline-flex items-center gap-2 text-theme-tertiary hover:text-white mb-4">
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Dashboard</span>
-        </Link>
-        <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary mb-2">End of Day Report</h1>
-        <p className="text-theme-tertiary text-sm sm:text-base">
-          {format(new Date(order.delivery_date), 'EEEE, d MMMM yyyy')}
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
+        <div>
+          <Link href="/customer/dashboard" className="inline-flex items-center gap-2 text-theme-tertiary hover:text-theme-primary mb-3">
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Dashboard</span>
+          </Link>
+          <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary">End of Day Report</h1>
+          <p className="text-theme-tertiary text-sm mt-1">
+            {format(new Date(order.delivery_date), 'EEEE, d MMMM yyyy')} — Order for {format(new Date(order.delivery_date), 'd MMM yyyy')}
+            <span className="text-green-600 dark:text-green-400 ml-2">✓ Delivered</span>
+          </p>
+        </div>
+        {/* Summary stats inline */}
+        <div className="flex items-center gap-4 text-sm">
+          <div className="text-theme-tertiary">
+            Ordered: <span className="text-theme-primary font-medium">{totalOrdered}</span>
+          </div>
+          <div className="text-theme-tertiary">
+            Sold: <span className="text-green-600 dark:text-green-400 font-medium">{totalSold}</span>
+          </div>
+          <div className={`font-medium ${
+            wastePercent < 15 ? 'text-green-600 dark:text-green-400' :
+            wastePercent < 25 ? 'text-yellow-600 dark:text-yellow-400' :
+            'text-red-600 dark:text-red-400'
+          }`}>
+            Waste: {totalWaste} ({wastePercent}%) · £{wasteCost.toFixed(2)}
+          </div>
+        </div>
       </div>
 
-      {/* Order Summary */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
-        <div className="text-sm text-theme-secondary mb-1">Today's delivery from supplier</div>
-        <div className="text-lg font-semibold text-theme-primary">Order for {format(new Date(order.delivery_date), 'd MMM yyyy')}</div>
-        <div className="text-sm text-green-400 mt-1">✓ Delivered</div>
-      </div>
-
-      {/* Product Log Form */}
-      <div className="space-y-4 mb-6">
+      {/* Product Log Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
         {order.items?.map((item) => {
           const waste = calculateWaste(item);
           const wastePercent = calculateWastePercent(item);
@@ -323,24 +344,31 @@ export default function WasteLogPage() {
           const status = getWasteStatus(item);
 
           return (
-            <div key={item.id} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-theme-primary">{item.product.name}</h3>
-                  <p className="text-sm text-theme-tertiary">Ordered: {item.quantity} {item.product.unit}</p>
+            <div key={item.id} className="bg-theme-button border border-theme rounded-xl p-4 flex flex-col">
+              {/* Product header */}
+              <div className="flex items-start justify-between mb-3">
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-theme-primary truncate">{item.product.name}</h3>
+                  <p className="text-xs text-theme-tertiary">Ordered: {item.quantity} {item.product.unit}</p>
+                </div>
+                <div className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ml-2 ${
+                  status === 'success' ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300' :
+                  status === 'warning' ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-300' :
+                  'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300'
+                }`}>
+                  {wastePercent}%
                 </div>
               </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-theme-secondary mb-2">
-                  How many sold?
-                </label>
-                <div className="flex items-center gap-3">
+              {/* Sold input */}
+              <div className="mb-3">
+                <label className="block text-xs text-theme-secondary mb-1.5">Sold</label>
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => decrement(item.id)}
-                    className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
+                    className="p-1.5 bg-theme-hover hover:bg-theme-muted rounded-lg transition-colors"
                   >
-                    <Minus className="w-4 h-4 text-theme-primary" />
+                    <Minus className="w-3.5 h-3.5 text-theme-primary" />
                   </button>
                   <input
                     type="number"
@@ -348,48 +376,45 @@ export default function WasteLogPage() {
                     max={item.quantity}
                     value={soldQuantities[item.id] || 0}
                     onChange={(e) => updateSoldQty(item.id, parseInt(e.target.value) || 0)}
-                    className="w-20 px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary text-center focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
+                    className="w-16 px-2 py-1.5 bg-theme-button border border-theme rounded-lg text-theme-primary text-center text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50"
                   />
                   <button
                     onClick={() => increment(item.id)}
-                    className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
+                    className="p-1.5 bg-theme-hover hover:bg-theme-muted rounded-lg transition-colors"
                   >
-                    <Plus className="w-4 h-4 text-theme-primary" />
+                    <Plus className="w-3.5 h-3.5 text-theme-primary" />
                   </button>
-                </div>
-                <div className="flex gap-2 mt-2">
-                  <button
-                    onClick={() => setSoldAll(item.id)}
-                    className="text-xs px-3 py-1 bg-green-500/20 text-green-300 rounded hover:bg-module-fg/10 transition-colors"
-                  >
-                    <Check className="w-3 h-3 inline mr-1" />
-                    Sold All
-                  </button>
-                  <button
-                    onClick={() => setSoldNone(item.id)}
-                    className="text-xs px-3 py-1 bg-red-500/20 text-red-300 rounded hover:bg-red-500/30 transition-colors"
-                  >
-                    <X className="w-3 h-3 inline mr-1" />
-                    None
-                  </button>
+                  <div className="flex gap-1.5 ml-auto">
+                    <button
+                      onClick={() => setSoldAll(item.id)}
+                      className="text-xs px-2 py-1 bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300 rounded hover:bg-module-fg/10 transition-colors"
+                      title="Sold All"
+                    >
+                      <Check className="w-3 h-3" />
+                    </button>
+                    <button
+                      onClick={() => setSoldNone(item.id)}
+                      className="text-xs px-2 py-1 bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300 rounded hover:bg-red-500/30 transition-colors"
+                      title="None Sold"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-white/[0.06]">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-theme-tertiary">Unsold:</span>
-                  <div className="text-right">
-                    <div className={`text-lg font-semibold ${
-                      status === 'success' ? 'text-green-400' :
-                      status === 'warning' ? 'text-yellow-400' :
-                      'text-red-400'
-                    }`}>
-                      {waste} units ({wastePercent}%)
-                    </div>
-                    <div className="text-sm text-theme-tertiary">
-                      £{wasteCost.toFixed(2)} waste
-                    </div>
-                  </div>
+              {/* Waste result */}
+              <div className="pt-3 border-t border-theme mt-auto flex items-center justify-between">
+                <span className="text-xs text-theme-tertiary">Unsold:</span>
+                <div className="text-right">
+                  <span className={`text-sm font-semibold ${
+                    status === 'success' ? 'text-green-600 dark:text-green-400' :
+                    status === 'warning' ? 'text-yellow-600 dark:text-yellow-400' :
+                    'text-red-600 dark:text-red-400'
+                  }`}>
+                    {waste} units
+                  </span>
+                  <span className="text-xs text-theme-tertiary ml-1.5">£{wasteCost.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -397,36 +422,8 @@ export default function WasteLogPage() {
         })}
       </div>
 
-      {/* Daily Summary */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
-        <h3 className="text-lg font-semibold text-theme-primary mb-4">Daily Summary</h3>
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-theme-tertiary">Total Ordered:</span>
-            <span className="text-theme-primary">{totalOrdered} units</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-theme-tertiary">Total Sold:</span>
-            <span className="text-green-400 font-semibold">{totalSold} units</span>
-          </div>
-          <div className="flex justify-between text-sm pt-2 border-t border-white/[0.06]">
-            <span className="text-theme-tertiary">Total Waste:</span>
-            <div className="text-right">
-              <div className={`font-semibold ${
-                wastePercent < 15 ? 'text-green-400' :
-                wastePercent < 25 ? 'text-yellow-400' :
-                'text-red-400'
-              }`}>
-                {totalWaste} units ({wastePercent}%)
-              </div>
-              <div className="text-xs text-theme-tertiary">£{wasteCost.toFixed(2)}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Actions */}
-      <div className="flex gap-4">
+      <div className="flex gap-4 max-w-md mx-auto">
         <Button
           variant="outline"
           onClick={() => handleSubmit('draft')}

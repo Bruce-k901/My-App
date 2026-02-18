@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * POST /api/customer/orders/generate-from-week
@@ -16,8 +17,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const admin = getCustomerAdmin();
+
     // Get customer record from planly
-    const { data: customer } = await supabase
+    const { data: customer } = await admin
       .from('planly_customers')
       .select('id')
       .eq('email', user.email?.toLowerCase() || '')
@@ -48,7 +51,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Call the function (check if it exists first)
-    const { data: count, error: generateError } = await supabase.rpc('generate_orders_from_week', {
+    const { data: count, error: generateError } = await admin.rpc('generate_orders_from_week', {
       p_customer_id: customer.id,
       p_week_start_date: weekStart.toISOString().split('T')[0],
       p_weeks_ahead: weeks_ahead,

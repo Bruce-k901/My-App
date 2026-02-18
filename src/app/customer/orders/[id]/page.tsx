@@ -97,7 +97,7 @@ export default function OrderDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-module-fg animate-spin" />
       </div>
     );
   }
@@ -108,7 +108,7 @@ export default function OrderDetailPage() {
         <p className="text-theme-tertiary">Order not found</p>
         <Link
           href="/customer/orders"
-          className="text-[#D37E91] hover:text-[#D37E91]/80 text-sm mt-4 inline-block"
+          className="text-module-fg hover:text-module-fg/80 text-sm mt-4 inline-block"
         >
           ← Back to Orders
         </Link>
@@ -122,7 +122,7 @@ export default function OrderDetailPage() {
       <div className="mb-6">
         <Link
           href="/customer/orders"
-          className="inline-flex items-center gap-2 text-theme-tertiary hover:text-white text-sm mb-4 transition-colors"
+          className="inline-flex items-center gap-2 text-theme-tertiary hover:text-theme-primary text-sm mb-4 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Orders
@@ -135,12 +135,12 @@ export default function OrderDetailPage() {
           <span
             className={`text-sm px-3 py-1.5 rounded ${
               order.status === 'confirmed'
-                ? 'bg-green-500/20 text-green-300'
+                ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300'
                 : order.status === 'locked'
-                ? 'bg-blue-500/20 text-blue-300'
+                ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300'
                 : order.status === 'delivered'
-                ? 'bg-purple-500/20 text-purple-300'
-                : 'bg-yellow-500/20 text-yellow-300'
+                ? 'bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300'
+                : 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-300'
             }`}
           >
             {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
@@ -149,7 +149,7 @@ export default function OrderDetailPage() {
       </div>
 
       {/* Order Info */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
+      <div className="bg-theme-button border border-theme rounded-xl p-4 sm:p-6 mb-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <div className="text-sm text-theme-tertiary mb-1">Order Date</div>
@@ -166,8 +166,8 @@ export default function OrderDetailPage() {
       </div>
 
       {/* Order Items */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden mb-6">
-        <h2 className="text-lg font-semibold text-theme-primary p-4 sm:p-6 pb-4 border-b border-white/[0.06]">
+      <div className="bg-theme-button border border-theme rounded-xl overflow-hidden mb-6">
+        <h2 className="text-lg font-semibold text-theme-primary p-4 sm:p-6 pb-4 border-b border-theme">
           Order Items
         </h2>
         {!order.items || order.items.length === 0 ? (
@@ -183,7 +183,7 @@ export default function OrderDetailPage() {
           <div className="overflow-auto">
             <table className="w-full border-collapse">
               <thead className="sticky top-0 z-20">
-                <tr className="bg-white/[0.05] border-b border-white/[0.1]">
+                <tr className="bg-theme-hover border-b border-theme-hover">
                   <th className="px-4 py-3 text-left text-sm font-semibold text-theme-primary">Product</th>
                   <th className="px-4 py-3 text-center text-sm font-semibold text-theme-primary">Quantity</th>
                   <th className="px-4 py-3 text-right text-sm font-semibold text-theme-primary">Unit Price</th>
@@ -210,7 +210,7 @@ export default function OrderDetailPage() {
                     return (
                       <tr
                         key={item.id || item.product_id}
-                        className="border-b border-white/[0.06] hover:bg-white/[0.02]"
+                        className="border-b border-theme hover:bg-theme-hover"
                       >
                         <td className="px-4 py-3">
                           <div>
@@ -252,22 +252,22 @@ export default function OrderDetailPage() {
       </div>
 
       {/* Order Summary */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
+      <div className="bg-theme-button border border-theme rounded-xl p-4 sm:p-6 mb-6">
         <div className="flex items-center justify-between mb-2">
           <span className="text-theme-tertiary">Subtotal</span>
           <span className="text-theme-primary font-medium">{formatCurrency(order.subtotal)}</span>
         </div>
-        <div className="flex items-center justify-between pt-4 border-t border-white/[0.06]">
+        <div className="flex items-center justify-between pt-4 border-t border-theme">
           <span className="text-lg font-semibold text-theme-primary">Total</span>
-          <span className="text-2xl font-bold text-[#D37E91]">{formatCurrency(order.total)}</span>
+          <span className="text-2xl font-bold text-module-fg">{formatCurrency(order.total)}</span>
         </div>
       </div>
 
       {/* Invoice Download (if available) */}
       {order.status === 'delivered' && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6">
+        <div className="bg-theme-button border border-theme rounded-xl p-4 sm:p-6">
           <h2 className="text-lg font-semibold text-theme-primary mb-4 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-[#D37E91]" />
+            <FileText className="w-5 h-5 text-module-fg" />
             Invoice
           </h2>
           <p className="text-theme-tertiary text-sm mb-4">
@@ -275,7 +275,7 @@ export default function OrderDetailPage() {
           </p>
           <Button
             variant="ghost"
-            className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-module-glow min-h-[44px]"
+            className="bg-transparent text-module-fg border border-module-fg hover:shadow-module-glow min-h-[44px]"
             disabled
           >
             <Download className="w-4 h-4 mr-2" />

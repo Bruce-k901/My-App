@@ -20,6 +20,7 @@ import {
   Wand2,
   ExternalLink,
   MessageSquare,
+  Layers,
 } from '@/components/ui/icons';
 import { useState, useEffect } from 'react';
 import { useSidebarMode } from '@/hooks/useSidebarMode';
@@ -32,7 +33,7 @@ interface NavItem {
   label: string;
   icon: React.ElementType;
   href?: string;
-  children?: { label: string; href: string; icon?: React.ElementType; roles?: string[] }[];
+  children?: { label: string; href: string; icon?: React.ElementType; roles?: string[]; external?: boolean }[];
 }
 
 // Define nav items as a constant
@@ -73,6 +74,12 @@ const navItems: NavItem[] = [
     icon: MapPin,
   },
   {
+    type: 'link',
+    label: 'Production Batches',
+    href: '/dashboard/planly/production-batches',
+    icon: Layers,
+  },
+  {
     type: 'section',
     label: 'PRODUCTION SETUP',
     icon: Settings,
@@ -104,7 +111,7 @@ const navItems: NavItem[] = [
     children: [
       { label: 'Customer List', href: '/dashboard/planly/customers' },
       { label: 'Customer Support', href: '/dashboard/planly/customer-support', icon: MessageSquare, roles: ['Owner', 'Admin', 'Manager', 'platform_admin'] },
-      { label: 'Customer Portal', href: '/customer/dashboard', icon: ExternalLink },
+      { label: 'Customer Portal', href: '/customer/dashboard', icon: ExternalLink, external: true },
     ],
   },
   {
@@ -223,6 +230,7 @@ export function PlanlyNavItem({ item }: { item: NavItem }) {
                 <Link
                   key={child.href}
                   href={child.href}
+                  {...(child.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors relative ${
                     isChildActive
                       ? 'bg-planly-dark/[0.08] dark:bg-planly/10 text-planly-dark dark:text-planly font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-planly-dark dark:before:bg-planly'

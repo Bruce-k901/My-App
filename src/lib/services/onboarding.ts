@@ -63,7 +63,6 @@ export async function completeOnboarding(
         company_number: data.companyNumber || null,
         vat_number: data.vatNumber || null,
         created_by: data.userId,
-        user_id: data.userId, // Critical: Set user_id so RLS policies work
       })
       .select("*")
       .single();
@@ -181,14 +180,12 @@ export async function completeOnboarding(
       console.log("🔄 Creating user_companies entry for profile");
       const { error: userCompaniesError } = await supabaseAdmin
         .from("user_companies")
-        .insert({
+        .upsert({
           profile_id: profile.id,
           company_id: profile.company_id,
           app_role: profile.app_role || "Admin",
           is_primary: true,
-        })
-        .onConflict("profile_id,company_id")
-        .merge();
+        }, { onConflict: "profile_id,company_id" });
       
       if (userCompaniesError) {
         console.warn("⚠️ Failed to create user_companies entry (trigger may handle this):", userCompaniesError);

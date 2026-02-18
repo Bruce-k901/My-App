@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { 
-  ArrowLeft, 
-  Building2, 
-  Users, 
-  ClipboardList, 
+import {
+  ArrowLeft,
+  Building2,
+  Users,
+  ClipboardList,
   Eye,
   Calendar,
   CheckCircle2,
@@ -15,8 +15,10 @@ import {
   AlertTriangle,
   Loader2,
   Mail,
-  MapPin
+  MapPin,
+  UserPlus
 } from '@/components/ui/icons';
+import AddUserModal from '@/components/admin/AddUserModal';
 
 interface CompanyDetails {
   id: string;
@@ -55,6 +57,7 @@ export default function CompanyDetailPage() {
   const [sites, setSites] = useState<CompanySite[]>([]);
   const [taskStats, setTaskStats] = useState<TaskStats>({ total: 0, completed: 0, pending: 0, missed: 0 });
   const [loading, setLoading] = useState(true);
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
 
   useEffect(() => {
     if (companyId) {
@@ -219,10 +222,19 @@ export default function CompanyDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Users List */}
         <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
-          <h2 className="text-xl font-semibold text-theme-primary mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-theme-tertiary" />
-            Users ({users.length})
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
+              <Users className="w-5 h-5 text-theme-tertiary" />
+              Users ({users.length})
+            </h2>
+            <button
+              onClick={() => setShowAddUserModal(true)}
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#D37E91] text-white rounded-lg font-medium hover:bg-[#C06B7E] transition-colors text-sm"
+            >
+              <UserPlus className="w-4 h-4" />
+              Add User
+            </button>
+          </div>
           <div className="space-y-3 max-h-[400px] overflow-y-auto">
             {users.map(user => (
               <div key={user.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -299,6 +311,16 @@ export default function CompanyDetailPage() {
           </div>
         </div>
       </div>
+
+      {company && (
+        <AddUserModal
+          open={showAddUserModal}
+          onOpenChange={setShowAddUserModal}
+          companyId={company.id}
+          companyName={company.name}
+          onSuccess={() => fetchCompanyDetails()}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * GET /api/customer/pricing?customer_id=X
@@ -15,6 +16,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const admin = getCustomerAdmin();
     const customerId = request.nextUrl.searchParams.get('customer_id');
     if (!customerId) {
       return NextResponse.json({ error: 'customer_id is required' }, { status: 400 });
@@ -22,7 +24,7 @@ export async function GET(request: NextRequest) {
 
     const today = new Date().toISOString().split('T')[0];
 
-    const { data: pricing, error } = await supabase
+    const { data: pricing, error } = await admin
       .from('planly_customer_product_prices')
       .select('product_id, unit_price, effective_from, effective_to')
       .eq('customer_id', customerId)

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { resolveCustomer, getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * GET /api/customer/waste/insights
@@ -25,21 +26,16 @@ export async function GET(request: NextRequest) {
 
   try {
     const supabase = await createServerSupabaseClient();
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       console.warn('Unauthorized access attempt to waste insights');
       return NextResponse.json(emptyData);
     }
 
-    // Get customer record from planly
-    const { data: customer } = await supabase
-      .from('planly_customers')
-      .select('id')
-      .eq('email', user.email?.toLowerCase() || '')
-      .eq('is_active', true)
-      .maybeSingle();
+    const admin = getCustomerAdmin();
 
+    const customer = await resolveCustomer(request, supabase, user);
     if (!customer) {
       console.warn('Customer not found for waste insights');
       return NextResponse.json(emptyData);
@@ -50,9 +46,9 @@ export async function GET(request: NextRequest) {
     // Try to call the function, but handle any errors gracefully
     let insights = null;
     let insightsError = null;
-    
+
     try {
-      const result = await supabase.rpc('get_waste_insights', {
+      const result = await admin.rpc('get_waste_insights', {
         p_customer_id: customer.id,
         p_days: days,
       });

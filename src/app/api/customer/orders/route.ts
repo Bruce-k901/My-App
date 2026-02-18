@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * GET /api/customer/orders?customer_id=X
@@ -18,6 +19,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const admin = getCustomerAdmin();
     const customerId = request.nextUrl.searchParams.get('customer_id');
     if (!customerId) {
       return NextResponse.json({ error: 'customer_id is required' }, { status: 400 });
@@ -25,7 +27,7 @@ export async function GET(request: NextRequest) {
 
     const deliveryDate = request.nextUrl.searchParams.get('delivery_date');
 
-    let query = supabase
+    let query = admin
       .from('planly_orders')
       .select('id, customer_id, delivery_date, status, total_value, notes, created_at, updated_at')
       .eq('customer_id', customerId)
@@ -49,7 +51,7 @@ export async function GET(request: NextRequest) {
 
     // Fetch all order lines for these orders
     const orderIds = orders.map(o => o.id);
-    const { data: allLines } = await supabase
+    const { data: allLines } = await admin
       .from('planly_order_lines')
       .select('id, order_id, product_id, quantity, unit_price_snapshot, ship_state')
       .in('order_id', orderIds);
@@ -59,14 +61,14 @@ export async function GET(request: NextRequest) {
     let productNameMap = new Map<string, { name: string; unit: string; category: string | null }>();
 
     if (productIds.length > 0) {
-      const { data: planlyProducts } = await supabase
+      const { data: planlyProducts } = await admin
         .from('planly_products')
         .select('id, stockly_product_id, category:planly_categories(name)')
         .in('id', productIds);
 
       const stocklyIds = (planlyProducts || []).map(p => p.stockly_product_id).filter(Boolean);
       if (stocklyIds.length > 0) {
-        const { data: ingredients } = await supabase
+        const { data: ingredients } = await admin
           .from('ingredients_library')
           .select('id, ingredient_name, unit')
           .in('id', stocklyIds);
@@ -138,6 +140,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const admin = getCustomerAdmin();
     const body = await request.json();
     const { customer_id, site_id, delivery_date, items } = body;
 
@@ -155,7 +158,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get customer info for default_ship_state
-    const { data: customer } = await supabase
+    const { data: customer } = await admin
       .from('planly_customers')
       .select('default_ship_state')
       .eq('id', customer_id)
@@ -168,14 +171,14 @@ export async function POST(request: NextRequest) {
     const today = new Date().toISOString().split('T')[0];
 
     const [{ data: customerPrices }, { data: listPrices }] = await Promise.all([
-      supabase
+      admin
         .from('planly_customer_product_prices')
         .select('product_id, unit_price, effective_from, effective_to')
         .eq('customer_id', customer_id)
         .in('product_id', productIds)
         .lte('effective_from', today)
         .order('effective_from', { ascending: false }),
-      supabase
+      admin
         .from('planly_product_list_prices')
         .select('product_id, list_price, effective_from, effective_to')
         .in('product_id', productIds)
@@ -199,7 +202,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Check for existing order on this date (upsert pattern)
-    const { data: existingOrders } = await supabase
+    const { data: existingOrders } = await admin
       .from('planly_orders')
       .select('id, status')
       .eq('customer_id', customer_id)
@@ -231,7 +234,7 @@ export async function POST(request: NextRequest) {
 
     if (existingOrder) {
       // Update existing order
-      const { error: updateError } = await supabase
+      const { error: updateError } = await admin
         .from('planly_orders')
         .update({ total_value: totalValue, updated_at: new Date().toISOString() })
         .eq('id', existingOrder.id);
@@ -242,13 +245,13 @@ export async function POST(request: NextRequest) {
       }
 
       // Delete old lines, insert new
-      await supabase
+      await admin
         .from('planly_order_lines')
         .delete()
         .eq('order_id', existingOrder.id);
 
       const linesWithOrderId = orderLines.map((l: any) => ({ ...l, order_id: existingOrder.id }));
-      const { error: linesError } = await supabase
+      const { error: linesError } = await admin
         .from('planly_order_lines')
         .insert(linesWithOrderId);
 
@@ -260,7 +263,7 @@ export async function POST(request: NextRequest) {
       orderId = existingOrder.id;
     } else {
       // Create new order
-      const { data: newOrder, error: orderError } = await supabase
+      const { data: newOrder, error: orderError } = await admin
         .from('planly_orders')
         .insert({
           customer_id,
@@ -278,14 +281,14 @@ export async function POST(request: NextRequest) {
       }
 
       const linesWithOrderId = orderLines.map((l: any) => ({ ...l, order_id: newOrder.id }));
-      const { error: linesError } = await supabase
+      const { error: linesError } = await admin
         .from('planly_order_lines')
         .insert(linesWithOrderId);
 
       if (linesError) {
         console.error('Error inserting order lines:', linesError);
         // Rollback
-        await supabase.from('planly_orders').delete().eq('id', newOrder.id);
+        await admin.from('planly_orders').delete().eq('id', newOrder.id);
         return NextResponse.json({ error: linesError.message }, { status: 500 });
       }
 

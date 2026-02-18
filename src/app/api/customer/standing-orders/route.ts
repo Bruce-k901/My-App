@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * POST /api/customer/standing-orders
@@ -15,6 +16,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const admin = getCustomerAdmin();
     const body = await request.json();
     const { customer_id, delivery_days, items } = body;
 
@@ -29,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the customer exists and get site_id
-    const { data: customer, error: customerError } = await supabase
+    const { data: customer, error: customerError } = await admin
       .from('planly_customers')
       .select('id, site_id')
       .eq('id', customer_id)
@@ -46,7 +48,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if standing order already exists for this customer
-    const { data: existingOrders } = await supabase
+    const { data: existingOrders } = await admin
       .from('planly_standing_orders')
       .select('id')
       .eq('customer_id', customer_id);
@@ -63,7 +65,7 @@ export async function POST(request: NextRequest) {
 
     if (existingOrders && existingOrders.length > 0) {
       // Update existing standing order
-      const { data: updated, error: updateError } = await supabase
+      const { data: updated, error: updateError } = await admin
         .from('planly_standing_orders')
         .update({
           ...standingOrderData,
@@ -81,7 +83,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, data: updated });
     } else {
       // Create new standing order
-      const { data: created, error: createError } = await supabase
+      const { data: created, error: createError } = await admin
         .from('planly_standing_orders')
         .insert({
           ...standingOrderData,
@@ -120,12 +122,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const admin = getCustomerAdmin();
     const customerId = request.nextUrl.searchParams.get('customer_id');
     if (!customerId) {
       return NextResponse.json({ error: 'customer_id is required' }, { status: 400 });
     }
 
-    const { data: standingOrders, error } = await supabase
+    const { data: standingOrders, error } = await admin
       .from('planly_standing_orders')
       .select('*')
       .eq('customer_id', customerId)
@@ -159,6 +162,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const admin = getCustomerAdmin();
     const body = await request.json();
     const { id, ...updates } = body;
 
@@ -166,7 +170,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Standing order ID is required' }, { status: 400 });
     }
 
-    const { data: updated, error: updateError } = await supabase
+    const { data: updated, error: updateError } = await admin
       .from('planly_standing_orders')
       .update({
         ...updates,

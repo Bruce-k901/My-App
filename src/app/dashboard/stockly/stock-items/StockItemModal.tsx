@@ -11,6 +11,8 @@ import Select from '@/components/ui/Select';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Plus, Save, Loader2 } from '@/components/ui/icons';
+import { UK_ALLERGENS } from '@/lib/stockly/allergens';
+import ProductSpecPanel from '@/components/stockly/ProductSpecPanel';
 
 // Section Header Component
 const SectionHeader = ({ children }: { children: React.ReactNode }) => (
@@ -34,22 +36,7 @@ const COSTING_METHODS = [
   { label: 'Fixed Price', value: 'fixed' },
 ];
 
-const UK_ALLERGENS = [
-  { key: 'celery', label: 'Celery' },
-  { key: 'gluten', label: 'Gluten' },
-  { key: 'crustaceans', label: 'Crustaceans' },
-  { key: 'eggs', label: 'Eggs' },
-  { key: 'fish', label: 'Fish' },
-  { key: 'lupin', label: 'Lupin' },
-  { key: 'milk', label: 'Milk' },
-  { key: 'molluscs', label: 'Molluscs' },
-  { key: 'mustard', label: 'Mustard' },
-  { key: 'nuts', label: 'Nuts' },
-  { key: 'peanuts', label: 'Peanuts' },
-  { key: 'sesame', label: 'Sesame' },
-  { key: 'soybeans', label: 'Soybeans' },
-  { key: 'sulphites', label: 'Sulphites' },
-];
+// @salsa — UK_ALLERGENS imported from shared utility (@/lib/stockly/allergens)
 
 // Form validation schema
 const stockItemSchema = z.object({
@@ -690,6 +677,18 @@ export default function StockItemModal({
               </section>
             </div>
           </div>
+
+          {/* @salsa — PRODUCT SPECIFICATION (full-width, below the 2-col grid, only when editing) */}
+          {editingItem && (
+            <div className="mt-8">
+              <SectionHeader>Product Specification (SALSA)</SectionHeader>
+              <ProductSpecPanel
+                stockItemId={editingItem.id}
+                companyId={companyId}
+                stockItemName={editingItem.name}
+              />
+            </div>
+          )}
 
           {/* FOOTER */}
           <div className="flex justify-center gap-4 mt-6 pt-4 border-t border-gray-700">

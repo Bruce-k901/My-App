@@ -568,7 +568,7 @@ export default function OrdersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-module-fg animate-spin" />
       </div>
     );
   }
@@ -595,7 +595,7 @@ export default function OrdersPage() {
       <div className="mb-6">
         <Link
           href="/customer/dashboard"
-          className="inline-flex items-center gap-2 text-theme-tertiary hover:text-white text-sm mb-4 transition-colors"
+          className="inline-flex items-center gap-2 text-theme-tertiary hover:text-theme-primary text-sm mb-4 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Dashboard
@@ -611,7 +611,7 @@ export default function OrdersPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setWeekOffset(weekOffset - 1)}
-              className="p-2 rounded-lg border border-white/[0.1] text-theme-tertiary hover:text-white hover:bg-white/[0.05] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-2 rounded-lg border border-theme-hover text-theme-tertiary hover:text-theme-primary hover:bg-theme-hover transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label="Previous week"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -619,7 +619,7 @@ export default function OrdersPage() {
             <button
               onClick={() => setWeekOffset(Math.min(weekOffset + 1, 4))}
               disabled={weekOffset >= 4}
-              className="p-2 rounded-lg border border-white/[0.1] text-theme-tertiary hover:text-white hover:bg-white/[0.05] disabled:opacity-30 disabled:cursor-not-allowed transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-2 rounded-lg border border-theme-hover text-theme-tertiary hover:text-theme-primary hover:bg-theme-hover disabled:opacity-30 disabled:cursor-not-allowed transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label="Next week"
             >
               <ChevronRight className="w-5 h-5" />
@@ -629,26 +629,26 @@ export default function OrdersPage() {
       </div>
 
       {/* Grid Table */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden mb-6">
+      <div className="bg-theme-button border border-theme rounded-xl overflow-hidden mb-6">
         <div className="overflow-auto max-h-[calc(100vh-350px)] order-book-scrollbar">
           <table className="w-full border-collapse">
             <thead className="sticky top-0 z-20">
-              <tr className="bg-white/[0.05] border-b border-white/[0.1]">
-                <th className="sticky left-0 z-30 bg-white/[0.05] px-4 py-3 text-left text-sm font-semibold text-theme-primary border-r border-white/[0.1] min-w-[200px]">
+              <tr className="bg-theme-hover border-b border-theme-hover">
+                <th className="sticky left-0 z-30 bg-theme-hover px-4 py-3 text-left text-sm font-semibold text-theme-primary border-r border-theme-hover min-w-[200px]">
                   Product
                 </th>
                 {availableDates.map((date) => (
                   <th
                     key={date}
-                    className="bg-white/[0.05] px-3 py-3 text-center text-xs font-semibold text-theme-secondary min-w-[100px]"
+                    className="bg-theme-hover px-3 py-3 text-center text-xs font-semibold text-theme-secondary min-w-[100px]"
                   >
                     <div className="flex flex-col items-center gap-1">
-                      <Calendar className="w-4 h-4 text-[#D37E91]" />
+                      <Calendar className="w-4 h-4 text-module-fg" />
                       <span>{formatDate(date)}</span>
                     </div>
                   </th>
                 ))}
-                <th className="bg-white/[0.05] px-4 py-3 text-right text-sm font-semibold text-theme-primary min-w-[120px]">
+                <th className="bg-theme-hover px-4 py-3 text-right text-sm font-semibold text-theme-primary min-w-[120px]">
                   Total
                 </th>
               </tr>
@@ -685,8 +685,8 @@ export default function OrdersPage() {
                     a.name.localeCompare(b.name)
                   );
                   return [
-                    <tr key={`bakegroup-${groupName}`} className="bg-white/[0.08] border-b border-white/[0.15]">
-                      <td colSpan={availableDates.length + 2} className="sticky left-0 z-10 px-4 py-2 text-left text-xs font-bold uppercase text-[#D37E91] bg-white/[0.08]">
+                    <tr key={`bakegroup-${groupName}`} className="bg-theme-muted border-b border-theme-hover">
+                      <td colSpan={availableDates.length + 2} className="sticky left-0 z-10 px-4 py-2 text-left text-xs font-bold uppercase text-module-fg bg-theme-muted">
                         {groupName}
                       </td>
                     </tr>,
@@ -695,11 +695,11 @@ export default function OrdersPage() {
                       return (
                         <tr
                           key={product.id}
-                          className={`border-b border-white/[0.06] hover:bg-white/[0.02] ${
-                            idx % 2 === 0 ? 'bg-white/[0.01]' : ''
+                          className={`border-b border-theme hover:bg-theme-hover ${
+                            idx % 2 === 0 ? 'bg-theme-button' : ''
                           }`}
                         >
-                          <td className="sticky left-0 z-10 bg-inherit px-4 py-3 border-r border-white/[0.1]">
+                          <td className="sticky left-0 z-10 bg-inherit px-4 py-3 border-r border-theme-hover">
                             <div>
                               <div className="font-medium text-theme-primary text-sm">{product.name}</div>
                               <div className="text-xs text-theme-tertiary mt-0.5">
@@ -724,14 +724,14 @@ export default function OrdersPage() {
                                   className={`w-full px-2 py-2 rounded text-center text-base font-semibold focus:outline-none focus:ring-2 focus:ring-[#10B981]/50 min-h-[44px] ${
                                     hasValueForCell
                                       ? 'bg-[#10B981]/10 border-[#10B981]/30 text-[#10B981]'
-                                      : 'bg-white/[0.03] border-white/[0.1] text-theme-primary'
+                                      : 'bg-theme-button border-theme-hover text-theme-primary'
                                   }`}
                                   placeholder="0"
                                 />
                               </td>
                             );
                           })}
-                          <td className="px-4 py-3 text-right text-sm font-medium text-theme-secondary bg-white/[0.02]">
+                          <td className="px-4 py-3 text-right text-sm font-medium text-theme-secondary bg-theme-button">
                             {getTotalForProduct(product.id) > 0 && (
                               <span className="text-[#10B981]">
                                 {formatCurrency(getTotalForProduct(product.id))}
@@ -745,8 +745,8 @@ export default function OrdersPage() {
                 });
               })()}
               {/* Totals Row */}
-              <tr className="bg-white/[0.05] border-t-2 border-white/[0.1] font-semibold">
-                <td className="sticky left-0 z-10 bg-white/[0.05] px-4 py-3 text-theme-primary border-r border-white/[0.1]">
+              <tr className="bg-theme-hover border-t-2 border-theme-hover font-semibold">
+                <td className="sticky left-0 z-10 bg-theme-hover px-4 py-3 text-theme-primary border-r border-theme-hover">
                   Total
                 </td>
                 {availableDates.map((date) => {
@@ -754,14 +754,14 @@ export default function OrdersPage() {
                   return (
                     <td key={date} className="px-2 py-3 text-center">
                       {total > 0 && (
-                        <span className="text-[#D37E91] text-sm font-semibold">
+                        <span className="text-module-fg text-sm font-semibold">
                           {formatCurrency(total)}
                         </span>
                       )}
                     </td>
                   );
                 })}
-                <td className="px-4 py-3 text-right text-lg font-bold text-[#D37E91] bg-white/[0.05]">
+                <td className="px-4 py-3 text-right text-lg font-bold text-module-fg bg-theme-hover">
                   {formatCurrency(getGrandTotal())}
                 </td>
               </tr>
@@ -771,18 +771,18 @@ export default function OrdersPage() {
       </div>
 
       {/* Summary and Submit */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6">
+      <div className="bg-theme-button border border-theme rounded-xl p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="text-lg font-semibold text-theme-primary mb-1">
-              Grand Total: <span className="text-[#D37E91]">{formatCurrency(getGrandTotal())}</span>
+              Grand Total: <span className="text-module-fg">{formatCurrency(getGrandTotal())}</span>
             </div>
             {!hasAnyOrders && (
               <p className="text-sm text-theme-tertiary">Enter quantities above to place your order</p>
             )}
           </div>
           {error && (
-            <p className="text-sm text-red-400" role="alert">
+            <p className="text-sm text-red-600 dark:text-red-400" role="alert">
               {error}
             </p>
           )}
@@ -790,7 +790,7 @@ export default function OrdersPage() {
             <Button
               onClick={handleSubmit}
               variant="primary"
-              className="min-h-[44px] bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-module-glow whitespace-nowrap"
+              className="min-h-[44px] bg-transparent text-module-fg border border-module-fg hover:shadow-module-glow whitespace-nowrap"
               disabled={submitting || !hasAnyOrders}
             >
               {submitting ? (
@@ -818,7 +818,7 @@ export default function OrdersPage() {
                 }
               }}
               variant="ghost"
-              className="min-h-[44px] bg-transparent text-red-400 border border-red-400/50 hover:bg-red-400/10 hover:border-red-400 whitespace-nowrap"
+              className="min-h-[44px] bg-transparent text-red-600 dark:text-red-400 border border-red-400/50 hover:bg-red-400/10 hover:border-red-400 whitespace-nowrap"
               disabled={submitting}
             >
               <RotateCcw className="w-4 h-4 mr-2" />
@@ -829,7 +829,7 @@ export default function OrdersPage() {
 
         {/* Save as Standing Order */}
         {hasAnyOrders && (
-          <div className="pt-4 border-t border-white/[0.06]">
+          <div className="pt-4 border-t border-theme">
             <Button
               onClick={handleSaveAsStandingOrder}
               variant="ghost"

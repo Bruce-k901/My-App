@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { resolveCustomer, getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * POST /api/customer/waste/log
@@ -8,26 +9,21 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get customer record from planly
-    const { data: customer } = await supabase
-      .from('planly_customers')
-      .select('id, site_id')
-      .eq('email', user.email?.toLowerCase() || '')
-      .eq('is_active', true)
-      .maybeSingle();
+    const admin = getCustomerAdmin();
 
+    const customer = await resolveCustomer(request, supabase, user);
     if (!customer) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
 
     // Get company_id from site
-    const { data: site } = await supabase
+    const { data: site } = await admin
       .from('sites')
       .select('company_id')
       .eq('id', customer.site_id)
@@ -44,7 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify order belongs to customer (planly_orders)
-    const { data: order, error: orderError } = await supabase
+    const { data: order, error: orderError } = await admin
       .from('planly_orders')
       .select('id, customer_id, delivery_date, total_value')
       .eq('id', order_id)
@@ -67,7 +63,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if waste log already exists
-    const { data: existingLog } = await supabase
+    const { data: existingLog } = await admin
       .from('order_book_waste_logs')
       .select('id')
       .eq('order_id', order_id)
@@ -77,7 +73,7 @@ export async function POST(request: NextRequest) {
 
     if (existingLog) {
       // Check if log is already submitted - cannot edit submitted logs
-      const { data: existingLogFull, error: fetchError } = await supabase
+      const { data: existingLogFull, error: fetchError } = await admin
         .from('order_book_waste_logs')
         .select('id, status')
         .eq('id', existingLog.id)
@@ -95,7 +91,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Update existing draft log
-      const { data: updatedLog, error: updateError } = await supabase
+      const { data: updatedLog, error: updateError } = await admin
         .from('order_book_waste_logs')
         .update({
           total_ordered: totalOrdered,
@@ -116,13 +112,13 @@ export async function POST(request: NextRequest) {
       wasteLogId = updatedLog.id;
 
       // Delete existing items
-      await supabase
+      await admin
         .from('order_book_waste_log_items')
         .delete()
         .eq('waste_log_id', wasteLogId);
     } else {
       // Create new log
-      const { data: newLog, error: createError } = await supabase
+      const { data: newLog, error: createError } = await admin
         .from('order_book_waste_logs')
         .insert({
           company_id: site?.company_id,
@@ -156,7 +152,7 @@ export async function POST(request: NextRequest) {
       unit_price: item.unit_price,
     }));
 
-    const { error: itemsError } = await supabase
+    const { error: itemsError } = await admin
       .from('order_book_waste_log_items')
       .insert(wasteLogItems);
 
@@ -184,31 +180,26 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const admin = getCustomerAdmin();
 
     const orderId = request.nextUrl.searchParams.get('order_id');
     if (!orderId) {
       return NextResponse.json({ error: 'Missing order_id' }, { status: 400 });
     }
 
-    // Get customer record from planly
-    const { data: customer } = await supabase
-      .from('planly_customers')
-      .select('id')
-      .eq('email', user.email?.toLowerCase() || '')
-      .eq('is_active', true)
-      .maybeSingle();
-
+    const customer = await resolveCustomer(request, supabase, user);
     if (!customer) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
 
     // Get waste log with items
-    const { data: wasteLog, error: logError } = await supabase
+    const { data: wasteLog, error: logError } = await admin
       .from('order_book_waste_logs')
       .select(`
         *,
@@ -225,14 +216,14 @@ export async function GET(request: NextRequest) {
     // Resolve product names from planly_products → ingredients_library
     if (wasteLog?.items && wasteLog.items.length > 0) {
       const productIds = [...new Set(wasteLog.items.map((i: any) => i.product_id))];
-      const { data: planlyProducts } = await supabase
+      const { data: planlyProducts } = await admin
         .from('planly_products')
         .select('id, stockly_product_id')
         .in('id', productIds);
 
       const stocklyIds = (planlyProducts || []).map(p => p.stockly_product_id).filter(Boolean);
       if (stocklyIds.length > 0) {
-        const { data: ingredients } = await supabase
+        const { data: ingredients } = await admin
           .from('ingredients_library')
           .select('id, ingredient_name')
           .in('id', stocklyIds);

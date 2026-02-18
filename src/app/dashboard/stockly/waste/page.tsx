@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { ModuleReferences } from '@/lib/module-references';
 import { useWasteTasks } from '@/hooks/useModuleReferences';
 import { format } from 'date-fns';
+import BatchSelector from '@/components/stockly/BatchSelector'; // @salsa
 
 interface StockItem {
   id: string;
@@ -65,6 +66,7 @@ export default function WasteLogPage() {
     notes: string;
     current_stock?: number;
     stock_warning?: boolean;
+    batch_id?: string | null; // @salsa — linked batch for SALSA traceability
   }>>([]);
   const [wasteDate, setWasteDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [globalNotes, setGlobalNotes] = useState<string>('');
@@ -614,9 +616,29 @@ export default function WasteLogPage() {
             line_cost: line.line_cost,
             specific_reason: line.reason,
             notes: line.notes || null,
+            batch_id: line.batch_id || null, // @salsa
           });
 
         if (lineError) throw lineError;
+
+        // @salsa — Update batch quantity if batch is linked
+        if (line.batch_id) {
+          try {
+            await fetch(`/api/stockly/batches/${line.batch_id}/consume`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                quantity: line.quantity,
+                movement_type: 'consumed_waste',
+                reference_type: 'waste_log',
+                reference_id: wasteLog.id,
+                notes: `Waste: ${line.reason}${line.notes ? ' — ' + line.notes : ''}`,
+              }),
+            });
+          } catch (batchErr) {
+            console.error('Error updating batch for waste:', batchErr);
+          }
+        }
 
         // Update stock level
         let stockLevelQuery = supabase
@@ -1669,6 +1691,16 @@ export default function WasteLogPage() {
                       <tr key={line.id} className={`hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors ${line.stock_warning ? 'bg-red-50 dark:bg-red-500/5' : ''}`}>
                         <td className="px-4 py-3">
                           <p className="text-sm font-medium text-theme-primary">{line.name}</p>
+                          {/* @salsa — Batch selector for SALSA traceability */}
+                          {line.stock_item_id && (
+                            <BatchSelector
+                              stockItemId={line.stock_item_id}
+                              selectedBatchId={line.batch_id || null}
+                              onSelect={(batchId) => updateLine(line.id, { batch_id: batchId } as any)}
+                              required={true}
+                              className="mt-1"
+                            />
+                          )}
                         </td>
                         <td className="px-4 py-3 text-right">
                           {line.current_stock !== undefined ? (

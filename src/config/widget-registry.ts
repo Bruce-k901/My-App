@@ -90,6 +90,24 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     defaultRoles: ['Admin', 'Owner', 'Manager'],
     component: safeLazy(() => import('@/components/dashboard/widgets-v2/StockValueWidget')),
   },
+  // @salsa — Batch expiry alert widget
+  batch_expiry_alerts: {
+    id: 'batch_expiry_alerts',
+    title: 'Batch Expiry Alerts',
+    module: 'stockly',
+    size: 'medium',
+    defaultRoles: ['Admin', 'Owner', 'Manager'],
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/ExpiryAlertWidget')),
+  },
+  // @salsa — Supplier approval status widget
+  supplier_approval: {
+    id: 'supplier_approval',
+    title: 'Supplier Approval',
+    module: 'stockly',
+    size: 'medium',
+    defaultRoles: ['Admin', 'Owner', 'Manager'],
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/SupplierApprovalWidget')),
+  },
 
   // ── TEAMLY ──
   whos_on_today: {

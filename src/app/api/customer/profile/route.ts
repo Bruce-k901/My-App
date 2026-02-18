@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * GET /api/customer/profile
@@ -15,11 +16,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const admin = getCustomerAdmin();
     const customerIdParam = request.nextUrl.searchParams.get('customer_id');
 
     // Admin preview: allow specifying customer_id directly
     if (customerIdParam) {
-      const { data: profile } = await supabase
+      const { data: profile } = await admin
         .from('profiles')
         .select('is_platform_admin, app_role')
         .eq('auth_user_id', user.id)
@@ -27,7 +29,7 @@ export async function GET(request: NextRequest) {
 
       const isAdmin = profile?.is_platform_admin || profile?.app_role === 'Owner';
       if (isAdmin) {
-        const { data: customer, error } = await supabase
+        const { data: customer, error } = await admin
           .from('planly_customers')
           .select('id, name, contact_name, email, phone, site_id, is_active, default_ship_state')
           .eq('id', customerIdParam)
@@ -54,7 +56,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Regular customer: look up by email
-    const { data: customer, error: customerError } = await supabase
+    const { data: customer, error: customerError } = await admin
       .from('planly_customers')
       .select('id, name, contact_name, email, phone, site_id, is_active, default_ship_state')
       .eq('email', user.email?.toLowerCase() || '')

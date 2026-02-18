@@ -158,7 +158,7 @@ export default function StandingOrdersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-module-fg animate-spin" />
       </div>
     );
   }
@@ -169,21 +169,21 @@ export default function StandingOrdersPage() {
         <div className="mb-6">
           <Link
             href="/customer/dashboard"
-            className="inline-flex items-center gap-2 text-theme-tertiary hover:text-white text-sm mb-4 transition-colors"
+            className="inline-flex items-center gap-2 text-theme-tertiary hover:text-theme-primary text-sm mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Dashboard
           </Link>
           <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary">Standing Orders</h1>
         </div>
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 sm:p-12 text-center">
+        <div className="bg-theme-button border border-theme rounded-xl p-8 sm:p-12 text-center">
           <p className="text-theme-tertiary text-sm sm:text-base mb-4">
             You don't have a standing order yet.
           </p>
           <Link href="/customer/order/new">
             <Button
               variant="primary"
-              className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-module-glow min-h-[44px]"
+              className="bg-transparent text-module-fg border border-module-fg hover:shadow-module-glow min-h-[44px]"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create Standing Order
@@ -200,7 +200,7 @@ export default function StandingOrdersPage() {
       <div className="mb-6">
         <Link
           href="/customer/dashboard"
-          className="inline-flex items-center gap-2 text-theme-tertiary hover:text-white text-sm mb-4 transition-colors"
+          className="inline-flex items-center gap-2 text-theme-tertiary hover:text-theme-primary text-sm mb-4 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Dashboard
@@ -212,7 +212,7 @@ export default function StandingOrdersPage() {
               <Button
                 onClick={handleTogglePause}
                 variant="ghost"
-                className="text-[#D37E91] border border-[#D37E91] hover:shadow-module-glow min-h-[44px]"
+                className="text-module-fg border border-module-fg hover:shadow-module-glow min-h-[44px]"
                 disabled={saving}
               >
                 {standingOrder.is_paused ? (
@@ -230,7 +230,7 @@ export default function StandingOrdersPage() {
               <Button
                 onClick={() => setIsEditing(true)}
                 variant="ghost"
-                className="text-[#D37E91] border border-[#D37E91] hover:shadow-module-glow min-h-[44px]"
+                className="text-module-fg border border-module-fg hover:shadow-module-glow min-h-[44px]"
               >
                 <Edit className="w-4 h-4 mr-2" />
                 Edit
@@ -241,25 +241,25 @@ export default function StandingOrdersPage() {
       </div>
 
       {error && (
-        <div className="mb-4 p-4 bg-red-500/20 border border-red-500/30 rounded-lg text-sm text-red-300">
+        <div className="mb-4 p-4 bg-red-100 dark:bg-red-500/20 border border-red-200 dark:border-red-500/30 rounded-lg text-sm text-red-700 dark:text-red-300">
           {error}
         </div>
       )}
 
       {/* Status Badge */}
       {!standingOrder.is_active && (
-        <div className="mb-4 p-3 bg-yellow-500/20 border border-yellow-500/30 rounded-lg text-sm text-yellow-300">
+        <div className="mb-4 p-3 bg-yellow-100 dark:bg-yellow-500/20 border border-yellow-200 dark:border-yellow-500/30 rounded-lg text-sm text-yellow-700 dark:text-yellow-300">
           This standing order is not active
         </div>
       )}
       {standingOrder.is_paused && (
-        <div className="mb-4 p-3 bg-blue-500/20 border border-blue-500/30 rounded-lg text-sm text-blue-300">
+        <div className="mb-4 p-3 bg-blue-100 dark:bg-blue-500/20 border border-blue-200 dark:border-blue-500/30 rounded-lg text-sm text-blue-700 dark:text-blue-300">
           This standing order is paused
         </div>
       )}
 
       {/* Delivery Days */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
+      <div className="bg-theme-button border border-theme rounded-xl p-4 sm:p-6 mb-6">
         <h2 className="text-lg font-semibold text-theme-primary mb-4">Delivery Days</h2>
         {isEditing ? (
           <div className="flex flex-wrap gap-2">
@@ -270,8 +270,8 @@ export default function StandingOrdersPage() {
                 onClick={() => toggleDeliveryDay(day.value)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium min-h-[44px] transition-all ${
                   editedDeliveryDays.includes(day.value)
-                    ? 'bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91]'
-                    : 'bg-white/[0.03] text-theme-tertiary border border-white/[0.06] hover:bg-white/[0.05]'
+                    ? 'bg-module-fg/20 text-module-fg border border-module-fg'
+                    : 'bg-theme-button text-theme-tertiary border border-theme hover:bg-theme-hover'
                 }`}
               >
                 {day.label}
@@ -285,7 +285,7 @@ export default function StandingOrdersPage() {
               return (
                 <span
                   key={day}
-                  className="px-4 py-2 bg-[#D37E91]/20 text-[#D37E91] border border-[#D37E91] rounded-lg text-sm font-medium"
+                  className="px-4 py-2 bg-module-fg/20 text-module-fg border border-module-fg rounded-lg text-sm font-medium"
                 >
                   {dayLabel}
                 </span>
@@ -296,7 +296,7 @@ export default function StandingOrdersPage() {
       </div>
 
       {/* Items */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
+      <div className="bg-theme-button border border-theme rounded-xl p-4 sm:p-6 mb-6">
         <h2 className="text-lg font-semibold text-theme-primary mb-4">Items</h2>
 
         {isEditing ? (
@@ -314,14 +314,14 @@ export default function StandingOrdersPage() {
                     return (
                       <div
                         key={product.id}
-                        className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-3"
+                        className="bg-theme-button border border-theme rounded-lg p-3"
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex-1 min-w-0">
                             <h4 className="font-medium text-theme-primary text-sm truncate">
                               {product.name}
                             </h4>
-                            <p className="text-[#D37E91] text-xs mt-1">
+                            <p className="text-module-fg text-xs mt-1">
                               {formatCurrency(product.base_price)} / {product.unit}
                             </p>
                           </div>
@@ -331,7 +331,7 @@ export default function StandingOrdersPage() {
                             <button
                               type="button"
                               onClick={() => updateItemQuantity(product.id, quantity - 1)}
-                              className="w-10 h-10 rounded-lg border border-white/[0.2] text-theme-primary hover:bg-white/[0.1] flex items-center justify-center min-h-[44px] min-w-[44px]"
+                              className="w-10 h-10 rounded-lg border border-theme-hover text-theme-primary hover:bg-theme-muted flex items-center justify-center min-h-[44px] min-w-[44px]"
                             >
                               <Minus className="w-4 h-4" />
                             </button>
@@ -341,7 +341,7 @@ export default function StandingOrdersPage() {
                             <button
                               type="button"
                               onClick={() => updateItemQuantity(product.id, quantity + 1)}
-                              className="w-10 h-10 rounded-lg border border-white/[0.2] text-theme-primary hover:bg-white/[0.1] flex items-center justify-center min-h-[44px] min-w-[44px]"
+                              className="w-10 h-10 rounded-lg border border-theme-hover text-theme-primary hover:bg-theme-muted flex items-center justify-center min-h-[44px] min-w-[44px]"
                             >
                               <Plus className="w-4 h-4" />
                             </button>
@@ -351,7 +351,7 @@ export default function StandingOrdersPage() {
                             type="button"
                             onClick={() => addProduct(product.id)}
                             variant="ghost"
-                            className="w-full mt-2 text-[#D37E91] border border-[#D37E91] hover:shadow-module-glow min-h-[44px]"
+                            className="w-full mt-2 text-module-fg border border-module-fg hover:shadow-module-glow min-h-[44px]"
                           >
                             <Plus className="w-4 h-4 mr-2" />
                             Add
@@ -364,11 +364,11 @@ export default function StandingOrdersPage() {
             </div>
 
             {/* Save/Cancel */}
-            <div className="flex gap-3 pt-4 border-t border-white/[0.06]">
+            <div className="flex gap-3 pt-4 border-t border-theme">
               <Button
                 onClick={handleSave}
                 variant="primary"
-                className="flex-1 bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-module-glow min-h-[44px]"
+                className="flex-1 bg-transparent text-module-fg border border-module-fg hover:shadow-module-glow min-h-[44px]"
                 disabled={saving || editedDeliveryDays.length === 0 || editedItems.length === 0}
               >
                 {saving ? (
@@ -388,7 +388,7 @@ export default function StandingOrdersPage() {
                   setError(null);
                 }}
                 variant="ghost"
-                className="bg-white/[0.03] border border-white/[0.06] text-theme-tertiary hover:text-white min-h-[44px]"
+                className="bg-theme-button border border-theme text-theme-tertiary hover:text-theme-primary min-h-[44px]"
                 disabled={saving}
               >
                 Cancel
@@ -403,7 +403,7 @@ export default function StandingOrdersPage() {
                 return (
                   <div
                     key={idx}
-                    className="flex items-center justify-between p-3 bg-white/[0.02] border border-white/[0.06] rounded-lg"
+                    className="flex items-center justify-between p-3 bg-theme-button border border-theme rounded-lg"
                   >
                     <div>
                       <div className="text-theme-primary font-medium">{product?.name || 'Unknown Product'}</div>

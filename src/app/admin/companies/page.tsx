@@ -3,18 +3,20 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import { 
-  Building2, 
-  Search, 
-  Eye, 
-  Users, 
+import {
+  Building2,
+  Search,
+  Eye,
+  Users,
   ClipboardList,
   Calendar,
   Loader2,
   ChevronRight,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  Plus
 } from '@/components/ui/icons';
+import CreateCompanyModal from '@/components/admin/CreateCompanyModal';
 
 interface CompanyWithStats {
   id: string;
@@ -32,6 +34,7 @@ export default function AdminCompaniesPage() {
   const [companies, setCompanies] = useState<CompanyWithStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
     fetchCompanies();
@@ -128,8 +131,15 @@ export default function AdminCompaniesPage() {
           <h1 className="text-3xl font-bold text-theme-primary mb-2">Companies</h1>
           <p className="text-theme-tertiary">Manage and monitor all registered companies</p>
         </div>
-        <div className="text-theme-tertiary text-sm">
-          {companies.length} total companies
+        <div className="flex items-center gap-3">
+          <span className="text-theme-tertiary text-sm">{companies.length} total companies</span>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#D37E91] text-white rounded-lg font-medium hover:bg-[#C06B7E] transition-colors text-sm"
+          >
+            <Plus className="w-4 h-4" />
+            Create Company
+          </button>
         </div>
       </div>
 
@@ -251,6 +261,12 @@ export default function AdminCompaniesPage() {
           </div>
         )}
       </div>
+
+      <CreateCompanyModal
+        open={showCreateModal}
+        onOpenChange={setShowCreateModal}
+        onSuccess={() => fetchCompanies()}
+      />
     </div>
   );
 }

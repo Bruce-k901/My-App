@@ -3,6 +3,123 @@
  * Types for inventory management, stock counting, and production planning
  */
 
+// @salsa - SALSA Compliance: Batch tracking types
+// ============================================================================
+// Batch Tracking Types (SALSA Phase 1)
+// ============================================================================
+
+export type BatchStatus = 'active' | 'depleted' | 'expired' | 'quarantined' | 'recalled';
+
+export type BatchMovementType =
+  | 'received'
+  | 'consumed_production'
+  | 'consumed_waste'
+  | 'adjustment'
+  | 'transfer'
+  | 'recalled';
+
+export interface StockBatch {
+  id: string;
+  company_id: string;
+  site_id: string | null;
+  stock_item_id: string;
+  delivery_line_id: string | null;
+  production_batch_id: string | null;
+  batch_code: string;
+  supplier_batch_code: string | null;
+  quantity_received: number;
+  quantity_remaining: number;
+  unit: string;
+  use_by_date: string | null; // ISO date — safety-critical, mandatory discard
+  best_before_date: string | null; // ISO date — quality, softer warning
+  temperature_on_receipt: number | null;
+  condition_notes: string | null;
+  status: BatchStatus;
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+  // Joined data (optional, from queries)
+  stock_item?: {
+    id: string;
+    name: string;
+    category_id: string | null;
+    stock_unit: string | null;
+  };
+  delivery?: {
+    id: string;
+    supplier_id: string | null;
+    delivery_date: string | null;
+    suppliers?: { name: string } | null;
+  };
+}
+
+export type StockBatchInsert = Omit<StockBatch,
+  'id' | 'created_at' | 'updated_at' | 'stock_item' | 'delivery'
+>;
+
+export type StockBatchUpdate = Partial<Pick<StockBatch,
+  'quantity_remaining' | 'status' | 'condition_notes' | 'use_by_date' | 'best_before_date'
+>>;
+
+export interface BatchMovement {
+  id: string;
+  company_id: string;
+  site_id: string | null;
+  batch_id: string;
+  movement_type: BatchMovementType;
+  quantity: number; // positive for in, negative for out
+  reference_type: string | null;
+  reference_id: string | null;
+  notes: string | null;
+  created_at: string;
+  created_by: string | null;
+  // Joined data
+  created_by_profile?: { full_name: string } | null;
+}
+
+export interface BatchWithMovements extends StockBatch {
+  movements: BatchMovement[];
+}
+
+// Condition assessment structure for delivery goods-in
+export interface ConditionAssessment {
+  packaging_ok: boolean;
+  pest_signs: boolean;
+  cleanliness_ok: boolean;
+  notes: string;
+}
+
+// Batch tracking settings (added to StocklySettings JSONB)
+export interface BatchTrackingSettings {
+  batch_code_format: string; // e.g. '{SITE}-{YYYY}-{MMDD}-{SEQ}'
+  batch_code_auto_generate: boolean;
+  require_temp_for_chilled: boolean;
+  expiry_warning_days_use_by: number; // e.g. 3
+  expiry_warning_days_best_before: number; // e.g. 7
+}
+
+// FIFO warning for display
+export interface FifoWarning {
+  older_batch_code: string;
+  older_batch_remaining: number;
+  older_batch_use_by: string | null;
+  older_batch_best_before: string | null;
+  unit: string;
+}
+
+// Expiry alert for dashboard widget
+export interface ExpiryAlert {
+  batch_id: string;
+  batch_code: string;
+  stock_item_name: string;
+  quantity_remaining: number;
+  unit: string;
+  expiry_type: 'use_by' | 'best_before';
+  expiry_date: string;
+  days_until_expiry: number;
+  severity: 'expired' | 'critical' | 'warning'; // expired = past date, critical = use_by approaching, warning = best_before approaching
+}
+
 export interface StorageArea {
   id: string;
   company_id: string;
@@ -174,5 +291,227 @@ export interface PriceChange {
     currentCost: number;
     newCost: number;
   }[];
+}
+
+// @salsa - SALSA Compliance: Phase 2 types
+// ============================================================================
+// Supplier Approval Types (SALSA Phase 2)
+// ============================================================================
+
+export type SupplierApprovalStatus = 'pending' | 'approved' | 'conditional' | 'suspended' | 'rejected';
+export type RiskRating = 'low' | 'medium' | 'high' | 'critical';
+export type SupplierDocumentType = 'certificate' | 'insurance' | 'spec_sheet' | 'audit_report' | 'contract' | 'other';
+
+export interface Supplier {
+  id: string;
+  company_id: string;
+  name: string;
+  code?: string;
+  contact_name?: string;
+  email?: string;
+  phone?: string;
+  address?: {
+    line1?: string;
+    line2?: string;
+    city?: string;
+    postcode?: string;
+  };
+  ordering_method?: 'phone' | 'email' | 'whatsapp' | 'portal' | 'rep';
+  ordering_config?: {
+    whatsapp_number?: string;
+    portal_url?: string;
+    rep_name?: string;
+  };
+  payment_terms_days?: number;
+  minimum_order_value?: number;
+  delivery_days?: string[];
+  lead_time_days?: number;
+  order_cutoff_time?: string;
+  account_number?: string;
+  is_active: boolean;
+  is_approved: boolean;
+  // @salsa Phase 2 fields
+  approval_status?: SupplierApprovalStatus;
+  risk_rating?: RiskRating;
+  next_review_date?: string | null;
+  approved_at?: string | null;
+  approved_by?: string | null;
+}
+
+export interface SupplierDocument {
+  id: string;
+  company_id: string;
+  supplier_id: string;
+  document_type: SupplierDocumentType;
+  name: string;
+  description?: string | null;
+  file_path?: string | null;
+  version: string;
+  expiry_date?: string | null;
+  is_archived: boolean;
+  uploaded_by?: string | null;
+  uploaded_at?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SupplierApprovalLog {
+  id: string;
+  company_id: string;
+  supplier_id: string;
+  action: string;
+  old_status?: string | null;
+  new_status?: string | null;
+  old_risk_rating?: string | null;
+  new_risk_rating?: string | null;
+  notes?: string | null;
+  performed_by?: string | null;
+  performed_at: string;
+  // Joined data
+  performed_by_profile?: { full_name: string } | null;
+}
+
+// ============================================================================
+// Product Specification Types (SALSA Phase 2)
+// ============================================================================
+
+export type SpecStatus = 'draft' | 'active' | 'superseded';
+export type StorageCondition = 'ambient' | 'chilled' | 'frozen' | 'dry' | 'cool_dry';
+export type ShelfLifeUnit = 'days' | 'weeks' | 'months';
+
+export interface ProductSpecification {
+  id: string;
+  company_id: string;
+  stock_item_id: string;
+  supplier_id?: string | null;
+  version_number: number;
+  allergens?: string[] | null;
+  may_contain_allergens?: string[] | null;
+  storage_temp_min?: number | null;
+  storage_temp_max?: number | null;
+  storage_conditions?: StorageCondition | null;
+  shelf_life_days?: number | null;
+  shelf_life_unit: ShelfLifeUnit;
+  handling_instructions?: string | null;
+  country_of_origin?: string | null;
+  spec_document_id?: string | null;
+  status: SpecStatus;
+  last_reviewed_at?: string | null;
+  next_review_date?: string | null;
+  reviewed_by?: string | null;
+  created_at: string;
+  updated_at: string;
+  created_by?: string | null;
+  // Joined data
+  stock_item?: { id: string; name: string } | null;
+  supplier?: { id: string; name: string } | null;
+  spec_document?: SupplierDocument | null;
+}
+
+// @salsa - SALSA Compliance: Phase 3 types
+// ============================================================================
+// Production Batch Types (SALSA Phase 3)
+// ============================================================================
+
+export type ProductionBatchStatus = 'planned' | 'in_progress' | 'completed' | 'cancelled';
+export type CCPType = 'cooking_temp' | 'cooling_temp' | 'cooling_time' | 'metal_detection' | 'ph_level' | 'other';
+
+export interface ProductionBatch {
+  id: string;
+  company_id: string;
+  site_id: string | null;
+  batch_code: string;
+  recipe_id: string | null;
+  process_template_id: string | null;
+  production_date: string;
+  status: ProductionBatchStatus;
+  planned_quantity: number | null;
+  actual_quantity: number | null;
+  unit: string | null;
+  started_at: string | null;
+  completed_at: string | null;
+  operator_id: string | null;
+  notes: string | null;
+  allergens: string[] | null;
+  may_contain_allergens: string[] | null;
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+  // Joined data
+  recipe?: { id: string; name: string; allergens?: string[] | null; may_contain_allergens?: string[] | null } | null;
+  inputs?: ProductionBatchInput[];
+  outputs?: ProductionBatchOutput[];
+  ccp_records?: ProductionCCPRecord[];
+}
+
+export interface ProductionBatchInput {
+  id: string;
+  company_id: string;
+  production_batch_id: string;
+  stock_batch_id: string;
+  stock_item_id: string;
+  planned_quantity: number | null;
+  actual_quantity: number | null;
+  unit: string | null;
+  added_at: string;
+  added_by: string | null;
+  // Joined data
+  stock_batch?: StockBatch | null;
+  stock_item?: { id: string; name: string; stock_unit?: string | null } | null;
+}
+
+export interface ProductionBatchOutput {
+  id: string;
+  company_id: string;
+  production_batch_id: string;
+  stock_item_id: string;
+  batch_code: string;
+  quantity: number | null;
+  unit: string | null;
+  use_by_date: string | null;
+  best_before_date: string | null;
+  created_at: string;
+  // Joined data
+  stock_item?: { id: string; name: string } | null;
+  stock_batch?: StockBatch | null; // The created stock_batch record
+}
+
+export interface ProductionCCPRecord {
+  id: string;
+  company_id: string;
+  production_batch_id: string;
+  ccp_type: CCPType;
+  target_value: string | null;
+  actual_value: string | null;
+  unit: string | null;
+  is_within_spec: boolean | null;
+  corrective_action: string | null;
+  recorded_at: string;
+  recorded_by: string | null;
+  // Joined data
+  recorded_by_profile?: { full_name: string } | null;
+}
+
+export interface ProductSpecificationHistory {
+  id: string;
+  spec_id: string;
+  company_id: string;
+  stock_item_id: string;
+  version_number: number;
+  allergens?: string[] | null;
+  may_contain_allergens?: string[] | null;
+  storage_temp_min?: number | null;
+  storage_temp_max?: number | null;
+  storage_conditions?: string | null;
+  shelf_life_days?: number | null;
+  shelf_life_unit?: string | null;
+  handling_instructions?: string | null;
+  country_of_origin?: string | null;
+  spec_document_id?: string | null;
+  change_notes?: string | null;
+  archived_at: string;
+  archived_by?: string | null;
+  // Joined data
+  archived_by_profile?: { full_name: string } | null;
 }
 

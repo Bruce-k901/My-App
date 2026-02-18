@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Search, Calculator } from '@/components/ui/icons';
+import { X, Plus, Trash2, Search, Calculator, ChevronDown, ChevronRight, Layers, Thermometer } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -43,6 +43,13 @@ interface DeliveryLine {
   vat_rate: number;
   vat_amount: number;
   line_total_inc_vat: number;
+  // @salsa — Batch tracking fields for goods-in
+  supplier_batch_code?: string;
+  use_by_date?: string;
+  best_before_date?: string;
+  temperature_reading?: number | null;
+  condition_notes?: string;
+  batch_expanded?: boolean; // UI-only: toggle batch fields visibility
 }
 
 interface ManualDeliveryModalProps {
@@ -173,6 +180,13 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
       vat_rate: 0,
       vat_amount: 0,
       line_total_inc_vat: 0,
+      // @salsa — Batch tracking defaults
+      supplier_batch_code: '',
+      use_by_date: '',
+      best_before_date: '',
+      temperature_reading: null,
+      condition_notes: '',
+      batch_expanded: false,
     };
     
     setFormData(prev => ({
@@ -325,14 +339,52 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
           qty_base_units: qtyBaseUnits,
           matched_status: line.product_variant_id ? 'manual_matched' : 'unmatched',
           match_confidence: line.product_variant_id ? 1.0 : null,
+          // @salsa — Batch tracking fields on delivery line
+          temperature_reading: line.temperature_reading || null,
+          supplier_batch_code: line.supplier_batch_code || null,
+          condition_assessment: line.condition_notes ? { notes: line.condition_notes } : null,
         };
       });
 
-      const { error: linesError } = await supabase
+      const { data: insertedLines, error: linesError } = await supabase
         .from('delivery_lines')
-        .insert(linesToInsert);
+        .insert(linesToInsert)
+        .select('id, stock_item_id, quantity, description');
 
       if (linesError) throw linesError;
+
+      // @salsa — Auto-create batch records when confirming (not draft)
+      if (!asDraft && insertedLines) {
+        for (let i = 0; i < insertedLines.length; i++) {
+          const dbLine = insertedLines[i];
+          const formLine = formData.lines[i];
+
+          // Only create batches for lines with a stock_item_id
+          if (!dbLine.stock_item_id) continue;
+
+          try {
+            await fetch('/api/stockly/batches', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                stock_item_id: dbLine.stock_item_id,
+                delivery_line_id: dbLine.id,
+                supplier_batch_code: formLine.supplier_batch_code || null,
+                quantity_received: dbLine.quantity,
+                unit: 'units', // Default unit — could be improved with stock_item.stock_unit
+                use_by_date: formLine.use_by_date || null,
+                best_before_date: formLine.best_before_date || null,
+                temperature_on_receipt: formLine.temperature_reading || null,
+                condition_notes: formLine.condition_notes || null,
+                auto_generate_code: true,
+              }),
+            });
+          } catch (batchErr) {
+            // Non-blocking — batch creation failure shouldn't prevent delivery save
+            console.error('Error creating batch for line:', dbLine.id, batchErr);
+          }
+        }
+      }
 
       toast.success(`Delivery ${asDraft ? 'saved as draft' : 'confirmed'} successfully`);
       onSuccess(delivery.id);
@@ -640,6 +692,74 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
                     {/* VAT Breakdown */}
                     <div className="mt-2 pt-2 border-t border-theme text-xs text-theme-tertiary">
                       Ex-VAT: {formatCurrency(line.line_total)} | VAT ({line.vat_rate}%): {formatCurrency(line.vat_amount)}
+                    </div>
+
+                    {/* @salsa — Batch tracking / Goods-In fields */}
+                    <div className="mt-2 pt-2 border-t border-theme">
+                      <button
+                        type="button"
+                        onClick={() => updateLineItem(index, 'batch_expanded', !line.batch_expanded)}
+                        className="flex items-center gap-1.5 text-xs text-stockly-dark dark:text-stockly hover:opacity-80 transition-opacity"
+                      >
+                        {line.batch_expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                        <Layers size={14} />
+                        <span>Batch &amp; Goods-In</span>
+                        {(line.supplier_batch_code || line.use_by_date || line.best_before_date || line.temperature_reading) && (
+                          <span className="ml-1 w-1.5 h-1.5 rounded-full bg-stockly-dark dark:bg-stockly" />
+                        )}
+                      </button>
+
+                      {line.batch_expanded && (
+                        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                          <div>
+                            <label className="block text-xs text-theme-tertiary mb-1">Supplier Batch Code</label>
+                            <Input
+                              value={line.supplier_batch_code || ''}
+                              onChange={(e) => updateLineItem(index, 'supplier_batch_code', e.target.value)}
+                              placeholder="Supplier's ref"
+                              disabled={saving}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-theme-tertiary mb-1">Use By Date</label>
+                            <Input
+                              type="date"
+                              value={line.use_by_date || ''}
+                              onChange={(e) => updateLineItem(index, 'use_by_date', e.target.value)}
+                              disabled={saving}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-theme-tertiary mb-1">Best Before Date</label>
+                            <Input
+                              type="date"
+                              value={line.best_before_date || ''}
+                              onChange={(e) => updateLineItem(index, 'best_before_date', e.target.value)}
+                              disabled={saving}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-theme-tertiary mb-1">Temp on Receipt (&deg;C)</label>
+                            <Input
+                              type="number"
+                              step="0.1"
+                              value={line.temperature_reading ?? ''}
+                              onChange={(e) => updateLineItem(index, 'temperature_reading', e.target.value ? parseFloat(e.target.value) : null)}
+                              placeholder="e.g. 3.5"
+                              disabled={saving}
+                            />
+                          </div>
+                          <div className="md:col-span-2 lg:col-span-4">
+                            <label className="block text-xs text-theme-tertiary mb-1">Condition Notes</label>
+                            <Input
+                              value={line.condition_notes || ''}
+                              onChange={(e) => updateLineItem(index, 'condition_notes', e.target.value)}
+                              placeholder="Packaging intact, no pest signs, clean..."
+                              disabled={saving}
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}

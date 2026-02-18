@@ -137,31 +137,31 @@ export default function CustomerLayout({
 
   if (!mounted || loading) {
     return (
-      <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center">
+      <div className="module-planly min-h-screen bg-[rgb(var(--background))] flex items-center justify-center">
         <div className="text-theme-tertiary">Loading...</div>
       </div>
     );
   }
 
   if (isLoginPage) {
-    return <>{children}</>;
+    return <div className="module-planly">{children}</div>;
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] flex flex-col">
+    <div className="module-planly min-h-screen bg-[rgb(var(--background))] flex flex-col">
       {/* Admin Preview Bar */}
       {isAdminPreview && (
-        <div className="bg-orange-500/10 border-b border-orange-500/20 px-4 py-2">
+        <div className="bg-orange-50 dark:bg-orange-500/10 border-b border-orange-200 dark:border-orange-500/20 px-4 py-2">
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
-              <span className="text-orange-400 text-xs font-medium shrink-0">PREVIEW MODE</span>
+              <span className="text-orange-600 dark:text-orange-400 text-xs font-medium shrink-0">PREVIEW MODE</span>
               <select
                 value={selectedCustomerId}
                 onChange={(e) => handleCustomerChange(e.target.value)}
-                className="bg-white/[0.05] border border-orange-500/30 rounded-lg px-3 py-1.5 text-sm text-theme-primary min-w-0 max-w-[280px] focus:outline-none focus:border-orange-500/60"
+                className="bg-theme-button border border-orange-200 dark:border-orange-500/30 rounded-lg px-3 py-1.5 text-sm text-theme-primary min-w-0 max-w-[280px] focus:outline-none focus:border-orange-400 dark:focus:border-orange-500/60"
               >
                 {customers.map((c) => (
-                  <option key={c.id} value={c.id} className="bg-[#1a1a2e] text-white">
+                  <option key={c.id} value={c.id} className="bg-[rgb(var(--surface))] text-theme-primary">
                     {c.business_name}
                   </option>
                 ))}
@@ -169,7 +169,7 @@ export default function CustomerLayout({
             </div>
             <button
               onClick={handleBackToApp}
-              className="flex items-center gap-1.5 text-orange-400 hover:text-orange-300 text-xs font-medium shrink-0 transition-colors"
+              className="flex items-center gap-1.5 text-orange-600 dark:text-orange-400 hover:text-orange-500 dark:hover:text-orange-300 text-xs font-medium shrink-0 transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Back to Planly
@@ -179,7 +179,7 @@ export default function CustomerLayout({
       )}
 
       {/* Header */}
-      <header className="bg-white/[0.03] border-b border-white/[0.06] sticky top-0 z-50">
+      <header className="bg-theme-button border-b border-theme sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo/Brand */}
@@ -193,8 +193,8 @@ export default function CustomerLayout({
                 href="/customer/dashboard"
                 className={`text-sm transition-colors ${
                   pathname === '/customer/dashboard'
-                    ? 'text-[#D37E91]'
-                    : 'text-theme-tertiary hover:text-white'
+                    ? 'text-module-fg'
+                    : 'text-theme-tertiary hover:text-theme-primary'
                 }`}
               >
                 Dashboard
@@ -203,8 +203,8 @@ export default function CustomerLayout({
                 href="/customer/orders"
                 className={`text-sm transition-colors ${
                   pathname?.startsWith('/customer/orders')
-                    ? 'text-[#D37E91]'
-                    : 'text-theme-tertiary hover:text-white'
+                    ? 'text-module-fg'
+                    : 'text-theme-tertiary hover:text-theme-primary'
                 }`}
               >
                 Orders
@@ -213,8 +213,8 @@ export default function CustomerLayout({
                 href="/customer/waste"
                 className={`text-sm transition-colors ${
                   pathname?.startsWith('/customer/waste')
-                    ? 'text-[#D37E91]'
-                    : 'text-theme-tertiary hover:text-white'
+                    ? 'text-module-fg'
+                    : 'text-theme-tertiary hover:text-theme-primary'
                 }`}
               >
                 Waste Tracking
@@ -223,8 +223,8 @@ export default function CustomerLayout({
                 href="/customer/messages"
                 className={`text-sm transition-colors ${
                   pathname?.startsWith('/customer/messages')
-                    ? 'text-[#D37E91]'
-                    : 'text-theme-tertiary hover:text-white'
+                    ? 'text-module-fg'
+                    : 'text-theme-tertiary hover:text-theme-primary'
                 }`}
               >
                 Messages
@@ -233,8 +233,8 @@ export default function CustomerLayout({
                 href="/customer/feedback"
                 className={`text-sm transition-colors ${
                   pathname?.startsWith('/customer/feedback')
-                    ? 'text-[#D37E91]'
-                    : 'text-theme-tertiary hover:text-white'
+                    ? 'text-module-fg'
+                    : 'text-theme-tertiary hover:text-theme-primary'
                 }`}
               >
                 Feedback
@@ -242,7 +242,7 @@ export default function CustomerLayout({
               {!isAdminPreview && (
                 <button
                   onClick={handleSignOut}
-                  className="flex items-center gap-2 text-sm text-theme-tertiary hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-sm text-theme-tertiary hover:text-theme-primary transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   Sign Out
@@ -253,7 +253,7 @@ export default function CustomerLayout({
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-theme-tertiary hover:text-white"
+              className="md:hidden p-2 text-theme-tertiary hover:text-theme-primary"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -263,15 +263,15 @@ export default function CustomerLayout({
 
             {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-white/[0.06] bg-white/[0.03]">
+          <div className="md:hidden border-t border-theme bg-theme-button">
             <nav className="px-4 py-4 space-y-3">
               <Link
                 href="/customer/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
                 className={`block py-2 text-sm transition-colors ${
                   pathname === '/customer/dashboard'
-                    ? 'text-[#D37E91]'
-                    : 'text-theme-tertiary hover:text-white'
+                    ? 'text-module-fg'
+                    : 'text-theme-tertiary hover:text-theme-primary'
                 }`}
               >
                 Dashboard
@@ -281,8 +281,8 @@ export default function CustomerLayout({
                 onClick={() => setMobileMenuOpen(false)}
                 className={`block py-2 text-sm transition-colors ${
                   pathname?.startsWith('/customer/orders')
-                    ? 'text-[#D37E91]'
-                    : 'text-theme-tertiary hover:text-white'
+                    ? 'text-module-fg'
+                    : 'text-theme-tertiary hover:text-theme-primary'
                 }`}
               >
                 Orders
@@ -292,8 +292,8 @@ export default function CustomerLayout({
                 onClick={() => setMobileMenuOpen(false)}
                 className={`block py-2 text-sm transition-colors ${
                   pathname?.startsWith('/customer/waste')
-                    ? 'text-[#D37E91]'
-                    : 'text-theme-tertiary hover:text-white'
+                    ? 'text-module-fg'
+                    : 'text-theme-tertiary hover:text-theme-primary'
                 }`}
               >
                 Waste Tracking
@@ -303,8 +303,8 @@ export default function CustomerLayout({
                 onClick={() => setMobileMenuOpen(false)}
                 className={`block py-2 text-sm transition-colors ${
                   pathname?.startsWith('/customer/messages')
-                    ? 'text-[#D37E91]'
-                    : 'text-theme-tertiary hover:text-white'
+                    ? 'text-module-fg'
+                    : 'text-theme-tertiary hover:text-theme-primary'
                 }`}
               >
                 Messages
@@ -314,8 +314,8 @@ export default function CustomerLayout({
                 onClick={() => setMobileMenuOpen(false)}
                 className={`block py-2 text-sm transition-colors ${
                   pathname?.startsWith('/customer/feedback')
-                    ? 'text-[#D37E91]'
-                    : 'text-theme-tertiary hover:text-white'
+                    ? 'text-module-fg'
+                    : 'text-theme-tertiary hover:text-theme-primary'
                 }`}
               >
                 Feedback
@@ -326,7 +326,7 @@ export default function CustomerLayout({
                     handleSignOut();
                     setMobileMenuOpen(false);
                   }}
-                  className="flex items-center gap-2 w-full py-2 text-sm text-theme-tertiary hover:text-white transition-colors"
+                  className="flex items-center gap-2 w-full py-2 text-sm text-theme-tertiary hover:text-theme-primary transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   Sign Out
@@ -337,7 +337,7 @@ export default function CustomerLayout({
                     handleBackToApp();
                     setMobileMenuOpen(false);
                   }}
-                  className="flex items-center gap-2 w-full py-2 text-sm text-orange-400 hover:text-orange-300 transition-colors"
+                  className="flex items-center gap-2 w-full py-2 text-sm text-orange-600 dark:text-orange-400 hover:text-orange-500 dark:hover:text-orange-300 transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Back to Planly

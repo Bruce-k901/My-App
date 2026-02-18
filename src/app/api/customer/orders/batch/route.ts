@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * POST /api/customer/orders/batch
@@ -15,6 +16,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const admin = getCustomerAdmin();
     const body = await request.json();
     const { customer_id, site_id, orders } = body;
 
@@ -26,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get customer default ship state
-    const { data: customer } = await supabase
+    const { data: customer } = await admin
       .from('planly_customers')
       .select('default_ship_state')
       .eq('id', customer_id)
@@ -46,14 +48,14 @@ export async function POST(request: NextRequest) {
     // Batch fetch pricing
     const today = new Date().toISOString().split('T')[0];
     const [{ data: customerPrices }, { data: listPrices }] = await Promise.all([
-      supabase
+      admin
         .from('planly_customer_product_prices')
         .select('product_id, unit_price, effective_from, effective_to')
         .eq('customer_id', customer_id)
         .in('product_id', productIds)
         .lte('effective_from', today)
         .order('effective_from', { ascending: false }),
-      supabase
+      admin
         .from('planly_product_list_prices')
         .select('product_id, list_price, effective_from, effective_to')
         .in('product_id', productIds)
@@ -77,7 +79,7 @@ export async function POST(request: NextRequest) {
 
     // Check for existing orders on these dates
     const deliveryDates = orders.map((o: any) => o.delivery_date);
-    const { data: existingOrders } = await supabase
+    const { data: existingOrders } = await admin
       .from('planly_orders')
       .select('id, delivery_date, status')
       .eq('customer_id', customer_id)
@@ -100,7 +102,7 @@ export async function POST(request: NextRequest) {
         // Delete existing order if no items
         const existing = existingOrderMap.get(delivery_date);
         if (existing) {
-          await supabase.from('planly_orders').delete().eq('id', existing.id);
+          await admin.from('planly_orders').delete().eq('id', existing.id);
         }
         continue;
       }
@@ -126,23 +128,23 @@ export async function POST(request: NextRequest) {
       const existing = existingOrderMap.get(delivery_date);
 
       if (existing) {
-        await supabase
+        await admin
           .from('planly_orders')
           .update({ total_value: totalValue, updated_at: new Date().toISOString() })
           .eq('id', existing.id);
 
-        await supabase
+        await admin
           .from('planly_order_lines')
           .delete()
           .eq('order_id', existing.id);
 
-        await supabase
+        await admin
           .from('planly_order_lines')
           .insert(orderLines.map((l: any) => ({ ...l, order_id: existing.id })));
 
         updated++;
       } else {
-        const { data: newOrder, error: orderError } = await supabase
+        const { data: newOrder, error: orderError } = await admin
           .from('planly_orders')
           .insert({
             customer_id,
@@ -159,13 +161,13 @@ export async function POST(request: NextRequest) {
           continue;
         }
 
-        const { error: linesError } = await supabase
+        const { error: linesError } = await admin
           .from('planly_order_lines')
           .insert(orderLines.map((l: any) => ({ ...l, order_id: newOrder.id })));
 
         if (linesError) {
           console.error('Error inserting lines:', linesError);
-          await supabase.from('planly_orders').delete().eq('id', newOrder.id);
+          await admin.from('planly_orders').delete().eq('id', newOrder.id);
           continue;
         }
 

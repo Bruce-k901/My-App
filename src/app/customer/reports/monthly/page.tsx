@@ -65,7 +65,11 @@ export default function MonthlyReportPage() {
       setLoading(true);
       setError(null);
       const monthStr = format(selectedMonth, 'yyyy-MM');
-      const response = await fetch(`/api/customer/reports/monthly?month=${monthStr}`);
+      const params = new URLSearchParams({ month: monthStr });
+      // Support admin preview mode
+      const previewId = typeof window !== 'undefined' ? sessionStorage.getItem('admin_preview_customer_id') : null;
+      if (previewId) params.set('customer_id', previewId);
+      const response = await fetch(`/api/customer/reports/monthly?${params}`);
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -94,7 +98,7 @@ export default function MonthlyReportPage() {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+          <Loader2 className="w-8 h-8 text-module-fg animate-spin" />
         </div>
       </div>
     );
@@ -103,8 +107,8 @@ export default function MonthlyReportPage() {
   if (error) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6 text-center">
-          <p className="text-red-400 mb-4">{error}</p>
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl p-6 text-center">
+          <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
           <Button variant="secondary" onClick={loadMonthlyData}>
             Try Again
           </Button>
@@ -116,7 +120,7 @@ export default function MonthlyReportPage() {
   if (!data || !data.current_month) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
+        <div className="bg-theme-button border border-theme rounded-xl p-8 text-center">
           <p className="text-theme-tertiary mb-4">No data available for this month</p>
           <Link href="/customer/dashboard">
             <Button variant="secondary">Back to Dashboard</Button>
@@ -141,7 +145,7 @@ export default function MonthlyReportPage() {
           </Link>
           <button
             onClick={() => setSelectedMonth(subMonths(selectedMonth, 1))}
-            className="p-1 hover:bg-white/10 rounded transition-colors"
+            className="p-1 hover:bg-theme-muted rounded transition-colors"
           >
             <ChevronLeft className="w-5 h-5 text-theme-tertiary" />
           </button>
@@ -151,7 +155,7 @@ export default function MonthlyReportPage() {
           <button
             onClick={() => setSelectedMonth(addMonths(selectedMonth, 1))}
             disabled={format(selectedMonth, 'yyyy-MM') >= format(new Date(), 'yyyy-MM')}
-            className="p-1 hover:bg-white/10 rounded transition-colors disabled:opacity-40"
+            className="p-1 hover:bg-theme-muted rounded transition-colors disabled:opacity-40"
           >
             <ChevronRight className="w-5 h-5 text-theme-tertiary" />
           </button>
@@ -166,7 +170,7 @@ export default function MonthlyReportPage() {
 
       {/* Summary Metrics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
+        <div className="bg-theme-button border border-theme rounded-lg p-4">
           <div className="text-xs text-theme-tertiary mb-1">Total Spend</div>
           <div className="text-2xl font-bold text-theme-primary">{formatCurrency(current.total_spend)}</div>
           {previous && (
@@ -175,7 +179,7 @@ export default function MonthlyReportPage() {
             </div>
           )}
         </div>
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
+        <div className="bg-theme-button border border-theme rounded-lg p-4">
           <div className="text-xs text-theme-tertiary mb-1">Orders Placed</div>
           <div className="text-2xl font-bold text-theme-primary">{current.order_count}</div>
           {previous && (
@@ -184,7 +188,7 @@ export default function MonthlyReportPage() {
             </div>
           )}
         </div>
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
+        <div className="bg-theme-button border border-theme rounded-lg p-4">
           <div className="text-xs text-theme-tertiary mb-1">Average Order</div>
           <div className="text-2xl font-bold text-theme-primary">{formatCurrency(current.avg_order_value)}</div>
           {previous && (
@@ -193,7 +197,7 @@ export default function MonthlyReportPage() {
             </div>
           )}
         </div>
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">
+        <div className="bg-theme-button border border-theme rounded-lg p-4">
           <div className="text-xs text-theme-tertiary mb-1">Products Ordered</div>
           <div className="text-2xl font-bold text-theme-primary">{current.total_units_ordered}</div>
           <div className="text-xs text-theme-tertiary mt-1">{current.unique_products} unique products</div>
@@ -202,12 +206,12 @@ export default function MonthlyReportPage() {
 
       {/* Top Products Table */}
       {data.top_products && data.top_products.length > 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 mb-8">
+        <div className="bg-theme-button border border-theme rounded-xl p-6 mb-8">
           <h2 className="text-lg font-semibold text-theme-primary mb-4">Product Breakdown</h2>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/[0.06]">
+                <tr className="border-b border-theme">
                   <th className="text-left py-2 px-4 text-sm font-medium text-theme-tertiary">Product</th>
                   <th className="text-right py-2 px-4 text-sm font-medium text-theme-tertiary">Quantity</th>
                   <th className="text-right py-2 px-4 text-sm font-medium text-theme-tertiary">Unit Price</th>
@@ -222,7 +226,7 @@ export default function MonthlyReportPage() {
                     : '0';
                   
                   return (
-                    <tr key={product.product_id} className="border-b border-white/[0.06]">
+                    <tr key={product.product_id} className="border-b border-theme">
                       <td className="py-3 px-4 text-theme-primary">{product.product_name}</td>
                       <td className="py-3 px-4 text-right text-theme-secondary">{product.total_quantity}</td>
                       <td className="py-3 px-4 text-right text-theme-secondary">{formatCurrency(product.avg_unit_price)}</td>
@@ -233,7 +237,7 @@ export default function MonthlyReportPage() {
                 })}
               </tbody>
               <tfoot>
-                <tr className="border-t border-white/[0.06] font-semibold">
+                <tr className="border-t border-theme font-semibold">
                   <td className="py-3 px-4 text-theme-primary">Total</td>
                   <td className="py-3 px-4 text-right text-theme-primary">{current.total_units_ordered}</td>
                   <td className="py-3 px-4 text-right text-theme-tertiary">-</td>
@@ -248,11 +252,11 @@ export default function MonthlyReportPage() {
 
       {/* Weekly Breakdown */}
       {data.weekly_breakdown && data.weekly_breakdown.length > 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 mb-8">
+        <div className="bg-theme-button border border-theme rounded-xl p-6 mb-8">
           <h2 className="text-lg font-semibold text-theme-primary mb-4">Weekly Breakdown</h2>
           <div className="space-y-2">
             {data.weekly_breakdown.map((week) => (
-              <div key={week.week} className="flex items-center justify-between p-3 bg-white/[0.02] rounded-lg">
+              <div key={week.week} className="flex items-center justify-between p-3 bg-theme-button rounded-lg">
                 <div>
                   <div className="text-sm font-medium text-theme-primary">Week {week.week}</div>
                   <div className="text-xs text-theme-tertiary">

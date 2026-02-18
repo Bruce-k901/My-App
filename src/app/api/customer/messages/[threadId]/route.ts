@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { resolveCustomer, getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * GET /api/customer/messages/[threadId]
@@ -11,28 +12,23 @@ export async function GET(
 ) {
   try {
     const supabase = await createServerSupabaseClient();
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get customer record from planly
-    const { data: customer } = await supabase
-      .from('planly_customers')
-      .select('id')
-      .eq('email', user.email?.toLowerCase() || '')
-      .eq('is_active', true)
-      .maybeSingle();
-
+    const customer = await resolveCustomer(request, supabase, user);
     if (!customer) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
 
+    const admin = getCustomerAdmin();
+
     const { threadId } = params;
 
     // Verify thread belongs to customer
-    const { data: thread, error: threadError } = await supabase
+    const { data: thread, error: threadError } = await admin
       .from('order_book_message_threads')
       .select('*')
       .eq('id', threadId)
@@ -44,7 +40,7 @@ export async function GET(
     }
 
     // Get messages
-    const { data: messages, error: messagesError } = await supabase
+    const { data: messages, error: messagesError } = await admin
       .from('order_book_messages')
       .select('*')
       .eq('thread_id', threadId)
@@ -55,7 +51,7 @@ export async function GET(
     }
 
     // Mark messages as read
-    await supabase
+    await admin
       .from('order_book_messages')
       .update({ is_read: true, read_at: new Date().toISOString() })
       .eq('thread_id', threadId)
@@ -85,23 +81,18 @@ export async function POST(
 ) {
   try {
     const supabase = await createServerSupabaseClient();
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get customer record from planly
-    const { data: customer } = await supabase
-      .from('planly_customers')
-      .select('id')
-      .eq('email', user.email?.toLowerCase() || '')
-      .eq('is_active', true)
-      .maybeSingle();
-
+    const customer = await resolveCustomer(request, supabase, user);
     if (!customer) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
+
+    const admin = getCustomerAdmin();
 
     const { threadId } = params;
     const body = await request.json();
@@ -112,7 +103,7 @@ export async function POST(
     }
 
     // Verify thread belongs to customer
-    const { data: thread, error: threadError } = await supabase
+    const { data: thread, error: threadError } = await admin
       .from('order_book_message_threads')
       .select('id')
       .eq('id', threadId)
@@ -124,7 +115,7 @@ export async function POST(
     }
 
     // Create message
-    const { data: message, error: messageError } = await supabase
+    const { data: message, error: messageError } = await admin
       .from('order_book_messages')
       .insert({
         thread_id: threadId,

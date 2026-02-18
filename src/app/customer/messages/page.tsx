@@ -24,7 +24,10 @@ export default function MessagesPage() {
   async function loadMessages() {
     try {
       setLoading(true);
-      const response = await fetch('/api/customer/messages');
+      // Support admin preview mode
+      const previewId = typeof window !== 'undefined' ? sessionStorage.getItem('admin_preview_customer_id') : null;
+      const url = previewId ? `/api/customer/messages?customer_id=${previewId}` : '/api/customer/messages';
+      const response = await fetch(url);
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || 'Failed to load messages');
@@ -45,7 +48,7 @@ export default function MessagesPage() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+          <Loader2 className="w-8 h-8 text-module-fg animate-spin" />
         </div>
       </div>
     );
@@ -61,7 +64,7 @@ export default function MessagesPage() {
       </div>
 
       {threads.length === 0 ? (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-12 text-center">
+        <div className="bg-theme-button border border-theme rounded-xl p-12 text-center">
           <MessageSquare className="w-16 h-16 mx-auto mb-4 text-theme-tertiary" />
           <p className="text-theme-tertiary mb-4">No messages yet</p>
           <p className="text-sm text-theme-tertiary">Start a conversation with your supplier</p>
@@ -72,14 +75,14 @@ export default function MessagesPage() {
             <Link
               key={thread.id}
               href={`/customer/messages/${thread.id}`}
-              className="block p-4 bg-white/[0.03] border border-white/[0.06] rounded-lg hover:bg-white/[0.05] hover:border-white/20 transition-all"
+              className="block p-4 bg-theme-button border border-theme rounded-lg hover:bg-theme-hover hover:border-theme-hover transition-all"
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-medium text-theme-primary">{thread.subject || 'No subject'}</span>
                     {thread.unread_count > 0 && (
-                      <span className="px-2 py-0.5 bg-[#D37E91] text-white text-xs rounded-full">
+                      <span className="px-2 py-0.5 bg-module-fg text-white text-xs rounded-full">
                         {thread.unread_count}
                       </span>
                     )}

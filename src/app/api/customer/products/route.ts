@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * GET /api/customer/products?site_id=X
@@ -15,13 +16,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const admin = getCustomerAdmin();
     const siteId = request.nextUrl.searchParams.get('site_id');
     if (!siteId) {
       return NextResponse.json({ error: 'site_id is required' }, { status: 400 });
     }
 
     // Fetch active, non-archived planly products with category and bake group
-    const { data: products, error: productsError } = await supabase
+    const { data: products, error: productsError } = await admin
       .from('planly_products')
       .select(`
         id,
@@ -50,7 +52,7 @@ export async function GET(request: NextRequest) {
 
     // Manual join: get product names and units from ingredients_library
     const stocklyIds = products.map(p => p.stockly_product_id).filter(Boolean);
-    const { data: ingredients } = await supabase
+    const { data: ingredients } = await admin
       .from('ingredients_library')
       .select('id, ingredient_name, unit')
       .in('id', stocklyIds);
@@ -62,7 +64,7 @@ export async function GET(request: NextRequest) {
     // Get current list prices for all products
     const today = new Date().toISOString().split('T')[0];
     const productIds = products.map(p => p.id);
-    const { data: listPrices } = await supabase
+    const { data: listPrices } = await admin
       .from('planly_product_list_prices')
       .select('product_id, list_price, effective_from, effective_to')
       .in('product_id', productIds)

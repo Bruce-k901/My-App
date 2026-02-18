@@ -141,7 +141,7 @@ export default function CustomerDashboardPage() {
   if (!mounted) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-module-fg animate-spin" />
       </div>
     );
   }
@@ -149,7 +149,7 @@ export default function CustomerDashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+        <Loader2 className="w-8 h-8 text-module-fg animate-spin" />
       </div>
     );
   }
@@ -157,8 +157,8 @@ export default function CustomerDashboardPage() {
   if (error) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6">
-          <h2 className="text-xl font-semibold text-red-400 mb-2">Error Loading Dashboard</h2>
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl p-6">
+          <h2 className="text-xl font-semibold text-red-600 dark:text-red-400 mb-2">Error Loading Dashboard</h2>
           <p className="text-theme-tertiary mb-4">{error}</p>
           <Button
             onClick={() => {
@@ -166,7 +166,7 @@ export default function CustomerDashboardPage() {
               loadDashboardData();
             }}
             variant="primary"
-            className="bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
+            className="bg-transparent text-module-fg border border-module-fg hover:shadow-module-glow"
           >
             Try Again
           </Button>
@@ -200,7 +200,7 @@ export default function CustomerDashboardPage() {
       )}
 
       {/* Place Order */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6 mb-6">
+      <div className="bg-theme-button border border-theme rounded-xl p-4 sm:p-6 mb-6">
         <h2 className="text-lg sm:text-xl font-semibold text-theme-primary mb-4">Place Order</h2>
         <p className="text-theme-tertiary text-sm mb-4">
           {orderDays.length > 0
@@ -216,7 +216,7 @@ export default function CustomerDashboardPage() {
         <Link href="/customer/order/new">
           <Button
             variant="primary"
-            className="w-full min-h-[44px] bg-transparent text-[#D37E91] border border-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)]"
+            className="w-full min-h-[44px] bg-transparent text-module-fg border border-module-fg hover:shadow-module-glow"
           >
             <Plus className="w-5 h-5 mr-2" />
             Place Order
@@ -225,7 +225,7 @@ export default function CustomerDashboardPage() {
       </div>
 
       {/* Upcoming Deliveries */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 sm:p-6">
+      <div className="bg-theme-button border border-theme rounded-xl p-4 sm:p-6">
         <h2 className="text-lg sm:text-xl font-semibold text-theme-primary mb-4">Upcoming Deliveries</h2>
 
         {upcomingOrders.length === 0 ? (
@@ -239,20 +239,20 @@ export default function CustomerDashboardPage() {
               <Link
                 key={order.id}
                 href={`/customer/orders/${order.id}`}
-                className="block p-4 bg-white/[0.02] border border-white/[0.06] rounded-lg hover:bg-white/[0.05] hover:border-white/20 transition-all"
+                className="block p-4 bg-theme-button border border-theme rounded-lg hover:bg-theme-hover hover:border-theme-hover transition-all"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <Calendar className="w-4 h-4 text-[#D37E91]" />
+                      <Calendar className="w-4 h-4 text-module-fg" />
                       <span className="font-medium text-theme-primary">{formatDate(order.delivery_date)}</span>
                       <span
                         className={`text-xs px-2 py-0.5 rounded ${
                           order.status === 'confirmed'
-                            ? 'bg-green-500/20 text-green-300'
+                            ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300'
                             : order.status === 'locked'
-                            ? 'bg-blue-500/20 text-blue-300'
-                            : 'bg-yellow-500/20 text-yellow-300'
+                            ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300'
+                            : 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-300'
                         }`}
                       >
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
@@ -269,10 +269,10 @@ export default function CustomerDashboardPage() {
         )}
 
         {upcomingOrders.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-white/[0.06]">
+          <div className="mt-4 pt-4 border-t border-theme">
             <Link
               href="/customer/orders"
-              className="text-[#D37E91] hover:text-[#D37E91]/80 text-sm font-medium transition-colors"
+              className="text-module-fg hover:text-module-fg/80 text-sm font-medium transition-colors"
             >
               View all orders →
             </Link>

@@ -3,6 +3,29 @@
  * Client-side functions for the customer portal, backed by planly tables.
  */
 
+/**
+ * Build a customer API URL, auto-appending customer_id for admin preview mode.
+ */
+export function customerApiUrl(path: string, params?: Record<string, string>): string {
+  const url = new URL(path, window.location.origin);
+
+  // Auto-append admin preview customer_id if set
+  if (typeof window !== 'undefined') {
+    const previewId = sessionStorage.getItem('admin_preview_customer_id');
+    if (previewId) {
+      url.searchParams.set('customer_id', previewId);
+    }
+  }
+
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      url.searchParams.set(key, value);
+    });
+  }
+
+  return url.toString();
+}
+
 export interface Product {
   id: string;
   name: string;

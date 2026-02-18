@@ -24,6 +24,8 @@ import {
 } from '@/components/ui/icons';
 import { RecipeIngredientsTable } from './RecipeIngredientsTable';
 import { supabase } from '@/lib/supabase';
+// @salsa — Shared allergen utility for label display
+import { allergenKeyToLabel } from '@/lib/stockly/allergens';
 import { createFoodSOPFromRecipe } from '@/lib/utils/sopCreator';
 import { updateFoodSOPFromRecipe } from '@/lib/utils/sopUpdater';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
@@ -678,17 +680,37 @@ export function ExpandableRecipeCard({
               </div>
               {recipe.allergens && recipe.allergens.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
+                  {/* @salsa — Display allergen labels from short keys */}
                   {recipe.allergens.map((allergen) => (
-                    <span 
-                      key={allergen} 
+                    <span
+                      key={allergen}
                       className="px-2 py-1 rounded-full text-xs bg-red-500/20 text-red-300 border border-red-500/30"
                     >
-                      {allergen}
+                      {allergenKeyToLabel(allergen)}
                     </span>
                   ))}
                 </div>
               ) : (
  <p className="text-sm text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">No allergens detected</p>
+              )}
+              {/* @salsa — May Contain (cross-contamination) section */}
+              {(recipe as any).may_contain_allergens && (recipe as any).may_contain_allergens.length > 0 && (
+                <div className="mt-3 pt-3 border-t border-red-500/20">
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />
+                    <span className="text-xs font-medium text-amber-400">May Contain</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(recipe as any).may_contain_allergens.map((allergen: string) => (
+                      <span
+                        key={allergen}
+                        className="px-2 py-1 rounded-full text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                      >
+                        {allergenKeyToLabel(allergen)}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
 

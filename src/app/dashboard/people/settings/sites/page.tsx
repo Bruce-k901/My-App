@@ -46,7 +46,7 @@ interface Site {
 }
 
 export default function SettingsSitesPage() {
-  const { loading: ctxLoading, profile } = useAppContext();
+  const { loading: ctxLoading, profile, companyId } = useAppContext();
   
   // State hooks
   const [sites, setSites] = useState<Site[]>([]);
@@ -60,14 +60,14 @@ export default function SettingsSitesPage() {
   const [loadingImport, setLoadingImport] = useState(false);
 
   const fetchGMList = useCallback(async () => {
-    if (!profile?.company_id) return;
+    if (!companyId) return;
 
     try {
       // Fetch all GMs for the company from profiles table
       const { data: gmsData, error: gmsError } = await supabase
         .from('profiles')
         .select('id, full_name, email, phone_number')
-        .eq('company_id', profile.company_id)
+        .eq('company_id', companyId)
         .eq('app_role', 'Manager')
         .order('full_name');
 
@@ -88,20 +88,20 @@ export default function SettingsSitesPage() {
     } catch (err: any) {
       console.error('Error in fetchGMList:', err);
     }
-  }, [profile?.company_id]);
+  }, [companyId]);
 
   const fetchSites = useCallback(async () => {
-    if (!profile?.company_id) {
-      console.warn('⚠️ Cannot fetch sites: no company_id in profile');
+    if (!companyId) {
+      console.warn('⚠️ Cannot fetch sites: no companyId in context');
       setLoading(false);
       return;
     }
-    
+
     setLoading(true);
     setError(null);
 
     try {
-      console.log('📡 Fetching sites for company:', profile.company_id);
+      console.log('📡 Fetching sites for company:', companyId);
       
       // First, fetch sites with planned closures (no GM profile join)
       const { data: sitesData, error: sitesError } = await supabase
@@ -128,7 +128,7 @@ export default function SettingsSitesPage() {
             notes
           )
         `)
-        .eq('company_id', profile.company_id)
+        .eq('company_id', companyId)
         .order('created_at', { ascending: false });
 
       if (sitesError) {
@@ -180,22 +180,22 @@ export default function SettingsSitesPage() {
     } finally {
       setLoading(false);
     }
-  }, [profile?.company_id]);
+  }, [companyId]);
 
   // Load data on mount
   useEffect(() => {
     if (ctxLoading) return;
-    
-    if (profile?.company_id) {
+
+    if (companyId) {
       fetchSites();
       fetchGMList();
     } else {
       setError('No company context detected. Please sign in or complete setup.');
     }
-  }, [ctxLoading, profile?.company_id, fetchSites, fetchGMList]);
+  }, [ctxLoading, companyId, fetchSites, fetchGMList]);
 
   const handleImportFromSites = async () => {
-    if (!profile?.company_id) {
+    if (!companyId) {
       toast.error('No company ID found');
       return;
     }
@@ -206,7 +206,7 @@ export default function SettingsSitesPage() {
       const { data: sitesData, error: sitesError } = await supabase
         .from('sites')
         .select('*')
-        .eq('company_id', profile.company_id);
+        .eq('company_id', companyId);
 
       if (sitesError) {
         throw sitesError;
@@ -349,7 +349,7 @@ export default function SettingsSitesPage() {
                     skipEmptyLines: true,
                     complete: async ({ data }: any) => {
                       try {
-                        if (!profile?.company_id) {
+                        if (!companyId) {
                           toast.error('No company ID found');
                           return;
                         }
@@ -378,7 +378,7 @@ export default function SettingsSitesPage() {
                           opening_time_from: r.opening_time_from || null,
                           opening_time_to: r.opening_time_to || null,
                           yearly_closures: r.yearly_closures || null,
-                          company_id: profile.company_id,
+                          company_id: companyId,
                         }));
 
                         const { error } = await supabase.from("sites").insert(payload);
@@ -471,7 +471,7 @@ export default function SettingsSitesPage() {
           onClose={() => setFormOpen(false)}
           onSaved={handleSaved}
           initial={editing || null}
-          companyId={profile?.company_id || ''}
+          companyId={companyId || ''}
           gmList={gmList}
         />
       )}
@@ -487,7 +487,7 @@ export default function SettingsSitesPage() {
             fetchSites();
             fetchGMList();
           }}
-          companyId={profile?.company_id || ''}
+          companyId={companyId || ''}
           gmList={gmList}
         />
       )}

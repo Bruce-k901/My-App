@@ -33,6 +33,7 @@ import {
   Users,
   Store,
   Link as LinkIcon,
+  Layers, // @salsa — batch tracking nav icon
 } from '@/components/ui/icons';
 import { useState, useEffect } from 'react';
 import { useSidebarMode } from '@/hooks/useSidebarMode';
@@ -87,16 +88,27 @@ const navItems: NavItem[] = [
     href: '/dashboard/stockly/stock-counts',
     icon: ClipboardList,
   },
+  // @salsa — Batch tracking navigation
+  {
+    type: 'link',
+    label: 'Batches',
+    href: '/dashboard/stockly/batches',
+    icon: Layers,
+  },
   {
     type: 'section',
     label: 'PURCHASING',
     icon: ShoppingCart,
   },
+  // @salsa — Supplier nav with Approved List sub-link
   {
-    type: 'link',
+    type: 'parent',
     label: 'Suppliers',
     href: '/dashboard/stockly/suppliers',
     icon: Building2,
+    children: [
+      { label: 'Approved List', href: '/dashboard/stockly/suppliers/approved-list', icon: FileText },
+    ],
   },
   {
     type: 'link',

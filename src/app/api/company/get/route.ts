@@ -66,7 +66,7 @@ export async function GET(request: Request) {
     // This prevents users from accessing other companies' data
     const { data: userProfile } = await supabaseAdmin
       .from("profiles")
-      .select("company_id, app_role")
+      .select("company_id, app_role, is_platform_admin")
       .eq("id", user.id)
       .maybeSingle();
 
@@ -75,20 +75,19 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "User profile not found" }, { status: 404 });
     }
 
+    // Platform admins can access any company (needed for "View As" feature)
+    const isPlatformAdmin = userProfile.is_platform_admin === true;
+
     // Check if user belongs to the company they're requesting
-    // Convert both to strings for comparison (UUIDs might be stored differently)
     const userCompanyIdStr = userProfile.company_id ? String(userProfile.company_id) : null;
     const requestedCompanyIdStr = companyId ? String(companyId) : null;
-    
-    if (companyId && userCompanyIdStr !== requestedCompanyIdStr) {
+
+    if (companyId && !isPlatformAdmin && userCompanyIdStr !== requestedCompanyIdStr) {
       console.error("❌ Access denied: User does not belong to requested company", {
         userId: user.id,
         userCompanyId: userProfile.company_id,
-        userCompanyIdStr,
         requestedCompanyId: companyId,
-        requestedCompanyIdStr,
         userRole: userProfile.app_role,
-        match: userCompanyIdStr === requestedCompanyIdStr,
       });
       return NextResponse.json(
         { error: "Access denied: You do not have permission to access this company" },
@@ -97,19 +96,14 @@ export async function GET(request: Request) {
     }
 
     // If fetching by userId, verify the company matches user's company_id
-    // Convert both to strings for comparison
-    const userCompanyIdStrForUserId = userProfile.company_id ? String(userProfile.company_id) : null;
     const fetchedCompanyIdStr = company.id ? String(company.id) : null;
-    
-    if (userId && userProfile.company_id && userCompanyIdStrForUserId !== fetchedCompanyIdStr) {
+
+    if (userId && !isPlatformAdmin && userProfile.company_id && userCompanyIdStr !== fetchedCompanyIdStr) {
       console.error("❌ Access denied: User's company does not match fetched company", {
         userId: user.id,
         userCompanyId: userProfile.company_id,
-        userCompanyIdStr: userCompanyIdStrForUserId,
         fetchedCompanyId: company.id,
-        fetchedCompanyIdStr,
         userRole: userProfile.app_role,
-        match: userCompanyIdStrForUserId === fetchedCompanyIdStr,
       });
       return NextResponse.json(
         { error: "Access denied: Company mismatch" },

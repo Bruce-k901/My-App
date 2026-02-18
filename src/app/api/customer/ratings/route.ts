@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { resolveCustomer, getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * GET /api/customer/ratings
@@ -8,25 +9,20 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get customer record from planly
-    const { data: customer } = await supabase
-      .from('planly_customers')
-      .select('id, site_id')
-      .eq('email', user.email?.toLowerCase() || '')
-      .eq('is_active', true)
-      .maybeSingle();
-
+    const customer = await resolveCustomer(request, supabase, user);
     if (!customer) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
 
-    const { data: ratings, error: ratingsError } = await supabase
+    const admin = getCustomerAdmin();
+
+    const { data: ratings, error: ratingsError } = await admin
       .from('order_book_product_ratings')
       .select('*')
       .eq('customer_id', customer.id)
@@ -45,14 +41,14 @@ export async function GET(request: NextRequest) {
     let productNameMap = new Map<string, string>();
 
     if (productIds.length > 0) {
-      const { data: planlyProducts } = await supabase
+      const { data: planlyProducts } = await admin
         .from('planly_products')
         .select('id, stockly_product_id')
         .in('id', productIds);
 
       const stocklyIds = (planlyProducts || []).map(p => p.stockly_product_id).filter(Boolean);
       if (stocklyIds.length > 0) {
-        const { data: ingredients } = await supabase
+        const { data: ingredients } = await admin
           .from('ingredients_library')
           .select('id, ingredient_name')
           .in('id', stocklyIds);
@@ -94,26 +90,21 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get customer record from planly
-    const { data: customer } = await supabase
-      .from('planly_customers')
-      .select('id, site_id')
-      .eq('email', user.email?.toLowerCase() || '')
-      .eq('is_active', true)
-      .maybeSingle();
-
+    const customer = await resolveCustomer(request, supabase, user);
     if (!customer) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
 
+    const admin = getCustomerAdmin();
+
     // Get company_id from site
-    const { data: site } = await supabase
+    const { data: site } = await admin
       .from('sites')
       .select('company_id')
       .eq('id', customer.site_id)
@@ -139,7 +130,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if rating exists
-    const { data: existingRating } = await supabase
+    const { data: existingRating } = await admin
       .from('order_book_product_ratings')
       .select('id')
       .eq('customer_id', customer.id)
@@ -150,7 +141,7 @@ export async function POST(request: NextRequest) {
 
     if (existingRating) {
       // Update existing rating
-      const { data: updated, error: updateError } = await supabase
+      const { data: updated, error: updateError } = await admin
         .from('order_book_product_ratings')
         .update({
           rating,
@@ -172,7 +163,7 @@ export async function POST(request: NextRequest) {
       ratingData = updated;
     } else {
       // Create new rating
-      const { data: created, error: createError } = await supabase
+      const { data: created, error: createError } = await admin
         .from('order_book_product_ratings')
         .insert({
           company_id: site?.company_id,

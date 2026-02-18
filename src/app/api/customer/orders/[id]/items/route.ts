@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * GET /api/customer/orders/[id]/items
@@ -18,8 +19,10 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const admin = getCustomerAdmin();
+
     // Verify the order exists
-    const { data: order, error: orderError } = await supabase
+    const { data: order, error: orderError } = await admin
       .from('planly_orders')
       .select('id, customer_id')
       .eq('id', orderId)
@@ -30,7 +33,7 @@ export async function GET(
     }
 
     // Fetch order lines
-    const { data: lines, error: linesError } = await supabase
+    const { data: lines, error: linesError } = await admin
       .from('planly_order_lines')
       .select('id, product_id, quantity, unit_price_snapshot, ship_state')
       .eq('order_id', orderId);
@@ -45,14 +48,14 @@ export async function GET(
     let productNameMap = new Map<string, { name: string; unit: string; category: string | null }>();
 
     if (productIds.length > 0) {
-      const { data: planlyProducts } = await supabase
+      const { data: planlyProducts } = await admin
         .from('planly_products')
         .select('id, stockly_product_id, category:planly_categories(name)')
         .in('id', productIds);
 
       const stocklyIds = (planlyProducts || []).map(p => p.stockly_product_id).filter(Boolean);
       if (stocklyIds.length > 0) {
-        const { data: ingredients } = await supabase
+        const { data: ingredients } = await admin
           .from('ingredients_library')
           .select('id, ingredient_name, unit')
           .in('id', stocklyIds);

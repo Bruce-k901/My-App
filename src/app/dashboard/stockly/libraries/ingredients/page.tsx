@@ -15,28 +15,16 @@ import { ensureSupplierExists, ensureSuppliersExist } from '@/lib/utils/supplier
 import { formatUnitCost } from '@/lib/utils/libraryHelpers';
 import { PlanlyBadgeInline } from '@/components/planly/PlanlyBadge';
 import { usePlanlyBadgeStatusBulk } from '@/hooks/planly/usePlanlyBadgeStatus';
+// @salsa — Shared allergen utility (replaces inline full-name list)
+import { UK_ALLERGENS as UK_ALLERGENS_OBJECTS, allergenKeyToLabel, allergenLabelToKey } from '@/lib/stockly/allergens';
 
 const INGREDIENT_CATEGORIES = [
   'Meat', 'Fish', 'Vegetables', 'Fruits', 'Dairy', 'Grains', 'Bakery', 'Dry Goods', 'Other'
 ];
 
-// UK 14 Allergens (EU Food Information Regulation)
-const UK_ALLERGENS = [
-  'Cereals containing gluten',
-  'Crustaceans',
-  'Eggs',
-  'Fish',
-  'Peanuts',
-  'Soybeans',
-  'Milk',
-  'Nuts',
-  'Celery',
-  'Mustard',
-  'Sesame',
-  'Sulphites/Sulphur dioxide',
-  'Lupin',
-  'Molluscs'
-];
+// @salsa — UK allergens: use short keys internally, display labels in UI
+const UK_ALLERGENS = UK_ALLERGENS_OBJECTS.map(a => a.key);
+const UK_ALLERGEN_LABELS = UK_ALLERGENS_OBJECTS.map(a => a.label);
 
 export default function IngredientsLibraryPage() {
   const { companyId, company, user } = useAppContext();
@@ -842,21 +830,12 @@ export default function IngredientsLibraryPage() {
           }
         }
         
-        // Allergen fuzzy matching to UK standard list
+        // @salsa — Allergen fuzzy matching to UK standard list (now uses short keys)
         const allergensRaw = row[headerIndex['allergens']];
         const allergenArray = normaliseArrayCell(allergensRaw);
         const matchedAllergens = allergenArray.map((allergen: string) => {
-          const normalized = allergen.toLowerCase().trim();
-          // Match against UK_ALLERGENS with fuzzy matching
-          const matched = UK_ALLERGENS.find((ukAllergen) => {
-            const ukNormalized = ukAllergen.toLowerCase();
-            return ukNormalized === normalized || 
-                   ukNormalized.includes(normalized) || 
-                   normalized.includes(ukNormalized) ||
-                   normalized.replace(/[^a-z]/g, '') === ukNormalized.replace(/[^a-z]/g, '');
-          });
-          return matched || allergen; // Return matched standard name or original if no match
-        }).filter((a: string) => UK_ALLERGENS.includes(a)); // Only keep valid UK allergens
+          return allergenLabelToKey(allergen);
+        }).filter((a: string | null): a is string => a !== null && UK_ALLERGENS.includes(a));
         
         const unitCostRaw = row[headerIndex['unit_cost']];
         const packCostRaw = row[headerIndex['pack_cost']];
@@ -1327,25 +1306,26 @@ export default function IngredientsLibraryPage() {
                               <div className="text-xs text-theme-tertiary mb-2">Allergens (UK 14)</div>
                               {editingRowId === item.id ? (
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                                  {UK_ALLERGENS.map((allergen) => {
-                                    const isChecked = (rowDraft?.allergens || []).includes(allergen);
+                                  {/* @salsa — Allergen checkboxes use short keys, display labels */}
+                                  {UK_ALLERGENS_OBJECTS.map((allergenObj) => {
+                                    const isChecked = (rowDraft?.allergens || []).includes(allergenObj.key);
                                     return (
-                                      <label key={allergen} className="flex items-center gap-2 cursor-pointer">
+                                      <label key={allergenObj.key} className="flex items-center gap-2 cursor-pointer">
                                         <input
                                           type="checkbox"
                                           checked={isChecked}
                                           onChange={(e) => {
                                             const current = rowDraft?.allergens || [];
                                             if (e.target.checked) {
-                                              setRowDraft((d: any) => ({ ...d, allergens: [...current, allergen] }));
+                                              setRowDraft((d: any) => ({ ...d, allergens: [...current, allergenObj.key] }));
                                             } else {
-                                              setRowDraft((d: any) => ({ ...d, allergens: current.filter((a: string) => a !== allergen) }));
+                                              setRowDraft((d: any) => ({ ...d, allergens: current.filter((a: string) => a !== allergenObj.key) }));
                                             }
                                           }}
                                           style={{ accentColor: '#10B981' }}
                                           className="w-4 h-4 rounded border-module-fg/30 bg-theme-surface text-emerald-500 focus:ring-emerald-500 focus:ring-2 checked:bg-emerald-500 checked:border-emerald-500"
                                         />
-                                        <span className="text-xs text-theme-primary">{allergen}</span>
+                                        <span className="text-xs text-theme-primary">{allergenObj.label}</span>
                                       </label>
                                     );
                                   })}
@@ -1354,9 +1334,10 @@ export default function IngredientsLibraryPage() {
                                 <div className="text-sm text-theme-primary">
                                   {(item.allergens || []).length > 0 ? (
                                     <div className="flex flex-wrap gap-1">
+                                      {/* @salsa — Display allergen labels from short keys */}
                                       {(item.allergens || []).map((allergen: string) => (
                                         <span key={allergen} className="px-2 py-1 bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/30 rounded text-xs">
-                                          {allergen}
+                                          {allergenKeyToLabel(allergen)}
                                         </span>
                                       ))}
                                     </div>

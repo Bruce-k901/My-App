@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { resolveCustomer, getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * GET /api/customer/waste/pending
@@ -14,21 +15,16 @@ export async function GET(request: NextRequest) {
 
   try {
     const supabase = await createServerSupabaseClient();
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       console.warn('Unauthorized access attempt to pending waste logs');
       return NextResponse.json(emptyResponse);
     }
 
-    // Get customer record from planly
-    const { data: customer } = await supabase
-      .from('planly_customers')
-      .select('id')
-      .eq('email', user.email?.toLowerCase() || '')
-      .eq('is_active', true)
-      .maybeSingle();
+    const admin = getCustomerAdmin();
 
+    const customer = await resolveCustomer(request, supabase, user);
     if (!customer) {
       console.warn('Customer not found for pending waste logs');
       return NextResponse.json(emptyResponse);
@@ -40,7 +36,7 @@ export async function GET(request: NextRequest) {
     const startDate = sevenDaysAgo.toISOString().split('T')[0];
     const today = new Date().toISOString().split('T')[0];
 
-    const { data: recentOrders } = await supabase
+    const { data: recentOrders } = await admin
       .from('planly_orders')
       .select('id, delivery_date')
       .eq('customer_id', customer.id)
@@ -54,7 +50,7 @@ export async function GET(request: NextRequest) {
 
     // Check which already have waste logs
     const orderIds = recentOrders.map(o => o.id);
-    const { data: existingLogs } = await supabase
+    const { data: existingLogs } = await admin
       .from('order_book_waste_logs')
       .select('order_id')
       .in('order_id', orderIds);

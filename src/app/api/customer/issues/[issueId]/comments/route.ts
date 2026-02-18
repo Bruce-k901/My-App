@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { resolveCustomer, getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * POST /api/customer/issues/[issueId]/comments
@@ -11,23 +12,18 @@ export async function POST(
 ) {
   try {
     const supabase = await createServerSupabaseClient();
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get customer record from planly
-    const { data: customer } = await supabase
-      .from('planly_customers')
-      .select('id')
-      .eq('email', user.email?.toLowerCase() || '')
-      .eq('is_active', true)
-      .maybeSingle();
-
+    const customer = await resolveCustomer(request, supabase, user);
     if (!customer) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
+
+    const admin = getCustomerAdmin();
 
     const { issueId } = params;
     const body = await request.json();
@@ -38,7 +34,7 @@ export async function POST(
     }
 
     // Verify issue belongs to customer
-    const { data: issue, error: issueError } = await supabase
+    const { data: issue, error: issueError } = await admin
       .from('order_book_issues')
       .select('id')
       .eq('id', issueId)
@@ -50,7 +46,7 @@ export async function POST(
     }
 
     // Create comment
-    const { data: commentData, error: commentError } = await supabase
+    const { data: commentData, error: commentError } = await admin
       .from('order_book_issue_comments')
       .insert({
         issue_id: issueId,

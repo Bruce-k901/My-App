@@ -15,7 +15,10 @@ export default function FeedbackPage() {
   async function loadIssues() {
     try {
       setLoading(true);
-      const response = await fetch('/api/customer/issues');
+      // Support admin preview mode
+      const previewId = typeof window !== 'undefined' ? sessionStorage.getItem('admin_preview_customer_id') : null;
+      const url = previewId ? `/api/customer/issues?customer_id=${previewId}` : '/api/customer/issues';
+      const response = await fetch(url);
       if (response.ok) {
         const result = await response.json();
         setIssues(result.data || []);
@@ -31,7 +34,7 @@ export default function FeedbackPage() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="w-8 h-8 text-[#D37E91] animate-spin" />
+          <Loader2 className="w-8 h-8 text-module-fg animate-spin" />
         </div>
       </div>
     );
@@ -46,23 +49,23 @@ export default function FeedbackPage() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <button className="p-4 bg-white/[0.03] border border-white/[0.06] rounded-lg hover:bg-white/[0.05] transition-colors text-left">
-          <AlertTriangle className="w-6 h-6 text-yellow-400 mb-2" />
+        <button className="p-4 bg-theme-button border border-theme rounded-lg hover:bg-theme-hover transition-colors text-left">
+          <AlertTriangle className="w-6 h-6 text-yellow-600 dark:text-yellow-400 mb-2" />
           <div className="text-sm font-medium text-theme-primary">Quality Issue</div>
           <div className="text-xs text-theme-tertiary">Damaged items</div>
         </button>
-        <button className="p-4 bg-white/[0.03] border border-white/[0.06] rounded-lg hover:bg-white/[0.05] transition-colors text-left">
-          <Truck className="w-6 h-6 text-blue-400 mb-2" />
+        <button className="p-4 bg-theme-button border border-theme rounded-lg hover:bg-theme-hover transition-colors text-left">
+          <Truck className="w-6 h-6 text-blue-600 dark:text-blue-400 mb-2" />
           <div className="text-sm font-medium text-theme-primary">Delivery Problem</div>
           <div className="text-xs text-theme-tertiary">Late or missing</div>
         </button>
-        <button className="p-4 bg-white/[0.03] border border-white/[0.06] rounded-lg hover:bg-white/[0.05] transition-colors text-left">
-          <Star className="w-6 h-6 text-yellow-400 mb-2" />
+        <button className="p-4 bg-theme-button border border-theme rounded-lg hover:bg-theme-hover transition-colors text-left">
+          <Star className="w-6 h-6 text-yellow-600 dark:text-yellow-400 mb-2" />
           <div className="text-sm font-medium text-theme-primary">Rate Products</div>
           <div className="text-xs text-theme-tertiary">Help us improve</div>
         </button>
-        <button className="p-4 bg-white/[0.03] border border-white/[0.06] rounded-lg hover:bg-white/[0.05] transition-colors text-left">
-          <CreditCard className="w-6 h-6 text-green-400 mb-2" />
+        <button className="p-4 bg-theme-button border border-theme rounded-lg hover:bg-theme-hover transition-colors text-left">
+          <CreditCard className="w-6 h-6 text-green-600 dark:text-green-400 mb-2" />
           <div className="text-sm font-medium text-theme-primary">Request Credit</div>
           <div className="text-xs text-theme-tertiary">For issues</div>
         </button>
@@ -72,7 +75,7 @@ export default function FeedbackPage() {
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-theme-primary mb-4">Recent Reports</h2>
         {issues.length === 0 ? (
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
+          <div className="bg-theme-button border border-theme rounded-xl p-8 text-center">
             <p className="text-theme-tertiary">No issues reported yet</p>
           </div>
         ) : (
@@ -80,14 +83,14 @@ export default function FeedbackPage() {
             {issues.map((issue) => (
               <div
                 key={issue.id}
-                className="p-4 bg-white/[0.03] border border-white/[0.06] rounded-lg"
+                className="p-4 bg-theme-button border border-theme rounded-lg"
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-theme-primary">{issue.title}</span>
                   <span className={`text-xs px-2 py-1 rounded ${
-                    issue.status === 'resolved' ? 'bg-green-500/20 text-green-300' :
-                    issue.status === 'in_review' ? 'bg-yellow-500/20 text-yellow-300' :
-                    'bg-blue-500/20 text-blue-300'
+                    issue.status === 'resolved' ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300' :
+                    issue.status === 'in_review' ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-300' :
+                    'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300'
                   }`}>
                     {issue.status}
                   </span>

@@ -99,10 +99,10 @@ export function MonthlySpendCard() {
 
   if (loading) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+      <div className="bg-theme-button border border-theme rounded-xl p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-white/10 rounded w-1/3"></div>
-          <div className="h-20 bg-white/10 rounded"></div>
+          <div className="h-6 bg-theme-muted rounded w-1/3"></div>
+          <div className="h-20 bg-theme-muted rounded"></div>
         </div>
       </div>
     );
@@ -110,20 +110,20 @@ export function MonthlySpendCard() {
 
   if (error) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
-        <p className="text-red-400 text-sm">{error}</p>
+      <div className="bg-theme-button border border-theme rounded-xl p-6">
+        <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
       </div>
     );
   }
 
   if (!data || !data.current_month) {
     return (
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+      <div className="bg-theme-button border border-theme rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSelectedMonth(subMonths(selectedMonth, 1))}
-              className="p-1 hover:bg-white/10 rounded transition-colors"
+              className="p-1 hover:bg-theme-muted rounded transition-colors"
             >
               <ChevronLeft className="w-5 h-5 text-theme-tertiary" />
             </button>
@@ -133,7 +133,7 @@ export function MonthlySpendCard() {
             <button
               onClick={() => setSelectedMonth(addMonths(selectedMonth, 1))}
               disabled={format(selectedMonth, 'yyyy-MM') >= format(new Date(), 'yyyy-MM')}
-              className="p-1 hover:bg-white/10 rounded transition-colors disabled:opacity-40"
+              className="p-1 hover:bg-theme-muted rounded transition-colors disabled:opacity-40"
             >
               <ChevronRight className="w-5 h-5 text-theme-tertiary" />
             </button>
@@ -153,13 +153,13 @@ export function MonthlySpendCard() {
   const unitsTrend = calculateTrend(current.total_units_ordered, previous?.total_units_ordered || null);
 
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+    <div className="bg-theme-button border border-theme rounded-xl p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           <button
             onClick={() => setSelectedMonth(subMonths(selectedMonth, 1))}
-            className="p-1 hover:bg-white/10 rounded transition-colors"
+            className="p-1 hover:bg-theme-muted rounded transition-colors"
           >
             <ChevronLeft className="w-5 h-5 text-theme-tertiary" />
           </button>
@@ -169,7 +169,7 @@ export function MonthlySpendCard() {
           <button
             onClick={() => setSelectedMonth(addMonths(selectedMonth, 1))}
             disabled={format(selectedMonth, 'yyyy-MM') >= format(new Date(), 'yyyy-MM')}
-            className="p-1 hover:bg-white/10 rounded transition-colors disabled:opacity-40"
+            className="p-1 hover:bg-theme-muted rounded transition-colors disabled:opacity-40"
           >
             <ChevronRight className="w-5 h-5 text-theme-tertiary" />
           </button>
@@ -222,12 +222,12 @@ export function MonthlySpendCard() {
               return (
                 <div key={product.product_id} className="flex items-center gap-3">
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm text-white/90 truncate">{product.product_name}</div>
+                    <div className="text-sm text-theme-primary truncate">{product.product_name}</div>
                     <div className="text-xs text-theme-tertiary">{product.total_quantity} units</div>
                   </div>
-                  <div className="flex-1 bg-white/5 rounded-full h-2 overflow-hidden">
+                  <div className="flex-1 bg-theme-hover rounded-full h-2 overflow-hidden">
                     <div
-                      className="h-full bg-[#D37E91] rounded-full transition-all"
+                      className="h-full bg-module-fg rounded-full transition-all"
                       style={{ width: `${widthPercent}%` }}
                     />
                   </div>
@@ -241,7 +241,7 @@ export function MonthlySpendCard() {
           {data.top_products.length > 3 && (
             <Link
               href={`/customer/reports/monthly?month=${format(selectedMonth, 'yyyy-MM')}`}
-              className="text-sm text-[#D37E91] hover:text-[#D37E91]/80 mt-3 inline-block"
+              className="text-sm text-module-fg hover:text-module-fg/80 mt-3 inline-block"
             >
               View All Products →
             </Link>
@@ -273,12 +273,12 @@ function MetricCard({
     : 'N/A';
 
   return (
-    <div className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-4">
+    <div className="bg-theme-button border border-theme rounded-lg p-4">
       <div className="text-xs text-theme-tertiary mb-1">{label}</div>
       <div className="text-xl font-bold text-theme-primary mb-1">{value}</div>
       {previousValue && (
         <div className={`flex items-center gap-1 text-xs ${
-          trend.isPositive ? 'text-green-400' : 'text-red-400'
+          trend.isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
         }`}>
           <TrendIcon className="w-3 h-3" />
           <span>{trendText} vs previous</span>

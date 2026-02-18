@@ -91,7 +91,7 @@ export default function CustomerLoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-theme-tertiary hover:text-white p-1"
+                className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-theme-tertiary hover:text-theme-primary p-1"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? (
@@ -114,7 +114,7 @@ export default function CustomerLoginPage() {
             {loading ? 'Signing in...' : 'Log in'}
           </Button>
           {error && (
-            <p className="mt-3 text-xs sm:text-sm text-red-400 text-center" role="alert">
+            <p className="mt-3 text-xs sm:text-sm text-red-600 dark:text-red-400 text-center" role="alert">
               {error}
             </p>
           )}
@@ -123,7 +123,7 @@ export default function CustomerLoginPage() {
         <div className="text-center mt-5 sm:mt-6">
           <Link
             href="/forgot-password"
-            className="text-[#D37E91] hover:text-[#D37E91]/80 text-xs sm:text-sm transition-colors"
+            className="text-module-fg hover:text-module-fg/80 text-xs sm:text-sm transition-colors"
           >
             Forgotten your password?
           </Link>

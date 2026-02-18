@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { resolveCustomer, getCustomerAdmin } from '@/lib/customer-auth';
 
 /**
  * GET /api/customer/reports/monthly
@@ -15,12 +16,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const admin = getCustomerAdmin();
+
     // Resolve customer ID (admin preview or email lookup)
     const customerIdParam = request.nextUrl.searchParams.get('customer_id');
     let customerId: string | null = null;
 
     if (customerIdParam) {
-      const { data: profile } = await supabase
+      const { data: profile } = await admin
         .from('profiles')
         .select('is_platform_admin, app_role')
         .eq('auth_user_id', user.id)
@@ -33,7 +36,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (!customerId) {
-      const { data: customer } = await supabase
+      const { data: customer } = await admin
         .from('planly_customers')
         .select('id')
         .eq('email', user.email?.toLowerCase() || '')
@@ -65,14 +68,14 @@ export async function GET(request: NextRequest) {
 
     // Fetch current and previous month orders in parallel
     const [{ data: currentOrders }, { data: prevOrders }] = await Promise.all([
-      supabase
+      admin
         .from('planly_orders')
         .select('id, delivery_date, total_value, status')
         .eq('customer_id', customerId)
         .neq('status', 'cancelled')
         .gte('delivery_date', currentStart)
         .lte('delivery_date', currentEnd),
-      supabase
+      admin
         .from('planly_orders')
         .select('id, delivery_date, total_value, status')
         .eq('customer_id', customerId)
@@ -85,7 +88,7 @@ export async function GET(request: NextRequest) {
     let currentMonth = null;
     if (currentOrders && currentOrders.length > 0) {
       const orderIds = currentOrders.map(o => o.id);
-      const { data: lines } = await supabase
+      const { data: lines } = await admin
         .from('planly_order_lines')
         .select('order_id, product_id, quantity, unit_price_snapshot')
         .in('order_id', orderIds);
@@ -117,14 +120,14 @@ export async function GET(request: NextRequest) {
       let productNameMap = new Map<string, string>();
 
       if (productIds.length > 0) {
-        const { data: planlyProducts } = await supabase
+        const { data: planlyProducts } = await admin
           .from('planly_products')
           .select('id, stockly_product_id')
           .in('id', productIds);
 
         const stocklyIds = (planlyProducts || []).map(p => p.stockly_product_id).filter(Boolean);
         if (stocklyIds.length > 0) {
-          const { data: ingredients } = await supabase
+          const { data: ingredients } = await admin
             .from('ingredients_library')
             .select('id, ingredient_name')
             .in('id', stocklyIds);

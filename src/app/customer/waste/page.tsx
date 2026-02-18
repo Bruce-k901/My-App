@@ -23,12 +23,12 @@ export default function WasteTrackingPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {/* Log Waste */}
         <Link href="/customer/waste/log">
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 hover:bg-white/[0.05] transition-colors cursor-pointer group">
+          <div className="bg-theme-button border border-theme rounded-xl p-6 hover:bg-theme-hover transition-colors cursor-pointer group">
             <div className="flex items-start justify-between mb-4">
-              <div className="p-3 bg-[#D37E91]/10 rounded-lg">
-                <Calendar className="w-6 h-6 text-[#D37E91]" />
+              <div className="p-3 bg-module-fg/10 rounded-lg">
+                <Calendar className="w-6 h-6 text-module-fg" />
               </div>
-              <ArrowRight className="w-5 h-5 text-theme-tertiary group-hover:text-[#D37E91] transition-colors" />
+              <ArrowRight className="w-5 h-5 text-theme-tertiary group-hover:text-module-fg transition-colors" />
             </div>
             <h2 className="text-lg font-semibold text-theme-primary mb-2">Log Today's Sales</h2>
             <p className="text-sm text-theme-tertiary">
@@ -39,12 +39,12 @@ export default function WasteTrackingPage() {
 
         {/* View Insights */}
         <Link href="/customer/waste/insights">
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6 hover:bg-white/[0.05] transition-colors cursor-pointer group">
+          <div className="bg-theme-button border border-theme rounded-xl p-6 hover:bg-theme-hover transition-colors cursor-pointer group">
             <div className="flex items-start justify-between mb-4">
-              <div className="p-3 bg-blue-500/10 rounded-lg">
-                <TrendingUp className="w-6 h-6 text-blue-400" />
+              <div className="p-3 bg-blue-50 dark:bg-blue-500/10 rounded-lg">
+                <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <ArrowRight className="w-5 h-5 text-theme-tertiary group-hover:text-blue-400 transition-colors" />
+              <ArrowRight className="w-5 h-5 text-theme-tertiary group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
             </div>
             <h2 className="text-lg font-semibold text-theme-primary mb-2">View Insights</h2>
             <p className="text-sm text-theme-tertiary">
@@ -55,11 +55,11 @@ export default function WasteTrackingPage() {
       </div>
 
       {/* Quick Info */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+      <div className="bg-theme-button border border-theme rounded-xl p-6">
         <h3 className="text-lg font-semibold text-theme-primary mb-4">How It Works</h3>
         <div className="space-y-3 text-sm text-theme-tertiary">
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-[#D37E91]/20 text-[#D37E91] flex items-center justify-center text-xs font-semibold mt-0.5 flex-shrink-0">
+            <div className="w-6 h-6 rounded-full bg-module-fg/20 text-module-fg flex items-center justify-center text-xs font-semibold mt-0.5 flex-shrink-0">
               1
             </div>
             <div>
@@ -67,7 +67,7 @@ export default function WasteTrackingPage() {
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-[#D37E91]/20 text-[#D37E91] flex items-center justify-center text-xs font-semibold mt-0.5 flex-shrink-0">
+            <div className="w-6 h-6 rounded-full bg-module-fg/20 text-module-fg flex items-center justify-center text-xs font-semibold mt-0.5 flex-shrink-0">
               2
             </div>
             <div>
@@ -75,7 +75,7 @@ export default function WasteTrackingPage() {
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-[#D37E91]/20 text-[#D37E91] flex items-center justify-center text-xs font-semibold mt-0.5 flex-shrink-0">
+            <div className="w-6 h-6 rounded-full bg-module-fg/20 text-module-fg flex items-center justify-center text-xs font-semibold mt-0.5 flex-shrink-0">
               3
             </div>
             <div>
