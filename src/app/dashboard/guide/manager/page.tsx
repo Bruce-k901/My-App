@@ -14,7 +14,7 @@ export default function ManagerGuidePage() {
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary">Manager Guide</h1>
-            <p className="text-sm text-theme-tertiary">Teamly &amp; Checkly &mdash; Beta Edition</p>
+            <p className="text-sm text-theme-tertiary">All Modules &mdash; Beta Edition</p>
           </div>
         </div>
         <button

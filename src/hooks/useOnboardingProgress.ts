@@ -27,14 +27,19 @@ interface UseOnboardingProgressReturn {
 async function safeCount(
   table: string,
   column: string,
-  value: string,
+  value: string | string[],
   extraFilter?: { column: string; value: string }
 ): Promise<number> {
   try {
     let query = supabase
       .from(table)
-      .select('id', { count: 'exact', head: true })
-      .eq(column, value);
+      .select('id', { count: 'exact', head: true });
+
+    if (Array.isArray(value)) {
+      query = query.in(column, value);
+    } else {
+      query = query.eq(column, value);
+    }
 
     if (extraFilter) {
       query = query.eq(extraFilter.column, extraFilter.value);
@@ -57,6 +62,18 @@ async function bootstrapFromCounts(
 ): Promise<Map<string, { status: StepStatus; detail: string }>> {
   const results = new Map<string, { status: StepStatus; detail: string }>();
 
+  // Fetch site IDs for this company (needed for site_id-based checks like Planly)
+  let siteIds: string[] = [];
+  try {
+    const { data: sites } = await supabase
+      .from('sites')
+      .select('id')
+      .eq('company_id', companyId);
+    siteIds = (sites || []).map((s: { id: string }) => s.id);
+  } catch {
+    // If sites query fails, site_id checks will return 0
+  }
+
   // Run all counts in parallel
   const countPromises = ONBOARDING_STEPS.map(async (step) => {
     if (!step.check) {
@@ -69,10 +86,15 @@ async function bootstrapFromCounts(
       return { stepId: step.stepId, count: hasValue ? 1 : 0, special: true };
     }
 
+    // For site_id checks, use the company's site IDs instead of companyId
+    const value = step.check.column === 'site_id'
+      ? (siteIds.length > 0 ? siteIds : companyId)
+      : companyId;
+
     const count = await safeCount(
       step.check.table,
       step.check.column,
-      companyId,
+      value,
       step.check.extraFilter
     );
     return { stepId: step.stepId, count, special: false };
@@ -179,15 +201,21 @@ export function useOnboardingProgress(): UseOnboardingProgressReturn {
           });
         }
 
-        // For steps that have progress rows, enrich the detail with row counts too
+        // Enrich with fresh row counts — also catches steps that were missed previously
         const enriched = await bootstrapFromCounts(companyId, company?.name);
         for (const [stepId, derived] of enriched) {
           const existing = progressMap.get(stepId);
           if (existing) {
-            // Keep the persisted status but use the richer detail from row counts
-            if (existing.status === 'complete' && derived.status === 'complete') {
+            // If row counts show complete but persisted status is behind, upgrade it
+            if (derived.status === 'complete' && existing.status === 'not_started') {
+              existing.status = 'complete';
+              existing.detail = derived.detail;
+            } else if (existing.status === 'complete' && derived.status === 'complete') {
               existing.detail = derived.detail;
             }
+          } else if (derived.status !== 'not_started') {
+            // Step wasn't in progress table yet — add it from row counts
+            progressMap.set(stepId, { ...derived, notes: null });
           }
         }
 

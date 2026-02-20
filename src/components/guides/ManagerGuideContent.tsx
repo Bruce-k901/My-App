@@ -1,59 +1,225 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+
 export default function ManagerGuideContent() {
+  const [showTop, setShowTop] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 400)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
-    <div className="guide-content text-theme-primary">
+    <>
+      <style jsx global>{`
+        .guide-content {
+          max-width: 800px;
+          margin: 0 auto;
+          font-size: 11pt;
+          line-height: 1.6;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        @media print {
+          .guide-content { font-size: 10pt; }
+          .guide-page-break { page-break-before: always; }
+          .guide-no-break { page-break-inside: avoid; }
+          .guide-no-print { display: none !important; }
+        }
+        .guide-section-header {
+          padding: 20px 0;
+          margin: 40px 0 24px 0;
+          border-bottom: 3px solid;
+        }
+        .guide-section-header.teamly { border-color: #D37E91; }
+        .guide-section-header.checkly { border-color: #F1E194; }
+        .guide-section-header.stockly { border-color: #789A99; }
+        .guide-section-header.assetly { border-color: #F3E7D9; }
+        .guide-section-header.planly { border-color: #ACC8A2; }
+        .guide-section-header.msgly { border-color: #CBDDE9; }
+        .guide-section-header.general { border-color: #110f0d; }
+        @media (prefers-color-scheme: dark) {
+          .guide-section-header.general { border-color: #a09890; }
+        }
+        .dark .guide-section-header.general { border-color: #a09890; }
+        .dark .guide-section-header.assetly { border-color: #544349; }
+        .guide-section-header h2 {
+          font-size: 24px;
+          font-weight: 700;
+          margin-bottom: 4px;
+        }
+        .guide-module-label {
+          font-size: 11px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+        }
+        .guide-module-label.teamly { color: #C28FA3; }
+        .guide-module-label.checkly { color: #5B0E14; }
+        .guide-module-label.stockly { color: #4E7D7C; }
+        .guide-module-label.assetly { color: #544349; }
+        .guide-module-label.planly { color: #1A2517; }
+        .guide-module-label.msgly { color: #2872A1; }
+        .guide-module-label.general { color: #666; }
+        .dark .guide-module-label.checkly { color: #F1E194; }
+        .dark .guide-module-label.stockly { color: #789A99; }
+        .dark .guide-module-label.assetly { color: #F3E7D9; }
+        .dark .guide-module-label.planly { color: #ACC8A2; }
+        .dark .guide-module-label.msgly { color: #CBDDE9; }
+        .dark .guide-module-label.general { color: #a09890; }
+        .guide-step {
+          display: flex;
+          gap: 14px;
+          margin-bottom: 14px;
+          padding: 14px 16px;
+          border-radius: 8px;
+          border-left: 3px solid #ddd;
+        }
+        .guide-step.teamly { border-left-color: #D37E91; }
+        .guide-step.checkly { border-left-color: #F1E194; }
+        .guide-step.stockly { border-left-color: #789A99; }
+        .guide-step.assetly { border-left-color: #F3E7D9; }
+        .guide-step.planly { border-left-color: #ACC8A2; }
+        .guide-step.msgly { border-left-color: #CBDDE9; }
+        .guide-step-number {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 13px;
+          flex-shrink: 0;
+          color: white;
+        }
+        .guide-step-number.teamly { background: #D37E91; }
+        .guide-step-number.checkly { background: #F1E194; color: #110f0d; }
+        .guide-step-number.stockly { background: #789A99; color: #110f0d; }
+        .guide-step-number.assetly { background: #544349; }
+        .guide-step-number.planly { background: #ACC8A2; color: #110f0d; }
+        .guide-step-number.msgly { background: #2872A1; }
+        .guide-step-number.general { background: #110f0d; }
+        .dark .guide-step-number.general { background: #a09890; color: #110f0d; }
+        .dark .guide-step-number.assetly { background: #F3E7D9; color: #110f0d; }
+        .guide-nav-path {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 4px 12px;
+          border-radius: 6px;
+          font-size: 10pt;
+          font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+          margin: 4px 0;
+        }
+        .guide-nav-path .sep { margin: 0 2px; }
+      `}</style>
+    <div id="guide-top" className="guide-content text-theme-primary">
+
+      {/* Floating back-to-top button */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className={`guide-no-print fixed bottom-6 right-6 z-40 w-10 h-10 rounded-full bg-teamly text-white shadow-lg flex items-center justify-center transition-all duration-300 hover:bg-teamly/80 ${showTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
+        aria-label="Back to top"
+      >
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
+      </button>
+
       {/* ===== TABLE OF CONTENTS ===== */}
-      <div className="bg-theme-muted/30 rounded-xl p-8 mb-8">
+      <div className="bg-theme-muted/30 rounded-xl p-6 sm:p-8 mb-8">
         <h3 className="text-lg font-semibold mb-4">Contents</h3>
 
-        <div className="mb-4">
-          <div className="text-xs font-semibold uppercase tracking-wider text-theme-tertiary mb-2 pb-1 border-b-2 border-gray-300 dark:border-gray-600 inline-block">Getting Started</div>
-          <ol className="ml-5 text-sm text-theme-secondary space-y-1">
-            <li>Logging In &amp; First-Time Setup</li>
-            <li>Navigating the App</li>
-            <li>Site Filtering &amp; Context</li>
-            <li>Your Profile &amp; Settings</li>
-          </ol>
-        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-theme-tertiary mb-1.5 pb-1 border-b-2 border-gray-300 dark:border-gray-600 inline-block">Getting Started</div>
+            <ol className="ml-5 text-sm space-y-0.5">
+              <li><a href="#section-1" className="text-theme-secondary hover:text-teamly transition-colors">Logging In &amp; First-Time Setup</a></li>
+              <li><a href="#section-2" className="text-theme-secondary hover:text-teamly transition-colors">Navigating the App</a></li>
+              <li><a href="#section-3" className="text-theme-secondary hover:text-teamly transition-colors">Site Filtering &amp; Context</a></li>
+              <li><a href="#section-4" className="text-theme-secondary hover:text-teamly transition-colors">Your Profile &amp; Settings</a></li>
+            </ol>
+          </div>
 
-        <div className="mb-4">
-          <div className="text-xs font-semibold uppercase tracking-wider text-teamly-dark dark:text-teamly mb-2 pb-1 border-b-2 border-teamly inline-block">Teamly &mdash; People &amp; Rotas</div>
-          <ol className="ml-5 text-sm text-theme-secondary space-y-1" start={5}>
-            <li>Adding Employees</li>
-            <li>Managing Employee Profiles</li>
-            <li>Departments &amp; Org Structure</li>
-            <li>Setting Shift Rules (Working Time Directive)</li>
-            <li>Building Rotas</li>
-            <li>Staff Availability &amp; Requests</li>
-            <li>Leave Management</li>
-            <li>Time &amp; Attendance</li>
-            <li>Training &amp; Compliance</li>
-            <li>Onboarding New Starters</li>
-            <li>Teamly Settings Reference</li>
-          </ol>
-        </div>
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-teamly-dark dark:text-teamly mb-1.5 pb-1 border-b-2 border-teamly inline-block">Teamly &mdash; People &amp; Rotas</div>
+            <ol className="ml-5 text-sm space-y-0.5" start={5}>
+              <li><a href="#section-5" className="text-theme-secondary hover:text-teamly transition-colors">Adding Employees</a></li>
+              <li><a href="#section-6" className="text-theme-secondary hover:text-teamly transition-colors">Managing Employee Profiles</a></li>
+              <li><a href="#section-7" className="text-theme-secondary hover:text-teamly transition-colors">Departments &amp; Org Structure</a></li>
+              <li><a href="#section-8" className="text-theme-secondary hover:text-teamly transition-colors">Setting Shift Rules (WTD)</a></li>
+              <li><a href="#section-9" className="text-theme-secondary hover:text-teamly transition-colors">Building Rotas</a></li>
+              <li><a href="#section-10" className="text-theme-secondary hover:text-teamly transition-colors">Staff Availability &amp; Requests</a></li>
+              <li><a href="#section-11" className="text-theme-secondary hover:text-teamly transition-colors">Leave Management</a></li>
+              <li><a href="#section-12" className="text-theme-secondary hover:text-teamly transition-colors">Time &amp; Attendance</a></li>
+              <li><a href="#section-13" className="text-theme-secondary hover:text-teamly transition-colors">Training &amp; Compliance</a></li>
+              <li><a href="#section-14" className="text-theme-secondary hover:text-teamly transition-colors">Onboarding New Starters</a></li>
+              <li><a href="#section-15" className="text-theme-secondary hover:text-teamly transition-colors">Teamly Settings Reference</a></li>
+            </ol>
+          </div>
 
-        <div>
-          <div className="text-xs font-semibold uppercase tracking-wider text-checkly-dark dark:text-checkly mb-2 pb-1 border-b-2 border-checkly inline-block">Checkly &mdash; Compliance &amp; Tasks</div>
-          <ol className="ml-5 text-sm text-theme-secondary space-y-1" start={16}>
-            <li>Understanding Task Templates</li>
-            <li>Setting Up Compliance Templates</li>
-            <li>Creating Custom Templates</li>
-            <li>Scheduling Tasks for Your Site</li>
-            <li>Managing Equipment for Temperature Checks</li>
-            <li>Reviewing Completed Tasks</li>
-            <li>Temperature Logs &amp; Breach Actions</li>
-            <li>EHO Readiness Reports</li>
-            <li>Checkly Reports &amp; Analytics</li>
-          </ol>
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-checkly-dark dark:text-checkly mb-1.5 pb-1 border-b-2 border-checkly inline-block">Checkly &mdash; Compliance &amp; Tasks</div>
+            <ol className="ml-5 text-sm space-y-0.5" start={16}>
+              <li><a href="#section-16" className="text-theme-secondary hover:text-teamly transition-colors">Understanding Task Templates</a></li>
+              <li><a href="#section-17" className="text-theme-secondary hover:text-teamly transition-colors">Setting Up Compliance Templates</a></li>
+              <li><a href="#section-18" className="text-theme-secondary hover:text-teamly transition-colors">Creating Custom Templates</a></li>
+              <li><a href="#section-19" className="text-theme-secondary hover:text-teamly transition-colors">Scheduling Tasks for Your Site</a></li>
+              <li><a href="#section-20" className="text-theme-secondary hover:text-teamly transition-colors">Managing Equipment for Temp Checks</a></li>
+              <li><a href="#section-21" className="text-theme-secondary hover:text-teamly transition-colors">Reviewing Completed Tasks</a></li>
+              <li><a href="#section-22" className="text-theme-secondary hover:text-teamly transition-colors">Temperature Logs &amp; Breach Actions</a></li>
+              <li><a href="#section-23" className="text-theme-secondary hover:text-teamly transition-colors">EHO Readiness Reports</a></li>
+              <li><a href="#section-24" className="text-theme-secondary hover:text-teamly transition-colors">Checkly Reports &amp; Analytics</a></li>
+            </ol>
+          </div>
+
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-stockly-dark dark:text-stockly mb-1.5 pb-1 border-b-2 border-stockly inline-block">Stockly &mdash; Inventory &amp; Stock</div>
+            <ol className="ml-5 text-sm space-y-0.5" start={25}>
+              <li><a href="#section-25" className="text-theme-secondary hover:text-teamly transition-colors">Stock Items &amp; Storage Areas</a></li>
+              <li><a href="#section-26" className="text-theme-secondary hover:text-teamly transition-colors">Suppliers &amp; Approved Lists</a></li>
+              <li><a href="#section-27" className="text-theme-secondary hover:text-teamly transition-colors">Orders &amp; Deliveries</a></li>
+              <li><a href="#section-28" className="text-theme-secondary hover:text-teamly transition-colors">Stock Counts &amp; Variance</a></li>
+              <li><a href="#section-29" className="text-theme-secondary hover:text-teamly transition-colors">Waste Tracking &amp; Credit Notes</a></li>
+              <li><a href="#section-30" className="text-theme-secondary hover:text-teamly transition-colors">Recipes &amp; Ingredients</a></li>
+              <li><a href="#section-31" className="text-theme-secondary hover:text-teamly transition-colors">Production Batches &amp; Traceability</a></li>
+              <li><a href="#section-32" className="text-theme-secondary hover:text-teamly transition-colors">SALSA Compliance</a></li>
+              <li><a href="#section-33" className="text-theme-secondary hover:text-teamly transition-colors">Stockly Reports</a></li>
+            </ol>
+          </div>
+
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-assetly-dark dark:text-assetly mb-1.5 pb-1 border-b-2 border-assetly inline-block">Assetly &mdash; Assets &amp; Maintenance</div>
+            <ol className="ml-5 text-sm space-y-0.5" start={34}>
+              <li><a href="#section-34" className="text-theme-secondary hover:text-teamly transition-colors">Managing Assets</a></li>
+              <li><a href="#section-35" className="text-theme-secondary hover:text-teamly transition-colors">Preventive Planned Maintenance</a></li>
+              <li><a href="#section-36" className="text-theme-secondary hover:text-teamly transition-colors">Contractors &amp; Callout Logs</a></li>
+            </ol>
+          </div>
+
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-planly-dark dark:text-planly mb-1.5 pb-1 border-b-2 border-planly inline-block">Planly &mdash; Production Planning</div>
+            <ol className="ml-5 text-sm space-y-0.5" start={37}>
+              <li><a href="#section-37" className="text-theme-secondary hover:text-teamly transition-colors">Products &amp; Pricing</a></li>
+              <li><a href="#section-38" className="text-theme-secondary hover:text-teamly transition-colors">Customers &amp; Orders</a></li>
+              <li><a href="#section-39" className="text-theme-secondary hover:text-teamly transition-colors">Production Planning &amp; Delivery</a></li>
+            </ol>
+
+            <div className="text-xs font-semibold uppercase tracking-wider text-msgly-dark dark:text-msgly mb-1.5 mt-4 pb-1 border-b-2 border-msgly inline-block">Msgly &mdash; Messaging</div>
+            <ol className="ml-5 text-sm space-y-0.5" start={40}>
+              <li><a href="#section-40" className="text-theme-secondary hover:text-teamly transition-colors">Team Messaging</a></li>
+            </ol>
+          </div>
         </div>
       </div>
 
       {/* ===== GETTING STARTED ===== */}
       <div className="guide-page-break" />
 
-      <div className="guide-section-header general">
+      <div className="rounded-2xl bg-theme-muted/10 border border-theme px-6 py-2 mb-6">
+
+      <div id="section-1" className="guide-section-header general scroll-mt-32">
         <div className="guide-module-label general">Getting Started</div>
         <h2>1. Logging In &amp; First-Time Setup</h2>
       </div>
@@ -97,7 +263,7 @@ export default function ManagerGuideContent() {
       </div>
 
       {/* Section 2 */}
-      <div className="guide-section-header general">
+      <div id="section-2" className="guide-section-header general scroll-mt-32">
         <div className="guide-module-label general">Getting Started</div>
         <h2>2. Navigating the App</h2>
       </div>
@@ -133,7 +299,7 @@ export default function ManagerGuideContent() {
       </ul>
 
       {/* Section 3 */}
-      <div className="guide-section-header general">
+      <div id="section-3" className="guide-section-header general scroll-mt-32">
         <div className="guide-module-label general">Getting Started</div>
         <h2>3. Site Filtering &amp; Context</h2>
       </div>
@@ -145,7 +311,7 @@ export default function ManagerGuideContent() {
       </div>
 
       {/* Section 4 */}
-      <div className="guide-section-header general">
+      <div id="section-4" className="guide-section-header general scroll-mt-32">
         <div className="guide-module-label general">Getting Started</div>
         <h2>4. Your Profile &amp; Settings</h2>
       </div>
@@ -169,10 +335,14 @@ export default function ManagerGuideContent() {
         </table>
       </div>
 
+      </div>{/* end Getting Started background */}
+
       {/* ===== TEAMLY ===== */}
       <div className="guide-page-break" />
 
-      <div className="guide-section-header teamly">
+      <div className="rounded-2xl bg-teamly/[0.04] dark:bg-teamly/[0.03] border border-teamly/20 px-6 py-2 mb-6">
+
+      <div id="section-5" className="guide-section-header teamly scroll-mt-32">
         <div className="guide-module-label teamly">Teamly &mdash; People &amp; Rotas</div>
         <h2>5. Adding Employees</h2>
       </div>
@@ -224,7 +394,7 @@ export default function ManagerGuideContent() {
       </div>
 
       {/* Section 6 */}
-      <div className="guide-section-header teamly">
+      <div id="section-6" className="guide-section-header teamly scroll-mt-32">
         <div className="guide-module-label teamly">Teamly &mdash; People &amp; Rotas</div>
         <h2>6. Managing Employee Profiles</h2>
       </div>
@@ -254,7 +424,7 @@ export default function ManagerGuideContent() {
       <p className="mb-3 text-theme-secondary">You can also edit key fields directly from the profile overview: position, department, site assignment, contracted hours, hourly rate, and reporting manager.</p>
 
       {/* Section 7 */}
-      <div className="guide-section-header teamly">
+      <div id="section-7" className="guide-section-header teamly scroll-mt-32">
         <div className="guide-module-label teamly">Teamly &mdash; People &amp; Rotas</div>
         <h2>7. Departments &amp; Org Structure</h2>
       </div>
@@ -266,7 +436,7 @@ export default function ManagerGuideContent() {
       <p className="mb-3 text-theme-secondary">You can also view the <strong>Org Chart</strong> via <span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Teamly <span className="sep opacity-50">&rsaquo;</span> Employees <span className="sep opacity-50">&rsaquo;</span> Org Chart</span> to see reporting lines and team structure visually.</p>
 
       {/* Section 8 */}
-      <div className="guide-section-header teamly">
+      <div id="section-8" className="guide-section-header teamly scroll-mt-32">
         <div className="guide-module-label teamly">Teamly &mdash; People &amp; Rotas</div>
         <h2>8. Setting Shift Rules (Working Time Directive)</h2>
       </div>
@@ -300,7 +470,7 @@ export default function ManagerGuideContent() {
       <p className="mb-3 text-theme-secondary">The system will warn you on the rota if any shift assignment breaches these rules.</p>
 
       {/* Section 9 */}
-      <div className="guide-section-header teamly">
+      <div id="section-9" className="guide-section-header teamly scroll-mt-32">
         <div className="guide-module-label teamly">Teamly &mdash; People &amp; Rotas</div>
         <h2>9. Building Rotas</h2>
       </div>
@@ -363,7 +533,7 @@ export default function ManagerGuideContent() {
       </div>
 
       {/* Section 10 */}
-      <div className="guide-section-header teamly">
+      <div id="section-10" className="guide-section-header teamly scroll-mt-32">
         <div className="guide-module-label teamly">Teamly &mdash; People &amp; Rotas</div>
         <h2>10. Staff Availability &amp; Requests</h2>
       </div>
@@ -385,7 +555,7 @@ export default function ManagerGuideContent() {
       <p className="mb-3 text-theme-secondary">When staff submit availability changes, they appear here for manager approval.</p>
 
       {/* Section 11 */}
-      <div className="guide-section-header teamly">
+      <div id="section-11" className="guide-section-header teamly scroll-mt-32">
         <div className="guide-module-label teamly">Teamly &mdash; People &amp; Rotas</div>
         <h2>11. Leave Management</h2>
       </div>
@@ -413,7 +583,7 @@ export default function ManagerGuideContent() {
       </div>
 
       {/* Section 12 */}
-      <div className="guide-section-header teamly">
+      <div id="section-12" className="guide-section-header teamly scroll-mt-32">
         <div className="guide-module-label teamly">Teamly &mdash; People &amp; Rotas</div>
         <h2>12. Time &amp; Attendance</h2>
       </div>
@@ -434,7 +604,7 @@ export default function ManagerGuideContent() {
       </ul>
 
       {/* Section 13 */}
-      <div className="guide-section-header teamly">
+      <div id="section-13" className="guide-section-header teamly scroll-mt-32">
         <div className="guide-module-label teamly">Teamly &mdash; People &amp; Rotas</div>
         <h2>13. Training &amp; Compliance</h2>
       </div>
@@ -461,7 +631,7 @@ export default function ManagerGuideContent() {
       <p className="mb-3 text-theme-secondary">Log a completed training course for any employee: select the course, enter the completion date, expiry date, and certificate reference.</p>
 
       {/* Section 14 */}
-      <div className="guide-section-header teamly">
+      <div id="section-14" className="guide-section-header teamly scroll-mt-32">
         <div className="guide-module-label teamly">Teamly &mdash; People &amp; Rotas</div>
         <h2>14. Onboarding New Starters</h2>
       </div>
@@ -501,7 +671,7 @@ export default function ManagerGuideContent() {
       </div>
 
       {/* Section 15 */}
-      <div className="guide-section-header teamly">
+      <div id="section-15" className="guide-section-header teamly scroll-mt-32">
         <div className="guide-module-label teamly">Teamly &mdash; People &amp; Rotas</div>
         <h2>15. Teamly Settings Reference</h2>
       </div>
@@ -529,10 +699,14 @@ export default function ManagerGuideContent() {
         </table>
       </div>
 
+      </div>{/* end Teamly background */}
+
       {/* ===== CHECKLY ===== */}
       <div className="guide-page-break" />
 
-      <div className="guide-section-header checkly">
+      <div className="rounded-2xl bg-checkly/[0.04] dark:bg-checkly/[0.03] border border-checkly/20 px-6 py-2 mb-6">
+
+      <div id="section-16" className="guide-section-header checkly scroll-mt-32">
         <div className="guide-module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
         <h2>16. Understanding Task Templates</h2>
       </div>
@@ -555,7 +729,7 @@ export default function ManagerGuideContent() {
       </ol>
 
       {/* Section 17 */}
-      <div className="guide-section-header checkly">
+      <div id="section-17" className="guide-section-header checkly scroll-mt-32">
         <div className="guide-module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
         <h2>17. Setting Up Compliance Templates</h2>
       </div>
@@ -600,7 +774,7 @@ export default function ManagerGuideContent() {
       </div>
 
       {/* Section 18 */}
-      <div className="guide-section-header checkly">
+      <div id="section-18" className="guide-section-header checkly scroll-mt-32">
         <div className="guide-module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
         <h2>18. Creating Custom Templates</h2>
       </div>
@@ -659,7 +833,7 @@ export default function ManagerGuideContent() {
       </div>
 
       {/* Section 19 */}
-      <div className="guide-section-header checkly">
+      <div id="section-19" className="guide-section-header checkly scroll-mt-32">
         <div className="guide-module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
         <h2>19. Scheduling Tasks for Your Site</h2>
       </div>
@@ -680,7 +854,7 @@ export default function ManagerGuideContent() {
       </div>
 
       {/* Section 20 */}
-      <div className="guide-section-header checkly">
+      <div id="section-20" className="guide-section-header checkly scroll-mt-32">
         <div className="guide-module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
         <h2>20. Managing Equipment for Temperature Checks</h2>
       </div>
@@ -716,7 +890,7 @@ export default function ManagerGuideContent() {
       </div>
 
       {/* Section 21 */}
-      <div className="guide-section-header checkly">
+      <div id="section-21" className="guide-section-header checkly scroll-mt-32">
         <div className="guide-module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
         <h2>21. Reviewing Completed Tasks</h2>
       </div>
@@ -743,7 +917,7 @@ export default function ManagerGuideContent() {
       </ul>
 
       {/* Section 22 */}
-      <div className="guide-section-header checkly">
+      <div id="section-22" className="guide-section-header checkly scroll-mt-32">
         <div className="guide-module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
         <h2>22. Temperature Logs &amp; Breach Actions</h2>
       </div>
@@ -770,7 +944,7 @@ export default function ManagerGuideContent() {
       </ol>
 
       {/* Section 23 */}
-      <div className="guide-section-header checkly">
+      <div id="section-23" className="guide-section-header checkly scroll-mt-32">
         <div className="guide-module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
         <h2>23. EHO Readiness Reports</h2>
       </div>
@@ -804,7 +978,7 @@ export default function ManagerGuideContent() {
       </div>
 
       {/* Section 24 */}
-      <div className="guide-section-header checkly">
+      <div id="section-24" className="guide-section-header checkly scroll-mt-32">
         <div className="guide-module-label checkly">Checkly &mdash; Compliance &amp; Tasks</div>
         <h2>24. Checkly Reports &amp; Analytics</h2>
       </div>
@@ -833,6 +1007,315 @@ export default function ManagerGuideContent() {
 
       <p className="mb-3 text-theme-secondary">All reports support date range filtering and site filtering.</p>
 
+      </div>{/* end Checkly background */}
+
+      {/* ===== STOCKLY ===== */}
+      <div className="guide-page-break" />
+
+      <div className="rounded-2xl bg-stockly/[0.04] dark:bg-stockly/[0.03] border border-stockly/20 px-6 py-2 mb-6">
+
+      <div id="section-25" className="guide-section-header stockly scroll-mt-32">
+        <div className="guide-module-label stockly">Stockly &mdash; Inventory &amp; Stock</div>
+        <h2>25. Stock Items &amp; Storage Areas</h2>
+      </div>
+
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Stock Items</span></p>
+
+      <p className="mb-3 text-theme-secondary">Stock Items is your product catalogue &mdash; every ingredient, chemical, packaging item, and sundry your business buys. Each item has a name, category, unit of measure, supplier link, and par level.</p>
+
+      <h4 className="text-sm font-semibold mt-5 mb-2">Storage Areas</h4>
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Storage Areas</span></p>
+      <p className="mb-3 text-theme-secondary">Define the physical storage locations on your site (e.g. Walk-in Fridge, Dry Store, Freezer Room, Bar Store). Stock counts and deliveries are organised by storage area.</p>
+
+      <h4 className="text-sm font-semibold mt-5 mb-2">Libraries</h4>
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Libraries</span></p>
+      <p className="mb-3 text-theme-secondary">Reference libraries for different stock categories: Ingredients, Chemicals, Packaging, Disposables, PPE, and First Aid. These provide a master list that stock items can be linked to.</p>
+
+      {/* Section 26 */}
+      <div id="section-26" className="guide-section-header stockly scroll-mt-32">
+        <div className="guide-module-label stockly">Stockly &mdash; Inventory &amp; Stock</div>
+        <h2>26. Suppliers &amp; Approved Lists</h2>
+      </div>
+
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Suppliers</span></p>
+
+      <p className="mb-3 text-theme-secondary">Manage your supplier directory with contact details, delivery days, minimum order values, and lead times. Each supplier profile shows their linked stock items and order history.</p>
+
+      <h4 className="text-sm font-semibold mt-5 mb-2">Approved Supplier List</h4>
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Suppliers <span className="sep opacity-50">&rsaquo;</span> Approved List</span></p>
+      <p className="mb-3 text-theme-secondary">Maintain a formal approved supplier list for compliance purposes. This is a key document for EHO and SALSA audits &mdash; it records which suppliers are approved, their food safety certifications, and review dates.</p>
+
+      {/* Section 27 */}
+      <div id="section-27" className="guide-section-header stockly scroll-mt-32">
+        <div className="guide-module-label stockly">Stockly &mdash; Inventory &amp; Stock</div>
+        <h2>27. Orders &amp; Deliveries</h2>
+      </div>
+
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Orders</span></p>
+
+      <p className="mb-3 text-theme-secondary">Create purchase orders for your suppliers. Orders can be built from par levels, previous orders, or manually. Once submitted, track the order status through to delivery.</p>
+
+      <h4 className="text-sm font-semibold mt-5 mb-2">Deliveries</h4>
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Deliveries</span></p>
+      <p className="mb-3 text-theme-secondary">When a delivery arrives, book it in against the order. Record quantities received, check temperatures, note any discrepancies, and capture photo evidence of delivery notes. Discrepancies can be flagged for credit notes.</p>
+
+      {/* Section 28 */}
+      <div id="section-28" className="guide-section-header stockly scroll-mt-32">
+        <div className="guide-module-label stockly">Stockly &mdash; Inventory &amp; Stock</div>
+        <h2>28. Stock Counts &amp; Variance</h2>
+      </div>
+
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Stock Counts</span></p>
+
+      <p className="mb-3 text-theme-secondary">Perform regular stock takes by storage area. The system compares your counted stock against expected levels (based on deliveries, sales, and waste) to calculate variance.</p>
+
+      <div className="space-y-3 my-4">
+        <div className="guide-step stockly bg-theme-muted/20">
+          <div className="guide-step-number stockly">1</div>
+          <div>
+            <strong className="block mb-1">Start a new count</strong>
+            <p className="text-sm text-theme-secondary">Select the storage area and the system pre-populates items expected to be there.</p>
+          </div>
+        </div>
+        <div className="guide-step stockly bg-theme-muted/20">
+          <div className="guide-step-number stockly">2</div>
+          <div>
+            <strong className="block mb-1">Enter quantities</strong>
+            <p className="text-sm text-theme-secondary">Count each item and enter the actual quantity on hand.</p>
+          </div>
+        </div>
+        <div className="guide-step stockly bg-theme-muted/20">
+          <div className="guide-step-number stockly">3</div>
+          <div>
+            <strong className="block mb-1">Review variance</strong>
+            <p className="text-sm text-theme-secondary">The system highlights items with significant variance. Review and submit for manager sign-off.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Section 29 */}
+      <div id="section-29" className="guide-section-header stockly scroll-mt-32">
+        <div className="guide-module-label stockly">Stockly &mdash; Inventory &amp; Stock</div>
+        <h2>29. Waste Tracking &amp; Credit Notes</h2>
+      </div>
+
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Waste</span></p>
+
+      <p className="mb-3 text-theme-secondary">Log waste as it happens with a reason category (spoilage, out of date, preparation, customer return, etc.). Waste feeds into your variance reports and GP calculations.</p>
+
+      <h4 className="text-sm font-semibold mt-5 mb-2">Credit Notes</h4>
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Credit Notes</span></p>
+      <p className="mb-3 text-theme-secondary">When a delivery has issues (damaged goods, short deliveries, quality problems), raise a credit note against the supplier. Track the status until the credit is confirmed.</p>
+
+      {/* Section 30 */}
+      <div id="section-30" className="guide-section-header stockly scroll-mt-32">
+        <div className="guide-module-label stockly">Stockly &mdash; Inventory &amp; Stock</div>
+        <h2>30. Recipes &amp; Ingredients</h2>
+      </div>
+
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Recipes</span></p>
+
+      <p className="mb-3 text-theme-secondary">Build recipes with ingredient quantities and costings. The system calculates the cost per portion and theoretical food cost percentage. Recipes also feed into production batches for traceability.</p>
+
+      <h4 className="text-sm font-semibold mt-5 mb-2">Ingredients Library</h4>
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Libraries <span className="sep opacity-50">&rsaquo;</span> Ingredients</span></p>
+      <p className="mb-3 text-theme-secondary">Master list of all ingredients with allergen information, supplier links, and unit costs. Allergens are tracked at the ingredient level and roll up to recipes automatically.</p>
+
+      {/* Section 31 */}
+      <div id="section-31" className="guide-section-header stockly scroll-mt-32">
+        <div className="guide-module-label stockly">Stockly &mdash; Inventory &amp; Stock</div>
+        <h2>31. Production Batches &amp; Traceability</h2>
+      </div>
+
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Production Batches</span></p>
+
+      <p className="mb-3 text-theme-secondary">Create production batches to track what was made, when, by whom, and from which ingredients. Each batch gets a unique reference and records shelf-life dates.</p>
+
+      <h4 className="text-sm font-semibold mt-5 mb-2">Traceability</h4>
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Traceability</span></p>
+      <p className="mb-3 text-theme-secondary">Full forward and backward traceability: from supplier delivery through to the finished product. Essential for recall situations &mdash; you can quickly identify affected batches and customers.</p>
+
+      <h4 className="text-sm font-semibold mt-5 mb-2">Recalls</h4>
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Recalls</span></p>
+      <p className="mb-3 text-theme-secondary">If a recall is needed, create a recall record to track the affected product, batches, and resolution actions.</p>
+
+      {/* Section 32 */}
+      <div id="section-32" className="guide-section-header stockly scroll-mt-32">
+        <div className="guide-module-label stockly">Stockly &mdash; Inventory &amp; Stock</div>
+        <h2>32. SALSA Compliance</h2>
+      </div>
+
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> SALSA</span></p>
+
+      <p className="mb-3 text-theme-secondary">If your business is SALSA accredited (or working towards it), the SALSA module guides you through the compliance requirements. It tracks your progress across all SALSA standards with a phase-based approach.</p>
+
+      <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-sm text-green-800 dark:text-green-200 mb-4">
+        <strong className="block mb-1">Tip:</strong> A dedicated SALSA How-To Guide is available at <span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> SALSA <span className="sep opacity-50">&rsaquo;</span> Guide</span> with step-by-step instructions for each compliance phase.
+      </div>
+
+      {/* Section 33 */}
+      <div id="section-33" className="guide-section-header stockly scroll-mt-32">
+        <div className="guide-module-label stockly">Stockly &mdash; Inventory &amp; Stock</div>
+        <h2>33. Stockly Reports</h2>
+      </div>
+
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Reports</span></p>
+
+      <div className="overflow-x-auto mb-4">
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr className="border-b border-theme">
+              <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-theme-tertiary font-semibold">Report</th>
+              <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-theme-tertiary font-semibold">What It Shows</th>
+            </tr>
+          </thead>
+          <tbody className="text-theme-secondary">
+            <tr className="border-b border-theme-muted/30"><td className="py-2 px-3 font-medium text-theme-primary">Stock Value</td><td className="py-2 px-3">Current stock on hand valued at cost price</td></tr>
+            <tr className="border-b border-theme-muted/30"><td className="py-2 px-3 font-medium text-theme-primary">Gross Profit</td><td className="py-2 px-3">Sales vs. cost of goods sold, GP percentage by category</td></tr>
+            <tr className="border-b border-theme-muted/30"><td className="py-2 px-3 font-medium text-theme-primary">Price Analysis</td><td className="py-2 px-3">Price trends across suppliers, price comparison</td></tr>
+            <tr className="border-b border-theme-muted/30"><td className="py-2 px-3 font-medium text-theme-primary">Supplier Spend</td><td className="py-2 px-3">Spend breakdown by supplier over time</td></tr>
+            <tr className="border-b border-theme-muted/30"><td className="py-2 px-3 font-medium text-theme-primary">Wastage</td><td className="py-2 px-3">Waste by category, reason, and trend over time</td></tr>
+            <tr className="border-b border-theme-muted/30"><td className="py-2 px-3 font-medium text-theme-primary">Variance</td><td className="py-2 px-3">Difference between expected and actual stock levels</td></tr>
+            <tr><td className="py-2 px-3 font-medium text-theme-primary">Dead Stock</td><td className="py-2 px-3">Items with no movement over a specified period</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      </div>{/* end Stockly background */}
+
+      {/* ===== ASSETLY ===== */}
+      <div className="guide-page-break" />
+
+      <div className="rounded-2xl bg-assetly/[0.04] dark:bg-assetly/[0.03] border border-assetly/20 px-6 py-2 mb-6">
+
+      <div id="section-34" className="guide-section-header assetly scroll-mt-32">
+        <div className="guide-module-label assetly">Assetly &mdash; Assets &amp; Maintenance</div>
+        <h2>34. Managing Assets</h2>
+      </div>
+
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Assetly <span className="sep opacity-50">&rsaquo;</span> Assets</span></p>
+
+      <p className="mb-3 text-theme-secondary">Register all your physical assets: kitchen equipment, refrigeration units, HVAC, furniture, IT equipment, and more. Each asset record includes:</p>
+      <ul className="list-disc ml-6 space-y-1 text-theme-secondary mb-4">
+        <li>Name, description, and category</li>
+        <li>Location (site and area)</li>
+        <li>Make, model, and serial number</li>
+        <li>Purchase date, warranty expiry, and expected lifespan</li>
+        <li>Linked maintenance schedules and callout history</li>
+      </ul>
+
+      <h4 className="text-sm font-semibold mt-5 mb-2">Asset Groups</h4>
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Assetly <span className="sep opacity-50">&rsaquo;</span> Groups</span></p>
+      <p className="mb-3 text-theme-secondary">Organise assets into logical groups (e.g. Refrigeration, Cooking Equipment, Electrical) for easier management and reporting.</p>
+
+      {/* Section 35 */}
+      <div id="section-35" className="guide-section-header assetly scroll-mt-32">
+        <div className="guide-module-label assetly">Assetly &mdash; Assets &amp; Maintenance</div>
+        <h2>35. Preventive Planned Maintenance (PPM)</h2>
+      </div>
+
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Assetly <span className="sep opacity-50">&rsaquo;</span> PPM Schedule</span></p>
+
+      <p className="mb-3 text-theme-secondary">Set up recurring maintenance schedules for your assets. PPM ensures equipment is serviced regularly to prevent breakdowns and maintain compliance.</p>
+      <ul className="list-disc ml-6 space-y-1 text-theme-secondary mb-4">
+        <li>Define maintenance tasks with frequency (weekly, monthly, quarterly, annually)</li>
+        <li>Assign to internal staff or external contractors</li>
+        <li>Track completion and overdue items</li>
+        <li>View compliance rates across all assets</li>
+      </ul>
+
+      {/* Section 36 */}
+      <div id="section-36" className="guide-section-header assetly scroll-mt-32">
+        <div className="guide-module-label assetly">Assetly &mdash; Assets &amp; Maintenance</div>
+        <h2>36. Contractors &amp; Callout Logs</h2>
+      </div>
+
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Assetly <span className="sep opacity-50">&rsaquo;</span> Contractors</span></p>
+
+      <p className="mb-3 text-theme-secondary">Maintain a directory of your maintenance contractors with contact details, specialities, and service agreements.</p>
+
+      <h4 className="text-sm font-semibold mt-5 mb-2">Callout Logs</h4>
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Assetly <span className="sep opacity-50">&rsaquo;</span> Callout Logs</span></p>
+      <p className="mb-3 text-theme-secondary">Record every contractor callout: which asset, the issue reported, contractor assigned, date, cost, and resolution. This builds a full maintenance history for each asset and helps with budgeting.</p>
+
+      </div>{/* end Assetly background */}
+
+      {/* ===== PLANLY ===== */}
+      <div className="guide-page-break" />
+
+      <div className="rounded-2xl bg-planly/[0.04] dark:bg-planly/[0.03] border border-planly/20 px-6 py-2 mb-6">
+
+      <div id="section-37" className="guide-section-header planly scroll-mt-32">
+        <div className="guide-module-label planly">Planly &mdash; Production Planning</div>
+        <h2>37. Products &amp; Pricing</h2>
+      </div>
+
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Planly <span className="sep opacity-50">&rsaquo;</span> Products</span></p>
+
+      <p className="mb-3 text-theme-secondary">Define your product catalogue with categories, unit sizes, and base pricing. Products can be linked to recipes in Stockly for automatic costing.</p>
+
+      <h4 className="text-sm font-semibold mt-5 mb-2">Pricing</h4>
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Planly <span className="sep opacity-50">&rsaquo;</span> Pricing</span></p>
+      <p className="mb-3 text-theme-secondary">Set up pricing tiers and customer-specific pricing. Supports volume discounts, seasonal pricing, and price lists per customer or customer group.</p>
+
+      {/* Section 38 */}
+      <div id="section-38" className="guide-section-header planly scroll-mt-32">
+        <div className="guide-module-label planly">Planly &mdash; Production Planning</div>
+        <h2>38. Customers &amp; Orders</h2>
+      </div>
+
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Planly <span className="sep opacity-50">&rsaquo;</span> Customers</span></p>
+
+      <p className="mb-3 text-theme-secondary">Manage your wholesale customer directory with delivery addresses, contact details, preferred delivery days, and order cutoff times. Each customer profile shows their order history and pricing.</p>
+
+      <h4 className="text-sm font-semibold mt-5 mb-2">Order Book</h4>
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Planly <span className="sep opacity-50">&rsaquo;</span> Order Book</span></p>
+      <p className="mb-3 text-theme-secondary">View and manage all customer orders in one place. Create new orders, edit existing ones, and track order status from placement through to delivery.</p>
+
+      {/* Section 39 */}
+      <div id="section-39" className="guide-section-header planly scroll-mt-32">
+        <div className="guide-module-label planly">Planly &mdash; Production Planning</div>
+        <h2>39. Production Planning &amp; Delivery</h2>
+      </div>
+
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Planly <span className="sep opacity-50">&rsaquo;</span> Production Plan</span></p>
+
+      <p className="mb-3 text-theme-secondary">The production plan aggregates all orders for a given day and calculates what needs to be produced. It breaks down by product, quantity, and production process.</p>
+
+      <h4 className="text-sm font-semibold mt-5 mb-2">Delivery Schedule &amp; Notes</h4>
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Planly <span className="sep opacity-50">&rsaquo;</span> Delivery Schedule</span></p>
+      <p className="mb-3 text-theme-secondary">View the daily delivery schedule showing which customers need deliveries, what products, and delivery sequence. Generate delivery notes for drivers with full order details.</p>
+
+      <h4 className="text-sm font-semibold mt-5 mb-2">Monthly Sales</h4>
+      <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Planly <span className="sep opacity-50">&rsaquo;</span> Monthly Sales</span></p>
+      <p className="mb-3 text-theme-secondary">Track sales performance by customer and product over time with monthly summaries and trend analysis.</p>
+
+      </div>{/* end Planly background */}
+
+      {/* ===== MSGLY ===== */}
+      <div className="guide-page-break" />
+
+      <div className="rounded-2xl bg-msgly/[0.04] dark:bg-msgly/[0.03] border border-msgly/20 px-6 py-2 mb-6">
+
+      <div id="section-40" className="guide-section-header msgly scroll-mt-32">
+        <div className="guide-module-label msgly">Msgly &mdash; Messaging</div>
+        <h2>40. Team Messaging</h2>
+      </div>
+
+      <p className="mb-3 text-theme-secondary">Msgly is the built-in messaging system for team communication. Access it from the <strong>Messages</strong> icon in the sidebar or header.</p>
+
+      <h4 className="text-sm font-semibold mt-5 mb-2">Key features:</h4>
+      <ul className="list-disc ml-6 space-y-1 text-theme-secondary mb-4">
+        <li><strong>Direct messages</strong> &mdash; one-to-one conversations with any team member</li>
+        <li><strong>Group channels</strong> &mdash; create channels for teams, departments, or sites</li>
+        <li><strong>Unread badges</strong> &mdash; unread message counts shown in the sidebar</li>
+        <li><strong>Real-time</strong> &mdash; messages appear instantly without refreshing</li>
+      </ul>
+
+      <p className="mb-3 text-theme-secondary">Messaging opens as a side panel so you can reference it alongside your current work without losing your place.</p>
+
+      </div>{/* end Msgly background */}
+
       <hr className="border-t border-theme my-8" />
 
       <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-sm text-green-800 dark:text-green-200 mb-4">
@@ -846,9 +1329,10 @@ export default function ManagerGuideContent() {
       </div>
 
       <div className="text-center pt-10 mt-16 border-t border-theme text-xs text-theme-tertiary">
-        opsly. &mdash; Manager Guide &mdash; Beta Edition February 2026<br />
+        opsly. &mdash; Manager Guide &mdash; All Modules &mdash; Beta Edition February 2026<br />
         &copy; 2026 Opsly Technologies Ltd. All rights reserved. Confidential.
       </div>
     </div>
+    </>
   )
 }

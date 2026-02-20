@@ -1,6 +1,16 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+
 export default function StaffGuideContent() {
+  const [showTop, setShowTop] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 400)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
     <>
       <style jsx global>{`
@@ -25,11 +35,15 @@ export default function StaffGuideContent() {
         }
         .guide-section-header.teamly { border-color: #D37E91; }
         .guide-section-header.checkly { border-color: #F1E194; }
+        .guide-section-header.stockly { border-color: #789A99; }
+        .guide-section-header.assetly { border-color: #F3E7D9; }
+        .guide-section-header.msgly { border-color: #CBDDE9; }
         .guide-section-header.general { border-color: #110f0d; }
         @media (prefers-color-scheme: dark) {
           .guide-section-header.general { border-color: #a09890; }
         }
         .dark .guide-section-header.general { border-color: #a09890; }
+        .dark .guide-section-header.assetly { border-color: #544349; }
         .guide-section-header h2 {
           font-size: 24px;
           font-weight: 700;
@@ -43,8 +57,14 @@ export default function StaffGuideContent() {
         }
         .guide-module-label.teamly { color: #C28FA3; }
         .guide-module-label.checkly { color: #5B0E14; }
+        .guide-module-label.stockly { color: #4E7D7C; }
+        .guide-module-label.assetly { color: #544349; }
+        .guide-module-label.msgly { color: #2872A1; }
         .guide-module-label.general { color: #666; }
         .dark .guide-module-label.checkly { color: #F1E194; }
+        .dark .guide-module-label.stockly { color: #789A99; }
+        .dark .guide-module-label.assetly { color: #F3E7D9; }
+        .dark .guide-module-label.msgly { color: #CBDDE9; }
         .dark .guide-module-label.general { color: #a09890; }
         .guide-step {
           display: flex;
@@ -56,6 +76,9 @@ export default function StaffGuideContent() {
         }
         .guide-step.teamly { border-left-color: #D37E91; }
         .guide-step.checkly { border-left-color: #F1E194; }
+        .guide-step.stockly { border-left-color: #789A99; }
+        .guide-step.assetly { border-left-color: #F3E7D9; }
+        .guide-step.msgly { border-left-color: #CBDDE9; }
         .guide-step-number {
           width: 28px;
           height: 28px;
@@ -70,8 +93,12 @@ export default function StaffGuideContent() {
         }
         .guide-step-number.teamly { background: #D37E91; }
         .guide-step-number.checkly { background: #F1E194; color: #110f0d; }
+        .guide-step-number.stockly { background: #789A99; color: #110f0d; }
+        .guide-step-number.assetly { background: #544349; }
+        .guide-step-number.msgly { background: #2872A1; }
         .guide-step-number.general { background: #110f0d; }
         .dark .guide-step-number.general { background: #a09890; color: #110f0d; }
+        .dark .guide-step-number.assetly { background: #F3E7D9; color: #110f0d; }
         .guide-nav-path {
           display: inline-flex;
           align-items: center;
@@ -113,58 +140,89 @@ export default function StaffGuideContent() {
         }
       `}</style>
 
-      <div className="guide-content text-theme-primary">
+      <div id="guide-top" className="guide-content text-theme-primary">
+
+        {/* Floating back-to-top button */}
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className={`guide-no-print fixed bottom-6 right-6 z-40 w-10 h-10 rounded-full bg-teamly text-white shadow-lg flex items-center justify-center transition-all duration-300 hover:bg-teamly/80 ${showTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
+          aria-label="Back to top"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
+        </button>
+
         {/* ===== TABLE OF CONTENTS ===== */}
-        <div className="bg-theme-muted/30 rounded-xl p-8 mb-8">
+        <div className="bg-theme-muted/30 rounded-xl p-6 sm:p-8 mb-8">
           <h3 className="text-lg font-semibold mb-4">Contents</h3>
 
-          <div className="mb-4">
-            <div className="text-xs font-semibold uppercase tracking-wider text-theme-tertiary mb-2 pb-1 border-b-2 border-gray-300 dark:border-gray-600 inline-block">Getting Started</div>
-            <ol className="ml-5 text-sm text-theme-secondary space-y-1">
-              <li>Setting Up Your Account</li>
-              <li>Finding Your Way Around</li>
-              <li>Your Profile &amp; Settings</li>
-              <li>Installing on Your Phone</li>
-            </ol>
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wider text-theme-tertiary mb-1.5 pb-1 border-b-2 border-gray-300 dark:border-gray-600 inline-block">Getting Started</div>
+              <ol className="ml-5 text-sm space-y-0.5">
+                <li><a href="#section-1" className="text-theme-secondary hover:text-teamly transition-colors">Setting Up Your Account</a></li>
+                <li><a href="#section-2" className="text-theme-secondary hover:text-teamly transition-colors">Finding Your Way Around</a></li>
+                <li><a href="#section-3" className="text-theme-secondary hover:text-teamly transition-colors">Your Profile &amp; Settings</a></li>
+                <li><a href="#section-4" className="text-theme-secondary hover:text-teamly transition-colors">Installing on Your Phone</a></li>
+              </ol>
+            </div>
 
-          <div className="mb-4">
-            <div className="text-xs font-semibold uppercase tracking-wider text-checkly-dark dark:text-checkly mb-2 pb-1 border-b-2 border-checkly inline-block">Checkly &mdash; Your Daily Tasks</div>
-            <ol className="ml-5 text-sm text-theme-secondary space-y-1" start={5}>
-              <li>Viewing Today&apos;s Tasks</li>
-              <li>Completing a Task</li>
-              <li>Temperature Checks</li>
-              <li>Taking Photo Evidence</li>
-              <li>Flagging Issues</li>
-            </ol>
-          </div>
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wider text-checkly-dark dark:text-checkly mb-1.5 pb-1 border-b-2 border-checkly inline-block">Checkly &mdash; Your Daily Tasks</div>
+              <ol className="ml-5 text-sm space-y-0.5" start={5}>
+                <li><a href="#section-5" className="text-theme-secondary hover:text-teamly transition-colors">Viewing Today&apos;s Tasks</a></li>
+                <li><a href="#section-6" className="text-theme-secondary hover:text-teamly transition-colors">Completing a Task</a></li>
+                <li><a href="#section-7" className="text-theme-secondary hover:text-teamly transition-colors">Temperature Checks</a></li>
+                <li><a href="#section-8" className="text-theme-secondary hover:text-teamly transition-colors">Taking Photo Evidence</a></li>
+                <li><a href="#section-9" className="text-theme-secondary hover:text-teamly transition-colors">Flagging Issues</a></li>
+              </ol>
+            </div>
 
-          <div className="mb-4">
-            <div className="text-xs font-semibold uppercase tracking-wider text-teamly-dark dark:text-teamly mb-2 pb-1 border-b-2 border-teamly inline-block">Teamly &mdash; Your Shifts &amp; Time Off</div>
-            <ol className="ml-5 text-sm text-theme-secondary space-y-1" start={10}>
-              <li>Viewing Your Rota</li>
-              <li>Clocking In &amp; Out</li>
-              <li>Setting Your Availability</li>
-              <li>Requesting Leave</li>
-              <li>Checking Your Leave Balance</li>
-              <li>Your Training Records</li>
-              <li>Onboarding Documents</li>
-            </ol>
-          </div>
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wider text-teamly-dark dark:text-teamly mb-1.5 pb-1 border-b-2 border-teamly inline-block">Teamly &mdash; Your Shifts &amp; Time Off</div>
+              <ol className="ml-5 text-sm space-y-0.5" start={10}>
+                <li><a href="#section-10" className="text-theme-secondary hover:text-teamly transition-colors">Viewing Your Rota</a></li>
+                <li><a href="#section-11" className="text-theme-secondary hover:text-teamly transition-colors">Clocking In &amp; Out</a></li>
+                <li><a href="#section-12" className="text-theme-secondary hover:text-teamly transition-colors">Setting Your Availability</a></li>
+                <li><a href="#section-13" className="text-theme-secondary hover:text-teamly transition-colors">Requesting Leave</a></li>
+                <li><a href="#section-14" className="text-theme-secondary hover:text-teamly transition-colors">Checking Your Leave Balance</a></li>
+                <li><a href="#section-15" className="text-theme-secondary hover:text-teamly transition-colors">Your Training Records</a></li>
+                <li><a href="#section-16" className="text-theme-secondary hover:text-teamly transition-colors">Onboarding Documents</a></li>
+              </ol>
+            </div>
 
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-theme-tertiary mb-2 pb-1 border-b-2 border-gray-300 dark:border-gray-600 inline-block">Quick Reference</div>
-            <ol className="ml-5 text-sm text-theme-secondary space-y-1" start={17}>
-              <li>Daily Checklist</li>
-              <li>Getting Help</li>
-            </ol>
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wider text-stockly-dark dark:text-stockly mb-1.5 pb-1 border-b-2 border-stockly inline-block">Stockly &mdash; Stock &amp; Deliveries</div>
+              <ol className="ml-5 text-sm space-y-0.5" start={17}>
+                <li><a href="#section-17" className="text-theme-secondary hover:text-teamly transition-colors">Booking In Deliveries</a></li>
+                <li><a href="#section-18" className="text-theme-secondary hover:text-teamly transition-colors">Logging Waste</a></li>
+                <li><a href="#section-19" className="text-theme-secondary hover:text-teamly transition-colors">Stock Counts</a></li>
+              </ol>
+
+              <div className="text-xs font-semibold uppercase tracking-wider text-assetly-dark dark:text-assetly mb-1.5 mt-3 pb-1 border-b-2 border-assetly inline-block">Assetly &mdash; Reporting Issues</div>
+              <ol className="ml-5 text-sm space-y-0.5" start={20}>
+                <li><a href="#section-20" className="text-theme-secondary hover:text-teamly transition-colors">Reporting Equipment Issues</a></li>
+              </ol>
+
+              <div className="text-xs font-semibold uppercase tracking-wider text-msgly-dark dark:text-msgly mb-1.5 mt-3 pb-1 border-b-2 border-msgly inline-block">Msgly &mdash; Messaging</div>
+              <ol className="ml-5 text-sm space-y-0.5" start={21}>
+                <li><a href="#section-21" className="text-theme-secondary hover:text-teamly transition-colors">Sending &amp; Receiving Messages</a></li>
+              </ol>
+
+              <div className="text-xs font-semibold uppercase tracking-wider text-theme-tertiary mb-1.5 mt-3 pb-1 border-b-2 border-gray-300 dark:border-gray-600 inline-block">Quick Reference</div>
+              <ol className="ml-5 text-sm space-y-0.5" start={22}>
+                <li><a href="#section-22" className="text-theme-secondary hover:text-teamly transition-colors">Daily Checklist</a></li>
+                <li><a href="#section-23" className="text-theme-secondary hover:text-teamly transition-colors">Getting Help</a></li>
+              </ol>
+            </div>
           </div>
         </div>
 
         {/* ===== GETTING STARTED ===== */}
         <div className="guide-page-break" />
 
-        <div className="guide-section-header general">
+        <div className="rounded-2xl bg-theme-muted/10 border border-theme px-6 py-2 mb-6">
+
+        <div id="section-1" className="guide-section-header general scroll-mt-32">
           <div className="guide-module-label general">Getting Started</div>
           <h2>1. Setting Up Your Account</h2>
         </div>
@@ -203,7 +261,7 @@ export default function StaffGuideContent() {
         </div>
 
         {/* Section 2 */}
-        <div className="guide-section-header general">
+        <div id="section-2" className="guide-section-header general scroll-mt-32">
           <div className="guide-module-label general">Getting Started</div>
           <h2>2. Finding Your Way Around</h2>
         </div>
@@ -235,7 +293,7 @@ export default function StaffGuideContent() {
         <p className="mb-3 text-theme-secondary">Use the <strong>Module Bar</strong> at the top to switch between <strong>Checkly</strong> (tasks) and <strong>Teamly</strong> (shifts/leave). A sidebar on the left shows navigation for whichever module you&apos;re in.</p>
 
         {/* Section 3 */}
-        <div className="guide-section-header general">
+        <div id="section-3" className="guide-section-header general scroll-mt-32">
           <div className="guide-module-label general">Getting Started</div>
           <h2>3. Your Profile &amp; Settings</h2>
         </div>
@@ -253,7 +311,7 @@ export default function StaffGuideContent() {
         </div>
 
         {/* Section 4 */}
-        <div className="guide-section-header general">
+        <div id="section-4" className="guide-section-header general scroll-mt-32">
           <div className="guide-module-label general">Getting Started</div>
           <h2>4. Installing on Your Phone</h2>
         </div>
@@ -278,10 +336,14 @@ export default function StaffGuideContent() {
 
         <p className="mb-3 text-theme-secondary">Once installed, Opsly will open full-screen like a regular app &mdash; no browser bars.</p>
 
+        </div>{/* end Getting Started background */}
+
         {/* ===== CHECKLY ===== */}
         <div className="guide-page-break" />
 
-        <div className="guide-section-header checkly">
+        <div className="rounded-2xl bg-checkly/[0.04] dark:bg-checkly/[0.03] border border-checkly/20 px-6 py-2 mb-6">
+
+        <div id="section-5" className="guide-section-header checkly scroll-mt-32">
           <div className="guide-module-label checkly">Checkly &mdash; Your Daily Tasks</div>
           <h2>5. Viewing Today&apos;s Tasks</h2>
         </div>
@@ -312,7 +374,7 @@ export default function StaffGuideContent() {
         </div>
 
         {/* Section 6 */}
-        <div className="guide-section-header checkly">
+        <div id="section-6" className="guide-section-header checkly scroll-mt-32">
           <div className="guide-module-label checkly">Checkly &mdash; Your Daily Tasks</div>
           <h2>6. Completing a Task</h2>
         </div>
@@ -355,7 +417,7 @@ export default function StaffGuideContent() {
         </div>
 
         {/* Section 7 */}
-        <div className="guide-section-header checkly">
+        <div id="section-7" className="guide-section-header checkly scroll-mt-32">
           <div className="guide-module-label checkly">Checkly &mdash; Your Daily Tasks</div>
           <h2>7. Temperature Checks</h2>
         </div>
@@ -391,7 +453,7 @@ export default function StaffGuideContent() {
         </div>
 
         {/* Section 8 */}
-        <div className="guide-section-header checkly">
+        <div id="section-8" className="guide-section-header checkly scroll-mt-32">
           <div className="guide-module-label checkly">Checkly &mdash; Your Daily Tasks</div>
           <h2>8. Taking Photo Evidence</h2>
         </div>
@@ -409,7 +471,7 @@ export default function StaffGuideContent() {
         </div>
 
         {/* Section 9 */}
-        <div className="guide-section-header checkly">
+        <div id="section-9" className="guide-section-header checkly scroll-mt-32">
           <div className="guide-module-label checkly">Checkly &mdash; Your Daily Tasks</div>
           <h2>9. Flagging Issues</h2>
         </div>
@@ -422,10 +484,14 @@ export default function StaffGuideContent() {
         </ul>
         <p className="mb-3 text-theme-secondary">Flagged tasks are highlighted in the completed tasks list and in reports, so your manager can follow up.</p>
 
+        </div>{/* end Checkly background */}
+
         {/* ===== TEAMLY ===== */}
         <div className="guide-page-break" />
 
-        <div className="guide-section-header teamly">
+        <div className="rounded-2xl bg-teamly/[0.04] dark:bg-teamly/[0.03] border border-teamly/20 px-6 py-2 mb-6">
+
+        <div id="section-10" className="guide-section-header teamly scroll-mt-32">
           <div className="guide-module-label teamly">Teamly &mdash; Your Shifts &amp; Time Off</div>
           <h2>10. Viewing Your Rota</h2>
         </div>
@@ -445,7 +511,7 @@ export default function StaffGuideContent() {
         </div>
 
         {/* Section 11 */}
-        <div className="guide-section-header teamly">
+        <div id="section-11" className="guide-section-header teamly scroll-mt-32">
           <div className="guide-module-label teamly">Teamly &mdash; Your Shifts &amp; Time Off</div>
           <h2>11. Clocking In &amp; Out</h2>
         </div>
@@ -485,7 +551,7 @@ export default function StaffGuideContent() {
         </div>
 
         {/* Section 12 */}
-        <div className="guide-section-header teamly">
+        <div id="section-12" className="guide-section-header teamly scroll-mt-32">
           <div className="guide-module-label teamly">Teamly &mdash; Your Shifts &amp; Time Off</div>
           <h2>12. Setting Your Availability</h2>
         </div>
@@ -504,7 +570,7 @@ export default function StaffGuideContent() {
         </div>
 
         {/* Section 13 */}
-        <div className="guide-section-header teamly">
+        <div id="section-13" className="guide-section-header teamly scroll-mt-32">
           <div className="guide-module-label teamly">Teamly &mdash; Your Shifts &amp; Time Off</div>
           <h2>13. Requesting Leave</h2>
         </div>
@@ -550,7 +616,7 @@ export default function StaffGuideContent() {
         </div>
 
         {/* Section 14 */}
-        <div className="guide-section-header teamly">
+        <div id="section-14" className="guide-section-header teamly scroll-mt-32">
           <div className="guide-module-label teamly">Teamly &mdash; Your Shifts &amp; Time Off</div>
           <h2>14. Checking Your Leave Balance</h2>
         </div>
@@ -568,7 +634,7 @@ export default function StaffGuideContent() {
         <p className="mb-3 text-theme-secondary">You can also see the <strong>Team Calendar</strong> to see when your colleagues are off &mdash; helpful for planning your own requests.</p>
 
         {/* Section 15 */}
-        <div className="guide-section-header teamly">
+        <div id="section-15" className="guide-section-header teamly scroll-mt-32">
           <div className="guide-module-label teamly">Teamly &mdash; Your Shifts &amp; Time Off</div>
           <h2>15. Your Training Records</h2>
         </div>
@@ -587,7 +653,7 @@ export default function StaffGuideContent() {
         </div>
 
         {/* Section 16 */}
-        <div className="guide-section-header teamly">
+        <div id="section-16" className="guide-section-header teamly scroll-mt-32">
           <div className="guide-module-label teamly">Teamly &mdash; Your Shifts &amp; Time Off</div>
           <h2>16. Onboarding Documents</h2>
         </div>
@@ -619,12 +685,136 @@ export default function StaffGuideContent() {
           </div>
         </div>
 
+        </div>{/* end Teamly background */}
+
+        {/* ===== STOCKLY ===== */}
+        <div className="guide-page-break" />
+
+        <div className="rounded-2xl bg-stockly/[0.04] dark:bg-stockly/[0.03] border border-stockly/20 px-6 py-2 mb-6">
+
+        <div id="section-17" className="guide-section-header stockly scroll-mt-32">
+          <div className="guide-module-label stockly">Stockly &mdash; Stock &amp; Deliveries</div>
+          <h2>17. Booking In Deliveries</h2>
+        </div>
+
+        <p className="mb-3 text-theme-secondary">When a delivery arrives at your site, your manager may ask you to book it in. Here&apos;s what to do:</p>
+
+        <div className="space-y-3 my-4">
+          <div className="guide-step stockly bg-theme-muted/20">
+            <div className="guide-step-number stockly">1</div>
+            <div>
+              <strong className="block mb-1">Check the delivery note</strong>
+              <p className="text-sm text-theme-secondary">Match the items delivered against the delivery note. Check quantities and look for any damage.</p>
+            </div>
+          </div>
+          <div className="guide-step stockly bg-theme-muted/20">
+            <div className="guide-step-number stockly">2</div>
+            <div>
+              <strong className="block mb-1">Check temperatures</strong>
+              <p className="text-sm text-theme-secondary">For chilled and frozen goods, check the temperature on arrival and record it. Flag anything outside the safe range.</p>
+            </div>
+          </div>
+          <div className="guide-step stockly bg-theme-muted/20">
+            <div className="guide-step-number stockly">3</div>
+            <div>
+              <strong className="block mb-1">Record in the app</strong>
+              <p className="text-sm text-theme-secondary">Go to <span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Deliveries</span>, find the order, and confirm what was received. Note any discrepancies.</p>
+            </div>
+          </div>
+          <div className="guide-step stockly bg-theme-muted/20">
+            <div className="guide-step-number stockly">4</div>
+            <div>
+              <strong className="block mb-1">Take a photo</strong>
+              <p className="text-sm text-theme-secondary">Photograph the delivery note and any issues (damaged items, missing goods) as evidence.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 18 */}
+        <div id="section-18" className="guide-section-header stockly scroll-mt-32">
+          <div className="guide-module-label stockly">Stockly &mdash; Stock &amp; Deliveries</div>
+          <h2>18. Logging Waste</h2>
+        </div>
+
+        <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Waste</span></p>
+
+        <p className="mb-3 text-theme-secondary">Whenever you throw away food or stock, log it in the app:</p>
+        <ul className="list-disc ml-6 space-y-1 text-theme-secondary mb-4">
+          <li>Select the item from the stock list</li>
+          <li>Enter the quantity wasted</li>
+          <li>Choose a reason: spoilage, out of date, preparation waste, customer return, dropped/damaged</li>
+          <li>Add a note if helpful (e.g. &ldquo;found at back of fridge, 3 days past use-by&rdquo;)</li>
+        </ul>
+
+        <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm text-blue-800 dark:text-blue-200 mb-4">
+          <strong className="block mb-1">Note:</strong> Logging waste isn&apos;t about blame &mdash; it helps the business understand where waste happens so it can be reduced. Always log it honestly.
+        </div>
+
+        {/* Section 19 */}
+        <div id="section-19" className="guide-section-header stockly scroll-mt-32">
+          <div className="guide-module-label stockly">Stockly &mdash; Stock &amp; Deliveries</div>
+          <h2>19. Stock Counts</h2>
+        </div>
+
+        <p className="mb-1 text-theme-secondary"><span className="guide-nav-path bg-theme-muted/30 text-theme-tertiary">Stockly <span className="sep opacity-50">&rsaquo;</span> Stock Counts</span></p>
+
+        <p className="mb-3 text-theme-secondary">Your manager may assign you to help with stock counts. You&apos;ll count the physical stock in a storage area and enter the quantities into the app. Be accurate &mdash; count carefully and double-check if unsure.</p>
+
+        </div>{/* end Stockly background */}
+
+        {/* ===== ASSETLY ===== */}
+        <div className="guide-page-break" />
+
+        <div className="rounded-2xl bg-assetly/[0.04] dark:bg-assetly/[0.03] border border-assetly/20 px-6 py-2 mb-6">
+
+        <div id="section-20" className="guide-section-header assetly scroll-mt-32">
+          <div className="guide-module-label assetly">Assetly &mdash; Reporting Issues</div>
+          <h2>20. Reporting Equipment Issues</h2>
+        </div>
+
+        <p className="mb-3 text-theme-secondary">If a piece of equipment breaks down or isn&apos;t working properly (e.g. a fridge not cooling, a dishwasher leaking, an oven not heating), report it through the app:</p>
+
+        <ul className="list-disc ml-6 space-y-1 text-theme-secondary mb-4">
+          <li>Flag the issue on the relevant Checkly task if you notice it during a check</li>
+          <li>Or tell your manager directly so they can log a callout in Assetly</li>
+        </ul>
+
+        <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-sm text-amber-800 dark:text-amber-200 mb-4">
+          <strong className="block mb-1">Important:</strong> If a fridge or freezer fails, do not move food without manager approval. Report it immediately &mdash; time is critical for food safety.
+        </div>
+
+        </div>{/* end Assetly background */}
+
+        {/* ===== MSGLY ===== */}
+
+        <div className="rounded-2xl bg-msgly/[0.04] dark:bg-msgly/[0.03] border border-msgly/20 px-6 py-2 mb-6">
+
+        <div id="section-21" className="guide-section-header msgly scroll-mt-32">
+          <div className="guide-module-label msgly">Msgly &mdash; Messaging</div>
+          <h2>21. Sending &amp; Receiving Messages</h2>
+        </div>
+
+        <p className="mb-3 text-theme-secondary">Opsly has built-in messaging so you can communicate with your team without needing separate apps.</p>
+
+        <ul className="list-disc ml-6 space-y-1 text-theme-secondary mb-4">
+          <li>Access messages from the <strong>Messages</strong> icon in the sidebar</li>
+          <li>Send direct messages to any colleague</li>
+          <li>Join group channels for your team or department</li>
+          <li>Unread messages show a badge count so you don&apos;t miss anything</li>
+        </ul>
+
+        <p className="mb-3 text-theme-secondary">Messages open in a side panel, so you can read and reply without leaving your current page.</p>
+
+        </div>{/* end Msgly background */}
+
         {/* ===== QUICK REFERENCE ===== */}
         <div className="guide-page-break" />
 
-        <div className="guide-section-header general">
+        <div className="rounded-2xl bg-theme-muted/10 border border-theme px-6 py-2 mb-6">
+
+        <div id="section-22" className="guide-section-header general scroll-mt-32">
           <div className="guide-module-label general">Quick Reference</div>
-          <h2>17. Your Daily Checklist</h2>
+          <h2>22. Your Daily Checklist</h2>
         </div>
 
         <p className="mb-3 text-theme-secondary">Here&apos;s a quick summary of what to do each day:</p>
@@ -701,10 +891,10 @@ export default function StaffGuideContent() {
           </div>
         </div>
 
-        {/* Section 18 */}
-        <div className="guide-section-header general">
+        {/* Section 23 */}
+        <div id="section-23" className="guide-section-header general scroll-mt-32">
           <div className="guide-module-label general">Quick Reference</div>
-          <h2>18. Getting Help</h2>
+          <h2>23. Getting Help</h2>
         </div>
 
         <p className="mb-3 text-theme-secondary">If you&apos;re stuck or something isn&apos;t working:</p>
@@ -732,8 +922,10 @@ export default function StaffGuideContent() {
           The app is designed to make your daily work easier. Tasks guide you through exactly what needs to be done, the rota keeps you up to date on your shifts, and everything is recorded so there&apos;s no more paper checklists or guesswork. If something doesn&apos;t seem right, just flag it &mdash; that&apos;s what the system is for.
         </div>
 
+        </div>{/* end Quick Reference background */}
+
         <div className="text-center pt-10 mt-16 border-t border-theme text-xs text-theme-tertiary">
-          opsly. &mdash; Staff Guide &mdash; Beta Edition February 2026<br />
+          opsly. &mdash; Staff Guide &mdash; All Modules &mdash; Beta Edition February 2026<br />
           &copy; 2026 Opsly Technologies Ltd. All rights reserved. Confidential.
         </div>
       </div>

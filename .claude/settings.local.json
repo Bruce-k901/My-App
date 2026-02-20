@@ -129,7 +129,9 @@
       "Bash(where:*)",
       "Bash(supabase db dump:*)",
       "Bash(Select-String:*)",
-      "Bash(Select-Object -First 15)"
+      "Bash(Select-Object -First 15)",
+      "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" status)",
+      "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" log --oneline -5)"
     ]
   }
 }
