@@ -60,3 +60,6 @@ playwright/.cache/
 # Private assets (certificate templates, etc.)
 /private/
 nul
+
+# Docker tutorial (not part of app)
+/welcome-to-docker/
