@@ -175,7 +175,8 @@ export default function CompanyDetailPage() {
       id: company.id,
       name: company.name
     }));
-    router.push('/dashboard');
+    // Full page load so AppContext re-mounts and reads the new sessionStorage
+    window.location.href = '/dashboard';
   };
 
   const handleViewAsSetup = () => {
@@ -185,7 +186,8 @@ export default function CompanyDetailPage() {
       id: company.id,
       name: company.name
     }));
-    router.push('/dashboard/business');
+    // Full page load so AppContext re-mounts and reads the new sessionStorage
+    window.location.href = '/dashboard/business';
   };
 
   if (loading) {

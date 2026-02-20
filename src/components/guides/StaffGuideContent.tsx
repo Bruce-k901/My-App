@@ -8,11 +8,68 @@ export default function StaffGuideContent() {
   useEffect(() => {
     const onScroll = () => setShowTop(window.scrollY > 400)
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+
+    // Estimate page numbers for TOC before printing
+    const handleBeforePrint = () => {
+      const scale = 0.55
+      const pageH = 900
+      document.querySelectorAll('.guide-toc a[href^="#section-"]').forEach(link => {
+        const id = link.getAttribute('href')?.slice(1)
+        if (!id) return
+        const el = document.getElementById(id)
+        if (!el) return
+        const top = el.getBoundingClientRect().top + window.scrollY
+        const pg = Math.floor((top * scale) / pageH) + 1
+        let s = link.querySelector('.toc-pg') as HTMLSpanElement
+        if (!s) {
+          s = document.createElement('span')
+          s.className = 'toc-pg'
+          link.appendChild(s)
+        }
+        s.textContent = String(pg)
+      })
+    }
+    const handleAfterPrint = () => {
+      document.querySelectorAll('.toc-pg').forEach(el => el.remove())
+    }
+
+    window.addEventListener('beforeprint', handleBeforePrint)
+    window.addEventListener('afterprint', handleAfterPrint)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('beforeprint', handleBeforePrint)
+      window.removeEventListener('afterprint', handleAfterPrint)
+    }
   }, [])
 
   return (
     <>
+      {/* Print page layout — @page margin boxes for running header/footer */}
+      <style>{`
+        @page {
+          size: A4;
+          margin: 20mm 15mm 16mm 15mm;
+          @top-left {
+            content: "opsly.";
+            font-weight: 700;
+            font-size: 10pt;
+            color: #1B2624;
+            font-family: system-ui, -apple-system, sans-serif;
+          }
+          @top-right {
+            content: "Staff Guide";
+            font-size: 8pt;
+            color: #888;
+            font-family: system-ui, -apple-system, sans-serif;
+          }
+          @bottom-center {
+            content: "Page " counter(page);
+            font-size: 8pt;
+            color: #999;
+            font-family: system-ui, -apple-system, sans-serif;
+          }
+        }
+      `}</style>
       <style jsx global>{`
         .guide-content {
           max-width: 800px;
@@ -22,11 +79,76 @@ export default function StaffGuideContent() {
           -webkit-print-color-adjust: exact;
           print-color-adjust: exact;
         }
+        .toc-pg { display: none; }
         @media print {
-          .guide-content { font-size: 10pt; }
+          body, html { background: white !important; }
+          .guide-no-print { display: none !important; }
           .guide-page-break { page-break-before: always; }
           .guide-no-break { page-break-inside: avoid; }
-          .guide-no-print { display: none !important; }
+          .guide-content {
+            font-size: 9.5pt !important;
+            line-height: 1.4 !important;
+            max-width: 100% !important;
+          }
+          /* Strip module wrapper decoration for print */
+          .guide-content > .rounded-2xl,
+          .guide-content > .rounded-xl {
+            background: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            margin-bottom: 0 !important;
+          }
+          /* Section headers — compact */
+          .guide-section-header {
+            padding: 6px 0 !important;
+            margin: 10px 0 5px 0 !important;
+            border-bottom-width: 2px !important;
+          }
+          .guide-section-header h2 { font-size: 14pt !important; margin-bottom: 1px !important; }
+          .guide-module-label { font-size: 8px !important; letter-spacing: 1.5px !important; }
+          /* Steps — compact */
+          .guide-step {
+            margin-bottom: 3px !important;
+            padding: 4px 10px !important;
+            gap: 8px !important;
+            border-radius: 3px !important;
+          }
+          .guide-step-number { width: 20px !important; height: 20px !important; font-size: 10px !important; }
+          /* Nav paths */
+          .guide-nav-path { padding: 1px 6px !important; font-size: 8pt !important; margin: 1px 0 !important; }
+          /* Paragraphs, lists, headings */
+          .guide-content p { margin-bottom: 3px !important; }
+          .guide-content ul, .guide-content ol { margin-bottom: 4px !important; }
+          .guide-content li { margin-bottom: 0 !important; }
+          .guide-content h3 { margin-top: 6px !important; margin-bottom: 2px !important; font-size: 11pt !important; }
+          .guide-content h4 { margin-top: 4px !important; margin-bottom: 1px !important; font-size: 10pt !important; }
+          /* Info/tip/warning boxes */
+          .guide-content .p-4.rounded-lg {
+            padding: 4px 8px !important;
+            margin-bottom: 4px !important;
+            font-size: 8.5pt !important;
+            border-radius: 3px !important;
+          }
+          /* Tables */
+          .guide-content table { font-size: 8.5pt !important; }
+          .guide-content td, .guide-content th { padding: 2px 5px !important; }
+          /* Misc */
+          .guide-content hr { margin: 4px 0 !important; }
+          .guide-content .text-center.border-t { padding-top: 6px !important; margin-top: 8px !important; }
+          /* Quick reference */
+          .guide-quick-ref { padding: 10px !important; margin: 4px 0 !important; }
+          /* TOC page numbers */
+          .guide-toc a { display: flex !important; text-decoration: none !important; color: #333 !important; }
+          .guide-toc ol { font-size: 9pt !important; }
+          .toc-pg {
+            display: inline !important;
+            margin-left: auto;
+            padding-left: 6px;
+            color: #888;
+            font-size: 8pt;
+            font-variant-numeric: tabular-nums;
+          }
         }
         .guide-section-header {
           padding: 20px 0;
@@ -152,7 +274,7 @@ export default function StaffGuideContent() {
         </button>
 
         {/* ===== TABLE OF CONTENTS ===== */}
-        <div className="bg-theme-muted/30 rounded-xl p-6 sm:p-8 mb-8">
+        <div className="guide-toc bg-theme-muted/30 rounded-xl p-6 sm:p-8 mb-8">
           <h3 className="text-lg font-semibold mb-4">Contents</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
@@ -218,8 +340,6 @@ export default function StaffGuideContent() {
         </div>
 
         {/* ===== GETTING STARTED ===== */}
-        <div className="guide-page-break" />
-
         <div className="rounded-2xl bg-theme-muted/10 border border-theme px-6 py-2 mb-6">
 
         <div id="section-1" className="guide-section-header general scroll-mt-32">

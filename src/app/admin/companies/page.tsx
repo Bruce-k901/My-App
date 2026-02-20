@@ -95,8 +95,8 @@ export default function AdminCompaniesPage() {
       name: company.name
     }));
     
-    // Redirect to customer dashboard
-    router.push('/dashboard');
+    // Full page load so AppContext re-mounts and reads the new sessionStorage
+    window.location.href = '/dashboard';
   };
 
   const filteredCompanies = companies.filter(company =>

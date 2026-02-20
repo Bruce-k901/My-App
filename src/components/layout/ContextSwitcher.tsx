@@ -12,7 +12,7 @@ interface Company {
 }
 
 export function ContextSwitcher() {
-  const { company, profile, setCompany, setSelectedSite } = useAppContext();
+  const { company, profile, setCompany, setSelectedSite, isViewingAs } = useAppContext();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -74,15 +74,30 @@ export function ContextSwitcher() {
   const handleSelectCompany = (selectedCompany: Company) => {
     console.log('🏢 [ContextSwitcher] Selecting company:', selectedCompany.name);
 
-    // Update the company in context
+    // Clear site selection
+    localStorage.removeItem("selectedSiteId");
+
+    if (profile?.is_platform_admin) {
+      // Platform admin: use View As mode for other companies
+      if (selectedCompany.id === profile.company_id) {
+        // Switching back to own company — exit View As mode
+        sessionStorage.removeItem('admin_viewing_as_company');
+      } else {
+        // Switching to another company — enter/update View As mode
+        sessionStorage.setItem('admin_viewing_as_company', JSON.stringify({
+          id: selectedCompany.id,
+          name: selectedCompany.name
+        }));
+      }
+      // Full page reload so AppContext re-reads sessionStorage consistently
+      window.location.reload();
+      return;
+    }
+
+    // Non-admin: update context directly
     setCompany(selectedCompany);
-
-    // Clear the selected site when switching companies (site won't belong to new company)
     setSelectedSite(null);
-
-    // Store selected company in localStorage for persistence
     localStorage.setItem("selectedCompanyId", selectedCompany.id);
-    localStorage.removeItem("selectedSiteId"); // Clear site selection
 
     setIsOpen(false);
   };
@@ -131,14 +146,16 @@ export function ContextSwitcher() {
           transition-all
           ${isOpen
             ? "bg-black/[0.05] dark:bg-white/[0.08] border-[#D37E91]"
-            : "bg-black/[0.03] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] hover:bg-black/[0.05] dark:hover:bg-white/[0.06]"
+            : isViewingAs
+              ? "bg-amber-500/10 dark:bg-amber-500/10 border-amber-500/50 hover:bg-amber-500/15 dark:hover:bg-amber-500/15"
+              : "bg-black/[0.03] dark:bg-white/[0.03] border-[rgb(var(--border))] dark:border-white/[0.06] hover:bg-black/[0.05] dark:hover:bg-white/[0.06]"
           }
         `}
         disabled={loading}
         suppressHydrationWarning
       >
-        <Building2 className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
-        <span className="text-[rgb(var(--text-primary))] dark:text-white font-medium flex-1 text-left truncate" suppressHydrationWarning>
+        <Building2 className={`w-4 h-4 ${isViewingAs ? "text-amber-500" : "text-[rgb(var(--text-secondary))] dark:text-theme-tertiary"}`} />
+        <span className={`font-medium flex-1 text-left truncate ${isViewingAs ? "text-amber-500" : "text-[rgb(var(--text-primary))] dark:text-white"}`} suppressHydrationWarning>
           {loading ? "Loading..." : displayText}
         </span>
         <ChevronDown className={`w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary transition-transform flex-shrink-0 ${isOpen ? "rotate-180" : ""}`} />
@@ -154,17 +171,25 @@ export function ContextSwitcher() {
           }}
         >
           {/* Company Options */}
-          {companies.map((comp) => (
-            <button
-              key={comp.id}
-              onClick={() => handleSelectCompany(comp)}
-              className="w-full px-4 py-2 flex items-center gap-3 hover:bg-black/[0.05] dark:hover:bg-white/[0.06] transition-colors text-left"
-            >
-              <Building2 className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
-              <span className="flex-1 text-[rgb(var(--text-primary))] dark:text-white">{comp.name}</span>
-              {company?.id === comp.id && <Check className="w-4 h-4 text-[#D37E91]" />}
-            </button>
-          ))}
+          {companies.map((comp) => {
+            const isOwnCompany = comp.id === profile?.company_id;
+            return (
+              <button
+                key={comp.id}
+                onClick={() => handleSelectCompany(comp)}
+                className="w-full px-4 py-2 flex items-center gap-3 hover:bg-black/[0.05] dark:hover:bg-white/[0.06] transition-colors text-left"
+              >
+                <Building2 className="w-4 h-4 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary" />
+                <span className="flex-1 text-[rgb(var(--text-primary))] dark:text-white">
+                  {comp.name}
+                  {isOwnCompany && profile?.is_platform_admin && (
+                    <span className="ml-2 text-xs text-theme-tertiary">(yours)</span>
+                  )}
+                </span>
+                {company?.id === comp.id && <Check className="w-4 h-4 text-[#D37E91]" />}
+              </button>
+            );
+          })}
 
           {companies.length === 0 && !loading && (
             <div className="px-4 py-2 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-sm">
