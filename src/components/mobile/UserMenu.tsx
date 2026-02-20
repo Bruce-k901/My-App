@@ -28,7 +28,7 @@ interface UserMenuProps {
 
 export function UserMenu({ isOpen, onClose }: UserMenuProps) {
   const router = useRouter();
-  const { profile, signOut, role } = useAppContext();
+  const { profile, signOut, role, setSelectedSite: setAppContextSite } = useAppContext();
   const {
     selectedSiteId,
     accessibleSites,
@@ -79,6 +79,8 @@ export function UserMenu({ isOpen, onClose }: UserMenuProps) {
   const handleSiteSelect = (siteId: string | 'all') => {
     haptics.light();
     setSelectedSite(siteId);
+    // Also update AppContext so pages reading selectedSiteId from AppContext stay in sync
+    setAppContextSite(siteId === 'all' ? null : siteId);
     setShowSites(false);
   };
 

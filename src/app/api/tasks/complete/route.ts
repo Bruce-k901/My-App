@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     // Use .or() with proper syntax: "field1.eq.value,field2.eq.value"
     const { data: profile, error: profileError } = await serviceClient
       .from('profiles')
-      .select('id, company_id, auth_user_id')
+      .select('id, company_id, auth_user_id, is_platform_admin')
       .or(`id.eq.${completionRecord.completed_by},auth_user_id.eq.${completionRecord.completed_by}`)
       .maybeSingle()
 
@@ -68,8 +68,8 @@ export async function POST(request: NextRequest) {
       completionRecord.completed_by = profile.id
     }
 
-    // Verify company_id matches profile's company
-    if (completionRecord.company_id !== profile.company_id) {
+    // Verify company_id matches profile's company (platform admins bypass)
+    if (!profile.is_platform_admin && completionRecord.company_id !== profile.company_id) {
       return NextResponse.json({ error: 'Company ID mismatch' }, { status: 403 })
     }
 

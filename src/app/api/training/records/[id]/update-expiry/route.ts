@@ -36,7 +36,7 @@ export async function POST(
     // Get user's profile
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('id, company_id, app_role')
+      .select('id, company_id, app_role, is_platform_admin')
       .eq('auth_user_id', user.id)
       .single();
 
@@ -44,8 +44,8 @@ export async function POST(
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
 
-    // Check permissions (manager/admin only)
-    const isManager = ['admin', 'owner', 'manager', 'general_manager', 'area_manager', 'regional_manager']
+    // Check permissions (manager/admin only, or platform admin)
+    const isManager = profile.is_platform_admin || ['admin', 'owner', 'manager', 'general_manager', 'area_manager', 'regional_manager']
       .includes((profile.app_role || '').toLowerCase());
 
     if (!isManager) {
@@ -76,8 +76,8 @@ export async function POST(
       return NextResponse.json({ error: 'Training record not found' }, { status: 404 });
     }
 
-    // Verify company access
-    if (record.company_id !== profile.company_id) {
+    // Verify company access (platform admins bypass)
+    if (!profile.is_platform_admin && record.company_id !== profile.company_id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

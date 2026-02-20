@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     // Get user's profile to check permissions and get company_id
     const { data: currentProfile, error: profileError } = await supabase
       .from('profiles')
-      .select('id, company_id, app_role')
+      .select('id, company_id, app_role, is_platform_admin')
       .eq('auth_user_id', user.id)
       .maybeSingle();
 
@@ -36,8 +36,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
 
-    // Check if user has permission (manager/owner/admin)
-    const isManager = ['admin', 'owner', 'manager', 'general_manager', 'area_manager', 'regional_manager']
+    // Check if user has permission (manager/owner/admin or platform admin)
+    const isManager = currentProfile.is_platform_admin || ['admin', 'owner', 'manager', 'general_manager', 'area_manager', 'regional_manager']
       .includes((currentProfile.app_role || '').toLowerCase());
 
     if (!isManager) {
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     // Get target profile and course to verify they exist and are in same company
     const supabaseAdmin = getSupabaseAdmin();
-    
+
     const { data: targetProfile, error: targetError } = await supabaseAdmin
       .from('profiles')
       .select('id, company_id, full_name, email, home_site, site_id')
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Target employee not found' }, { status: 404 });
     }
 
-    if (targetProfile.company_id !== currentProfile.company_id) {
+    if (!currentProfile.is_platform_admin && targetProfile.company_id !== currentProfile.company_id) {
       return NextResponse.json({ error: 'Employee not in same company' }, { status: 403 });
     }
 
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 });
     }
 
-    if (course.company_id !== currentProfile.company_id) {
+    if (!currentProfile.is_platform_admin && course.company_id !== currentProfile.company_id) {
       return NextResponse.json({ error: 'Course not in same company' }, { status: 403 });
     }
 

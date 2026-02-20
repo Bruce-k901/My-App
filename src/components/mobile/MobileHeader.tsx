@@ -31,7 +31,7 @@ export function MobileHeader({
   showSiteSelector = true,
   onAvatarClick,
 }: MobileHeaderProps) {
-  const { companyId, profile, siteId } = useAppContext();
+  const { companyId, profile, siteId, setSelectedSite: setAppContextSite } = useAppContext();
   const { setSelectedSite } = useSiteContext();
   const [sites, setSites] = useState<{ id: string; name: string }[]>([]);
   const [showSiteDropdown, setShowSiteDropdown] = useState(false);
@@ -75,6 +75,8 @@ export function MobileHeader({
 
   const handleSiteSelect = (selectedSiteId: string | null) => {
     setSelectedSite(selectedSiteId || 'all');
+    // Also update AppContext so pages reading selectedSiteId from AppContext stay in sync
+    setAppContextSite(selectedSiteId === 'all' ? null : selectedSiteId);
     if (selectedSiteId === null || selectedSiteId === 'all') {
       setCurrentSiteName('All Sites');
     } else {

@@ -31,8 +31,9 @@ export function registerServiceWorker(): void {
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // New service worker available, prompt user to refresh
-                  console.log('[PWA] New service worker available');
+                  // New service worker installed while existing one controls the page
+                  console.log('[PWA] New version available — prompting user');
+                  window.dispatchEvent(new CustomEvent('pwa-update-available'));
                 }
               });
             }
@@ -43,11 +44,10 @@ export function registerServiceWorker(): void {
         });
     });
 
-    // Listen for service worker updates
+    // When the new SW takes control, notify UI so it can reload
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      console.log('[PWA] Service Worker controller changed');
-      // Optionally reload the page to use new service worker
-      // window.location.reload();
+      console.log('[PWA] Service Worker controller changed — new version active');
+      window.dispatchEvent(new CustomEvent('pwa-update-activated'));
     });
   } else {
     console.warn('[PWA] Service Workers not supported');

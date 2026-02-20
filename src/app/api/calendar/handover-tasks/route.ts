@@ -42,11 +42,11 @@ export async function GET(request: NextRequest) {
     const supabaseAdmin = getSupabaseAdmin();
     const { data: userProfile, error: profileErr } = await supabaseAdmin
       .from('profiles')
-      .select('company_id, id')
+      .select('company_id, id, is_platform_admin')
       .eq('id', user.id)
       .single();
 
-    if (profileErr || !userProfile || userProfile.company_id !== companyId) {
+    if (profileErr || !userProfile || (!userProfile.is_platform_admin && userProfile.company_id !== companyId)) {
       return NextResponse.json(
         { error: 'Unauthorized - user does not belong to this company' },
         { status: 403 }

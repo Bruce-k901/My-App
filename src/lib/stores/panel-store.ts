@@ -30,10 +30,13 @@ import { create } from 'zustand'
 
 interface PanelStore {
   messagingOpen: boolean
+  pendingConversationId: string | null
   calendarOpen: boolean
   aiAssistantOpen: boolean
   searchOpen: boolean
   setMessagingOpen: (open: boolean) => void
+  openMessagingWithConversation: (conversationId: string) => void
+  clearPendingConversation: () => void
   setCalendarOpen: (open: boolean) => void
   setAiAssistantOpen: (open: boolean) => void
   setSearchOpen: (open: boolean) => void
@@ -41,10 +44,13 @@ interface PanelStore {
 
 export const usePanelStore = create<PanelStore>((set) => ({
   messagingOpen: false,
+  pendingConversationId: null,
   calendarOpen: false,
   aiAssistantOpen: false,
   searchOpen: false,
   setMessagingOpen: (open) => set({ messagingOpen: open }),
+  openMessagingWithConversation: (conversationId) => set({ messagingOpen: true, pendingConversationId: conversationId }),
+  clearPendingConversation: () => set({ pendingConversationId: null }),
   setCalendarOpen: (open) => set({ calendarOpen: open }),
   setAiAssistantOpen: (open) => set({ aiAssistantOpen: open }),
   setSearchOpen: (open) => set({ searchOpen: open }),

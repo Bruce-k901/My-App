@@ -4,6 +4,7 @@ import { useRef, useCallback } from 'react';
 import { useAlerts } from './useAlerts';
 import { toast } from 'sonner';
 import { usePathname } from 'next/navigation';
+import { usePanelStore } from '@/lib/stores/panel-store';
 import type { Message } from '@/types/messaging';
 
 interface UseMessageAlertsOptions {
@@ -64,9 +65,9 @@ export function useMessageAlerts({
         label: 'Reply',
         onClick: () => {
           if (conversationId) {
-            window.location.href = `/dashboard/messages?conversation=${conversationId}`;
+            usePanelStore.getState().openMessagingWithConversation(conversationId);
           } else {
-            window.location.href = '/dashboard/messages';
+            usePanelStore.getState().setMessagingOpen(true);
           }
         },
       },

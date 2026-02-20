@@ -3,11 +3,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { CheckSquare, Users, Calendar, MessageSquare, MoreHorizontal } from '@/components/ui/icons';
+import { CheckSquare, Users, Calendar, MessageSquare, MoreHorizontal, UserX, Clock } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { useMobileNav } from './MobileNavProvider';
 import { usePanelStore } from '@/lib/stores/panel-store';
 import { haptics } from '@/lib/haptics';
+import { useUnreadMessageCount } from '@/hooks/useUnreadMessageCount';
 
 const container = {
   hidden: { opacity: 0 },
@@ -60,12 +61,29 @@ const quickAccessItems = [
     color: 'text-msgly-dark dark:text-msgly',
     bg: 'bg-msgly/10 dark:bg-msgly/10',
   },
+  {
+    id: 'sickness',
+    label: 'Log Sickness',
+    icon: UserX,
+    href: '/dashboard/incidents/staff-sickness',
+    color: 'text-red-600 dark:text-red-400',
+    bg: 'bg-red-500/10 dark:bg-red-500/10',
+  },
+  {
+    id: 'clockin',
+    label: 'Clock In/Out',
+    icon: Clock,
+    href: '/dashboard/people/attendance',
+    color: 'text-teamly-dark dark:text-teamly',
+    bg: 'bg-teamly/10 dark:bg-teamly/10',
+  },
 ] as const;
 
 export function QuickAccess() {
   const router = useRouter();
   const { openMoreSheet } = useMobileNav();
   const { setMessagingOpen } = usePanelStore();
+  const { unreadCount } = useUnreadMessageCount();
 
   const handleItemClick = (clickedItem: typeof quickAccessItems[number]) => {
     haptics.light();
@@ -104,8 +122,13 @@ export function QuickAccess() {
               "transition-all touch-manipulation"
             )}
           >
-            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", action.bg)}>
+            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center relative", action.bg)}>
               <action.icon size={24} className={action.color} />
+              {action.id === 'messages' && unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 flex items-center justify-center bg-[#D37E91] text-white text-[11px] font-bold rounded-full shadow-sm">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
             </div>
             <span className="text-sm font-medium text-theme-primary text-center leading-tight">
               {action.label}

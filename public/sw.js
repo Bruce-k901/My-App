@@ -1,6 +1,6 @@
 // Service Worker for PWA - Offline Support & Push Notifications
-const CACHE_NAME = 'opsly-v3'; // Rebrand - clear old cache
-const RUNTIME_CACHE = 'opsly-runtime-v3';
+const CACHE_NAME = 'opsly-v4'; // PWA update toast + guide updates
+const RUNTIME_CACHE = 'opsly-runtime-v4';
 
 // Global error handler for unhandled promise rejections
 self.addEventListener('error', (event) => {

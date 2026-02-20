@@ -659,7 +659,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
       // Verify user has access to this company by checking their profile
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('company_id')
+        .select('company_id, is_platform_admin')
         .or(`id.eq.${user?.id},auth_user_id.eq.${user?.id}`)
         .maybeSingle();
 
@@ -670,7 +670,8 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         return;
       }
 
-      if (!profileData || profileData.company_id !== companyId) {
+      // Platform admins can create templates for any company (View As mode)
+      if (!profileData || (!profileData.is_platform_admin && profileData.company_id !== companyId)) {
         toast.error('You do not have access to create templates for this company.');
         setIsSaving(false);
         return;

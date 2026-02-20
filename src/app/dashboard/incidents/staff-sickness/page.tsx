@@ -80,7 +80,7 @@ export default function StaffSicknessPage() {
         .eq('company_id', companyId)
         .order('illness_onset_date', { ascending: false });
 
-      if (siteId) {
+      if (siteId && siteId !== 'all') {
         query = query.eq('site_id', siteId);
       }
 
@@ -129,7 +129,7 @@ export default function StaffSicknessPage() {
           .insert({
             ...formData,
             company_id: companyId,
-            site_id: siteId || null,
+            site_id: siteId && siteId !== 'all' ? siteId : null,
             reported_by: profile?.id || '',
             reported_date: new Date().toISOString().split('T')[0],
             created_at: new Date().toISOString()

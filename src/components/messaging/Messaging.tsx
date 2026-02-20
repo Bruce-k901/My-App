@@ -12,6 +12,7 @@ import { MessageSquare, Menu, ArrowLeft } from '@/components/ui/icons';
 import type { Message } from '@/types/messaging';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
+import { usePanelStore } from '@/lib/stores/panel-store';
 
 export function Messaging() {
   const searchParams = useSearchParams();
@@ -82,6 +83,18 @@ export function Messaging() {
     }
   };
 
+  // Pick up pending conversation from panel store (e.g. from toast Reply button)
+  const { pendingConversationId, clearPendingConversation } = usePanelStore();
+  useEffect(() => {
+    if (pendingConversationId) {
+      setSelectedConversationId(pendingConversationId);
+      if (user?.id) {
+        markChannelAsRead(pendingConversationId, user.id);
+      }
+      clearPendingConversation();
+    }
+  }, [pendingConversationId]);
+
   // Handle conversation selection - update URL and state
   const handleSelectConversation = async (conversationId: string | null) => {
     setSelectedConversationId(conversationId);
@@ -113,7 +126,7 @@ export function Messaging() {
   });
 
   return (
-    <div className="flex h-full w-full bg-white dark:bg-[#0B0D13] overflow-hidden">
+    <div className="flex h-full w-full bg-white dark:bg-[#0B0D13] overflow-hidden relative">
       {/* Mobile: Back Button - Only show when viewing a conversation */}
       {selectedConversationId && isMobile && (
         <button
@@ -122,7 +135,7 @@ export function Messaging() {
             setIsSidebarOpen(true);
             router.replace(pathname, { scroll: false });
           }}
-          className="md:hidden fixed top-[80px] left-4 z-50 p-2 bg-white dark:bg-white/[0.1] hover:bg-gray-100 dark:hover:bg-white/[0.15] backdrop-blur-sm border border-theme rounded-lg text-theme-primary transition-colors shadow-lg"
+          className="md:hidden absolute top-2 left-2 z-50 p-2 bg-white dark:bg-white/[0.1] hover:bg-gray-100 dark:hover:bg-white/[0.15] backdrop-blur-sm border border-theme rounded-lg text-theme-primary transition-colors shadow-lg"
           aria-label="Back to conversations"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -141,8 +154,8 @@ export function Messaging() {
           overflow-hidden
           flex flex-col
           ${
-            isMobile 
-              ? `fixed top-[72px] left-0 z-40 transition-transform duration-300 ease-in-out ${
+            isMobile
+              ? `absolute inset-0 z-40 transition-transform duration-300 ease-in-out ${
                   isSidebarOpen || !selectedConversationId ? 'translate-x-0' : '-translate-x-full'
                 }`
               : ''
@@ -159,7 +172,7 @@ export function Messaging() {
       {isSidebarOpen && isMobile && (
         <div
           onClick={() => setIsSidebarOpen(false)}
-          className="md:hidden fixed inset-0 bg-black/40 dark:bg-black/50 z-30"
+          className="md:hidden absolute inset-0 bg-black/40 dark:bg-black/50 z-30"
         />
       )}
 

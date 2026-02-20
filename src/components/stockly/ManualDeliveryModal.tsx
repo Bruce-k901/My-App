@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Search, Calculator, ChevronDown, ChevronRight, Layers, Thermometer } from '@/components/ui/icons';
+import { X, Plus, Trash2, Search, Calculator, ChevronDown, ChevronRight, Layers, Thermometer, Upload, FileText } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -81,6 +81,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
   });
   
   const [saving, setSaving] = useState(false);
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
 
   useEffect(() => {
     if (isOpen && companyId) {
@@ -401,6 +402,25 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
         }
       }
 
+      // Upload attached files to Supabase storage
+      if (attachedFiles.length > 0) {
+        for (const file of attachedFiles) {
+          try {
+            const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+            const filePath = `${companyId}/deliveries/${delivery.id}/${Date.now()}_${safeName}`;
+            await supabase.storage
+              .from('invoices')
+              .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false,
+                contentType: file.type || 'application/octet-stream',
+              });
+          } catch (uploadErr) {
+            console.error('Error uploading file:', uploadErr);
+          }
+        }
+      }
+
       toast.success(`Delivery ${asDraft ? 'saved as draft' : 'confirmed'} successfully`);
       onSuccess(delivery.id);
       
@@ -419,6 +439,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
       setSelectedSupplier('');
       setSearchingLineIndex(null);
       setSearchTerm('');
+      setAttachedFiles([]);
     } catch (error: any) {
       console.error('Error saving delivery:', error);
       toast.error(error.message || 'Failed to save delivery');
@@ -443,8 +464,25 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
       setSelectedSupplier('');
       setSearchingLineIndex(null);
       setSearchTerm('');
+      setAttachedFiles([]);
       onClose();
     }
+  }
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files || []);
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+    const validFiles = files.filter(f => validTypes.includes(f.type) && f.size <= 10 * 1024 * 1024);
+    if (validFiles.length < files.length) {
+      toast.error('Some files were skipped (unsupported type or >10MB)');
+    }
+    setAttachedFiles(prev => [...prev, ...validFiles]);
+    // Reset input so the same file can be re-selected
+    e.target.value = '';
+  }
+
+  function removeFile(index: number) {
+    setAttachedFiles(prev => prev.filter((_, i) => i !== index));
   }
 
   const supplierOptions = suppliers.map((s) => ({
@@ -471,7 +509,7 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto overflow-x-hidden">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-theme-primary">Add Manual Delivery</DialogTitle>
         </DialogHeader>
@@ -535,6 +573,52 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
                 placeholder="DN-6789"
                 disabled={saving}
               />
+            </div>
+
+            {/* Invoice / Photo Upload */}
+            <div className="col-span-1 md:col-span-2">
+              <label className="block text-sm text-theme-secondary mb-2">Invoice / Photos</label>
+              {attachedFiles.length > 0 && (
+                <div className="space-y-2 mb-3">
+                  {attachedFiles.map((file, i) => (
+                    <div key={i} className="border border-theme rounded-lg p-3 flex items-center justify-between bg-white/[0.03]">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <FileText className="text-[#D37E91] flex-shrink-0" size={20} />
+                        <div className="min-w-0">
+                          <p className="text-sm text-theme-primary font-medium truncate">{file.name}</p>
+                          <p className="text-xs text-theme-tertiary">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => removeFile(i)}
+                        disabled={saving}
+                        className="text-theme-tertiary hover:text-red-400 transition-colors flex-shrink-0 ml-2 disabled:opacity-50"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="border-2 border-dashed border-theme rounded-lg p-4 text-center hover:border-[#D37E91]/50 transition-colors">
+                <input
+                  type="file"
+                  id="delivery-file-upload"
+                  className="hidden"
+                  accept="image/jpeg,image/png,image/webp,application/pdf"
+                  onChange={handleFileSelect}
+                  multiple
+                  disabled={saving}
+                />
+                <label htmlFor="delivery-file-upload" className="cursor-pointer flex flex-col items-center gap-2">
+                  <Upload className="text-theme-tertiary" size={24} />
+                  <div className="text-sm">
+                    <span className="text-[#D37E91] font-medium">Upload files</span>
+                    <span className="text-theme-tertiary"> or take photo</span>
+                  </div>
+                  <p className="text-xs text-theme-tertiary">JPEG, PNG, WebP or PDF (max 10MB each)</p>
+                </label>
+              </div>
             </div>
           </div>
 
@@ -802,8 +886,13 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-neutral-800">
+          {/* Spacer so content isn't hidden behind sticky buttons */}
+          <div className="h-20 lg:h-0" />
+        </div>
+
+        {/* Actions - sticky at bottom so they're always visible on mobile */}
+        <div className="sticky bottom-0 -mx-4 sm:-mx-6 px-4 sm:px-6 pt-4 pb-4 bg-white dark:bg-[#0B0D13] border-t border-gray-200 dark:border-neutral-800 z-10">
+          <div className="flex gap-3">
             <Button
               onClick={() => handleSave(true)}
               disabled={saving || !formData.supplier_id || formData.lines.length === 0}

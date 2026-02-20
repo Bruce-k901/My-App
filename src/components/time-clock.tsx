@@ -183,7 +183,7 @@ export function TimeClock({ profileId, siteId, onStatusChange }: TimeClockProps)
   }
 
   return (
-    <div className="bg-theme-surface border border-theme rounded-lg p-6 shadow-sm dark:shadow-none">
+    <div className="bg-theme-surface border border-theme rounded-lg p-6 shadow-sm dark:shadow-none overflow-hidden">
       {/* Current Time */}
       <div className="text-center mb-6">
         <p className="text-4xl font-bold text-theme-primary font-mono">

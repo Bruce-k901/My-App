@@ -83,7 +83,7 @@ export async function POST(req: Request) {
     // Load caller profile for role/company validation
     const { data: callerProfile, error: callerErr } = await supabase
       .from("profiles")
-      .select("id, company_id, app_role, full_name, email")
+      .select("id, company_id, app_role, full_name, email, is_platform_admin")
       .eq("id", user.id)
       .maybeSingle();
     if (callerErr || !callerProfile?.company_id) {
@@ -93,7 +93,7 @@ export async function POST(req: Request) {
     const roleKey = String(callerProfile.app_role || "")
       .toLowerCase()
       .replace(/\s+/g, "_");
-    const canManageRota = ["admin", "owner", "manager", "general_manager", "area_manager", "ops_manager"].includes(roleKey);
+    const canManageRota = callerProfile.is_platform_admin || ["admin", "owner", "manager", "general_manager", "area_manager", "ops_manager"].includes(roleKey);
     if (!canManageRota) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
@@ -109,7 +109,7 @@ export async function POST(req: Request) {
     if (rotaErr || !rota) {
       return NextResponse.json({ error: "Rota not found" }, { status: 404 });
     }
-    if (rota.company_id !== callerProfile.company_id || rota.site_id !== siteId) {
+    if (!callerProfile.is_platform_admin && (rota.company_id !== callerProfile.company_id || rota.site_id !== siteId)) {
       return NextResponse.json({ error: "Not allowed" }, { status: 403 });
     }
 
