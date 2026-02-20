@@ -59,30 +59,23 @@ export default function MyTasksPage() {
       
       // Determine effective site ID:
       // - Staff: always use home site (ignore selectedSiteId)
-      // - Managers: use selectedSiteId if it's a specific site (not 'all'), otherwise use home site
+      // - Managers: use selectedSiteId if it's a specific site, otherwise show all company configs
       let effectiveSiteId: string | null = null;
       if (isManager) {
         // Managers can cycle through sites using header selector
-        // If selectedSiteId is set and not 'all', use it; otherwise use home site
+        // If selectedSiteId is set and not 'all', filter by that site
+        // Otherwise show all active configurations for the company (no site filter)
         if (selectedSiteId && selectedSiteId !== 'all' && selectedSiteId !== null) {
           effectiveSiteId = selectedSiteId;
-          console.log('🔍 Manager: Using selected site from header:', selectedSiteId, 'home site:', homeSiteId);
+          console.log('🔍 Manager: Using selected site from header:', selectedSiteId);
         } else {
-          effectiveSiteId = homeSiteId;
-          console.log('🔍 Manager: Using home site (no specific site selected or "all" selected):', homeSiteId);
+          effectiveSiteId = null; // Show all sites for the company
+          console.log('🔍 Manager: Showing all sites (no specific site selected)');
         }
       } else {
         // Staff: always use home site (ignore selectedSiteId)
         effectiveSiteId = homeSiteId;
         console.log('🔍 Staff: Using home site:', homeSiteId, '(ignoring selectedSiteId:', selectedSiteId, ')');
-        
-        // For staff, also ensure selectedSiteId in context is set to their home site
-        // This prevents any confusion if they somehow have a different site selected
-        if (homeSiteId && selectedSiteId !== homeSiteId) {
-          console.log('🔒 Staff: Resetting selectedSiteId to home site in context');
-          // Note: We can't call setSelectedSite here as it's not available in this scope
-          // But the query will use homeSiteId anyway, so this is just for logging
-        }
       }
       
       console.log('🔍 Configuration loading:', {
@@ -95,18 +88,14 @@ export default function MyTasksPage() {
         hasProfile: !!profile
       });
       
-      if (!effectiveSiteId) {
-        console.warn('⚠️ No effectiveSiteId - cannot load configurations', {
-          isManager,
-          homeSiteId,
-          selectedSiteId,
-          userRole
-        });
+      // Staff must have a site — bail if not
+      if (!isManager && !effectiveSiteId) {
+        console.warn('⚠️ Staff has no home site - cannot load configurations');
         setConfigs([]);
         setLoadingConfigs(false);
         return;
       }
-      
+
       let query = supabase
         .from('site_checklists')
         .select(`
@@ -121,12 +110,17 @@ export default function MyTasksPage() {
           )
         `)
         .eq('company_id', companyId)
-        .eq('active', true)
-        .eq('site_id', effectiveSiteId); // Always filter by site_id
+        .eq('active', true);
+
+      // Only filter by site_id when a specific site is selected
+      // Managers with no site selected see all configs for the company
+      if (effectiveSiteId) {
+        query = query.eq('site_id', effectiveSiteId);
+      }
       
       console.log('🔍 Query filters:', {
         company_id: companyId,
-        site_id: effectiveSiteId,
+        site_id: effectiveSiteId || '(all sites)',
         active: true,
         selectedSiteId,
         isManager

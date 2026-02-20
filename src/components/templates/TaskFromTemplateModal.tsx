@@ -1816,6 +1816,8 @@ export function TaskFromTemplateModal({
             }
           }
           
+          let siteChecklistId: string | null = null;
+
           if (existingChecklist) {
             // Update existing configuration instead of creating duplicate
             console.log('🔄 Found existing site_checklist, updating instead of creating:', existingChecklist.id);
@@ -1823,8 +1825,9 @@ export function TaskFromTemplateModal({
               .from('site_checklists')
               .update(siteChecklistData)
               .eq('id', existingChecklist.id);
-            
+
             if (updateError) throw updateError;
+            siteChecklistId = existingChecklist.id;
             toast.success(`Task configuration updated successfully for ${siteName}!`);
           } else {
             // Create new configuration
@@ -1835,6 +1838,7 @@ export function TaskFromTemplateModal({
               .single();
 
             if (error) throw error;
+            siteChecklistId = data?.id || null;
             toast.success(`Task configuration created successfully for ${siteName}!`);
           }
 
@@ -1988,6 +1992,7 @@ export function TaskFromTemplateModal({
                   .from('checklist_tasks')
                   .insert({
                     template_id: templateId,
+                    site_checklist_id: siteChecklistId,
                     company_id: companyId,
                     site_id: effectiveSiteId,
                     custom_name: formData.custom_name.trim() || template?.name || null,
