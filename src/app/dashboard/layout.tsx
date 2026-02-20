@@ -48,9 +48,14 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
     setShowAIWidget(!isMessagingPage);
   }, [pathname]);
 
-  // Don't render dashboard while checking auth or redirecting
+  // Render a stable placeholder while checking auth — prevents hydration mismatch
+  // by keeping a consistent DOM element in the {children} slot of the root layout
   if (loading || !user) {
-    return null;
+    return (
+      <MobileNavProvider>
+        <div className="min-h-screen bg-[rgb(var(--module-bg-tint))] text-theme-primary" />
+      </MobileNavProvider>
+    );
   }
 
   // Determine which module sidebar to show

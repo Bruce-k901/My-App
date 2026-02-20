@@ -1,9 +1,10 @@
 'use client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 export function ReactQueryProvider({ children }: { children: ReactNode }) {
+  const [mounted, setMounted] = useState(false);
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -24,14 +25,14 @@ export function ReactQueryProvider({ children }: { children: ReactNode }) {
       })
   );
 
+  useEffect(() => { setMounted(true); }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      {/* Show React Query DevTools in development (hidden on print) */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="print:hidden">
-          <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
-        </div>
+      {/* Render devtools only after client mount to avoid hydration mismatch */}
+      {mounted && process.env.NODE_ENV === 'development' && (
+        <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
       )}
     </QueryClientProvider>
   );

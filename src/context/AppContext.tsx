@@ -50,15 +50,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<any | null>(null);
   const [company, setCompany] = useState<any | null>(null);
-  // Initialize loading as false to prevent hydration mismatch
-  // It will be set to true in useEffect if needed
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [viewingAsCompanyId, setViewingAsCompanyId] = useState<string | null>(null);
   // Global selected site - persists in localStorage and overrides profile.site_id
   const [selectedSiteId, setSelectedSiteIdState] = useState<string | null>(null);
   // Track whether site selection has been initialized (prevents re-init when user selects "All Sites" / null)
   const siteInitializedRef = useRef(false);
+  // Prevent duplicate fetchProfile calls (getSession + onAuthStateChange both fire on mount)
+  const profileLoadedForRef = useRef<string | null>(null);
 
   // Load selected site from localStorage on mount
   useEffect(() => {
@@ -117,14 +117,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    // Mark as mounted to prevent hydration issues
     setIsMounted(true);
-    setLoading(true);
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
+        profileLoadedForRef.current = session.user.id;
         fetchProfile(session.user.id);
       } else {
         setLoading(false);
@@ -132,25 +131,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      // console.log('🔄 Auth state changed:', event, session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) {
-        // Force a fresh profile fetch on SIGNED_IN event (e.g., after setup-account)
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          // console.log('🔄 Forcing profile refresh after auth event:', event);
-          // Small delay to ensure session is fully established
-          setTimeout(() => {
-            fetchProfile(session.user.id);
-          }, 100);
-        } else {
-          fetchProfile(session.user.id);
-        }
-      } else {
+
+      if (!session?.user) {
         setProfile(null);
         setCompany(null);
         setLoading(false);
+        profileLoadedForRef.current = null;
+        setViewingAsCompanyId(null);
+        try { sessionStorage.removeItem('admin_viewing_as_company'); } catch {}
+        return;
       }
+
+      // Token refresh — session/cookies already updated above, no profile re-fetch needed
+      if (event === 'TOKEN_REFRESHED') {
+        return;
+      }
+
+      // Deduplicate: getSession() already handles the initial load on mount
+      // INITIAL_SESSION and SIGNED_IN both fire on page load alongside getSession()
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && profileLoadedForRef.current === session.user.id) {
+        return;
+      }
+
+      profileLoadedForRef.current = session.user.id;
+      fetchProfile(session.user.id);
     });
 
     return () => subscription.unsubscribe();
@@ -764,13 +770,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function signOut() {
-    // Clear selected site on logout
+    // Clear state on logout
     siteInitializedRef.current = false;
+    profileLoadedForRef.current = null;
     setSelectedSiteIdState(null);
+    setViewingAsCompanyId(null);
     try {
       localStorage.removeItem('selectedSiteId');
+      sessionStorage.removeItem('admin_viewing_as_company');
     } catch (error) {
-      console.warn('Failed to clear selected site from localStorage:', error);
+      console.warn('Failed to clear storage on logout:', error);
     }
     await supabase.auth.signOut();
     window.location.href = '/login';
@@ -787,8 +796,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     user,
     session,
     profile,
-    // Use viewingAsCompanyId if admin is viewing as another company, otherwise use profile's company_id
-    companyId: viewingAsCompanyId || profile?.company_id || user?.user_metadata?.company_id || null,
+    // Use viewingAsCompanyId if admin is viewing as another company, then active company, then profile fallback
+    companyId: viewingAsCompanyId || company?.id || profile?.company_id || user?.user_metadata?.company_id || null,
     company,
     // Use selected site from header if available, otherwise use profile's site_id
     siteId: effectiveSiteId,
