@@ -63,11 +63,17 @@ Deno.serve(async (req)=>{
         // Populate checklist items based on evidence type
         if (Array.isArray(defaultChecklistItems) && defaultChecklistItems.length > 0) {
           if (hasYesNoChecklist) {
-            // Yes/No checklist format
-            taskData.yesNoChecklistItems = defaultChecklistItems.map((item)=>({
-                text: typeof item === "string" ? item : item.text || item.label || "",
-                answer: null
-              })).filter((item)=>item.text && item.text.trim().length > 0);
+            // Yes/No checklist format (preserve enhanced options if present)
+            taskData.yesNoChecklistItems = defaultChecklistItems.map((item)=>{
+                if (typeof item === "string") {
+                  return { text: item, answer: null };
+                }
+                if (item.options && Array.isArray(item.options)) {
+                  // Enhanced format — preserve options, reset runtime fields
+                  return { ...item, answer: null, actionResponse: undefined, exceptionLogged: undefined };
+                }
+                return { text: item.text || item.label || "", answer: null };
+              }).filter((item: any)=>item.text && item.text.trim().length > 0);
           } else {
             // Regular checklist format
             taskData.checklistItems = defaultChecklistItems.map((item)=>typeof item === "string" ? item : item.text || item.label || "").filter((item)=>item && item.trim().length > 0);

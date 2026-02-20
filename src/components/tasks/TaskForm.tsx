@@ -102,6 +102,7 @@ export default function TaskForm({ formData, setFormData, sites }: TaskFormProps
           onChange={(participants) => setFormData({ ...formData, assignedTo: participants })}
           currentUserId={userId}
           companyId={companyId}
+          sites={sites}
           label="Assign To"
         />
       )}

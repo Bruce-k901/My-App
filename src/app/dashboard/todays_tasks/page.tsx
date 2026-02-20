@@ -16,6 +16,8 @@ import { enrichTemplateWithDefinition } from '@/lib/templates/enrich-template'
 import { calculateTaskTiming } from '@/utils/taskTiming'
 import { triggerTaskGeneration } from '@/lib/task-generation'
 import { useOfflineTaskCache } from '@/hooks/checkly/useOfflineTaskCache'
+import { useAdHocTasks } from '@/hooks/tasks/useAdHocTasks'
+import AdHocTaskList from '@/components/tasks/AdHocTaskList'
 
 // Daypart chronological order (for sorting)
 const DAYPART_ORDER: Record<string, number> = {
@@ -118,6 +120,15 @@ export default function DailyChecklistPage() {
   const [breachLoading, setBreachLoading] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const { isOnline, isCachedData, cacheTasks, getCachedTasks, markLiveData } = useOfflineTaskCache()
+  const [activeTab, setActiveTab] = useState<'scheduled' | 'adhoc'>('scheduled')
+  const [startingAdHocTaskId, setStartingAdHocTaskId] = useState<string | null>(null)
+
+  // Ad hoc tasks hook
+  const {
+    adHocTemplates, loading: adHocLoading,
+    startAdHocTask, refreshCompletionCounts
+  } = useAdHocTasks(companyId, siteId, selectedSiteId)
+
   // Use ref to store latest fetchTodaysTasks function
   const fetchTodaysTasksRef = useRef<() => Promise<void>>()
 
@@ -1762,6 +1773,22 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
     return colors[category] || 'bg-theme-surface-elevated0/10 text-theme-tertiary'
   }
 
+  const handleStartAdHocTask = useCallback(async (template: any) => {
+    setStartingAdHocTaskId(template.siteChecklist.id)
+    try {
+      const task = await startAdHocTask(template)
+      if (task) {
+        setSelectedTask(task)
+        setShowCompletion(true)
+      }
+    } catch (err) {
+      console.error('Failed to start ad hoc task:', err)
+      toast.error('Failed to start task')
+    } finally {
+      setStartingAdHocTaskId(null)
+    }
+  }, [startAdHocTask])
+
   return (
     <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 px-4 sm:px-6">
       {/* Simple Header */}
@@ -1857,6 +1884,50 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
         </div>
       </div>
 
+      {/* Tab Bar: Scheduled / Ad Hoc */}
+      <div className="flex gap-1 rounded-lg bg-gray-100 dark:bg-white/[0.05] p-1 w-fit">
+        <button
+          type="button"
+          onClick={() => setActiveTab('scheduled')}
+          className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5 ${
+            activeTab === 'scheduled'
+              ? 'bg-white dark:bg-white/[0.1] text-[rgb(var(--text-primary))] dark:text-white shadow-sm'
+              : 'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-secondary))] dark:hover:text-theme-secondary'
+          }`}
+        >
+          Scheduled
+          {tasks.length > 0 && (
+            <span className={`px-1.5 py-0.5 rounded-full text-xs ${
+              activeTab === 'scheduled'
+                ? 'bg-checkly-dark/[0.07] dark:bg-checkly/[0.10] text-checkly-dark/60 dark:text-checkly/60'
+                : 'bg-gray-200 dark:bg-white/10 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'
+            }`}>
+              {tasks.length}
+            </span>
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('adhoc')}
+          className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5 ${
+            activeTab === 'adhoc'
+              ? 'bg-white dark:bg-white/[0.1] text-[rgb(var(--text-primary))] dark:text-white shadow-sm'
+              : 'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-secondary))] dark:hover:text-theme-secondary'
+          }`}
+        >
+          Ad Hoc
+          {adHocTemplates.length > 0 && (
+            <span className={`px-1.5 py-0.5 rounded-full text-xs ${
+              activeTab === 'adhoc'
+                ? 'bg-checkly-dark/[0.07] dark:bg-checkly/[0.10] text-checkly-dark/60 dark:text-checkly/60'
+                : 'bg-gray-200 dark:bg-white/10 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'
+            }`}>
+              {adHocTemplates.length}
+            </span>
+          )}
+        </button>
+      </div>
+
       {/* Offline cache indicator */}
       {isCachedData && (
         <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-sm">
@@ -1865,8 +1936,8 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
         </div>
       )}
 
-      {/* Tasks List */}
-      {loading ? (
+      {/* Scheduled Tasks */}
+      {activeTab === 'scheduled' && (loading ? (
         <div className="text-center py-12">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-module-fg/[0.10] dark:bg-module-fg/[0.15] mb-4">
             <Clock className="w-8 h-8 text-module-fg dark:text-module-fg animate-spin" />
@@ -1959,6 +2030,16 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
             })
           })()}
         </div>
+      ))}
+
+      {/* Ad Hoc Tasks */}
+      {activeTab === 'adhoc' && (
+        <AdHocTaskList
+          adHocTemplates={adHocTemplates}
+          loading={adHocLoading}
+          onStartTask={handleStartAdHocTask}
+          startingTaskId={startingAdHocTaskId}
+        />
       )}
 
       {/* Upcoming Callout Follow-up Tasks Section */}
@@ -2069,6 +2150,7 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
             setCompletedTasks([])
             await fetchTodaysTasks() // Refresh tasks to show completed task
             console.log('✅ fetchTodaysTasks completed')
+            await refreshCompletionCounts() // Refresh ad hoc completion counts
             await loadBreachActions() // Refresh breach actions after task completion
           }}
           onMonitoringTaskCreated={() => {

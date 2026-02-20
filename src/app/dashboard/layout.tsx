@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { MobileNavProvider, BottomTabBar, MoreSheet } from "@/components/mobile";
 import { ChecklySidebar } from "@/components/checkly/sidebar-nav";
@@ -13,12 +13,23 @@ import AIAssistantWidget from "@/components/assistant/AIAssistantWidget";
 import { SearchModal } from "@/components/search";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useSidebarMode } from "@/hooks/useSidebarMode";
+import { useAppContext } from "@/context/AppContext";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAppContext();
+  const router = useRouter();
   const [paddingClass, setPaddingClass] = useState('px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:pb-6 lg:px-16');
   const [showAIWidget, setShowAIWidget] = useState(true);
   const pathname = usePathname();
   const { isMobile } = useIsMobile();
+  const { width: sidebarWidth } = useSidebarMode();
+
+  // Redirect to login if session expired
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace('/login');
+    }
+  }, [loading, user, router]);
 
   useEffect(() => {
     // Only compute pathname-dependent values on client after mount
@@ -37,6 +48,11 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
     setShowAIWidget(!isMessagingPage);
   }, [pathname]);
 
+  // Don't render dashboard while checking auth or redirecting
+  if (loading || !user) {
+    return null;
+  }
+
   // Determine which module sidebar to show
   const isCheckly = pathname?.startsWith('/dashboard/todays_tasks') || pathname?.startsWith('/dashboard/tasks') || pathname?.startsWith('/dashboard/checklists') || pathname?.startsWith('/dashboard/incidents') || pathname?.startsWith('/dashboard/sops') || pathname?.startsWith('/dashboard/risk-assessments') || pathname?.startsWith('/dashboard/logs') || pathname?.startsWith('/dashboard/equipment');
   const isStockly = pathname?.startsWith('/dashboard/stockly') || pathname?.startsWith('/dashboard/reports/stockly');
@@ -49,7 +65,6 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
                       isTeamly  ? 'module-teamly'  :
                       isPlanly  ? 'module-planly'  :
                       isAssetly ? 'module-assetly' : '';
-  const { width: sidebarWidth } = useSidebarMode();
 
   // ============================================
   // MOBILE LAYOUT - No desktop header/sidebar

@@ -100,7 +100,7 @@ export default function CreateTaskModal({
   const [sites, setSites] = useState<Array<{ id: string; name: string | null }>>([]);
   const [participantNames, setParticipantNames] = useState<string[]>([]);
   const [templateName, setTemplateName] = useState<string | undefined>();
-  const [autoTitleEnabled, setAutoTitleEnabled] = useState(true);
+  const [autoTitleEnabled, setAutoTitleEnabled] = useState(false);
   const [userProfileName, setUserProfileName] = useState<string>('');
   const [existingTask, setExistingTask] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -243,12 +243,13 @@ export default function CreateTaskModal({
     // Otherwise, create new task
     const preSelectedDate = context?.preSelectedDate || new Date();
     const now = new Date();
-    const defaultTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const snappedMinutes = Math.round(now.getMinutes() / 15) * 15;
+    const snappedHour = snappedMinutes === 60 ? now.getHours() + 1 : now.getHours();
+    const snappedMin = snappedMinutes === 60 ? 0 : snappedMinutes;
+    const defaultTime = `${String(snappedHour % 24).padStart(2, '0')}:${String(snappedMin).padStart(2, '0')}`;
     
     const base: Partial<BaseFormData> = {
-      title: context?.messageContent 
-        ? `Follow up: ${context.messageContent.substring(0, 50)}${context.messageContent.length > 50 ? '...' : ''}`
-        : '',
+      title: '',
       description: context?.messageContent || '',
       siteId: '',
       dueDate: preSelectedDate,
@@ -316,7 +317,7 @@ export default function CreateTaskModal({
         setFormData(initial);
         setParticipantNames([]);
         setTemplateName(undefined);
-        setAutoTitleEnabled(true);
+        setAutoTitleEnabled(false);
         return;
       }
 
@@ -401,7 +402,7 @@ export default function CreateTaskModal({
       setFormData(initial);
       setParticipantNames([]);
       setTemplateName(undefined);
-      setAutoTitleEnabled(true);
+      setAutoTitleEnabled(false);
     }
   }, [isOpen, activeType, isEditing]);
 
@@ -763,11 +764,11 @@ export default function CreateTaskModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-[#0B0D13] border border-theme rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col"
+        className="bg-white dark:bg-[#0B0D13] border border-theme rounded-lg shadow-xl max-w-2xl w-full max-h-[85vh] sm:max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -883,7 +884,7 @@ export default function CreateTaskModal({
         </div>
 
         {/* Footer */}
-        <div className="flex gap-3 p-6 border-t border-theme flex-shrink-0">
+        <div className="flex gap-3 p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] border-t border-theme flex-shrink-0">
           <button
             onClick={onClose}
             className="flex-1 px-4 py-2 bg-gray-100 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] text-theme-secondary rounded-lg hover:bg-gray-200 dark:hover:bg-white/[0.05] transition-colors text-sm font-medium"

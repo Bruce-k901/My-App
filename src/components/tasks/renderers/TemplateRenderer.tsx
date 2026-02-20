@@ -23,8 +23,10 @@ interface TemplateRendererProps {
   onChecklistItemChange: (index: number, completed: boolean) => void;
 
   // Yes/No checklist
-  yesNoItems: Array<{ text: string; answer: 'yes' | 'no' | null }>;
-  onYesNoItemChange: (index: number, answer: 'yes' | 'no' | null) => void;
+  yesNoItems: any[];
+  onYesNoItemChange: (index: number, answer: string | null) => void;
+  actionResponses?: Record<number, string>;
+  onActionResponse?: (index: number, response: string) => void;
 
   // Photos
   photos: File[];
@@ -57,6 +59,8 @@ export function TemplateRenderer({
   onChecklistItemChange,
   yesNoItems,
   onYesNoItemChange,
+  actionResponses,
+  onActionResponse,
   photos,
   onPhotoAdd,
   onPhotoRemove,
@@ -97,6 +101,8 @@ export function TemplateRenderer({
         <YesNoChecklistRenderer
           items={yesNoItems}
           onChange={onYesNoItemChange}
+          actionResponses={actionResponses}
+          onActionResponse={onActionResponse}
           disabled={disabled}
         />
       )}

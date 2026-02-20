@@ -141,7 +141,7 @@ export function TaskFromTemplateModal({
     priority: 'medium' as 'low' | 'medium' | 'high' | 'critical',
     // Feature-specific data
     checklistItems: [] as string[],
-    yesNoChecklistItems: [] as Array<{ text: string; answer: 'yes' | 'no' | null }>,
+    yesNoChecklistItems: [] as any[],
     temperatures: [] as Array<{ assetId?: string; equipment?: string; nickname?: string; temp?: number; temp_min?: number; temp_max?: number }>,
     photos: [] as Array<{ url: string; fileName: string }>,
     passFailStatus: '' as '' | 'pass' | 'fail',
@@ -915,12 +915,17 @@ export function TaskFromTemplateModal({
       const defaultChecklistItems = (recurrencePattern as any)?.default_checklist_items || [];
       const hasYesNoChecklist = templateData.evidence_types?.includes('yes_no_checklist');
 
-      // Convert to yes/no format if yes_no_checklist is enabled
+      // Convert to yes/no format if yes_no_checklist is enabled (preserve enhanced format)
       const loadedYesNoChecklistItems = hasYesNoChecklist && Array.isArray(defaultChecklistItems)
-        ? defaultChecklistItems.map((item: any) => ({
-            text: typeof item === 'string' ? item : (item.text || item.label || ''),
-            answer: null as 'yes' | 'no' | null
-          })).filter((item: { text: string; answer: null }) => item.text && item.text.trim().length > 0)
+        ? defaultChecklistItems.map((item: any) => {
+            if (item && typeof item === 'object' && item.options && Array.isArray(item.options)) {
+              return { ...item, answer: null }; // Enhanced format — preserve options
+            }
+            return {
+              text: typeof item === 'string' ? item : (item.text || item.label || ''),
+              answer: null,
+            };
+          }).filter((item: any) => item.text && item.text.trim().length > 0)
         : [];
 
       // Regular checklist items (only if yes_no_checklist is NOT enabled)
@@ -1084,10 +1089,15 @@ export function TaskFromTemplateModal({
       // Convert default_checklist_items to yes/no checklist format
       const hasYesNoChecklist = templateData.evidence_types?.includes('yes_no_checklist');
       const yesNoChecklistItems = hasYesNoChecklist && Array.isArray(defaultChecklistItems)
-        ? defaultChecklistItems.map((item: any) => ({
-            text: typeof item === 'string' ? item : (item.text || item.label || ''),
-            answer: null as 'yes' | 'no' | null
-          })).filter((item: { text: string; answer: null }) => item.text && item.text.trim().length > 0)
+        ? defaultChecklistItems.map((item: any) => {
+            if (item && typeof item === 'object' && item.options && Array.isArray(item.options)) {
+              return { ...item, answer: null }; // Enhanced format — preserve options
+            }
+            return {
+              text: typeof item === 'string' ? item : (item.text || item.label || ''),
+              answer: null,
+            };
+          }).filter((item: any) => item.text && item.text.trim().length > 0)
         : [];
       
       // Regular checklist items (only if yes_no_checklist is NOT enabled)
@@ -1852,14 +1862,20 @@ export function TaskFromTemplateModal({
                   }
                 }
 
-                // Prepare checklist items to save
-                let defaultChecklistItems: string[] = [];
+                // Prepare checklist items to save (preserve enhanced format with options)
+                let defaultChecklistItems: any[] = [];
 
                 if (formData.yesNoChecklistItems && formData.yesNoChecklistItems.length > 0) {
-                  // For yes/no checklists, save the text values
+                  // For yes/no checklists, save full structure (enhanced or text-only)
                   defaultChecklistItems = formData.yesNoChecklistItems
                     .filter((item: any) => item && item.text && item.text.trim().length > 0)
-                    .map((item: any) => item.text.trim());
+                    .map((item: any) => {
+                      if (item.options && Array.isArray(item.options)) {
+                        // Enhanced format — save text + options (strip runtime fields)
+                        return { text: item.text.trim(), options: item.options };
+                      }
+                      return item.text.trim();
+                    });
                 } else if (formData.checklistItems && formData.checklistItems.length > 0) {
                   // For regular checklists, save the items directly
                   defaultChecklistItems = formData.checklistItems

@@ -79,6 +79,7 @@ export function generateViewport() {
     initialScale: 1,
     maximumScale: 1,
     userScalable: false,
+    viewportFit: "cover",
     themeColor: "#0b0d13",
   };
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { X, User, Search } from '@/components/ui/icons';
+import React, { useState, useEffect, useMemo } from 'react';
+import { X, User, Search, Users } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 
 interface ParticipantSelectorProps {
@@ -11,6 +11,7 @@ interface ParticipantSelectorProps {
   companyId: string;
   required?: boolean;
   label?: string;
+  sites?: Array<{ id: string; name: string | null }>;
 }
 
 interface UserProfile {
@@ -19,11 +20,10 @@ interface UserProfile {
   email: string;
   avatar_url: string | null;
   role?: string;
+  position_title?: string | null;
   department?: string | null;
   site_id?: string | null;
-  sites?: {
-    name: string | null;
-  } | null;
+  site_name?: string | null;
 }
 
 export default function ParticipantSelector({
@@ -32,7 +32,8 @@ export default function ParticipantSelector({
   currentUserId,
   companyId,
   required = false,
-  label = 'Participants'
+  label = 'Participants',
+  sites: sitesFromProps
 }: ParticipantSelectorProps) {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(false);
@@ -43,9 +44,27 @@ export default function ParticipantSelector({
   useEffect(() => {
     const fetchUsers = async () => {
       if (!companyId) return;
-      
+
       setLoading(true);
       try {
+        // Build site lookup map
+        let siteMap: Record<string, string> = {};
+        if (sitesFromProps && sitesFromProps.length > 0) {
+          sitesFromProps.forEach(s => {
+            if (s.id && s.name) siteMap[s.id] = s.name;
+          });
+        } else {
+          const { data: sitesData } = await supabase
+            .from('sites')
+            .select('id, name')
+            .eq('company_id', companyId);
+          if (sitesData) {
+            sitesData.forEach(s => {
+              if (s.id && s.name) siteMap[s.id] = s.name;
+            });
+          }
+        }
+
         // Try RPC function first (bypasses RLS)
         const { data: rpcData, error: rpcError } = await supabase.rpc('get_company_profiles', {
           p_company_id: companyId
@@ -59,8 +78,10 @@ export default function ParticipantSelector({
             email: profile.email,
             avatar_url: profile.avatar_url,
             role: profile.app_role,
+            position_title: profile.position_title,
             department: profile.department,
             site_id: profile.home_site,
+            site_name: profile.home_site ? (siteMap[profile.home_site] || null) : null,
           }));
           setUsers(mappedUsers);
         } else {
@@ -73,15 +94,21 @@ export default function ParticipantSelector({
               email,
               avatar_url,
               app_role,
+              position_title,
               department,
               site_id,
               sites:site_id(name)
             `)
             .eq('company_id', companyId)
             .order('full_name');
-          
+
           if (error) throw error;
-          setUsers(data || []);
+          const mappedFallback = (data || []).map((u: any) => ({
+            ...u,
+            role: u.app_role,
+            site_name: u.sites?.name || (u.site_id ? siteMap[u.site_id] || null : null),
+          }));
+          setUsers(mappedFallback);
         }
       } catch (error) {
         console.error('Error fetching users:', error);
@@ -91,14 +118,41 @@ export default function ParticipantSelector({
     };
 
     fetchUsers();
-  }, [companyId]);
+  }, [companyId, sitesFromProps]);
 
-  const filteredUsers = users.filter(user => {
+  const filteredUsers = useMemo(() => {
+    if (!searchQuery) return users;
     const searchLower = searchQuery.toLowerCase();
-    const name = user.full_name?.toLowerCase() || '';
-    const email = user.email?.toLowerCase() || '';
-    return name.includes(searchLower) || email.includes(searchLower);
-  });
+    return users.filter(user => {
+      const name = user.full_name?.toLowerCase() || '';
+      const email = user.email?.toLowerCase() || '';
+      const position = user.position_title?.toLowerCase() || '';
+      const department = user.department?.toLowerCase() || '';
+      const role = user.role?.toLowerCase() || '';
+      const siteName = user.site_name?.toLowerCase() || '';
+      return (
+        name.includes(searchLower) ||
+        email.includes(searchLower) ||
+        position.includes(searchLower) ||
+        department.includes(searchLower) ||
+        role.includes(searchLower) ||
+        siteName.includes(searchLower)
+      );
+    });
+  }, [users, searchQuery]);
+
+  // Compute matching sites for "Select all" quick action
+  const matchingSites = useMemo(() => {
+    if (!searchQuery || searchQuery.length < 2) return [];
+    const searchLower = searchQuery.toLowerCase();
+    const siteNames = [...new Set(
+      users
+        .filter(u => u.site_name?.toLowerCase().includes(searchLower) && !selectedParticipants.includes(u.id))
+        .map(u => u.site_name)
+        .filter(Boolean)
+    )] as string[];
+    return siteNames;
+  }, [users, searchQuery, selectedParticipants]);
 
   const selectedUsers = users.filter(u => selectedParticipants.includes(u.id));
   const availableUsers = filteredUsers.filter(u => !selectedParticipants.includes(u.id));
@@ -128,13 +182,25 @@ export default function ParticipantSelector({
     onChange(newParticipants, newNames);
   };
 
+  const handleSelectAllAtSite = (siteName: string) => {
+    const siteUserIds = users.filter(u => u.site_name === siteName).map(u => u.id);
+    const merged = [...new Set([...selectedParticipants, ...siteUserIds])];
+    const mergedNames = users.filter(u => merged.includes(u.id)).map(u => u.full_name || u.email);
+    onChange(merged, mergedNames);
+  };
+
   const canAssignToUser = (targetUserId: string): boolean => {
     // Can always assign to yourself
     if (targetUserId === currentUserId) return true;
-    
+
     // For now, allow all assignments. Permission checks can be added based on role
-    // This would check userProfile.role against manager roles
     return true;
+  };
+
+  const getUserSubtext = (user: UserProfile): string => {
+    return [user.position_title, user.department, user.site_name]
+      .filter(Boolean)
+      .join(' \u00B7 ') || user.email;
   };
 
   return (
@@ -149,7 +215,7 @@ export default function ParticipantSelector({
           {selectedUsers.map((user) => {
             const isCurrentUser = user.id === currentUserId;
             const canRemove = !(isCurrentUser && selectedParticipants.length === 1 && required);
-            
+
             return (
               <div
                 key={user.id}
@@ -214,12 +280,33 @@ export default function ParticipantSelector({
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search users..."
+                    placeholder="Search by name, role, site..."
                     className="w-full pl-8 pr-3 py-1.5 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded text-sm text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50"
                     onClick={(e) => e.stopPropagation()}
                   />
                 </div>
               </div>
+
+              {/* Site quick-select buttons */}
+              {matchingSites.length > 0 && (
+                <div className="px-2 py-1.5 border-b border-theme bg-gray-50 dark:bg-white/[0.02]">
+                  {matchingSites.map((siteName) => {
+                    const siteUserCount = users.filter(u => u.site_name === siteName && !selectedParticipants.includes(u.id)).length;
+                    if (siteUserCount === 0) return null;
+                    return (
+                      <button
+                        key={siteName}
+                        type="button"
+                        onClick={() => handleSelectAllAtSite(siteName)}
+                        className="w-full text-left px-2 py-1.5 text-sm text-[#D37E91] hover:bg-[#D37E91]/10 rounded transition-colors flex items-center gap-2"
+                      >
+                        <Users className="w-3.5 h-3.5" />
+                        <span>Select all from {siteName} ({siteUserCount})</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* User List */}
               <div className="overflow-y-auto max-h-48">
@@ -232,7 +319,7 @@ export default function ParticipantSelector({
                 ) : (
                   availableUsers.map((user) => {
                     const canSelect = canAssignToUser(user.id);
-                    
+
                     return (
                       <button
                         key={user.id}
@@ -262,11 +349,9 @@ export default function ParticipantSelector({
                           <div className="text-sm text-theme-primary truncate">
                             {user.full_name || user.email}
                           </div>
-                          {user.department && (
-                            <div className="text-xs text-theme-tertiary truncate">
-                              {user.department}
-                            </div>
-                          )}
+                          <div className="text-xs text-theme-tertiary truncate">
+                            {getUserSubtext(user)}
+                          </div>
                         </div>
                       </button>
                     );

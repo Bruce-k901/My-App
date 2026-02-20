@@ -28,8 +28,12 @@ interface UseTaskStateResult {
   setChecklistItemCompleted: (index: number, completed: boolean) => void;
 
   // Yes/No checklist items
-  yesNoItems: Array<{ text: string; answer: 'yes' | 'no' | null }>;
-  setYesNoAnswer: (index: number, answer: 'yes' | 'no' | null) => void;
+  yesNoItems: any[];
+  setYesNoAnswer: (index: number, answer: string | null) => void;
+
+  // Yes/No action responses (for require action)
+  actionResponses: Record<number, string>;
+  setActionResponse: (index: number, response: string) => void;
 
   // Photos
   photos: File[];
@@ -65,7 +69,8 @@ export function useTaskState(
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [temperatures, setTemperatures] = useState<Record<string, number | null>>({});
   const [checklistItems, setChecklistItems] = useState<Array<{ text: string; completed: boolean }>>([]);
-  const [yesNoItems, setYesNoItems] = useState<Array<{ text: string; answer: 'yes' | 'no' | null }>>([]);
+  const [yesNoItems, setYesNoItems] = useState<any[]>([]);
+  const [actionResponses, setActionResponsesState] = useState<Record<number, string>>({});
   const [photos, setPhotos] = useState<File[]>([]);
   const [notes, setNotes] = useState('');
   const [outOfRangeActions, setOutOfRangeActions] = useState<Map<string, { action: 'monitor' | 'callout'; duration?: number; notes?: string }>>(new Map());
@@ -135,6 +140,7 @@ export function useTaskState(
       setTemperatures({});
       setChecklistItems([]);
       setYesNoItems([]);
+      setActionResponsesState({});
       setPhotos([]);
       setNotes('');
       setOutOfRangeActions(new Map());
@@ -379,12 +385,15 @@ export function useTaskState(
       setChecklistItems(items);
     }
 
-    // Initialize yes/no items
+    // Initialize yes/no items (preserve enhanced format if present)
     if (rawTaskData.yesNoChecklistItems && Array.isArray(rawTaskData.yesNoChecklistItems)) {
-      setYesNoItems(rawTaskData.yesNoChecklistItems.map((item: any) => ({
-        text: item.text || '',
-        answer: item.answer || null
-      })));
+      setYesNoItems(rawTaskData.yesNoChecklistItems.map((item: any) => {
+        if (item.options && Array.isArray(item.options)) {
+          // Enhanced format — preserve options, reset runtime fields
+          return { ...item, answer: item.answer || null, actionResponse: undefined, exceptionLogged: undefined };
+        }
+        return { text: item.text || '', answer: item.answer || null };
+      }));
       console.log('✅ [INIT] Initialized yes/no items:', rawTaskData.yesNoChecklistItems.length);
     }
 
@@ -412,8 +421,8 @@ export function useTaskState(
     });
   }, []);
 
-  // Yes/No item setter
-  const setYesNoAnswer = useCallback((index: number, answer: 'yes' | 'no' | null) => {
+  // Yes/No item setter (supports both legacy and enhanced formats)
+  const setYesNoAnswer = useCallback((index: number, answer: string | null) => {
     setYesNoItems(prev => {
       const newItems = [...prev];
       if (newItems[index]) {
@@ -421,6 +430,11 @@ export function useTaskState(
       }
       return newItems;
     });
+  }, []);
+
+  // Action response setter (for require action items)
+  const setActionResponse = useCallback((index: number, response: string) => {
+    setActionResponsesState(prev => ({ ...prev, [index]: response }));
   }, []);
 
   // Photo helpers
@@ -481,6 +495,8 @@ export function useTaskState(
     setChecklistItemCompleted,
     yesNoItems,
     setYesNoAnswer,
+    actionResponses,
+    setActionResponse,
     photos,
     addPhoto,
     removePhoto,

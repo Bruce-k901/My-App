@@ -98,6 +98,7 @@ export default function DateTimePicker({
                 time: newTime,
               });
             }}
+            step={900}
             className="w-full"
             required={required}
           />

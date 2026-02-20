@@ -8,6 +8,7 @@ import { useTaskSubmission } from '@/hooks/tasks/useTaskSubmission';
 import { TemplateRenderer } from './renderers/TemplateRenderer';
 // Actions are now integrated directly into AssetTemperatureInput
 import type { ChecklistTask, TaskCompletionPayload, OutOfRangeAsset } from '@/types/task-completion.types';
+import { isEnhancedYesNoItem } from '@/types/task-completion.types';
 
 interface TaskCompletionModalNewProps {
   task: ChecklistTask;
@@ -39,6 +40,8 @@ export function TaskCompletionModalNew({
     setChecklistItemCompleted,
     yesNoItems,
     setYesNoAnswer,
+    actionResponses,
+    setActionResponse,
     photos,
     addPhoto,
     removePhoto,
@@ -191,11 +194,21 @@ export function TaskCompletionModalNew({
       };
     });
 
-    // Build form data
+    // Build form data — enrich yes/no items with action responses
+    const enrichedYesNoItems = yesNoItems.map((item: any, index: number) => {
+      if (!isEnhancedYesNoItem(item) || !item.answer) return item;
+      const selectedOption = item.options.find((o: any) => o.value === item.answer);
+      return {
+        ...item,
+        actionResponse: actionResponses[index] || undefined,
+        exceptionLogged: selectedOption?.actions?.logException || false,
+      };
+    });
+
     const formData: Record<string, any> = {
       notes,
       checklist_items: checklistItems,
-      yes_no_items: yesNoItems,
+      yes_no_items: enrichedYesNoItems,
       temperatures: assetIds.map((assetId) => {
         const asset = assets.get(assetId);
         return {
@@ -221,7 +234,7 @@ export function TaskCompletionModalNew({
     await submitTask(payload);
   }, [
     task, profile, companyId, assetIds, temperatures, assetTempRanges,
-    assets, localOutOfRangeActions, checklistItems, yesNoItems, notes, photos, submitTask
+    assets, localOutOfRangeActions, checklistItems, yesNoItems, actionResponses, notes, photos, submitTask
   ]);
 
   // Handle placing an out-of-range action
@@ -262,6 +275,20 @@ export function TaskCompletionModalNew({
       }
     }
 
+    // Validate required action responses for yes/no items
+    if (enabledFeatures.yesNoChecklist && yesNoItems.length > 0) {
+      const missingActions = yesNoItems.some((item: any, index: number) => {
+        if (!isEnhancedYesNoItem(item) || !item.answer) return false;
+        const selectedOption = item.options.find((o: any) => o.value === item.answer);
+        if (!selectedOption?.actions?.requireAction) return false;
+        return !(actionResponses[index] || '').trim();
+      });
+      if (missingActions) {
+        alert('Please document all required actions for flagged checklist items.');
+        return;
+      }
+    }
+
     // Check if all out-of-range assets have actions placed (only when temperature feature is enabled)
     if (enabledFeatures.temperature && outOfRangeAssets.length > 0) {
       const allActionsPlaced = outOfRangeAssets.every(
@@ -276,7 +303,7 @@ export function TaskCompletionModalNew({
 
     // Submit (awaited to ensure submitting state is set before returning)
     await handleSubmit();
-  }, [enabledFeatures, assetIds, temperatures, outOfRangeAssets, localOutOfRangeActions, handleSubmit]);
+  }, [enabledFeatures, assetIds, temperatures, outOfRangeAssets, localOutOfRangeActions, yesNoItems, actionResponses, handleSubmit]);
 
   if (!isOpen) return null;
 
@@ -331,6 +358,8 @@ export function TaskCompletionModalNew({
               onChecklistItemChange={setChecklistItemCompleted}
               yesNoItems={yesNoItems}
               onYesNoItemChange={setYesNoAnswer}
+              actionResponses={actionResponses}
+              onActionResponse={setActionResponse}
               photos={photos}
               onPhotoAdd={addPhoto}
               onPhotoRemove={removePhoto}

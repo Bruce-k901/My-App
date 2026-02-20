@@ -35,13 +35,8 @@ export default function CallForm({ formData, setFormData, sites, onParticipantsC
     <div className="space-y-4">
       {/* Title */}
       <div>
-        <label className="flex items-center justify-between text-sm font-medium text-theme-secondary mb-2">
-          <span>
-            Title <span className="text-[#D37E91]">*</span>
-          </span>
-          <span className="text-xs text-theme-tertiary font-normal">
-            Auto-generated from selections
-          </span>
+        <label className="block text-sm font-medium text-theme-secondary mb-2">
+          Title <span className="text-[#D37E91]">*</span>
         </label>
         <input
           type="text"
@@ -116,6 +111,7 @@ export default function CallForm({ formData, setFormData, sites, onParticipantsC
           }}
           currentUserId={userId}
           companyId={companyId}
+          sites={sites}
           required
         />
       )}

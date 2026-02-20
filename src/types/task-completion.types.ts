@@ -21,7 +21,7 @@ export interface TaskDataBase {
 
   // Checklist features
   checklistItems?: Array<string | { text: string; completed: boolean }>;
-  yesNoChecklistItems?: Array<{ text: string; answer: 'yes' | 'no' | null }>;
+  yesNoChecklistItems?: YesNoChecklistItem[];
 
   // Asset selection
   selectedAssets?: string[];
@@ -141,6 +141,64 @@ export interface OutOfRangeAsset {
   action?: 'monitor' | 'callout';
   monitoringDuration?: number;
   calloutNotes?: string;
+}
+
+// ============================================================================
+// YES/NO CHECKLIST - ENHANCED TYPES
+// ============================================================================
+
+/** Per-option action configuration (configured in template builder) */
+export interface YesNoOptionAction {
+  logException?: boolean;
+  requestAction?: boolean;
+  requireAction?: boolean;
+  message?: string;
+  logicJump?: number | null; // Deferred — data model only
+}
+
+/** A single option within a yes/no question (Yes, No, N/A, or custom) */
+export interface YesNoOption {
+  label: string;    // Display label: "Yes", "No", "N/A", etc.
+  value: string;    // Lowercase key: "yes", "no", "na", etc.
+  actions?: YesNoOptionAction;
+}
+
+/** Enhanced yes/no checklist item with per-option actions */
+export interface YesNoChecklistItemEnhanced {
+  text: string;
+  options: YesNoOption[];
+  answer: string | null;
+  actionResponse?: string;       // Runtime: user's documented action
+  exceptionLogged?: boolean;     // Runtime: was exception flagged
+}
+
+/** Legacy yes/no checklist item (backward-compatible) */
+export interface YesNoChecklistItemLegacy {
+  text: string;
+  answer: 'yes' | 'no' | null;
+}
+
+/** Union type for backward compatibility */
+export type YesNoChecklistItem = YesNoChecklistItemLegacy | YesNoChecklistItemEnhanced;
+
+/** Type guard to distinguish enhanced from legacy format */
+export function isEnhancedYesNoItem(
+  item: any
+): item is YesNoChecklistItemEnhanced {
+  return item && 'options' in item && Array.isArray(item.options);
+}
+
+/** Normalize any yes/no item to enhanced format */
+export function normalizeYesNoItem(item: any): YesNoChecklistItemEnhanced {
+  if (isEnhancedYesNoItem(item)) return item;
+  return {
+    text: typeof item === 'string' ? item : (item?.text || ''),
+    options: [
+      { label: 'Yes', value: 'yes', actions: {} },
+      { label: 'No', value: 'no', actions: {} },
+    ],
+    answer: item?.answer || null,
+  };
 }
 
 // Task completion payload

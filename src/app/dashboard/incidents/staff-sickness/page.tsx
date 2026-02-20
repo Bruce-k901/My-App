@@ -39,6 +39,8 @@ export default function StaffSicknessPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<StaffSicknessRecord | null>(null);
+  const [staffList, setStaffList] = useState<{ id: string; full_name: string; position_title: string | null }[]>([]);
+
   const [formData, setFormData] = useState<Partial<StaffSicknessRecord>>({
     staff_member_name: '',
     staff_member_id: null,
@@ -60,8 +62,26 @@ export default function StaffSicknessPage() {
   useEffect(() => {
     if (companyId) {
       fetchRecords();
+      loadStaff();
     }
   }, [companyId, siteId]);
+
+  async function loadStaff() {
+    if (!companyId) return;
+    let query = supabase
+      .from('profiles')
+      .select('id, full_name, position_title')
+      .eq('company_id', companyId)
+      .eq('status', 'active')
+      .order('full_name');
+
+    if (siteId && siteId !== 'all') {
+      query = query.eq('home_site', siteId);
+    }
+
+    const { data } = await query;
+    if (data) setStaffList(data);
+  }
 
   async function fetchRecords() {
     try {
@@ -348,15 +368,27 @@ export default function StaffSicknessPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-2">Staff Member Name *</label>
-                  <input
-                    type="text"
-                    value={formData.staff_member_name}
-                    onChange={(e) => setFormData({ ...formData, staff_member_name: e.target.value })}
-                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:border-module-fg/[0.50]"
-                    placeholder="John Smith"
+                  <label className="block text-sm font-medium text-theme-secondary mb-2">Staff Member *</label>
+                  <select
+                    value={formData.staff_member_id || ''}
+                    onChange={(e) => {
+                      const selected = staffList.find(s => s.id === e.target.value);
+                      setFormData({
+                        ...formData,
+                        staff_member_id: e.target.value || null,
+                        staff_member_name: selected?.full_name || '',
+                      });
+                    }}
+                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary focus:outline-none focus:border-module-fg/[0.50]"
                     required
-                  />
+                  >
+                    <option value="">Select staff member...</option>
+                    {staffList.map(staff => (
+                      <option key={staff.id} value={staff.id}>
+                        {staff.full_name}{staff.position_title ? ` (${staff.position_title})` : ''}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>

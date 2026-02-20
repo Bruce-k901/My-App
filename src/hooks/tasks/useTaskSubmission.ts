@@ -5,7 +5,8 @@
 
 import { useState, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
-import type { ChecklistTask, TaskCompletionPayload, OutOfRangeAsset } from '@/types/task-completion.types';
+import type { ChecklistTask, TaskCompletionPayload, OutOfRangeAsset, YesNoChecklistItemEnhanced, YesNoOption } from '@/types/task-completion.types';
+import { isEnhancedYesNoItem } from '@/types/task-completion.types';
 import { useToast } from '@/components/ui/ToastProvider';
 import { useAppContext } from '@/context/AppContext';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
@@ -201,6 +202,48 @@ export function useTaskSubmission(
         }
       }
 
+      // 3.5 Handle yes/no checklist follow-up actions
+      const yesNoItems = payload.formData.yes_no_items || [];
+      let hasExceptions = false;
+
+      for (const item of yesNoItems) {
+        if (!isEnhancedYesNoItem(item) || !item.answer) continue;
+        const selectedOption = item.options.find((o: YesNoOption) => o.value === item.answer);
+        if (!selectedOption?.actions) continue;
+
+        if (selectedOption.actions.logException) {
+          hasExceptions = true;
+        }
+
+        if (selectedOption.actions.requestAction) {
+          try {
+            await supabase.from('notifications').insert({
+              company_id: companyId,
+              site_id: effectiveSiteId,
+              type: 'task',
+              title: `Action requested: ${item.text.substring(0, 60)}`,
+              message: selectedOption.actions.message ||
+                `"${item.text}" was answered "${selectedOption.label}" — action requested.`,
+              severity: 'warning',
+              priority: 'high',
+              status: 'active',
+              recipient_role: 'manager',
+              task_id: task.id,
+              created_by: profile?.id,
+              metadata: {
+                source: 'yes_no_checklist',
+                question: item.text,
+                answer: selectedOption.label,
+                action_response: item.actionResponse || null,
+              }
+            });
+            console.log(`✅ Created notification for: ${item.text}`);
+          } catch (notifErr) {
+            console.error('Failed to create yes/no notification:', notifErr);
+          }
+        }
+      }
+
       // 4. Build completion data
       const completionData = {
         ...payload.formData,
@@ -211,14 +254,15 @@ export function useTaskSubmission(
         completed_by_name: profile.full_name || profile.email || 'Unknown'
       };
 
-      // 5. Mark task as completed
+      // 5. Mark task as completed (flag if exceptions were logged)
       const { error: updateError } = await supabase
         .from('checklist_tasks')
         .update({
           status: 'completed',
           completed_at: payload.completedAt,
           completed_by: profile.id,
-          completion_notes: JSON.stringify(completionData)
+          completion_notes: JSON.stringify(completionData),
+          ...(hasExceptions ? { flagged: true, flag_reason: 'yes_no_exception' } : {}),
         })
         .eq('id', payload.taskId);
 
@@ -238,6 +282,21 @@ export function useTaskSubmission(
       window.dispatchEvent(new CustomEvent('task-completed', {
         detail: { taskId: payload.taskId, completedAt: payload.completedAt }
       }));
+
+      // Fire-and-forget: trigger notification emails if template has notification_config
+      fetch('/api/notifications/task-completed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          taskId: payload.taskId,
+          completedBy: profile.id,
+          completedAt: payload.completedAt,
+          companyId,
+          siteId: effectiveSiteId,
+        }),
+      }).catch((notifErr) => {
+        console.error('Non-blocking: notification trigger failed:', notifErr);
+      });
 
       onComplete();
       return true;

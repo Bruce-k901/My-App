@@ -131,7 +131,12 @@
       "Bash(Select-String:*)",
       "Bash(Select-Object -First 15)",
       "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" status)",
-      "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" log --oneline -5)"
+      "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" log --oneline -5)",
+      "Bash(npm i:*)",
+      "Bash(git submodule:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(git rm:*)",
+      "Bash(submodules\" warning on Vercel deployments.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }

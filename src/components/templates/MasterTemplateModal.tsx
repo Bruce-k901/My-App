@@ -7,6 +7,8 @@ import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
 import { getTemplateFeatures, featuresToEvidenceTypes } from '@/lib/template-features';
 import TimePicker from '@/components/ui/TimePicker';
+import NotificationConfigSection from '@/components/templates/NotificationConfigSection';
+import type { NotificationConfig } from '@/types/checklist';
 
 interface MasterTemplateModalProps {
   isOpen: boolean;
@@ -94,6 +96,8 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
   const [applyToAllSites, setApplyToAllSites] = useState(false);
   const [selectedSites, setSelectedSites] = useState<string[]>([]);
   const [availableSites, setAvailableSites] = useState<Array<{id: string, name: string}>>([]);
+
+  const [notificationConfig, setNotificationConfig] = useState<NotificationConfig | null>(null);
 
   const [features, setFeatures] = useState({
     monitorCallout: false,
@@ -247,6 +251,13 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         assetDropdown: templateFeatures.assetSelection, // Map assetSelection to assetDropdown
         sopUpload: templateFeatures.requiresSOP,
       });
+
+      // Load notification config
+      if (editingTemplate.notification_config) {
+        setNotificationConfig(editingTemplate.notification_config);
+      } else {
+        setNotificationConfig(null);
+      }
     } else if (!editingTemplate && isOpen) {
       // Reset form for new template
       setTemplateConfig({
@@ -278,6 +289,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         assetDropdown: false,
         sopUpload: false,
       });
+      setNotificationConfig(null);
     }
   }, [editingTemplate, isOpen]);
 
@@ -618,6 +630,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         // This prevents the old database cron from creating tasks for all sites
         is_active: false,
         is_template_library: false, // User-created templates, not library templates
+        notification_config: notificationConfig,
       };
 
       // Set asset selection fields if asset dropdown feature is enabled
@@ -1326,6 +1339,13 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
               ))}
             </div>
           </div>
+
+          {/* Notification Configuration */}
+          <NotificationConfigSection
+            config={notificationConfig}
+            onChange={setNotificationConfig}
+            companyId={companyId || ''}
+          />
 
           {/* Task Instructions section hidden from builder - will be shown in curated template view */}
           {/* Instructions are still saved to template, just not displayed in builder */}
