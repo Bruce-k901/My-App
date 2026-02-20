@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Trash2, X, ChevronDown, ChevronUp } from '@/components/ui/icons';
-import type { YesNoChecklistItemEnhanced, YesNoOption } from '@/types/task-completion.types';
+import { Trash2, Plus, AlertTriangle, Bell, FileText } from '@/components/ui/icons';
+import type { YesNoChecklistItemEnhanced } from '@/types/task-completion.types';
 import { normalizeYesNoItem } from '@/types/task-completion.types';
 
 interface YesNoChecklistFeatureProps {
@@ -16,8 +15,8 @@ function createDefaultItem(): YesNoChecklistItemEnhanced {
   return {
     text: '',
     options: [
-      { label: 'No', value: 'no', actions: {} },
       { label: 'Yes', value: 'yes', actions: {} },
+      { label: 'No', value: 'no', actions: {} },
     ],
     answer: null,
   };
@@ -27,32 +26,7 @@ export function YesNoChecklistFeature({
   items,
   onChange,
 }: YesNoChecklistFeatureProps) {
-  // Normalize all items to enhanced format
   const enhancedItems: YesNoChecklistItemEnhanced[] = items.map(normalizeYesNoItem);
-
-  // Track which items have expanded option configs
-  const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
-  // Track which options have message fields visible
-  const [messageVisible, setMessageVisible] = useState<Set<string>>(new Set());
-
-  const toggleExpanded = (index: number) => {
-    setExpandedItems(prev => {
-      const next = new Set(prev);
-      if (next.has(index)) next.delete(index);
-      else next.add(index);
-      return next;
-    });
-  };
-
-  const toggleMessage = (itemIndex: number, optionIndex: number) => {
-    const key = `${itemIndex}-${optionIndex}`;
-    setMessageVisible(prev => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  };
 
   const updateItemText = (index: number, text: string) => {
     const newItems = [...enhancedItems];
@@ -60,41 +34,23 @@ export function YesNoChecklistFeature({
     onChange(newItems);
   };
 
-  const duplicateItem = (index: number) => {
-    const newItems = [...enhancedItems];
-    const clone = JSON.parse(JSON.stringify(newItems[index]));
-    clone.text = `${clone.text} (copy)`;
-    clone.answer = null;
-    newItems.splice(index + 1, 0, clone);
-    onChange(newItems);
-  };
-
   const removeItem = (index: number) => {
     onChange(enhancedItems.filter((_, i) => i !== index));
-    // Clean up expanded state
-    setExpandedItems(prev => {
-      const next = new Set<number>();
-      prev.forEach(i => {
-        if (i < index) next.add(i);
-        else if (i > index) next.add(i - 1);
-      });
-      return next;
-    });
   };
 
   const addItem = () => {
     onChange([...enhancedItems, createDefaultItem()]);
   };
 
-  const updateOptionLabel = (itemIndex: number, optionIndex: number, label: string) => {
+  const setOptionMessage = (itemIndex: number, optionIndex: number, message: string) => {
     const newItems = [...enhancedItems];
     const item = { ...newItems[itemIndex] };
     const options = [...item.options];
-    options[optionIndex] = {
-      ...options[optionIndex],
-      label,
-      value: label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || `option_${optionIndex}`,
-    };
+    const option = { ...options[optionIndex] };
+    const actions = { ...(option.actions || {}) };
+    actions.message = message;
+    option.actions = actions;
+    options[optionIndex] = option;
     item.options = options;
     newItems[itemIndex] = item;
     onChange(newItems);
@@ -118,57 +74,11 @@ export function YesNoChecklistFeature({
     onChange(newItems);
   };
 
-  const setOptionMessage = (itemIndex: number, optionIndex: number, message: string) => {
-    const newItems = [...enhancedItems];
-    const item = { ...newItems[itemIndex] };
-    const options = [...item.options];
-    const option = { ...options[optionIndex] };
-    const actions = { ...(option.actions || {}) };
-    actions.message = message;
-    option.actions = actions;
-    options[optionIndex] = option;
-    item.options = options;
-    newItems[itemIndex] = item;
-    onChange(newItems);
-  };
-
-  const addOption = (itemIndex: number) => {
-    const newItems = [...enhancedItems];
-    const item = { ...newItems[itemIndex] };
-    const options = [...item.options];
-    const optionNum = options.length + 1;
-    options.push({ label: '', value: `option_${optionNum}`, actions: {} });
-    item.options = options;
-    newItems[itemIndex] = item;
-    onChange(newItems);
-  };
-
-  const removeOption = (itemIndex: number, optionIndex: number) => {
-    const newItems = [...enhancedItems];
-    const item = { ...newItems[itemIndex] };
-    if (item.options.length <= 2) return; // Minimum 2 options
-    const options = item.options.filter((_, i) => i !== optionIndex);
-    item.options = options;
-    // Reset answer if the removed option was selected
-    if (item.answer === enhancedItems[itemIndex].options[optionIndex]?.value) {
-      item.answer = null;
-    }
-    newItems[itemIndex] = item;
-    onChange(newItems);
-    // Clean up message visibility
-    const key = `${itemIndex}-${optionIndex}`;
-    setMessageVisible(prev => {
-      const next = new Set(prev);
-      next.delete(key);
-      return next;
-    });
-  };
-
   return (
     <div className="border-t border-theme pt-6">
       <h2 className="text-lg font-semibold text-theme-primary mb-1">Yes/No Checklist</h2>
       <p className="text-sm text-theme-secondary mb-4">
-        Configure questions with per-option actions. Each option can log exceptions, request actions, or require documentation.
+        Add questions staff must answer. For each answer, you can add a follow-up message and flag it if needed.
       </p>
 
       <div className="space-y-4">
@@ -177,170 +87,117 @@ export function YesNoChecklistFeature({
             key={itemIndex}
             className="bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg overflow-hidden"
           >
-            {/* Header row: drag handle + input + buttons */}
+            {/* Question row */}
             <div className="flex items-center gap-2 p-4 pb-3">
-              {/* Drag handle placeholder */}
-              <div className="flex flex-col items-center gap-0.5 cursor-grab text-theme-tertiary">
-                <div className="flex gap-0.5">
-                  <div className="w-1 h-1 rounded-full bg-current" />
-                  <div className="w-1 h-1 rounded-full bg-current" />
-                </div>
-                <div className="flex gap-0.5">
-                  <div className="w-1 h-1 rounded-full bg-current" />
-                  <div className="w-1 h-1 rounded-full bg-current" />
-                </div>
-                <div className="flex gap-0.5">
-                  <div className="w-1 h-1 rounded-full bg-current" />
-                  <div className="w-1 h-1 rounded-full bg-current" />
-                </div>
-              </div>
-
+              <span className="text-sm font-medium text-theme-tertiary w-5 flex-shrink-0">
+                {itemIndex + 1}.
+              </span>
               <input
                 type="text"
                 value={item.text}
                 onChange={(e) => updateItemText(itemIndex, e.target.value)}
-                placeholder="Enter question/item"
+                placeholder="Enter question (e.g. Hot Water Available?)"
                 className="flex-1 px-4 py-2 rounded-lg bg-white dark:bg-[#0f1220] border border-gray-300 dark:border-neutral-800 text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
               />
-
-              {/* Duplicate */}
-              <button
-                type="button"
-                onClick={() => duplicateItem(itemIndex)}
-                className="p-2 text-theme-tertiary hover:text-theme-primary hover:bg-theme-hover rounded transition-colors"
-                title="Duplicate item"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <rect x="9" y="9" width="13" height="13" rx="2" />
-                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                </svg>
-              </button>
-
-              {/* Delete */}
               <button
                 type="button"
                 onClick={() => removeItem(itemIndex)}
                 className="p-2 text-theme-tertiary hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded transition-colors"
-                title="Delete item"
+                title="Delete question"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Options section */}
+            {/* Answer options */}
             <div className="px-4 pb-4 space-y-3">
               {item.options.map((option, optionIndex) => {
-                const messageKey = `${itemIndex}-${optionIndex}`;
-                const showMessage = messageVisible.has(messageKey) || !!(option.actions?.message);
+                const hasActions = option.actions?.logException || option.actions?.requestAction || option.actions?.requireAction;
+                const hasMessage = !!(option.actions?.message);
 
                 return (
-                  <div key={optionIndex} className="space-y-2">
-                    {/* Option label */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-theme-tertiary w-12 flex-shrink-0">Option</span>
-                      <input
-                        type="text"
-                        value={option.label}
-                        onChange={(e) => updateOptionLabel(itemIndex, optionIndex, e.target.value)}
-                        placeholder="Option label (e.g. Yes, No, N/A)"
-                        className="flex-1 px-3 py-1.5 rounded bg-white dark:bg-[#0f1220] border border-gray-300 dark:border-neutral-800 text-theme-primary text-sm focus:outline-none focus:ring-1 focus:ring-[#D37E91]"
-                      />
-                      {item.options.length > 2 && (
-                        <button
-                          type="button"
-                          onClick={() => removeOption(itemIndex, optionIndex)}
-                          className="p-1 text-theme-tertiary hover:text-red-500 rounded transition-colors"
-                          title="Remove option"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
+                  <div
+                    key={optionIndex}
+                    className={`rounded-lg border p-3 ${
+                      hasActions || hasMessage
+                        ? 'border-amber-300/50 dark:border-amber-500/30 bg-amber-50/50 dark:bg-amber-500/[0.04]'
+                        : 'border-gray-200 dark:border-neutral-800 bg-white dark:bg-[#0f1220]'
+                    }`}
+                  >
+                    {/* Option header */}
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                        option.value === 'yes'
+                          ? 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400'
+                          : option.value === 'no'
+                          ? 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400'
+                          : 'bg-gray-100 text-gray-700 dark:bg-white/10 dark:text-gray-300'
+                      }`}>
+                        If {option.label}
+                      </span>
+                      {hasActions && (
+                        <span className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                          <AlertTriangle className="w-3 h-3" />
+                          Flagged
+                        </span>
                       )}
                     </div>
 
-                    {/* Action checkboxes */}
-                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 ml-14">
-                      <label className="flex items-center gap-1.5 cursor-pointer">
+                    {/* Follow-up message */}
+                    <div className="mb-3">
+                      <label className="block text-xs text-theme-secondary mb-1">
+                        Message shown to staff when they select &quot;{option.label}&quot;
+                      </label>
+                      <input
+                        type="text"
+                        value={option.actions?.message || ''}
+                        onChange={(e) => setOptionMessage(itemIndex, optionIndex, e.target.value)}
+                        placeholder={option.value === 'no'
+                          ? 'e.g. Follow the corrective action procedure in Ad Hoc tasks'
+                          : 'Leave blank if no message needed'
+                        }
+                        className="w-full px-3 py-1.5 rounded border border-gray-200 dark:border-neutral-700 bg-white dark:bg-[#0a0c15] text-theme-primary text-sm focus:outline-none focus:ring-1 focus:ring-[#D37E91] placeholder:text-theme-tertiary/60"
+                      />
+                    </div>
+
+                    {/* Action toggles - clear labels */}
+                    <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                      <label className="flex items-center gap-1.5 cursor-pointer group" title="Flag this answer as an exception in compliance reports">
                         <input
                           type="checkbox"
                           checked={!!option.actions?.logException}
                           onChange={() => toggleOptionAction(itemIndex, optionIndex, 'logException')}
-                          className="w-4 h-4 rounded border-gray-300 accent-[#D37E91]"
+                          className="w-3.5 h-3.5 rounded border-gray-300 accent-[#D37E91]"
                         />
-                        <span className="text-xs text-theme-secondary">Log exception</span>
+                        <AlertTriangle className="w-3 h-3 text-theme-tertiary group-hover:text-amber-500" />
+                        <span className="text-xs text-theme-secondary">Flag as exception</span>
                       </label>
-                      <label className="flex items-center gap-1.5 cursor-pointer">
+
+                      <label className="flex items-center gap-1.5 cursor-pointer group" title="Send a notification to managers when this answer is selected">
                         <input
                           type="checkbox"
                           checked={!!option.actions?.requestAction}
                           onChange={() => toggleOptionAction(itemIndex, optionIndex, 'requestAction')}
-                          className="w-4 h-4 rounded border-gray-300 accent-[#D37E91]"
+                          className="w-3.5 h-3.5 rounded border-gray-300 accent-[#D37E91]"
                         />
-                        <span className="text-xs text-theme-secondary">Request action</span>
+                        <Bell className="w-3 h-3 text-theme-tertiary group-hover:text-blue-500" />
+                        <span className="text-xs text-theme-secondary">Notify manager</span>
                       </label>
-                      <label className="flex items-center gap-1.5 cursor-pointer">
+
+                      <label className="flex items-center gap-1.5 cursor-pointer group" title="Staff must write what action they took before they can complete the task">
                         <input
                           type="checkbox"
                           checked={!!option.actions?.requireAction}
                           onChange={() => toggleOptionAction(itemIndex, optionIndex, 'requireAction')}
-                          className="w-4 h-4 rounded border-gray-300 accent-[#D37E91]"
+                          className="w-3.5 h-3.5 rounded border-gray-300 accent-[#D37E91]"
                         />
-                        <span className="text-xs text-theme-secondary">Require action</span>
+                        <FileText className="w-3 h-3 text-theme-tertiary group-hover:text-purple-500" />
+                        <span className="text-xs text-theme-secondary">Staff must document action</span>
                       </label>
                     </div>
-
-                    {/* Message field */}
-                    {showMessage ? (
-                      <div className="ml-14">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-medium text-theme-secondary">Message when option is selected</span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setOptionMessage(itemIndex, optionIndex, '');
-                              toggleMessage(itemIndex, optionIndex);
-                            }}
-                            className="p-0.5 text-theme-tertiary hover:text-theme-primary rounded"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                        <input
-                          type="text"
-                          value={option.actions?.message || ''}
-                          onChange={(e) => setOptionMessage(itemIndex, optionIndex, e.target.value)}
-                          placeholder="e.g. Please take corrective action..."
-                          className="w-full px-3 py-1.5 rounded bg-white dark:bg-[#0f1220] border border-gray-300 dark:border-neutral-800 text-theme-primary text-sm focus:outline-none focus:ring-1 focus:ring-[#D37E91]"
-                        />
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => toggleMessage(itemIndex, optionIndex)}
-                        className="ml-14 text-xs text-[#D37E91] hover:underline"
-                      >
-                        + Add message
-                      </button>
-                    )}
                   </div>
                 );
               })}
-
-              {/* Add option / Add logic jump */}
-              <div className="flex gap-4 pt-1">
-                <button
-                  type="button"
-                  onClick={() => addOption(itemIndex)}
-                  className="text-xs text-[#D37E91] hover:underline"
-                >
-                  Add option
-                </button>
-                <span
-                  className="text-xs text-theme-tertiary cursor-default"
-                  title="Logic jumps will be available in a future update"
-                >
-                  Add logic jump (coming soon)
-                </span>
-              </div>
             </div>
           </div>
         ))}
@@ -348,9 +205,10 @@ export function YesNoChecklistFeature({
         <button
           type="button"
           onClick={addItem}
-          className="text-sm text-[#D37E91] dark:text-[#D37E91] hover:underline transition-colors"
+          className="flex items-center gap-1.5 text-sm text-[#D37E91] hover:underline transition-colors"
         >
-          + Add Yes/No Question
+          <Plus className="w-4 h-4" />
+          Add Question
         </button>
       </div>
     </div>

@@ -12,7 +12,7 @@ interface Company {
 }
 
 export function ContextSwitcher() {
-  const { company, profile, setCompany, setSelectedSite, isViewingAs } = useAppContext();
+  const { company, profile, setCompany, setSelectedSite, isViewingAs, switchViewAsCompany } = useAppContext();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -74,27 +74,21 @@ export function ContextSwitcher() {
   const handleSelectCompany = (selectedCompany: Company) => {
     console.log('🏢 [ContextSwitcher] Selecting company:', selectedCompany.name);
 
-    // Clear site selection
-    localStorage.removeItem("selectedSiteId");
-
     if (profile?.is_platform_admin) {
-      // Platform admin: use View As mode for other companies
+      // Platform admin: use View As mode — update state directly, no page reload
       if (selectedCompany.id === profile.company_id) {
         // Switching back to own company — exit View As mode
-        sessionStorage.removeItem('admin_viewing_as_company');
+        switchViewAsCompany(null);
       } else {
         // Switching to another company — enter/update View As mode
-        sessionStorage.setItem('admin_viewing_as_company', JSON.stringify({
-          id: selectedCompany.id,
-          name: selectedCompany.name
-        }));
+        switchViewAsCompany(selectedCompany);
       }
-      // Full page reload so AppContext re-reads sessionStorage consistently
-      window.location.reload();
+      setIsOpen(false);
       return;
     }
 
     // Non-admin: update context directly
+    localStorage.removeItem("selectedSiteId");
     setCompany(selectedCompany);
     setSelectedSite(null);
     localStorage.setItem("selectedCompanyId", selectedCompany.id);

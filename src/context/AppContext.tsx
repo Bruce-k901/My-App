@@ -24,6 +24,8 @@ interface AppContextType {
   viewingAsCompanyId: string | null;
   /** True when the current user has is_platform_admin flag */
   isPlatformAdmin: boolean;
+  /** Switch platform admin View As mode to another company (or null to exit) */
+  switchViewAsCompany: (company: { id: string; name: string } | null) => void;
 }
 
 const AppContext = createContext<AppContextType>({
@@ -43,6 +45,7 @@ const AppContext = createContext<AppContextType>({
   isViewingAs: false,
   viewingAsCompanyId: null,
   isPlatformAdmin: false,
+  switchViewAsCompany: () => {},
 });
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -114,6 +117,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     siteInitializedRef.current = true;
     setSelectedSiteIdState(siteId);
     console.log('🏢 [AppContext] Selected site changed:', siteId);
+  }, []);
+
+  // Switch platform admin View As mode without page reload
+  const switchViewAsCompany = useCallback((targetCompany: { id: string; name: string } | null) => {
+    if (targetCompany) {
+      // Entering or changing View As mode
+      sessionStorage.setItem('admin_viewing_as_company', JSON.stringify(targetCompany));
+      setViewingAsCompanyId(targetCompany.id);
+      fetchCompanyById(targetCompany.id);
+      console.log('🏢 [AppContext] Switched View As to:', targetCompany.name);
+    } else {
+      // Exiting View As mode — back to own company
+      sessionStorage.removeItem('admin_viewing_as_company');
+      setViewingAsCompanyId(null);
+      console.log('🏢 [AppContext] Exited View As mode');
+    }
+    // Clear site selection (sites are company-specific)
+    localStorage.removeItem('selectedSiteId');
+    setSelectedSiteIdState(null);
+    siteInitializedRef.current = true;
+    // Clear failed fetch cache so new company can be fetched
+    failedCompanyFetches.current.clear();
+   
   }, []);
 
   useEffect(() => {
@@ -811,6 +837,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isViewingAs: !!viewingAsCompanyId,
     viewingAsCompanyId: viewingAsCompanyId || null,
     isPlatformAdmin: profile?.is_platform_admin ?? false,
+    switchViewAsCompany,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
