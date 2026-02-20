@@ -1470,7 +1470,7 @@ export default function ReviewCountItemsPage() {
 
   if (!count) {
     return (
-      <div className="w-full bg-theme-surface-elevated min-h-screen">
+      <div className="w-full min-h-screen">
         <div className="container mx-auto py-8 px-4 max-w-7xl">
           <div className="text-center py-12">
             <p className="text-theme-secondary">Stock count not found</p>

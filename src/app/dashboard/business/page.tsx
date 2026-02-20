@@ -1,188 +1,312 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Building2,
   MapPin,
   Users,
-  ClipboardCheck,
-  Package,
   UserCog,
+  ClipboardCheck,
+  FileText,
+  Thermometer,
+  ShieldAlert,
+  Package,
+  Truck,
+  Barcode,
+  CookingPot,
+  IdCard,
+  Notebook,
+  GraduationCap,
+  Wrench,
+  Construction,
+  CalendarCheck,
+  Map,
+  Factory,
+  ShoppingCart,
+  Store,
   CheckCircle,
   ChevronRight,
+  ChevronDown,
   Loader2,
   Rocket,
   PartyPopper,
   ArrowRight,
+  SkipForward,
+  FileEdit,
 } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { useAppContext } from '@/context/AppContext';
-import { supabase } from '@/lib/supabase';
+import { useOnboardingProgress } from '@/hooks/useOnboardingProgress';
+import { useSetupNav } from '@/hooks/useSetupNav';
+import { ONBOARDING_SECTIONS, SECTION_ORDER, type OnboardingSection, type OnboardingStepWithStatus, type StepStatus } from '@/types/onboarding';
 import { cn } from '@/lib/utils';
 
-type StepStatus = 'not_started' | 'in_progress' | 'complete';
+// ─── Icon map ──────────────────────────────────────────────────────────────
 
-interface SetupStep {
-  step: number;
-  name: string;
-  description: string;
-  icon: React.ElementType;
-  href: string;
-  color: string;
-  status: StepStatus;
-  detail: string;
-}
+const ICON_MAP: Record<string, React.ElementType> = {
+  Building2, MapPin, Users, UserCog,
+  ClipboardCheck, FileText, Thermometer, ShieldAlert,
+  Package, Truck, Barcode, CookingPot,
+  IdCard, Notebook, GraduationCap,
+  Wrench, Construction, CalendarCheck,
+  Map, Factory, ShoppingCart, Store,
+  // Aliases for step registry icon names
+  ShieldWarning: ShieldAlert,
+  IdentificationCard: IdCard,
+  HardHat: Construction,
+  MapTrifold: Map,
+  Bread: Factory,
+  Oven: Thermometer,
+  Storefront: Store,
+};
 
-const stepConfig = [
-  {
-    step: 1,
-    name: 'Company Details',
-    description: 'Add your business name, address, and contact information',
-    icon: Building2,
-    href: '/dashboard/business/details?from=setup',
-    color: 'text-teamly',
-  },
-  {
-    step: 2,
-    name: 'Add Your Sites',
-    description: 'Set up your locations with addresses and operating hours',
-    icon: MapPin,
-    href: '/dashboard/sites?from=setup',
-    color: 'text-emerald-500',
-  },
-  {
-    step: 3,
-    name: 'Invite Your Team',
-    description: 'Add team members and assign roles so everyone can get started',
-    icon: Users,
-    href: '/dashboard/users?from=setup',
-    color: 'text-blue-500',
-  },
-  {
-    step: 4,
-    name: 'Compliance Templates',
-    description: 'Import industry checklist templates to hit the ground running',
-    icon: ClipboardCheck,
-    href: '/dashboard/tasks/compliance?from=setup',
-    color: 'text-orange-500',
-  },
-  {
-    step: 5,
-    name: 'Stock & Suppliers',
-    description: 'Set up storage areas and add your first suppliers',
-    icon: Package,
-    href: '/dashboard/stockly/storage-areas?from=setup',
-    color: 'text-cyan-500',
-  },
-  {
-    step: 6,
-    name: 'People & Departments',
-    description: 'Configure departments, roles, and shift rules for your team',
-    icon: UserCog,
-    href: '/dashboard/people/settings/departments?from=setup',
-    color: 'text-violet-500',
-  },
-];
+// ─── Module colour classes ─────────────────────────────────────────────────
 
-function StepCard({
+const MODULE_COLOURS: Record<string, { text: string; bg: string; border: string; progressBg: string }> = {
+  core: {
+    text: 'text-teamly-dark dark:text-teamly',
+    bg: 'bg-teamly-dark/[0.06] dark:bg-teamly/[0.12]',
+    border: 'border-teamly-dark/30 dark:border-teamly/30',
+    progressBg: 'bg-teamly-dark dark:bg-teamly',
+  },
+  checkly: {
+    text: 'text-checkly-dark dark:text-checkly',
+    bg: 'bg-checkly-dark/[0.06] dark:bg-checkly/[0.12]',
+    border: 'border-checkly-dark/30 dark:border-checkly/30',
+    progressBg: 'bg-checkly-dark dark:bg-checkly',
+  },
+  stockly: {
+    text: 'text-stockly-dark dark:text-stockly',
+    bg: 'bg-stockly-dark/[0.06] dark:bg-stockly/[0.12]',
+    border: 'border-stockly-dark/30 dark:border-stockly/30',
+    progressBg: 'bg-stockly-dark dark:bg-stockly',
+  },
+  teamly: {
+    text: 'text-teamly-dark dark:text-teamly',
+    bg: 'bg-teamly-dark/[0.06] dark:bg-teamly/[0.12]',
+    border: 'border-teamly-dark/30 dark:border-teamly/30',
+    progressBg: 'bg-teamly-dark dark:bg-teamly',
+  },
+  assetly: {
+    text: 'text-assetly-dark dark:text-assetly',
+    bg: 'bg-assetly-dark/[0.06] dark:bg-assetly/[0.12]',
+    border: 'border-assetly-dark/30 dark:border-assetly/30',
+    progressBg: 'bg-assetly-dark dark:bg-assetly',
+  },
+  planly: {
+    text: 'text-planly-dark dark:text-planly',
+    bg: 'bg-planly-dark/[0.06] dark:bg-planly/[0.12]',
+    border: 'border-planly-dark/30 dark:border-planly/30',
+    progressBg: 'bg-planly-dark dark:bg-planly',
+  },
+};
+
+// ─── Components ────────────────────────────────────────────────────────────
+
+function StepRow({
   step,
-  isActive,
+  colours,
+  isAdmin,
   onNavigate,
+  onMarkComplete,
+  onSkip,
 }: {
-  step: SetupStep;
-  isActive: boolean;
+  step: OnboardingStepWithStatus;
+  colours: typeof MODULE_COLOURS.core;
+  isAdmin: boolean;
   onNavigate: () => void;
+  onMarkComplete: () => void;
+  onSkip: () => void;
 }) {
-  const Icon = step.icon;
+  const Icon = ICON_MAP[step.icon] || Package;
+  const isDone = step.status === 'complete' || step.status === 'skipped';
 
   return (
     <div
       className={cn(
-        'relative p-4 rounded-lg border-2 transition-all',
-        step.status === 'complete'
-          ? 'bg-teamly/5 dark:bg-teamly/10 border-teamly/30'
-          : isActive
-          ? 'bg-theme-surface border-teamly shadow-lg shadow-teamly/10'
-          : 'bg-gray-50 dark:bg-white/[0.02] border-theme'
+        'flex items-center gap-3 p-3 rounded-lg transition-colors',
+        isDone ? 'opacity-70' : 'hover:bg-theme-hover'
       )}
     >
-      {/* Step Number Badge */}
+      {/* Status indicator */}
       <div
         className={cn(
-          'absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold',
-          step.status === 'complete'
-            ? 'bg-teamly text-white'
-            : isActive
-            ? 'bg-teamly text-white'
-            : 'bg-gray-200 dark:bg-white/20 text-theme-secondary'
+          'flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center',
+          isDone
+            ? `${colours.bg} ${colours.text}`
+            : 'bg-theme-muted text-theme-tertiary'
         )}
       >
-        {step.status === 'complete' ? (
-          <CheckCircle className="h-5 w-5" />
+        {isDone ? (
+          <CheckCircle className="h-4 w-4" />
         ) : (
-          step.step
+          <Icon className="h-3.5 w-3.5" />
         )}
       </div>
 
-      <div className="flex items-start justify-between gap-4 ml-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <Icon className={cn('h-5 w-5', step.status === 'complete' ? 'text-teamly' : step.color)} />
-            <h3 className="font-semibold text-theme-primary">{step.name}</h3>
-          </div>
-          <p className="text-sm text-theme-secondary mb-2">{step.description}</p>
-          <span
-            className={cn(
-              'text-sm font-medium',
-              step.status === 'complete'
-                ? 'text-teamly'
-                : step.status === 'in_progress'
-                ? 'text-amber-600 dark:text-amber-400'
-                : 'text-theme-tertiary'
-            )}
-          >
-            {step.status === 'complete'
-              ? step.detail
-              : step.status === 'in_progress'
-              ? step.detail
-              : 'Not started'}
+      {/* Step info */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className={cn('text-sm font-medium', isDone ? 'text-theme-secondary line-through' : 'text-theme-primary')}>
+            {step.name}
           </span>
+          {step.status === 'skipped' && (
+            <span className="text-xs text-theme-tertiary bg-theme-muted px-1.5 py-0.5 rounded">Skipped</span>
+          )}
         </div>
+        <p className="text-xs text-theme-tertiary truncate">{step.description}</p>
+        {step.detail && step.detail !== 'Not started' && step.status === 'complete' && (
+          <p className={cn('text-xs font-medium mt-0.5', colours.text)}>{step.detail}</p>
+        )}
+      </div>
 
+      {/* Actions */}
+      <div className="flex items-center gap-1.5 flex-shrink-0">
+        {isAdmin && !isDone && (
+          <>
+            <button
+              onClick={(e) => { e.stopPropagation(); onSkip(); }}
+              className="p-1 text-theme-tertiary hover:text-theme-secondary rounded"
+              title="Skip this step"
+            >
+              <SkipForward className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onMarkComplete(); }}
+              className={cn('p-1 rounded hover:opacity-80', colours.text)}
+              title="Mark complete"
+            >
+              <CheckCircle className="h-3.5 w-3.5" />
+            </button>
+          </>
+        )}
         <Button
-          variant={isActive ? 'secondary' : 'outline'}
-          className="shrink-0"
+          variant={isDone ? 'ghost' : 'outline'}
+          className="h-7 px-2.5 text-xs"
           onClick={onNavigate}
         >
-          {step.status === 'complete' ? 'Edit' : 'Configure'}
-          <ChevronRight className="h-4 w-4 ml-1" />
+          {isDone ? 'Edit' : 'Configure'}
+          <ChevronRight className="h-3 w-3 ml-0.5" />
         </Button>
       </div>
     </div>
   );
 }
 
-function CompletionCelebration() {
+function SectionCard({
+  section,
+  label,
+  steps,
+  completedCount,
+  totalCount,
+  isAdmin,
+  defaultOpen,
+  onNavigate,
+  onUpdateStep,
+}: {
+  section: OnboardingSection;
+  label: string;
+  steps: OnboardingStepWithStatus[];
+  completedCount: number;
+  totalCount: number;
+  isAdmin: boolean;
+  defaultOpen: boolean;
+  onNavigate: (href: string) => void;
+  onUpdateStep: (stepId: string, status: StepStatus) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const colours = MODULE_COLOURS[section];
+  const meta = ONBOARDING_SECTIONS[section];
+  const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const allSectionDone = completedCount === totalCount;
+
   return (
-    <div className="text-center py-8 px-4">
-      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-teamly/10 mb-4">
-        <PartyPopper className="h-8 w-8 text-teamly" />
+    <Card className={cn('!p-0 overflow-hidden', allSectionDone && `border-2 ${colours.border}`)}>
+      {/* Section header — clickable to expand/collapse */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center gap-3 p-4 text-left hover:bg-theme-hover transition-colors"
+      >
+        <div className={cn('flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center', colours.bg)}>
+          {allSectionDone ? (
+            <CheckCircle className={cn('h-5 w-5', colours.text)} />
+          ) : (
+            <span className={cn('text-sm font-bold', colours.text)}>
+              {completedCount}/{totalCount}
+            </span>
+          )}
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-theme-primary">{label}</h3>
+            {allSectionDone && (
+              <span className={cn('text-xs font-medium px-1.5 py-0.5 rounded', colours.bg, colours.text)}>
+                Complete
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-theme-tertiary">{meta.description}</p>
+          {/* Mini progress bar */}
+          <div className="mt-1.5 h-1 bg-theme-muted rounded-full overflow-hidden">
+            <div
+              className={cn('h-full rounded-full transition-all duration-500', colours.progressBg)}
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        </div>
+
+        <ChevronDown
+          className={cn(
+            'h-4 w-4 text-theme-tertiary transition-transform flex-shrink-0',
+            isOpen && 'rotate-180'
+          )}
+        />
+      </button>
+
+      {/* Expanded step list */}
+      {isOpen && (
+        <div className="border-t border-theme px-2 pb-2">
+          {steps.map((step) => (
+            <StepRow
+              key={step.stepId}
+              step={step}
+              colours={colours}
+              isAdmin={isAdmin}
+              onNavigate={() => onNavigate(step.href)}
+              onMarkComplete={() => onUpdateStep(step.stepId, 'complete')}
+              onSkip={() => onUpdateStep(step.stepId, 'skipped')}
+            />
+          ))}
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function CompletionCelebration({ isPartial }: { isPartial: boolean }) {
+  return (
+    <div className="text-center py-6 px-4">
+      <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-teamly/10 mb-3">
+        <PartyPopper className="h-7 w-7 text-teamly" />
       </div>
-      <h2 className="text-2xl font-bold text-theme-primary mb-2">
-        You're All Set!
+      <h2 className="text-xl font-bold text-theme-primary mb-1.5">
+        {isPartial ? 'Core Setup Complete!' : "You're All Set!"}
       </h2>
-      <p className="text-theme-secondary mb-6 max-w-md mx-auto">
-        Your business is fully configured. Head to the dashboard to start using Opsly.
+      <p className="text-theme-secondary text-sm mb-4 max-w-md mx-auto">
+        {isPartial
+          ? 'Great work! Your core setup is done. Continue configuring modules below, or head to the dashboard.'
+          : 'Your business is fully configured. Head to the dashboard to start using Opsly.'}
       </p>
-      <div className="flex items-center justify-center gap-4">
+      <div className="flex items-center justify-center gap-3">
         <Button variant="outline" asChild>
           <a href="/dashboard">Go to Dashboard</a>
         </Button>
         <Button variant="secondary" asChild>
           <a href="/dashboard/todays_tasks">
-            Today's Tasks
+            Today&apos;s Tasks
             <ArrowRight className="h-4 w-4 ml-2" />
           </a>
         </Button>
@@ -191,108 +315,23 @@ function CompletionCelebration() {
   );
 }
 
-async function safeCount(table: string, column: string, value: string): Promise<number> {
-  try {
-    const { count, error } = await supabase
-      .from(table)
-      .select('id', { count: 'exact', head: true })
-      .eq(column, value);
-
-    if (error) {
-      // 42P01 = table doesn't exist - treat as 0
-      if (error.code === '42P01') return 0;
-      return 0;
-    }
-    return count ?? 0;
-  } catch {
-    return 0;
-  }
-}
+// ─── Main page ─────────────────────────────────────────────────────────────
 
 export default function BusinessSetupPage() {
   const router = useRouter();
-  const { companyId, company } = useAppContext();
-  const [steps, setSteps] = useState<SetupStep[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { companyId, role } = useAppContext();
+  const { sections, loading, totalCompleted, totalSteps, allComplete, updateStep } = useOnboardingProgress();
+  const { setupHref } = useSetupNav();
 
-  useEffect(() => {
-    if (!companyId) {
-      setLoading(false);
-      return;
-    }
+  const isAdmin = ['Admin', 'Owner', 'General Manager', 'Manager'].includes(role || '');
+  const progressPercent = totalSteps > 0 ? Math.round((totalCompleted / totalSteps) * 100) : 0;
 
-    async function checkStatus() {
-      setLoading(true);
-
-      // Run all counts in parallel
-      const [sitesCount, usersCount, templatesCount, storageCount, deptsCount] = await Promise.all([
-        safeCount('sites', 'company_id', companyId!),
-        safeCount('profiles', 'company_id', companyId!),
-        safeCount('task_templates', 'company_id', companyId!),
-        safeCount('storage_areas', 'company_id', companyId!),
-        safeCount('departments', 'company_id', companyId!),
-      ]);
-
-      const hasCompany = !!(company?.name);
-
-      const results: SetupStep[] = stepConfig.map((cfg) => {
-        let status: StepStatus = 'not_started';
-        let detail = 'Not started';
-
-        switch (cfg.step) {
-          case 1:
-            if (hasCompany) {
-              status = 'complete';
-              detail = company?.name || 'Configured';
-            }
-            break;
-          case 2:
-            if (sitesCount > 0) {
-              status = 'complete';
-              detail = `${sitesCount} site${sitesCount !== 1 ? 's' : ''} added`;
-            }
-            break;
-          case 3:
-            if (usersCount > 1) {
-              status = 'complete';
-              detail = `${usersCount} team members`;
-            } else if (usersCount === 1) {
-              status = 'in_progress';
-              detail = 'Just you so far';
-            }
-            break;
-          case 4:
-            if (templatesCount > 0) {
-              status = 'complete';
-              detail = `${templatesCount} template${templatesCount !== 1 ? 's' : ''} imported`;
-            }
-            break;
-          case 5:
-            if (storageCount > 0) {
-              status = 'complete';
-              detail = `${storageCount} storage area${storageCount !== 1 ? 's' : ''}`;
-            }
-            break;
-          case 6:
-            if (deptsCount > 0) {
-              status = 'complete';
-              detail = `${deptsCount} department${deptsCount !== 1 ? 's' : ''}`;
-            }
-            break;
-        }
-
-        return { ...cfg, status, detail };
-      });
-
-      setSteps(results);
-      setLoading(false);
-    }
-
-    checkStatus();
-  }, [companyId, company?.name]);
+  // Check if core section is complete
+  const coreSection = sections.find((s) => s.section === 'core');
+  const coreComplete = coreSection ? coreSection.completedCount === coreSection.totalCount : false;
 
   const handleNavigate = (href: string) => {
-    router.push(href);
+    router.push(setupHref(href));
   };
 
   if (loading) {
@@ -309,7 +348,7 @@ export default function BusinessSetupPage() {
         <div className="text-center py-12">
           <Rocket className="h-12 w-12 mx-auto text-teamly mb-4" />
           <h2 className="text-xl font-bold text-theme-primary mb-2">Welcome to Opsly</h2>
-          <p className="text-theme-secondary mb-6">Let's get your business set up. Start by adding your company details.</p>
+          <p className="text-theme-secondary mb-6">Let&apos;s get your business set up. Start by adding your company details.</p>
           <Button variant="secondary" onClick={() => router.push('/dashboard/business/details')}>
             Get Started
             <ArrowRight className="h-4 w-4 ml-2" />
@@ -319,82 +358,91 @@ export default function BusinessSetupPage() {
     );
   }
 
-  const completedSteps = steps.filter((s) => s.status === 'complete').length;
-  const totalSteps = steps.length;
-  const progressPercent = Math.round((completedSteps / totalSteps) * 100);
-  const allComplete = completedSteps === totalSteps;
-
-  // Find first incomplete step
-  const firstIncompleteStep = steps.find((s) => s.status !== 'complete')?.step ?? -1;
-
   return (
     <div className="max-w-3xl mx-auto py-8 px-4">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
           <Rocket className="h-7 w-7 text-teamly" />
-          <h1 className="text-2xl font-bold text-theme-primary">
-            Getting Started
-          </h1>
+          <h1 className="text-2xl font-bold text-theme-primary">Getting Started</h1>
         </div>
-        <p className="text-theme-secondary">
-          Complete these steps to get the most out of Opsly. Each step links to the relevant page where you can configure things at your own pace.
+        <p className="text-theme-secondary text-sm">
+          Complete these steps to get the most out of Opsly. Work through each section at your own pace.
         </p>
       </div>
 
-      {/* Progress Bar */}
-      <Card className="p-4 mb-8">
+      {/* Overall progress bar */}
+      <Card className="!p-4 mb-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-theme-secondary">
-            Setup Progress
-          </span>
-          <span className="text-sm font-bold text-teamly">
-            {completedSteps} of {totalSteps} complete
+          <span className="text-sm font-medium text-theme-secondary">Setup Progress</span>
+          <span className="text-sm font-bold text-teamly-dark dark:text-teamly">
+            {totalCompleted} of {totalSteps} complete
           </span>
         </div>
         <div className="h-3 bg-theme-muted rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-teamly to-module-fg rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-teamly-dark to-teamly dark:from-teamly dark:to-teamly/70 rounded-full transition-all duration-500"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
         {allComplete && (
-          <p className="mt-2 text-sm text-teamly font-medium flex items-center gap-1">
+          <p className="mt-2 text-sm text-teamly-dark dark:text-teamly font-medium flex items-center gap-1">
             <CheckCircle className="h-4 w-4" />
             All steps complete!
           </p>
         )}
       </Card>
 
-      {/* Completion Celebration */}
+      {/* All-complete celebration */}
       {allComplete && (
-        <Card className="mb-8 overflow-hidden">
-          <div className="bg-gradient-to-r from-teamly/10 to-module-fg/[0.05]">
-            <CompletionCelebration />
+        <Card className="mb-6 overflow-hidden">
+          <div className="bg-gradient-to-r from-teamly/10 to-teamly/[0.02]">
+            <CompletionCelebration isPartial={false} />
           </div>
         </Card>
       )}
 
-      {/* Steps */}
-      <div className="space-y-4">
-        {steps.map((step) => (
-          <StepCard
-            key={step.step}
-            step={step}
-            isActive={firstIncompleteStep === step.step}
-            onNavigate={() => handleNavigate(step.href)}
-          />
-        ))}
+      {/* Core-complete celebration (only if core is done but not all) */}
+      {coreComplete && !allComplete && (
+        <Card className="mb-6 overflow-hidden">
+          <div className="bg-gradient-to-r from-teamly/10 to-teamly/[0.02]">
+            <CompletionCelebration isPartial={true} />
+          </div>
+        </Card>
+      )}
+
+      {/* Section cards */}
+      <div className="space-y-3">
+        {sections.map((sectionData) => {
+          // Core always starts expanded; others auto-expand if they have incomplete steps
+          const hasIncomplete = sectionData.completedCount < sectionData.totalCount;
+          const defaultOpen =
+            sectionData.section === 'core' ||
+            (hasIncomplete && sectionData.completedCount > 0);
+
+          return (
+            <SectionCard
+              key={sectionData.section}
+              section={sectionData.section}
+              label={sectionData.label}
+              steps={sectionData.steps}
+              completedCount={sectionData.completedCount}
+              totalCount={sectionData.totalCount}
+              isAdmin={isAdmin}
+              defaultOpen={defaultOpen}
+              onNavigate={handleNavigate}
+              onUpdateStep={updateStep}
+            />
+          );
+        })}
       </div>
 
-      {/* Help Section */}
+      {/* Help section */}
       {!allComplete && (
-        <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-500/10 rounded-lg border border-blue-100 dark:border-blue-500/20">
-          <h3 className="font-medium text-blue-900 dark:text-blue-300 mb-1">
-            Take your time
-          </h3>
+        <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-500/10 rounded-lg border border-blue-100 dark:border-blue-500/20">
+          <h3 className="font-medium text-blue-900 dark:text-blue-300 mb-1">Take your time</h3>
           <p className="text-sm text-blue-700 dark:text-blue-400">
-            You don't need to complete everything at once. Come back to this page any time from the menu to pick up where you left off.
+            You don&apos;t need to complete everything at once. Come back to this page any time from the menu to pick up where you left off.
           </p>
         </div>
       )}

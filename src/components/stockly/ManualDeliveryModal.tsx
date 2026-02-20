@@ -136,10 +136,24 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
         .eq('is_purchasable', true)
         .order('name');
 
+      // If error is about is_purchasable column not existing, retry without that filter
+      if (error && (error.message?.includes('is_purchasable') || error.code === '42703')) {
+        const { data: retryData, error: retryError } = await supabase
+          .from('stock_items')
+          .select('id, name, description, default_vat_rate')
+          .eq('company_id', companyId)
+          .eq('is_active', true)
+          .order('name');
+
+        if (retryError) throw retryError;
+        setStockItems(retryData || []);
+        return;
+      }
+
       if (error) throw error;
       setStockItems(data || []);
     } catch (error: any) {
-      console.error('Error fetching stock items:', error);
+      console.error('Error fetching stock items:', error?.message || error);
     }
   }
 
@@ -367,16 +381,17 @@ export function ManualDeliveryModal({ isOpen, onClose, onSuccess }: ManualDelive
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
+                company_id: companyId,
+                site_id: siteId,
                 stock_item_id: dbLine.stock_item_id,
                 delivery_line_id: dbLine.id,
                 supplier_batch_code: formLine.supplier_batch_code || null,
                 quantity_received: dbLine.quantity,
-                unit: 'units', // Default unit — could be improved with stock_item.stock_unit
+                unit: 'units',
                 use_by_date: formLine.use_by_date || null,
                 best_before_date: formLine.best_before_date || null,
                 temperature_on_receipt: formLine.temperature_reading || null,
                 condition_notes: formLine.condition_notes || null,
-                auto_generate_code: true,
               }),
             });
           } catch (batchErr) {

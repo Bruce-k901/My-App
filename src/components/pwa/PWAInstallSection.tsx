@@ -58,10 +58,10 @@ export function PWAInstallSection() {
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <Smartphone className="h-5 w-5 text-blue-400" />
-            <h3 className="font-medium text-theme-primary">Install Checkly App</h3>
+            <h3 className="font-medium text-theme-primary">Install Opsly App</h3>
           </div>
           <p className="text-sm text-theme-tertiary mb-3">
-            Install Checkly to your home screen for quick access, offline support, and push notifications.
+            Install Opsly to your home screen for quick access, offline support, and push notifications.
           </p>
 
           {needsManualInstall ? (

@@ -82,6 +82,8 @@ export async function PATCH(
       condition_notes,
       use_by_date,
       best_before_date,
+      reference_type,
+      reference_id,
     } = body;
 
     // Get current batch state
@@ -134,7 +136,8 @@ export async function PATCH(
         batch_id: id,
         movement_type: 'adjustment',
         quantity: quantity_adjustment,
-        reference_type: 'adjustment',
+        reference_type: reference_type || 'adjustment',
+        reference_id: reference_id || null,
         notes: adjustment_reason || 'Manual quantity adjustment',
         created_by: user?.id || null,
       });

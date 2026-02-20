@@ -1,6 +1,6 @@
 export default function AttendanceSignOffLoading() {
   return (
-    <div className="min-h-screen bg-[rgb(var(--surface-elevated))] text-theme-primary p-6">
+    <div className="min-h-screen text-theme-primary p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header skeleton */}
         <div className="flex items-center justify-between mb-6">

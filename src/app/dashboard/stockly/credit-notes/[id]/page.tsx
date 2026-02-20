@@ -270,7 +270,7 @@ export default function CreditNoteDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-4 md:p-8">
+      <div className="min-h-screen p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-theme-primary">Loading credit note...</div>
         </div>
@@ -280,7 +280,7 @@ export default function CreditNoteDetailPage() {
 
   if (!creditNote) {
     return (
-      <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-4 md:p-8">
+      <div className="min-h-screen p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-theme-primary">Credit note not found</div>
         </div>
@@ -292,7 +292,7 @@ export default function CreditNoteDetailPage() {
   const canEdit = ['draft', 'disputed'].includes(creditNote.status);
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">

@@ -170,7 +170,7 @@ export default function CustomerDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-6">
+      <div className="min-h-screen p-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-12">
             <p className="text-theme-tertiary">Loading customer details...</p>
@@ -182,7 +182,7 @@ export default function CustomerDetailPage() {
 
   if (!customer) {
     return (
-      <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-6">
+      <div className="min-h-screen p-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-12">
             <p className="text-theme-tertiary">Customer not found</p>
@@ -199,7 +199,7 @@ export default function CustomerDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">

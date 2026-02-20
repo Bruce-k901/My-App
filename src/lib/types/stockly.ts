@@ -186,14 +186,18 @@ export interface StockCount {
 export interface StockCountItem {
   id: string;
   stock_count_id: string;
+  stock_item_id?: string; // Auto-populated by DB trigger from ingredient_id
   storage_area_id: string | null; // Now nullable - pre-assigned area (may be null)
   ingredient_id: string;
-  
-  // NEW FIELDS
+
+  // @salsa — Batch tracking
+  batch_id?: string | null; // null = aggregate item, set = specific batch count
+
+  // Library fields
   library_type: LibraryType;
   counted_storage_area_id: string | null; // Where item was actually found during counting
   item_type: string | null;
-  
+
   // Stock movement
   opening_stock: number | null;
   stock_in: number;
@@ -202,13 +206,13 @@ export interface StockCountItem {
   transfers_in: number;
   transfers_out: number;
   theoretical_closing: number | null;
-  
+
   // Count data
   counted_quantity: number | null;
   variance_quantity: number | null;
   variance_percentage: number | null;
   variance_value: number | null;
-  
+
   // Metadata
   unit_of_measurement: string | null;
   unit_cost: number | null;
@@ -216,11 +220,20 @@ export interface StockCountItem {
   counted_at: string | null;
   notes: string | null;
   created_at: string;
-  
+
   // Joined data
   ingredient?: Ingredient;
   storage_area?: StorageArea; // Pre-assigned area (may be null)
   counted_storage_area?: StorageArea; // Where actually found during counting
+  // @salsa — Joined batch data (when batch_id is set)
+  batch?: {
+    id: string;
+    batch_code: string;
+    use_by_date: string | null;
+    best_before_date: string | null;
+    quantity_remaining: number;
+    status: BatchStatus;
+  };
 }
 
 export interface StockCountWithDetails extends StockCount {

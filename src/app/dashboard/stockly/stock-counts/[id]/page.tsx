@@ -301,13 +301,31 @@ export default function StockCountDetailPage() {
       const itemsWithNames = itemsWithRelations.length > 0
         ? await fetchItemNames(itemsWithRelations)
         : [];
-      
-      console.log(`Items with names: ${itemsWithNames.length}`, {
-        itemsWithNames,
-        libraryTypes: itemsWithNames.map(i => i.library_type),
-      });
-      
-      setItems(itemsWithNames);
+
+      // @salsa — Bulk fetch batch data for items with batch_id
+      const batchIds = itemsWithNames
+        .filter((i: any) => i.batch_id)
+        .map((i: any) => i.batch_id);
+
+      let itemsWithBatches = itemsWithNames;
+      if (batchIds.length > 0) {
+        const { data: batchData } = await supabase
+          .from('stock_batches')
+          .select('id, batch_code, use_by_date, best_before_date, quantity_remaining, status, created_at')
+          .in('id', batchIds);
+
+        if (batchData) {
+          const batchMap = new Map(batchData.map(b => [b.id, b]));
+          itemsWithBatches = itemsWithNames.map((item: any) => {
+            if (item.batch_id && batchMap.has(item.batch_id)) {
+              return { ...item, batch: batchMap.get(item.batch_id) };
+            }
+            return item;
+          });
+        }
+      }
+
+      setItems(itemsWithBatches);
     }
 
     setCount(countData as StockCountWithDetails);
@@ -697,7 +715,7 @@ export default function StockCountDetailPage() {
 
   if (!count) {
     return (
-      <div className="w-full bg-theme-surface-elevated min-h-screen">
+      <div className="w-full min-h-screen">
         <div className="container mx-auto py-8 px-4">
           <div className="text-center">
             <AlertCircle className="h-16 w-16 text-theme-disabled mx-auto mb-4" />
@@ -715,7 +733,7 @@ export default function StockCountDetailPage() {
   }
 
   return (
-    <div className="w-full bg-theme-surface-elevated min-h-screen">
+    <div className="w-full min-h-screen">
       <div className="container mx-auto py-8 px-4 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
@@ -1075,6 +1093,7 @@ export default function StockCountDetailPage() {
         isOpen={showFinalizeModal}
         onClose={() => setShowFinalizeModal(false)}
         count={count}
+        items={items}
         onSuccess={fetchCountDetails}
       />
 

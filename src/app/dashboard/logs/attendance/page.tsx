@@ -225,7 +225,7 @@ export default function AttendanceLogsPage() {
   const isManager = profile?.app_role && ['manager', 'general_manager', 'admin', 'owner'].includes(profile.app_role.toLowerCase());
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-3 sm:p-4 md:p-6">
+    <div className="min-h-screen p-3 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-4 sm:mb-6">

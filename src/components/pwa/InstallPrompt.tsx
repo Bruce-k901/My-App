@@ -81,11 +81,11 @@ export function InstallPrompt() {
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-theme-primary mb-1">Install Checkly</h3>
+            <h3 className="font-semibold text-theme-primary mb-1">Install Opsly</h3>
             <p className="text-sm text-theme-tertiary mb-3">
-              {browserInfo.isDuckDuckGo 
+              {browserInfo.isDuckDuckGo
                 ? "DuckDuckGo browser doesn't support automatic installation. Follow these steps:"
-                : "Add Checkly to your home screen manually:"}
+                : "Add Opsly to your home screen manually:"}
             </p>
             
             {browserInfo.isIOS ? (
@@ -158,9 +158,9 @@ export function InstallPrompt() {
           </div>
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-theme-primary mb-1">Install Checkly</h3>
+          <h3 className="font-semibold text-theme-primary mb-1">Install Opsly</h3>
           <p className="text-sm text-theme-tertiary mb-3">
-            Add Checkly to your home screen for quick access, offline support, and push notifications.
+            Add Opsly to your home screen for quick access, offline support, and push notifications.
           </p>
           <div className="flex gap-2">
             <Button 

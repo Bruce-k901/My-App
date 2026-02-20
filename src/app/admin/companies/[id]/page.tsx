@@ -11,14 +11,26 @@ import {
   Eye,
   Calendar,
   CheckCircle2,
+  CheckCircle,
   Clock,
   AlertTriangle,
   Loader2,
   Mail,
   MapPin,
-  UserPlus
+  UserPlus,
+  Rocket,
+  SkipForward,
+  FileEdit,
 } from '@/components/ui/icons';
 import AddUserModal from '@/components/admin/AddUserModal';
+import {
+  ONBOARDING_STEPS,
+  ONBOARDING_SECTIONS,
+  SECTION_ORDER,
+  type OnboardingSection,
+  type OnboardingProgress,
+  type StepStatus,
+} from '@/types/onboarding';
 
 interface CompanyDetails {
   id: string;
@@ -58,10 +70,13 @@ export default function CompanyDetailPage() {
   const [taskStats, setTaskStats] = useState<TaskStats>({ total: 0, completed: 0, pending: 0, missed: 0 });
   const [loading, setLoading] = useState(true);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [onboardingProgress, setOnboardingProgress] = useState<OnboardingProgress[]>([]);
+  const [onboardingLoading, setOnboardingLoading] = useState(false);
 
   useEffect(() => {
     if (companyId) {
       fetchCompanyDetails();
+      fetchOnboardingProgress();
     }
   }, [companyId]);
 
@@ -123,6 +138,36 @@ export default function CompanyDetailPage() {
     }
   }
 
+  async function fetchOnboardingProgress() {
+    setOnboardingLoading(true);
+    try {
+      const res = await fetch(`/api/onboarding/progress?companyId=${companyId}`);
+      if (res.ok) {
+        const { progress } = await res.json();
+        setOnboardingProgress(progress || []);
+      }
+    } catch (err) {
+      console.error('Error fetching onboarding progress:', err);
+    } finally {
+      setOnboardingLoading(false);
+    }
+  }
+
+  async function handleUpdateStep(stepId: string, status: StepStatus) {
+    try {
+      const res = await fetch('/api/onboarding/update-step', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ companyId, stepId, status }),
+      });
+      if (res.ok) {
+        await fetchOnboardingProgress();
+      }
+    } catch (err) {
+      console.error('Error updating step:', err);
+    }
+  }
+
   const handleViewAs = () => {
     if (!company) return;
 
@@ -131,6 +176,16 @@ export default function CompanyDetailPage() {
       name: company.name
     }));
     router.push('/dashboard');
+  };
+
+  const handleViewAsSetup = () => {
+    if (!company) return;
+
+    sessionStorage.setItem('admin_viewing_as_company', JSON.stringify({
+      id: company.id,
+      name: company.name
+    }));
+    router.push('/dashboard/business');
   };
 
   if (loading) {
@@ -217,6 +272,134 @@ export default function CompanyDetailPage() {
           </div>
           <div className="text-2xl font-bold text-theme-primary">{completionRate}%</div>
         </div>
+      </div>
+
+      {/* Setup Progress Section */}
+      <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
+            <Rocket className="w-5 h-5 text-[#D37E91]" />
+            Setup Progress
+            {!onboardingLoading && (
+              <span className="text-sm font-normal text-theme-tertiary ml-2">
+                {onboardingProgress.filter(p => p.status === 'complete' || p.status === 'skipped').length}/{ONBOARDING_STEPS.length} steps
+              </span>
+            )}
+          </h2>
+          <button
+            onClick={handleViewAsSetup}
+            className="flex items-center gap-2 px-3 py-1.5 bg-[#D37E91] text-white rounded-lg font-medium hover:bg-[#C06B7E] transition-colors text-sm"
+          >
+            <Eye className="w-4 h-4" />
+            View As + Enter Setup
+          </button>
+        </div>
+
+        {onboardingLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="w-6 h-6 text-[#D37E91] animate-spin" />
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {/* Overall progress bar */}
+            {(() => {
+              const done = onboardingProgress.filter(p => p.status === 'complete' || p.status === 'skipped').length;
+              const total = ONBOARDING_STEPS.length;
+              const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+              return (
+                <div className="mb-4">
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-theme-tertiary">Overall</span>
+                    <span className="font-medium text-theme-primary">{pct}%</span>
+                  </div>
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[#D37E91] rounded-full transition-all"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Sections */}
+            {SECTION_ORDER.map((sectionKey) => {
+              const meta = ONBOARDING_SECTIONS[sectionKey];
+              const sectionSteps = ONBOARDING_STEPS.filter(s => s.section === sectionKey);
+              const sectionProgress = sectionSteps.map(step => {
+                const p = onboardingProgress.find(op => op.step_id === step.stepId);
+                return { ...step, status: (p?.status || 'not_started') as StepStatus, notes: p?.notes || null };
+              });
+              const sectionDone = sectionProgress.filter(s => s.status === 'complete' || s.status === 'skipped').length;
+
+              return (
+                <div key={sectionKey} className="border border-gray-100 rounded-lg">
+                  <div className="flex items-center justify-between px-4 py-2.5 bg-gray-50 rounded-t-lg">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-theme-primary">{meta.label}</span>
+                      <span className="text-xs text-theme-tertiary">{sectionDone}/{sectionSteps.length}</span>
+                    </div>
+                    <div className="w-24 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[#D37E91] rounded-full transition-all"
+                        style={{ width: `${sectionSteps.length > 0 ? (sectionDone / sectionSteps.length) * 100 : 0}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div className="divide-y divide-gray-50">
+                    {sectionProgress.map((step) => {
+                      const isDone = step.status === 'complete' || step.status === 'skipped';
+                      return (
+                        <div key={step.stepId} className="flex items-center gap-3 px-4 py-2">
+                          <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
+                            isDone ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
+                          }`}>
+                            {isDone ? <CheckCircle className="w-3.5 h-3.5" /> : <span className="w-1.5 h-1.5 bg-gray-300 rounded-full" />}
+                          </div>
+                          <span className={`text-sm flex-1 ${isDone ? 'text-theme-tertiary line-through' : 'text-theme-primary'}`}>
+                            {step.name}
+                          </span>
+                          {step.notes && (
+                            <span className="text-xs text-theme-tertiary max-w-[200px] truncate" title={step.notes}>
+                              <FileEdit className="w-3 h-3 inline mr-1" />{step.notes}
+                            </span>
+                          )}
+                          {!isDone && (
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => handleUpdateStep(step.stepId, 'skipped')}
+                                className="p-1 text-gray-400 hover:text-gray-600 rounded"
+                                title="Skip"
+                              >
+                                <SkipForward className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => handleUpdateStep(step.stepId, 'complete')}
+                                className="p-1 text-green-400 hover:text-green-600 rounded"
+                                title="Mark complete"
+                              >
+                                <CheckCircle className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          )}
+                          {isDone && (
+                            <button
+                              onClick={() => handleUpdateStep(step.stepId, 'not_started')}
+                              className="text-xs text-gray-400 hover:text-gray-600"
+                              title="Reset"
+                            >
+                              Reset
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import Input from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -81,7 +81,8 @@ export default function CountDataEntry({
 
   // Sort items to match print sheet order:
   // 1. By library type (same order as librariesIncluded)
-  // 2. Then alphabetically by name
+  // 2. Then alphabetically by name (groups batches of same item together)
+  // 3. Then by batch created_at (oldest first = FIFO)
   const sortedItems = [...filteredItems].sort((a, b) => {
     // First sort by library order
     const aLibOrder = getLibraryOrder(a.library_type, librariesIncluded);
@@ -89,13 +90,19 @@ export default function CountDataEntry({
     if (aLibOrder !== bLibOrder) {
       return aLibOrder - bLibOrder;
     }
-    
-    // Then alphabetically by name
-    const aName = (a.ingredient as any)?.ingredient_name || 
+
+    // Then alphabetically by name (keeps same-item batches together)
+    const aName = (a.ingredient as any)?.ingredient_name ||
                   (a.ingredient as any)?.name || '';
-    const bName = (b.ingredient as any)?.ingredient_name || 
+    const bName = (b.ingredient as any)?.ingredient_name ||
                   (b.ingredient as any)?.name || '';
-    return aName.localeCompare(bName);
+    const nameCompare = aName.localeCompare(bName);
+    if (nameCompare !== 0) return nameCompare;
+
+    // Then by batch created_at (oldest first for FIFO)
+    const aBatchDate = a.batch?.created_at || a.created_at;
+    const bBatchDate = b.batch?.created_at || b.created_at;
+    return aBatchDate.localeCompare(bBatchDate);
   });
 
   // Search-filtered items for display (search filters the visible list)
@@ -779,126 +786,156 @@ export default function CountDataEntry({
                       </tr>
                     ) : (
                       displayItems.map((item, localIndex) => {
-                        const ingredientName = (item.ingredient as any)?.ingredient_name || 
-                                             (item.ingredient as any)?.name || 
+                        const ingredientName = (item.ingredient as any)?.ingredient_name ||
+                                             (item.ingredient as any)?.name ||
                                              'Unknown';
                         const currentCountValue = editingValues[item.id] !== undefined
                           ? editingValues[item.id]
                           : (item.counted_quantity?.toString() || '');
                         const isCounted = item.status === 'counted';
-                        // Use local index within current library section for navigation
 
                         const isActiveKeypadItem = isMobile && showKeypad && sortedItems[activeItemIndex]?.id === item.id;
 
+                        // @salsa — Batch grouping: detect group boundaries
+                        const hasBatch = !!item.batch_id;
+                        const prevItem = localIndex > 0 ? displayItems[localIndex - 1] : null;
+                        const isNewGroup = hasBatch && (!prevItem || prevItem.ingredient_id !== item.ingredient_id);
+
+                        // Format expiry info for batch rows
+                        const batchExpiryLabel = hasBatch && item.batch ? (() => {
+                          const ub = item.batch.use_by_date;
+                          const bb = item.batch.best_before_date;
+                          const parts: string[] = [];
+                          if (ub) parts.push(`UB: ${new Date(ub).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}`);
+                          if (bb) parts.push(`BB: ${new Date(bb).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}`);
+                          return parts.join(' / ') || null;
+                        })() : null;
+
                         return (
-                          <tr
-                            key={item.id}
-                            className={cn(
-                              'hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02]',
-                              isCounted && 'bg-emerald-50/50 dark:bg-emerald-500/5',
-                              isActiveKeypadItem && 'bg-emerald-100/80 dark:bg-emerald-500/15 ring-2 ring-emerald-500/50 ring-inset'
+                          <React.Fragment key={item.id}>
+                            {/* @salsa — Group header row for batched items */}
+                            {isNewGroup && (
+                              <tr className="bg-theme-button/50 dark:bg-white/[0.03]">
+                                <td colSpan={isMobile ? 2 : 4} className="px-4 py-2">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-theme-primary font-semibold text-sm">
+                                      {ingredientName}
+                                    </span>
+                                    {(item.ingredient as any)?.supplier && (
+                                      <span className="text-xs text-theme-tertiary">
+                                        — {(item.ingredient as any)?.supplier}
+                                      </span>
+                                    )}
+                                    <span className="text-xs text-stockly-dark dark:text-stockly font-medium ml-auto">
+                                      {displayItems.filter(d => d.ingredient_id === item.ingredient_id && d.batch_id).length} batches
+                                    </span>
+                                  </div>
+                                </td>
+                              </tr>
                             )}
-                          >
-                            <td
-                              className={cn("px-4 py-3", isMobile && "cursor-pointer")}
-                              onClick={() => {
-                                if (isMobile) {
-                                  const idx = sortedItems.findIndex(si => si.id === item.id);
-                                  setActiveItemIndex(idx >= 0 ? idx : 0);
-                                  setShowKeypad(true);
-                                }
-                              }}
+                            {/* Data row */}
+                            <tr
+                              className={cn(
+                                'hover:bg-theme-surface-elevated dark:hover:bg-white/[0.02]',
+                                isCounted && 'bg-emerald-50/50 dark:bg-emerald-500/5',
+                                isActiveKeypadItem && 'bg-emerald-100/80 dark:bg-emerald-500/15 ring-2 ring-emerald-500/50 ring-inset'
+                              )}
                             >
-                              <div className="flex flex-col gap-1">
-                                <span className="text-theme-primary font-medium">
-                                  {ingredientName}
+                              <td
+                                className={cn("px-4 py-3", isMobile && "cursor-pointer")}
+                                onClick={() => {
+                                  if (isMobile) {
+                                    const idx = sortedItems.findIndex(si => si.id === item.id);
+                                    setActiveItemIndex(idx >= 0 ? idx : 0);
+                                    setShowKeypad(true);
+                                  }
+                                }}
+                              >
+                                {hasBatch && item.batch ? (
+                                  /* @salsa — Batch sub-row: show batch code + expiry */
+                                  <div className="flex flex-col gap-0.5 pl-4">
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-mono text-sm font-medium text-theme-primary">
+                                        {item.batch.batch_code}
+                                      </span>
+                                      {batchExpiryLabel && (
+                                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium">
+                                          {batchExpiryLabel}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                ) : (
+                                  /* Non-batched item: show name as before */
+                                  <div className="flex flex-col gap-1">
+                                    <span className="text-theme-primary font-medium">
+                                      {ingredientName}
+                                    </span>
+                                    {(item.ingredient as any)?.supplier && (
+                                      <span className="text-xs text-theme-tertiary">
+                                        Supplier: {(item.ingredient as any)?.supplier}
+                                      </span>
+                                    )}
+                                    {(item.ingredient as any)?.pack_size && (
+                                      <span className="text-xs text-theme-tertiary">
+                                        Case Size: {(item.ingredient as any)?.pack_size}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+                              </td>
+                              <td className={cn("px-4 py-3 text-right", isMobile && "hidden")}>
+                                <span className="text-theme-secondary text-sm">
+                                  {item.theoretical_closing || 0} {item.unit_of_measurement || ''}
                                 </span>
-                                {(item.ingredient as any)?.supplier && (
-                                  <span className="text-xs text-theme-tertiary">
-                                    Supplier: {(item.ingredient as any)?.supplier}
-                                  </span>
-                                )}
-                                {(item.ingredient as any)?.pack_size && (
-                                  <span className="text-xs text-theme-tertiary">
-                                    Case Size: {(item.ingredient as any)?.pack_size}
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-                            <td className={cn("px-4 py-3 text-right", isMobile && "hidden")}>
-                              <span className="text-theme-secondary text-sm">
-                                {item.theoretical_closing || 0} {item.unit_of_measurement || ''}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-2">
-                                <Input
-                                  ref={(el) => {
-                                    if (el) inputRefs.current[item.id] = el;
-                                  }}
-                                  type="number"
-                                  step="0.01"
-                                  value={currentCountValue}
-                                  onChange={(e) => handleCountChange(item.id, e.target.value)}
-                                  onKeyDown={(e) => {
-                                    // CRITICAL: Verify item is from the correct library
-                                    if (selectedLibrary && item.library_type !== selectedLibrary) {
-                                      console.error('Item library mismatch!', { 
-                                        itemLibraryType: item.library_type, 
-                                        selectedLibrary,
-                                        itemId: item.id 
-                                      });
-                                      return; // Don't navigate if library mismatch
-                                    }
-                                    
-                                    // Verify libItems only contains items from the selected library
-                                    if (selectedLibrary) {
-                                      const wrongLibraryItems = libItems.filter(i => i.library_type !== selectedLibrary);
-                                      if (wrongLibraryItems.length > 0) {
-                                        console.error('libItems contains wrong library items!', { 
-                                          selectedLibrary,
-                                          wrongItems: wrongLibraryItems.map(i => ({ id: i.id, library_type: i.library_type })),
-                                          libItemsLength: libItems.length
-                                        });
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-2">
+                                  <Input
+                                    ref={(el) => {
+                                      if (el) inputRefs.current[item.id] = el;
+                                    }}
+                                    type="number"
+                                    step="0.01"
+                                    value={currentCountValue}
+                                    onChange={(e) => handleCountChange(item.id, e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (selectedLibrary && item.library_type !== selectedLibrary) {
+                                        return;
                                       }
-                                    }
-                                    
-                                    // Use localIndex from map instead of findIndex - it's more reliable
-                                    // localIndex is the actual position in the rendered array
-                                    handleKeyDown(e, item, localIndex, libItems);
-                                  }}
-                                  readOnly={isMobile}
-                                  onFocus={(e) => {
-                                    if (isMobile) {
-                                      // On mobile: open calculator keypad instead of native keyboard
-                                      const idx = sortedItems.findIndex(si => si.id === item.id);
-                                      setActiveItemIndex(idx >= 0 ? idx : 0);
-                                      setShowKeypad(true);
-                                      e.target.blur(); // Prevent native keyboard
-                                    } else {
-                                      // Desktop: select all text for easy replacement (Excel-like)
-                                      e.target.select();
-                                    }
-                                  }}
-                                  placeholder={isMobile ? "Tap to count" : "Press Enter to continue..."}
-                                  autoComplete="off"
-                                  disabled={saving === item.id}
- className="bg-theme-surface ] border-theme text-theme-primary focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 disabled:opacity-50"
-                                />
-                                <span className="text-theme-tertiary text-sm whitespace-nowrap">
-                                  {item.unit_of_measurement || ''}
-                                </span>
-                              </div>
-                            </td>
-                            <td className={cn("px-4 py-3 text-center", isMobile && "hidden")}>
-                              {isCounted && (
-                                <CheckCircle className="h-5 w-5 text-module-fg mx-auto" />
-                              )}
-                              {saving === item.id && (
-                                <Loader2 className="h-5 w-5 text-module-fg animate-spin mx-auto" />
-                              )}
-                            </td>
-                          </tr>
+                                      handleKeyDown(e, item, localIndex, libItems);
+                                    }}
+                                    readOnly={isMobile}
+                                    onFocus={(e) => {
+                                      if (isMobile) {
+                                        const idx = sortedItems.findIndex(si => si.id === item.id);
+                                        setActiveItemIndex(idx >= 0 ? idx : 0);
+                                        setShowKeypad(true);
+                                        e.target.blur();
+                                      } else {
+                                        e.target.select();
+                                      }
+                                    }}
+                                    placeholder={isMobile ? "Tap to count" : "Press Enter to continue..."}
+                                    autoComplete="off"
+                                    disabled={saving === item.id}
+                                    className="bg-theme-surface border-theme text-theme-primary focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 disabled:opacity-50"
+                                  />
+                                  <span className="text-theme-tertiary text-sm whitespace-nowrap">
+                                    {item.unit_of_measurement || ''}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className={cn("px-4 py-3 text-center", isMobile && "hidden")}>
+                                {isCounted && (
+                                  <CheckCircle className="h-5 w-5 text-module-fg mx-auto" />
+                                )}
+                                {saving === item.id && (
+                                  <Loader2 className="h-5 w-5 text-module-fg animate-spin mx-auto" />
+                                )}
+                              </td>
+                            </tr>
+                          </React.Fragment>
                         );
                       })
                     )}

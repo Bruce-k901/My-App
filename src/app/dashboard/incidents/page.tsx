@@ -38,7 +38,7 @@ interface Incident {
 
 export default function IncidentsPage() {
   return (
-    <Suspense fallback={<div className="w-full bg-theme-surface-elevated min-h-screen p-6"><p className="text-theme-secondary">Loading...</p></div>}>
+    <Suspense fallback={<div className="w-full min-h-screen p-6"><p className="text-theme-secondary">Loading...</p></div>}>
       <IncidentsPageContent />
     </Suspense>
   );
@@ -315,7 +315,7 @@ function IncidentsPageContent() {
   const activeTabInfo = getActiveTabInfo();
 
   return (
-    <div className="w-full bg-theme-surface-elevated min-h-screen overflow-x-hidden">
+    <div className="w-full min-h-screen overflow-x-hidden">
       <div className="max-w-7xl mx-auto p-4 sm:p-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6">

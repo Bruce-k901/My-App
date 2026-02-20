@@ -193,10 +193,30 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+# Custom Opsly-branded email templates
+[auth.email.template.confirmation]
+subject = "Confirm your Opsly account"
+content_path = "./supabase/templates/confirm-signup.html"
+
+[auth.email.template.invite]
+subject = "You've been invited to Opsly"
+content_path = "./supabase/templates/invite.html"
+
+[auth.email.template.magic_link]
+subject = "Your Opsly sign-in link"
+content_path = "./supabase/templates/magic-link.html"
+
+[auth.email.template.email_change]
+subject = "Confirm your new email address"
+content_path = "./supabase/templates/change-email.html"
+
+[auth.email.template.recovery]
+subject = "Reset your Opsly password"
+content_path = "./supabase/templates/reset-password.html"
+
+[auth.email.template.reauthentication]
+subject = "Confirm your identity"
+content_path = "./supabase/templates/reauthentication.html"
 
 [auth.sms]
 # Allow/disallow new user signups via SMS to your project.

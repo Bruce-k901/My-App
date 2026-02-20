@@ -4,10 +4,10 @@
 
 /* Theme CSS Variables */
 :root {
-  --background: 12 11 10; /* warm near-black */
+  --background: 10 10 10; /* neutral near-black (matches neutral-950) */
   --foreground: 255 255 255;
-  --surface: 28 25 22; /* warm charcoal */
-  --surface-elevated: 40 36 33; /* warm mid */
+  --surface: 23 23 23; /* neutral charcoal (matches neutral-900) */
+  --surface-elevated: 38 38 38; /* neutral mid (matches neutral-800) */
   --text-primary: 255 255 255;
   --text-secondary: 255 255 255 / 0.8;
   --text-tertiary: 255 255 255 / 0.6;

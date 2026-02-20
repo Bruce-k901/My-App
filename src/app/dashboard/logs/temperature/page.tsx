@@ -1275,7 +1275,7 @@ export default function TemperatureLogsPage() {
   }, [filteredLogs]);
 
   return (
-    <div className="w-full bg-theme-surface-elevated min-h-screen">
+    <div className="w-full min-h-screen">
       <div className="w-full px-4">
         <div className="max-w-[2000px] mx-auto p-6">
         {/* Header */}

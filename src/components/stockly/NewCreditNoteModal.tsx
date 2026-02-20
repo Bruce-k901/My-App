@@ -172,10 +172,24 @@ export function NewCreditNoteModal({
         .eq('is_purchasable', true)
         .order('name');
 
+      // If error is about is_purchasable column not existing, retry without that filter
+      if (error && (error.message?.includes('is_purchasable') || error.code === '42703')) {
+        const { data: retryData, error: retryError } = await supabase
+          .from('stock_items')
+          .select('id, name, description, default_vat_rate')
+          .eq('company_id', companyId)
+          .eq('is_active', true)
+          .order('name');
+
+        if (retryError) throw retryError;
+        setStockItems(retryData || []);
+        return;
+      }
+
       if (error) throw error;
       setStockItems(data || []);
     } catch (error: any) {
-      console.error('Error fetching stock items:', error);
+      console.error('Error fetching stock items:', error?.message || error);
     }
   }
 

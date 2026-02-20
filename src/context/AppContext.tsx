@@ -18,6 +18,12 @@ interface AppContextType {
   setCompany: (company: any | null) => void;
   setSelectedSite: (siteId: string | null) => void;
   selectedSiteId: string | null;
+  /** True when a platform admin is viewing as another company */
+  isViewingAs: boolean;
+  /** The company ID being viewed as (null when not in View As mode) */
+  viewingAsCompanyId: string | null;
+  /** True when the current user has is_platform_admin flag */
+  isPlatformAdmin: boolean;
 }
 
 const AppContext = createContext<AppContextType>({
@@ -34,6 +40,9 @@ const AppContext = createContext<AppContextType>({
   setCompany: () => {},
   setSelectedSite: () => {},
   selectedSiteId: null,
+  isViewingAs: false,
+  viewingAsCompanyId: null,
+  isPlatformAdmin: false,
 });
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -790,6 +799,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setCompany,
     setSelectedSite,
     selectedSiteId,
+    isViewingAs: !!viewingAsCompanyId,
+    viewingAsCompanyId: viewingAsCompanyId || null,
+    isPlatformAdmin: profile?.is_platform_admin ?? false,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

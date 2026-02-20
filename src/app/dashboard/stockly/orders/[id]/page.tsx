@@ -952,7 +952,7 @@ export default function PurchaseOrderDetailPage() {
   }
 
   return (
-    <div className="w-full bg-theme-surface-elevated min-h-screen p-6">
+    <div className="w-full min-h-screen p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">

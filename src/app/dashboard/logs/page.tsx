@@ -38,7 +38,7 @@ export default function LogsHubPage() {
   const activeTab = logTabs.find((tab) => pathname.startsWith(tab.href))?.key || "temperature";
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--surface-elevated))]">
+    <div className="min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 sm:mb-8">

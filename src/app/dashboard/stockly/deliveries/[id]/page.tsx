@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { ArrowLeft, CheckCircle2, AlertCircle, XCircle, Plus, Search, Save } from '@/components/ui/icons';
+import { ArrowLeft, CheckCircle2, AlertCircle, XCircle, Plus, Search, Save, Layers, ChevronDown, ChevronRight, Thermometer } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/Button';
@@ -59,6 +59,11 @@ interface DeliveryLine {
     name?: string;
   };
   product_variant?: ProductVariant;
+  // @salsa — Batch traceability fields (from delivery_lines table)
+  supplier_batch_code?: string;
+  temperature_reading?: number;
+  condition_assessment?: any;
+  batch_id?: string;
 }
 
 interface PurchaseOrderLine {
@@ -136,6 +141,16 @@ export default function DeliveryReviewPage() {
     rejected: number;
     rejection_reason?: string;
     rejection_notes?: string;
+  }>>({});
+
+  // @salsa — Goods-in / batch data per delivery line
+  const [lineGoodsInData, setLineGoodsInData] = useState<Record<string, {
+    supplier_batch_code: string;
+    use_by_date: string;
+    best_before_date: string;
+    temperature_reading: string;
+    condition_notes: string;
+    expanded: boolean;
   }>>({});
 
   // Price change detection state (Phase 2)
@@ -336,6 +351,20 @@ export default function DeliveryReviewPage() {
         };
       });
       setLineAcceptanceStates(states);
+
+      // @salsa — Initialize goods-in data from any existing delivery_line values
+      const goodsIn: Record<string, any> = {};
+      deliveryData.lines?.forEach(line => {
+        goodsIn[line.id] = {
+          supplier_batch_code: line.supplier_batch_code || '',
+          use_by_date: '',
+          best_before_date: '',
+          temperature_reading: line.temperature_reading ? String(line.temperature_reading) : '',
+          condition_notes: '',
+          expanded: false,
+        };
+      });
+      setLineGoodsInData(goodsIn);
     } catch (error: any) {
       console.error('Error fetching delivery:', error);
       toast.error('Failed to load delivery');
@@ -1364,6 +1393,84 @@ export default function DeliveryReviewPage() {
       }
 
       // ========================================
+      // @salsa — Create batch records for traceability
+      // ========================================
+      let batchesCreated = 0;
+
+      for (const line of delivery.lines || []) {
+        const state = lineAcceptanceStates[line.id];
+        const received = state?.received ?? line.quantity_ordered;
+
+        // Skip fully rejected or zero-qty lines
+        if (received <= 0) continue;
+
+        // Resolve stock_item_id (directly or via product_variant)
+        let stockItemId = line.stock_item_id;
+        let stockUnit = 'units';
+
+        if (!stockItemId && line.product_variant_id) {
+          const { data: variant } = await supabase
+            .from('product_variants')
+            .select('stock_item_id, stock_item:stock_items(stock_unit)')
+            .eq('id', line.product_variant_id)
+            .single();
+          stockItemId = variant?.stock_item_id;
+          stockUnit = (variant as any)?.stock_item?.stock_unit || 'units';
+        } else if (stockItemId) {
+          const { data: si } = await supabase
+            .from('stock_items')
+            .select('stock_unit')
+            .eq('id', stockItemId)
+            .single();
+          stockUnit = si?.stock_unit || 'units';
+        }
+
+        // Skip lines without a stock item (non-stock/service items)
+        if (!stockItemId) continue;
+
+        // Check if batch already exists for this delivery line (prevent duplicates)
+        const { data: existingBatch } = await supabase
+          .from('stock_batches')
+          .select('id')
+          .eq('delivery_line_id', line.id)
+          .limit(1);
+
+        if (existingBatch && existingBatch.length > 0) continue;
+
+        const goodsIn = lineGoodsInData[line.id];
+
+        try {
+          const response = await fetch('/api/stockly/batches', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              company_id: delivery.company_id,
+              site_id: delivery.site_id,
+              stock_item_id: stockItemId,
+              delivery_line_id: line.id,
+              supplier_batch_code: goodsIn?.supplier_batch_code || null,
+              quantity_received: received,
+              unit: stockUnit,
+              use_by_date: goodsIn?.use_by_date || null,
+              best_before_date: goodsIn?.best_before_date || null,
+              temperature_on_receipt: goodsIn?.temperature_reading ? parseFloat(goodsIn.temperature_reading) : null,
+              condition_notes: goodsIn?.condition_notes || null,
+            }),
+          });
+
+          if (response.ok) {
+            batchesCreated++;
+          } else {
+            const err = await response.json();
+            console.error('Failed to create batch for line:', line.id, err);
+          }
+        } catch (batchErr) {
+          // Non-blocking — batch creation failure shouldn't prevent confirmation
+          console.error('Error creating batch for line:', line.id, batchErr);
+        }
+      }
+
+      // ========================================
       // Update ingredient costs from invoice
       // (Modified to respect user's price change decisions)
       // ========================================
@@ -1523,6 +1630,9 @@ export default function DeliveryReviewPage() {
 
       // Build success message
       let message = 'Delivery confirmed successfully';
+      if (batchesCreated > 0) {
+        message += `. ${batchesCreated} batch${batchesCreated > 1 ? 'es' : ''} created`;
+      }
       if (pricesUpdated > 0) {
         message += `. ${pricesUpdated} price${pricesUpdated > 1 ? 's' : ''} updated`;
       }
@@ -1615,7 +1725,7 @@ export default function DeliveryReviewPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-4 md:p-8">
+      <div className="min-h-screen p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-theme-primary">Loading delivery...</div>
         </div>
@@ -1625,7 +1735,7 @@ export default function DeliveryReviewPage() {
 
   if (!delivery) {
     return (
-      <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-4 md:p-8">
+      <div className="min-h-screen p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-theme-primary">Delivery not found</div>
         </div>
@@ -1646,7 +1756,7 @@ export default function DeliveryReviewPage() {
   }, 0) || 0;
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--surface-elevated))] p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-[95rem] mx-auto">
         {/* Header */}
         <div className="mb-6">
@@ -2259,6 +2369,112 @@ export default function DeliveryReviewPage() {
                                 Undo
                               </button>
                             </div>
+                          </td>
+                        </tr>
+                      )}
+
+                      {/* @salsa — Goods-In Check Row: batch data for SALSA traceability */}
+                      {line.match_status && line.match_status !== 'unmatched' &&
+                       acceptanceState.state !== 'reject_all' && delivery.status !== 'confirmed' && (
+                        <tr className="bg-white/[0.02]">
+                          <td colSpan={purchaseOrder ? 12 : 8} className="px-2 py-1.5">
+                            {(() => {
+                              const goodsIn = lineGoodsInData[line.id];
+                              if (!goodsIn) return null;
+                              const hasData = !!(goodsIn.supplier_batch_code || goodsIn.use_by_date || goodsIn.best_before_date || goodsIn.temperature_reading || goodsIn.condition_notes);
+
+                              return (
+                                <div>
+                                  <button
+                                    type="button"
+                                    onClick={() => setLineGoodsInData(prev => ({
+                                      ...prev,
+                                      [line.id]: { ...prev[line.id], expanded: !prev[line.id]?.expanded }
+                                    }))}
+                                    className="flex items-center gap-1.5 text-xs text-stockly-dark dark:text-stockly hover:opacity-80 transition-opacity"
+                                  >
+                                    {goodsIn.expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                                    <Layers size={14} />
+                                    <span>Goods-In Check</span>
+                                    {hasData && (
+                                      <span className="w-1.5 h-1.5 rounded-full bg-stockly-dark dark:bg-stockly ml-1" />
+                                    )}
+                                  </button>
+
+                                  {goodsIn.expanded && (
+                                    <div className="mt-2 grid grid-cols-2 md:grid-cols-5 gap-2">
+                                      <div>
+                                        <label className="block text-[10px] uppercase text-theme-tertiary mb-0.5">Supplier Batch Code</label>
+                                        <input
+                                          type="text"
+                                          value={goodsIn.supplier_batch_code}
+                                          onChange={(e) => setLineGoodsInData(prev => ({
+                                            ...prev,
+                                            [line.id]: { ...prev[line.id], supplier_batch_code: e.target.value }
+                                          }))}
+                                          placeholder="e.g. SUP-2026-001"
+                                          className="w-full px-2 py-1.5 bg-theme-surface border border-theme rounded text-xs text-theme-primary placeholder:text-theme-tertiary"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="block text-[10px] uppercase text-theme-tertiary mb-0.5">Use By Date</label>
+                                        <input
+                                          type="date"
+                                          value={goodsIn.use_by_date}
+                                          onChange={(e) => setLineGoodsInData(prev => ({
+                                            ...prev,
+                                            [line.id]: { ...prev[line.id], use_by_date: e.target.value }
+                                          }))}
+                                          className="w-full px-2 py-1.5 bg-theme-surface border border-theme rounded text-xs text-theme-primary"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="block text-[10px] uppercase text-theme-tertiary mb-0.5">Best Before Date</label>
+                                        <input
+                                          type="date"
+                                          value={goodsIn.best_before_date}
+                                          onChange={(e) => setLineGoodsInData(prev => ({
+                                            ...prev,
+                                            [line.id]: { ...prev[line.id], best_before_date: e.target.value }
+                                          }))}
+                                          className="w-full px-2 py-1.5 bg-theme-surface border border-theme rounded text-xs text-theme-primary"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="block text-[10px] uppercase text-theme-tertiary mb-0.5 flex items-center gap-1">
+                                          <Thermometer size={10} />
+                                          Temp °C
+                                        </label>
+                                        <input
+                                          type="number"
+                                          step="0.1"
+                                          value={goodsIn.temperature_reading}
+                                          onChange={(e) => setLineGoodsInData(prev => ({
+                                            ...prev,
+                                            [line.id]: { ...prev[line.id], temperature_reading: e.target.value }
+                                          }))}
+                                          placeholder="e.g. 3.5"
+                                          className="w-full px-2 py-1.5 bg-theme-surface border border-theme rounded text-xs text-theme-primary placeholder:text-theme-tertiary"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="block text-[10px] uppercase text-theme-tertiary mb-0.5">Condition Notes</label>
+                                        <input
+                                          type="text"
+                                          value={goodsIn.condition_notes}
+                                          onChange={(e) => setLineGoodsInData(prev => ({
+                                            ...prev,
+                                            [line.id]: { ...prev[line.id], condition_notes: e.target.value }
+                                          }))}
+                                          placeholder="Packaging OK, etc."
+                                          className="w-full px-2 py-1.5 bg-theme-surface border border-theme rounded text-xs text-theme-primary placeholder:text-theme-tertiary"
+                                        />
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })()}
                           </td>
                         </tr>
                       )}

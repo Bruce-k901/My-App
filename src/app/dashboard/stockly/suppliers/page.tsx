@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Search, Phone, Mail, Building2, Calendar, Clock, ArrowLeft, ChevronRight } from '@/components/ui/icons';
+import { Plus, Search, Phone, Mail, Building2, Calendar, Clock, ArrowLeft, ChevronRight, Loader2, AlertTriangle, Check, Layers } from '@/components/ui/icons';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -12,6 +12,7 @@ import Input from '@/components/ui/Input';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ApprovalStatusBadge, RiskRatingBadge } from '@/components/stockly/SupplierApprovalPanel';
+import { mergeSuppliers } from '@/lib/utils/supplierMerge';
 import type { Supplier, SupplierApprovalStatus, RiskRating } from '@/lib/types/stockly';
 
 // @salsa
@@ -42,6 +43,12 @@ export default function SuppliersPage() {
   const [saving, setSaving] = useState(false);
   const [newName, setNewName] = useState('');
   const [newCode, setNewCode] = useState('');
+  // Merge state
+  const [mergeMode, setMergeMode] = useState(false);
+  const [selectedForMerge, setSelectedForMerge] = useState<Set<string>>(new Set());
+  const [isMergeOpen, setIsMergeOpen] = useState(false);
+  const [canonicalId, setCanonicalId] = useState<string | null>(null);
+  const [merging, setMerging] = useState(false);
 
   useEffect(() => {
     if (companyId) {
@@ -134,6 +141,56 @@ export default function SuppliersPage() {
     return matchesSearch && matchesStatus;
   });
 
+  function toggleMergeSelection(id: string) {
+    setSelectedForMerge(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function openMergeDialog() {
+    if (selectedForMerge.size < 2) {
+      toast.error('Select at least 2 suppliers to merge');
+      return;
+    }
+    // Default canonical = first selected
+    const firstSelected = Array.from(selectedForMerge)[0];
+    setCanonicalId(firstSelected);
+    setIsMergeOpen(true);
+  }
+
+  async function handleMerge() {
+    if (!canonicalId || !companyId) return;
+    const mergeIds = Array.from(selectedForMerge).filter(id => id !== canonicalId);
+    if (mergeIds.length === 0) {
+      toast.error('Select at least one supplier to merge into the canonical one');
+      return;
+    }
+
+    setMerging(true);
+    try {
+      const result = await mergeSuppliers(canonicalId, mergeIds, companyId);
+      if (result.success) {
+        toast.success(`Merged successfully. ${result.updatedRecords} records updated.`);
+        setIsMergeOpen(false);
+        setMergeMode(false);
+        setSelectedForMerge(new Set());
+        setCanonicalId(null);
+        fetchSuppliers();
+      } else {
+        toast.error(result.error || 'Merge failed');
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Merge failed');
+    } finally {
+      setMerging(false);
+    }
+  }
+
+  const selectedSuppliers = suppliers.filter(s => selectedForMerge.has(s.id));
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -143,7 +200,7 @@ export default function SuppliersPage() {
   }
 
   return (
-    <div className="w-full bg-theme-surface-elevated min-h-screen">
+    <div className="w-full min-h-screen">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between gap-3">
@@ -169,14 +226,42 @@ export default function SuppliersPage() {
             >
               Approved List
             </Link>
-            <button
-              onClick={() => setIsAddOpen(true)}
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out text-sm flex-shrink-0"
-            >
-              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline">Add Supplier</span>
-              <span className="sm:hidden">Add</span>
-            </button>
+            {mergeMode ? (
+              <>
+                <button
+                  onClick={openMergeDialog}
+                  disabled={selectedForMerge.size < 2}
+                  className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Layers className="w-4 h-4" />
+                  <span>Merge ({selectedForMerge.size})</span>
+                </button>
+                <button
+                  onClick={() => { setMergeMode(false); setSelectedForMerge(new Set()); }}
+                  className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-theme text-theme-secondary hover:text-theme-primary rounded-lg transition-colors text-sm"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setMergeMode(true)}
+                  className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm text-theme-secondary hover:text-theme-primary border border-theme rounded-lg hover:bg-theme-surface transition-colors"
+                >
+                  <Layers className="w-4 h-4" />
+                  Merge Suppliers
+                </button>
+                <button
+                  onClick={() => setIsAddOpen(true)}
+                  className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all duration-200 ease-in-out text-sm flex-shrink-0"
+                >
+                  <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="hidden sm:inline">Add Supplier</span>
+                  <span className="sm:hidden">Add</span>
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -236,20 +321,45 @@ export default function SuppliersPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredSuppliers.map((supplier) => (
-              <Link
+            {filteredSuppliers.map((supplier) => {
+              const isSelected = selectedForMerge.has(supplier.id);
+              const CardWrapper = mergeMode ? 'div' : Link;
+              const cardProps = mergeMode
+                ? {
+                    onClick: () => toggleMergeSelection(supplier.id),
+                    className: `bg-theme-surface border rounded-xl p-5 hover:bg-theme-hover transition-colors group cursor-pointer block ${
+                      isSelected ? 'border-amber-500 ring-1 ring-amber-500/30' : 'border-theme'
+                    }`,
+                  }
+                : {
+                    href: `/dashboard/stockly/suppliers/${supplier.id}`,
+                    className: 'bg-theme-surface border border-theme rounded-xl p-5 hover:bg-theme-hover hover:border-module-fg/30 dark:hover:border-module-fg/30 transition-colors group cursor-pointer block',
+                  };
+
+              return (
+              <CardWrapper
                 key={supplier.id}
-                href={`/dashboard/stockly/suppliers/${supplier.id}`}
-                className="bg-theme-surface border border-theme rounded-xl p-5 hover:bg-theme-hover hover:border-module-fg/30 dark:hover:border-module-fg/30 transition-colors group cursor-pointer block"
+                {...(cardProps as any)}
               >
                 <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-theme-primary mb-1 truncate">{supplier.name}</h3>
-                    {supplier.code && (
-                      <p className="text-xs text-theme-tertiary">Code: {supplier.code}</p>
+                  <div className="flex items-start gap-3 flex-1 min-w-0">
+                    {mergeMode && (
+                      <div className={`mt-1 w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                        isSelected ? 'bg-amber-500 border-amber-500' : 'border-theme'
+                      }`}>
+                        {isSelected && <Check className="w-3 h-3 text-white" />}
+                      </div>
                     )}
+                    <div className="min-w-0">
+                      <h3 className="text-lg font-semibold text-theme-primary mb-1 truncate">{supplier.name}</h3>
+                      {supplier.code && (
+                        <p className="text-xs text-theme-tertiary">Code: {supplier.code}</p>
+                      )}
+                    </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-theme-tertiary group-hover:text-module-fg transition-colors flex-shrink-0 mt-1" />
+                  {!mergeMode && (
+                    <ChevronRight className="w-5 h-5 text-theme-tertiary group-hover:text-module-fg transition-colors flex-shrink-0 mt-1" />
+                  )}
                 </div>
 
                 {/* @salsa — Approval badges */}
@@ -290,8 +400,9 @@ export default function SuppliersPage() {
                     </div>
                   )}
                 </div>
-              </Link>
-            ))}
+              </CardWrapper>
+              );
+            })}
           </div>
         )}
 
@@ -334,6 +445,80 @@ export default function SuppliersPage() {
                   {saving ? 'Creating...' : 'Create & View'}
                 </Button>
                 <Button onClick={() => setIsAddOpen(false)} variant="outline" className="flex-1">
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Merge Confirmation Modal */}
+        <Dialog open={isMergeOpen} onOpenChange={setIsMergeOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-semibold text-theme-primary flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-500" />
+                Merge Suppliers
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-3">
+              <p className="text-sm text-theme-secondary">
+                Select the canonical supplier to keep. All other selected suppliers will be merged into it and deactivated.
+              </p>
+
+              <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                {selectedSuppliers.map(s => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => setCanonicalId(s.id)}
+                    className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+                      canonicalId === s.id
+                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-600/10'
+                        : 'border-theme hover:bg-theme-hover'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-theme-primary font-medium">{s.name}</span>
+                        {s.code && <span className="text-theme-tertiary text-xs ml-2">({s.code})</span>}
+                      </div>
+                      {canonicalId === s.id && (
+                        <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-600/20 px-2 py-0.5 rounded">
+                          Keep
+                        </span>
+                      )}
+                    </div>
+                    {canonicalId !== s.id && (
+                      <p className="text-xs text-red-500 dark:text-red-400 mt-1">Will be merged & deactivated</p>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              <div className="bg-amber-50 dark:bg-amber-600/10 border border-amber-200 dark:border-amber-600/30 rounded-lg p-3">
+                <p className="text-xs text-amber-700 dark:text-amber-400">
+                  All library items and orders referencing the merged suppliers will be updated to the canonical supplier. This cannot be undone.
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button
+                  onClick={handleMerge}
+                  disabled={merging || !canonicalId}
+                  variant="secondary"
+                  className="flex-1"
+                >
+                  {merging ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      Merging...
+                    </>
+                  ) : (
+                    'Confirm Merge'
+                  )}
+                </Button>
+                <Button onClick={() => setIsMergeOpen(false)} variant="outline" className="flex-1">
                   Cancel
                 </Button>
               </div>

@@ -85,7 +85,7 @@ export default function StorageAreasPage() {
   };
 
   return (
-    <div className="w-full bg-theme-surface-elevated min-h-screen">
+    <div className="w-full min-h-screen">
       <div className="max-w-6xl mx-auto p-6">
         <BackToSetup />
         {/* Header */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import {
   Dialog,
@@ -10,13 +10,14 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/Button';
-import { StockCountWithDetails } from '@/lib/types/stockly';
-import { Loader2, CheckCircle, AlertTriangle } from '@/components/ui/icons';
+import { StockCountWithDetails, StockCountItem } from '@/lib/types/stockly';
+import { Loader2, CheckCircle, AlertTriangle, Layers } from '@/components/ui/icons';
 
 interface FinalizeModalProps {
   isOpen: boolean;
   onClose: () => void;
   count: StockCountWithDetails;
+  items?: StockCountItem[];
   onSuccess: () => void;
 }
 
@@ -24,10 +25,21 @@ export default function FinalizeModal({
   isOpen,
   onClose,
   count,
+  items = [],
   onSuccess,
 }: FinalizeModalProps) {
   const [finalizing, setFinalizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // @salsa — Calculate batch stats from items
+  const batchStats = useMemo(() => {
+    const batchedItems = items.filter(i => i.batch_id && i.status === 'counted');
+    const batchesToDeplete = batchedItems.filter(i => i.counted_quantity !== null && i.counted_quantity <= 0);
+    return {
+      totalBatches: batchedItems.length,
+      batchesToDeplete: batchesToDeplete.length,
+    };
+  }, [items]);
 
   const handleFinalize = async () => {
     setFinalizing(true);
@@ -43,7 +55,7 @@ export default function FinalizeModal({
       }
 
       // Call the database function to process the approved count
-      // This function handles stock level updates and movement records
+      // This function handles stock level updates, batch quantity updates, and movement records
       const { error: processError } = await supabase.rpc(
         'process_approved_stock_count',
         { p_count_id: count.id }
@@ -97,8 +109,8 @@ export default function FinalizeModal({
                 <div>
                   <h4 className="font-medium text-red-700 dark:text-red-400 mb-1">Approval Required</h4>
                   <p className="text-sm text-red-600 dark:text-red-300">
-                    This stock count must be approved before it can be finalized. 
-                    {count.status === 'ready_for_approval' 
+                    This stock count must be approved before it can be finalized.
+                    {count.status === 'ready_for_approval'
                       ? ' The approver has been notified and will review it shortly.'
                       : count.status === 'completed'
                       ? ' Please mark it ready for approval first.'
@@ -117,6 +129,18 @@ export default function FinalizeModal({
                   <span className="text-module-fg mt-0.5">•</span>
                   <span>All stock levels will be updated to match counted quantities</span>
                 </li>
+                {batchStats.totalBatches > 0 && (
+                  <li className="flex items-start gap-2">
+                    <span className="text-module-fg mt-0.5">•</span>
+                    <span>Batch quantities will be updated to match counted amounts</span>
+                  </li>
+                )}
+                {batchStats.batchesToDeplete > 0 && (
+                  <li className="flex items-start gap-2">
+                    <span className="text-module-fg mt-0.5">•</span>
+                    <span>{batchStats.batchesToDeplete} batch{batchStats.batchesToDeplete !== 1 ? 'es' : ''} counted as zero will be marked as depleted</span>
+                  </li>
+                )}
                 <li className="flex items-start gap-2">
                   <span className="text-module-fg mt-0.5">•</span>
                   <span>Variance records will be saved for reporting</span>
@@ -127,7 +151,7 @@ export default function FinalizeModal({
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-module-fg mt-0.5">•</span>
-                  <span>Count status will change to "Finalized"</span>
+                  <span>Count status will change to &quot;Finalized&quot;</span>
                 </li>
               </ul>
             </div>
@@ -139,7 +163,7 @@ export default function FinalizeModal({
               <div>
                 <h4 className="font-medium text-amber-700 dark:text-amber-400 mb-1">Important</h4>
                 <p className="text-sm text-theme-secondary">
-                  After finalization, you can still lock the count to make it permanent. 
+                  After finalization, you can still lock the count to make it permanent.
                   Review the variance report carefully before proceeding.
                 </p>
               </div>
@@ -152,6 +176,21 @@ export default function FinalizeModal({
               <span className="text-theme-secondary">Items to adjust:</span>
               <span className="text-theme-primary font-medium">{count.items_counted}</span>
             </div>
+            {batchStats.totalBatches > 0 && (
+              <div className="flex justify-between">
+                <span className="text-theme-secondary flex items-center gap-1">
+                  <Layers className="w-3.5 h-3.5" />
+                  Batches to adjust:
+                </span>
+                <span className="text-theme-primary font-medium">{batchStats.totalBatches}</span>
+              </div>
+            )}
+            {batchStats.batchesToDeplete > 0 && (
+              <div className="flex justify-between">
+                <span className="text-theme-secondary">Batches to deplete:</span>
+                <span className="text-red-600 dark:text-red-400 font-medium">{batchStats.batchesToDeplete}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span className="text-theme-secondary">Items with variance:</span>
               <span className="text-theme-primary font-medium">{count.variance_count}</span>
@@ -159,7 +198,7 @@ export default function FinalizeModal({
             <div className="flex justify-between">
               <span className="text-theme-secondary">Total variance value:</span>
               <span className={`font-medium ${
-                count.total_variance_value < 0 ? 'text-red-600 dark:text-red-400' : 
+                count.total_variance_value < 0 ? 'text-red-600 dark:text-red-400' :
                 count.total_variance_value > 0 ? 'text-module-fg dark:text-green-400' : 'text-theme-primary'
               }`}>
                 {count.total_variance_value < 0 ? '-' : count.total_variance_value > 0 ? '+' : ''}

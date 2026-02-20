@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Plus, Search, Upload, Download, Edit, Trash2, Save, X, ChevronDown, ChevronRight, Package } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
+import { ensureSupplierExists } from '@/lib/utils/supplierPlaceholderFlow';
+import { SupplierSearchInput } from '@/components/stockly/SupplierSearchInput';
 // toast removed per project policy
 
 const DISPOSABLE_CATEGORIES = [
@@ -25,6 +27,7 @@ export default function DisposablesLibraryPage() {
   const [disposables, setDisposables] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
+  const [filterSupplier, setFilterSupplier] = useState('all');
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [rowDraft, setRowDraft] = useState<any | null>(null);
@@ -106,6 +109,12 @@ export default function DisposablesLibraryPage() {
         ? null
         : parseFloat(String(reorderQtyRaw));
 
+      // Ensure supplier placeholder exists
+      const supplierVal = rowDraft.supplier?.trim() || null;
+      if (supplierVal && companyId) {
+        await ensureSupplierExists(supplierVal, companyId, { sourceLibrary: 'disposables' });
+      }
+
       const payload: any = {
         item_name: trimmedName,
         category: rowDraft.category ?? null,
@@ -113,7 +122,7 @@ export default function DisposablesLibraryPage() {
         eco_friendly: rowDraft.eco_friendly ?? false,
         color_finish: rowDraft.color_finish ?? null,
         dimensions: rowDraft.dimensions ?? null,
-        supplier: rowDraft.supplier ?? null,
+        supplier: supplierVal,
         pack_cost: packCostVal,
         pack_size: packSizeVal,
         reorder_level: reorderLevelVal,
@@ -413,14 +422,23 @@ export default function DisposablesLibraryPage() {
     }
   };
 
+  const uniqueSuppliers = useMemo(() => {
+    const suppliers = new Set<string>();
+    disposables.forEach((item: any) => {
+      if (item.supplier && item.supplier.trim()) suppliers.add(item.supplier.trim());
+    });
+    return Array.from(suppliers).sort((a, b) => a.localeCompare(b));
+  }, [disposables]);
+
   const filteredItems = disposables.filter((item: any) => {
     const matchesSearch = (item.item_name || '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = filterCategory === 'all' || item.category === filterCategory;
-    return matchesSearch && matchesCategory;
+    const matchesSupplier = filterSupplier === 'all' || (item.supplier || '').trim() === filterSupplier;
+    return matchesSearch && matchesCategory && matchesSupplier;
   });
 
   return (
-    <div className="w-full bg-theme-surface-elevated min-h-screen">
+    <div className="w-full min-h-screen">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -500,6 +518,16 @@ export default function DisposablesLibraryPage() {
               <option value="all">All Categories</option>
               {DISPOSABLE_CATEGORIES.map(cat => (
                 <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+            <select
+              value={filterSupplier}
+              onChange={(e) => setFilterSupplier(e.target.value)}
+ className="bg-theme-surface ] border border-theme rounded-lg px-4 py-2.5 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 min-w-[180px] appearance-none cursor-pointer"
+            >
+              <option value="all">All Suppliers</option>
+              {uniqueSuppliers.map(sup => (
+                <option key={sup} value={sup}>{sup}</option>
               ))}
             </select>
           </div>
@@ -603,7 +631,7 @@ export default function DisposablesLibraryPage() {
                             <div className="bg-theme-surface border border-theme rounded-lg p-3">
                               <div className="text-xs text-theme-tertiary mb-1">Supplier</div>
                               {editingRowId === item.id ? (
- <input className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.supplier ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, supplier: e.target.value }))} />
+ <SupplierSearchInput value={rowDraft?.supplier ?? ''} onChange={(name) => setRowDraft((d: any) => ({ ...d, supplier: name }))} companyId={companyId} className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" />
                               ) : (
                                 <div className="text-sm text-theme-primary font-medium">{item.supplier || '-'}</div>
                               )}

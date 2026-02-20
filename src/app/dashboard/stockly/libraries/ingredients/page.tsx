@@ -12,6 +12,7 @@ import { IngredientHistoryPanel } from '@/components/stockly/IngredientHistoryPa
 import { toast } from 'sonner';
 import { StorageArea } from '@/lib/types/stockly';
 import { ensureSupplierExists, ensureSuppliersExist } from '@/lib/utils/supplierPlaceholderFlow';
+import { SupplierSearchInput } from '@/components/stockly/SupplierSearchInput';
 import { formatUnitCost } from '@/lib/utils/libraryHelpers';
 import { PlanlyBadgeInline } from '@/components/planly/PlanlyBadge';
 import { usePlanlyBadgeStatusBulk } from '@/hooks/planly/usePlanlyBadgeStatus';
@@ -35,6 +36,7 @@ export default function IngredientsLibraryPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery); // Initialize with searchQuery
   const [filterCategory, setFilterCategory] = useState('all');
+  const [filterSupplier, setFilterSupplier] = useState('all');
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [rowDraft, setRowDraft] = useState<any | null>(null);
@@ -397,7 +399,7 @@ export default function IngredientsLibraryPage() {
 
       // Ensure supplier placeholder exists
       if (supplierVal && companyId) {
-        await ensureSupplierExists(supplierVal, companyId);
+        await ensureSupplierExists(supplierVal, companyId, { sourceLibrary: 'ingredients' });
       }
 
       // Auto-calculate unit cost if pack cost and pack size are provided
@@ -949,20 +951,33 @@ export default function IngredientsLibraryPage() {
     }
   };
 
+  // Extract unique supplier names for the filter dropdown
+  const uniqueSuppliers = useMemo(() => {
+    const suppliers = new Set<string>();
+    ingredients.forEach((item: any) => {
+      if (item.supplier && item.supplier.trim()) {
+        suppliers.add(item.supplier.trim());
+      }
+    });
+    return Array.from(suppliers).sort((a, b) => a.localeCompare(b));
+  }, [ingredients]);
+
   // Memoize filtered items to avoid recalculating on every render
   // Use debounced search query to reduce filtering frequency
   const filteredItems = useMemo(() => {
     if (!ingredients.length) return [];
-    
+
     const queryLower = debouncedSearchQuery.toLowerCase();
     const isAllCategory = filterCategory === 'all';
-    
+    const isAllSupplier = filterSupplier === 'all';
+
     return ingredients.filter((item: any) => {
       const matchesSearch = !queryLower || (item.ingredient_name || '').toLowerCase().includes(queryLower);
       const matchesCategory = isAllCategory || item.category === filterCategory;
-      return matchesSearch && matchesCategory;
+      const matchesSupplier = isAllSupplier || (item.supplier || '').trim() === filterSupplier;
+      return matchesSearch && matchesCategory && matchesSupplier;
     });
-  }, [ingredients, debouncedSearchQuery, filterCategory]);
+  }, [ingredients, debouncedSearchQuery, filterCategory, filterSupplier]);
 
   // Get Planly badge status for all ingredients
   const ingredientIds = useMemo(() =>
@@ -972,7 +987,7 @@ export default function IngredientsLibraryPage() {
   const { statusMap: planlyStatusMap } = usePlanlyBadgeStatusBulk(ingredientIds);
 
   return (
-    <div className="w-full bg-theme-surface-elevated min-h-screen">
+    <div className="w-full min-h-screen">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -1055,6 +1070,16 @@ export default function IngredientsLibraryPage() {
               <option value="all">All Categories</option>
               {INGREDIENT_CATEGORIES.map(cat => (
                 <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+            <select
+              value={filterSupplier}
+              onChange={(e) => setFilterSupplier(e.target.value)}
+ className="bg-theme-surface ] border border-theme rounded-lg px-4 py-2.5 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 min-w-[180px] appearance-none cursor-pointer"
+            >
+              <option value="all">All Suppliers</option>
+              {uniqueSuppliers.map(sup => (
+                <option key={sup} value={sup}>{sup}</option>
               ))}
             </select>
           </div>
@@ -1219,7 +1244,7 @@ export default function IngredientsLibraryPage() {
                             <div className="bg-theme-surface border border-theme rounded-lg p-3">
                               <div className="text-xs text-theme-tertiary">Supplier</div>
                               {editingRowId === item.id ? (
- <input className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"value={rowDraft?.supplier ??''} onChange={(e) => setRowDraft((d: any) => ({ ...d, supplier: e.target.value }))} />
+ <SupplierSearchInput value={rowDraft?.supplier ?? ''} onChange={(name) => setRowDraft((d: any) => ({ ...d, supplier: name }))} companyId={companyId} className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500" />
                               ) : (
                                 <div className="text-sm text-theme-primary font-medium">{item.supplier || '-'}</div>
                               )}

@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Plus, Search, Upload, Download, Edit, Trash2, Save, X, AlertTriangle, CheckCircle, ChevronDown, ChevronRight, FileText, Package } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
+import { ensureSupplierExists } from '@/lib/utils/supplierPlaceholderFlow';
+import { SupplierSearchInput } from '@/components/stockly/SupplierSearchInput';
 
 export default function ChemicalsClient() {
   const { companyId } = useAppContext();
@@ -13,6 +15,7 @@ export default function ChemicalsClient() {
   const [loading, setLoading] = useState(true);
   const [chemicals, setChemicals] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterSupplier, setFilterSupplier] = useState('all');
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
@@ -270,6 +273,12 @@ export default function ChemicalsClient() {
         ? rowDraft.linked_risks.map((s: any) => (s == null ? '' : String(s))).filter((s: string) => s.length > 0)
         : [];
 
+      // Ensure supplier placeholder exists
+      const supplierVal = rowDraft.supplier?.trim() || null;
+      if (supplierVal && companyId) {
+        await ensureSupplierExists(supplierVal, companyId, { sourceLibrary: 'chemicals' });
+      }
+
       const payload: any = {
         product_name: rowDraft.product_name?.trim() || null,
         manufacturer: rowDraft.manufacturer?.trim() || null,
@@ -278,7 +287,7 @@ export default function ChemicalsClient() {
         dilution_ratio: rowDraft.dilution_ratio?.trim() || null,
         contact_time: rowDraft.contact_time?.trim() || null,
         required_ppe: requiredPPEVal,
-        supplier: rowDraft.supplier?.trim() || null,
+        supplier: supplierVal,
         unit_cost: unitCostVal,
         pack_size: rowDraft.pack_size?.trim() || null,
         storage_requirements: rowDraft.storage_requirements?.trim() || null,
@@ -550,9 +559,19 @@ export default function ChemicalsClient() {
     }
   };
 
-  const filteredItems = chemicals.filter((item: any) => 
-    (item.product_name || '').toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const uniqueSuppliers = useMemo(() => {
+    const suppliers = new Set<string>();
+    chemicals.forEach((item: any) => {
+      if (item.supplier && item.supplier.trim()) suppliers.add(item.supplier.trim());
+    });
+    return Array.from(suppliers).sort((a, b) => a.localeCompare(b));
+  }, [chemicals]);
+
+  const filteredItems = chemicals.filter((item: any) => {
+    const matchesSearch = (item.product_name || '').toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSupplier = filterSupplier === 'all' || (item.supplier || '').trim() === filterSupplier;
+    return matchesSearch && matchesSupplier;
+  });
 
   const toggleRow = (id: string) => {
     setExpandedRows(prev => {
@@ -763,7 +782,7 @@ export default function ChemicalsClient() {
   };
 
   return (
-    <div className="w-full bg-theme-surface-elevated min-h-screen">
+    <div className="w-full min-h-screen">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -841,15 +860,27 @@ export default function ChemicalsClient() {
         </div>
 
         <div className="bg-theme-surface border border-theme rounded-xl p-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-tertiary" size={20} />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search chemicals..."
+          <div className="flex items-center gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-theme-tertiary" size={20} />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search chemicals..."
  className="w-full bg-theme-surface ] border border-theme rounded-lg pl-10 pr-4 py-2.5 text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
-            />
+              />
+            </div>
+            <select
+              value={filterSupplier}
+              onChange={(e) => setFilterSupplier(e.target.value)}
+ className="bg-theme-surface ] border border-theme rounded-lg px-4 py-2.5 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500 min-w-[180px] appearance-none cursor-pointer"
+            >
+              <option value="all">All Suppliers</option>
+              {uniqueSuppliers.map(sup => (
+                <option key={sup} value={sup}>{sup}</option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -1079,10 +1110,11 @@ export default function ChemicalsClient() {
                             <div className="bg-theme-surface border border-theme rounded-lg p-3">
                               <div className="text-xs text-theme-tertiary mb-1">Supplier</div>
                               {editingRowId === item.id ? (
-                                <input
- className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
+                                <SupplierSearchInput
                                   value={rowDraft?.supplier ?? ''}
-                                  onChange={(e) => setRowDraft((d: any) => ({ ...d, supplier: e.target.value }))}
+                                  onChange={(name) => setRowDraft((d: any) => ({ ...d, supplier: name }))}
+                                  companyId={companyId}
+ className="w-full bg-theme-surface ] border border-theme rounded px-2 py-1 text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:focus:ring-emerald-500"
                                 />
                               ) : (
                                 <div className="text-sm text-theme-primary font-medium">{item.supplier || '-'}</div>

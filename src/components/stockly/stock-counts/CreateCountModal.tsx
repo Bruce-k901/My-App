@@ -355,11 +355,90 @@ export default function CreateCountModal({
         }
       }
 
-      // Insert all items
-      if (allItems.length > 0) {
+      // @salsa — Expand items into per-batch rows where batches exist
+      // 1. Bulk fetch stock_items for this company (maps library items → stock_item_ids)
+      const { data: stockItems } = await supabase
+        .from('stock_items')
+        .select('id, library_item_id, library_type')
+        .eq('company_id', companyId);
+
+      // 2. Bulk fetch active stock_batches for this company + site
+      let batchQuery = supabase
+        .from('stock_batches')
+        .select('id, stock_item_id, batch_code, quantity_remaining, unit, use_by_date, best_before_date, created_at')
+        .eq('company_id', companyId)
+        .eq('status', 'active')
+        .gt('quantity_remaining', 0)
+        .order('created_at', { ascending: true }); // FIFO — oldest first
+
+      if (selectedSiteId) {
+        batchQuery = batchQuery.eq('site_id', selectedSiteId);
+      }
+
+      const { data: activeBatches } = await batchQuery;
+
+      // 3. Build lookup maps
+      const libraryTypeDbMap: Record<string, string> = {
+        ingredients: 'ingredients_library',
+        packaging: 'packaging_library',
+        foh: 'disposables_library',
+        first_aid: 'first_aid_supplies_library',
+        ppe: 'ppe_library',
+        chemicals: 'chemicals_library',
+      };
+
+      // Map: `{library_item_id}_{library_type}` → stock_item_id
+      const libraryToStockItem = new Map<string, string>();
+      if (stockItems) {
+        for (const si of stockItems) {
+          if (si.library_item_id && si.library_type) {
+            libraryToStockItem.set(`${si.library_item_id}_${si.library_type}`, si.id);
+          }
+        }
+      }
+
+      // Map: stock_item_id → StockBatch[]
+      const stockItemToBatches = new Map<string, typeof activeBatches>();
+      if (activeBatches) {
+        for (const batch of activeBatches) {
+          const existing = stockItemToBatches.get(batch.stock_item_id) || [];
+          existing.push(batch);
+          stockItemToBatches.set(batch.stock_item_id, existing);
+        }
+      }
+
+      // 4. Expand items: replace aggregate rows with per-batch rows where batches exist
+      const expandedItems: any[] = [];
+      for (const item of allItems) {
+        const dbLibType = libraryTypeDbMap[item.library_type] || item.library_type;
+        const stockItemId = libraryToStockItem.get(`${item.ingredient_id}_${dbLibType}`);
+        const batches = stockItemId ? stockItemToBatches.get(stockItemId) : null;
+
+        if (batches && batches.length > 0) {
+          // Create one row per batch
+          for (const batch of batches) {
+            expandedItems.push({
+              stock_count_id: item.stock_count_id,
+              ingredient_id: item.ingredient_id,
+              library_type: item.library_type,
+              batch_id: batch.id,
+              opening_stock: batch.quantity_remaining,
+              theoretical_closing: batch.quantity_remaining,
+              unit_of_measurement: batch.unit || item.unit_of_measurement,
+              unit_cost: item.unit_cost,
+            });
+          }
+        } else {
+          // No batches — keep as aggregate row (batch_id = null)
+          expandedItems.push(item);
+        }
+      }
+
+      // Insert all items (expanded)
+      if (expandedItems.length > 0) {
         const { error: itemsError } = await supabase
           .from('stock_count_items')
-          .insert(allItems);
+          .insert(expandedItems);
 
         if (itemsError) throw itemsError;
       }

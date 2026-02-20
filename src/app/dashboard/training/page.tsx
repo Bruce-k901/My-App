@@ -800,7 +800,7 @@ function TrainingMatrixPageContent() {
 export default function TrainingMatrixPage() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--surface-elevated))]">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="text-theme-tertiary">Loading training matrix...</div>
       </div>
     }>

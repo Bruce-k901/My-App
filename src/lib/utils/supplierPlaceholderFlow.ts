@@ -1,19 +1,33 @@
 import { supabase } from '@/lib/supabase';
 
 /**
+ * Normalize a supplier name: trim, collapse whitespace, strip trailing punctuation.
+ * This prevents duplicates like "Albion Foods." vs "Albion Foods" or "ABC  Ltd" vs "ABC Ltd".
+ */
+export function normalizeSupplierName(raw: string): string {
+  return raw
+    .trim()
+    .replace(/\s+/g, ' ')           // collapse multiple spaces to one
+    .replace(/[.,;:!?]+$/g, '')     // strip trailing punctuation
+    .trim();                         // trim again after stripping
+}
+
+/**
  * Ensures a supplier exists for the given name and company.
  * Creates a placeholder if not found.
- * 
- * @param supplierName - Name from ingredient card
+ *
+ * @param supplierName - Name from library page
  * @param companyId - Current company ID
+ * @param options - Optional: sourceLibrary for audit trail
  * @returns Supplier ID if found/created, null if invalid input
  */
 export async function ensureSupplierExists(
   supplierName: string | null | undefined,
-  companyId: string
+  companyId: string,
+  options?: { sourceLibrary?: string }
 ): Promise<string | null> {
   // Normalize and validate
-  const normalizedName = supplierName?.trim();
+  const normalizedName = normalizeSupplierName(supplierName ?? '');
   if (!normalizedName || !companyId) {
     return null;
   }
@@ -49,7 +63,7 @@ export async function ensureSupplierExists(
         code: code,
         is_active: true,
         is_approved: false, // Placeholder - needs approval
-        // All contact fields null - user completes later
+        source_library: options?.sourceLibrary ?? null,
       })
       .select('id')
       .single();
@@ -111,15 +125,15 @@ export async function ensureSuppliersExist(
   supplierNames: (string | null | undefined)[],
   companyId: string
 ): Promise<void> {
-  // Get unique, valid supplier names
+  // Get unique, valid supplier names (normalized)
   const uniqueSuppliers = [...new Set(
     supplierNames
-      .map(name => name?.trim())
+      .map(name => normalizeSupplierName(name ?? ''))
       .filter((name): name is string => Boolean(name))
   )];
 
   // Create all placeholders concurrently
   await Promise.all(
-    uniqueSuppliers.map(name => ensureSupplierExists(name, companyId))
+    uniqueSuppliers.map(name => ensureSupplierExists(name, companyId, { sourceLibrary: 'csv_upload' }))
   );
 }
