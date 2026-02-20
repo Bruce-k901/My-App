@@ -966,7 +966,7 @@ export function TaskFromTemplateModal({
       
       setFormData({
         custom_name: existingSiteChecklist.name || templateData.name || '',
-        custom_instructions: templateData.instructions || '',
+        custom_instructions: existingSiteChecklist.custom_instructions || templateData.instructions || '',
         due_date: new Date().toISOString().split('T')[0], // Not used for configurations
         due_time: '', // Not used for configurations
         daypart: daypartsArray[0]?.daypart || dayparts[0] || '',
@@ -1748,7 +1748,8 @@ export function TaskFromTemplateModal({
           site_id: effectiveSiteId,
           name: formData.custom_name.trim() || template?.name || 'Task Configuration',
           frequency: frequency,
-          active: true
+          active: true,
+          custom_instructions: instructions,
         };
         
         // Add daypart_times if we have multiple times
@@ -1996,6 +1997,7 @@ export function TaskFromTemplateModal({
                     company_id: companyId,
                     site_id: effectiveSiteId,
                     custom_name: formData.custom_name.trim() || template?.name || null,
+                    custom_instructions: instructions,
                     due_date: today,
                     due_time: dp.due_time || '09:00',
                     daypart: dp.daypart,

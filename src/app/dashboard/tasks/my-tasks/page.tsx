@@ -67,30 +67,15 @@ export default function MyTasksPage() {
         // Otherwise show all active configurations for the company (no site filter)
         if (selectedSiteId && selectedSiteId !== 'all' && selectedSiteId !== null) {
           effectiveSiteId = selectedSiteId;
-          console.log('🔍 Manager: Using selected site from header:', selectedSiteId);
         } else {
           effectiveSiteId = null; // Show all sites for the company
-          console.log('🔍 Manager: Showing all sites (no specific site selected)');
         }
       } else {
-        // Staff: always use home site (ignore selectedSiteId)
         effectiveSiteId = homeSiteId;
-        console.log('🔍 Staff: Using home site:', homeSiteId, '(ignoring selectedSiteId:', selectedSiteId, ')');
       }
-      
-      console.log('🔍 Configuration loading:', {
-        userRole,
-        isManager,
-        homeSiteId,
-        selectedSiteId,
-        effectiveSiteId,
-        profileId: profile?.id,
-        hasProfile: !!profile
-      });
-      
+
       // Staff must have a site — bail if not
       if (!isManager && !effectiveSiteId) {
-        console.warn('⚠️ Staff has no home site - cannot load configurations');
         setConfigs([]);
         setLoadingConfigs(false);
         return;
@@ -118,64 +103,6 @@ export default function MyTasksPage() {
         query = query.eq('site_id', effectiveSiteId);
       }
       
-      console.log('🔍 Query filters:', {
-        company_id: companyId,
-        site_id: effectiveSiteId || '(all sites)',
-        active: true,
-        selectedSiteId,
-        isManager
-      });
-      
-      // Debug: Check what site_checklists exist for this site (any status)
-      if (effectiveSiteId && effectiveSiteId !== 'all') {
-        const { data: debugConfigs } = await supabase
-          .from('site_checklists')
-          .select('id, name, site_id, template_id, frequency, active, company_id')
-          .eq('site_id', effectiveSiteId)
-          .eq('company_id', companyId);
-        
-        console.log('🔍 DEBUG: All site_checklists for this site (any active status):', {
-          count: debugConfigs?.length || 0,
-          site_id: effectiveSiteId,
-          company_id: companyId,
-          configs: debugConfigs?.map((c: any) => ({
-            id: c.id,
-            name: c.name,
-            site_id: c.site_id,
-            template_id: c.template_id,
-            frequency: c.frequency,
-            active: c.active
-          })) || []
-        });
-        
-        // Also check for the known site_checklist_id from tasks
-        const knownSiteChecklistId = '10816ec5-3e89-45cb-82ed-a92276a60579';
-        const { data: knownConfig } = await supabase
-          .from('site_checklists')
-          .select('id, name, site_id, template_id, frequency, active, company_id')
-          .eq('id', knownSiteChecklistId)
-          .single();
-        
-        console.log('🔍 DEBUG: Known site_checklist from tasks:', {
-          id: knownSiteChecklistId,
-          found: !!knownConfig,
-          config: knownConfig ? {
-            id: knownConfig.id,
-            name: knownConfig.name,
-            site_id: knownConfig.site_id,
-            template_id: knownConfig.template_id,
-            frequency: knownConfig.frequency,
-            active: knownConfig.active,
-            company_id: knownConfig.company_id
-          } : null,
-          matchesSite: knownConfig?.site_id === effectiveSiteId,
-          matchesCompany: knownConfig?.company_id === companyId,
-          effectiveSiteId,
-          configSiteId: knownConfig?.site_id,
-          homeSiteId
-        });
-      }
-      
       const { data: configsData, error } = await query
         .order('frequency', { ascending: true })
         .order('name', { ascending: true });
@@ -186,18 +113,6 @@ export default function MyTasksPage() {
         return;
       }
       
-      console.log('🔧 Task Configurations (site_checklists) loaded:', {
-        count: configsData?.length || 0,
-        configs: configsData?.map((c: any) => ({
-          id: c.id,
-          name: c.name,
-          site_id: c.site_id,
-          template_id: c.template_id,
-          frequency: c.frequency,
-          active: c.active
-        })) || []
-      });
-
       // Fetch sites separately and map them
       const siteIds = [...new Set((configsData || []).map((c: any) => c.site_id).filter(Boolean))];
       let sitesMap: Record<string, { id: string; name: string }> = {};

@@ -6044,6 +6044,7 @@ export type Database = {
           company_id: string
           created_at: string | null
           created_by: string | null
+          custom_instructions: string | null
           date_of_month: number | null
           daypart_times: Json | null
           days_of_week: number[] | null
@@ -6061,6 +6062,7 @@ export type Database = {
           company_id: string
           created_at?: string | null
           created_by?: string | null
+          custom_instructions?: string | null
           date_of_month?: number | null
           daypart_times?: Json | null
           days_of_week?: number[] | null
@@ -6078,6 +6080,7 @@ export type Database = {
           company_id?: string
           created_at?: string | null
           created_by?: string | null
+          custom_instructions?: string | null
           date_of_month?: number | null
           daypart_times?: Json | null
           days_of_week?: number[] | null
