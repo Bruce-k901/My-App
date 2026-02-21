@@ -16,7 +16,7 @@ export default function SharedHeaderBase({ children, cta, logoSrc, logoAlt }: Sh
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-gradient-to-b from-[#0a0a0a]/90 via-[#0a0a0a]/60 to-transparent backdrop-blur-sm text-white">
+    <header className="sticky top-0 z-50 bg-gradient-to-b from-[#0a0a0a]/90 via-[#0a0a0a]/60 to-transparent backdrop-blur-sm text-white" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-4 sm:py-5">
         <div className="flex items-center justify-between">
           {/* Logo + Nav (left group) */}
