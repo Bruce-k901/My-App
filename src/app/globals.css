@@ -520,7 +520,7 @@ html.light select option {
   .dashboard-page main {
     padding-left: 1rem;
     padding-right: 1rem;
-    padding-top: 1rem;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 1rem);
   }
 
   @media (min-width: 640px) {
@@ -830,11 +830,17 @@ body:has(.dashboard-page) {
   overflow: hidden;
   height: 100vh;
   height: 100dvh; /* Dynamic viewport height for mobile browsers */
-  /* In PWA standalone with viewportFit:cover, extend to fill safe area edges */
-  min-height: -webkit-fill-available;
   position: fixed;
   width: 100%;
   touch-action: none; /* Prevent pull-to-refresh and overscroll on mobile */
+}
+
+/* In PWA standalone, use -webkit-fill-available as height (not min-height)
+   to fill the screen correctly without creating extra space beyond the viewport */
+@media (display-mode: standalone) {
+  body:has(.dashboard-page) {
+    height: -webkit-fill-available;
+  }
 }
 
 /* Ensure html doesn't scroll when dashboard is active */

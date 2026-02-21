@@ -49,8 +49,8 @@ const SheetContent = React.forwardRef<
         "fixed z-[60] gap-4 bg-white dark:bg-[#0B0D13] p-0 shadow-lg",
         "transition-all duration-500 ease-out",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
-        side === "right" && "inset-y-0 right-0 h-full border-l border-theme data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right rounded-none sm:rounded-l-xl",
-        side === "left" && "inset-y-0 left-0 h-full border-r border-theme data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:rounded-r-xl",
+        side === "right" && "inset-y-0 right-0 h-full border-l border-theme data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right rounded-none sm:rounded-l-xl pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]",
+        side === "left" && "inset-y-0 left-0 h-full border-r border-theme data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:rounded-r-xl pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]",
         side === "top" && "inset-x-0 top-0 border-b border-theme data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
         side === "bottom" && "inset-x-0 bottom-0 border-t border-theme data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
         className
