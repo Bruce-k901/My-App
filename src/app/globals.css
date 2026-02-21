@@ -500,11 +500,9 @@ html.light select option {
     overscroll-behavior-x: none;
   }
 
-  .dashboard-page > main,
-  .dashboard-page > div {
+  .dashboard-page > main {
     width: 100%;
     min-width: 0;
-    min-height: 100%;
     overflow-x: hidden;
   }
 }
