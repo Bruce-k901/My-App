@@ -9,6 +9,7 @@ import { TemplateRenderer } from './renderers/TemplateRenderer';
 // Actions are now integrated directly into AssetTemperatureInput
 import type { ChecklistTask, TaskCompletionPayload, OutOfRangeAsset } from '@/types/task-completion.types';
 import { isEnhancedYesNoItem } from '@/types/task-completion.types';
+import { portalToOverlayRoot } from '@/lib/overlay-portal';
 
 interface TaskCompletionModalNewProps {
   task: ChecklistTask;
@@ -307,7 +308,7 @@ export function TaskCompletionModalNew({
 
   if (!isOpen) return null;
 
-  return (
+  return portalToOverlayRoot(
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
       <div className="bg-theme-surface rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-theme">
         {/* Header */}

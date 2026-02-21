@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { ModuleId, MODULE_NAMES, MODULE_COLORS, WidgetConfig } from '@/types/dashboard';
 import { WIDGET_REGISTRY, filterWidgetsByModules } from './widgets';
 import { X, RotateCcw, Settings } from '@/components/ui/icons';
+import { portalToOverlayRoot } from '@/lib/overlay-portal';
 
 interface DashboardSettingsPanelProps {
   isOpen: boolean;
@@ -34,7 +35,7 @@ export function DashboardSettingsPanel({
 
   if (!isOpen) return null;
 
-  return (
+  return portalToOverlayRoot(
     <>
       {/* Backdrop */}
       <div

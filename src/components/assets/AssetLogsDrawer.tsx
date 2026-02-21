@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Database } from '@/lib/database.types';
 import { Button } from '@/components/ui/Button';
 import { X, Calendar, User, FileText } from '@/components/ui/icons';
+import { portalToOverlayRoot } from '@/lib/overlay-portal';
 
 type Asset = Database['public']['Tables']['assets']['Row'];
 
@@ -101,7 +102,7 @@ export default function AssetLogsDrawer({ asset, open, onClose }: AssetLogsDrawe
     }
   };
 
-  return (
+  return portalToOverlayRoot(
     <div className="fixed inset-0 z-[60] flex">
       {/* Backdrop */}
       <div

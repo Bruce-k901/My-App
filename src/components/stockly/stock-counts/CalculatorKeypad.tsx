@@ -6,6 +6,7 @@ import { Eraser, Plus, X, Check, ArrowRight } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
 import { useCalculatorKeypad } from '@/hooks/stockly/useCalculatorKeypad';
+import { portalToOverlayRoot } from '@/lib/overlay-portal';
 
 interface CalculatorKeypadProps {
   itemName: string;
@@ -77,7 +78,7 @@ export default function CalculatorKeypad({
 
   const digitBtn = "flex items-center justify-center h-14 rounded-xl text-xl font-bold transition-all active:scale-95 bg-black/5 dark:bg-white/5 text-theme-primary active:bg-black/10 dark:active:bg-white/10 select-none";
 
-  return (
+  return portalToOverlayRoot(
     <motion.div
       initial={{ y: '100%' }}
       animate={{ y: 0 }}
@@ -193,3 +194,4 @@ export default function CalculatorKeypad({
     </motion.div>
   );
 }
+

@@ -26,6 +26,7 @@ import type { BatchMovement, BatchStatus } from '@/lib/types/stockly';
 import { allergenKeyToLabel } from '@/lib/stockly/allergens';
 // @salsa — Phase 4: Dispatch record form
 import DispatchRecordForm from '@/components/stockly/DispatchRecordForm';
+import { portalToOverlayRoot } from '@/lib/overlay-portal';
 
 interface BatchDetailDrawerProps {
   batchId: string;
@@ -157,7 +158,7 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
   }
 
   if (loading) {
-    return (
+    return portalToOverlayRoot(
       <div className="fixed inset-0 z-[60] flex">
         <div className="absolute inset-0 bg-black/50" onClick={onClose} />
         <div className="ml-auto w-full max-w-md bg-theme-surface shadow-xl flex items-center justify-center">
@@ -174,7 +175,7 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
   const delivery = deliveryLine?.delivery as any;
   const supplier = delivery?.suppliers as any;
 
-  return (
+  return portalToOverlayRoot(
     <div className="fixed inset-0 z-[60] flex">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="ml-auto w-full max-w-md bg-theme-surface shadow-xl flex flex-col h-full overflow-hidden">

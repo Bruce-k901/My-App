@@ -58,18 +58,18 @@ export function MoreSheet() {
         className={cn(
           "fixed inset-x-0 bottom-0 z-[60]",
           "bg-white dark:bg-[#1a1a1f] text-theme-primary rounded-t-3xl",
-          "max-h-[85vh] overflow-hidden",
+          "max-h-[85vh] flex flex-col overflow-hidden",
           "animate-in slide-in-from-bottom duration-300",
         )}
-        style={{ paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
         {/* Handle */}
-        <div className="flex justify-center pt-3 pb-2">
+        <div className="flex justify-center pt-3 pb-2 flex-shrink-0">
           <div className="w-10 h-1 bg-black/20 dark:bg-white/20 rounded-full" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pb-4 border-b border-black/10 dark:border-white/10">
+        <div className="flex items-center justify-between px-5 pb-4 border-b border-black/10 dark:border-white/10 flex-shrink-0">
           <h2 className="text-lg font-semibold text-theme-primary">Quick Access</h2>
           <button
             onClick={closeMoreSheet}
@@ -79,9 +79,9 @@ export function MoreSheet() {
           </button>
         </div>
 
-        {/* Scrollable Content */}
-        <div className="overflow-y-auto max-h-[calc(85vh-80px)] overscroll-contain">
-          <div className="px-5 pt-2 pb-2 space-y-3">
+        {/* Scrollable Content — flex-1 fills space after handle, header, and safe-area padding */}
+        <div className="flex-1 overflow-y-auto min-h-0 overscroll-contain">
+          <div className="px-5 pt-2 pb-4 space-y-3">
 
             {/* Quick Actions */}
             <section>

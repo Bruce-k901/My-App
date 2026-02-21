@@ -13,7 +13,7 @@ import {
   Users,
 } from '@/components/ui/icons';
 import { toast } from 'sonner';
-// z-indexes and padding use CSS vars from globals.css: --bottom-tab-height, --above-tab-bar
+import { portalToOverlayRoot } from '@/lib/overlay-portal';
 
 interface ShiftInfo {
   id: string;
@@ -142,7 +142,7 @@ export function ShiftActionSheet({
     }
   }
 
-  return (
+  return portalToOverlayRoot(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -231,7 +231,7 @@ export function ShiftActionSheet({
 
             {mode === 'actions' ? (
               /* Action Buttons */
-              <div className="px-4 py-3 space-y-1" style={{ paddingBottom: 'var(--above-tab-bar)' }}>
+              <div className="px-4 py-3 space-y-1" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
                 {/* Clock In — own shift, not clocked in, today */}
                 {isOwnShift && !isUserClockedIn && isToday && onClockIn && (
                   <ActionButton
@@ -296,7 +296,7 @@ export function ShiftActionSheet({
               </div>
             ) : (
               /* Absence Form */
-              <div className="px-5 py-4 space-y-4" style={{ paddingBottom: 'var(--above-tab-bar)' }}>
+              <div className="px-5 py-4 space-y-4" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
                 <h3 className="text-base font-semibold text-theme-primary">
                   Record Absence — {staffMember?.full_name || shift.profile_name}
                 </h3>
@@ -348,6 +348,8 @@ export function ShiftActionSheet({
     </AnimatePresence>
   );
 }
+
+
 
 function ActionButton({
   icon,

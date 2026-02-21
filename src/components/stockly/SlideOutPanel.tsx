@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { X } from '@/components/ui/icons';
+import { portalToOverlayRoot } from '@/lib/overlay-portal';
 
 interface SlideOutPanelProps {
   isOpen: boolean;
@@ -48,7 +49,7 @@ export default function SlideOutPanel({
 
   if (!isOpen) return null;
 
-  return (
+  return portalToOverlayRoot(
     <div className="fixed inset-0 z-[60] overflow-hidden">
       {/* Backdrop */}
       <div 

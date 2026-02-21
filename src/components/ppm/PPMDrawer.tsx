@@ -10,6 +10,7 @@ import ServiceCompletionModal from './ServiceCompletionModal';
 import { useAppContext } from '@/context/AppContext';
 import { PPMAsset } from '@/types/ppm';
 import { nullifyUndefined } from '@/lib/utils';
+import { portalToOverlayRoot } from '@/lib/overlay-portal';
 
 interface PPMDrawerProps {
   asset: PPMAsset | null;
@@ -207,7 +208,7 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
     }
   };
 
-  return (
+  return portalToOverlayRoot(
     <AnimatePresence>
       {open && (
         <>

@@ -83,6 +83,11 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
             {children}
           </main>
 
+          {/* Portal target for fixed overlays that need to escape <main>'s stacking context.
+              Overlays rendered inside <main> via createPortal(jsx, getOverlayRoot())
+              will appear here — outside main but inside .dashboard-page (preserving CSS vars). */}
+          <div id="overlay-root" />
+
           {/* Mobile Navigation */}
           <BottomTabBar />
           <MoreSheet />

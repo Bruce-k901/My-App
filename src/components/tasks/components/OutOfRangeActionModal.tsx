@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { AlertTriangle, Clock, Phone } from '@/components/ui/icons';
+import { portalToOverlayRoot } from '@/lib/overlay-portal';
 
 interface OutOfRangeAction {
   assetId: string;
@@ -47,7 +48,7 @@ export function OutOfRangeActionModal({
 
   const allActionsSelected = outOfRangeAssets.every(asset => actions.has(asset.assetId));
 
-  return (
+  return portalToOverlayRoot(
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
       <div className="bg-gray-900 border border-white/[0.1] rounded-xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
 
