@@ -51,7 +51,7 @@ export function BottomTabBar() {
         "lg:hidden" // Hide on desktop
       )}
     >
-      <div className="flex items-center justify-around py-2">
+      <div className="flex items-center justify-around py-1">
         {tabs.map((tab) => {
           const isActive = tab.id === currentActive;
           const badgeCount = tab.id === 'tasks' ? badges.tasks : 0;
@@ -61,8 +61,8 @@ export function BottomTabBar() {
               key={tab.id}
               onClick={() => handleTabClick(tab)}
               className={cn(
-                "flex flex-col items-center py-2 px-4 rounded-xl transition-all relative",
-                "min-w-[64px] touch-manipulation",
+                "flex flex-col items-center py-1.5 px-3 rounded-xl transition-all relative",
+                "min-w-[56px] touch-manipulation",
                 isActive
                   ? "text-[#FF6B9D]"
                   : "text-theme-tertiary hover:text-theme-tertiary"
@@ -70,30 +70,27 @@ export function BottomTabBar() {
             >
               <div className="relative">
                 <tab.icon
-                  size={24}
+                  size={22}
                   strokeWidth={isActive ? 2.5 : 2}
                   className="transition-all"
                 />
                 {badgeCount > 0 && (
                   <span className={cn(
-                    "absolute -top-1 -right-2 min-w-[18px] h-[18px]",
+                    "absolute -top-1 -right-2 min-w-[16px] h-[16px]",
                     "bg-[#FF6B9D] text-white",
-                    "rounded-full text-[10px] font-bold",
-                    "flex items-center justify-center px-1"
+                    "rounded-full text-[9px] font-bold",
+                    "flex items-center justify-center px-0.5"
                   )}>
                     {badgeCount > 99 ? '99+' : badgeCount}
                   </span>
                 )}
               </div>
               <span className={cn(
-                "text-xs mt-1 font-medium transition-colors",
+                "text-[10px] mt-0.5 font-medium transition-colors",
                 isActive && "text-[#FF6B9D]"
               )}>
                 {tab.label}
               </span>
-              {isActive && (
-                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#FF6B9D] rounded-full" />
-              )}
             </button>
           );
         })}

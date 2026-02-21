@@ -4082,7 +4082,7 @@ export default function RotaBuilderPage() {
     return (
       <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-theme-primary">
         {/* Mobile Header */}
-        <div className="sticky top-0 z-20 bg-white dark:bg-[#0a0a0a] border-b border-black/10 dark:border-white/10">
+        <div className="sticky top-0 z-20 bg-white dark:bg-[#0a0a0a] border-b border-black/10 dark:border-white/10" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
           {/* Site Selector */}
           {sites.length > 1 && (
             <div className="px-4 pt-4 pb-2">
@@ -4150,7 +4150,7 @@ export default function RotaBuilderPage() {
         </div>
 
         {/* Day Content */}
-        <div className="px-4 py-4 space-y-4 pb-24">
+        <div className="px-4 py-4 space-y-4" style={{ paddingBottom: 'calc(var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px) + 5rem)' }}>
           {isClosed ? (
             <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-center">
               <div className="text-red-400 text-lg font-semibold mb-1">🔒 Closed</div>
@@ -4322,7 +4322,7 @@ export default function RotaBuilderPage() {
         </div>
 
         {/* Quick Day Selector - Bottom */}
-        <div className="fixed bottom-20 left-0 right-0 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur border-t border-black/10 dark:border-white/10 px-4 py-3">
+        <div className="fixed left-0 right-0 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur border-t border-black/10 dark:border-white/10 px-4 py-2 z-10 lg:hidden" style={{ bottom: 'calc(var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px))' }}>
           <div className="flex items-center justify-between gap-1">
             {weekDays.map((day) => {
               const dayStr = day.toISOString().split('T')[0];

@@ -718,19 +718,23 @@ export function useMessages({
 
   const deleteMessage = useCallback(async (messageId: string) => {
     try {
+      // Optimistically remove from UI immediately
+      setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
+
       const { error: deleteError } = await supabase
         .from("messaging_messages")
         .update({ deleted_at: new Date().toISOString() })
-        .eq("id", messageId);
+        .eq("id", messageId)
+        .select("id")
+        .single();
 
       if (deleteError) throw deleteError;
-
-      setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
     } catch (err: any) {
       console.error("Error deleting message:", err);
-      setError(err.message || "Failed to delete message");
+      // Reload messages to restore the message if delete failed
+      loadMessages();
     }
-  }, []);
+  }, [conversationId, loadMessages]);
 
   const markAsDelivered = useCallback(async (messageIds: string[]) => {
     try {
@@ -1355,6 +1359,11 @@ export function useMessages({
         },
         (payload) => {
           // Real-time message UPDATE event received
+          // If message was soft-deleted, remove it from the list
+          if (payload.new.deleted_at) {
+            setMessages((prev) => prev.filter((msg) => msg.id !== payload.new.id));
+            return;
+          }
           setMessages((prev) =>
             prev.map((msg) =>
               msg.id === payload.new.id

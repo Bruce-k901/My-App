@@ -5,7 +5,7 @@
 /* Theme CSS Variables */
 :root {
   /* Mobile layout tokens */
-  --bottom-tab-height: 5rem;
+  --bottom-tab-height: 3.5rem;
   --above-tab-bar: calc(var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px));
 
   --background: 10 10 10; /* neutral near-black (matches neutral-950) */

@@ -615,10 +615,9 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                               <button
                                 onClick={async (e) => {
                                   e.stopPropagation();
-                                  if (window.confirm('Delete this message?')) {
-                                    await deleteMessage(message.id);
-                                  }
                                   setActiveMenuId(null);
+                                  await deleteMessage(message.id);
+                                  toast.success('Message deleted');
                                 }}
                                 className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                               >

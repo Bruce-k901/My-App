@@ -1,26 +1,28 @@
 /** Mobile layout constants — single source of truth
  *
- * Import these instead of hardcoding values like '5rem', 'z-50', or
- * 'calc(5rem + env(safe-area-inset-bottom, 0px))' across components.
+ * Import these instead of hardcoding values like '3.5rem', 'z-50', or
+ * 'calc(3.5rem + env(safe-area-inset-bottom, 0px))' across components.
+ *
+ * Keep in sync with --bottom-tab-height in globals.css.
  */
 
-/** Height of the BottomTabBar (py-2 + icon 24px + label + spacing) */
-export const BOTTOM_TAB_HEIGHT = '5rem';
+/** Height of the BottomTabBar (py-1 + button padding + icon 22px + label) */
+export const BOTTOM_TAB_HEIGHT = '3.5rem';
 
 /** CSS calc for positioning directly above the tab bar on mobile */
-export const ABOVE_TAB_BAR = 'calc(5rem + env(safe-area-inset-bottom, 0px))';
+export const ABOVE_TAB_BAR = 'calc(3.5rem + env(safe-area-inset-bottom, 0px))';
 
 /** CSS calc with breathing room (for toasts, FABs) */
-export const ABOVE_TAB_BAR_SPACED = 'calc(5rem + env(safe-area-inset-bottom, 0px) + 0.5rem)';
+export const ABOVE_TAB_BAR_SPACED = 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 0.5rem)';
 
 /** Tailwind class fragments for common positioning patterns */
 export const MOBILE_LAYOUT = {
   /** Bottom sheet content padding to clear the tab bar */
-  sheetPadding: 'pb-[calc(5rem+env(safe-area-inset-bottom,0px))]',
+  sheetPadding: 'pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))]',
   /** Toast/FAB: above tab bar on mobile, normal on desktop */
-  aboveTabBar: 'bottom-[calc(5rem+env(safe-area-inset-bottom,0px)+0.5rem)] lg:bottom-4',
+  aboveTabBar: 'bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px)+0.5rem)] lg:bottom-4',
   /** Page content padding to clear the tab bar */
-  pageContent: 'pb-[calc(5rem+env(safe-area-inset-bottom,0px))]',
+  pageContent: 'pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))]',
   /** Safe area only (no tab bar offset — for elements that overlay the tab bar) */
   safeBottom: 'pb-[env(safe-area-inset-bottom,0px)]',
 } as const;
