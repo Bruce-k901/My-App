@@ -2,10 +2,12 @@
 
 /**
  * PWA Utility Functions
- * Handles service worker registration and install prompts
+ * Handles service worker registration, update detection, and install prompts
  */
 
 let deferredPrompt: BeforeInstallPromptEvent | null = null;
+let swRegistration: ServiceWorkerRegistration | null = null;
+let updateCheckInterval: ReturnType<typeof setInterval> | null = null;
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -13,44 +15,83 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 /**
- * Register service worker for PWA functionality
+ * Register service worker and set up update detection
  */
 export function registerServiceWorker(): void {
   if (typeof window === 'undefined') return;
-  
+
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
         .register('/sw.js')
         .then((registration) => {
           console.log('[PWA] Service Worker registered:', registration.scope);
-          
-          // Check for updates
+          swRegistration = registration;
+
+          // Check if there's already a waiting worker (e.g. from a previous visit)
+          if (registration.waiting) {
+            console.log('[PWA] Update already waiting — prompting user');
+            window.dispatchEvent(new CustomEvent('pwa-update-available'));
+          }
+
+          // Listen for new workers being installed
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // New service worker installed while existing one controls the page
-                  console.log('[PWA] New version available — prompting user');
-                  window.dispatchEvent(new CustomEvent('pwa-update-available'));
-                }
-              });
-            }
+            if (!newWorker) return;
+
+            newWorker.addEventListener('statechange', () => {
+              // New SW is installed and waiting to activate
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('[PWA] New version installed — prompting user');
+                window.dispatchEvent(new CustomEvent('pwa-update-available'));
+              }
+            });
           });
+
+          // Start periodic update checks
+          startPeriodicUpdateChecks(registration);
         })
         .catch((error) => {
           console.error('[PWA] Service Worker registration failed:', error);
         });
     });
 
-    // When the new SW takes control, notify UI so it can reload
+    // When a new SW takes control, reload to use updated assets
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      console.log('[PWA] Service Worker controller changed — new version active');
-      window.dispatchEvent(new CustomEvent('pwa-update-activated'));
+      console.log('[PWA] New service worker activated — reloading');
+      window.location.reload();
     });
   } else {
     console.warn('[PWA] Service Workers not supported');
+  }
+}
+
+/**
+ * Periodically check for SW updates (every 60s when visible)
+ * Also checks immediately when the app returns to the foreground.
+ */
+function startPeriodicUpdateChecks(registration: ServiceWorkerRegistration): void {
+  // Check every 60 seconds
+  updateCheckInterval = setInterval(() => {
+    if (document.visibilityState === 'visible') {
+      registration.update().catch(() => {});
+    }
+  }, 60_000);
+
+  // Check immediately when app comes back to foreground
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      registration.update().catch(() => {});
+    }
+  });
+}
+
+/**
+ * Tell the waiting service worker to activate (used by UpdateToast)
+ */
+export function activateWaitingWorker(): void {
+  if (swRegistration?.waiting) {
+    swRegistration.waiting.postMessage('SKIP_WAITING');
   }
 }
 
@@ -71,17 +112,10 @@ export async function showInstallPrompt(): Promise<boolean> {
   }
 
   try {
-    // Show the install prompt
     deferredPrompt.prompt();
-    
-    // Wait for user response
     const { outcome } = await deferredPrompt.userChoice;
-    
     console.log('[PWA] User choice:', outcome);
-    
-    // Clear the deferred prompt
     deferredPrompt = null;
-    
     return outcome === 'accepted';
   } catch (error) {
     console.error('[PWA] Error showing install prompt:', error);
@@ -94,28 +128,16 @@ export async function showInstallPrompt(): Promise<boolean> {
  */
 export function isInstalled(): boolean {
   if (typeof window === 'undefined') return false;
-  
-  // Check if running in standalone mode (iOS)
-  if (window.matchMedia('(display-mode: standalone)').matches) {
-    return true;
-  }
-  
-  // Check if running in standalone mode (Android)
-  if ((window.navigator as any).standalone === true) {
-    return true;
-  }
-  
-  // Check if launched from home screen
-  if (document.referrer.includes('android-app://')) {
-    return true;
-  }
-  
+
+  if (window.matchMedia('(display-mode: standalone)').matches) return true;
+  if ((window.navigator as any).standalone === true) return true;
+  if (document.referrer.includes('android-app://')) return true;
+
   return false;
 }
 
 /**
  * Setup install prompt listener
- * Call this in your component to listen for install prompts
  */
 export function setupInstallPrompt(
   onPromptAvailable: (available: boolean) => void
@@ -132,12 +154,10 @@ export function setupInstallPrompt(
 
   window.addEventListener('beforeinstallprompt', handler);
 
-  // Check if already installed
   if (isInstalled()) {
     onPromptAvailable(false);
   }
 
-  // Return cleanup function
   return () => {
     window.removeEventListener('beforeinstallprompt', handler);
   };
@@ -173,14 +193,7 @@ export function detectBrowser(): {
   const isSafari = /safari/.test(ua) && !/chrome/.test(ua);
   const isFirefox = /firefox/.test(ua);
 
-  return {
-    isDuckDuckGo,
-    isIOS,
-    isAndroid,
-    isChrome,
-    isSafari,
-    isFirefox,
-  };
+  return { isDuckDuckGo, isIOS, isAndroid, isChrome, isSafari, isFirefox };
 }
 
 /**
@@ -199,4 +212,3 @@ export function getPWAStatus(): {
     browser: detectBrowser(),
   };
 }
-

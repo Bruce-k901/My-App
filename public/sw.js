@@ -1,90 +1,86 @@
 // Service Worker for PWA - Offline Support & Push Notifications
-const CACHE_NAME = 'opsly-v4'; // PWA update toast + guide updates
-const RUNTIME_CACHE = 'opsly-runtime-v4';
+// SW_VERSION is updated at build time by the prebuild script.
+// Changing this value forces the browser to detect a new SW and trigger updates.
+const SW_VERSION = '1771661370777';
+const CACHE_NAME = 'opsly-v5';
+const RUNTIME_CACHE = 'opsly-runtime-v5';
 
 // Global error handler for unhandled promise rejections
 self.addEventListener('error', (event) => {
   console.warn('[SW] Unhandled error (non-fatal):', event.message);
-  event.preventDefault(); // Prevent default error handling
+  event.preventDefault();
 });
 
 self.addEventListener('unhandledrejection', (event) => {
   console.warn('[SW] Unhandled promise rejection (non-fatal):', event.reason);
-  event.preventDefault(); // Prevent default error handling
+  event.preventDefault();
 });
 
-// Assets to cache on install
+// Assets to cache on install (offline shell)
 const STATIC_ASSETS = [
   '/',
   '/dashboard',
-  '/admin',
-  '/admin/companies',
-  '/admin/users',
-  '/admin/tasks',
-  '/notifications',
-  '/manifest.json',
-  '/icon-192x192.png',
-  '/icon-512x512.png',
-  '/admin-icon-192x192.png',
-  '/admin-icon-512x512.png'
+  '/site.webmanifest',
+  '/android-chrome-192x192.png',
+  '/android-chrome-512x512.png'
 ];
 
-// Install event - cache static assets
+// --- Install: cache shell assets, but do NOT skipWaiting ---
+// The client controls when the new SW activates via SKIP_WAITING message.
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing service worker...');
+  console.log('[SW] Installing v' + SW_VERSION);
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('[SW] Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
-      })
-      .then(() => self.skipWaiting()) // Activate immediately
+      .then((cache) => cache.addAll(STATIC_ASSETS))
   );
+  // Do NOT call self.skipWaiting() here — let the client decide when to activate
 });
 
-// Activate event - clean up old caches
+// --- Activate: clean up old caches, claim clients ---
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating service worker...');
+  console.log('[SW] Activating v' + SW_VERSION);
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((cacheName) => {
-            return cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE;
+    caches.keys()
+      .then((names) => Promise.all(
+        names
+          .filter((n) => n !== CACHE_NAME && n !== RUNTIME_CACHE)
+          .map((n) => {
+            console.log('[SW] Deleting old cache:', n);
+            return caches.delete(n);
           })
-          .map((cacheName) => {
-            console.log('[SW] Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          })
-      );
-    })
-    .then(() => self.clients.claim()) // Take control of all pages
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
-// Fetch event - serve from cache, fallback to network
-// Rate limiting for failed fetches to prevent spam
+// --- Message listener: client tells us when to activate ---
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') {
+    console.log('[SW] Client requested skipWaiting');
+    self.skipWaiting();
+  }
+});
+
+// ====================================================
+// FETCH STRATEGIES
+// ====================================================
+// Navigation (HTML)    → Network-first, cache-fallback
+// _next/static/*       → Cache-first (content-hashed, immutable)
+// API / supabase       → Network-only (never cache)
+// Everything else      → Network-first, cache-fallback
+// ====================================================
+
+// Rate limiting for failed fetches
 const failedFetches = new Map();
 const MAX_RETRIES = 3;
-const RETRY_DELAY = 5000; // 5 seconds
+const RETRY_DELAY = 5000;
 
 function shouldRetry(url) {
   const now = Date.now();
   const record = failedFetches.get(url);
-  
   if (!record) return true;
-  
-  // If last failure was recent, check retry count
-  if (now - record.lastFailure < RETRY_DELAY) {
-    return record.retries < MAX_RETRIES;
-  }
-  
-  // Reset if enough time has passed
-  if (now - record.lastFailure > RETRY_DELAY * 2) {
-    failedFetches.delete(url);
-    return true;
-  }
-  
+  if (now - record.lastFailure < RETRY_DELAY) return record.retries < MAX_RETRIES;
+  if (now - record.lastFailure > RETRY_DELAY * 2) { failedFetches.delete(url); return true; }
   return record.retries < MAX_RETRIES;
 }
 
@@ -96,167 +92,128 @@ function recordFailure(url) {
 }
 
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests
-  if (event.request.method !== 'GET') {
-    return;
-  }
+  const { request } = event;
+  const url = request.url;
 
-  // Skip cross-origin requests
-  if (!event.request.url.startsWith(self.location.origin)) {
-    return;
-  }
+  // Skip non-GET
+  if (request.method !== 'GET') return;
 
-  const requestUrl = event.request.url;
+  // Skip cross-origin
+  if (!url.startsWith(self.location.origin)) return;
 
-  // Skip webpack HMR files and other development-only files
-  // These are temporary and shouldn't be cached or intercepted
-  if (
-    requestUrl.includes('webpack.hot-update') ||
-    requestUrl.includes('hot-update.json') ||
-    requestUrl.includes('hot-update.js') ||
-    requestUrl.includes('_next/webpack-hmr') ||
-    requestUrl.includes('__webpack_hmr')
-  ) {
-    // Let these requests pass through without service worker interception
-    return;
-  }
+  // Skip webpack HMR / dev files
+  if (url.includes('webpack.hot-update') || url.includes('_next/webpack-hmr') || url.includes('__webpack_hmr')) return;
 
-  // Don't cache favicon - always fetch fresh (but handle errors gracefully)
-  if (requestUrl.includes('favicon') || requestUrl.includes('icon')) {
+  // Skip API routes — always go to network, never cache
+  if (url.includes('/api/')) return;
+
+  // Skip supabase / auth routes
+  if (url.includes('/auth/')) return;
+
+  // Favicon/icons — network with silent fallback
+  if (url.includes('favicon') || url.includes('icon')) {
     event.respondWith(
-      fetch(event.request).catch((error) => {
-        // Silently handle favicon errors - don't spam console
-        return new Response('', { status: 200, headers: { 'Content-Type': 'image/png' } });
-      })
+      fetch(request).catch(() => new Response('', { status: 200, headers: { 'Content-Type': 'image/png' } }))
     );
     return;
   }
 
-  // Check if we should retry this URL (rate limiting)
-  if (!shouldRetry(requestUrl)) {
-    // Too many failures, serve from cache or return empty response
-    event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-        // Return empty response to prevent further fetch attempts
-        return new Response('', { status: 200 });
-      }).catch(() => {
-        return new Response('', { status: 200 });
-      })
-    );
+  // --- NAVIGATION REQUESTS (HTML pages) → Network-first ---
+  if (request.mode === 'navigate' || request.destination === 'document') {
+    event.respondWith(networkFirstWithCache(request));
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request)
-      .then((cachedResponse) => {
-        // Return cached version if available
-        if (cachedResponse) {
-          return cachedResponse;
-        }
+  // --- IMMUTABLE STATIC ASSETS (_next/static/*) → Cache-first ---
+  if (url.includes('/_next/static/')) {
+    event.respondWith(cacheFirstWithNetwork(request));
+    return;
+  }
 
-        // Otherwise fetch from network with timeout
-        const fetchPromise = fetch(event.request);
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Fetch timeout')), 10000)
-        );
-
-        return Promise.race([fetchPromise, timeoutPromise])
-          .then((response) => {
-            // Reset failure count on success
-            failedFetches.delete(requestUrl);
-            
-            // Don't cache non-successful responses
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Clone the response (stream can only be consumed once)
-            const responseToCache = response.clone();
-
-            // Cache the response (don't await - fire and forget)
-            caches.open(RUNTIME_CACHE)
-              .then((cache) => {
-                cache.put(event.request, responseToCache).catch(() => {
-                  // Silently fail cache operations
-                });
-              })
-              .catch(() => {
-                // Silently fail cache operations
-              });
-
-            return response;
-          })
-          .catch((error) => {
-            // Record the failure
-            recordFailure(requestUrl);
-            
-            // Only log in development or if it's a new failure
-            const record = failedFetches.get(requestUrl);
-            if (record && record.retries <= 1) {
-              console.warn('[SW] Fetch failed (will retry):', requestUrl, error.message);
-            }
-            
-            // If network fails and no cache, return offline page or empty response
-            if (event.request.destination === 'document') {
-              return caches.match('/').then((cachedPage) => {
-                if (cachedPage) return cachedPage;
-                // If even cache fails, return a valid empty HTML response
-                return new Response('<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>You are offline</h1></body></html>', {
-                  headers: { 'Content-Type': 'text/html' }
-                });
-              }).catch(() => {
-                return new Response('<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>You are offline</h1></body></html>', {
-                  headers: { 'Content-Type': 'text/html' }
-                });
-              });
-            }
-            // For non-document requests, return a valid empty response
-            return new Response('', { status: 200 });
-          });
-      })
-      .catch((error) => {
-        // If cache match fails, try network or return empty response
-        // Only log if it's not a network error (which we already handle above)
-        if (error.name !== 'TypeError' || !error.message.includes('fetch')) {
-          console.warn('[SW] Cache match failed:', error.message);
-        }
-        
-        // Check rate limit before attempting fetch
-        if (!shouldRetry(requestUrl)) {
-          return new Response('', { status: 200 });
-        }
-        
-        return fetch(event.request).catch(() => {
-          recordFailure(requestUrl);
-          return new Response('', { status: 200 });
-        });
-      })
-  );
+  // --- EVERYTHING ELSE → Network-first ---
+  event.respondWith(networkFirstWithCache(request));
 });
 
-// Vibration patterns for different notification types (duration in ms)
+// Network-first: try network, fall back to cache, then offline page
+async function networkFirstWithCache(request) {
+  try {
+    const response = await fetchWithTimeout(request, 8000);
+    if (response && response.ok) {
+      // Cache the fresh response for offline fallback
+      const clone = response.clone();
+      caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, clone).catch(() => {})).catch(() => {});
+      failedFetches.delete(request.url);
+    }
+    return response;
+  } catch (err) {
+    recordFailure(request.url);
+    // Try cache fallback
+    const cached = await caches.match(request);
+    if (cached) return cached;
+
+    // For navigation requests, serve the cached root as an app shell fallback
+    if (request.mode === 'navigate' || request.destination === 'document') {
+      const shell = await caches.match('/');
+      if (shell) return shell;
+      return new Response('<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>You are offline</h1><p>Please check your connection and try again.</p></body></html>', {
+        headers: { 'Content-Type': 'text/html' }
+      });
+    }
+
+    return new Response('', { status: 200 });
+  }
+}
+
+// Cache-first: serve from cache, fall back to network (for immutable hashed assets)
+async function cacheFirstWithNetwork(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+
+  if (!shouldRetry(request.url)) {
+    return new Response('', { status: 200 });
+  }
+
+  try {
+    const response = await fetchWithTimeout(request, 10000);
+    if (response && response.ok && response.type === 'basic') {
+      const clone = response.clone();
+      caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, clone).catch(() => {})).catch(() => {});
+      failedFetches.delete(request.url);
+    }
+    return response;
+  } catch (err) {
+    recordFailure(request.url);
+    return new Response('', { status: 200 });
+  }
+}
+
+// Fetch with timeout helper
+function fetchWithTimeout(request, ms) {
+  return Promise.race([
+    fetch(request),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Fetch timeout')), ms))
+  ]);
+}
+
+// ====================================================
+// PUSH NOTIFICATIONS
+// ====================================================
+
 const VIBRATION_PATTERNS = {
-  task: [200, 100, 200],           // buzz-pause-buzz (standard reminder)
-  message: [100, 50, 100],          // quick double-tap (new message)
-  urgent: [300, 100, 300, 100, 500], // long urgent pattern (overdue/critical)
+  task: [200, 100, 200],
+  message: [100, 50, 100],
+  urgent: [300, 100, 300, 100, 500],
   default: [200, 100, 200]
 };
 
-// Push notification event - Enhanced with vibration and better actions
 self.addEventListener('push', function(event) {
   console.log('[SW] Push notification received');
 
   const data = event.data ? event.data.json() : {};
   const title = data.title || 'Opsly Notification';
-  const notificationType = data.type || 'default'; // task, message, urgent, default
-
-  // Select vibration pattern based on notification type
+  const notificationType = data.type || 'default';
   const vibrationPattern = VIBRATION_PATTERNS[notificationType] || VIBRATION_PATTERNS.default;
 
-  // Determine actions based on notification type
   let actions = [];
   if (notificationType === 'task') {
     actions = [
@@ -280,7 +237,6 @@ self.addEventListener('push', function(event) {
     ];
   }
 
-  // Use custom actions if provided
   if (data.actions && Array.isArray(data.actions)) {
     actions = data.actions;
   }
@@ -289,9 +245,9 @@ self.addEventListener('push', function(event) {
     body: data.body || data.message || 'You have a new notification',
     icon: data.icon || '/android-chrome-192x192.png',
     badge: data.badge || '/android-chrome-192x192.png',
-    tag: data.tag || data.id || 'default', // Prevents duplicate notifications
-    renotify: true, // Vibrate even if same tag
-    requireInteraction: data.urgent || notificationType === 'urgent' || false, // Stay until dismissed if urgent
+    tag: data.tag || data.id || 'default',
+    renotify: true,
+    requireInteraction: data.urgent || notificationType === 'urgent' || false,
     vibrate: vibrationPattern,
     data: {
       url: data.url || '/notifications',
@@ -306,24 +262,16 @@ self.addEventListener('push', function(event) {
   );
 });
 
-// Notification click event - Enhanced with action handling
 self.addEventListener('notificationclick', function(event) {
   console.log('[SW] Notification clicked, action:', event.action);
-
   event.notification.close();
 
   const notificationData = event.notification.data || {};
   const url = notificationData.url || '/notifications';
-  const notificationType = notificationData.type;
 
-  // Handle dismiss/close actions - just close, don't navigate
-  if (event.action === 'dismiss' || event.action === 'close') {
-    return;
-  }
+  if (event.action === 'dismiss' || event.action === 'close') return;
 
-  // Handle snooze action - reschedule notification
   if (event.action === 'snooze') {
-    // Re-show notification after 10 minutes
     event.waitUntil(
       new Promise((resolve) => {
         setTimeout(() => {
@@ -339,66 +287,45 @@ self.addEventListener('notificationclick', function(event) {
               { action: 'dismiss', title: 'Dismiss' }
             ]
           }).then(resolve);
-        }, 10 * 60 * 1000); // 10 minutes
+        }, 10 * 60 * 1000);
       })
     );
     return;
   }
 
-  // Handle acknowledge action - just close and mark as seen
-  if (event.action === 'acknowledge') {
-    // Could send a message to the client to mark the notification as acknowledged
-    // For now, just close the notification (already done above)
-    return;
-  }
+  if (event.action === 'acknowledge') return;
 
-  // All other actions navigate to the appropriate URL
-  // - open, view, complete, reply all navigate to the url
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true })
       .then((clientList) => {
-        // Check if app is already open on any window
         for (let i = 0; i < clientList.length; i++) {
           const client = clientList[i];
           if (client.url.includes('/dashboard') && 'focus' in client) {
-            // App is open - focus it and navigate
             client.focus();
-            if ('navigate' in client) {
-              return client.navigate(url);
-            }
+            if ('navigate' in client) return client.navigate(url);
             return;
           }
         }
-        // Open new window if app not open
-        if (clients.openWindow) {
-          return clients.openWindow(url);
-        }
+        if (clients.openWindow) return clients.openWindow(url);
       })
   );
 });
 
-// Background sync (for offline writes)
+// ====================================================
+// BACKGROUND SYNC (offline writes)
+// ====================================================
+
 self.addEventListener('sync', function(event) {
   console.log('[SW] Background sync:', event.tag);
-
-  if (event.tag === 'sync-offline-writes') {
-    event.waitUntil(syncPendingWrites());
-  }
-
-  // Legacy support for old tag
-  if (event.tag === 'sync-forms') {
+  if (event.tag === 'sync-offline-writes' || event.tag === 'sync-forms') {
     event.waitUntil(syncPendingWrites());
   }
 });
 
 async function syncPendingWrites() {
   console.log('[SW] Syncing pending writes...');
-
   try {
-    // Open IndexedDB
     const db = await openDB('opsly-offline', 1);
-
-    // Get all pending writes
     const tx = db.transaction('pendingWrites', 'readonly');
     const store = tx.objectStore('pendingWrites');
     const index = store.index('by_status');
@@ -408,15 +335,10 @@ async function syncPendingWrites() {
 
     for (const write of pending) {
       try {
-        // Update status to syncing
         const updateTx = db.transaction('pendingWrites', 'readwrite');
-        await updateTx.objectStore('pendingWrites').put({
-          ...write,
-          status: 'syncing'
-        });
+        await updateTx.objectStore('pendingWrites').put({ ...write, status: 'syncing' });
         await updateTx.done;
 
-        // Check if there are associated files
         const filesTx = db.transaction('queuedFiles', 'readonly');
         const queuedFile = await filesTx.objectStore('queuedFiles').get(write.id);
 
@@ -424,43 +346,31 @@ async function syncPendingWrites() {
         let headers = {};
 
         if (queuedFile) {
-          // Build FormData if files exist
           const formData = new FormData();
           formData.append('file', queuedFile.blob, queuedFile.filename);
           formData.append('data', JSON.stringify(write.payload));
           body = formData;
-          // Don't set Content-Type header - browser will set it with boundary
         } else {
-          // Regular JSON payload
           body = JSON.stringify(write.payload);
           headers = { 'Content-Type': 'application/json' };
         }
 
-        // Attempt POST
         const response = await fetch(write.endpoint, {
           method: 'POST',
           headers: headers,
           body: body,
-          credentials: 'include' // Include cookies for auth
+          credentials: 'include'
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 
         console.log(`[SW] Successfully synced: ${write.operation}`);
 
-        // Success - remove from queue
         const deleteTx = db.transaction(['pendingWrites', 'queuedFiles'], 'readwrite');
         await deleteTx.objectStore('pendingWrites').delete(write.id);
-
-        if (queuedFile) {
-          await deleteTx.objectStore('queuedFiles').delete(write.id);
-        }
-
+        if (queuedFile) await deleteTx.objectStore('queuedFiles').delete(write.id);
         await deleteTx.done;
 
-        // Show success notification
         await self.registration.showNotification('Synced', {
           body: `${write.operation.replace(/_/g, ' ')} completed`,
           badge: '/android-chrome-192x192.png',
@@ -469,24 +379,15 @@ async function syncPendingWrites() {
           requireInteraction: false,
           silent: true
         });
-
       } catch (error) {
         console.error(`[SW] Failed to sync ${write.operation}:`, error);
-
-        // Failed - increment retries
         const retries = write.retries + 1;
         const updateTx = db.transaction('pendingWrites', 'readwrite');
 
         if (retries >= 5) {
-          // Max retries - mark as failed
           await updateTx.objectStore('pendingWrites').put({
-            ...write,
-            status: 'failed',
-            error: error.message,
-            retries: retries
+            ...write, status: 'failed', error: error.message, retries
           });
-
-          // Show error notification
           await self.registration.showNotification('Sync Failed', {
             body: `${write.operation.replace(/_/g, ' ')} failed after ${retries} attempts`,
             badge: '/android-chrome-192x192.png',
@@ -495,52 +396,39 @@ async function syncPendingWrites() {
             requireInteraction: true
           });
         } else {
-          // Retry later - reset to pending
           await updateTx.objectStore('pendingWrites').put({
-            ...write,
-            status: 'pending',
-            retries: retries
+            ...write, status: 'pending', retries
           });
         }
-
         await updateTx.done;
       }
     }
-
     console.log('[SW] Sync complete');
   } catch (error) {
     console.error('[SW] Sync process failed:', error);
   }
 }
 
-// Helper function to open IndexedDB (duplicated for service worker context)
 function openDB(name, version) {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(name, version);
-
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);
-
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
-
-      // Create stores if they don't exist (same as main db.ts)
       if (!db.objectStoreNames.contains('cachedReads')) {
-        const cachedReads = db.createObjectStore('cachedReads', { keyPath: 'key' });
-        cachedReads.createIndex('by_timestamp', 'timestamp');
-        cachedReads.createIndex('by_module', 'module');
+        const store = db.createObjectStore('cachedReads', { keyPath: 'key' });
+        store.createIndex('by_timestamp', 'timestamp');
+        store.createIndex('by_module', 'module');
       }
-
       if (!db.objectStoreNames.contains('pendingWrites')) {
-        const pendingWrites = db.createObjectStore('pendingWrites', { keyPath: 'id' });
-        pendingWrites.createIndex('by_timestamp', 'timestamp');
-        pendingWrites.createIndex('by_status', 'status');
+        const store = db.createObjectStore('pendingWrites', { keyPath: 'id' });
+        store.createIndex('by_timestamp', 'timestamp');
+        store.createIndex('by_status', 'status');
       }
-
       if (!db.objectStoreNames.contains('queuedFiles')) {
         db.createObjectStore('queuedFiles', { keyPath: 'writeId' });
       }
     };
   });
 }
-

@@ -116,6 +116,16 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // Service worker must never be cached by CDN/browser — ensures update detection works
+        source: "/sw.js",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-cache, no-store, must-revalidate",
+          },
+        ],
+      },
+      {
         source: "/_next/static/:path*",
         headers: [
           {
