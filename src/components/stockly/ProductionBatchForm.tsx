@@ -9,8 +9,6 @@ import { ChefHat, Calendar } from '@/components/ui/icons';
 interface Recipe {
   id: string;
   name: string;
-  allergens: string[] | null;
-  may_contain_allergens: string[] | null;
 }
 
 interface ProductionBatchFormProps {
@@ -44,7 +42,7 @@ export default function ProductionBatchForm({
       if (!companyId) return;
       const { data } = await supabase
         .from('recipes')
-        .select('id, name, allergens, may_contain_allergens')
+        .select('id, name')
         .eq('company_id', companyId)
         .eq('is_active', true)
         .order('name');
