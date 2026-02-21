@@ -4,6 +4,10 @@
 
 /* Theme CSS Variables */
 :root {
+  /* Mobile layout tokens */
+  --bottom-tab-height: 5rem;
+  --above-tab-bar: calc(var(--bottom-tab-height) + env(safe-area-inset-bottom, 0px));
+
   --background: 10 10 10; /* neutral near-black (matches neutral-950) */
   --foreground: 255 255 255;
   --surface: 23 23 23; /* neutral charcoal (matches neutral-900) */
@@ -369,7 +373,7 @@ select {
 /* Bottom nav safe spacing for all mobile pages */
 @media (max-width: 1023px) {
   .dashboard-page main {
-    padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+    padding-bottom: var(--above-tab-bar) !important;
   }
   /* Sheet/Dialog portals should NOT get bottom nav padding */
   [data-radix-portal] main {
@@ -734,7 +738,10 @@ body {
     color 0.2s ease;
 }
 
-/* Dark mode body background (radial gradient) */
+/* Dark mode backgrounds — html gets solid fallback for PWA safe-area edges */
+.dark html {
+  background: #0c0a09;
+}
 .dark body {
   background: radial-gradient(circle at 20% 30%, #110f0d 0%, #0c0a09 80%);
   color: rgb(var(--text-primary));
@@ -762,6 +769,8 @@ html {
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  /* Match body background so safe-area edges don't show a gap in PWA standalone mode */
+  background: rgb(var(--background));
 }
 
 body {
@@ -817,6 +826,8 @@ body:has(.dashboard-page) {
   overflow: hidden;
   height: 100vh;
   height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  /* In PWA standalone with viewportFit:cover, extend to fill safe area edges */
+  min-height: -webkit-fill-available;
   position: fixed;
   width: 100%;
   touch-action: none; /* Prevent pull-to-refresh and overscroll on mobile */

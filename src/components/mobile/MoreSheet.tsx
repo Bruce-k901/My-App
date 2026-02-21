@@ -5,6 +5,7 @@ import { X } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { useMobileNav } from './MobileNavProvider';
 import { QuickActionsGrid } from './QuickActionsGrid';
+import { MOBILE_Z } from '@/lib/mobile-layout';
 
 // Module icons for section headers
 import {
@@ -49,14 +50,14 @@ export function MoreSheet() {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm animate-in fade-in-0"
+        className={`fixed inset-0 ${MOBILE_Z.sheetBackdrop} bg-black/60 backdrop-blur-sm animate-in fade-in-0`}
         onClick={closeMoreSheet}
       />
 
       {/* Sheet - Dark theme */}
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-50",
+          `fixed inset-x-0 bottom-0 ${MOBILE_Z.sheet}`,
           "bg-white dark:bg-[#1a1a1f] text-theme-primary rounded-t-3xl",
           "max-h-[85vh] overflow-hidden",
           "animate-in slide-in-from-bottom duration-300",

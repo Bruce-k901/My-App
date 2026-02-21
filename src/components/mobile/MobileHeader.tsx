@@ -95,7 +95,7 @@ export function MobileHeader({
   };
 
   return (
-    <header className="px-5 pt-4 pb-6 relative">
+    <header className="px-5 pb-6 relative" style={{ paddingTop: 'calc(1rem + env(safe-area-inset-top, 0px))' }}>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-theme-tertiary text-sm">{getGreeting()}</p>

@@ -112,6 +112,9 @@ export function MessageInput({
     }
   }, []);
 
+  // Track the text content before dictation started so we can append to it
+  const contentBeforeDictationRef = useRef('');
+
   // Initialize speech recognition
   useEffect(() => {
     if (!dictationSupported) return;
@@ -120,9 +123,12 @@ export function MessageInput({
     if (!SpeechRecognition) return;
 
     const recognition = new SpeechRecognition();
-    recognition.continuous = true;
+    // Use non-continuous mode — it's more reliable on mobile. Each utterance
+    // produces a final result, then recognition ends. We restart it in onend
+    // if the user hasn't toggled off.
+    recognition.continuous = false;
     recognition.interimResults = true;
-    recognition.lang = 'en-US';
+    recognition.lang = 'en-GB';
 
     recognition.onresult = (event: any) => {
       let finalTranscript = '';
@@ -131,72 +137,80 @@ export function MessageInput({
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
-          finalTranscript += transcript + ' ';
+          finalTranscript += transcript;
         } else {
           interimTranscript += transcript;
         }
       }
 
-      // Update content with final transcript (append to existing)
       if (finalTranscript) {
+        // Append final transcript and update the base content
         setContent((prev) => {
-          const newContent = (prev + finalTranscript).trim();
+          const newContent = (prev + ' ' + finalTranscript).trim();
+          contentBeforeDictationRef.current = newContent;
           return newContent;
         });
+      } else if (interimTranscript) {
+        // Show interim results in real-time so the user sees their speech
+        setContent(() => {
+          const base = contentBeforeDictationRef.current;
+          return (base + ' ' + interimTranscript).trim();
+        });
       }
-      
-      // Optionally show interim results (uncomment if you want real-time preview)
-      // Note: This can cause flickering, so we'll only use final results
     };
 
     recognition.onerror = (event: any) => {
-      console.error('Speech recognition error:', event.error);
+      console.error('[Speech] Error:', event.error);
+      // 'no-speech' and 'aborted' are non-fatal — don't stop dictation mode
+      if (event.error === 'no-speech' || event.error === 'aborted') return;
       setIsDictating(false);
-      
-      // Show user-friendly error messages
-      if (event.error === 'no-speech') {
-        console.log('No speech detected. Try again.');
-      } else if (event.error === 'not-allowed') {
-        console.error('Microphone permission denied. Please enable microphone access.');
-      }
     };
 
     recognition.onend = () => {
-      setIsDictating(false);
+      // In non-continuous mode, recognition ends after each utterance.
+      // Restart automatically if user hasn't toggled off.
+      // Use a ref check to avoid stale closure over isDictating state.
+      if (dictatingRef.current) {
+        try {
+          recognition.start();
+        } catch {
+          setIsDictating(false);
+        }
+      }
     };
 
     recognitionRef.current = recognition;
 
     return () => {
       if (recognitionRef.current) {
-        try {
-          recognitionRef.current.stop();
-        } catch (e) {
-          // Ignore errors when stopping
-        }
+        try { recognitionRef.current.abort(); } catch { /* ignore */ }
       }
     };
   }, [dictationSupported]);
+
+  // Keep a ref in sync with isDictating so the onend callback can read it
+  const dictatingRef = useRef(false);
+  useEffect(() => {
+    dictatingRef.current = isDictating;
+  }, [isDictating]);
 
   const toggleDictation = () => {
     if (!recognitionRef.current) return;
 
     if (isDictating) {
-      // Stop dictation
-      try {
-        recognitionRef.current.stop();
-        setIsDictating(false);
-      } catch (e) {
-        console.error('Error stopping recognition:', e);
-        setIsDictating(false);
-      }
+      // Stop dictation — use abort() which is more reliable than stop() on mobile
+      setIsDictating(false);
+      try { recognitionRef.current.abort(); } catch { /* ignore */ }
     } else {
-      // Start dictation
+      // Snapshot current content so we can append speech to it
+      setContent((prev) => {
+        contentBeforeDictationRef.current = prev;
+        return prev;
+      });
       try {
         recognitionRef.current.start();
         setIsDictating(true);
-      } catch (e) {
-        console.error('Error starting recognition:', e);
+      } catch {
         setIsDictating(false);
       }
     }
@@ -207,12 +221,8 @@ export function MessageInput({
 
     // Stop dictation if active
     if (isDictating && recognitionRef.current) {
-      try {
-        recognitionRef.current.stop();
-        setIsDictating(false);
-      } catch (e) {
-        // Ignore errors
-      }
+      setIsDictating(false);
+      try { recognitionRef.current.abort(); } catch { /* ignore */ }
     }
 
     await sendMessage(content.trim(), replyTo?.id);
