@@ -38,14 +38,14 @@ export function DashboardSettingsPanel({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+        className="fixed inset-0 bg-black/50 z-[59] transition-opacity"
         onClick={onClose}
       />
 
       {/* Panel */}
       <div
         className={cn(
-          'fixed right-0 top-0 h-full w-full max-w-md z-50',
+          'fixed right-0 top-0 h-full w-full max-w-md z-[60]',
           'bg-white dark:bg-[#0a0a0a] border-l border-theme',
           'transform transition-transform duration-300',
           isOpen ? 'translate-x-0' : 'translate-x-full'

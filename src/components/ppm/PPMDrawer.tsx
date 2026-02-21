@@ -222,7 +222,7 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
                 onClose();
               }
             }}
-            className="fixed inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm z-[59]"
           />
 
           {/* Drawer */}
@@ -231,7 +231,7 @@ export default function PPMDrawer({ asset, open, onClose, onUpdate }: PPMDrawerP
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed right-0 top-0 h-full w-full max-w-2xl bg-white dark:bg-[#0f1220] border-l border-theme z-50 overflow-y-auto shadow-xl dark:shadow-none"
+            className="fixed right-0 top-0 h-full w-full max-w-2xl bg-white dark:bg-[#0f1220] border-l border-theme z-[60] overflow-y-auto shadow-xl dark:shadow-none"
           >
             {/* Header */}
             <div className="sticky top-0 bg-gray-50 dark:bg-[#0f1220] border-b border-theme px-6 py-4">

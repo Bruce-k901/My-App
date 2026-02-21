@@ -67,7 +67,7 @@ export function DashboardGrid({
   // Mobile layout - single column with collapsible cards
   if (isMobile) {
     return (
-      <div className="space-y-3 pb-24">
+      <div className="space-y-3 pb-4">
         {visibleWidgets.map((widget) => (
           <WidgetWrapper
             key={widget.id}

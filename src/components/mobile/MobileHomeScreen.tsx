@@ -45,7 +45,7 @@ export function MobileHomeScreen() {
       />
 
       {/* Content sections */}
-      <div className="px-4 space-y-5 pb-24">
+      <div className="px-4 space-y-5 pb-4">
         <WeatherWidget />
         <QuickAccess />
         <PrioritySummaryCard />

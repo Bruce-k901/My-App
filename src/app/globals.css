@@ -512,11 +512,11 @@ html.light select option {
 /* PWA Standalone Mode - Improved Mobile Padding */
 @media (display-mode: standalone) {
   /* Better padding for standalone PWA on mobile */
+  /* padding-bottom intentionally omitted — handled by the mobile @media rule with var(--above-tab-bar) */
   .dashboard-page main {
     padding-left: 1rem;
     padding-right: 1rem;
     padding-top: 1rem;
-    padding-bottom: 1rem;
   }
 
   @media (min-width: 640px) {

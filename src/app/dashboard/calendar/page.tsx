@@ -1062,7 +1062,7 @@ export default function ManagerCalendarPage() {
         </div>
 
         {/* Content */}
-        <div className="px-4 py-4 pb-32">
+        <div className="px-4 py-4 pb-4">
           {/* Notes for the day */}
           {mobileNotes && (
             <div className="mb-6 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl p-4">
@@ -1111,8 +1111,8 @@ export default function ManagerCalendarPage() {
             transition-all duration-200
             active:scale-95 touch-manipulation
             right-5
-            bottom-[calc(6rem+env(safe-area-inset-bottom))]
           "
+          style={{ bottom: 'calc(var(--above-tab-bar) + 0.5rem)' }}
           aria-label="Create task"
         >
           <Plus className="w-7 h-7" />
@@ -1964,7 +1964,7 @@ export default function ManagerCalendarPage() {
           transition-all duration-200
           active:scale-95 touch-manipulation
           right-5 lg:right-8
-          bottom-[calc(6rem+env(safe-area-inset-bottom))] lg:bottom-8
+          bottom-[calc(var(--above-tab-bar)+0.5rem)] lg:bottom-8
         "
         aria-label="Create task"
         title="Create task, meeting, call, or note"

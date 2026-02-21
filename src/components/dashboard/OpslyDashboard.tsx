@@ -49,7 +49,8 @@ export function OpslyDashboard({ variant }: OpslyDashboardProps) {
           {/* Mobile sidebar toggle */}
           <button
             onClick={() => setSidebarOpen(true)}
-            className="fixed bottom-20 right-4 w-12 h-12 bg-teamly rounded-full flex items-center justify-center shadow-lg z-30"
+            className="fixed right-4 w-12 h-12 bg-teamly rounded-full flex items-center justify-center shadow-lg z-30"
+            style={{ bottom: 'calc(var(--above-tab-bar) + 0.5rem)' }}
           >
             <Menu className="w-5 h-5 text-theme-primary" />
           </button>

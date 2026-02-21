@@ -53,7 +53,7 @@ export function WidgetDetailModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999]"
           />
 
           {/* Modal */}
@@ -63,7 +63,7 @@ export function WidgetDetailModal({
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className={cn(
-              'fixed z-50',
+              'fixed z-[9999]',
               'inset-4 lg:inset-[10%]',
               'bg-[rgb(var(--surface-elevated))] dark:bg-[#171B2D]',
               'border border-module-fg/[0.12] rounded-xl',

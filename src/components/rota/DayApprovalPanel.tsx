@@ -459,7 +459,7 @@ export function DayApprovalPanel({
 
       {/* Review Modal */}
       {showReviewModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 dark:bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/30 dark:bg-black/50 backdrop-blur-sm">
           <div className="bg-white dark:bg-[#171b2d] rounded-lg border border-theme w-full max-w-md p-6 shadow-xl">
             <h3 className="text-lg font-semibold text-theme-primary mb-4">
               {approvals[showReviewModal]?.status === 'needs_review' ? 'Edit Review' : 'Mark Day for Review'}

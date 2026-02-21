@@ -128,7 +128,7 @@ export default function HelpPage() {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 space-y-6 pb-28">
+    <div className="max-w-lg mx-auto px-4 py-6 space-y-6 pb-4">
       {/* Header */}
       <div>
         <h1 className="text-xl font-semibold text-theme-primary">Help & Support</h1>

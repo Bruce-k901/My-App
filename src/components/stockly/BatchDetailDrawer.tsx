@@ -158,7 +158,7 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
 
   if (loading) {
     return (
-      <div className="fixed inset-0 z-50 flex">
+      <div className="fixed inset-0 z-[60] flex">
         <div className="absolute inset-0 bg-black/50" onClick={onClose} />
         <div className="ml-auto w-full max-w-md bg-theme-surface shadow-xl flex items-center justify-center">
           <Loader2 className="w-6 h-6 animate-spin text-stockly-dark dark:text-stockly" />
@@ -175,7 +175,7 @@ export default function BatchDetailDrawer({ batchId, onClose, onUpdated }: Batch
   const supplier = delivery?.suppliers as any;
 
   return (
-    <div className="fixed inset-0 z-50 flex">
+    <div className="fixed inset-0 z-[60] flex">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="ml-auto w-full max-w-md bg-theme-surface shadow-xl flex flex-col h-full overflow-hidden">
         {/* Header */}
