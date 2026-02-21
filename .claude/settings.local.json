@@ -143,7 +143,10 @@
       "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" diff c306517b~1 c306517b -- middleware.ts)",
       "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" status --branch --short)",
       "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" push origin main)",
-      "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" log --oneline -1)"
+      "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" log --oneline -1)",
+      "Bash(npx husky install:*)",
+      "Bash(git config:*)",
+      "Bash(bash:*)"
     ]
   }
 }
