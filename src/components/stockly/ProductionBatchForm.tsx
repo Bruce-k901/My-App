@@ -142,13 +142,21 @@ export default function ProductionBatchForm({
         </div>
         <div>
           <label className="block text-sm font-medium text-theme-secondary mb-1">Unit</label>
-          <input
-            type="text"
+          <select
             value={unit}
             onChange={(e) => setUnit(e.target.value)}
             className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
-            placeholder="kg, units, etc."
-          />
+          >
+            <option value="">Select unit</option>
+            <option value="kg">kg</option>
+            <option value="g">g</option>
+            <option value="litres">litres</option>
+            <option value="ml">ml</option>
+            <option value="units">units</option>
+            <option value="portions">portions</option>
+            <option value="trays">trays</option>
+            <option value="boxes">boxes</option>
+          </select>
         </div>
       </div>
 

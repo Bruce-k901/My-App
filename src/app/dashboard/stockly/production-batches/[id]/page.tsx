@@ -10,7 +10,7 @@ import ProductionOutputRecorder from '@/components/stockly/ProductionOutputRecor
 import CCPRecordForm from '@/components/stockly/CCPRecordForm';
 import {
   ArrowLeft, Layers, ChefHat, Calendar, Clock, CheckCircle, XCircle,
-  Play, Square, Thermometer, Package, AlertTriangle, Plus,
+  Play, Square, Thermometer, Package, AlertTriangle, Plus, Info,
 } from '@/components/ui/icons';
 
 const STATUS_CONFIG: Record<ProductionBatchStatus, { label: string; color: string; icon: React.ElementType }> = {
@@ -184,6 +184,41 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
       {/* Tab content */}
       {activeTab === 'Overview' && (
         <div className="space-y-6">
+          {/* Workflow guide */}
+          {batch.status === 'planned' && (
+            <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <Info className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+              <div className="text-sm">
+                <p className="font-medium text-blue-700 dark:text-blue-400">Next step: Start Production</p>
+                <p className="text-blue-600 dark:text-blue-300 mt-0.5">
+                  Click &quot;Start Production&quot; to begin, then record your <strong>Inputs</strong> (ingredients used) and <strong>Outputs</strong> (finished products). Actual quantity and yield are calculated when the batch is completed.
+                </p>
+              </div>
+            </div>
+          )}
+          {batch.status === 'in_progress' && (
+            <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-lg">
+              <Info className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" />
+              <div className="text-sm">
+                <p className="font-medium text-amber-700 dark:text-amber-400">Production in progress</p>
+                <p className="text-amber-600 dark:text-amber-300 mt-0.5">
+                  Use the <strong>Inputs</strong> tab to record ingredients used, and the <strong>Outputs</strong> tab to record finished products. Record any <strong>CCP checks</strong> as needed. When done, click &quot;Complete Batch&quot; to finalise — this will calculate your actual quantity, yield, and aggregate allergens.
+                </p>
+              </div>
+            </div>
+          )}
+          {batch.status === 'completed' && (
+            <div className="flex items-start gap-3 p-4 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+              <CheckCircle className="w-5 h-5 text-emerald-500 mt-0.5 flex-shrink-0" />
+              <div className="text-sm">
+                <p className="font-medium text-emerald-700 dark:text-emerald-400">Batch complete</p>
+                <p className="text-emerald-600 dark:text-emerald-300 mt-0.5">
+                  This batch has been finalised. Actual quantity, yield, and allergens have been calculated from the recorded inputs and outputs.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Quantities */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-theme-surface-elevated border border-theme rounded-lg p-4">
@@ -197,6 +232,9 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
               <p className="text-lg font-semibold text-theme-primary">
                 {batch.actual_quantity ?? '—'} {batch.unit || ''}
               </p>
+              {!batch.actual_quantity && batch.status !== 'completed' && batch.status !== 'cancelled' && (
+                <p className="text-[10px] text-theme-tertiary mt-1">Calculated on completion from outputs</p>
+              )}
             </div>
             <div className="bg-theme-surface-elevated border border-theme rounded-lg p-4">
               <p className="text-xs text-theme-tertiary mb-1">Yield</p>
@@ -205,12 +243,18 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
                   ? `${((batch.actual_quantity / batch.planned_quantity) * 100).toFixed(1)}%`
                   : '—'}
               </p>
+              {!batch.actual_quantity && batch.status !== 'completed' && batch.status !== 'cancelled' && (
+                <p className="text-[10px] text-theme-tertiary mt-1">Calculated on completion</p>
+              )}
             </div>
             <div className="bg-theme-surface-elevated border border-theme rounded-lg p-4">
               <p className="text-xs text-theme-tertiary mb-1">Inputs / Outputs</p>
               <p className="text-lg font-semibold text-theme-primary">
                 {batch.inputs?.length || 0} / {batch.outputs?.length || 0}
               </p>
+              {(batch.inputs?.length || 0) === 0 && (batch.outputs?.length || 0) === 0 && batch.status !== 'completed' && batch.status !== 'cancelled' && (
+                <p className="text-[10px] text-theme-tertiary mt-1">Record via Inputs &amp; Outputs tabs</p>
+              )}
             </div>
           </div>
 

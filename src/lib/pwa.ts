@@ -21,7 +21,7 @@ export function registerServiceWorker(): void {
   if (typeof window === 'undefined') return;
 
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
+    const doRegister = () => {
       navigator.serviceWorker
         .register('/sw.js')
         .then((registration) => {
@@ -54,7 +54,15 @@ export function registerServiceWorker(): void {
         .catch((error) => {
           console.error('[PWA] Service Worker registration failed:', error);
         });
-    });
+    };
+
+    // If the page has already loaded (common in PWA standalone mode where
+    // React hydrates after load), register immediately. Otherwise wait for load.
+    if (document.readyState === 'complete') {
+      doRegister();
+    } else {
+      window.addEventListener('load', doRegister);
+    }
 
     // When a new SW takes control, reload to use updated assets
     navigator.serviceWorker.addEventListener('controllerchange', () => {
