@@ -2732,7 +2732,7 @@ function AttendanceTab({ employeeId }: { employeeId: string }) {
       <h3 className="text-lg font-semibold text-theme-primary mb-4">Recent Attendance</h3>
       <div className="space-y-2">
         {attendance.map((record) => (
-          <div key={record.id} className="flex items-center justify-between p-3 bg-neutral-700/50 rounded-lg">
+          <div key={record.id} className="flex items-center justify-between p-3 bg-theme-surface-elevated rounded-lg">
             <div>
               <p className="text-theme-primary">
                 {new Date(record.clock_in_time).toLocaleDateString('en-GB', { 

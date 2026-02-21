@@ -294,7 +294,7 @@ const APP_NAME = 'Checkly';
 
 export function ChecklySidebar() {
   const { profile } = useAppContext();
-  const { isCollapsed, showExpanded, isHoverExpanded, displayWidth, togglePin, handleMouseEnter, handleMouseLeave } = useSidebarMode();
+  const { isCollapsed, showExpanded, isHoverExpanded, displayWidth, canPin, togglePin, handleMouseEnter, handleMouseLeave } = useSidebarMode();
 
   return (
     <aside
@@ -360,7 +360,7 @@ export function ChecklySidebar() {
             </Link>
           </div>
         )}
-        <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />
+        {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
       </div>
     </aside>
   );

@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
 import { useSidebarStore } from '@/lib/stores/sidebar-store';
+import { useMediaQuery } from '@/hooks/useIsMobile';
 
 export type SidebarMode = 'collapsed' | 'expanded';
 
@@ -50,8 +51,12 @@ export function useSidebarMode() {
     };
   }, []);
 
-  const mode: SidebarMode = pinOverride ?? prefMode;
+  // Auto-collapse on tablet-sized viewports (below xl / 1280px) to free up content space
+  const belowXl = useMediaQuery('(max-width: 1279px)');
+
+  const mode: SidebarMode = belowXl ? 'collapsed' : (pinOverride ?? prefMode);
   const isCollapsed = mode === 'collapsed';
+  const canPin = !belowXl;
 
   // Whether to render expanded content (pinned expanded OR hover-expanded)
   const showExpanded = !isCollapsed || isHoverExpanded;
@@ -101,6 +106,7 @@ export function useSidebarMode() {
     isCollapsed,
     showExpanded,
     isHoverExpanded,
+    canPin,
     displayWidth,
     layoutWidth,
     width: layoutWidth, // backward compat — used by layout for margins

@@ -5,7 +5,6 @@ import { X } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { useMobileNav } from './MobileNavProvider';
 import { QuickActionsGrid } from './QuickActionsGrid';
-import { MOBILE_Z } from '@/lib/mobile-layout';
 
 // Module icons for section headers
 import {
@@ -50,19 +49,19 @@ export function MoreSheet() {
     <>
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 ${MOBILE_Z.sheetBackdrop} bg-black/60 backdrop-blur-sm animate-in fade-in-0`}
+        className="fixed inset-0 z-[59] bg-black/60 backdrop-blur-sm animate-in fade-in-0"
         onClick={closeMoreSheet}
       />
 
-      {/* Sheet - Dark theme */}
+      {/* Sheet */}
       <div
         className={cn(
-          `fixed inset-x-0 bottom-0 ${MOBILE_Z.sheet}`,
+          "fixed inset-x-0 bottom-0 z-[60]",
           "bg-white dark:bg-[#1a1a1f] text-theme-primary rounded-t-3xl",
           "max-h-[85vh] overflow-hidden",
           "animate-in slide-in-from-bottom duration-300",
-          "pb-[env(safe-area-inset-bottom)]"
         )}
+        style={{ paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-2">

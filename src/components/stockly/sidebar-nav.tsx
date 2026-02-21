@@ -345,7 +345,7 @@ const APP_NAME = 'Stockly';
 
 export function StocklySidebar() {
   const { profile } = useAppContext();
-  const { isCollapsed, showExpanded, isHoverExpanded, displayWidth, togglePin, handleMouseEnter, handleMouseLeave } = useSidebarMode();
+  const { isCollapsed, showExpanded, isHoverExpanded, displayWidth, canPin, togglePin, handleMouseEnter, handleMouseLeave } = useSidebarMode();
 
   return (
     <aside
@@ -403,7 +403,7 @@ export function StocklySidebar() {
             </Link>
           </div>
         )}
-        <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />
+        {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
       </div>
     </aside>
   );

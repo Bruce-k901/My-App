@@ -1790,7 +1790,7 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
   }, [startAdHocTask])
 
   return (
-    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 px-4 sm:px-6">
+    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 px-4 sm:px-6" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       {/* Simple Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
       <div>

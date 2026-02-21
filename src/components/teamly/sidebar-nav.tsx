@@ -280,7 +280,7 @@ const APP_NAME = 'Teamly';
 
 export function TeamlySidebar() {
   const { profile } = useAppContext();
-  const { isCollapsed, showExpanded, isHoverExpanded, displayWidth, togglePin, handleMouseEnter, handleMouseLeave } = useSidebarMode();
+  const { isCollapsed, showExpanded, isHoverExpanded, displayWidth, canPin, togglePin, handleMouseEnter, handleMouseLeave } = useSidebarMode();
   const userRole = profile?.app_role?.toLowerCase() || 'staff';
 
   const filteredItems = navItems.filter(item => {
@@ -350,7 +350,7 @@ export function TeamlySidebar() {
             </Link>
           </div>
         )}
-        <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />
+        {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
       </div>
     </aside>
   );

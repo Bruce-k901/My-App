@@ -39,7 +39,7 @@ interface QuickAction {
 const quickActions: QuickAction[] = [
   { id: 'clock', icon: Clock, label: 'Clock In/Out', href: '/dashboard/people/attendance', color: '#FF6B9D' },
   { id: 'incident', icon: AlertTriangle, label: 'Incident', href: '/dashboard/incidents', color: '#f44336' },
-  { id: 'temp', icon: Thermometer, label: 'Temp Check', href: '/dashboard/checklists', color: '#2196F3' },
+  { id: 'temp', icon: Thermometer, label: 'Temp Check', href: '/dashboard/todays_tasks', color: '#2196F3' },
 ];
 
 // Module-specific actions (Planly removed from mobile - desktop only)

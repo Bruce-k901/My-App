@@ -91,7 +91,7 @@ export default function ComplianceScoreWidget({ companyId, siteId }: WidgetProps
           icon={<ShieldCheck className="w-8 h-8" />}
           message="No compliance data available yet"
           actionLabel="Complete a checklist"
-          actionHref="/dashboard/checklists"
+          actionHref="/dashboard/todays_tasks"
         />
       </WidgetCard>
     );

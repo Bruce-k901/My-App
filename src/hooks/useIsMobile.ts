@@ -29,6 +29,14 @@ export function useIsMobile() {
   return { isMobile, isHydrated };
 }
 
+/**
+ * Returns true when viewport is tablet-landscape size (1024px–1279px).
+ * At this range the desktop layout renders but space is tight.
+ */
+export function useIsTablet() {
+  return useMediaQuery('(min-width: 1024px) and (max-width: 1279px)');
+}
+
 export function useMediaQuery(query: string) {
   const [matches, setMatches] = useState(false);
 

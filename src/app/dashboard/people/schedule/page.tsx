@@ -4527,7 +4527,7 @@ export default function RotaBuilderPage() {
         }
       `}</style>
       {/* Header */}
-      <div className="flex items-center justify-between gap-4 pb-3 border-b border-theme mb-3 bg-theme-surface-elevated px-4 py-3 -mx-4 -mt-4 sticky top-[112px] z-20 rounded-t-lg">
+      <div className="flex flex-wrap items-center justify-between gap-2 xl:gap-4 pb-3 border-b border-theme mb-3 bg-theme-surface-elevated px-4 py-3 -mx-4 -mt-4 sticky top-[112px] z-20 rounded-t-lg">
         <div className="flex items-center gap-3">
           {sites.length > 0 && (
             <select
@@ -4555,7 +4555,7 @@ export default function RotaBuilderPage() {
  <button onClick={goToPreviousWeek} className="p-2 bg-theme-surface hover:bg-theme-hover border border-theme rounded-lg transition-colors">
             <ChevronLeft className="w-4 h-4 text-theme-primary" />
           </button>
-          <div className="px-4 py-2 bg-module-fg/10 border border-module-fg/20 text-module-fg rounded-lg font-medium min-w-[180px] text-center shadow-sm dark:shadow-none">
+          <div className="px-4 py-2 bg-module-fg/10 border border-module-fg/20 text-module-fg rounded-lg font-medium min-w-[140px] xl:min-w-[180px] text-center shadow-sm dark:shadow-none">
             <Calendar className="w-4 h-4 inline mr-2" />
             {formatWeekRange()}
           </div>
@@ -4566,18 +4566,18 @@ export default function RotaBuilderPage() {
 
         {/* Actions */}
         <div className="no-print flex items-center gap-2">
- <button onClick={handleCopyLastWeek} className="flex items-center gap-2 px-3 py-2 bg-theme-surface hover:bg-theme-hover border border-theme rounded-lg text-theme-primary transition-colors">
+ <button onClick={handleCopyLastWeek} className="flex items-center gap-2 px-2 xl:px-3 py-2 bg-theme-surface hover:bg-theme-hover border border-theme rounded-lg text-theme-primary transition-colors" title="Copy Week">
             <Copy className="w-4 h-4" />
-            Copy Week
+            <span className="hidden xl:inline">Copy Week</span>
           </button>
           <button
             type="button"
             onClick={() => setShowForecastModal(true)}
- className="flex items-center gap-2 px-3 py-2 bg-theme-surface hover:bg-theme-hover border border-theme rounded-lg text-theme-primary transition-colors"
+ className="flex items-center gap-2 px-2 xl:px-3 py-2 bg-theme-surface hover:bg-theme-hover border border-theme rounded-lg text-theme-primary transition-colors"
             title="Forecast"
           >
             <TrendingUp className="w-4 h-4" />
-            Forecast
+            <span className="hidden xl:inline">Forecast</span>
           </button>
  <div className="flex items-center bg-theme-surface border border-theme rounded-lg overflow-hidden shadow-sm dark:shadow-none">
             <button
@@ -4609,7 +4609,7 @@ export default function RotaBuilderPage() {
               title="Actions"
             >
               <MoreHorizontal className="w-4 h-4" />
-              Actions
+              <span className="hidden xl:inline">Actions</span>
             </button>
 
             {actionsMenuOpen && (

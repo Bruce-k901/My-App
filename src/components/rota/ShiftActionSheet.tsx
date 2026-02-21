@@ -13,7 +13,7 @@ import {
   Users,
 } from '@/components/ui/icons';
 import { toast } from 'sonner';
-import { MOBILE_LAYOUT, MOBILE_Z } from '@/lib/mobile-layout';
+// z-indexes and padding use CSS vars from globals.css: --bottom-tab-height, --above-tab-bar
 
 interface ShiftInfo {
   id: string;
@@ -151,7 +151,7 @@ export function ShiftActionSheet({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className={`fixed inset-0 bg-black/30 dark:bg-black/50 ${MOBILE_Z.sheetBackdrop}`}
+            className="fixed inset-0 bg-black/30 dark:bg-black/50 z-[59]"
             onClick={handleClose}
           />
 
@@ -161,7 +161,7 @@ export function ShiftActionSheet({
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className={`fixed bottom-0 left-0 right-0 ${MOBILE_Z.sheet} bg-white dark:bg-[rgb(var(--surface-elevated))] border-t border-black/10 dark:border-white/10 rounded-t-2xl max-h-[70vh] overflow-y-auto`}
+            className="fixed bottom-0 left-0 right-0 z-[60] bg-white dark:bg-[rgb(var(--surface-elevated))] border-t border-black/10 dark:border-white/10 rounded-t-2xl max-h-[70vh] overflow-y-auto"
           >
             {/* Handle bar */}
             <div className="flex justify-center pt-3 pb-2">
@@ -231,7 +231,7 @@ export function ShiftActionSheet({
 
             {mode === 'actions' ? (
               /* Action Buttons */
-              <div className={`px-4 py-3 space-y-1 ${MOBILE_LAYOUT.sheetPadding}`}>
+              <div className="px-4 py-3 space-y-1" style={{ paddingBottom: 'var(--above-tab-bar)' }}>
                 {/* Clock In — own shift, not clocked in, today */}
                 {isOwnShift && !isUserClockedIn && isToday && onClockIn && (
                   <ActionButton
@@ -296,7 +296,7 @@ export function ShiftActionSheet({
               </div>
             ) : (
               /* Absence Form */
-              <div className={`px-5 py-4 space-y-4 ${MOBILE_LAYOUT.sheetPadding}`}>
+              <div className="px-5 py-4 space-y-4" style={{ paddingBottom: 'var(--above-tab-bar)' }}>
                 <h3 className="text-base font-semibold text-theme-primary">
                   Record Absence — {staffMember?.full_name || shift.profile_name}
                 </h3>
