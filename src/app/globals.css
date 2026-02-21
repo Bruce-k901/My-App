@@ -375,6 +375,12 @@ select {
   .dashboard-page main {
     padding-bottom: var(--above-tab-bar) !important;
   }
+  /* Neutralise min-h-screen (100vh) inside mobile dashboard —
+     100vh > 100dvh on mobile Safari, causing excess scroll space.
+     Pages fill naturally; .dashboard-page background covers the rest. */
+  .dashboard-page main .min-h-screen {
+    min-height: auto !important;
+  }
   /* Sheet/Dialog portals should NOT get bottom nav padding */
   [data-radix-portal] main {
     padding-bottom: 0 !important;
