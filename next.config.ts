@@ -48,8 +48,8 @@ const nextConfig: NextConfig = {
     if (!dev) {
       config.devtool = false;
 
-      // Bundle analyzer (client-side only)
-      if (!isServer) {
+      // Bundle analyzer (opt-in only — slows builds significantly)
+      if (!isServer && process.env.ANALYZE === 'true') {
         const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
         config.plugins.push(
           new BundleAnalyzerPlugin({

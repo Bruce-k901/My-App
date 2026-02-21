@@ -16,9 +16,22 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
+// Mock AppContext — return an authenticated user so the layout renders fully
+vi.mock('@/context/AppContext', () => ({
+  useAppContext: () => ({
+    user: { id: 'test-user-id', email: 'test@example.com' },
+    loading: false,
+    profile: { id: 'test-profile-id', app_role: 'admin', company_id: 'test-co' },
+    companyId: 'test-co',
+    company: {},
+    siteId: 'all',
+    role: 'Admin',
+  }),
+}));
+
 // Mock hooks
 vi.mock('@/hooks/useIsMobile', () => ({
-  useIsMobile: () => ({ isMobile: false }),
+  useIsMobile: () => ({ isMobile: false, isHydrated: true }),
 }));
 
 vi.mock('@/hooks/useSidebarMode', () => ({

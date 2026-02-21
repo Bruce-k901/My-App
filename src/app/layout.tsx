@@ -17,6 +17,7 @@ import { TaskAlertSubscriber } from "@/components/notifications/TaskAlertSubscri
 import { SuppressConsoleWarnings } from "@/components/dev/SuppressConsoleWarnings";
 import { ConditionalGlobalComponents } from "@/components/layout/ConditionalGlobalComponents";
 import { UserPreferencesProvider } from "@/context/UserPreferencesContext";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -300,6 +301,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   {children}
                   <Footer />
                   <Toaster position="top-right" richColors />
+                  <SpeedInsights />
                   
                   {/* Global components - only shown on dashboard pages */}
                   <ConditionalGlobalComponents />
