@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { toast } from 'sonner';
+import { compressImage } from '@/lib/image-compression';
 import { PhotoEvidenceFeature } from '@/components/templates/features/PhotoEvidenceFeature';
 import Select from '@/components/ui/Select';
 
@@ -1097,14 +1098,15 @@ export function EmergencyIncidentModal({
                     const file = e.target.files?.[0];
                     if (file) {
                       try {
+                        const compressed = await compressImage(file).catch(() => file);
                         // Upload to Supabase storage
-                        const fileExt = file.name.split('.').pop();
+                        const fileExt = compressed.name.split('.').pop();
                         const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
                         const filePath = `incidents/${companyId}/${fileName}`;
 
                         const { data: uploadData, error: uploadError } = await supabase.storage
                           .from('task-evidence')
-                          .upload(filePath, file);
+                          .upload(filePath, compressed);
 
                         if (uploadError) throw uploadError;
 

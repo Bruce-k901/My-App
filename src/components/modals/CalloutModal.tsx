@@ -8,6 +8,7 @@ import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import { useToast } from '@/components/ui/ToastProvider';
 import { supabase } from '@/lib/supabase';
+import { compressImage } from '@/lib/image-compression';
 import { useAppContext } from '@/context/AppContext';
 import TroubleshootReel from '@/components/ui/TroubleshootReel';
 import { 
@@ -502,16 +503,17 @@ export default function CalloutModal({
         console.log(`📸 [CALLOUT] Uploading ${attachments.length} photo(s)...`);
         try {
           const uploadPromises = attachments.map(async (file, index) => {
-            const fileExt = file.name.split('.').pop();
+            const compressed = await compressImage(file).catch(() => file);
+            const fileExt = compressed.name.split('.').pop();
             const timestamp = Date.now();
             const fileName = `callout_${timestamp}_${index}.${fileExt}`;
             const filePath = `${companyId}/callouts/${fileName}`;
-            
+
             // Try callout_documents bucket first, fallback to sop-photos
             let bucketName = 'callout_documents';
             let { error } = await supabase.storage
               .from(bucketName)
-              .upload(filePath, file, {
+              .upload(filePath, compressed, {
                 cacheControl: '3600',
                 upsert: false,
                 contentType: file.type || 'image/jpeg'
@@ -522,10 +524,10 @@ export default function CalloutModal({
               bucketName = 'sop-photos';
               const fallbackResult = await supabase.storage
                 .from(bucketName)
-                .upload(filePath, file, {
+                .upload(filePath, compressed, {
                   cacheControl: '3600',
                   upsert: false,
-                  contentType: file.type || 'image/jpeg'
+                  contentType: compressed.type || 'image/jpeg'
                 });
               error = fallbackResult.error;
             }

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Upload, X, FileText, File, Trash2 } from '@/components/ui/icons';
 import { Button } from '@/components/ui/Button';
 import { supabase } from '@/lib/supabase';
+import { compressImage } from '@/lib/image-compression';
 import { toast } from 'sonner';
 
 interface DocumentUpload {
@@ -58,15 +59,18 @@ export function DocumentUploadFeature({
           continue;
         }
 
+        // Compress images before upload (non-image files pass through unchanged)
+        const fileToUpload = await compressImage(file).catch(() => file);
+
         // Generate unique file path
-        const fileExt = file.name.split('.').pop();
+        const fileExt = fileToUpload.name.split('.').pop();
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
         const filePath = `task-documents/${fileName}`;
 
         // Upload to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('task-documents')
-          .upload(filePath, file, {
+          .upload(filePath, fileToUpload, {
             cacheControl: '3600',
             upsert: false,
           });
@@ -85,8 +89,8 @@ export function DocumentUploadFeature({
         newUploads.push({
           url: publicUrl,
           fileName: file.name,
-          fileType: file.type || 'application/octet-stream',
-          fileSize: file.size,
+          fileType: fileToUpload.type || 'application/octet-stream',
+          fileSize: fileToUpload.size,
         });
       }
 

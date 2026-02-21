@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { compressImage } from "@/lib/image-compression";
 import { useAppContext, AppProvider } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 
@@ -29,11 +30,12 @@ function NewIncidentForm() {
       const incidentId = crypto.randomUUID();
       let photoPath: string | null = null;
       if (photoFile) {
-        const filename = photoFile.name;
+        const compressed = await compressImage(photoFile).catch(() => photoFile);
+        const filename = compressed.name;
         photoPath = `${companyId}/${siteId}/${incidentId}/${filename}`;
         const { error: uploadErr } = await supabase.storage
           .from("incident_photos")
-          .upload(photoPath, photoFile, { upsert: true });
+          .upload(photoPath, compressed, { upsert: true });
         if (uploadErr) throw new Error(uploadErr.message);
       }
 

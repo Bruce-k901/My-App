@@ -11,6 +11,7 @@ import { useToast } from '@/components/ui/ToastProvider';
 import { useAppContext } from '@/context/AppContext';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { queueWrite } from '@/lib/offline/db';
+import { compressImage } from '@/lib/image-compression';
 
 interface UseTaskSubmissionResult {
   submitTask: (payload: TaskCompletionPayload) => Promise<boolean>;
@@ -103,12 +104,13 @@ export function useTaskSubmission(
       if (payload.photos && payload.photos.length > 0) {
         for (const photo of payload.photos) {
           try {
-            const fileExt = photo.name.split('.').pop() || 'jpg';
+            const compressed = await compressImage(photo).catch(() => photo);
+            const fileExt = compressed.name.split('.').pop() || 'jpg';
             const fileName = `${companyId}/${effectiveSiteId}/${payload.taskId}_${Date.now()}.${fileExt}`;
 
             const { error: uploadError } = await supabase.storage
               .from('task-evidence')
-              .upload(fileName, photo);
+              .upload(fileName, compressed);
 
             if (uploadError) {
               console.error('Photo upload error:', uploadError);

@@ -355,10 +355,12 @@ export default function BusinessDetailsTab() {
     if (!file) return;
     setUploading(true);
     try {
-      const path = `logos/${form.id || "temp"}/${file.name}`;
+      const { compressImage } = await import('@/lib/image-compression');
+      const compressed = await compressImage(file, 512, 512, 0.85).catch(() => file);
+      const path = `logos/${form.id || "temp"}/${compressed.name}`;
       const { error } = await supabase.storage
         .from("company-logos")
-        .upload(path, file, { upsert: true });
+        .upload(path, compressed, { upsert: true });
       if (error) throw error;
       const { data: { publicUrl } } = supabase.storage
         .from("company-logos")

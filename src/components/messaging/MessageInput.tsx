@@ -349,7 +349,7 @@ export function MessageInput({
       
       if (file.type.startsWith('image/')) {
         try {
-          fileToUpload = await compressImage(file);
+          fileToUpload = await compressImage(file, 1920, 1920, 0.92);
           console.log(`Image compression: ${(originalSize / 1024).toFixed(1)}KB → ${(fileToUpload.size / 1024).toFixed(1)}KB`);
         } catch (compressionError) {
           console.warn('Image compression failed, using original:', compressionError);
