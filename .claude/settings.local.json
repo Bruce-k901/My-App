@@ -136,7 +136,14 @@
       "Bash(git submodule:*)",
       "Bash(git ls-tree:*)",
       "Bash(git rm:*)",
-      "Bash(submodules\" warning on Vercel deployments.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(submodules\" warning on Vercel deployments.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" log --oneline -5 -- src/components/templates/features/YesNoChecklistFeature.tsx)",
+      "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" diff HEAD -- src/components/templates/features/YesNoChecklistFeature.tsx)",
+      "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" log --oneline -10)",
+      "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" diff c306517b~1 c306517b -- middleware.ts)",
+      "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" status --branch --short)",
+      "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" push origin main)",
+      "Bash(git -C \"c:\\\\Users\\\\bruce\\\\my-app\" log --oneline -1)"
     ]
   }
 }

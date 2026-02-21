@@ -177,7 +177,7 @@ export function Messaging() {
       )}
 
       {/* Main - Message Thread - TAKES REMAINING SPACE */}
-      <main className="flex-1 flex flex-col min-h-0 overflow-hidden min-w-0">
+      <main className="flex-1 flex flex-col min-h-0 overflow-hidden min-w-0 !pb-0">
         {selectedConversationId ? (
           <>
             {/* Conversation Header - Fixed at top */}

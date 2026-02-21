@@ -56,6 +56,7 @@ import { pdf } from '@react-pdf/renderer';
 import { RotaPDF } from '@/lib/pdf/templates/RotaPDF';
 import { DayApprovalPanel } from '@/components/rota/DayApprovalPanel';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { ShiftActionSheet } from '@/components/rota/ShiftActionSheet';
 
 // ============================================
 // TYPES
@@ -1776,6 +1777,11 @@ export default function RotaBuilderPage() {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const actionsMenuRef = useRef<HTMLDivElement | null>(null);
 
+  // Mobile shift action sheet state
+  const [selectedMobileShift, setSelectedMobileShift] = useState<Shift | null>(null);
+  const [isShiftActionOpen, setIsShiftActionOpen] = useState(false);
+  const [userAttendanceStatus, setUserAttendanceStatus] = useState<{ onShift: boolean } | null>(null);
+
   // Close actions dropdown on outside click / escape
   useEffect(() => {
     function onDocMouseDown(e: MouseEvent) {
@@ -1795,6 +1801,22 @@ export default function RotaBuilderPage() {
       document.removeEventListener('keydown', onKeyDown);
     };
   }, [actionsMenuOpen]);
+
+  // Load attendance status for current user (for mobile shift actions)
+  useEffect(() => {
+    async function checkAttendance() {
+      try {
+        const response = await fetch('/api/attendance/status');
+        if (response.ok) {
+          const data = await response.json();
+          setUserAttendanceStatus({ onShift: !!data.onShift });
+        }
+      } catch {
+        // Silently fail — actions just won't show clock in/out
+      }
+    }
+    if (profile?.id && isMobile) checkAttendance();
+  }, [profile?.id, isMobile]);
 
   // Drag and drop sensors
   const sensors = useSensors(
@@ -4161,7 +4183,11 @@ export default function RotaBuilderPage() {
                         return (
                           <div
                             key={shift.id}
-                            className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3 flex items-center gap-3"
+                            onClick={() => {
+                              setSelectedMobileShift(shift);
+                              setIsShiftActionOpen(true);
+                            }}
+                            className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3 flex items-center gap-3 cursor-pointer active:bg-black/10 dark:active:bg-white/10 transition-colors"
                           >
                             {/* Color indicator */}
                             <div
@@ -4211,15 +4237,18 @@ export default function RotaBuilderPage() {
                               </div>
                             </div>
 
-                            {/* Time */}
-                            <div className="text-right flex-shrink-0">
-                              <div className="text-theme-primary font-medium text-sm">
-                                {formatTime(shift.start_time)} - {formatTime(shift.end_time)}
+                            {/* Time + Chevron */}
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                              <div className="text-right">
+                                <div className="text-theme-primary font-medium text-sm">
+                                  {formatTime(shift.start_time)} - {formatTime(shift.end_time)}
+                                </div>
+                                <div className="text-theme-tertiary text-xs">
+                                  {hours}h
+                                  {shift.break_minutes > 0 && ` (${shift.break_minutes}m break)`}
+                                </div>
                               </div>
-                              <div className="text-theme-tertiary text-xs">
-                                {hours}h
-                                {shift.break_minutes > 0 && ` (${shift.break_minutes}m break)`}
-                              </div>
+                              <ChevronRight className="w-4 h-4 text-theme-tertiary" />
                             </div>
                           </div>
                         );
@@ -4243,7 +4272,11 @@ export default function RotaBuilderPage() {
                         return (
                           <div
                             key={shift.id}
-                            className="bg-orange-500/5 border border-orange-500/20 rounded-xl p-3 flex items-center gap-3"
+                            onClick={() => {
+                              setSelectedMobileShift(shift);
+                              setIsShiftActionOpen(true);
+                            }}
+                            className="bg-orange-500/5 border border-orange-500/20 rounded-xl p-3 flex items-center gap-3 cursor-pointer active:bg-orange-500/10 transition-colors"
                           >
                             {/* Color indicator */}
                             <div
@@ -4266,14 +4299,17 @@ export default function RotaBuilderPage() {
                               </div>
                             </div>
 
-                            {/* Time */}
-                            <div className="text-right flex-shrink-0">
-                              <div className="text-theme-primary font-medium text-sm">
-                                {formatTime(shift.start_time)} - {formatTime(shift.end_time)}
+                            {/* Time + Chevron */}
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                              <div className="text-right">
+                                <div className="text-theme-primary font-medium text-sm">
+                                  {formatTime(shift.start_time)} - {formatTime(shift.end_time)}
+                                </div>
+                                <div className="text-theme-tertiary text-xs">
+                                  {hours}h
+                                </div>
                               </div>
-                              <div className="text-theme-tertiary text-xs">
-                                {hours}h
-                              </div>
+                              <ChevronRight className="w-4 h-4 text-theme-tertiary" />
                             </div>
                           </div>
                         );
@@ -4320,6 +4356,62 @@ export default function RotaBuilderPage() {
             })}
           </div>
         </div>
+
+        {/* Shift Action Sheet */}
+        <ShiftActionSheet
+          shift={selectedMobileShift}
+          staffMember={selectedMobileShift?.profile_id ? getStaffMember(selectedMobileShift.profile_id) : null}
+          isOpen={isShiftActionOpen}
+          onClose={() => {
+            setIsShiftActionOpen(false);
+            setSelectedMobileShift(null);
+          }}
+          onClockIn={async () => {
+            if (!selectedSite) {
+              toast.error('No site selected');
+              return;
+            }
+            const response = await fetch('/api/attendance/clock-in', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ siteId: selectedSite }),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to clock in');
+            toast.success('Clocked in successfully');
+            setUserAttendanceStatus({ onShift: true });
+          }}
+          onClockOut={async () => {
+            const response = await fetch('/api/attendance/clock-out', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({}),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to clock out');
+            toast.success('Clocked out successfully');
+            setUserAttendanceStatus({ onShift: false });
+          }}
+          onRecordAbsence={async (shiftId, profileId, reason, notes) => {
+            const { error } = await supabase.from('staff_attendance').insert({
+              profile_id: profileId,
+              company_id: profile?.company_id,
+              site_id: selectedSite,
+              clock_in_time: new Date().toISOString(),
+              shift_status: 'absent',
+              shift_notes: `${reason}${notes ? ': ' + notes : ''}`,
+            });
+            if (error) throw error;
+            toast.success('Absence recorded');
+          }}
+          onEditShift={(shift) => {
+            setEditingShift(shift as Shift);
+          }}
+          currentUserId={profile?.id}
+          isUserClockedIn={userAttendanceStatus?.onShift ?? false}
+          canManageRota={canManageRota}
+          siteId={selectedSite}
+        />
       </div>
     );
   }

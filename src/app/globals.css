@@ -222,6 +222,31 @@
 }
 /* medium = 14px default — no class needed */
 
+/* ----------------------------------------- */
+/* Messaging Panel - Fixed size (like WhatsApp) */
+/* ----------------------------------------- */
+/* Lock text sizes to default pixel values regardless of root font-size setting */
+.messaging-panel .text-xs {
+  font-size: 12px !important;
+  line-height: 16px !important;
+}
+.messaging-panel .text-sm {
+  font-size: 14px !important;
+  line-height: 20px !important;
+}
+.messaging-panel .text-base {
+  font-size: 16px !important;
+  line-height: 24px !important;
+}
+.messaging-panel .text-lg {
+  font-size: 18px !important;
+  line-height: 28px !important;
+}
+.messaging-panel .text-xl {
+  font-size: 20px !important;
+  line-height: 28px !important;
+}
+
 /* ----------------------------- */
 /* Reduce animations              */
 /* ----------------------------- */
@@ -346,6 +371,10 @@ select {
   .dashboard-page main {
     padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
   }
+  /* Sheet/Dialog portals should NOT get bottom nav padding */
+  [data-radix-portal] main {
+    padding-bottom: 0 !important;
+  }
 }
 
 /* Global Select/Dropdown Styling - Theme-aware */
@@ -458,13 +487,19 @@ html.light select option {
 /* Mobile viewport height — apply universally, not just iOS */
 @media (max-width: 1023px) {
   .dashboard-page {
+    width: 100%;
+    max-width: 100vw;
     height: 100dvh;
     max-height: 100dvh;
     overflow-x: hidden;
     overflow-y: auto;
+    overscroll-behavior-x: none;
   }
 
+  .dashboard-page > main,
   .dashboard-page > div {
+    width: 100%;
+    min-width: 0;
     min-height: 100%;
     overflow-x: hidden;
   }
@@ -731,15 +766,29 @@ html {
 
 body {
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
 }
 
 /* Prevent any child from causing horizontal scroll on mobile */
 @media (max-width: 1023px) {
+  html,
+  body {
+    position: relative;
+    overscroll-behavior-x: none;
+  }
+
   main,
   [role="main"],
   .dashboard-page {
+    width: 100%;
     max-width: 100vw;
     overflow-x: hidden;
+    overscroll-behavior-x: none;
+  }
+
+  .dashboard-page > main {
+    min-width: 0;
   }
 }
 

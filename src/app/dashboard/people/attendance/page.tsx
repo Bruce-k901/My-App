@@ -152,7 +152,7 @@ export default function AttendancePage() {
   };
 
   return (
-    <div className="space-y-6 overflow-x-hidden px-4 sm:px-6">
+    <div className="space-y-6 overflow-x-hidden px-4 sm:px-6 w-full max-w-full min-w-0">
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
@@ -193,9 +193,9 @@ export default function AttendancePage() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid lg:grid-cols-3 gap-6 min-w-0 max-w-full">
         {/* Time Clock */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 min-w-0">
           <TimeClock
             profileId={profile?.id || ''}
             siteId={siteId && siteId !== 'all' ? siteId : profile?.home_site}
@@ -204,7 +204,7 @@ export default function AttendancePage() {
         </div>
 
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-6 min-w-0">
           {/* Date Navigation */}
  <div className="flex items-center justify-between bg-theme-surface border border-theme rounded-lg p-4 shadow-sm dark:shadow-none">
             <button onClick={prevDay} className="p-2 hover:bg-theme-hover rounded-lg transition-colors">
@@ -275,7 +275,7 @@ export default function AttendancePage() {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-module-fg" />
             </div>
           ) : viewMode === 'today' ? (
- <div className="bg-theme-surface border border-theme rounded-lg overflow-hidden overflow-x-auto shadow-sm dark:shadow-none">
+ <div className="bg-theme-surface border border-theme rounded-lg overflow-x-auto shadow-sm dark:shadow-none max-w-full">
               <table className="w-full min-w-[480px]">
                 <thead className="bg-theme-button">
                   <tr>
@@ -318,7 +318,7 @@ export default function AttendancePage() {
               </table>
             </div>
           ) : (
-            <div className="bg-theme-surface border border-theme rounded-lg overflow-hidden overflow-x-auto shadow-sm dark:shadow-none">
+            <div className="bg-theme-surface border border-theme rounded-lg overflow-x-auto shadow-sm dark:shadow-none max-w-full">
               <table className="w-full min-w-[700px]">
                 <thead className="bg-theme-button">
                   <tr>

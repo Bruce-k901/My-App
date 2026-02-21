@@ -17,7 +17,7 @@ export function MessagingPanel() {
       <SheetContent
         side="right"
         hideClose
-        className="w-full md:w-[85vw] lg:w-[900px] xl:w-[1100px] p-0 flex flex-col bg-white dark:bg-[#0a0a0a]"
+        className="messaging-panel w-full md:w-[85vw] lg:w-[900px] xl:w-[1100px] p-0 flex flex-col bg-white dark:bg-[#0a0a0a]"
       >
         <SheetHeader className="px-4 py-4 border-b border-theme flex-row items-center justify-between">
           <SheetTitle className="text-theme-primary">Messages</SheetTitle>

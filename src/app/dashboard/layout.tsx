@@ -77,9 +77,9 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   if (isMobile) {
     return (
       <MobileNavProvider>
-        <div className={`dashboard-page ${moduleClass} bg-[rgb(var(--module-bg-tint))] text-theme-primary pb-20`}>
+        <div className={`dashboard-page ${moduleClass} bg-[rgb(var(--module-bg-tint))] text-theme-primary w-full max-w-[100vw] overflow-x-hidden`}>
           {/* No desktop header on mobile - pages handle their own headers */}
-          <main className="overflow-x-hidden max-w-full">
+          <main className="w-full min-w-0 overflow-x-hidden">
             {children}
           </main>
 

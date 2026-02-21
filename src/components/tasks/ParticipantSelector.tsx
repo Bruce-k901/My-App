@@ -170,6 +170,8 @@ export default function ParticipantSelector({
       const newParticipants = [...selectedParticipants, userId];
       const newNames = users.filter(u => newParticipants.includes(u.id)).map(u => u.full_name || u.email);
       onChange(newParticipants, newNames);
+      setSearchQuery('');
+      setIsOpen(false);
     }
   };
 

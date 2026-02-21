@@ -467,7 +467,7 @@ export function MessageInput({
             }}
             placeholder="Type a message... (use @ to mention someone)"
             rows={1}
-            className="w-full h-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-lg text-theme-primary placeholder-gray-400 dark:placeholder-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 text-sm leading-tight"
+            className="w-full h-full px-4 py-2 bg-gray-50 dark:bg-white/[0.03] border border-gray-300 dark:border-white/[0.06] rounded-full text-theme-primary placeholder-gray-400 dark:placeholder-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 text-sm leading-tight"
             style={{
               minHeight: '44px',
               maxHeight: '44px',
@@ -516,7 +516,7 @@ export function MessageInput({
         <button
           onClick={handleSend}
           disabled={!content.trim() && !replyTo}
-          className="flex-shrink-0 w-[44px] h-[44px] flex items-center justify-center bg-[#D37E91]/10 dark:bg-[#D37E91]/25 hover:bg-[#D37E91]/20 dark:hover:bg-[#D37E91]/35 text-[#D37E91] dark:text-[#D37E91] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-shrink-0 w-[44px] h-[44px] flex items-center justify-center bg-[#D37E91]/10 dark:bg-[#D37E91]/25 hover:bg-[#D37E91]/20 dark:hover:bg-[#D37E91]/35 text-[#D37E91] dark:text-[#D37E91] rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           title="Send message"
         >
           <Send className="w-5 h-5" />
