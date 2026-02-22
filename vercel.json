@@ -52,7 +52,7 @@
     },
     {
       "path": "/api/cron/square-sync",
-      "schedule": "0 */4 * * *"
+      "schedule": "0 2 * * *"
     }
   ],
   "buildCommand": "npm run build",

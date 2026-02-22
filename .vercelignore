@@ -1,20 +1,65 @@
-# Ignore development files
+# Build artifacts & deps
 .next/
 node_modules/
-*.log
+
+# Dev / IDE
+.claude/
+.cursor/
+.vscode/
+.husky/
+.github/
+.git/
+/coverage/
+
+# Env files
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env
 
-# Ignore documentation files
+# Documentation
 *.md
-docs/
+/docs/
 
-# Ignore SQL files
-*.sql
+# SQL files (root level only)
+/*.sql
 
-# Ignore test files
-__tests__/
+# Test files
+/__tests__/
 *.test.*
 *.spec.*
+/tests/
+/test-results/
+/playwright-report/
+
+# Non-app root directories
+/Logo/
+/assets/
+/checkly-site/
+/checkToken.js/
+/Compliance tasks/
+/data/
+/Onbaording Docs/
+/private/
+/sql/
+/Training/
+/welcome-to-docker/
+/supabase/
+/c:Usersbrucemy-appdocs/
+/c:Usersbrucemy-appsupabasetemplates/
+
+# Misc
+*.zip
+*.log
+*.pem
+*.tsbuildinfo
+/_final_pink.mjs
+/_replace_imports.ps1
+/_sweep_pink.mjs
+/_warm_palette.mjs
+/.cursorrules
+/.browserslistrc
+/.tmp_schema_dump.sql
+/nul
+/-
