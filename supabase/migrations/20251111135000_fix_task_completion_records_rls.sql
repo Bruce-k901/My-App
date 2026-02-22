@@ -2,43 +2,57 @@
 -- Migration: 20251111135000_fix_task_completion_records_rls.sql
 -- Description: Fix RLS policy for task_completion_records to allow inserts
 -- ============================================================================
+-- Note: This migration will be skipped if required tables don't exist yet
 
--- Create a SECURITY DEFINER function to get user's company_id (bypasses RLS)
-create or replace function public.get_user_company_id()
-returns uuid
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select company_id 
-  from public.profiles 
-  where id = auth.uid() or auth_user_id = auth.uid()
-  limit 1;
-$$;
+DO $$
+BEGIN
+  -- Only proceed if required tables exist
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_completion_records') THEN
 
--- Update the modify policy - use the function to bypass profiles RLS
--- Also add explicit INSERT policy for better debugging
-drop policy if exists tenant_modify_task_completion_records on public.task_completion_records;
-drop policy if exists tenant_insert_task_completion_records on public.task_completion_records;
+    -- Create a SECURITY DEFINER function to get user's company_id (bypasses RLS)
+    CREATE OR REPLACE FUNCTION public.get_user_company_id()
+    RETURNS uuid
+    LANGUAGE sql
+    STABLE
+    SECURITY DEFINER
+    SET search_path = public
+    AS $func$
+      SELECT company_id 
+      FROM public.profiles 
+      WHERE id = auth.uid() OR auth_user_id = auth.uid()
+      LIMIT 1;
+    $func$;
 
--- Separate INSERT policy (most permissive for debugging)
-create policy tenant_insert_task_completion_records
-  on public.task_completion_records
-  for insert
-  with check (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-    or company_id = public.get_user_company_id()
-  );
+    -- Update the modify policy - use the function to bypass profiles RLS
+    -- Also add explicit INSERT policy for better debugging
+    DROP POLICY IF EXISTS tenant_modify_task_completion_records ON public.task_completion_records;
+    DROP POLICY IF EXISTS tenant_insert_task_completion_records ON public.task_completion_records;
 
--- UPDATE/DELETE policy
-create policy tenant_modify_task_completion_records
-  on public.task_completion_records
-  for all
-  using (
-    public.is_service_role()
-    or matches_current_tenant(company_id)
-    or company_id = public.get_user_company_id()
-  );
+    -- Separate INSERT policy (most permissive for debugging)
+    CREATE POLICY tenant_insert_task_completion_records
+      ON public.task_completion_records
+      FOR INSERT
+      WITH CHECK (
+        public.is_service_role()
+        OR matches_current_tenant(company_id)
+        OR company_id = public.get_user_company_id()
+      );
+
+    -- UPDATE/DELETE policy
+    CREATE POLICY tenant_modify_task_completion_records
+      ON public.task_completion_records
+      FOR ALL
+      USING (
+        public.is_service_role()
+        OR matches_current_tenant(company_id)
+        OR company_id = public.get_user_company_id()
+      );
+
+    RAISE NOTICE 'Fixed task_completion_records RLS policies';
+
+  ELSE
+    RAISE NOTICE '⚠️ Required tables (profiles, task_completion_records) do not exist yet - skipping RLS fix';
+  END IF;
+END $$;
 

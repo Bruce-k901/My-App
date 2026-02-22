@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Mail, Phone, MapPin, KeyRound, UserCircle2 } from "lucide-react";
+import { Mail, Phone, MapPin, KeyRound, UserCircle2 } from "@/components/ui/icons";
 import { useState } from "react";
 
 export default function UserCard({ user }: { user: any }) {
@@ -15,7 +15,7 @@ export default function UserCard({ user }: { user: any }) {
   return (
     <Card className="bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all cursor-pointer border border-white/10 shadow-sm rounded-2xl">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold flex items-center gap-2 text-white">
+        <CardTitle className="text-lg font-semibold flex items-center gap-2 text-theme-primary">
           <UserCircle2 size={18} />
           {user.full_name || "Unnamed User"}
         </CardTitle>
@@ -59,12 +59,12 @@ export default function UserCard({ user }: { user: any }) {
               e.stopPropagation();
               generateCode();
             }}
-            className="text-xs px-3 py-1 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
+            className="text-xs px-3 py-1 bg-transparent border border-[#D37E91] text-[#D37E91] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.7)] rounded-lg transition-all duration-200"
           >
             Generate Code
           </button>
 
-          {loginCode && <span className="font-mono text-pink-400 text-xs">{loginCode}</span>}
+          {loginCode && <span className="font-mono text-[#D37E91] text-xs">{loginCode}</span>}
         </div>
       </CardContent>
     </Card>

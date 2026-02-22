@@ -24,12 +24,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Optimized function to fetch profile data from database
   const fetchProfileData = async (userId: string) => {
     try {
-      // Only fetch essential fields to reduce query time
-      const { data: profile, error } = await supabase
+      // Try direct query first, fall back to API route if RLS blocks it (406 error)
+      let profile = null;
+      let error = null;
+      
+      const result = await supabase
         .from("profiles")
         .select("company_id, app_role")
         .eq("id", userId)
         .single();
+      
+      profile = result.data;
+      error = result.error;
+      
+      // If we get a 406 error, fall back to API route
+      if (error && (error.code === 'PGRST116' || error.message?.includes('406') || (error as any).status === 406)) {
+        console.warn('⚠️ Direct profile query blocked by RLS (406), using API route fallback');
+        try {
+          const apiResponse = await fetch(`/api/profile/get?userId=${userId}`);
+          if (apiResponse.ok) {
+            const fullProfile = await apiResponse.json();
+            profile = { company_id: fullProfile.company_id, app_role: fullProfile.app_role };
+            error = null;
+          } else {
+            const errorText = await apiResponse.text();
+            error = new Error(`API route failed: ${errorText}`);
+          }
+        } catch (apiError) {
+          error = apiError instanceof Error ? apiError : new Error('API route error');
+        }
+      }
 
       if (error) {
         console.error("Error fetching profile:", error);

@@ -1,0 +1,165 @@
+/**
+ * Global search index for the command palette.
+ * When adding new pages to sidebars or navigation, add them here too.
+ */
+
+export interface SearchItem {
+  id: string;
+  label: string;
+  href: string;
+  section: string;
+  keywords: string[];
+}
+
+export const SEARCH_INDEX: SearchItem[] = [
+  // ─── General / Quick Access ─────────────────────────────
+  { id: "general-dashboard", label: "Dashboard", href: "/dashboard", section: "General", keywords: ["home", "overview", "main"] },
+  { id: "general-messages", label: "Messages", href: "/dashboard/messaging", section: "General", keywords: ["chat", "inbox", "notifications", "msgly"] },
+  { id: "general-calendar", label: "Manager Calendar", href: "/dashboard/calendar", section: "General", keywords: ["schedule", "events", "dates"] },
+  { id: "general-reports", label: "Reports", href: "/dashboard/reports", section: "General", keywords: ["analytics", "data", "stats"] },
+  { id: "general-eho", label: "EHO Readiness", href: "/dashboard/eho-report", section: "General", keywords: ["environmental health", "inspection", "compliance", "food safety", "audit"] },
+  { id: "general-billing", label: "Billing & Plan", href: "/dashboard/billing", section: "General", keywords: ["subscription", "payment", "invoice", "pricing"] },
+  { id: "general-settings", label: "Settings", href: "/dashboard/settings", section: "General", keywords: ["preferences", "configuration", "account"] },
+  { id: "general-support", label: "Help & Support", href: "/dashboard/support", section: "General", keywords: ["help", "tickets", "contact"] },
+  { id: "general-archive", label: "Archive Center", href: "/dashboard/archive", section: "General", keywords: ["archived", "old", "history"] },
+
+  // ─── Organization ───────────────────────────────────────
+  { id: "org-setup-guide", label: "Setup Guide", href: "/dashboard/organization/onboarding", section: "Organization", keywords: ["onboarding", "getting started", "wizard"] },
+  { id: "org-business", label: "Business Details", href: "/dashboard/business", section: "Organization", keywords: ["company", "info", "profile"] },
+  { id: "org-users", label: "Users & Roles", href: "/dashboard/users", section: "Organization", keywords: ["team", "permissions", "access", "staff"] },
+  { id: "org-sites", label: "Sites", href: "/dashboard/sites", section: "Organization", keywords: ["locations", "branches", "venues"] },
+  { id: "org-emergency", label: "Emergency Contacts", href: "/dashboard/organization/emergency-contacts", section: "Organization", keywords: ["safety", "contacts", "emergency"] },
+  { id: "org-documents", label: "Documents", href: "/dashboard/documents", section: "Organization", keywords: ["files", "uploads", "docs"] },
+  { id: "org-companies", label: "Companies & Brands", href: "/settings/companies", section: "Organization", keywords: ["brands", "entities", "business"] },
+
+  // ─── Checkly (Tasks, SOPs, Incidents, Logs) ─────────────
+  { id: "checkly-dashboard", label: "Tasks Dashboard", href: "/dashboard/tasks", section: "Checkly", keywords: ["checks", "overview"] },
+  { id: "checkly-todays-tasks", label: "Today's Tasks", href: "/dashboard/todays_tasks", section: "Checkly", keywords: ["daily", "checklist", "to do", "todo"] },
+  { id: "checkly-my-tasks", label: "My Tasks", href: "/dashboard/tasks/my-tasks", section: "Checkly", keywords: ["assigned", "personal"] },
+  { id: "checkly-completed", label: "Completed Tasks", href: "/dashboard/tasks/completed", section: "Checkly", keywords: ["done", "finished", "history"] },
+  { id: "checkly-compliance", label: "Compliance Templates", href: "/dashboard/tasks/compliance", section: "Checkly", keywords: ["regulatory", "legal", "templates"] },
+  { id: "checkly-task-builder", label: "Custom Templates", href: "/dashboard/tasks/templates", section: "Checkly", keywords: ["create", "new", "template", "builder", "custom"] },
+  { id: "checkly-sops", label: "My SOPs", href: "/dashboard/sops/list", section: "Checkly", keywords: ["standard operating procedures", "processes"] },
+  { id: "checkly-sops-archive", label: "Archived SOPs", href: "/dashboard/sops/archive", section: "Checkly", keywords: ["old", "archived"] },
+  { id: "checkly-sop-templates", label: "SOP Templates", href: "/dashboard/sops/templates", section: "Checkly", keywords: ["templates", "create"] },
+  { id: "checkly-coshh", label: "COSHH Data", href: "/dashboard/sops/coshh", section: "Checkly", keywords: ["chemicals", "hazardous", "safety data sheets"] },
+  { id: "checkly-risk-assessments", label: "Risk Assessments", href: "/dashboard/risk-assessments", section: "Checkly", keywords: ["RA", "hazards", "safety"] },
+  { id: "checkly-ra-archive", label: "Archived Risk Assessments", href: "/dashboard/risk-assessments/archive", section: "Checkly", keywords: ["old", "archived"] },
+  { id: "checkly-ra-templates", label: "RA Templates", href: "/dashboard/sops/ra-templates", section: "Checkly", keywords: ["risk assessment templates"] },
+  { id: "checkly-incidents", label: "All Incidents", href: "/dashboard/incidents", section: "Checkly", keywords: ["accidents", "events", "reports"] },
+  { id: "checkly-food-poisoning", label: "Food Poisoning Incidents", href: "/dashboard/incidents/food-poisoning", section: "Checkly", keywords: ["illness", "contamination"] },
+  { id: "checkly-complaints", label: "Customer Complaints", href: "/dashboard/incidents/customer-complaints", section: "Checkly", keywords: ["feedback", "complaints", "issues"] },
+  { id: "checkly-sickness", label: "Staff Sickness", href: "/dashboard/incidents/staff-sickness", section: "Checkly", keywords: ["absence", "illness", "sick"] },
+  { id: "checkly-incident-log", label: "Incident Log", href: "/dashboard/incidents/storage", section: "Checkly", keywords: ["history", "log"] },
+  { id: "checkly-temp-logs", label: "Temperature Logs", href: "/dashboard/logs/temperature", section: "Checkly", keywords: ["fridge", "freezer", "temperature", "readings"] },
+
+  // ─── Stockly (Inventory & Stock Management) ─────────────
+  { id: "stockly-dashboard", label: "Stockly Dashboard", href: "/dashboard/stockly", section: "Stockly", keywords: ["inventory", "stock", "overview"] },
+  { id: "stockly-stock-items", label: "Stock Items", href: "/dashboard/stockly/stock-items", section: "Stockly", keywords: ["inventory", "products", "items"] },
+  { id: "stockly-storage", label: "Storage Areas", href: "/dashboard/stockly/storage-areas", section: "Stockly", keywords: ["warehouse", "shelves", "locations"] },
+  { id: "stockly-counts", label: "Stock Counts", href: "/dashboard/stockly/stock-counts", section: "Stockly", keywords: ["stocktake", "inventory count", "audit"] },
+  { id: "stockly-suppliers", label: "Suppliers", href: "/dashboard/stockly/suppliers", section: "Stockly", keywords: ["vendors", "providers"] },
+  { id: "stockly-orders", label: "Orders", href: "/dashboard/stockly/orders", section: "Stockly", keywords: ["purchase orders", "ordering"] },
+  { id: "stockly-deliveries", label: "Deliveries", href: "/dashboard/stockly/deliveries", section: "Stockly", keywords: ["receiving", "goods in"] },
+  { id: "stockly-credit-notes", label: "Credit Notes", href: "/dashboard/stockly/credit-notes", section: "Stockly", keywords: ["returns", "credits", "refunds"] },
+  { id: "stockly-recipes", label: "Recipes", href: "/dashboard/stockly/recipes", section: "Stockly", keywords: ["dishes", "menu items", "ingredients"] },
+  { id: "stockly-waste", label: "Waste Log", href: "/dashboard/stockly/waste", section: "Stockly", keywords: ["wastage", "spoilage", "disposal"] },
+  { id: "stockly-sales", label: "Sales", href: "/dashboard/stockly/sales", section: "Stockly", keywords: ["revenue", "transactions"] },
+  { id: "stockly-reports", label: "Stock Reports", href: "/dashboard/stockly/reports", section: "Stockly", keywords: ["analytics", "data"] },
+  { id: "stockly-gp", label: "GP Analysis", href: "/dashboard/stockly/reports/gp", section: "Stockly", keywords: ["gross profit", "margin", "cost"] },
+  { id: "stockly-variance", label: "Variance Report", href: "/dashboard/stockly/reports/variance", section: "Stockly", keywords: ["discrepancy", "difference"] },
+  { id: "stockly-value", label: "Stock Value", href: "/dashboard/stockly/reports/stock-value", section: "Stockly", keywords: ["worth", "valuation"] },
+  { id: "stockly-supplier-spend", label: "Supplier Spend", href: "/dashboard/stockly/reports/supplier-spend", section: "Stockly", keywords: ["costs", "expenses"] },
+  { id: "stockly-dead-stock", label: "Dead Stock", href: "/dashboard/stockly/reports/dead-stock", section: "Stockly", keywords: ["unused", "slow moving"] },
+  { id: "stockly-prices", label: "Price Report", href: "/dashboard/stockly/reports/prices", section: "Stockly", keywords: ["pricing", "cost changes"] },
+  { id: "stockly-wastage", label: "Wastage Report", href: "/dashboard/stockly/reports/wastage", section: "Stockly", keywords: ["waste analysis"] },
+  { id: "stockly-ingredients", label: "Ingredients Library", href: "/dashboard/stockly/libraries/ingredients", section: "Stockly", keywords: ["food", "raw materials"] },
+  { id: "stockly-ppe", label: "PPE Library", href: "/dashboard/stockly/libraries/ppe", section: "Stockly", keywords: ["protective equipment", "safety gear"] },
+  { id: "stockly-chemicals", label: "Chemicals Library", href: "/dashboard/stockly/libraries/chemicals", section: "Stockly", keywords: ["cleaning", "products"] },
+  { id: "stockly-disposables", label: "Disposables Library", href: "/dashboard/stockly/libraries/disposables", section: "Stockly", keywords: ["single use", "packaging"] },
+  { id: "stockly-first-aid", label: "First Aid Library", href: "/dashboard/stockly/libraries/first-aid", section: "Stockly", keywords: ["medical", "supplies"] },
+  { id: "stockly-packaging", label: "Packaging Library", href: "/dashboard/stockly/libraries/packaging", section: "Stockly", keywords: ["containers", "boxes"] },
+  { id: "stockly-settings", label: "Stockly Settings", href: "/dashboard/stockly/settings", section: "Stockly", keywords: ["configuration", "preferences"] },
+
+  // ─── Teamly (People & HR) ──────────────────────────────
+  { id: "teamly-dashboard", label: "People Dashboard", href: "/dashboard/people", section: "Teamly", keywords: ["HR", "team", "staff", "overview"] },
+  { id: "teamly-employees", label: "Employees", href: "/dashboard/people/employees", section: "Teamly", keywords: ["staff", "team members", "directory"] },
+  { id: "teamly-add-employee", label: "Add Employee", href: "/dashboard/people/directory/new", section: "Teamly", keywords: ["hire", "new starter", "onboard"] },
+  { id: "teamly-org-chart", label: "Org Chart", href: "/dashboard/people/employees/org-chart", section: "Teamly", keywords: ["organization", "hierarchy", "structure"] },
+  { id: "teamly-directory", label: "People Directory", href: "/dashboard/people/directory", section: "Teamly", keywords: ["contacts", "phone", "email"] },
+  { id: "teamly-leave", label: "Leave Overview", href: "/dashboard/people/leave", section: "Teamly", keywords: ["holiday", "time off", "vacation", "absence"] },
+  { id: "teamly-leave-request", label: "Request Leave", href: "/dashboard/people/leave/request", section: "Teamly", keywords: ["holiday", "time off", "book"] },
+  { id: "teamly-leave-calendar", label: "Team Leave Calendar", href: "/dashboard/people/leave/calendar", section: "Teamly", keywords: ["who's off", "holidays"] },
+  { id: "teamly-leave-balances", label: "Leave Balances", href: "/dashboard/people/leave/balances", section: "Teamly", keywords: ["allowance", "remaining", "entitlement"] },
+  { id: "teamly-schedule", label: "Schedule / Rota", href: "/dashboard/people/schedule", section: "Teamly", keywords: ["shifts", "rota", "timetable", "roster"] },
+  { id: "teamly-availability", label: "My Availability", href: "/dashboard/people/schedule/availability", section: "Teamly", keywords: ["hours", "shifts", "preferences"] },
+  { id: "teamly-attendance", label: "Attendance / Time Clock", href: "/dashboard/people/attendance", section: "Teamly", keywords: ["clock in", "clock out", "time tracking"] },
+  { id: "teamly-timesheets", label: "Timesheets", href: "/dashboard/people/attendance/signoff", section: "Teamly", keywords: ["hours", "sign off", "approval"] },
+  { id: "teamly-training-matrix", label: "Training Matrix", href: "/dashboard/training", section: "Teamly", keywords: ["training", "compliance", "requirements", "learning", "courses", "matrix"] },
+  { id: "teamly-record-training", label: "Record Training", href: "/dashboard/people/training/record", section: "Teamly", keywords: ["log", "add", "certificate"] },
+  { id: "teamly-courses", label: "All Courses", href: "/dashboard/courses", section: "Teamly", keywords: ["learning", "modules", "e-learning"] },
+  { id: "teamly-onboarding", label: "Onboarding", href: "/dashboard/people/onboarding", section: "Teamly", keywords: ["new starter", "induction"] },
+  { id: "teamly-company-docs", label: "Company Documents", href: "/dashboard/people/onboarding/company-docs", section: "Teamly", keywords: ["contracts", "handbooks", "policies"] },
+  { id: "teamly-onboarding-packs", label: "Onboarding Packs", href: "/dashboard/people/onboarding/packs", section: "Teamly", keywords: ["starter pack", "welcome"] },
+  { id: "teamly-my-docs", label: "My Documents", href: "/dashboard/people/onboarding/my-docs", section: "Teamly", keywords: ["personal", "files", "docs"] },
+  { id: "teamly-reviews", label: "Reviews & Appraisals", href: "/dashboard/people/reviews", section: "Teamly", keywords: ["performance", "1-on-1", "feedback"] },
+  { id: "teamly-my-reviews", label: "My Reviews", href: "/dashboard/people/reviews/my-reviews", section: "Teamly", keywords: ["personal", "appraisal"] },
+  { id: "teamly-team-reviews", label: "Team Reviews", href: "/dashboard/people/reviews/team", section: "Teamly", keywords: ["manage", "performance"] },
+  { id: "teamly-review-templates", label: "Review Templates", href: "/dashboard/people/reviews/templates", section: "Teamly", keywords: ["forms", "questions"] },
+  { id: "teamly-review-schedule", label: "Schedule Review", href: "/dashboard/people/reviews/schedule", section: "Teamly", keywords: ["plan", "upcoming"] },
+  { id: "teamly-employee-files", label: "Employee Files", href: "/dashboard/people/reviews/files", section: "Teamly", keywords: ["documents", "records"] },
+  { id: "teamly-payroll", label: "Payroll", href: "/dashboard/people/payroll", section: "Teamly", keywords: ["pay", "wages", "salary"] },
+  { id: "teamly-pay-rates", label: "Pay Rates", href: "/dashboard/people/payroll/rates", section: "Teamly", keywords: ["wages", "hourly rate", "salary"] },
+  { id: "teamly-payslips", label: "My Payslips", href: "/dashboard/people/payroll/my-payslips", section: "Teamly", keywords: ["paycheck", "earnings"] },
+  { id: "teamly-recruitment", label: "Recruitment", href: "/dashboard/people/recruitment", section: "Teamly", keywords: ["hiring", "jobs", "vacancies"] },
+  { id: "teamly-candidates", label: "Candidates", href: "/dashboard/people/recruitment/candidates", section: "Teamly", keywords: ["applicants", "applications"] },
+  { id: "teamly-post-job", label: "Post a Job", href: "/dashboard/people/recruitment/jobs/new", section: "Teamly", keywords: ["vacancy", "listing", "advertise"] },
+  { id: "teamly-people-settings", label: "People Settings", href: "/dashboard/people/settings", section: "Teamly", keywords: ["configuration", "HR settings"] },
+  { id: "teamly-departments", label: "Departments", href: "/dashboard/people/settings/departments", section: "Teamly", keywords: ["teams", "groups"] },
+  { id: "teamly-areas", label: "Areas & Regions", href: "/dashboard/people/settings/areas", section: "Teamly", keywords: ["locations", "zones"] },
+  { id: "teamly-approvals", label: "Approval Workflows", href: "/dashboard/people/settings/approvals", section: "Teamly", keywords: ["sign off", "authorisation"] },
+  { id: "teamly-roles", label: "Roles & Permissions", href: "/dashboard/people/settings/roles", section: "Teamly", keywords: ["access", "security"] },
+  { id: "teamly-shift-rules", label: "Shift Rules", href: "/dashboard/people/settings/shift-rules", section: "Teamly", keywords: ["scheduling", "constraints"] },
+
+  // ─── Planly (Production Planning) ──────────────────────
+  { id: "planly-production", label: "Production Plan", href: "/dashboard/planly", section: "Planly", keywords: ["bakery", "manufacturing", "schedule"] },
+  { id: "planly-packing", label: "Packing Plan", href: "/dashboard/planly/order-book", section: "Planly", keywords: ["orders", "dispatch", "fulfillment"] },
+  { id: "planly-place-order", label: "Place Order", href: "/dashboard/planly/orders/new", section: "Planly", keywords: ["new order", "create"] },
+  { id: "planly-delivery-notes", label: "Delivery Notes", href: "/dashboard/planly/delivery-notes", section: "Planly", keywords: ["dispatch", "shipping"] },
+  { id: "planly-delivery-schedule", label: "Delivery Schedule", href: "/dashboard/planly/delivery-schedule", section: "Planly", keywords: ["routes", "timetable"] },
+  { id: "planly-customers", label: "Customers", href: "/dashboard/planly/customers", section: "Planly", keywords: ["clients", "accounts"] },
+  { id: "planly-products", label: "Products", href: "/dashboard/planly/products", section: "Planly", keywords: ["items", "catalogue"] },
+  { id: "planly-pricing", label: "Product Pricing", href: "/dashboard/planly/pricing", section: "Planly", keywords: ["prices", "cost"] },
+  { id: "planly-setup", label: "Setup Wizard", href: "/dashboard/planly/setup", section: "Planly", keywords: ["onboarding", "configure"] },
+  { id: "planly-settings", label: "Production Settings", href: "/dashboard/planly/settings/production", section: "Planly", keywords: ["configuration"] },
+  { id: "planly-timeline", label: "Production Timeline", href: "/dashboard/planly/settings/process-templates", section: "Planly", keywords: ["process", "steps"] },
+  { id: "planly-equipment", label: "Equipment", href: "/dashboard/planly/settings/oven-trays", section: "Planly", keywords: ["ovens", "trays", "machinery"] },
+  { id: "planly-cutoff", label: "Cutoff Rules", href: "/dashboard/planly/settings/cutoff-rules", section: "Planly", keywords: ["deadlines", "order cutoff"] },
+  { id: "planly-packing-delivery", label: "Packing & Delivery Settings", href: "/dashboard/planly/settings/destination-groups", section: "Planly", keywords: ["destinations", "groups"] },
+
+  // ─── Assetly (Assets & Maintenance) ────────────────────
+  { id: "assetly-assets", label: "Assets", href: "/dashboard/assets", section: "Assetly", keywords: ["equipment", "machinery", "appliances"] },
+  { id: "assetly-contractors", label: "Contractors", href: "/dashboard/assets/contractors", section: "Assetly", keywords: ["vendors", "service providers", "engineers"] },
+  { id: "assetly-callouts", label: "Callout Logs", href: "/dashboard/assets/callout-logs", section: "Assetly", keywords: ["repairs", "service calls", "maintenance"] },
+  { id: "assetly-ppm", label: "PPM Schedule", href: "/dashboard/ppm", section: "Assetly", keywords: ["planned preventive maintenance", "servicing", "schedule"] },
+
+  // ─── Libraries ─────────────────────────────────────────
+  { id: "lib-all", label: "All Libraries", href: "/dashboard/libraries", section: "Libraries", keywords: ["browse", "all"] },
+  { id: "lib-create", label: "Create Library", href: "/dashboard/libraries/create", section: "Libraries", keywords: ["new", "add"] },
+  { id: "lib-templates", label: "Library Templates", href: "/dashboard/libraries/templates", section: "Libraries", keywords: ["templates"] },
+  { id: "lib-ingredients", label: "Ingredients Library", href: "/dashboard/libraries/ingredients", section: "Libraries", keywords: ["food", "raw materials"] },
+  { id: "lib-ppe", label: "PPE Library", href: "/dashboard/libraries/ppe", section: "Libraries", keywords: ["protective equipment", "safety"] },
+  { id: "lib-chemicals", label: "Chemicals Library", href: "/dashboard/libraries/chemicals", section: "Libraries", keywords: ["cleaning", "products", "COSHH"] },
+  { id: "lib-drinks", label: "Drinks Library", href: "/dashboard/libraries/drinks", section: "Libraries", keywords: ["beverages"] },
+  { id: "lib-disposables", label: "Disposables Library", href: "/dashboard/libraries/disposables", section: "Libraries", keywords: ["single use"] },
+  { id: "lib-glassware", label: "Glassware Library", href: "/dashboard/libraries/glassware", section: "Libraries", keywords: ["glasses", "cups"] },
+  { id: "lib-packaging", label: "Packaging Library", href: "/dashboard/libraries/packaging", section: "Libraries", keywords: ["containers", "boxes", "wrapping"] },
+  { id: "lib-serving", label: "Serving Equipment", href: "/dashboard/libraries/serving-equipment", section: "Libraries", keywords: ["plates", "utensils"] },
+  { id: "lib-appliances", label: "Appliances", href: "/dashboard/libraries/appliances", section: "Libraries", keywords: ["machines", "equipment"] },
+  { id: "lib-first-aid", label: "First Aid Supplies", href: "/dashboard/libraries/first-aid", section: "Libraries", keywords: ["medical", "safety"] },
+
+  // ─── Courses ───────────────────────────────────────────
+  { id: "course-food-safety", label: "Food Safety Level 2 (UK)", href: "/learn/uk-l2-food-safety", section: "Courses", keywords: ["food hygiene", "training", "certification"] },
+  { id: "course-health-safety", label: "Health and Safety Level 2 (UK)", href: "/learn/uk-l2-health-and-safety", section: "Courses", keywords: ["workplace safety", "training"] },
+  { id: "course-allergens", label: "Allergen Awareness Level 2 (UK)", href: "/learn/uk-l2-allergens", section: "Courses", keywords: ["allergens", "food safety", "training"] },
+];

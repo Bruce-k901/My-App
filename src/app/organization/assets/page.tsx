@@ -243,32 +243,32 @@ export default function AssetsPage() {
       />
       {loading ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500 mb-4"></div>
-          <p className="text-slate-400">Loading assets...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600 dark:border-cyan-500 mb-4"></div>
+ <p className="text-gray-500 dark:text-theme-tertiary">Loading assets...</p>
         </div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="text-red-400 mb-2">⚠️</div>
-          <p className="text-red-400 font-medium">Error loading assets</p>
-          <p className="text-slate-400 text-sm mt-1">{error}</p>
-          <button 
+          <div className="text-red-600 dark:text-red-400 mb-2">⚠️</div>
+          <p className="text-red-600 dark:text-red-400 font-medium">Error loading assets</p>
+ <p className="text-gray-500 dark:text-theme-tertiary text-sm mt-1">{error}</p>
+          <button
             onClick={loadAssets}
-            className="mt-4 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-md transition-all duration-200"
+            className="mt-4 px-4 py-2 bg-module-fg hover:bg-module-fg/90 text-white rounded-md transition-all duration-200"
           >
             Try Again
           </button>
         </div>
       ) : assets.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="text-slate-400 mb-4 text-4xl">🏭</div>
-          <p className="text-slate-400 font-medium mb-2">No assets found</p>
-          <p className="text-slate-500 text-sm mb-4">
+ <div className="text-gray-400 dark:text-theme-tertiary mb-4 text-4xl">🏭</div>
+ <p className="text-gray-600 dark:text-theme-tertiary font-medium mb-2">No assets found</p>
+ <p className="text-gray-500 dark:text-theme-tertiary text-sm mb-4">
             {query ? `No assets match "${query}"` : "Add your first asset to get started"}
           </p>
           {!query && (
-            <button 
+            <button
               onClick={() => setOpenAdd(true)}
-              className="px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-md transition-all duration-200"
+              className="px-4 py-2 bg-module-fg hover:bg-module-fg/90 text-white rounded-md transition-all duration-200"
             >
               Add First Asset
             </button>

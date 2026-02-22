@@ -41,6 +41,7 @@ export type TaskTemplate = {
   contractor_type: string | null
   is_active: boolean
   is_template_library: boolean
+  notification_config: NotificationConfig | null
   created_at: string
   updated_at: string
 }
@@ -240,6 +241,25 @@ export enum ContractorCalloutStatus {
   IN_PROGRESS = 'in_progress',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled'
+}
+
+// ============= NOTIFICATION CONFIG =============
+
+/** Recipient for template notification emails */
+export interface NotificationRecipient {
+  type: 'user' | 'external'
+  user_id?: string   // Present when type === 'user'
+  email?: string     // Present when type === 'external'
+  name?: string      // Display name (for external recipients, or cached user name)
+}
+
+/** Notification configuration stored on task_templates.notification_config */
+export interface NotificationConfig {
+  enabled: boolean
+  trigger: 'on_completion'  // Extensible later: 'on_breach' | 'on_overdue'
+  subject: string           // Template string with placeholders
+  message: string           // Template string with placeholders
+  recipients: NotificationRecipient[]
 }
 
 // ============= CUSTOM INTERFACES =============

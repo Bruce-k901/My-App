@@ -6,7 +6,7 @@ import { AuthLayout } from "@/components/layouts";
 import GlassCard from "@/components/ui/GlassCard";
 import { supabase } from "@/lib/supabase";
 import { redirectToDashboard } from "@/lib/auth";
-import { Eye, EyeOff, Sparkles, Clipboard } from "lucide-react";
+import { Eye, EyeOff, Sparkles, Clipboard } from '@/components/ui/icons';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -103,12 +103,12 @@ export default function ResetPasswordPage() {
           Set a new password
         </h1>
 
-        <p className="text-center text-gray-400 mb-8 text-sm">
+        <p className="text-center text-theme-tertiary mb-8 text-sm">
           Enter a new password to complete your account recovery.
         </p>
 
         {!canReset && (
-          <p className="text-slate-400 text-sm mb-4">
+          <p className="text-theme-tertiary text-sm mb-4">
             Waiting for recovery session… If this page wasn’t opened from your email link,
             return to the email and click the reset link again.
           </p>
@@ -116,7 +116,7 @@ export default function ResetPasswordPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-gray-400 text-sm mb-2">New password</label>
+            <label className="block text-theme-tertiary text-sm mb-2">New password</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -125,12 +125,12 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="Choose a strong password"
-                className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
+                className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-3 text-gray-400 hover:text-magenta-400 transition"
+                className="absolute right-4 top-3 text-theme-tertiary hover:text-magenta-400 transition"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -147,7 +147,7 @@ export default function ResetPasswordPage() {
               <button
                 type="button"
                 onClick={() => navigator.clipboard.writeText(password)}
-                className="flex items-center gap-2 text-xs text-gray-400 hover:text-gray-300 transition mx-auto mt-2"
+                className="flex items-center gap-2 text-xs text-theme-tertiary hover:text-theme-tertiary transition mx-auto mt-2"
                 aria-label="Copy generated password"
               >
                 <Clipboard size={14} /> Copy generated password
@@ -156,7 +156,7 @@ export default function ResetPasswordPage() {
           </div>
 
           <div>
-            <label className="block text-gray-400 text-sm mb-2">Confirm password</label>
+            <label className="block text-theme-tertiary text-sm mb-2">Confirm password</label>
             <div className="relative">
               <input
                 type={showConfirm ? "text" : "password"}
@@ -165,12 +165,12 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setConfirm(e.target.value)}
                 required
                 placeholder="Re-enter your password"
-                className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
+                className="w-full rounded-xl px-4 py-3 bg-black/25 border border-white/10 text-theme-primary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-magenta-400/60 focus:border-transparent transition-all duration-300 pr-12"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirm(!showConfirm)}
-                className="absolute right-4 top-3 text-gray-400 hover:text-magenta-400 transition"
+                className="absolute right-4 top-3 text-theme-tertiary hover:text-magenta-400 transition"
                 aria-label={showConfirm ? "Hide password" : "Show password"}
               >
                 {showConfirm ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -181,7 +181,7 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-full py-3 mt-4 font-semibold text-white border border-white/20 bg-transparent hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(236,72,153,0.4)]"
+            className="w-full rounded-full py-3 mt-4 font-semibold text-white border border-white/20 bg-transparent hover:bg-gradient-to-r hover:from-magenta-500 hover:to-blue-500 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(211, 126, 145,0.4)]"
           >
             {loading ? "Updating…" : "Update password"}
           </button>
@@ -207,11 +207,11 @@ export default function ResetPasswordPage() {
           </button>
         </div>
 
-        <p className="mt-8 text-center text-xs text-gray-500">
+        <p className="mt-8 text-center text-xs text-theme-tertiary">
           By continuing, you agree to our {""}
-          <a href="/terms" className="underline underline-offset-4 hover:text-gray-300">Terms</a>
+          <a href="/terms" className="underline underline-offset-4 hover:text-theme-tertiary">Terms</a>
           {" "}and{" "}
-          <a href="/privacy" className="underline underline-offset-4 hover:text-gray-300">Privacy Policy</a>.
+          <a href="/privacy" className="underline underline-offset-4 hover:text-theme-tertiary">Privacy Policy</a>.
         </p>
       </GlassCard>
     </AuthLayout>

@@ -73,7 +73,18 @@ export const COMPLIANCE_CONSTANTS = {
 
 export const TEMPERATURE_VALIDATION = {
   isValidRange: (recordedTemp: number, minTemp: number, maxTemp: number): boolean => {
-    return recordedTemp >= minTemp && recordedTemp <= maxTemp;
+    // Handle inverted ranges for freezers (where min > max, e.g., min: -18, max: -20)
+    // For freezers: range is actually max to min (colder to warmer), so -20°C to -18°C
+    // For fridges: range is min to max (colder to warmer), so 3°C to 5°C
+    const isInvertedRange = minTemp > maxTemp;
+    
+    if (isInvertedRange) {
+      // Inverted range (freezer): actual range is max (colder) to min (warmer)
+      return recordedTemp >= maxTemp && recordedTemp <= minTemp;
+    } else {
+      // Normal range (fridge): range is min (colder) to max (warmer)
+      return recordedTemp >= minTemp && recordedTemp <= maxTemp;
+    }
   },
 
   getRangeStatus: (recordedTemp: number, minTemp: number, maxTemp: number): 'pass' | 'fail' => {

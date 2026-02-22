@@ -2,48 +2,57 @@
 -- Migration: 20250205000005_verify_and_fix_all_template_features.sql
 -- Description: Verifies and fixes feature configuration for all templates
 -- Ensures templates only show features based on their evidence_types
+-- Note: This migration will be skipped if task_templates table doesn't exist yet
 -- ============================================================================
 
--- Fix Fire Extinguisher template specifically
-UPDATE task_templates
-SET 
-  repeatable_field_name = NULL,  -- NO asset selection
-  evidence_types = ARRAY['pass_fail', 'text_note'],  -- Only pass/fail and checklist
-  triggers_contractor_on_failure = TRUE,
-  contractor_type = 'fire_safety'
-WHERE slug = 'fire_extinguisher_inspection';
+-- Fix templates (only if table exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    -- Fix Fire Extinguisher template specifically
+    UPDATE task_templates
+    SET 
+      repeatable_field_name = NULL,  -- NO asset selection
+      evidence_types = ARRAY['pass_fail', 'text_note'],  -- Only pass/fail and checklist
+      triggers_contractor_on_failure = TRUE,
+      contractor_type = 'fire_safety'
+    WHERE slug = 'fire_extinguisher_inspection';
 
--- Fix Fire Alarm template (if it exists)
-UPDATE task_templates
-SET 
-  repeatable_field_name = NULL  -- NO asset selection - call points are managed separately
-WHERE slug = 'fire_alarm_test_weekly';
+    -- Fix Fire Alarm template (if it exists)
+    UPDATE task_templates
+    SET 
+      repeatable_field_name = NULL  -- NO asset selection - call points are managed separately
+    WHERE slug = 'fire_alarm_test_weekly';
 
--- Fix Pest Control template (if it exists) - should not have asset selection
-UPDATE task_templates
-SET 
-  repeatable_field_name = NULL  -- NO asset selection - pest devices are managed separately
-WHERE slug = 'pest_control_device_inspection';
+    -- Fix Pest Control template (if it exists) - should not have asset selection
+    UPDATE task_templates
+    SET 
+      repeatable_field_name = NULL  -- NO asset selection - pest devices are managed separately
+    WHERE slug = 'pest_control_device_inspection';
 
--- Fix First Aid template (if it exists) - locations are in template_fields, not assets
-UPDATE task_templates
-SET 
-  repeatable_field_name = NULL  -- NO asset selection - locations are in template_fields.options
-WHERE slug = 'first_aid_kit_inspection';
+    -- Fix First Aid template (if it exists) - locations are in template_fields, not assets
+    UPDATE task_templates
+    SET 
+      repeatable_field_name = NULL  -- NO asset selection - locations are in template_fields.options
+    WHERE slug = 'first_aid_kit_inspection';
+  END IF;
+END $$;
 
--- Verify all templates have correct configuration
+-- Verify all templates have correct configuration (only if table exists)
 DO $$
 DECLARE
   template_record RECORD;
   template_count INTEGER := 0;
   issue_count INTEGER := 0;
 BEGIN
-  RAISE NOTICE '🔍 Verifying all templates...';
-  RAISE NOTICE '';
-  
-  FOR template_record IN 
-    SELECT * FROM task_templates WHERE is_active = true
-  LOOP
+  -- Check if table exists
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    RAISE NOTICE '🔍 Verifying all templates...';
+    RAISE NOTICE '';
+    
+    FOR template_record IN 
+      SELECT * FROM task_templates WHERE is_active = true
+    LOOP
     template_count := template_count + 1;
     RAISE NOTICE 'Template: % (slug: %)', template_record.name, template_record.slug;
     RAISE NOTICE '  Evidence types: %', template_record.evidence_types;
@@ -68,25 +77,30 @@ BEGIN
       issue_count := issue_count + 1;
     END IF;
     
-    RAISE NOTICE '';
-  END LOOP;
-  
-  RAISE NOTICE '========================================';
-  RAISE NOTICE 'Summary:';
-  RAISE NOTICE '  Total templates checked: %', template_count;
-  RAISE NOTICE '  Issues found: %', issue_count;
-  RAISE NOTICE '========================================';
+      RAISE NOTICE '';
+    END LOOP;
+    
+    RAISE NOTICE '========================================';
+    RAISE NOTICE 'Summary:';
+    RAISE NOTICE '  Total templates checked: %', template_count;
+    RAISE NOTICE '  Issues found: %', issue_count;
+    RAISE NOTICE '========================================';
+  ELSE
+    RAISE NOTICE '⚠️ task_templates table does not exist yet - skipping verification';
+  END IF;
 END $$;
 
--- Specific verification for Fire Extinguisher template
+-- Specific verification for Fire Extinguisher template (only if table exists)
 DO $$
 DECLARE
   template_record RECORD;
   checklist_count INTEGER;
 BEGIN
-  SELECT * INTO template_record
-  FROM task_templates
-  WHERE slug = 'fire_extinguisher_inspection';
+  -- Check if table exists
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'task_templates') THEN
+    SELECT * INTO template_record
+    FROM task_templates
+    WHERE slug = 'fire_extinguisher_inspection';
   
   IF template_record.id IS NOT NULL THEN
     RAISE NOTICE '';
@@ -124,8 +138,11 @@ BEGIN
     END IF;
     
     RAISE NOTICE '';
+    ELSE
+      RAISE NOTICE '⚠️ Fire Extinguisher template not found (may not exist yet)';
+    END IF;
   ELSE
-    RAISE WARNING '⚠️ Fire Extinguisher template not found!';
+    RAISE NOTICE '⚠️ task_templates table does not exist yet - skipping verification';
   END IF;
 END $$;
 

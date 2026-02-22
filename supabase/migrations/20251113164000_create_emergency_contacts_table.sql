@@ -2,11 +2,17 @@
 -- Migration: Emergency Contacts Table
 -- Description: Stores emergency contact information for display on notice boards
 -- ============================================================================
+-- Note: This migration will be skipped if required tables don't exist yet
 
-begin;
+DO $$
+BEGIN
+  -- Only proceed if required tables exist
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'companies')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'sites')
+     AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profiles') THEN
 
--- Create emergency_contacts table
-create table if not exists public.emergency_contacts (
+    -- Create emergency_contacts table
+    CREATE TABLE IF NOT EXISTS public.emergency_contacts (
   id uuid primary key default gen_random_uuid(),
   company_id uuid not null references public.companies(id) on delete cascade,
   site_id uuid references public.sites(id) on delete cascade, -- NULL = company-wide, UUID = site-specific
@@ -31,23 +37,25 @@ create table if not exists public.emergency_contacts (
   updated_by uuid references public.profiles(id) on delete set null
 );
 
--- Create indexes
-create index if not exists idx_emergency_contacts_company_id on public.emergency_contacts(company_id);
-create index if not exists idx_emergency_contacts_site_id on public.emergency_contacts(site_id);
-create index if not exists idx_emergency_contacts_active on public.emergency_contacts(company_id, site_id, is_active) where is_active = true;
+    -- Create indexes
+    CREATE INDEX IF NOT EXISTS idx_emergency_contacts_company_id ON public.emergency_contacts(company_id);
+    CREATE INDEX IF NOT EXISTS idx_emergency_contacts_site_id ON public.emergency_contacts(site_id);
+    CREATE INDEX IF NOT EXISTS idx_emergency_contacts_active ON public.emergency_contacts(company_id, site_id, is_active) WHERE is_active = true;
 
--- Enable RLS
-alter table public.emergency_contacts enable row level security;
+    -- Enable RLS
+    ALTER TABLE public.emergency_contacts ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies
-create policy emergency_contacts_select on public.emergency_contacts
+    -- RLS Policies
+    DROP POLICY IF EXISTS emergency_contacts_select ON public.emergency_contacts;
+    CREATE POLICY emergency_contacts_select ON public.emergency_contacts
   for select using (
     company_id in (
       select company_id from public.profiles where id = auth.uid()
     )
   );
 
-create policy emergency_contacts_insert on public.emergency_contacts
+    DROP POLICY IF EXISTS emergency_contacts_insert ON public.emergency_contacts;
+    CREATE POLICY emergency_contacts_insert ON public.emergency_contacts
   for insert with check (
     company_id in (
       select company_id from public.profiles 
@@ -56,7 +64,8 @@ create policy emergency_contacts_insert on public.emergency_contacts
     )
   );
 
-create policy emergency_contacts_update on public.emergency_contacts
+    DROP POLICY IF EXISTS emergency_contacts_update ON public.emergency_contacts;
+    CREATE POLICY emergency_contacts_update ON public.emergency_contacts
   for update using (
     company_id in (
       select company_id from public.profiles 
@@ -65,7 +74,8 @@ create policy emergency_contacts_update on public.emergency_contacts
     )
   );
 
-create policy emergency_contacts_delete on public.emergency_contacts
+    DROP POLICY IF EXISTS emergency_contacts_delete ON public.emergency_contacts;
+    CREATE POLICY emergency_contacts_delete ON public.emergency_contacts
   for delete using (
     company_id in (
       select company_id from public.profiles 
@@ -74,20 +84,26 @@ create policy emergency_contacts_delete on public.emergency_contacts
     )
   );
 
--- Create updated_at trigger
-create or replace function update_emergency_contacts_updated_at()
-returns trigger as $$
-begin
-  new.updated_at = now();
-  new.updated_by = auth.uid();
-  return new;
-end;
-$$ language plpgsql;
+    -- Create updated_at trigger
+    CREATE OR REPLACE FUNCTION update_emergency_contacts_updated_at()
+    RETURNS TRIGGER AS $func$
+    BEGIN
+      NEW.updated_at = now();
+      NEW.updated_by = auth.uid();
+      RETURN NEW;
+    END;
+    $func$ LANGUAGE plpgsql;
 
-create trigger update_emergency_contacts_timestamp
-  before update on public.emergency_contacts
-  for each row
-  execute function update_emergency_contacts_updated_at();
+    DROP TRIGGER IF EXISTS update_emergency_contacts_timestamp ON public.emergency_contacts;
+    CREATE TRIGGER update_emergency_contacts_timestamp
+      BEFORE UPDATE ON public.emergency_contacts
+      FOR EACH ROW
+      EXECUTE FUNCTION update_emergency_contacts_updated_at();
 
-commit;
+    RAISE NOTICE 'Created emergency_contacts table with RLS policies';
+
+  ELSE
+    RAISE NOTICE '⚠️ Required tables (companies, sites, profiles) do not exist yet - skipping emergency_contacts';
+  END IF;
+END $$;
 

@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { Plus, Trash2, Save, AlertTriangle, CheckCircle, XCircle, Calendar, ArrowDown, ArrowUp, FileText } from 'lucide-react';
+import { Plus, Trash2, Save, AlertTriangle, CheckCircle, XCircle, Calendar, ArrowDown, ArrowUp, FileText } from '@/components/ui/icons';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
 import { getRAVersioningInfo, createRAVersionPayload } from '@/lib/utils/raVersioning';
+import SmartSearch from '@/components/SmartSearch';
 
 const HAZARD_CATEGORIES = [
   'Slips, Trips & Falls',
@@ -50,10 +51,10 @@ const SEVERITY_OPTIONS = [
 ];
 
 const getRiskLevel = (score) => {
-  if (score <= 3) return { level: 'Low', color: 'bg-green-500/20 text-green-400 border-green-500/40' };
-  if (score <= 9) return { level: 'Medium', color: 'bg-amber-500/20 text-amber-400 border-amber-500/40' };
-  if (score <= 15) return { level: 'High', color: 'bg-orange-500/20 text-orange-400 border-orange-500/40' };
-  return { level: 'Very High', color: 'bg-red-500/20 text-red-400 border-red-500/40' };
+  if (score <= 3) return { level: 'Low', color: 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/40' };
+  if (score <= 9) return { level: 'Medium', color: 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/40' };
+  if (score <= 15) return { level: 'High', color: 'bg-orange-50 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/40' };
+  return { level: 'Very High', color: 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/40' };
 };
 
 function GeneralRiskAssessmentTemplateContent() {
@@ -79,17 +80,15 @@ function GeneralRiskAssessmentTemplateContent() {
   const [siteId, setSiteId] = useState("");
   const [assessorName, setAssessorName] = useState("");
   // Use client-safe date initialization to prevent hydration mismatch
-  const [assessmentDate, setAssessmentDate] = useState<string>(() => {
-    if (typeof window === 'undefined') return '';
-    return new Date().toISOString().split('T')[0];
-  });
+  // Always initialize with empty string, then set after mount
+  const [assessmentDate, setAssessmentDate] = useState<string>('');
   
-  // Initialize date after hydration
+  // Initialize date after mount to prevent hydration mismatch
   useEffect(() => {
-    if (!assessmentDate && typeof window !== 'undefined') {
+    if (!assessmentDate) {
       setAssessmentDate(new Date().toISOString().split('T')[0]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []); // Only run once after mount
   const [reviewDate, setReviewDate] = useState("");
   const [status, setStatus] = useState("Draft");
@@ -116,6 +115,10 @@ function GeneralRiskAssessmentTemplateContent() {
 
   // PPE requirements
   const [selectedPPE, setSelectedPPE] = useState([]);
+
+  // Equipment requirements
+  const [selectedEquipment, setSelectedEquipment] = useState<any[]>([]);
+  const [recentEquipment, setRecentEquipment] = useState<any[]>([]);
 
   // Training requirements
   const [trainingNeeded, setTrainingNeeded] = useState("");
@@ -214,6 +217,10 @@ function GeneralRiskAssessmentTemplateContent() {
           setSelectedPPE(assessmentData.selectedPPE);
         }
 
+        if (assessmentData.selectedEquipment && Array.isArray(assessmentData.selectedEquipment)) {
+          setSelectedEquipment(assessmentData.selectedEquipment);
+        }
+
         if (assessmentData.training) {
           setTrainingNeeded(assessmentData.training.trainingNeeded || false);
           setTrainingProvider(assessmentData.training.trainingProvider || '');
@@ -272,9 +279,13 @@ function GeneralRiskAssessmentTemplateContent() {
     const highestScore = Math.max(...riskScores, 0);
     const highestRisk = getRiskLevel(highestScore);
 
+    // Strip _sourceTable from equipment items before persisting
+    const cleanEquipment = selectedEquipment.map(({ _sourceTable, ...rest }) => rest);
+
     const assessmentData = {
       hazards,
       selectedPPE,
+      selectedEquipment: cleanEquipment,
       training: { trainingNeeded, trainingProvider, trainingFrequency, lastTrainingDate },
       review: { reviewFrequency, assessorSignature, managerApproval, managerApprovalDate }
     };
@@ -305,12 +316,13 @@ function GeneralRiskAssessmentTemplateContent() {
           assessment_data: assessmentData,
           linked_sops: hazards.map(h => h.linkedSOP).filter(Boolean),
           linked_ppe: selectedPPE,
+          linked_equipment: cleanEquipment.map(e => e.id),
           highest_risk_level: highestRisk.level,
           total_hazards: hazards.length,
           hazards_controlled: hazards.filter(h => h.status === 'Complete').length,
           created_by: profile?.auth_user_id || null
         };
-        
+
         const insertData = createRAVersionPayload(baseData, versioningInfo, profile, false);
         
         const { data, error } = await supabase
@@ -337,12 +349,13 @@ function GeneralRiskAssessmentTemplateContent() {
           assessment_data: assessmentData,
           linked_sops: hazards.map(h => h.linkedSOP).filter(Boolean),
           linked_ppe: selectedPPE,
+          linked_equipment: cleanEquipment.map(e => e.id),
           highest_risk_level: highestRisk.level,
           total_hazards: hazards.length,
           hazards_controlled: hazards.filter(h => h.status === 'Complete').length,
           created_by: profile?.auth_user_id || null
         };
-        
+
         const insertData = createRAVersionPayload(baseData, { newVersion: '1.0', versionNumber: 1, parentId: null, newRefCode: refCode }, profile, true);
         
         const { data, error } = await supabase
@@ -379,51 +392,51 @@ function GeneralRiskAssessmentTemplateContent() {
   };
 
   if (loading) {
-    return <div className="text-neutral-400 text-center py-8">Loading...</div>;
+ return <div className="text-gray-600 dark:text-theme-tertiary text-center py-8">Loading...</div>;
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
+    <div className="max-w-6xl mx-auto p-6 space-y-6 bg-[rgb(var(--background))] dark:bg-neutral-900 min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-r from-red-600/20 to-orange-600/20 rounded-2xl p-6 border border-red-500/30">
-        <h1 className="text-2xl font-semibold mb-2">General Risk Assessment</h1>
-        <p className="text-neutral-300 text-sm">UK Health & Safety risk assessment</p>
+      <div className="bg-red-50 dark:bg-gradient-to-r dark:from-red-600/20 dark:to-orange-600/20 rounded-2xl p-6 border border-red-200 dark:border-red-500/30">
+        <h1 className="text-2xl font-semibold text-theme-primary mb-2">General Risk Assessment</h1>
+        <p className="text-gray-700 dark:text-neutral-300 text-sm">UK Health & Safety risk assessment</p>
       </div>
 
       {/* Assessment Details */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
-        <h2 className="text-xl font-semibold text-magenta-400 mb-4">Assessment Details</h2>
+      <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-module-fg dark:text-magenta-400 mb-4">Assessment Details</h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
-            <label className="block text-sm text-neutral-300 mb-1">Activity/Task Name *</label>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+            <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Activity/Task Name *</label>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Reference Code (Auto)</label>
-            <input value={refCode} readOnly className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-neutral-400" />
+            <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Reference Code (Auto)</label>
+ <input value={refCode} readOnly className="w-full bg-gray-50 dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-600 dark:text-theme-tertiary"/>
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Site/Location</label>
-            <select value={siteId} onChange={(e) => setSiteId(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white">
+            <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Site/Location</label>
+            <select value={siteId} onChange={(e) => setSiteId(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary">
               <option value="">Select site...</option>
               {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Assessor Name *</label>
-            <input value={assessorName} onChange={(e) => setAssessorName(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+            <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Assessor Name *</label>
+            <input value={assessorName} onChange={(e) => setAssessorName(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Assessment Date *</label>
-            <input type="date" value={assessmentDate} onChange={(e) => setAssessmentDate(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+            <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Assessment Date *</label>
+            <input type="date" value={assessmentDate} onChange={(e) => setAssessmentDate(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Review Date (Auto)</label>
-            <input type="date" value={reviewDate} onChange={(e) => setReviewDate(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+            <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Review Date (Auto)</label>
+            <input type="date" value={reviewDate} onChange={(e) => setReviewDate(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Status *</label>
-            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white">
+            <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Status *</label>
+            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary">
               <option value="Draft">Draft</option>
               <option value="Published">Published</option>
               <option value="Under Review">Under Review</option>
@@ -434,8 +447,8 @@ function GeneralRiskAssessmentTemplateContent() {
       </section>
 
       {/* Hazards Section */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
-        <h2 className="text-xl font-semibold text-magenta-400 mb-4">Hazards</h2>
+      <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-module-fg dark:text-magenta-400 mb-4">Hazards</h2>
         <div className="space-y-4">
           {hazards.map((hazard, index) => {
             const scoreBefore = hazard.likelihoodBefore * hazard.severityBefore;
@@ -445,33 +458,33 @@ function GeneralRiskAssessmentTemplateContent() {
             const improved = scoreAfter < scoreBefore;
             
             return (
-              <div key={hazard.id} className="p-4 bg-neutral-900/50 rounded-lg border border-neutral-600">
+              <div key={hazard.id} className="p-4 bg-gray-50 dark:bg-neutral-900/50 rounded-lg border border-gray-200 dark:border-neutral-600">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-semibold text-magenta-400">Hazard {index + 1}</span>
-                  <button onClick={() => setHazards(hazards.filter(h => h.id !== hazard.id))} disabled={hazards.length === 1} className="text-red-400 hover:text-red-300 disabled:opacity-30">
+                  <span className="text-sm font-semibold text-module-fg dark:text-magenta-400">Hazard {index + 1}</span>
+                  <button onClick={() => setHazards(hazards.filter(h => h.id !== hazard.id))} disabled={hazards.length === 1} className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 disabled:opacity-30">
                     <Trash2 size={16} />
                   </button>
                 </div>
                 
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Hazard Description</label>
-                    <textarea value={hazard.description} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, description: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm" rows={2} />
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Hazard Description</label>
+                    <textarea value={hazard.description} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, description: e.target.value } : h))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm" rows={2} />
                   </div>
                   
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs text-neutral-400 mb-1">Category</label>
-                      <select value={hazard.category} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, category: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm">
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Category</label>
+                      <select value={hazard.category} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, category: e.target.value } : h))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm">
                         <option value="">Select...</option>
                         {HAZARD_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs text-neutral-400 mb-1">Who's at Risk?</label>
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Who's at Risk?</label>
                       <div className="flex flex-wrap gap-2">
                         {PEOPLE_AT_RISK.map(person => (
-                          <label key={person} className="flex items-center gap-1 text-xs text-neutral-300">
+                          <label key={person} className="flex items-center gap-1 text-xs text-gray-700 dark:text-neutral-300">
                             <input type="checkbox" checked={hazard.peopleAtRisk.includes(person)} onChange={(e) => {
                               if (e.target.checked) {
                                 setHazards(hazards.map(h => h.id === hazard.id ? { ...h, peopleAtRisk: [...h.peopleAtRisk, person] } : h));
@@ -487,28 +500,28 @@ function GeneralRiskAssessmentTemplateContent() {
                   </div>
 
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Existing Controls</label>
-                    <textarea value={hazard.existingControls} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, existingControls: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm" rows={2} />
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Existing Controls</label>
+                    <textarea value={hazard.existingControls} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, existingControls: e.target.value } : h))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm" rows={2} />
                   </div>
 
                   {/* Risk Before Controls */}
-                  <div className="p-3 bg-red-500/10 border border-red-500/30 rounded">
-                    <h4 className="text-sm font-semibold text-red-400 mb-2">Risk Rating BEFORE Controls</h4>
+                  <div className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded">
+                    <h4 className="text-sm font-semibold text-red-700 dark:text-red-400 mb-2">Risk Rating BEFORE Controls</h4>
                     <div className="grid grid-cols-3 gap-2">
                       <div>
-                        <label className="block text-xs text-neutral-400 mb-1">Likelihood</label>
-                        <select value={hazard.likelihoodBefore} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, likelihoodBefore: parseInt(e.target.value) } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-2 py-1 text-white text-sm">
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Likelihood</label>
+                        <select value={hazard.likelihoodBefore} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, likelihoodBefore: parseInt(e.target.value) } : h))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm">
                           {LIKELIHOOD_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs text-neutral-400 mb-1">Severity</label>
-                        <select value={hazard.severityBefore} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, severityBefore: parseInt(e.target.value) } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-2 py-1 text-white text-sm">
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Severity</label>
+                        <select value={hazard.severityBefore} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, severityBefore: parseInt(e.target.value) } : h))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm">
                           {SEVERITY_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs text-neutral-400 mb-1">Risk Score</label>
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Risk Score</label>
                         <div className={`w-full px-2 py-1 rounded border ${riskBefore.color} text-center text-sm font-semibold`}>
                           {scoreBefore} - {riskBefore.level}
                         </div>
@@ -517,31 +530,31 @@ function GeneralRiskAssessmentTemplateContent() {
                   </div>
 
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Additional Controls Needed</label>
-                    <textarea value={hazard.additionalControls} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, additionalControls: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm" rows={2} />
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Additional Controls Needed</label>
+                    <textarea value={hazard.additionalControls} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, additionalControls: e.target.value } : h))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm" rows={2} />
                   </div>
 
                   {/* Risk After Controls */}
-                  <div className="p-3 bg-green-500/10 border border-green-500/30 rounded">
+                  <div className="p-3 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 rounded">
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-sm font-semibold text-green-400">Risk Rating AFTER Additional Controls</h4>
-                      {improved && <ArrowDown size={16} className="text-green-400" />}
+                      <h4 className="text-sm font-semibold text-green-700 dark:text-green-400">Risk Rating AFTER Additional Controls</h4>
+                      {improved && <ArrowDown size={16} className="text-green-600 dark:text-green-400" />}
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                       <div>
-                        <label className="block text-xs text-neutral-400 mb-1">Likelihood</label>
-                        <select value={hazard.likelihoodAfter} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, likelihoodAfter: parseInt(e.target.value) } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-2 py-1 text-white text-sm">
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Likelihood</label>
+                        <select value={hazard.likelihoodAfter} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, likelihoodAfter: parseInt(e.target.value) } : h))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm">
                           {LIKELIHOOD_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs text-neutral-400 mb-1">Severity</label>
-                        <select value={hazard.severityAfter} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, severityAfter: parseInt(e.target.value) } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-2 py-1 text-white text-sm">
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Severity</label>
+                        <select value={hazard.severityAfter} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, severityAfter: parseInt(e.target.value) } : h))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm">
                           {SEVERITY_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs text-neutral-400 mb-1">Risk Score</label>
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Risk Score</label>
                         <div className={`w-full px-2 py-1 rounded border ${riskAfter.color} text-center text-sm font-semibold`}>
                           {scoreAfter} - {riskAfter.level}
                         </div>
@@ -551,16 +564,16 @@ function GeneralRiskAssessmentTemplateContent() {
 
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className="block text-xs text-neutral-400 mb-1">Responsible Person</label>
-                      <input value={hazard.responsiblePerson} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, responsiblePerson: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-2 py-1 text-white text-sm" />
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Responsible Person</label>
+                      <input value={hazard.responsiblePerson} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, responsiblePerson: e.target.value } : h))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm" />
                     </div>
                     <div>
-                      <label className="block text-xs text-neutral-400 mb-1">Target Date</label>
-                      <input type="date" value={hazard.targetDate} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, targetDate: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-2 py-1 text-white text-sm" />
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Target Date</label>
+                      <input type="date" value={hazard.targetDate} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, targetDate: e.target.value } : h))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm" />
                     </div>
                     <div>
-                      <label className="block text-xs text-neutral-400 mb-1">Status</label>
-                      <select value={hazard.status} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, status: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-2 py-1 text-white text-sm">
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Status</label>
+                      <select value={hazard.status} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, status: e.target.value } : h))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-2 py-1 text-theme-primary text-sm">
                         <option value="Not Started">Not Started</option>
                         <option value="In Progress">In Progress</option>
                         <option value="Complete">Complete</option>
@@ -569,8 +582,8 @@ function GeneralRiskAssessmentTemplateContent() {
                   </div>
 
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1">Link to Related SOP (Optional)</label>
-                    <select value={hazard.linkedSOP} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, linkedSOP: e.target.value } : h))} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm">
+ <label className="block text-xs text-gray-600 dark:text-theme-tertiary mb-1">Link to Related SOP (Optional)</label>
+                    <select value={hazard.linkedSOP} onChange={(e) => setHazards(hazards.map(h => h.id === hazard.id ? { ...h, linkedSOP: e.target.value } : h))} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm">
                       <option value="">Select SOP...</option>
                       {sops.map(sop => <option key={sop.id} value={sop.id}>{sop.ref_code} - {sop.title}</option>)}
                     </select>
@@ -580,14 +593,14 @@ function GeneralRiskAssessmentTemplateContent() {
             );
           })}
         </div>
-        <button onClick={() => setHazards([...hazards, { id: Date.now(), description: "", category: "", peopleAtRisk: [], existingControls: "", likelihoodBefore: 3, severityBefore: 3, additionalControls: "", likelihoodAfter: 1, severityAfter: 1, responsiblePerson: "", targetDate: "", status: "Not Started", linkedSOP: "" }])} className="mt-3 flex items-center gap-2 px-4 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/40 rounded-lg text-magenta-400 text-sm">
+        <button onClick={() => setHazards([...hazards, { id: Date.now(), description: "", category: "", peopleAtRisk: [], existingControls: "", likelihoodBefore: 3, severityBefore: 3, additionalControls: "", likelihoodAfter: 1, severityAfter: 1, responsiblePerson: "", targetDate: "", status: "Not Started", linkedSOP: "" }])} className="mt-3 flex items-center gap-2 px-4 py-2 bg-module-fg/20 hover:bg-module-fg/30 border border-module-fg/40 rounded-lg text-module-fg text-sm">
           <Plus size={16} /> Add Hazard
         </button>
       </section>
 
       {/* PPE Requirements */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
-        <h2 className="text-xl font-semibold text-magenta-400 mb-4">PPE Requirements</h2>
+      <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-module-fg dark:text-magenta-400 mb-4">PPE Requirements</h2>
         <div className="flex flex-wrap gap-2 mb-3">
           {selectedPPE.map(ppeId => {
             const ppe = ppeLibrary.find(p => p.id === ppeId);
@@ -601,28 +614,68 @@ function GeneralRiskAssessmentTemplateContent() {
             );
           })}
         </div>
-        <select onChange={(e) => { if (e.target.value) setSelectedPPE([...selectedPPE, e.target.value]); e.target.value = ""; }} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white">
+        <select onChange={(e) => { if (e.target.value) setSelectedPPE([...selectedPPE, e.target.value]); e.target.value = ""; }} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary">
           <option value="">Select PPE...</option>
           {ppeLibrary.filter(p => !selectedPPE.includes(p.id)).map(p => <option key={p.id} value={p.id}>{p.item_name}</option>)}
         </select>
       </section>
 
+      {/* Equipment */}
+      <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-module-fg dark:text-magenta-400 mb-4">Equipment</h2>
+        <p className="text-xs text-gray-600 dark:text-theme-tertiary mb-4">
+          Identify equipment relevant to this risk assessment
+        </p>
+
+        {/* Selected equipment chips */}
+        <div className="flex flex-wrap gap-2 mb-3">
+          {selectedEquipment.map((equip, idx) => (
+            <div key={equip.id || idx} className="px-3 py-1 bg-amber-500/20 border border-amber-500/40 rounded-full text-sm text-amber-400 flex items-center gap-2">
+              {equip.equipment_name || equip.name}
+              {equip._sourceTable && (
+                <span className="text-[10px] opacity-60">
+                  ({equip._sourceTable === 'assets' ? 'Asset' : 'Library'})
+                </span>
+              )}
+              <button onClick={() => setSelectedEquipment(selectedEquipment.filter((_, i) => i !== idx))} className="text-amber-300 hover:text-amber-200">
+                <XCircle size={14} />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* SmartSearch for equipment */}
+        <SmartSearch
+          libraryTable="equipment_library"
+          additionalTables={["assets"]}
+          placeholder="Search equipment or assets..."
+          onSelect={(item) => {
+            if (!selectedEquipment.some(e => e.id === item.id)) {
+              setSelectedEquipment([...selectedEquipment, item]);
+            }
+          }}
+          allowMultiple={true}
+          recentItems={recentEquipment}
+          currentSelected={selectedEquipment}
+        />
+      </section>
+
       {/* Training Requirements */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
-        <h2 className="text-xl font-semibold text-magenta-400 mb-4">Training Requirements</h2>
+      <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-module-fg dark:text-magenta-400 mb-4">Training Requirements</h2>
         <div className="space-y-3">
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Training Needed</label>
-            <textarea value={trainingNeeded} onChange={(e) => setTrainingNeeded(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" rows={3} />
+            <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Training Needed</label>
+            <textarea value={trainingNeeded} onChange={(e) => setTrainingNeeded(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" rows={3} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Training Provider</label>
-              <input value={trainingProvider} onChange={(e) => setTrainingProvider(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+              <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Training Provider</label>
+              <input value={trainingProvider} onChange={(e) => setTrainingProvider(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
             </div>
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Frequency</label>
-              <select value={trainingFrequency} onChange={(e) => setTrainingFrequency(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white">
+              <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Frequency</label>
+              <select value={trainingFrequency} onChange={(e) => setTrainingFrequency(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary">
                 <option value="Once">Once</option>
                 <option value="Annually">Annually</option>
                 <option value="Bi-annually">Bi-annually</option>
@@ -632,19 +685,19 @@ function GeneralRiskAssessmentTemplateContent() {
             </div>
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Last Completed Date</label>
-            <input type="date" value={lastTrainingDate} onChange={(e) => setLastTrainingDate(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+            <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Last Completed Date</label>
+            <input type="date" value={lastTrainingDate} onChange={(e) => setLastTrainingDate(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
           </div>
         </div>
       </section>
 
       {/* Review & Approval */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700">
-        <h2 className="text-xl font-semibold text-magenta-400 mb-4">Review & Approval</h2>
+      <section className="bg-theme-surface/50 rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-module-fg dark:text-magenta-400 mb-4">Review & Approval</h2>
         <div className="space-y-3">
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Review Frequency</label>
-            <select value={reviewFrequency} onChange={(e) => setReviewFrequency(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white">
+            <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Review Frequency</label>
+            <select value={reviewFrequency} onChange={(e) => setReviewFrequency(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary">
               <option value="Monthly">Monthly</option>
               <option value="Quarterly">Quarterly</option>
               <option value="Bi-annually">Bi-annually</option>
@@ -655,22 +708,22 @@ function GeneralRiskAssessmentTemplateContent() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Assessor Signature</label>
-              <input value={assessorSignature} onChange={(e) => setAssessorSignature(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+              <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Assessor Signature</label>
+              <input value={assessorSignature} onChange={(e) => setAssessorSignature(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
             </div>
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Date</label>
-              <input type="date" value={assessmentDate} readOnly className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-neutral-400" />
+              <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Date</label>
+ <input type="date"value={assessmentDate} readOnly className="w-full bg-gray-50 dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-gray-600 dark:text-theme-tertiary"/>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Manager Approval</label>
-              <input value={managerApproval} onChange={(e) => setManagerApproval(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+              <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Manager Approval</label>
+              <input value={managerApproval} onChange={(e) => setManagerApproval(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
             </div>
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Approval Date</label>
-              <input type="date" value={managerApprovalDate} onChange={(e) => setManagerApprovalDate(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white" />
+              <label className="block text-sm text-gray-700 dark:text-neutral-300 mb-1">Approval Date</label>
+              <input type="date" value={managerApprovalDate} onChange={(e) => setManagerApprovalDate(e.target.value)} className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
             </div>
           </div>
         </div>
@@ -690,8 +743,8 @@ function GeneralRiskAssessmentTemplateContent() {
 export default function GeneralRiskAssessmentTemplate() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-neutral-900">
-        <div className="text-neutral-400">Loading risk assessment template...</div>
+      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--background))] dark:bg-neutral-900">
+        <div className="text-theme-tertiary">Loading risk assessment template...</div>
       </div>
     }>
       <GeneralRiskAssessmentTemplateContent />

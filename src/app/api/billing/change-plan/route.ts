@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     // Use .or() to check both id and auth_user_id fields
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("company_id")
+      .select("company_id, is_platform_admin")
       .or(`id.eq.${user.id},auth_user_id.eq.${user.id}`)
       .maybeSingle();
 
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!profile || profile.company_id !== company_id) {
+    if (!profile || (!profile.is_platform_admin && profile.company_id !== company_id)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

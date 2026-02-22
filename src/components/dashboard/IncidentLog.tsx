@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { ClipboardList, AlertTriangle, ThumbsDown, Activity } from "lucide-react";
+import { ClipboardList, AlertTriangle, ThumbsDown, Activity } from '@/components/ui/icons';
 import { format } from "date-fns";
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
@@ -114,7 +114,7 @@ export default function IncidentLog() {
   }, [activeTab, companyId]);
 
   return (
-    <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)] text-white fade-in-soft">
+    <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(211, 126, 145,0.05)] text-white fade-in-soft">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -124,7 +124,7 @@ export default function IncidentLog() {
             <span className="blink-dot" aria-label="Active incidents" />
           )}
         </div>
-        <button className="px-3 py-1.5 rounded-md bg-white/[0.08] border border-white/[0.1] text-white/80 hover:bg-white/[0.15] transition-all text-sm">
+        <button className="px-3 py-1.5 rounded-md bg-white/[0.08] border border-white/[0.1] text-theme-secondary hover:bg-white/[0.15] transition-all text-sm">
           Log New Incident
         </button>
       </div>
@@ -141,7 +141,7 @@ export default function IncidentLog() {
               className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all ${
                 isActive
                   ? "text-magenta-400 border-b-2 border-magenta-400"
-                  : "text-white/60 hover:text-white"
+                  : "text-theme-tertiary hover:text-white"
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -158,7 +158,7 @@ export default function IncidentLog() {
             key={s}
             onClick={() => setStatusFilter(s as any)}
             className={`text-xs px-2 py-1 rounded-full border border-white/20 ${
-              statusFilter === s ? "text-white bg-black/20" : "text-slate-300 hover:bg-black/10"
+              statusFilter === s ? "text-theme-primary bg-black/20" : "text-theme-secondary hover:bg-black/10"
             }`}
           >
             {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
@@ -167,12 +167,12 @@ export default function IncidentLog() {
       </div>
 
       {/* Table */}
-      {loading && <p className="text-sm text-slate-400">Loading...</p>}
+      {loading && <p className="text-sm text-theme-tertiary">Loading...</p>}
       {error && (
         <div className="text-sm text-red-400">
           <p>{error}</p>
           <button
-            className="mt-2 px-3 py-1 rounded-md bg-white/[0.08] border border-white/[0.1] text-white/80 hover:bg-white/[0.15] transition-all text-sm"
+            className="mt-2 px-3 py-1 rounded-md bg-white/[0.08] border border-white/[0.1] text-theme-secondary hover:bg-white/[0.15] transition-all text-sm"
             onClick={() => loadIncidents()}
           >
             Retry
@@ -180,11 +180,11 @@ export default function IncidentLog() {
         </div>
       )}
       {!loading && !error && !incidents.length ? (
-        <div className="py-6 text-center text-white/60">No incidents recorded.</div>
+        <div className="py-6 text-center text-theme-tertiary">No incidents recorded.</div>
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="border-b border-white/[0.1] text-white/60">
+            <thead className="border-b border-white/[0.1] text-theme-tertiary">
               <tr>
                 <th className="text-left py-2">Date</th>
                 <th className="text-left py-2">Site</th>
@@ -198,10 +198,10 @@ export default function IncidentLog() {
                 .filter((i) => (statusFilter === "all" ? true : i.status === statusFilter))
                 .map((i) => (
                 <tr key={i.id} className="border-b border-white/[0.05] hover:bg-white/[0.05]">
-                  <td className="py-2 text-white/80">{format(new Date(i.created_at), "d MMM yyyy")}</td>
-                  <td className="py-2 text-white/80">{i.sites?.name || "—"}</td>
-                  <td className="py-2 text-white/80">{i.description}</td>
-                  <td className="py-2 text-white/60">{i.investigation_notes || "—"}</td>
+                  <td className="py-2 text-theme-secondary">{format(new Date(i.created_at), "d MMM yyyy")}</td>
+                  <td className="py-2 text-theme-secondary">{i.sites?.name || "—"}</td>
+                  <td className="py-2 text-theme-secondary">{i.description}</td>
+                  <td className="py-2 text-theme-tertiary">{i.investigation_notes || "—"}</td>
                   <td className="py-2">
                     <span
                       className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${

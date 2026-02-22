@@ -2,32 +2,27 @@
 
 import Link from "next/link";
 import SharedHeaderBase from "./SharedHeaderBase";
-import Button from "../ui/Button";
 
 export default function MarketingHeader() {
   return (
     <SharedHeaderBase
       cta={
         <>
-          <Link href="/signup">
-            <Button variant="primary">Sign up</Button>
+          <Link href="/login" className="text-sm text-white/60 hover:text-white transition-colors">
+            Login
           </Link>
-          <Link href="/login">
-            <Button variant="primary">Login</Button>
+          <Link href="/signup" className="btn-marketing-primary !px-5 !py-2 text-sm">
+            Get started
           </Link>
         </>
       }
     >
-            {/* Center navigation: Checkly Features, Why Checkly, Pricing */}
-            <Link href="/checkly-features" className="text-slate-200 hover:text-magenta-400 transition">
-              Checkly Features
-            </Link>
-            <Link href="/why-checkly" className="text-slate-200 hover:text-magenta-400 transition">
-              Why Checkly
-            </Link>
-            <Link href="/pricing" className="text-slate-200 hover:text-magenta-400 transition">
-              Pricing
-            </Link>
+      <Link key="product" href="/product" className="text-white/50 hover:text-white transition-colors" prefetch={false} suppressHydrationWarning>
+        Product
+      </Link>
+      <Link key="pricing" href="/pricing" className="text-white/50 hover:text-white transition-colors" prefetch={false} suppressHydrationWarning>
+        Pricing
+      </Link>
     </SharedHeaderBase>
   );
 }

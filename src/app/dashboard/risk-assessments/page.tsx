@@ -2,15 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, AlertTriangle, CheckCircle, Calendar, Edit, FileBox, FileText, Shield } from 'lucide-react';
+import { Search, AlertTriangle, CheckCircle, Calendar, Edit, FileBox, FileText, Shield, ArrowLeft } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 export default function RiskAssessmentsPage() {
   const router = useRouter();
   const { companyId } = useAppContext();
   const { showToast } = useToast();
+  const { isMobile } = useIsMobile();
   
   const [riskAssessments, setRiskAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -88,6 +90,8 @@ export default function RiskAssessmentsPage() {
                          ra.ref_code.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = filterStatus === 'all' || ra.status === filterStatus;
     const matchesType = filterType === 'all' || ra.template_type === filterType;
+    // On mobile, only show published RAs
+    if (isMobile && ra.status !== 'Published') return false;
     return matchesSearch && matchesStatus && matchesType;
   });
 
@@ -109,8 +113,8 @@ export default function RiskAssessmentsPage() {
           return score >= 16;
         });
         
-        if (veryHigh.length > 0) return { text: 'Very High Risk', color: 'bg-red-500/20 text-red-400 border-red-500/40' };
-        return { text: 'High Risk', color: 'bg-orange-500/20 text-orange-400 border-orange-500/40' };
+        if (veryHigh.length > 0) return { text: 'Very High Risk', color: 'bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/40' };
+        return { text: 'High Risk', color: 'bg-orange-50 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-500/40' };
       }
     }
     return null;
@@ -124,97 +128,117 @@ export default function RiskAssessmentsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Stats Cards - Improved Design */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-gradient-to-br from-neutral-800/50 to-neutral-900/50 border border-white/[0.1] rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-[0_0_20px_rgba(236,72,153,0.15)] hover:border-magenta-500/30 group">
-          <div className="flex items-center justify-between mb-3">
-            <div className="text-neutral-400 text-sm font-medium">Total RAs</div>
-            <FileText className="w-5 h-5 text-neutral-500 group-hover:text-magenta-400 transition-colors" />
+    <div className="space-y-4 sm:space-y-6">
+      {/* Mobile Header */}
+      {isMobile && (
+        <div className="flex items-center gap-3 px-1 pt-2">
+          <button onClick={() => router.back()} className="p-2 -ml-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5">
+            <ArrowLeft size={20} className="text-theme-primary" />
+          </button>
+          <div>
+            <h1 className="text-xl font-bold text-theme-primary">Risk Assessments</h1>
+            <p className="text-xs text-theme-tertiary">{filteredAssessments.length} published assessment{filteredAssessments.length !== 1 ? 's' : ''}</p>
           </div>
-          <div className="text-3xl font-bold text-white">{stats.total}</div>
-          <div className="text-xs text-neutral-500 mt-1">Active assessments</div>
         </div>
-        
-        <div className={`bg-gradient-to-br ${stats.overdue > 0 ? 'from-red-500/10 to-red-600/5' : 'from-neutral-800/50 to-neutral-900/50'} border ${stats.overdue > 0 ? 'border-red-500/30' : 'border-white/[0.1]'} rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] group`}>
+      )}
+
+      {/* Stats Cards - Desktop only */}
+      {!isMobile && (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-theme-surface/50 border border-theme rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-[0_0_20px_rgba(var(--module-fg),0.15)] hover:border-module-fg/30 dark:hover:border-magenta-500/30 group">
           <div className="flex items-center justify-between mb-3">
-            <div className={`text-sm font-medium ${stats.overdue > 0 ? 'text-red-300' : 'text-neutral-400'}`}>Overdue</div>
-            <AlertTriangle className={`w-5 h-5 transition-colors ${stats.overdue > 0 ? 'text-red-400' : 'text-neutral-500 group-hover:text-red-400'}`} />
+ <div className="text-gray-600 dark:text-theme-tertiary text-sm font-medium">Total RAs</div>
+ <FileText className="w-5 h-5 text-gray-400 dark:text-theme-tertiary group-hover:text-module-fg dark:group-hover:text-magenta-400 transition-colors"/>
           </div>
-          <div className={`text-3xl font-bold ${stats.overdue > 0 ? 'text-red-400' : 'text-white'}`}>
+          <div className="text-3xl font-bold text-theme-primary">{stats.total}</div>
+ <div className="text-xs text-gray-500 dark:text-theme-tertiary mt-1">Active assessments</div>
+        </div>
+
+        <div className={`bg-theme-surface/50 ${stats.overdue > 0 ? 'bg-red-50 dark:from-red-500/10 dark:to-red-600/5' : ''} border ${stats.overdue > 0 ? 'border-red-200 dark:border-red-500/30' : 'border-theme'} rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-module-glow group`}>
+          <div className="flex items-center justify-between mb-3">
+ <div className={`text-sm font-medium ${stats.overdue > 0 ?'text-red-700 dark:text-red-300':'text-gray-600 dark:text-theme-tertiary'}`}>Overdue</div>
+ <AlertTriangle className={`w-5 h-5 transition-colors ${stats.overdue > 0 ?'text-red-600 dark:text-red-400':'text-gray-400 dark:text-theme-tertiary group-hover:text-red-400'}`} />
+          </div>
+          <div className={`text-3xl font-bold ${stats.overdue > 0 ? 'text-red-600 dark:text-red-400' : 'text-theme-primary'}`}>
             {stats.overdue}
           </div>
-          <div className={`text-xs mt-1 ${stats.overdue > 0 ? 'text-red-300/70' : 'text-neutral-500'}`}>
+ <div className={`text-xs mt-1 ${stats.overdue > 0 ?'text-red-700/70 dark:text-red-300/70':'text-gray-500 dark:text-theme-tertiary'}`}>
             {stats.overdue > 0 ? 'Requires attention' : 'All up to date'}
           </div>
         </div>
-        
-        <div className={`bg-gradient-to-br ${stats.highRisk > 0 ? 'from-orange-500/10 to-orange-600/5' : 'from-neutral-800/50 to-neutral-900/50'} border ${stats.highRisk > 0 ? 'border-orange-500/30' : 'border-white/[0.1]'} rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-[0_0_20px_rgba(249,115,22,0.15)] group`}>
+
+        <div className={`bg-theme-surface/50 ${stats.highRisk > 0 ? 'bg-orange-50 dark:from-orange-500/10 dark:to-orange-600/5' : ''} border ${stats.highRisk > 0 ? 'border-orange-200 dark:border-orange-500/30' : 'border-theme'} rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-module-glow group`}>
           <div className="flex items-center justify-between mb-3">
-            <div className={`text-sm font-medium ${stats.highRisk > 0 ? 'text-orange-300' : 'text-neutral-400'}`}>High Risk</div>
-            <Shield className={`w-5 h-5 transition-colors ${stats.highRisk > 0 ? 'text-orange-400' : 'text-neutral-500 group-hover:text-orange-400'}`} />
+ <div className={`text-sm font-medium ${stats.highRisk > 0 ?'text-orange-700 dark:text-orange-300':'text-gray-600 dark:text-theme-tertiary'}`}>High Risk</div>
+ <Shield className={`w-5 h-5 transition-colors ${stats.highRisk > 0 ?'text-orange-600 dark:text-orange-400':'text-gray-400 dark:text-theme-tertiary group-hover:text-orange-400'}`} />
           </div>
-          <div className={`text-3xl font-bold ${stats.highRisk > 0 ? 'text-orange-400' : 'text-white'}`}>
+          <div className={`text-3xl font-bold ${stats.highRisk > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-theme-primary'}`}>
             {stats.highRisk}
           </div>
-          <div className={`text-xs mt-1 ${stats.highRisk > 0 ? 'text-orange-300/70' : 'text-neutral-500'}`}>
+ <div className={`text-xs mt-1 ${stats.highRisk > 0 ?'text-orange-700/70 dark:text-orange-300/70':'text-gray-500 dark:text-theme-tertiary'}`}>
             {stats.highRisk > 0 ? 'Needs review' : 'Low risk levels'}
           </div>
         </div>
-        
-        <div className="bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20 rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-[0_0_20px_rgba(34,197,94,0.15)] hover:border-green-500/30 group">
+
+        <div className="bg-green-50 dark:bg-gradient-to-br dark:from-green-500/10 dark:to-green-600/5 border border-green-200 dark:border-green-500/20 rounded-xl p-5 transition-all duration-200 ease-in-out hover:shadow-module-glow hover:border-green-300 dark:hover:border-green-500/30 group">
           <div className="flex items-center justify-between mb-3">
-            <div className="text-green-300 text-sm font-medium">Published</div>
-            <CheckCircle className="w-5 h-5 text-green-400 group-hover:text-green-300 transition-colors" />
+            <div className="text-green-700 dark:text-green-300 text-sm font-medium">Published</div>
+            <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 group-hover:text-green-500 dark:group-hover:text-green-300 transition-colors" />
           </div>
-          <div className="text-3xl font-bold text-green-400">{stats.published}</div>
-          <div className="text-xs text-green-300/70 mt-1">Active & published</div>
+          <div className="text-3xl font-bold text-green-600 dark:text-green-400">{stats.published}</div>
+          <div className="text-xs text-green-700/70 dark:text-green-300/70 mt-1">Active & published</div>
         </div>
       </div>
+      )}
 
-      {/* Overdue Banner */}
-      {stats.overdue > 0 && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-center gap-3">
-          <AlertTriangle size={20} className="text-red-400 flex-shrink-0" />
+      {/* Overdue Banner - Desktop only */}
+      {!isMobile && stats.overdue > 0 && (
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-center gap-3">
+          <AlertTriangle size={20} className="text-red-600 dark:text-red-400 flex-shrink-0" />
           <div className="flex-1">
-            <div className="text-red-400 font-semibold">Warning: {stats.overdue} risk assessment(s) overdue for review</div>
-            <div className="text-red-300 text-sm">Please update assessments to maintain compliance</div>
+            <div className="text-red-800 dark:text-red-400 font-semibold">Warning: {stats.overdue} risk assessment(s) overdue for review</div>
+            <div className="text-red-700 dark:text-red-300 text-sm">Please update assessments to maintain compliance</div>
           </div>
         </div>
       )}
 
       {/* Risk Assessments List */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-white">Risk Assessments</h2>
-          <div className="flex items-center gap-4">
-            <div className="text-sm text-neutral-400">{filteredAssessments.length} assessment{filteredAssessments.length !== 1 ? 's' : ''}</div>
+        {!isMobile && (
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4">
+          <h2 className="text-xl font-semibold text-theme-primary">Risk Assessments</h2>
+          <div className="flex items-center gap-3 sm:gap-4">
+ <div className="text-sm text-gray-600 dark:text-theme-tertiary">{filteredAssessments.length} assessment{filteredAssessments.length !== 1 ?'s':''}</div>
             <button
               onClick={() => router.push('/dashboard/risk-assessments/archive')}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg border border-orange-500 text-orange-600 dark:text-orange-500 bg-transparent hover:bg-orange-50 dark:hover:bg-white/[0.04] hover:shadow-module-glow transition-all duration-200 text-sm"
             >
               <FileBox size={18} />
-              <span className="text-sm font-medium">Archived RAs</span>
+              <span className="hidden sm:inline text-sm font-medium">Archived RAs</span>
+              <span className="sm:hidden text-sm font-medium">Archive</span>
             </button>
           </div>
         </div>
+        )}
 
         {/* Search and Filters */}
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 md:gap-4 mb-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
+ <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-theme-tertiary"size={18} />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search risk assessments..."
-              className="w-full bg-neutral-800 border border-neutral-600 rounded-lg pl-10 pr-4 py-2 text-white placeholder-neutral-400"
+              className="w-full bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 text-sm sm:text-base text-theme-primary placeholder-gray-400 dark:placeholder-neutral-400"
             />
           </div>
+          {!isMobile && (
+          <>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="bg-neutral-800 border border-neutral-600 rounded-lg px-4 py-2 text-white"
+            className="bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-theme-primary"
           >
             <option value="all">All Status</option>
             <option value="Draft">Draft</option>
@@ -224,20 +248,22 @@ export default function RiskAssessmentsPage() {
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="bg-neutral-800 border border-neutral-600 rounded-lg px-4 py-2 text-white"
+            className="bg-theme-surface border border-gray-200 dark:border-neutral-600 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-theme-primary"
           >
             <option value="all">All Types</option>
             <option value="general">General</option>
             <option value="coshh">COSHH</option>
           </select>
+          </>
+          )}
         </div>
 
         {/* Risk Assessments List */}
         {loading ? (
-          <div className="text-neutral-400 text-center py-8">Loading...</div>
+ <div className="text-gray-600 dark:text-theme-tertiary text-center py-8">Loading...</div>
         ) : filteredAssessments.length === 0 ? (
-          <div className="bg-neutral-800/50 rounded-xl p-8 text-center border border-neutral-700">
-            <p className="text-neutral-400">No risk assessments found.</p>
+          <div className="bg-theme-surface/50 rounded-xl p-8 text-center border border-theme">
+ <p className="text-gray-600 dark:text-theme-tertiary">No risk assessments found.</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -248,117 +274,88 @@ export default function RiskAssessmentsPage() {
               return (
                 <div
                   key={assessment.id}
-                  className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-3 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(236,72,153,0.2)] hover:bg-neutral-800/70 transition-colors cursor-pointer"
+ className="bg-theme-surface ] border border-theme rounded-xl p-3 sm:p-4 transition-all duration-150 ease-in-out hover:shadow-[0_0_15px_rgba(var(--module-fg),0.2)] hover:bg-theme-surface-elevated dark:hover:bg-neutral-800/70 transition-colors cursor-pointer"
                   onClick={() => router.push(`/dashboard/risk-assessments/view/${assessment.id}`)}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold text-white">{assessment.title}</h3>
-                        <span className="px-2 py-1 bg-neutral-700 text-neutral-300 rounded text-xs">{assessment.ref_code}</span>
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                        <h3 className="text-base sm:text-lg font-semibold text-theme-primary break-words w-full sm:w-auto">{assessment.title}</h3>
+                        <span className="px-2 py-1 bg-gray-100 dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 rounded text-xs whitespace-nowrap">{assessment.ref_code}</span>
                         {assessment.template_type === 'coshh' && (
-                          <span className="px-2 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/40 rounded text-xs">COSHH</span>
+                          <span className="px-2 py-1 bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/40 rounded text-xs whitespace-nowrap">COSHH</span>
                         )}
                         {assessment.status === 'Published' && (
-                          <span className="px-2 py-1 bg-green-500/20 text-green-400 border border-green-500/40 rounded text-xs flex items-center gap-1">
+                          <span className="px-2 py-1 bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/40 rounded text-xs flex items-center gap-1 whitespace-nowrap">
                             <CheckCircle size={12} />
                             Published
                           </span>
                         )}
                         {overdue && (
-                          <span className="px-2 py-1 bg-red-500/20 text-red-400 border border-red-500/40 rounded text-xs flex items-center gap-1">
+                          <span className="px-2 py-1 bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/40 rounded text-xs flex items-center gap-1 whitespace-nowrap">
                             <AlertTriangle size={12} />
                             Overdue
                           </span>
                         )}
                         {riskBadge && (
-                          <span className={`px-2 py-1 border rounded text-xs ${riskBadge.color}`}>
+                          <span className={`px-2 py-1 border rounded text-xs whitespace-nowrap ${riskBadge.color}`}>
                             {riskBadge.text}
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-neutral-400">
-                        <span>Assessor: {assessment.assessor_name}</span>
-                        <span className="flex items-center gap-1">
+ <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-600 dark:text-theme-tertiary">
+                        <span className="break-words">Assessor: {assessment.assessor_name}</span>
+                        <span className="flex items-center gap-1 whitespace-nowrap">
                           <Calendar size={14} />
                           Review due: {new Date(assessment.review_date).toLocaleDateString()}
                         </span>
                         {assessment.linked_sops && assessment.linked_sops.length > 0 && (
-                          <span>{assessment.linked_sops.length} linked SOP{assessment.linked_sops.length !== 1 ? 's' : ''}</span>
+                          <span className="whitespace-nowrap">{assessment.linked_sops.length} linked SOP{assessment.linked_sops.length !== 1 ? 's' : ''}</span>
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 ml-4">
+                    {!isMobile && (
+                    <div className="flex items-center justify-end sm:justify-start gap-2 sm:ml-4 flex-shrink-0">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          const templatePath = assessment.template_type === 'coshh' 
+                          const templatePath = assessment.template_type === 'coshh'
                             ? '/dashboard/risk-assessments/coshh-template'
                             : '/dashboard/risk-assessments/general-template';
                           router.push(`${templatePath}?edit=${assessment.id}`);
                         }}
-                        className="px-3 py-2 bg-magenta-500/20 hover:bg-magenta-500/30 border border-magenta-500/40 rounded-lg text-magenta-400 flex items-center gap-2 transition-colors"
+                        className="px-2 sm:px-3 py-2 bg-module-fg/20 hover:bg-module-fg/30 border border-module-fg/40 rounded-lg text-module-fg flex items-center gap-1 sm:gap-2 transition-colors text-sm"
                         title="Edit RA"
                       >
                         <Edit size={16} />
-                        Edit
+                        <span className="hidden sm:inline">Edit</span>
                       </button>
                       <button
                         onClick={async (e) => {
                           e.stopPropagation();
-                          if (!confirm('Archive this Risk Assessment? The original version (001) will be moved to archived RAs.')) return;
+                          if (!confirm('Archive this Risk Assessment? It will be moved to archived RAs.')) return;
 
                           try {
                             setArchivingId(assessment.id);
-                            
-                            // Find the current RA to get its ref_code base
-                            const { data: currentRA, error: fetchError } = await supabase
-                              .from('risk_assessments')
-                              .select('ref_code, parent_id')
-                              .eq('id', assessment.id)
-                              .eq('company_id', companyId)
-                              .single();
 
-                            if (fetchError) throw fetchError;
-                            if (!currentRA) throw new Error('RA not found');
-
-                            // Extract base pattern from ref_code (e.g., RA-GEN-BESH-002 -> RA-GEN-BESH)
-                            const refCode = currentRA.ref_code;
-                            const baseMatch = refCode.match(/^(.+)-\d+$/);
-                            const basePattern = baseMatch ? baseMatch[1] : refCode;
-
-                            // Find the original 001 version (version_number = 1 or ref_code ends with -001)
-                            const { data: originalVersion, error: findError } = await supabase
-                              .from('risk_assessments')
-                              .select('id')
-                              .eq('company_id', companyId)
-                              .like('ref_code', `${basePattern}-001`)
-                              .eq('version_number', 1)
-                              .maybeSingle();
-
-                            if (findError) throw findError;
-
-                            // Archive the original 001 version if found, otherwise archive current
-                            const versionToArchive = originalVersion?.id || assessment.id;
-
+                            // Archive the RA - set both status and archived_at for proper tracking
                             const { error } = await supabase
                               .from('risk_assessments')
-                              .update({ status: 'Archived' })
-                              .eq('id', versionToArchive)
+                              .update({
+                                status: 'Archived',
+                                archived_at: new Date().toISOString()
+                              })
+                              .eq('id', assessment.id)
                               .eq('company_id', companyId);
 
                             if (error) throw error;
 
-                            // Remove from local state (remove all versions of this RA base)
-                            setRiskAssessments(prev => prev.filter(ra => {
-                              const raBaseMatch = ra.ref_code.match(/^(.+)-\d+$/);
-                              const raBasePattern = raBaseMatch ? raBaseMatch[1] : ra.ref_code;
-                              return raBasePattern !== basePattern;
-                            }));
+                            // Remove from local state
+                            setRiskAssessments(prev => prev.filter(ra => ra.id !== assessment.id));
 
                             showToast({
                               title: 'RA archived',
-                              description: 'Original version (001) has been moved to archived RAs',
+                              description: 'Risk Assessment has been moved to archived RAs',
                               type: 'success'
                             });
                           } catch (error: any) {
@@ -373,16 +370,17 @@ export default function RiskAssessmentsPage() {
                           }
                         }}
                         disabled={archivingId === assessment.id}
-                        className="flex items-center justify-center h-9 w-9 rounded-lg border border-orange-500 text-orange-500 bg-transparent hover:bg-white/[0.04] hover:shadow-[0_0_12px_rgba(249,115,22,0.25)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                        className="flex items-center justify-center h-9 w-9 rounded-lg border border-orange-500 text-orange-600 dark:text-orange-500 bg-transparent hover:bg-orange-50 dark:hover:bg-white/[0.04] hover:shadow-module-glow transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                         title="Archive RA"
                       >
                         {archivingId === assessment.id ? (
-                          <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                          <div className="w-4 h-4 border-2 border-orange-600 dark:border-orange-500 border-t-transparent rounded-full animate-spin" />
                         ) : (
                           <FileBox size={18} />
                         )}
                       </button>
                     </div>
+                    )}
                   </div>
                 </div>
               );

@@ -212,7 +212,7 @@ export default function IngredientTableComponent({ node, updateAttributes, selec
       data-type="ingredientTable"
     >
       <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2 text-xs text-gray-400">
+        <div className="flex items-center gap-2 text-xs text-theme-tertiary">
           <span 
             className="cursor-grab select-none hover:text-magenta-400 transition-colors"
             contentEditable={false}
@@ -236,7 +236,7 @@ export default function IngredientTableComponent({ node, updateAttributes, selec
         </div>
         <button
           onClick={addRow}
-          className="relative overflow-hidden group px-3 py-1.5 rounded-xl text-xs font-medium text-white"
+          className="relative overflow-hidden group px-3 py-1.5 rounded-xl text-xs font-medium text-theme-primary"
         >
           <span className="absolute inset-0 bg-gradient-to-r from-magenta-600/60 to-magenta-500/80 blur-sm group-hover:blur transition-all"></span>
           <span className="relative z-10">+ Add Row</span>
@@ -246,7 +246,7 @@ export default function IngredientTableComponent({ node, updateAttributes, selec
       {/* Batch Multiplier */}
       <div className="mb-4">
         <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-300">Batch Multiplier:</span>
+          <span className="text-sm text-theme-tertiary">Batch Multiplier:</span>
           <input
             type="number"
             min="0.1"
@@ -254,15 +254,15 @@ export default function IngredientTableComponent({ node, updateAttributes, selec
             step="0.1"
             value={multiplier}
             onChange={(e) => setMultiplier(parseFloat(e.target.value) || 1)}
-            className="w-20 bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-white focus:border-magenta-400 focus:outline-none"
+            className="w-20 bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
           />
-          <span className="text-xs text-gray-400">(default: 1)</span>
+          <span className="text-xs text-theme-tertiary">(default: 1)</span>
         </div>
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-gray-200 border-collapse">
-          <thead className="text-gray-400 text-xs border-b border-magenta-500/20">
+          <thead className="text-theme-tertiary text-xs border-b border-magenta-500/20">
             <tr>
               <th className="text-left p-2">Ingredient</th>
               <th className="text-right p-2 w-20">Base Qty</th>
@@ -277,7 +277,7 @@ export default function IngredientTableComponent({ node, updateAttributes, selec
           <tbody>
             {rows.length === 0 && (
               <tr>
-                <td colSpan={8} className="text-center text-gray-500 italic py-4">
+                <td colSpan={8} className="text-center text-theme-tertiary italic py-4">
                   No ingredients yet.
                 </td>
               </tr>
@@ -288,7 +288,7 @@ export default function IngredientTableComponent({ node, updateAttributes, selec
                   <select
                     value={row.ingredient}
                     onChange={(e) => handleIngredientSelect(i, e.target.value)}
-                    className="w-full bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-white focus:border-magenta-400 focus:outline-none"
+                    className="w-full bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
                     disabled={ingredientsLoading}
                   >
                     <option value="">Select ingredient</option>
@@ -304,7 +304,7 @@ export default function IngredientTableComponent({ node, updateAttributes, selec
                     type="number"
                     value={row.baseQty}
                     onChange={(e) => updateCell(i, "baseQty", parseFloat(e.target.value) || 0)}
-                    className="w-full bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-right text-sm text-white focus:border-magenta-400 focus:outline-none"
+                    className="w-full bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-right text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
                     step="0.1"
                   />
                 </td>
@@ -312,7 +312,7 @@ export default function IngredientTableComponent({ node, updateAttributes, selec
                   <select
                     value={row.unit}
                     onChange={(e) => updateCell(i, "unit", e.target.value)}
-                    className="w-full bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-white focus:border-magenta-400 focus:outline-none"
+                    className="w-full bg-neutral-800 border border-gray-600 rounded-md px-2 py-1 text-sm text-theme-primary focus:border-magenta-400 focus:outline-none"
                   >
                     <option value="g">g</option>
                     <option value="kg">kg</option>
@@ -329,7 +329,7 @@ export default function IngredientTableComponent({ node, updateAttributes, selec
                 <td className="p-2 text-right text-magenta-300 font-medium">
                   {formatQty(row.baseQty * multiplier, row.unit)}
                 </td>
-                <td className="p-2 text-right text-sm text-gray-300">
+                <td className="p-2 text-right text-sm text-theme-tertiary">
                   <div className="flex items-center justify-end">
                     <div 
                       className="cursor-help"
@@ -361,7 +361,7 @@ export default function IngredientTableComponent({ node, updateAttributes, selec
                       ))}
                     </div>
                   ) : (
-                    <span className="text-gray-500 text-xs italic">None</span>
+                    <span className="text-theme-tertiary text-xs italic">None</span>
                   )}
                 </td>
                 <td className="p-2 text-center">
@@ -378,7 +378,7 @@ export default function IngredientTableComponent({ node, updateAttributes, selec
           {rows.length > 0 && (
             <tfoot>
               <tr className="border-t border-magenta-500/20">
-                <td colSpan={5} className="text-right text-gray-400 text-sm p-2 font-medium">
+                <td colSpan={5} className="text-right text-theme-tertiary text-sm p-2 font-medium">
                   Total Yield: {totalYield.toFixed(2)} kg (×{multiplier})
                 </td>
                 <td className="text-right text-magenta-400 font-semibold p-2">

@@ -1,21 +1,25 @@
-"use client";
+'use client'
 
-import { Suspense } from 'react';
-import { Messaging } from '@/components/messaging/Messaging';
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { usePanelStore } from '@/lib/stores/panel-store'
 
-function MessagingContent() {
-  return <Messaging />;
-}
+export default function MessagingRedirectPage() {
+  const router = useRouter()
+  const setMessagingOpen = usePanelStore((state) => state.setMessagingOpen)
 
-export default function MessagingPage() {
+  useEffect(() => {
+    // Open the messaging panel
+    setMessagingOpen(true)
+    // Always navigate to dashboard - router.back() is unreliable
+    // and can navigate outside the app (e.g., to login page), causing logout
+    router.replace('/dashboard')
+  }, [router, setMessagingOpen])
+
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center h-[calc(100vh-72px)] bg-[#0B0D13]">
-        <div className="text-white">Loading messaging...</div>
-      </div>
-    }>
-      <MessagingContent />
-    </Suspense>
-  );
+    <div className="flex items-center justify-center h-screen">
+      <p className="text-muted-foreground">Opening messages...</p>
+    </div>
+  )
 }
 

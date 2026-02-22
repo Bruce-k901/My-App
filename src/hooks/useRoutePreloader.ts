@@ -55,7 +55,7 @@ export function useRoutePreloader() {
     const routes = [
       { path: '/dashboard/tasks', delay: 100 },
       { path: '/dashboard/assets', delay: 200 },
-      { path: '/dashboard/organization', delay: 300 },
+      { path: '/dashboard/business', delay: 300 },
       { path: '/dashboard/ppm', delay: 400 },
       { path: '/dashboard/reports', delay: 500 },
       { path: '/dashboard/settings', delay: 600 },

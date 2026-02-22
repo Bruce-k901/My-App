@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     // Get active shift using the helper function
     const { data: activeShift, error: shiftError } = await supabase
-      .rpc('get_active_shift', { p_user_id: profile.id });
+      .rpc('get_active_shift', { p_profile_id: profile.id });
 
     if (shiftError) {
       console.error('Error fetching active shift:', shiftError);
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
       const { data: fallbackShift } = await supabase
         .from('staff_attendance')
         .select('*, site:sites(name)')
-        .eq('user_id', profile.id)
+        .eq('profile_id', profile.id)
         .eq('shift_status', 'on_shift')
         .is('clock_out_time', null)
         .order('clock_in_time', { ascending: false })
@@ -73,6 +73,23 @@ export async function GET(request: NextRequest) {
         onShift: true,
         shift: activeShift[0],
       });
+    }
+
+    // User is NOT on shift — clean up any orphaned time_entries that are still 'active'
+    // This prevents the TimeClock from showing stale "124h" elapsed times
+    const { error: cleanupError } = await supabase
+      .from('time_entries')
+      .update({
+        status: 'completed',
+        clock_out: new Date().toISOString(),
+        notes: 'Auto-closed: no matching active shift in staff_attendance',
+      })
+      .eq('profile_id', profile.id)
+      .eq('status', 'active')
+      .is('clock_out', null);
+
+    if (cleanupError) {
+      console.error('Error cleaning up orphaned time_entries (non-fatal):', cleanupError);
     }
 
     return NextResponse.json({

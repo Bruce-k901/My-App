@@ -58,7 +58,7 @@ export function Tooltip({ children, label, side = "right", delay = 150 }: Toolti
             className={`absolute ${position} z-50`}
             style={{ transform: offset }}
           >
-            <div className="bg-[#14161c]/95 backdrop-blur-sm text-white/90 text-xs px-2.5 py-1 rounded-md border border-white/[0.08] shadow-[0_0_14px_rgba(236,72,153,0.25)] whitespace-nowrap pointer-events-none">
+            <div className="bg-[#14161c]/95 backdrop-blur-sm text-white/90 text-xs px-2.5 py-1 rounded-md border border-white/[0.08] shadow-[0_0_14px_rgba(211, 126, 145,0.25)] whitespace-nowrap pointer-events-none">
               {label}
             </div>
           </motion.div>

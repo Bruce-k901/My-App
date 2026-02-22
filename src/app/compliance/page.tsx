@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@/lib/useUser";
 import { supabase } from "@/lib/supabaseClient";
-import { Thermometer, Edit2, X } from "lucide-react";
+import { Thermometer, Edit2, X } from '@/components/ui/icons';
+import TimePicker from "@/components/ui/TimePicker";
 
 interface Asset {
   id: string;
@@ -331,7 +332,7 @@ export default function CompliancePage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold mb-2">Available Templates</h1>
-          <p className="text-slate-300 text-sm">
+          <p className="text-theme-secondary text-sm">
             Deploy compliance tasks to your sites. Each template includes SFBB requirements and can be customized per site.
           </p>
         </div>
@@ -368,26 +369,26 @@ export default function CompliancePage() {
                     Draft
                   </span>
                 </div>
-                <p className="text-slate-400 text-sm mb-3">
+                <p className="text-theme-tertiary text-sm mb-3">
                   Daily temperature monitoring for refrigerators, freezers, and hot holding units to ensure food safety compliance.
                 </p>
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                   <div>
-                    <span className="text-slate-500">Regulation:</span>
-                    <p className="text-slate-200 font-medium">SFBB</p>
+                    <span className="text-theme-tertiary">Regulation:</span>
+                    <p className="text-theme-primary font-medium">SFBB</p>
                   </div>
                   <div>
-                    <span className="text-slate-500">Frequency:</span>
-                    <p className="text-slate-200 font-medium">Daily</p>
+                    <span className="text-theme-tertiary">Frequency:</span>
+                    <p className="text-theme-primary font-medium">Daily</p>
                   </div>
                   <div>
-                    <span className="text-slate-500">Requirement:</span>
-                    <p className="text-slate-200 font-medium">3x daily</p>
+                    <span className="text-theme-tertiary">Requirement:</span>
+                    <p className="text-theme-primary font-medium">3x daily</p>
                   </div>
                   <div>
-                    <span className="text-slate-500">Category:</span>
-                    <p className="text-slate-200 font-medium">Food Safety</p>
+                    <span className="text-theme-tertiary">Category:</span>
+                    <p className="text-theme-primary font-medium">Food Safety</p>
                   </div>
                 </div>
               </div>
@@ -407,7 +408,7 @@ export default function CompliancePage() {
 
         {/* Expanded Edit Mode */}
         {isExpanded && (
-          <div className="border-t border-neutral-800 p-6 bg-[#0f1220]">
+          <div className="border-t border-black/10 dark:border-neutral-800 p-6 bg-white dark:bg-[#0f1220]">
             <div className="space-y-6">
               {/* Template Name */}
               <div>
@@ -419,9 +420,9 @@ export default function CompliancePage() {
                   value={templateName}
                   onChange={(e) => setTemplateName(e.target.value)}
                   placeholder="e.g., Morning Fridges, Evening Walk-ins, All Equipment"
-                  className="w-full px-3 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-magenta-500"
+                  className="w-full px-3 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-theme-primary placeholder:text-theme-tertiary focus:outline-none focus:border-magenta-500"
                 />
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-theme-tertiary mt-1">
                   Give this template a unique name to identify it (e.g., "Morning Fridges Only", "Evening Walk-in Coolers")
                 </p>
               </div>
@@ -450,7 +451,7 @@ export default function CompliancePage() {
                       <select
                         value={row.assetId}
                         onChange={(e) => updateEquipmentRow(row.id, 'assetId', e.target.value)}
-                        className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-neutral-800 text-slate-200"
+                        className="flex-1 px-3 py-2 text-sm rounded-lg bg-white dark:bg-[#0f1220] border border-black/10 dark:border-neutral-800 text-theme-primary"
                       >
                         <option value="">Select equipment...</option>
                         {assets.map(asset => (
@@ -466,7 +467,7 @@ export default function CompliancePage() {
                         placeholder="Nickname (e.g., Fridge 1, ABC)"
                         value={row.nickname}
                         onChange={(e) => updateEquipmentRow(row.id, 'nickname', e.target.value)}
-                        className="flex-1 px-3 py-2 text-sm rounded-lg bg-[#0f1220] border border-neutral-800 text-slate-200 placeholder:text-slate-500"
+                        className="flex-1 px-3 py-2 text-sm rounded-lg bg-white dark:bg-[#0f1220] border border-black/10 dark:border-neutral-800 text-theme-primary placeholder:text-theme-tertiary"
                       />
 
                       {/* Delete Button */}
@@ -498,7 +499,7 @@ export default function CompliancePage() {
                       className={`px-4 py-3 rounded-lg border text-center transition-all ${
                         selectedDayParts.includes(part.id)
                           ? "border-magenta-500 bg-magenta-500/10 text-magenta-400"
-                          : "border-neutral-800 bg-[#141823] text-slate-400 hover:border-neutral-700"
+                          : "border-neutral-800 bg-[#141823] text-theme-tertiary hover:border-theme"
                       }`}
                     >
                       <div className="text-sm font-medium">{part.label}</div>
@@ -515,14 +516,13 @@ export default function CompliancePage() {
                 <div className="grid grid-cols-3 gap-3">
                   {selectedDayParts.map((dayPart, index) => (
                     <div key={dayPart}>
-                      <label className="block text-xs text-slate-400 mb-1 capitalize">
+                      <label className="block text-xs text-theme-tertiary mb-1 capitalize">
                         {dayPart}
                       </label>
-                      <input
-                        type="time"
+                      <TimePicker
                         value={times[index] || "09:00"}
-                        onChange={(e) => updateTime(index, e.target.value)}
-                        className="w-full px-3 py-2 text-sm rounded-lg bg-[#141823] border border-neutral-800 text-slate-200"
+                        onChange={(value) => updateTime(index, value)}
+                        className="w-full"
                       />
                     </div>
                   ))}
@@ -534,14 +534,14 @@ export default function CompliancePage() {
                 <button
                   type="button"
                   onClick={handleSave}
-                  className="px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12] hover:border-white/[0.25] backdrop-blur-md transition-all duration-150"
+                  className="px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-theme-primary hover:bg-white/[0.12] hover:border-white/[0.25] backdrop-blur-md transition-all duration-150"
                 >
                   Save
                 </button>
                 <button
                   type="button"
                   onClick={handleSaveAndDeploy}
-                  className="px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.12] hover:border-white/[0.25] backdrop-blur-md transition-all duration-150"
+                  className="px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-theme-primary hover:bg-white/[0.12] hover:border-white/[0.25] backdrop-blur-md transition-all duration-150"
                 >
                   Save & Deploy
                 </button>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NodeViewWrapper } from '@tiptap/react';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Upload, X, Image as ImageIcon } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 
 interface ImageComponentProps {
@@ -121,7 +121,7 @@ export default function ImageComponent({ node, updateAttributes }: ImageComponen
                 placeholder="Add caption..."
                 value={node.attrs.caption}
                 onChange={handleCaptionChange}
-                className="w-full bg-transparent border border-neutral-600 rounded px-2 py-1 text-sm text-white placeholder-neutral-400 focus:border-magenta-400 focus:outline-none"
+                className="w-full bg-transparent border border-neutral-600 rounded px-2 py-1 text-sm text-theme-primary placeholder-neutral-400 focus:border-magenta-400 focus:outline-none"
               />
               
               {/* Alt Text Input */}
@@ -130,7 +130,7 @@ export default function ImageComponent({ node, updateAttributes }: ImageComponen
                 placeholder="Alt text for accessibility..."
                 value={node.attrs.alt}
                 onChange={handleAltChange}
-                className="w-full bg-transparent border border-neutral-600 rounded px-2 py-1 text-xs text-neutral-300 placeholder-neutral-500 focus:border-magenta-400 focus:outline-none"
+                className="w-full bg-transparent border border-neutral-600 rounded px-2 py-1 text-xs text-theme-tertiary placeholder-neutral-500 focus:border-magenta-400 focus:outline-none"
               />
             </div>
           </div>
@@ -139,7 +139,7 @@ export default function ImageComponent({ node, updateAttributes }: ImageComponen
             {/* Upload Area */}
             <div className="border-2 border-dashed border-magenta-500/30 rounded-lg p-6 text-center hover:border-magenta-500/50 transition-colors">
               <ImageIcon size={32} className="mx-auto text-magenta-400 mb-2" />
-              <p className="text-sm text-neutral-300 mb-3">
+              <p className="text-sm text-theme-tertiary mb-3">
                 Upload an image for visual reference
               </p>
               
@@ -155,7 +155,7 @@ export default function ImageComponent({ node, updateAttributes }: ImageComponen
                 />
               </label>
               
-              <p className="text-xs text-neutral-500 mt-2">
+              <p className="text-xs text-theme-tertiary mt-2">
                 PNG, JPG, GIF up to 5MB
               </p>
             </div>

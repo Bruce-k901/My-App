@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
-import { Plus, Search, Edit, Trash2, Phone, Mail, User, AlertCircle, Wrench, Building2 } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Phone, Mail, User, AlertCircle, Wrench, Building2 } from '@/components/ui/icons';
 import { toast } from 'sonner';
 
 interface EmergencyContact {
@@ -40,7 +40,11 @@ const CONTACT_TYPE_ICONS = {
 };
 
 export default function EmergencyContactsPage() {
-  const { profile, companyId } = useAppContext();
+  const { profile, companyId, company } = useAppContext();
+  
+  // Use selected company from context (for multi-company support)
+  const effectiveCompanyId = company?.id || companyId || profile?.company_id;
+  
   const [contacts, setContacts] = useState<EmergencyContact[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -60,7 +64,7 @@ export default function EmergencyContactsPage() {
   });
 
   const loadContacts = useCallback(async () => {
-    if (!companyId) {
+    if (!effectiveCompanyId) {
       console.warn('No companyId available for loading emergency contacts');
       setLoading(false);
       return;
@@ -71,7 +75,7 @@ export default function EmergencyContactsPage() {
       const { data, error } = await supabase
         .from('emergency_contacts')
         .select('*')
-        .eq('company_id', companyId)
+        .eq('company_id', effectiveCompanyId)
         .order('display_order', { ascending: true })
         .order('name', { ascending: true });
 
@@ -106,16 +110,16 @@ export default function EmergencyContactsPage() {
     } finally {
       setLoading(false);
     }
-  }, [companyId]);
+  }, [effectiveCompanyId]);
 
   useEffect(() => {
-    if (companyId) {
+    if (effectiveCompanyId) {
       loadContacts();
     } else {
       setLoading(false);
       setContacts([]);
     }
-  }, [companyId, loadContacts]);
+  }, [effectiveCompanyId, loadContacts]);
 
   const handleSave = async () => {
     if (!companyId) return;
@@ -143,7 +147,7 @@ export default function EmergencyContactsPage() {
           .from('emergency_contacts')
           .insert({
             ...formData,
-            company_id: companyId,
+            company_id: effectiveCompanyId,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           });
@@ -226,7 +230,7 @@ export default function EmergencyContactsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white/60">Loading emergency contacts...</div>
+        <div className="text-theme-tertiary">Loading emergency contacts...</div>
       </div>
     );
   }
@@ -236,12 +240,12 @@ export default function EmergencyContactsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Emergency Contacts</h1>
-          <p className="text-white/60 mt-1">Manage emergency contact information for display on notice boards</p>
+          <h1 className="text-2xl font-bold text-theme-primary">Emergency Contacts</h1>
+          <p className="text-theme-tertiary mt-1">Manage emergency contact information for display on notice boards</p>
         </div>
         <button
           onClick={handleNew}
-          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
+          className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg),0.7)] rounded-lg transition-all duration-200"
         >
           <Plus className="w-4 h-4" />
           Add Contact
@@ -251,19 +255,19 @@ export default function EmergencyContactsPage() {
       {/* Filters */}
       <div className="flex gap-4 items-center">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-theme-tertiary" />
           <input
             type="text"
             placeholder="Search contacts..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+            className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:border-module-fg/[0.50]"
           />
         </div>
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
+          className="px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary focus:outline-none focus:border-module-fg/[0.50]"
         >
           <option value="all">All Types</option>
           {Object.entries(CONTACT_TYPE_LABELS).map(([value, label]) => (
@@ -275,7 +279,7 @@ export default function EmergencyContactsPage() {
       {/* Contacts List */}
       <div className="grid gap-4">
         {filteredContacts.length === 0 ? (
-          <div className="text-center py-12 text-white/60">
+          <div className="text-center py-12 text-theme-tertiary">
             {searchQuery || filterType !== 'all' 
               ? 'No contacts match your search' 
               : 'No emergency contacts yet. Click "Add Contact" to get started.'}
@@ -290,20 +294,20 @@ export default function EmergencyContactsPage() {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-4 flex-1">
-                    <div className="p-2 bg-pink-500/10 rounded-lg">
-                      <Icon className="w-5 h-5 text-pink-400" />
+                    <div className="p-2 bg-module-fg/[0.15] rounded-lg">
+                      <Icon className="w-5 h-5 text-module-fg" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-white font-semibold">{contact.name}</h3>
-                        <span className="text-xs px-2 py-0.5 bg-white/[0.1] text-white/60 rounded">
+                        <h3 className="text-theme-primary font-semibold">{contact.name}</h3>
+                        <span className="text-xs px-2 py-0.5 bg-white/[0.1] text-theme-tertiary rounded">
                           {CONTACT_TYPE_LABELS[contact.contact_type]}
                         </span>
                         {contact.role_title && (
-                          <span className="text-sm text-white/60">• {contact.role_title}</span>
+                          <span className="text-sm text-theme-tertiary">• {contact.role_title}</span>
                         )}
                       </div>
-                      <div className="flex flex-wrap gap-4 mt-2 text-sm text-white/60">
+                      <div className="flex flex-wrap gap-4 mt-2 text-sm text-theme-tertiary">
                         <div className="flex items-center gap-1">
                           <Phone className="w-4 h-4" />
                           <a href={`tel:${contact.phone_number}`} className="hover:text-white transition-colors">
@@ -320,7 +324,7 @@ export default function EmergencyContactsPage() {
                         )}
                       </div>
                       {contact.notes && (
-                        <p className="text-sm text-white/50 mt-2">{contact.notes}</p>
+                        <p className="text-sm text-theme-tertiary mt-2">{contact.notes}</p>
                       )}
                     </div>
                   </div>
@@ -330,7 +334,7 @@ export default function EmergencyContactsPage() {
                       className="p-2 hover:bg-white/[0.1] rounded-lg transition-colors"
                       title="Edit contact"
                     >
-                      <Edit className="w-4 h-4 text-white/60" />
+                      <Edit className="w-4 h-4 text-theme-tertiary" />
                     </button>
                     <button
                       onClick={() => handleDelete(contact.id)}
@@ -350,18 +354,18 @@ export default function EmergencyContactsPage() {
       {/* Add/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0B0D13] border border-white/[0.1] rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold text-white mb-4">
+          <div className="bg-[rgb(var(--surface-elevated))] border border-white/[0.1] rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold text-theme-primary mb-4">
               {editingContact ? 'Edit Contact' : 'Add Emergency Contact'}
             </h2>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Contact Type</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">Contact Type</label>
                 <select
                   value={formData.contact_type}
                   onChange={(e) => setFormData({ ...formData, contact_type: e.target.value as any })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary focus:outline-none focus:border-module-fg/[0.50]"
                 >
                   {Object.entries(CONTACT_TYPE_LABELS).map(([value, label]) => (
                     <option key={value} value={value}>{label}</option>
@@ -370,69 +374,69 @@ export default function EmergencyContactsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Name *</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">Name *</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:border-module-fg/[0.50]"
                   placeholder="John Smith"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Phone Number *</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">Phone Number *</label>
                 <input
                   type="tel"
                   value={formData.phone_number}
                   onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:border-module-fg/[0.50]"
                   placeholder="+44 123 456 7890"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Email</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">Email</label>
                 <input
                   type="email"
                   value={formData.email || ''}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:border-module-fg/[0.50]"
                   placeholder="john@example.com"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Role/Title</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">Role/Title</label>
                 <input
                   type="text"
                   value={formData.role_title || ''}
                   onChange={(e) => setFormData({ ...formData, role_title: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:border-module-fg/[0.50]"
                   placeholder="e.g., First Aider, Site Manager"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Notes</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">Notes</label>
                 <textarea
                   value={formData.notes || ''}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:border-module-fg/[0.50]"
                   placeholder="Additional information..."
                   rows={3}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Display Order</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-2">Display Order</label>
                 <input
                   type="number"
                   value={formData.display_order}
                   onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
-                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:border-module-fg/[0.50]"
                   min="0"
                 />
               </div>
@@ -445,14 +449,14 @@ export default function EmergencyContactsPage() {
                   onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
                   className="w-4 h-4 rounded border-white/[0.2] bg-white/[0.06]"
                 />
-                <label htmlFor="is_active" className="text-sm text-white/80">Active</label>
+                <label htmlFor="is_active" className="text-sm text-theme-secondary">Active</label>
               </div>
             </div>
 
             <div className="flex gap-3 mt-6">
               <button
                 onClick={handleSave}
-                className="flex-1 px-4 py-2 bg-transparent border border-[#EC4899] text-[#EC4899] hover:shadow-[0_0_12px_rgba(236,72,153,0.7)] rounded-lg transition-all duration-200"
+                className="flex-1 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg),0.7)] rounded-lg transition-all duration-200"
               >
                 {editingContact ? 'Update' : 'Add'} Contact
               </button>
@@ -472,7 +476,7 @@ export default function EmergencyContactsPage() {
                     language: 'en'
                   });
                 }}
-                className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-theme-primary rounded-lg transition-colors"
               >
                 Cancel
               </button>

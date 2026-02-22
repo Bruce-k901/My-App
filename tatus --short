@@ -1,0 +1,20 @@
+[33mab98b0c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m fix: Add error handling to middleware to prevent runtime crashes - Wrap Supabase client creation in try-catch - Skip Supabase setup if env vars missing - Continue request even if session refresh fails
+[33m932dc09[m fix: Remove invalid req.cookies.set() call in middleware - Only res.cookies can be written to in Next.js middleware - Fixes potential runtime errors
+[33m6581b68[m fix: Update middleware to use @supabase/ssr instead of deprecated auth-helpers-nextjs - Fixes cookie parsing error (base64 cookie parsing issue) - Replaces createMiddlewareClient with createServerClient from @supabase/ssr
+[33m7404253[m fix: Move clock_in_at::date fix before method check to catch SELECT queries
+[33m59e18a0[m fix: Make fetch interceptor more specific to avoid breaking cookie parsing - Only intercept attendance_logs REST API requests - Skip auth, storage, functions, and realtime endpoints - Preserve credentials mode for cookie handling
+[33m81f295c[m fix: Add comprehensive attendance_logs fix scripts and improved fetch interceptor
+[33maa5c3f1[m fix: improve callout closing functionality with better error handling and filter switching
+[33md6edf0e[m fix(auth): stop login/dashboard loop; skip AppContext auth on auth pages; soften middleware; wait for session cookie before redirect
+[33m7059bca[m chore(middleware): remove legacy src/proxy.ts to avoid conflict
+[33m455e2e6[m chore(dev): clear caches, reinstall deps, run dev on port 3001; add middleware
+[33mcb41efb[m fix(logout): sign out before clearing storage, use router.replace with hard fallback, and prevent double-click hangs
+[33mc5ffe36[m fix(auth-flow): root session-based redirect; prevent double sign-in on login; add loading gate to dashboard layout; keep dev toggle removed
+[33m7b008c6[m chore(dev-toggle): remove RoleToggle and all role override logic; sidebar now uses AppContext role only; delete dev component
+[33mf4f3994[m fix(AppContext): expose authLoading alias for loading; include in default context and legacy hook mapping to prevent undefined loading usage in pages
+[33m79e7586[m feat(business): update user metadata with company_id on save; sync existing profile company_id to auth metadata on business page; ensure profiles updated after company save
+[33m9fc4e87[m fix(AppContext): handle profiles RLS recursion by building session-based fallback profile with company_id/site_id; add debug logs for fetched vs fallback profile; extend Profile fields; temporary metadata logging
+[33ma5518f9[m fix(auth): global guard in RouteLogger - if session exists, auto-replace /login -> /dashboard; also handle SIGNED_IN event on /login
+[33me0d20e6[m fix(login): import useEffect to satisfy prerender and avoid /login build error
+[33m4a1b5d5[m fix(auth): on /login, immediately redirect to /dashboard if session already exists (breaks loop)
+[33mda0c58b[m fix(auth): prevent login loop by using router.replace after sign-in and removing /app auto-redirect to /login; /app now passive and shows state only

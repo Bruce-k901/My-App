@@ -88,7 +88,7 @@ export const COLORS = {
     [TaskCategory.COMPLIANCE]: 'from-purple-600/20 to-magenta-600/20'
   },
   priority: {
-    [TaskPriority.LOW]: 'text-gray-400',
+    [TaskPriority.LOW]: 'text-theme-tertiary',
     [TaskPriority.MEDIUM]: 'text-blue-400',
     [TaskPriority.HIGH]: 'text-orange-400',
     [TaskPriority.CRITICAL]: 'text-red-500'

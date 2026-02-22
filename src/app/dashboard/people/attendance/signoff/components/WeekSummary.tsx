@@ -1,0 +1,139 @@
+'use client';
+
+import { Send, Lock, AlertCircle, CheckCircle } from '@/components/ui/icons';
+import { WeekAttendance } from '@/lib/attendance/types';
+
+interface WeekSummaryProps {
+  weekData: WeekAttendance;
+  isLocked: boolean;
+  canApprove: boolean;
+  onSubmitPayroll: () => void;
+}
+
+export default function WeekSummary({
+  weekData,
+  isLocked,
+  canApprove,
+  onSubmitPayroll
+}: WeekSummaryProps) {
+  const allComplete = weekData.percentComplete === 100;
+  const hasIssues = weekData.days.some(d => 
+    d.records.some(r => r.attendanceStatus === 'missing_attendance')
+  );
+  
+  return (
+    <div className={`
+      bg-theme-surface border rounded-xl p-6 mt-6
+      ${isLocked ? 'border-green-200 dark:border-green-500/30' : 'border-theme'}
+    `}>
+      <h3 className="font-semibold mb-4 flex items-center gap-2">
+        {isLocked ? (
+          <>
+            <Lock className="w-5 h-5 text-green-400" />
+            Week Submitted to Payroll
+          </>
+        ) : (
+          <>
+            <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            Week Summary
+          </>
+        )}
+      </h3>
+      
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-gray-100 dark:bg-white/[0.05] rounded-lg p-4">
+          <p className="text-sm text-theme-tertiary">Total Scheduled</p>
+          <p className="text-2xl font-bold">{weekData.totalScheduledHours.toFixed(1)}h</p>
+        </div>
+        
+        <div className="bg-gray-100 dark:bg-white/[0.05] rounded-lg p-4">
+          <p className="text-sm text-theme-tertiary">Total Actual</p>
+          <p className="text-2xl font-bold">{weekData.totalActualHours.toFixed(1)}h</p>
+        </div>
+        
+        <div className="bg-gray-100 dark:bg-white/[0.05] rounded-lg p-4">
+          <p className="text-sm text-theme-tertiary">Variance</p>
+          <p className={`text-2xl font-bold ${
+            weekData.totalVariance >= 0 ? 'text-green-400' : 'text-red-600 dark:text-red-400'
+          }`}>
+            {weekData.totalVariance >= 0 ? '+' : ''}{weekData.totalVariance.toFixed(1)}h
+          </p>
+        </div>
+        
+        <div className="bg-gray-100 dark:bg-white/[0.05] rounded-lg p-4">
+          <p className="text-sm text-theme-tertiary">Signed Off</p>
+          <p className="text-2xl font-bold">
+            {weekData.signedOffCount}/{weekData.totalCount}
+            <span className="text-sm text-theme-tertiary ml-2">({weekData.percentComplete}%)</span>
+          </p>
+        </div>
+      </div>
+      
+      {/* Progress bar */}
+      <div className="mb-6">
+        <div className="h-2 bg-gray-100 dark:bg-white/[0.05] rounded-full overflow-hidden">
+          <div 
+            className={`h-full transition-all ${allComplete ? 'bg-green-500' : 'bg-blue-600 dark:bg-blue-500'}`}
+            style={{ width: `${weekData.percentComplete}%` }}
+          />
+        </div>
+      </div>
+      
+      {/* Warnings */}
+      {hasIssues && !isLocked && (
+        <div className="bg-yellow-100 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/20 rounded-lg p-4 mb-6 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-yellow-600 dark:text-yellow-400 font-medium">Attention Required</p>
+            <p className="text-sm text-theme-tertiary mt-1">
+              Some staff have missing attendance records. Please add or adjust their hours before submitting to payroll.
+            </p>
+          </div>
+        </div>
+      )}
+      
+      {/* Submit button */}
+      {canApprove && !isLocked && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-theme-tertiary">
+            {allComplete 
+              ? 'All hours have been signed off and are ready for payroll.'
+              : `${weekData.totalCount - weekData.signedOffCount} entries still pending sign-off.`
+            }
+          </p>
+          
+          <button
+            onClick={onSubmitPayroll}
+            disabled={!allComplete}
+            className={`
+              flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors
+              ${allComplete
+                ? 'bg-module-fg hover:bg-module-fg/90 text-white'
+                : 'bg-gray-100 dark:bg-white/[0.05] text-theme-tertiary cursor-not-allowed'
+              }
+            `}
+          >
+            <Send className="w-4 h-4" />
+            Lock Week & Send to Payroll
+          </button>
+        </div>
+      )}
+      
+      {isLocked && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-green-400">
+            Submitted on {new Date().toLocaleDateString('en-GB', { 
+              day: 'numeric', 
+              month: 'long', 
+              year: 'numeric' 
+            })}
+          </p>
+          <span className="text-xs bg-green-100 dark:bg-green-500/20 text-green-400 px-3 py-1.5 rounded-full">
+            Payroll Complete
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+

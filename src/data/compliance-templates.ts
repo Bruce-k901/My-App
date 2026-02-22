@@ -566,6 +566,9 @@ export function buildComplianceTemplate({
   instructions,
   triggersContractorOnFailure = false,
   contractorType = null as string | null,
+  assetType = null as string | null,
+  repeatableFieldName = null as string | null,
+  recurrencePattern = null as Record<string, any> | null,
 }: {
   slug: string
   name: string
@@ -583,6 +586,9 @@ export function buildComplianceTemplate({
   instructions?: string
   triggersContractorOnFailure?: boolean
   contractorType?: string | null
+  assetType?: string | null
+  repeatableFieldName?: string | null
+  recurrencePattern?: Record<string, any> | null
 }): ComplianceTemplate {
   return {
     id: slug,
@@ -593,16 +599,16 @@ export function buildComplianceTemplate({
     category: category as TaskCategory,
     audit_category: auditCategory,
     frequency,
-    recurrence_pattern: null,
+    recurrence_pattern: recurrencePattern,
     time_of_day: dayparts[0] ?? "anytime",
     dayparts,
     assigned_to_role: assignedRole,
     assigned_to_user_id: null,
     site_id: null,
     asset_id: null,
-    asset_type: null,
+    asset_type: assetType,
     instructions: instructions ?? description,
-    repeatable_field_name: null,
+    repeatable_field_name: repeatableFieldName,
     evidence_types: evidenceTypes,
     requires_sop: false,
     requires_risk_assessment: false,
@@ -638,6 +644,8 @@ const COMPLIANCE_MODULE_TEMPLATES_V2: ComplianceTemplate[] = [
     workflowType: "measurement",
     triggersContractorOnFailure: true,
     contractorType: "equipment_repair",
+    assetType: "refrigeration_equipment",
+    repeatableFieldName: "asset_name",
   }),
   buildComplianceTemplate({
     slug: "hot_holding_temperature_verification",
@@ -653,6 +661,8 @@ const COMPLIANCE_MODULE_TEMPLATES_V2: ComplianceTemplate[] = [
     complianceStandard: "Food Safety Act 1990",
     isCritical: true,
     workflowType: "measurement",
+    assetType: "hot_holding_equipment",
+    repeatableFieldName: "equipment_name",
   }),
   buildComplianceTemplate({
     slug: "weekly_pest_control_inspection",
@@ -668,6 +678,18 @@ const COMPLIANCE_MODULE_TEMPLATES_V2: ComplianceTemplate[] = [
     isCritical: true,
     triggersContractorOnFailure: true,
     contractorType: "pest_control",
+    recurrencePattern: {
+      daypart_times: { before_open: "07:00" },
+      default_checklist_items: [
+        "Check all mouse traps in storage areas",
+        "Inspect insectocutors in food preparation areas",
+        "Examine bait stations in external areas",
+        "Look for droppings or gnaw marks",
+        "Check for entry points around doors/windows",
+        "Verify no pest activity in dry goods storage",
+        "Document findings and take photos if needed"
+      ]
+    },
   }),
   buildComplianceTemplate({
     slug: "fire_alarm_test_weekly",
@@ -684,6 +706,8 @@ const COMPLIANCE_MODULE_TEMPLATES_V2: ComplianceTemplate[] = [
     isCritical: true,
     triggersContractorOnFailure: true,
     contractorType: "fire_engineer",
+    assetType: "fire_alarms",
+    repeatableFieldName: "fire_alarm_location",
   }),
   buildComplianceTemplate({
     slug: "first_aid_kit_inspection",
@@ -698,6 +722,24 @@ const COMPLIANCE_MODULE_TEMPLATES_V2: ComplianceTemplate[] = [
     evidenceTypes: ["pass_fail", "photo", "text_note"],
     complianceStandard: "Health and Safety (First-Aid) Regulations 1981",
     isCritical: true,
+    recurrencePattern: {
+      daypart_times: { before_open: "07:00" },
+      default_checklist_items: [
+        "Check fabric plasters - assorted sizes",
+        "Check blue plasters for food handlers",
+        "Check medium sterile dressings",
+        "Check large sterile dressings",
+        "Check burns dressings",
+        "Check disposable gloves",
+        "Check antiseptic wipes",
+        "Check eye wash solution",
+        "Check scissors and tweezers",
+        "Check finger cots",
+        "Check burns gel sachets",
+        "Verify accident book is available and completed",
+        "Restock any used or expired items"
+      ]
+    },
   }),
   buildComplianceTemplate({
     slug: "fire_extinguisher_inspection",
@@ -714,6 +756,19 @@ const COMPLIANCE_MODULE_TEMPLATES_V2: ComplianceTemplate[] = [
     isCritical: true,
     triggersContractorOnFailure: true,
     contractorType: "fire_safety",
+    recurrencePattern: {
+      date_of_month: 1,
+      daypart_times: { before_open: "07:00" },
+      default_checklist_items: [
+        "Check pressure gauge in green zone",
+        "Verify safety pin and seal intact",
+        "Inspect for physical damage or corrosion",
+        "Ensure clear access and visibility",
+        "Check inspection tag is present and current",
+        "Record inspection in fire safety log",
+        "Report any issues for immediate service"
+      ]
+    },
   }),
   buildComplianceTemplate({
     slug: "extraction_system_contractor_verification",
@@ -730,6 +785,8 @@ const COMPLIANCE_MODULE_TEMPLATES_V2: ComplianceTemplate[] = [
     isCritical: true,
     triggersContractorOnFailure: true,
     contractorType: "duct_cleaning",
+    assetType: "extraction_systems",
+    repeatableFieldName: "extraction_system",
   }),
   buildComplianceTemplate({
     slug: "lighting_inspection",
@@ -832,6 +889,16 @@ const COMPLIANCE_MODULE_TEMPLATES_V2: ComplianceTemplate[] = [
     evidenceTypes: ["yes_no_checklist", "pass_fail", "photo"],
     complianceStandard: "Food Safety Act 1990, Food Hygiene Regulations, HACCP",
     isCritical: true,
+    recurrencePattern: {
+      daypart_times: { before_open: "07:00" },
+      default_checklist_items: [
+        "Raw meats stored BELOW cooked/ready-to-eat items",
+        "Drip trays present under raw meat storage",
+        "Color-coded containers used correctly",
+        "Dedicated utensils for raw vs ready-to-eat",
+        "Physical barriers between zones where needed"
+      ]
+    },
   }),
   buildComplianceTemplate({
     slug: "pest_control_device_inspection",
@@ -860,6 +927,17 @@ const COMPLIANCE_MODULE_TEMPLATES_V2: ComplianceTemplate[] = [
     evidenceTypes: ["yes_no_checklist", "temperature", "pass_fail", "photo"],
     complianceStandard: "Food Safety Act 1990, Food Hygiene Regulations, HACCP",
     isCritical: true,
+    recurrencePattern: {
+      daypart_times: { before_open: "07:00" },
+      default_checklist_items: [
+        "Hot AND cold running water",
+        "Liquid soap dispenser full",
+        "Paper towels stocked",
+        "No-touch bin with liner",
+        '"Now Wash Your Hands" sign visible',
+        "Temperature check: water reaches 40-45°C"
+      ]
+    },
   }),
   buildComplianceTemplate({
     slug: "temperature_probe_calibration_audit",
@@ -874,6 +952,18 @@ const COMPLIANCE_MODULE_TEMPLATES_V2: ComplianceTemplate[] = [
     evidenceTypes: ["yes_no_checklist", "temperature", "pass_fail", "photo"],
     complianceStandard: "Food Safety Act 1990, Food Hygiene Regulations, HACCP",
     isCritical: true,
+    assetType: "temperature_probes",
+    repeatableFieldName: "probe_name",
+    recurrencePattern: {
+      daypart_times: { before_open: "09:00" },
+      default_checklist_items: [
+        "Ice bath test: reads 0°C ±1°C",
+        "Boiling water test: reads 100°C ±1°C",
+        "Probe clean and undamaged",
+        "Battery functional",
+        "Calibration date sticker updated"
+      ]
+    },
   }),
   buildComplianceTemplate({
     slug: "fire_drill_execution_documentation",
@@ -1014,6 +1104,131 @@ const COMPLIANCE_MODULE_TEMPLATES_V2: ComplianceTemplate[] = [
     evidenceTypes: ["yes_no_checklist", "text_note"],
     complianceStandard: "Manual Handling Operations Regulations 1992",
     isCritical: false,
+  }),
+  // --- SALSA Compliance Templates --- @salsa
+  buildComplianceTemplate({
+    slug: "salsa_annual_food_safety_review",
+    name: "Annual SALSA Food Safety Review",
+    description:
+      "Comprehensive annual review of all five SALSA standard sections — prerequisite controls, HACCP, management systems, GMP, and supplier approval.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "annually",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["yes_no_checklist", "text_note"],
+    complianceStandard: "SALSA Issue 6",
+    isCritical: true,
+    workflowType: "checklist_verify",
+    workflowConfig: {
+      verificationRules: { requiresSignature: true },
+    },
+  }),
+  buildComplianceTemplate({
+    slug: "salsa_mock_recall_exercise",
+    name: "Mock Recall Exercise",
+    description:
+      "Annual mock recall to demonstrate traceability capability within 4 hours. SALSA requires this as evidence of recall readiness.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "annually",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["yes_no_checklist", "text_note"],
+    complianceStandard: "SALSA Issue 6",
+    isCritical: true,
+    workflowType: "checklist_verify",
+    workflowConfig: {
+      verificationRules: { requiresSignature: true },
+    },
+    instructions:
+      "Use the automated mock recall tool at /dashboard/stockly/traceability to run forward and backward traces. Record batch code, time taken, and customer count.",
+  }),
+  buildComplianceTemplate({
+    slug: "salsa_food_fraud_assessment",
+    name: "Food Fraud Vulnerability Assessment",
+    description:
+      "Annual assessment of food fraud risks per SALSA requirement. Covers authenticity, substitution, dilution, and supply chain vulnerabilities.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "annually",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["yes_no_checklist", "text_note"],
+    complianceStandard: "SALSA Issue 6",
+    isCritical: false,
+    workflowType: "checklist_verify",
+  }),
+  buildComplianceTemplate({
+    slug: "salsa_haccp_plan_review",
+    name: "HACCP Plan Review",
+    description:
+      "Annual review of the HACCP plan to verify it remains current and effective. SALSA requires documented evidence of regular HACCP review.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "annually",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["yes_no_checklist", "text_note"],
+    complianceStandard: "SALSA Issue 6",
+    isCritical: true,
+    workflowType: "checklist_verify",
+    workflowConfig: {
+      verificationRules: { requiresSignature: true },
+    },
+  }),
+  buildComplianceTemplate({
+    slug: "salsa_internal_audit",
+    name: "Internal Food Safety Audit",
+    description:
+      "Quarterly internal audit of food safety practices. Covers hygiene, cleaning, temperature control, allergen handling, and documentation.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "quarterly",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["yes_no_checklist", "text_note", "photo"],
+    complianceStandard: "SALSA Issue 6",
+    isCritical: true,
+    workflowType: "checklist_verify",
+    workflowConfig: {
+      verificationRules: { requiresPhoto: true, requiresSignature: true },
+    },
+  }),
+  buildComplianceTemplate({
+    slug: "salsa_supplier_approval_review",
+    name: "Supplier Approval Review",
+    description:
+      "Annual review of supplier approval status. Verify certificates, specs, and risk ratings are current for all approved suppliers.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "annually",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["yes_no_checklist", "text_note"],
+    complianceStandard: "SALSA Issue 6",
+    isCritical: false,
+    workflowType: "document_track",
+    workflowConfig: {
+      trackingRules: { expiryWarningDays: 30 },
+    },
+    instructions:
+      "Review approved supplier list at /dashboard/stockly/suppliers/approved-list. Check all certificates are current and risk ratings up to date.",
+  }),
+  buildComplianceTemplate({
+    slug: "salsa_goods_in_verification",
+    name: "Goods-In Inspection Verification",
+    description:
+      "Weekly verification that goods-in procedures are being followed correctly — temperature checks, batch codes captured, condition assessments completed.",
+    category: TaskCategory.FOOD_SAFETY,
+    auditCategory: "food_safety",
+    frequency: "weekly",
+    dayparts: ["anytime"],
+    assignedRole: "manager",
+    evidenceTypes: ["yes_no_checklist", "text_note"],
+    complianceStandard: "SALSA Issue 6",
+    isCritical: false,
+    workflowType: "checklist_verify",
   }),
 ]
 

@@ -9,9 +9,10 @@ attribute vec2 position;
 void main(){gl_Position=vec4(position,0.0,1.0);}
 `;
 
+// Original CPPN shader — untouched, proven to work
 const fragment = `
 #ifdef GL_ES
-precision lowp float;
+precision mediump float;
 #endif
 uniform vec2 uResolution;
 uniform float uTime;
@@ -61,13 +62,23 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord){
 }
 void main(){
     vec4 col;mainImage(col,gl_FragCoord.xy);
-    col.rgb=hueShiftRGB(col.rgb,uHueShift);
-    float scanline_val=sin(gl_FragCoord.y*uScanFreq)*0.5+0.5;
-    col.rgb*=1.-(scanline_val*scanline_val)*uScan;
-    col.rgb+=(rand(gl_FragCoord.xy+uTime)-0.5)*uNoise;
-    gl_FragColor=vec4(clamp(col.rgb,0.0,1.0),1.0);
+    col.rgb = hueShiftRGB(col.rgb, uHueShift);
+    float scanline_val = sin(gl_FragCoord.y * uScanFreq) * 0.5 + 0.5;
+    col.rgb *= 1.0 - (scanline_val * scanline_val) * uScan;
+    col.rgb += (rand(gl_FragCoord.xy + uTime) - 0.5) * uNoise;
+    gl_FragColor = vec4(clamp(col.rgb, 0.0, 1.0), 1.0);
 }
 `;
+
+// Module colours for the CSS overlay
+const MODULE_COLORS_HEX = [
+  '#F1E194', // checkly
+  '#789A99', // stockly
+  '#D37E91', // teamly
+  '#ACC8A2', // planly
+  '#F3E7D9', // assetly
+  '#CBDDE9', // msgly
+];
 
 interface DarkVeilProps {
   hueShift?: number;
@@ -77,19 +88,25 @@ interface DarkVeilProps {
   scanlineFrequency?: number;
   warpAmount?: number;
   resolutionScale?: number;
+  moduleColors?: boolean;
+  opacity?: number;
 }
 
 export default function DarkVeil({
-  hueShift = 0,
+  hueShift = 150,
   noiseIntensity = 0,
   scanlineIntensity = 0,
   speed = 0.75,
   scanlineFrequency = 0,
   warpAmount = 0,
   resolutionScale = 1,
+  moduleColors = true,
+  opacity = 0.5,
 }: DarkVeilProps) {
   const ref = useRef<HTMLCanvasElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
+  // WebGL canvas — original CPPN shader, untouched
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
@@ -97,27 +114,37 @@ export default function DarkVeil({
     const parent = canvas.parentElement;
     if (!parent) return;
 
-    const renderer = new Renderer({
-      dpr: Math.min(window.devicePixelRatio, 2),
-      canvas,
-    });
+    let renderer: Renderer;
+    try {
+      renderer = new Renderer({
+        dpr: Math.min(window.devicePixelRatio, 2),
+        canvas,
+      });
+    } catch {
+      return;
+    }
 
     const gl = renderer.gl;
     const geometry = new Triangle(gl);
 
-    const program = new Program(gl, {
-      vertex,
-      fragment,
-      uniforms: {
-        uTime: { value: 0 },
-        uResolution: { value: new Vec2() },
-        uHueShift: { value: hueShift },
-        uNoise: { value: noiseIntensity },
-        uScan: { value: scanlineIntensity },
-        uScanFreq: { value: scanlineFrequency },
-        uWarp: { value: warpAmount },
-      },
-    });
+    let program: Program;
+    try {
+      program = new Program(gl, {
+        vertex,
+        fragment,
+        uniforms: {
+          uTime: { value: 0 },
+          uResolution: { value: new Vec2() },
+          uHueShift: { value: hueShift },
+          uNoise: { value: noiseIntensity },
+          uScan: { value: scanlineIntensity },
+          uScanFreq: { value: scanlineFrequency },
+          uWarp: { value: warpAmount },
+        },
+      });
+    } catch {
+      return;
+    }
 
     const mesh = new Mesh(gl, { geometry, program });
 
@@ -143,7 +170,6 @@ export default function DarkVeil({
       program.uniforms.uWarp.value = warpAmount;
 
       renderer.render({ scene: mesh });
-
       frame = requestAnimationFrame(loop);
     };
 
@@ -163,6 +189,46 @@ export default function DarkVeil({
     resolutionScale,
   ]);
 
-  return <canvas ref={ref} className="darkveil-canvas" />;
-}
+  // Animated module colour overlay via CSS
+  useEffect(() => {
+    if (!moduleColors || !overlayRef.current) return;
 
+    const el = overlayRef.current;
+    let animFrame: number;
+    const start = performance.now();
+
+    const animate = () => {
+      const t = (performance.now() - start) / 1000;
+      // Slowly rotate through module colours
+      const angle = (t * 15) % 360; // 15 degrees per second
+      const stops = MODULE_COLORS_HEX.map((c, i) => {
+        const pos = ((i / MODULE_COLORS_HEX.length) * 360 + angle) % 360;
+        return `${c} ${pos}deg`;
+      }).join(', ');
+      el.style.background = `conic-gradient(from ${angle}deg at 50% 50%, ${stops}, ${MODULE_COLORS_HEX[0]} ${360 + angle}deg)`;
+      el.style.opacity = String(opacity * 0.6);
+      animFrame = requestAnimationFrame(animate);
+    };
+
+    animate();
+    return () => cancelAnimationFrame(animFrame);
+  }, [moduleColors, opacity]);
+
+  return (
+    <div className="darkveil-wrapper" style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <canvas ref={ref} className="darkveil-canvas" style={{ opacity: 0.3 }} />
+      {moduleColors && (
+        <div
+          ref={overlayRef}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            mixBlendMode: 'color',
+            filter: 'blur(80px)',
+            pointerEvents: 'none',
+          }}
+        />
+      )}
+    </div>
+  );
+}

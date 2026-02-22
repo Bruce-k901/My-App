@@ -87,7 +87,7 @@ export default function DashboardRouter() {
   if (!ready || session === undefined) {
     return (
       <div className="min-h-[40vh] flex items-center justify-center">
-        <p className="text-slate-400">Loading dashboard…</p>
+        <p className="text-theme-tertiary">Loading dashboard…</p>
       </div>
     );
   }

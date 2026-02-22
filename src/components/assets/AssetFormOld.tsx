@@ -12,7 +12,7 @@ import { supabase } from '@/lib/supabaseClient';
 import Select from '@/components/ui/Select';
 import CheckboxCustom from '@/components/ui/CheckboxCustom';
 import { Tooltip } from '@/components/ui/tooltip/Tooltip';
-import { Save, XCircle, Loader2 } from 'lucide-react';
+import { Save, XCircle, Loader2 } from '@/components/ui/icons';
 
 export default function AssetForm({ open, onClose, onSaved, asset }: { open: boolean; onClose: () => void; onSaved?: (asset: any) => void; asset?: any }) {
   const { companyId, siteId } = useAppContext();
@@ -321,8 +321,8 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
         style={{ backgroundColor: '#171717', border: '1px solid #404040', minWidth: '900px' }}
       >
         {/* Sticky Header */}
-        <div className="sticky top-0 bg-neutral-900 border-b border-neutral-700 p-6 flex justify-between items-center z-10">
-          <DialogTitle className="text-xl font-semibold text-white">
+        <div className="sticky top-0 bg-neutral-900 border-b border-theme p-6 flex justify-between items-center z-10">
+          <DialogTitle className="text-xl font-semibold text-theme-primary">
             {asset?.id ? 'Edit Asset' : 'Add New Asset'}
           </DialogTitle>
           <div className="flex gap-2">
@@ -351,7 +351,7 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
             
             {/* Section A: Assignment - Full Width */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-neutral-300 uppercase tracking-wide border-b border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-theme-tertiary uppercase tracking-wide border-b border-theme pb-2">
                 Assignment
               </h3>
               <div className="grid grid-cols-2 gap-4">
@@ -373,13 +373,13 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
                   />
                   {/* Region display */}
                   {form.region && (
-                    <div className="text-xs text-neutral-400 mt-1">
+                    <div className="text-xs text-theme-tertiary mt-1">
                       Region: {form.region}
                     </div>
                   )}
                   {/* Debug info */}
                   {process.env.NODE_ENV === 'development' && (
-                    <div className="text-xs text-neutral-500 mt-1">
+                    <div className="text-xs text-theme-tertiary mt-1">
                       Debug: form.site_id="{form.site_id}", sites={sites.length}, 
                       selected={sites.find(s => s.id === form.site_id)?.name || 'none'}
                     </div>
@@ -407,12 +407,12 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
 
             {/* Section B: Identification - Two Columns */}
             <div className="space-y-4 mt-6">
-              <h3 className="text-sm font-medium text-neutral-300 uppercase tracking-wide border-b border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-theme-tertiary uppercase tracking-wide border-b border-theme pb-2">
                 Identification
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">Asset Name</label>
+                  <label className="text-sm text-theme-tertiary mb-1 block">Asset Name</label>
                   <Input
                     placeholder="e.g. Kitchen Fridge 1"
                     value={form.name}
@@ -420,7 +420,7 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">Serial Number</label>
+                  <label className="text-sm text-theme-tertiary mb-1 block">Serial Number</label>
                   <Input
                     placeholder="Manufacturer serial"
                     value={form.serial_number}
@@ -428,7 +428,7 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">Brand</label>
+                  <label className="text-sm text-theme-tertiary mb-1 block">Brand</label>
                   <Input
                     placeholder="e.g. Williams, Hoshizaki"
                     value={form.brand}
@@ -436,12 +436,12 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">Model</label>
+                  <label className="text-sm text-theme-tertiary mb-1 block">Model</label>
                   <Input
                     placeholder="e.g. Williams H280"
                     value={form.model}
                     onChange={(e) => setForm(prev => ({ ...prev, model: e.target.value }))}
-                    className="placeholder:italic placeholder:text-neutral-500"
+                    className="placeholder:italic placeholder:text-theme-tertiary"
                   />
                 </div>
               </div>
@@ -449,12 +449,12 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
 
             {/* Section C: Lifecycle - Two Columns */}
             <div className="space-y-4 mt-6">
-              <h3 className="text-sm font-medium text-neutral-300 uppercase tracking-wide border-b border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-theme-tertiary uppercase tracking-wide border-b border-theme pb-2">
                 Lifecycle
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">Install Date</label>
+                  <label className="text-sm text-theme-tertiary mb-1 block">Install Date</label>
                   <Input
                     type="date"
                     value={form.install_date}
@@ -462,7 +462,7 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">Warranty End Date</label>
+                  <label className="text-sm text-theme-tertiary mb-1 block">Warranty End Date</label>
                   <Input
                     type="date"
                     value={form.warranty_end}
@@ -470,24 +470,24 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">Next Service Date</label>
+                  <label className="text-sm text-theme-tertiary mb-1 block">Next Service Date</label>
                   <Input
                     type="date"
                     value={form.next_service_date}
                     onChange={(e) => setForm(prev => ({ ...prev, next_service_date: e.target.value }))}
                   />
                   {!form.next_service_date && form.install_date && (
-                    <p className="text-xs text-neutral-500 mt-1">
+                    <p className="text-xs text-theme-tertiary mt-1">
                       Suggestion: {new Date(new Date(form.install_date).setMonth(new Date(form.install_date).getMonth() + 6)).toISOString().split('T')[0]}
                     </p>
                   )}
                 </div>
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1 block">Status</label>
+                  <label className="text-sm text-theme-tertiary mb-1 block">Status</label>
                   <select
                     value={form.status}
                     onChange={(e) => setForm(prev => ({ ...prev, status: e.target.value }))}
-                    className="w-full rounded bg-neutral-800 border border-neutral-700 text-white text-sm px-3 py-2"
+                    className="w-full rounded bg-neutral-800 border border-theme text-theme-primary text-sm px-3 py-2"
                   >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
@@ -500,16 +500,16 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
 
             {/* Section D: Notes - Full Width */}
             <div className="space-y-4 mt-6">
-              <h3 className="text-sm font-medium text-neutral-300 uppercase tracking-wide border-b border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-theme-tertiary uppercase tracking-wide border-b border-theme pb-2">
                 Notes
               </h3>
               <div>
-                <label className="text-sm text-neutral-400 mb-1 block">Notes</label>
+                <label className="text-sm text-theme-tertiary mb-1 block">Notes</label>
                 <textarea
                   placeholder="Additional notes about this asset"
                   value={form.notes}
                   onChange={(e) => setForm(prev => ({ ...prev, notes: e.target.value }))}
-                  className="w-full rounded bg-neutral-800 border border-neutral-700 text-white text-sm px-3 py-2 min-h-[80px]"
+                  className="w-full rounded bg-neutral-800 border border-theme text-theme-primary text-sm px-3 py-2 min-h-[80px]"
                   rows={3}
                 />
               </div>
@@ -517,7 +517,7 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
 
             {/* Section E: Contractor Assignments - Three Columns */}
             <div className="space-y-4 mt-6">
-              <h3 className="text-sm font-medium text-neutral-300 uppercase tracking-wide border-b border-neutral-700 pb-2">
+              <h3 className="text-sm font-medium text-theme-tertiary uppercase tracking-wide border-b border-theme pb-2">
                 Contractor Assignments
               </h3>
               <div className="grid grid-cols-3 gap-4">
@@ -534,13 +534,13 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
                     className="w-full"
                   />
                    {ppmContractors.length === 0 && (
-                     <p className="text-xs text-neutral-500 mt-1">
+                     <p className="text-xs text-theme-tertiary mt-1">
                        No PPM contractors available for this asset's region/category
                      </p>
                    )}
                    {/* Debug info */}
                    {process.env.NODE_ENV === 'development' && (
-                     <div className="text-xs text-neutral-500 mt-1">
+                     <div className="text-xs text-theme-tertiary mt-1">
                        Debug: ppm_contractor_id="{form.ppm_contractor_id}", ppm_contractors={ppmContractors.length},
                        selected={ppmContractors.find(c => c.id === form.ppm_contractor_id)?.name || 'none'}
                      </div>
@@ -559,7 +559,7 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
                      className="w-full"
                    />
                    {reactiveContractors.length === 0 && (
-                     <p className="text-xs text-neutral-500 mt-1">
+                     <p className="text-xs text-theme-tertiary mt-1">
                        No reactive contractors available for this asset's region/category
                      </p>
                    )}
@@ -577,7 +577,7 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
                      className="w-full"
                    />
                    {warrantyContractors.length === 0 && (
-                     <p className="text-xs text-neutral-500 mt-1">
+                     <p className="text-xs text-theme-tertiary mt-1">
                        No warranty contractors available for this asset's region/category
                      </p>
                    )}
@@ -587,28 +587,28 @@ export default function AssetForm({ open, onClose, onSaved, asset }: { open: boo
 
              {/* Document Upload Section */}
              <div className="space-y-4 mt-6">
-               <h3 className="text-sm font-medium text-neutral-300 uppercase tracking-wide border-b border-neutral-700 pb-2">
+               <h3 className="text-sm font-medium text-theme-tertiary uppercase tracking-wide border-b border-theme pb-2">
                  Documentation
                </h3>
                <div>
-                 <label className="text-sm text-neutral-400 mb-1 block">Upload Manual / Certificate</label>
+                 <label className="text-sm text-theme-tertiary mb-1 block">Upload Manual / Certificate</label>
                  <input
                    type="file"
                    accept=".pdf,.png,.jpg,.jpeg"
                    onChange={(e) => setForm({ ...form, document_file: e.target.files?.[0] || null })}
-                   className="w-full text-sm text-neutral-300 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-neutral-700 file:text-neutral-300 hover:file:bg-neutral-600"
+                   className="w-full text-sm text-theme-tertiary file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-neutral-700 file:text-theme-tertiary hover:file:bg-neutral-600"
                  />
                </div>
              </div>
 
              {/* Bottom Save/Cancel Buttons for UX convenience */}
-             <div className="flex justify-end gap-3 pt-4 border-t border-neutral-700">
+             <div className="flex justify-end gap-3 pt-4 border-t border-theme">
                <Tooltip label="Cancel edit">
                  <Button 
                    type="button" 
                    variant="outline" 
                    onClick={handleCancel}
-                   className="border-gray-300 text-gray-300 hover:shadow-[0_0_8px_#ffffff] hover:shadow-opacity-50"
+                   className="border-gray-300 text-theme-tertiary hover:shadow-[0_0_8px_#ffffff] hover:shadow-opacity-50"
                  >
                    <XCircle size={18} />
                  </Button>

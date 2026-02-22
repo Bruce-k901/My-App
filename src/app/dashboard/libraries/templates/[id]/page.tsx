@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Plus, Upload, Download, Save, X, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Upload, Download, Save, X, Trash2 } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -517,31 +517,31 @@ export default function TemplateEditorPage() {
   if (!template) {
     return (
       <div className="p-8">
-        <div className="text-white/60">Loading template...</div>
+        <div className="text-theme-tertiary">Loading template...</div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#0f1220] text-white border border-neutral-800 rounded-xl p-4 sm:p-6 lg:p-8">
+    <div className="bg-[rgb(var(--surface-elevated))] text-theme-primary border border-neutral-800 rounded-xl p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div className="mb-6">
         <button
           onClick={() => router.push('/dashboard/libraries/templates')}
-          className="flex items-center gap-2 text-white/60 hover:text-white mb-4 transition-colors"
+          className="flex items-center gap-2 text-theme-tertiary hover:text-white mb-4 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Templates</span>
         </button>
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">{template.name} Template</h1>
-        <p className="text-white/60 text-sm sm:text-base">Add items one by one or upload a CSV file. Save when ready to add to your library.</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary mb-2">{template.name} Template</h1>
+        <p className="text-theme-tertiary text-sm sm:text-base">Add items one by one or upload a CSV file. Save when ready to add to your library.</p>
       </div>
 
       {/* Actions Bar */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <button
           onClick={handleAddItem}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-500/20 border border-blue-500/40 rounded-lg text-blue-400 hover:bg-blue-500/30 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-500/20 border border-blue-500/40 rounded-lg text-blue-400 hover:bg-module-fg/10 transition-colors"
         >
           <Plus className="h-4 w-4" />
           <span>Add Item</span>
@@ -549,7 +549,7 @@ export default function TemplateEditorPage() {
         <button
           onClick={() => csvInputRef.current?.click()}
           disabled={uploading}
-          className="flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/40 rounded-lg text-green-400 hover:bg-green-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/40 rounded-lg text-green-400 hover:bg-module-fg/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Upload className="h-4 w-4" />
           <span>{uploading ? 'Uploading...' : 'Upload CSV'}</span>
@@ -568,7 +568,7 @@ export default function TemplateEditorPage() {
           <>
             <button
               onClick={handleDownloadCSV}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/40 rounded-lg text-purple-400 hover:bg-purple-500/30 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/40 rounded-lg text-purple-400 hover:bg-module-fg/10 transition-colors"
             >
               <Download className="h-4 w-4" />
               <span>Download CSV</span>
@@ -589,7 +589,7 @@ export default function TemplateEditorPage() {
       {showAddForm && (
         <div className="mb-6 p-6 bg-neutral-900/50 border border-neutral-800 rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-white">
+            <h3 className="text-lg font-semibold text-theme-primary">
               {editingIndex !== null ? 'Edit Item' : 'Add New Item'}
             </h3>
             <button
@@ -599,13 +599,13 @@ export default function TemplateEditorPage() {
               }}
               className="p-1 hover:bg-white/10 rounded"
             >
-              <X className="h-5 w-5 text-white/60" />
+              <X className="h-5 w-5 text-theme-tertiary" />
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {template.fields.map((field: any) => (
               <div key={field.key} className={field.type === 'textarea' ? 'sm:col-span-2' : ''}>
-                <label className="block text-sm font-medium text-white/80 mb-1">
+                <label className="block text-sm font-medium text-theme-secondary mb-1">
                   {field.label}
                   {field.required && <span className="text-red-400 ml-1">*</span>}
                 </label>
@@ -613,7 +613,7 @@ export default function TemplateEditorPage() {
                   <textarea
                     value={formData[field.key] || ''}
                     onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
-                    className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-magenta-500/40"
+                    className="w-full px-3 py-2 bg-neutral-800 border border-theme rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-magenta-500/40"
                     rows={3}
                     placeholder={field.placeholder}
                   />
@@ -623,16 +623,16 @@ export default function TemplateEditorPage() {
                       type="checkbox"
                       checked={formData[field.key] || false}
                       onChange={(e) => setFormData({ ...formData, [field.key]: e.target.checked })}
-                      className="w-4 h-4 rounded border-neutral-700 bg-neutral-800 text-magenta-500 focus:ring-2 focus:ring-magenta-500/40"
+                      className="w-4 h-4 rounded border-theme bg-neutral-800 text-magenta-500 focus:ring-2 focus:ring-magenta-500/40"
                     />
-                    <span className="text-sm text-white/60">Yes</span>
+                    <span className="text-sm text-theme-tertiary">Yes</span>
                   </label>
                 ) : field.type === 'array' ? (
                   <input
                     type="text"
                     value={Array.isArray(formData[field.key]) ? formData[field.key].join(', ') : formData[field.key] || ''}
                     onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
-                    className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-magenta-500/40"
+                    className="w-full px-3 py-2 bg-neutral-800 border border-theme rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-magenta-500/40"
                     placeholder={field.placeholder || 'Comma or semicolon separated'}
                   />
                 ) : (
@@ -640,7 +640,7 @@ export default function TemplateEditorPage() {
                     type={field.type}
                     value={formData[field.key] || ''}
                     onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
-                    className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-magenta-500/40"
+                    className="w-full px-3 py-2 bg-neutral-800 border border-theme rounded-lg text-theme-primary placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-magenta-500/40"
                     placeholder={field.placeholder}
                   />
                 )}
@@ -653,7 +653,7 @@ export default function TemplateEditorPage() {
                 setShowAddForm(false);
                 setEditingIndex(null);
               }}
-              className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-colors"
+              className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-theme-primary hover:bg-white/10 transition-colors"
             >
               Cancel
             </button>
@@ -670,10 +670,10 @@ export default function TemplateEditorPage() {
       {/* Items List */}
       {items.length === 0 ? (
         <div className="text-center py-12 bg-neutral-900/30 rounded-lg border border-neutral-800">
-          <p className="text-white/60 mb-4">No items added yet</p>
+          <p className="text-theme-tertiary mb-4">No items added yet</p>
           <button
             onClick={handleAddItem}
-            className="px-4 py-2 bg-blue-500/20 border border-blue-500/40 rounded-lg text-blue-400 hover:bg-blue-500/30 transition-colors"
+            className="px-4 py-2 bg-blue-500/20 border border-blue-500/40 rounded-lg text-blue-400 hover:bg-module-fg/10 transition-colors"
           >
             Add Your First Item
           </button>
@@ -687,14 +687,14 @@ export default function TemplateEditorPage() {
               <div key={index} className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h4 className="text-white font-semibold mb-2">{primaryValue}</h4>
+                    <h4 className="text-theme-primary font-semibold mb-2">{primaryValue}</h4>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
                       {template.fields.slice(0, 6).map((field: any) => {
                         const value = item[field.key];
                         if (!value || (Array.isArray(value) && value.length === 0)) return null;
                         return (
                           <div key={field.key}>
-                            <span className="text-white/60">{field.label}:</span>{' '}
+                            <span className="text-theme-tertiary">{field.label}:</span>{' '}
                             <span className="text-white/90">
                               {Array.isArray(value) ? value.join(', ') : typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value)}
                             </span>

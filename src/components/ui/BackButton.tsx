@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft } from '@/components/ui/icons';
 
 interface BackButtonProps {
   href?: string; // Optional explicit path
@@ -30,7 +30,7 @@ export default function BackButton({ href, label = "Back" }: BackButtonProps) {
         rounded-lg 
         hover:bg-magenta-500/10 
         hover:border-magenta-400 
-        hover:shadow-[0_0_12px_rgba(236,72,153,0.3)]
+        hover:shadow-[0_0_12px_rgba(211, 126, 145,0.3)]
         transition-all duration-200
       "
     >

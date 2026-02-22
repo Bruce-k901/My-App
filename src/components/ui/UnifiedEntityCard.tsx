@@ -51,16 +51,16 @@ export default function UnifiedEntityCard({
   return (
     <motion.div
       onClick={handleCardClick}
-      className={`cursor-pointer rounded-xl bg-white/[0.05] border border-white/[0.1] backdrop-blur-md px-6 py-4 min-h-[72px] shadow-[0_0_20px_rgba(0,0,0,0.4)] hover:shadow-[0_0_12px_rgba(236,72,153,0.25)] hover:border-pink-500/40 transition-colors relative ${className}`}
+      className={`cursor-pointer rounded-xl bg-white/[0.05] border border-white/[0.1] backdrop-blur-md px-6 py-4 min-h-[72px] shadow-[0_0_20px_rgba(0,0,0,0.4)] hover:shadow-[0_0_12px_rgba(211, 126, 145,0.25)] hover:border-[#D37E91]/40 transition-colors relative ${className}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
       <div className="flex justify-between items-center">
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-white truncate">{title}</h3>
+          <h3 className="text-lg font-semibold text-theme-primary truncate">{title}</h3>
           {subtitle && (
-            <p className="text-sm text-gray-300 mt-1 truncate">{subtitle}</p>
+            <p className="text-sm text-theme-tertiary mt-1 truncate">{subtitle}</p>
           )}
         </div>
         

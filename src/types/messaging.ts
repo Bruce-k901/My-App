@@ -1,22 +1,41 @@
 // Messaging system TypeScript types
 
-export type ConversationType = 'direct' | 'group' | 'site' | 'team';
-export type MessageType = 'text' | 'file' | 'image' | 'system' | 'location';
-export type ParticipantRole = 'admin' | 'member';
+export type ConversationType = "direct" | "group" | "site" | "team";
+export type MessageType = "text" | "file" | "image" | "system" | "location";
+export type ParticipantRole = "admin" | "member";
+export type TopicCategory =
+  | "safety"
+  | "maintenance"
+  | "operations"
+  | "hr"
+  | "compliance"
+  | "incidents"
+  | "general";
+export type ContextType = "site" | "asset" | "task" | "team" | "general";
 
 export interface Conversation {
   id: string;
   company_id: string | null;
-  site_id: string | null;
-  type: ConversationType;
+  channel_type?: "site" | "asset" | "contractor" | "team" | ConversationType; // New schema field
+  type?: ConversationType; // Backward compatibility
+  entity_type?: string; // New field (maps to context_type)
+  entity_id?: string; // New field (maps to context_id)
+  site_id?: string | null; // Backward compatibility
   name: string | null;
-  description: string | null;
-  avatar_url: string | null;
-  created_by: string | null;
+  description?: string | null;
+  avatar_url?: string | null;
+  created_by?: string | null;
+  is_auto_created?: boolean; // New field
   created_at: string;
-  updated_at: string;
-  last_message_at: string | null;
-  archived_at: string | null;
+  updated_at?: string;
+  last_message_at?: string | null;
+  archived_at?: string | null;
+  // Zenzap-style enhancements
+  topic?: string | null;
+  topic_category?: TopicCategory | null;
+  is_pinned?: boolean;
+  context_type?: ContextType | null;
+  context_id?: string | null;
   // Relations
   participants?: ConversationParticipant[];
   last_message?: Message;
@@ -24,15 +43,18 @@ export interface Conversation {
 }
 
 export interface ConversationParticipant {
-  conversation_id: string;
+  channel_id?: string; // New schema field
+  conversation_id?: string; // Backward compatibility
   user_id: string;
-  role: ParticipantRole;
+  member_role?: ParticipantRole; // New schema field
+  role?: ParticipantRole; // Backward compatibility
   joined_at: string;
-  left_at: string | null;
-  last_read_at: string | null;
-  last_read_message_id: string | null;
-  muted_until: string | null;
-  notification_preferences: {
+  left_at?: string | null;
+  last_read_at?: string | null;
+  last_read_message_id?: string | null;
+  muted_until?: string | null;
+  unread_count?: number; // New field
+  notification_preferences?: {
     mentions: boolean;
     all_messages: boolean;
   };
@@ -46,20 +68,41 @@ export interface ConversationParticipant {
 
 export interface Message {
   id: string;
-  conversation_id: string;
-  sender_id: string;
-  reply_to_id: string | null;
+  channel_id: string; // New schema field
+  conversation_id?: string; // Backward compatibility
+  sender_profile_id: string;
+  sender_id?: string; // Backward compatibility
+  sender_name?: string; // New field
+  parent_message_id?: string | null; // New schema field (replaces reply_to_id)
+  reply_to_id?: string | null; // Backward compatibility
   content: string;
   message_type: MessageType;
-  file_url: string | null;
-  file_name: string | null;
-  file_size: number | null;
-  file_type: string | null;
+  file_url?: string | null;
+  file_name?: string | null;
+  file_size?: number | null;
+  file_type?: string | null;
+  attachments?: Array<{
+    url: string;
+    name: string;
+    size: number;
+    type: string;
+  }>; // New structure
   metadata: Record<string, any>;
   created_at: string;
   updated_at: string;
-  edited_at: string | null;
-  deleted_at: string | null;
+  edited_at?: string | null;
+  deleted_at?: string | null;
+  // Task conversion fields
+  is_task?: boolean;
+  task_id?: string | null;
+  is_system?: boolean;
+  // Topic tagging (per-message)
+  topic?: TopicCategory | null;
+  // Workflow integration fields (stored in metadata)
+  action_suggested?: boolean;
+  action_taken?: boolean;
+  action_type?: string;
+  action_entity_id?: string;
   // Relations
   sender?: {
     id: string;
@@ -72,7 +115,7 @@ export interface Message {
   read_by?: string[]; // Array of user IDs who read this message
   delivered_to?: string[]; // Array of user IDs who received this message
   // Receipt status (for UI display)
-  receipt_status?: 'sent' | 'delivered' | 'read'; // Status for own messages
+  receipt_status?: "sent" | "delivered" | "read"; // Status for own messages
 }
 
 export interface MessageReaction {
@@ -101,8 +144,9 @@ export interface MessageMention {
 }
 
 export interface TypingIndicator {
-  conversation_id: string;
-  user_id: string;
+  channel_id: string;
+  profile_id: string;
+  user_id?: string; // Backward compatibility
   is_typing: boolean;
   updated_at: string;
   // Relations
@@ -119,6 +163,11 @@ export interface CreateConversationInput {
   company_id?: string;
   site_id?: string;
   participant_ids: string[];
+  // Zenzap-style enhancements
+  topic?: string;
+  topic_category?: TopicCategory;
+  context_type?: ContextType;
+  context_id?: string;
 }
 
 export interface SendMessageInput {
@@ -129,3 +178,22 @@ export interface SendMessageInput {
   file?: File;
 }
 
+// Filter interface for topic-based filtering
+export interface ConversationFilters {
+  topicCategory?: TopicCategory;
+  isPinned?: boolean;
+  contextType?: ContextType;
+  contextId?: string;
+}
+
+// Task conversion input
+export interface ConvertToTaskInput {
+  messageId: string;
+  title: string;
+  description: string;
+  assigned_to?: string;
+  due_date?: string;
+  priority: "low" | "medium" | "high";
+  site_id?: string;
+  asset_id?: string;
+}

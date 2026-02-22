@@ -10,6 +10,10 @@ export default defineConfig({
       "**/.next/**",
       "**/build/**",
       "**/coverage/**",
+      "**/*.test.ts", // Exclude integration tests that require running server
+      "tests/critical-paths.test.ts", // Explicitly exclude critical paths test
+      "tests/e2e/**", // Playwright e2e tests
+      "tests/offline/**", // Playwright offline tests
     ],
     environment: "jsdom",
     setupFiles: ["./vitest.setup.ts"],

@@ -37,8 +37,8 @@ export function getPPMStatus(
   if (!nextServiceDate) {
     return {
       status: 'unscheduled',
-      bgColor: 'bg-gray-500/20',
-      textColor: 'text-gray-400',
+      bgColor: 'bg-theme-surface-elevated0/20',
+      textColor: 'text-theme-tertiary',
       borderColor: 'border-gray-500',
       color: '#6B7280'
     };

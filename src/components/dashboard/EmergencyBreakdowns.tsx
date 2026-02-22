@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle } from '@/components/ui/icons';
 import { formatDistanceToNow } from "date-fns";
 
 interface Breakdown {
@@ -94,20 +94,20 @@ export default function EmergencyBreakdowns() {
 
   if (!data.length)
     return (
-      <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)] text-white/70 flex items-center justify-center">
+      <div className="bg-[#0b0d13]/80 border border-white/[0.06] rounded-2xl p-5 shadow-[0_0_12px_rgba(211, 126, 145,0.05)] text-theme-secondary flex items-center justify-center">
         <p>No pending maintenance tasks. All systems operational.</p>
       </div>
     );
 
   return (
-    <div className="rounded-2xl bg-red-950/30 border border-red-500/40 p-5 shadow-[0_0_12px_rgba(236,72,153,0.05)]">
+    <div className="rounded-2xl bg-red-950/30 border border-red-500/40 p-5 shadow-[0_0_12px_rgba(211, 126, 145,0.05)]">
       <div className="flex items-center gap-2 mb-4">
         <AlertTriangle className="w-5 h-5 text-red-400" />
         <h2 className="text-lg font-semibold text-red-400">Pending Maintenance</h2>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm text-white/90">
-          <thead className="border-b border-white/[0.1] text-white/60">
+          <thead className="border-b border-white/[0.1] text-theme-tertiary">
             <tr>
               <th className="text-left py-2">Site</th>
               <th className="text-left py-2">Asset</th>
@@ -122,8 +122,8 @@ export default function EmergencyBreakdowns() {
                 <td className="py-2">{b.sites?.name || "—"}</td>
                 <td className="py-2">{b.assets?.name || "—"}</td>
                 <td className="py-2">{b.name}</td>
-                <td className="py-2 text-white/60">{b.notes || "—"}</td>
-                <td className="py-2 text-white/60">
+                <td className="py-2 text-theme-tertiary">{b.notes || "—"}</td>
+                <td className="py-2 text-theme-tertiary">
                   {formatDistanceToNow(new Date(b.created_at), { addSuffix: true })}
                 </td>
               </tr>

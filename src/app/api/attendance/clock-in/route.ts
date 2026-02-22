@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     const { data: activeShift } = await supabase
       .from('staff_attendance')
       .select('id')
-      .eq('user_id', profile.id)
+      .eq('profile_id', profile.id)
       .eq('shift_status', 'on_shift')
       .is('clock_out_time', null)
       .maybeSingle();
@@ -84,13 +84,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new attendance record
+    const clockInTime = new Date().toISOString();
     const { data: attendance, error: insertError } = await supabase
       .from('staff_attendance')
       .insert({
-        user_id: profile.id,
+        profile_id: profile.id,
         company_id: profile.company_id,
         site_id: siteId,
-        clock_in_time: new Date().toISOString(),
+        clock_in_time: clockInTime,
         shift_status: 'on_shift',
       })
       .select()
@@ -102,6 +103,36 @@ export async function POST(request: NextRequest) {
         { error: insertError.message || 'Failed to clock in' },
         { status: 500 }
       );
+    }
+
+    // Close any orphaned active time_entries before inserting a new one
+    // (prevents unique constraint violation on idx_one_active_entry)
+    await supabase
+      .from('time_entries')
+      .update({
+        clock_out: clockInTime,
+        status: 'completed',
+        notes: 'Auto-closed: orphaned active entry on new clock-in',
+      })
+      .eq('profile_id', profile.id)
+      .eq('status', 'active')
+      .is('clock_out', null);
+
+    // Create a time_entries record so TimeClock UI stays in sync
+    const { error: timeEntryError } = await supabase
+      .from('time_entries')
+      .insert({
+        profile_id: profile.id,
+        company_id: profile.company_id,
+        site_id: siteId,
+        clock_in: clockInTime,
+        status: 'active',
+        entry_type: 'shift',
+      });
+
+    if (timeEntryError) {
+      // Log but don't fail the clock-in — staff_attendance is the primary record
+      console.error('Error creating time_entries record (non-fatal):', timeEntryError);
     }
 
     return NextResponse.json({

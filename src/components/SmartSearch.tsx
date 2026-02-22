@@ -1,12 +1,22 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { X, ChevronDown, Star, Clock } from 'lucide-react';
+import { X, ChevronDown, Star, Clock } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 
+// Table config for multi-table support
+const TABLE_CONFIG: Record<string, { nameColumn: string; displayLabel: string }> = {
+  equipment_library: { nameColumn: 'equipment_name', displayLabel: 'Equipment' },
+  assets: { nameColumn: 'name', displayLabel: 'Asset' },
+  ingredients_library: { nameColumn: 'ingredient_name', displayLabel: 'Ingredient' },
+  chemicals_library: { nameColumn: 'product_name', displayLabel: 'Chemical' },
+  ppe_library: { nameColumn: 'item_name', displayLabel: 'PPE' },
+};
+
 interface SmartSearchProps {
   libraryTable: string;
+  additionalTables?: string[];
   placeholder?: string;
   categoryFilters?: string[];
   onSelect: (item: any) => void;
@@ -18,6 +28,7 @@ interface SmartSearchProps {
 
 export default function SmartSearch({
   libraryTable,
+  additionalTables,
   placeholder = "Search...",
   categoryFilters = [],
   onSelect,
@@ -43,10 +54,8 @@ export default function SmartSearch({
     try {
       setLoading(true);
       // Determine the correct column name for ordering based on table
-      const orderColumn = libraryTable === 'ingredients_library' ? 'ingredient_name' : 
-                         libraryTable === 'chemicals_library' ? 'product_name' :
-                         libraryTable === 'equipment_library' ? 'equipment_name' : 'item_name';
-      
+      const orderColumn = TABLE_CONFIG[libraryTable]?.nameColumn || 'item_name';
+
       const { data, error } = await supabase
         .from(libraryTable)
         .select('*')
@@ -54,13 +63,39 @@ export default function SmartSearch({
         .order(orderColumn);
 
       if (error) throw error;
-      setResults(data || []);
+
+      // Tag primary results with source table
+      let allResults = (data || []).map((item: any) => ({ ...item, _sourceTable: libraryTable }));
+
+      // Fetch additional tables if specified
+      if (additionalTables && additionalTables.length > 0) {
+        for (const table of additionalTables) {
+          const tableOrderCol = TABLE_CONFIG[table]?.nameColumn || 'item_name';
+          let query = supabase
+            .from(table)
+            .select('*')
+            .eq('company_id', companyId)
+            .order(tableOrderCol);
+
+          // Filter out archived assets
+          if (table === 'assets') {
+            query = query.eq('archived', false);
+          }
+
+          const { data: extraData, error: extraError } = await query;
+          if (!extraError && extraData) {
+            allResults = [...allResults, ...extraData.map((item: any) => ({ ...item, _sourceTable: table }))];
+          }
+        }
+      }
+
+      setResults(allResults);
     } catch (error) {
       console.error('Error loading items:', error);
     } finally {
       setLoading(false);
     }
-  }, [companyId, libraryTable]);
+  }, [companyId, libraryTable, additionalTables]);
 
   useEffect(() => {
     loadItems();
@@ -68,9 +103,13 @@ export default function SmartSearch({
 
   // Helper functions
   const getDisplayName = (item: any) => {
-    if (libraryTable === 'ingredients_library') return item.ingredient_name;
-    return item.item_name || item.product_name || item.equipment_name || '';
+    const table = item._sourceTable || libraryTable;
+    const config = TABLE_CONFIG[table];
+    if (config) return item[config.nameColumn] || '';
+    return item.item_name || item.product_name || item.equipment_name || item.name || '';
   };
+
+  const hasMultipleTables = additionalTables && additionalTables.length > 0;
 
   // Filter results based on search and category
   const filteredResults = results.filter(item => {
@@ -171,7 +210,7 @@ export default function SmartSearch({
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-white text-sm placeholder-neutral-400 focus:outline-none transition-colors"
+ className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary focus:outline-none transition-colors"
         />
         {searchQuery && (
           <button
@@ -179,7 +218,7 @@ export default function SmartSearch({
               setSearchQuery("");
               setIsOpen(false);
             }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+ className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))]"
           >
             <X size={18} />
           </button>
@@ -194,7 +233,7 @@ export default function SmartSearch({
             className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
               selectedCategory === "All"
                 ? "bg-magenta-500 text-white"
-                : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700"
+                : "bg-gray-100 dark:bg-neutral-800 text-theme-tertiary hover:bg-gray-200 dark:hover:bg-neutral-700"
             }`}
           >
             All ({results.length})
@@ -210,7 +249,7 @@ export default function SmartSearch({
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                   selectedCategory === cat
                     ? "bg-magenta-500 text-white"
-                    : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700"
+                    : "bg-gray-100 dark:bg-neutral-800 text-theme-tertiary hover:bg-gray-200 dark:hover:bg-neutral-700"
                 }`}
               >
                 {cat} ({count})
@@ -222,26 +261,26 @@ export default function SmartSearch({
 
       {/* Dropdown Results */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-neutral-800 border border-neutral-600 rounded-lg shadow-xl max-h-96 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-2 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg shadow-xl max-h-96 overflow-y-auto">
           {loading ? (
-            <div className="p-4 text-center text-neutral-400">Loading...</div>
+ <div className="p-4 text-center text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">Loading...</div>
           ) : filteredResults.length === 0 ? (
-            <div className="p-4 text-center text-neutral-400">
+ <div className="p-4 text-center text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">
               No results found for "{searchQuery}"
             </div>
           ) : (
             <>
               {/* Recent Items */}
               {recentItems.length > 0 && searchQuery === "" && (
-                <div className="p-2 border-b border-neutral-700">
-                  <div className="text-xs text-neutral-400 px-2 mb-1">Recently Used</div>
+                <div className="p-2 border-b border-[rgb(var(--border))] dark:border-theme">
+ <div className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary px-2 mb-1">Recently Used</div>
                   {recentItems.slice(0, 5).map((item) => (
                     <button
                       key={item.id}
                       onClick={() => handleSelect(item)}
-                      className="w-full text-left px-3 py-2 hover:bg-neutral-700 rounded text-sm"
+                      className="w-full text-left px-3 py-2 hover:bg-[rgb(var(--surface))] dark:hover:bg-neutral-700 rounded text-sm"
                     >
-                      <span className="text-white">{getDisplayName(item)}</span>
+                      <span className="text-[rgb(var(--text-primary))] dark:text-white">{getDisplayName(item)}</span>
                     </button>
                   ))}
                 </div>
@@ -256,13 +295,18 @@ export default function SmartSearch({
                   <button
                     key={item.id}
                     onClick={() => handleSelect(item)}
-                    className={`w-full text-left px-3 py-2 hover:bg-neutral-700 rounded transition-colors ${
-                      isHighlighted ? 'bg-neutral-700' : ''
+                    className={`w-full text-left px-3 py-2 hover:bg-[rgb(var(--surface))] dark:hover:bg-neutral-700 rounded transition-colors ${
+                      isHighlighted ? 'bg-[rgb(var(--surface))] dark:bg-neutral-700' : ''
                     } ${isSelected ? 'opacity-50' : ''}`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-medium text-white truncate">
+                      <span className="font-medium text-[rgb(var(--text-primary))] dark:text-white truncate">
                         {getDisplayName(item)}
+                        {hasMultipleTables && item._sourceTable && (
+                          <span className="ml-2 px-1.5 py-0.5 text-[10px] rounded bg-[rgb(var(--surface))] dark:bg-neutral-700 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary font-normal">
+                            {TABLE_CONFIG[item._sourceTable]?.displayLabel || item._sourceTable}
+                          </span>
+                        )}
                       </span>
                       {isSelected && (
                         <ChevronDown size={16} className="text-magenta-400 flex-shrink-0" />
