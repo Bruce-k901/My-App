@@ -1815,49 +1815,49 @@ export default function CalloutModal({
 
       {/* Confirmation Popup */}
       {showConfirmation && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-theme-surface rounded-lg p-6 max-w-md w-full mx-4 shadow-lg border border-theme">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+          <div className="bg-white dark:bg-[rgb(var(--surface-elevated))] rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl border border-black/10 dark:border-white/10">
             <h3 className="text-lg font-semibold text-theme-primary mb-4">Confirm Call-Out</h3>
-            
+
             <div className="space-y-3 mb-6">
               <div className="flex justify-between">
- <span className="text-gray-600 dark:text-theme-tertiary dark:text-neutral-400">Asset:</span>
+                <span className="text-theme-tertiary">Asset:</span>
                 <span className="text-theme-primary">{asset.name}</span>
               </div>
               <div className="flex justify-between">
- <span className="text-gray-600 dark:text-theme-tertiary dark:text-neutral-400">Serial:</span>
+                <span className="text-theme-tertiary">Serial:</span>
                 <span className="text-theme-primary">{asset.serial_number || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
- <span className="text-gray-600 dark:text-theme-tertiary dark:text-neutral-400">Site:</span>
+                <span className="text-theme-tertiary">Site:</span>
                 <span className="text-theme-primary">{asset.site_name || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
- <span className="text-gray-600 dark:text-theme-tertiary dark:text-neutral-400">Type:</span>
+                <span className="text-theme-tertiary">Type:</span>
                 <span className="text-theme-primary capitalize">{calloutType}</span>
               </div>
               {faultDescription && (
                 <div className="flex justify-between">
- <span className="text-gray-600 dark:text-theme-tertiary dark:text-neutral-400">Fault:</span>
+                  <span className="text-theme-tertiary">Fault:</span>
                   <span className="text-theme-primary text-sm max-w-xs truncate">{faultDescription}</span>
                 </div>
               )}
               <div className="flex justify-between">
- <span className="text-gray-600 dark:text-theme-tertiary dark:text-neutral-400">Priority:</span>
+                <span className="text-theme-tertiary">Priority:</span>
                 <span className="font-medium text-red-600 dark:text-red-400">Urgent</span>
               </div>
               <div className="flex justify-between">
- <span className="text-gray-600 dark:text-theme-tertiary dark:text-neutral-400">Contractor:</span>
+                <span className="text-theme-tertiary">Contractor:</span>
                 <span className="text-theme-primary">
-                  {showCustomContractorInput 
+                  {showCustomContractorInput
                     ? `${manualContractorName}${manualContractorEmail ? ` (${manualContractorEmail})` : ''}`
-                    : selectedContractorId 
+                    : selectedContractorId
                       ? contractors.find(c => c.id === selectedContractorId)?.name || 'N/A'
                       : 'Not selected'}
                 </span>
               </div>
               <div className="flex justify-between">
- <span className="text-gray-600 dark:text-theme-tertiary dark:text-neutral-400">Attachments:</span>
+                <span className="text-theme-tertiary">Attachments:</span>
                 <span className="text-theme-primary">{attachments.length} files</span>
               </div>
             </div>
@@ -1865,7 +1865,7 @@ export default function CalloutModal({
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowConfirmation(false)}
- className="px-4 py-2 text-gray-600 dark:text-theme-tertiary dark:text-neutral-400 hover:text-gray-900 transition-colors"
+                className="px-4 py-2 text-theme-tertiary hover:text-theme-primary transition-colors"
               >
                 Edit
               </button>
@@ -1883,13 +1883,13 @@ export default function CalloutModal({
 
       {/* Call Options Modal */}
       {showCallOptions && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-theme-surface border border-theme rounded-lg p-6 max-w-md w-full mx-4 shadow-lg">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999]">
+          <div className="bg-white dark:bg-[rgb(var(--surface-elevated))] border border-black/10 dark:border-white/10 rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl">
             <div className="text-center mb-6">
               <h3 className="text-lg font-semibold text-theme-primary mb-2">Choose Contact Option</h3>
- <p className="text-gray-600 dark:text-theme-tertiary dark:text-neutral-400 text-sm">Select how you'd like to contact the contractor</p>
+              <p className="text-theme-tertiary text-sm">Select how you'd like to contact the contractor</p>
             </div>
-            
+
             <div className="space-y-3">
               {/* Call Contractor Option */}
               <button
@@ -1901,15 +1901,15 @@ export default function CalloutModal({
                   }
                   setShowCallOptions(false);
                 }}
-                className="w-full flex items-center gap-3 p-4 bg-[#D37E91]/10 dark:bg-magenta-500/10 border border-[#D37E91]/30 dark:border-magenta-500/30 text-[#D37E91] dark:text-magenta-400 rounded-lg hover:bg-[#D37E91]/10 dark:hover:bg-magenta-500/20 transition-colors"
+                className="w-full flex items-center gap-3 p-4 bg-[#D37E91]/10 dark:bg-magenta-500/10 border border-[#D37E91]/30 dark:border-magenta-500/30 text-[#D37E91] dark:text-magenta-400 rounded-lg hover:bg-[#D37E91]/20 dark:hover:bg-magenta-500/20 transition-colors"
               >
                 <div className="text-2xl">📞</div>
                 <div className="text-left">
                   <div className="font-medium">Call Contractor</div>
- <div className="text-sm text-gray-600 dark:text-theme-tertiary dark:text-neutral-400">{getContractorInfo() ||'Main contractor line'}</div>
+                  <div className="text-sm text-theme-tertiary">{getContractorInfo() || 'Main contractor line'}</div>
                 </div>
               </button>
-              
+
               {/* Emergency Contact Option */}
               <button
                 onClick={() => {
@@ -1925,16 +1925,16 @@ export default function CalloutModal({
                 <div className="text-2xl">🚨</div>
                 <div className="text-left">
                   <div className="font-medium">Emergency Contact</div>
- <div className="text-sm text-gray-600 dark:text-theme-tertiary dark:text-neutral-400">Out-of-hours emergency line</div>
+                  <div className="text-sm text-theme-tertiary">Out-of-hours emergency line</div>
                 </div>
               </button>
             </div>
-            
+
             {/* Cancel Button */}
             <div className="mt-6 flex justify-center">
               <button
                 onClick={() => setShowCallOptions(false)}
- className="px-4 py-2 text-gray-600 dark:text-theme-tertiary dark:text-neutral-400 hover:text-gray-900 transition-colors"
+                className="px-4 py-2 text-theme-tertiary hover:text-theme-primary transition-colors"
               >
                 Cancel
               </button>
@@ -1945,16 +1945,16 @@ export default function CalloutModal({
 
       {/* Troubleshoot Modal */}
       {showTroubleshootModal && (
-        <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4"
           onClick={(e) => {
             // Close modal when clicking outside (if not required or if completed)
             if (e.target === e.currentTarget) {
               if (requireTroubleshoot && !troubleshootAck) {
-                showToast({ 
-                  title: 'Troubleshooting Required', 
+                showToast({
+                  title: 'Troubleshooting Required',
                   description: 'Please complete the troubleshooting guide before proceeding',
-                  type: 'warning' 
+                  type: 'warning'
                 });
                 return;
               }
@@ -1962,42 +1962,42 @@ export default function CalloutModal({
             }
           }}
         >
-          <div 
-            className="bg-white dark:bg-theme-surface border border-theme rounded-lg p-6 w-full max-w-2xl max-h-[95vh] overflow-y-auto scrollbar-hide relative shadow-lg"
+          <div
+            className="bg-white dark:bg-[rgb(var(--surface-elevated))] border border-black/10 dark:border-white/10 rounded-2xl p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto scrollbar-hide relative shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-4 sticky top-0 bg-white dark:bg-theme-surface z-10 pb-2">
+            <div className="flex items-center justify-between mb-4 sticky top-0 bg-white dark:bg-[rgb(var(--surface-elevated))] z-10 pb-2">
               <h3 className="text-lg font-semibold text-theme-primary">Troubleshooting Guide</h3>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   // If troubleshooting is required, don't allow closing without completion
                   if (requireTroubleshoot && !troubleshootAck) {
-                    showToast({ 
-                      title: 'Troubleshooting Required', 
+                    showToast({
+                      title: 'Troubleshooting Required',
                       description: 'Please complete the troubleshooting guide before proceeding',
-                      type: 'warning' 
+                      type: 'warning'
                     });
                     return;
                   }
                   // Close the modal
                   setShowTroubleshootModal(false);
                 }}
- className="text-gray-600 dark:text-theme-tertiary dark:text-neutral-400 hover:text-gray-900 transition-colors p-1 hover:bg-gray-100 dark:hover:bg-neutral-700/50 rounded flex items-center justify-center"
+                className="text-theme-tertiary hover:text-theme-primary transition-colors p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg flex items-center justify-center"
                 aria-label="Close troubleshooting guide"
                 type="button"
               >
                 <X size={20} />
               </button>
             </div>
-            
+
             {loadingQuestions ? (
               <div className="h-[200px] flex items-center justify-center">
- <div className="text-gray-600 dark:text-theme-tertiary dark:text-neutral-400 text-sm">Loading troubleshooting guide...</div>
+                <div className="text-theme-tertiary text-sm">Loading troubleshooting guide...</div>
               </div>
             ) : troubleshootingQuestions.length > 0 ? (
               <div>
-              <TroubleshootReel 
+              <TroubleshootReel
                 items={troubleshootingQuestions}
                 onComplete={(answers) => {
                   if (answers) {
@@ -2013,7 +2013,7 @@ export default function CalloutModal({
                   setShowTroubleshootModal(false);
                 }}
               />
-                
+
                 {/* Prevent closing troubleshoot modal when required */}
                 {requireTroubleshoot && !troubleshootAck && (
                   <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/30 rounded-lg text-yellow-700 dark:text-yellow-400 text-sm text-center">
@@ -2023,10 +2023,10 @@ export default function CalloutModal({
               </div>
             ) : (
               <div className="h-[200px] flex flex-col items-center justify-center">
- <div className="text-gray-600 dark:text-theme-tertiary dark:text-neutral-400 text-sm text-center mb-4">
+                <div className="text-theme-tertiary text-sm text-center mb-4">
                   No troubleshooting guide available for this equipment.
                   <br />
- <span className="text-xs text-theme-tertiary dark:text-theme-tertiary mt-2 block">
+                  <span className="text-xs text-theme-tertiary mt-2 block">
                     Category: {asset?.category || 'Unknown'}
                   </span>
                 </div>
@@ -2050,21 +2050,21 @@ export default function CalloutModal({
 
       {/* Validation Modal */}
       {showValidationModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-theme-surface border-2 border-yellow-400 dark:border-yellow-500/50 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+          <div className="bg-white dark:bg-[rgb(var(--surface-elevated))] border-2 border-yellow-400 dark:border-yellow-500/50 rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl">
             <div className="flex items-start gap-4 mb-6">
               <div className="p-3 bg-yellow-100 dark:bg-yellow-500/20 rounded-lg">
                 <AlertTriangle className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-theme-primary mb-2">Complete All Required Fields</h3>
- <p className="text-gray-600 dark:text-theme-tertiary dark:text-neutral-400 text-sm">
+                <p className="text-theme-tertiary text-sm">
                   Please complete the following required fields before submitting the callout:
                 </p>
               </div>
               <button
                 onClick={() => setShowValidationModal(false)}
- className="text-gray-600 dark:text-theme-tertiary dark:text-neutral-400 hover:text-gray-900 transition-colors p-1"
+                className="text-theme-tertiary hover:text-theme-primary transition-colors p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
@@ -2086,7 +2086,7 @@ export default function CalloutModal({
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowValidationModal(false)}
- className="px-4 py-2 bg-theme-button/50 border border-gray-300 dark:border-theme text-gray-700 dark:text-theme-tertiary dark:text-neutral-400 hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-neutral-700/50 transition-all rounded-lg text-sm font-medium"
+                className="px-4 py-2 bg-black/[0.04] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-theme-secondary hover:text-theme-primary hover:bg-black/[0.08] dark:hover:bg-white/[0.1] transition-all rounded-lg text-sm font-medium"
               >
                 I'll Complete These Fields
               </button>

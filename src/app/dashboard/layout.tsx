@@ -48,12 +48,17 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
     setShowAIWidget(!isMessagingPage);
   }, [pathname]);
 
-  // Render a stable placeholder while checking auth — prevents hydration mismatch
+  // Show loading skeleton while checking auth — prevents hydration mismatch
   // by keeping a consistent DOM element in the {children} slot of the root layout
   if (loading || !user) {
     return (
       <MobileNavProvider>
-        <div className="min-h-screen bg-[rgb(var(--module-bg-tint))] text-theme-primary" />
+        <div className="min-h-screen bg-[rgb(var(--module-bg-tint))] text-theme-primary flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-10 h-10 border-2 border-teamly border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-theme-tertiary">Loading...</p>
+          </div>
+        </div>
       </MobileNavProvider>
     );
   }
