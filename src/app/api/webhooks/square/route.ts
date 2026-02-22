@@ -69,18 +69,37 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true, skipped: 'no_connection' });
   }
 
-  const config = connection.config as Record<string, unknown>;
-  const locationId = config?.location_id as string | undefined;
+  // Extract location_id from the event payload for multi-site routing
+  const eventLocationId =
+    (event.data?.object as Record<string, unknown>)?.location_id as string | undefined;
 
-  // Look up the site
-  const { data: site } = await supabase
-    .from('sites')
-    .select('id')
-    .eq('pos_location_id', locationId || '')
-    .eq('pos_provider', 'square')
-    .maybeSingle();
+  // Look up the site by matching the event's location_id to sites.pos_location_id
+  let siteId: string | undefined;
+  if (eventLocationId) {
+    const { data: site } = await supabase
+      .from('sites')
+      .select('id')
+      .eq('company_id', connection.company_id)
+      .eq('pos_location_id', eventLocationId)
+      .eq('pos_provider', 'square')
+      .maybeSingle();
+    siteId = site?.id;
+  }
 
-  const siteId = site?.id;
+  // Fallback: if no location in event, try config.location_id (single-site compat)
+  if (!siteId) {
+    const config = connection.config as Record<string, unknown>;
+    const configLocationId = config?.location_id as string | undefined;
+    if (configLocationId) {
+      const { data: site } = await supabase
+        .from('sites')
+        .select('id')
+        .eq('pos_location_id', configLocationId)
+        .eq('pos_provider', 'square')
+        .maybeSingle();
+      siteId = site?.id;
+    }
+  }
 
   try {
     switch (eventType) {

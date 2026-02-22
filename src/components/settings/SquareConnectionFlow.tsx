@@ -13,6 +13,12 @@ import {
 } from '@/components/ui/icons';
 import { toast } from 'sonner';
 
+interface SitePosConfig {
+  pos_provider: string | null;
+  pos_location_id: string | null;
+  pos_config: Record<string, unknown> | null;
+}
+
 interface SquareConnectionFlowProps {
   connection: {
     id: string;
@@ -21,6 +27,8 @@ interface SquareConnectionFlowProps {
     last_connected_at: string | null;
     last_error: string | null;
   } | null;
+  siteHasLocation: boolean;
+  sitePosConfig: SitePosConfig | null;
   onRefresh: () => void;
 }
 
@@ -33,10 +41,9 @@ interface SquareLocation {
   status: string;
 }
 
-export function SquareConnectionFlow({ connection, onRefresh }: SquareConnectionFlowProps) {
+export function SquareConnectionFlow({ connection, siteHasLocation, sitePosConfig, onRefresh }: SquareConnectionFlowProps) {
   const { companyId, siteId, role } = useAppContext();
   const isAdmin = ['Admin', 'Owner', 'General Manager'].includes(role);
-  const isSandbox = process.env.NEXT_PUBLIC_SQUARE_ENVIRONMENT !== 'production';
 
   const [locations, setLocations] = useState<SquareLocation[]>([]);
   const [selectedLocationId, setSelectedLocationId] = useState('');
@@ -44,14 +51,14 @@ export function SquareConnectionFlow({ connection, onRefresh }: SquareConnection
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
-  const [sandboxToken, setSandboxToken] = useState('');
-  const [connectingSandbox, setConnectingSandbox] = useState(false);
 
-  // Determine the current step based on connection state
+  // Determine the current step based on connection + site state
   const step: FlowStep = (() => {
     if (!connection) return 'disconnected';
     if (connection.status === 'error') return 'error';
     if (connection.status === 'pending') return 'location_select';
+    // Company connected but this site has no location yet
+    if (connection.status === 'connected' && !siteHasLocation) return 'location_select';
     if (connection.status === 'connected') return 'connected';
     return 'disconnected';
   })();
@@ -108,30 +115,6 @@ export function SquareConnectionFlow({ connection, onRefresh }: SquareConnection
     if (!companyId) return;
     const params = new URLSearchParams({ companyId, siteId: siteId || '' });
     window.location.href = `/api/integrations/square/authorize?${params.toString()}`;
-  }
-
-  async function handleSandboxConnect() {
-    if (!companyId || !sandboxToken.trim()) return;
-    setConnectingSandbox(true);
-    try {
-      const res = await fetch('/api/integrations/square/sandbox-connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ companyId, siteId, accessToken: sandboxToken.trim() }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success(`Connected to Square sandbox (${data.businessName || data.merchantId})`);
-        setSandboxToken('');
-        onRefresh();
-      } else {
-        toast.error(data.error || 'Sandbox connect failed');
-      }
-    } catch {
-      toast.error('Sandbox connect failed');
-    } finally {
-      setConnectingSandbox(false);
-    }
   }
 
   async function handleSelectLocation() {
@@ -211,7 +194,8 @@ export function SquareConnectionFlow({ connection, onRefresh }: SquareConnection
     }
   }
 
-  const locationName = connection?.config?.location_name as string | undefined;
+  const locationName = (sitePosConfig?.pos_config as Record<string, unknown>)?.location_name as string | undefined
+    || connection?.config?.location_name as string | undefined;
   const merchantId = connection?.config?.merchant_id as string | undefined;
   const lastSync = connection?.last_connected_at;
   const lastError = connection?.last_error;
@@ -268,42 +252,13 @@ export function SquareConnectionFlow({ connection, onRefresh }: SquareConnection
 
       {/* Disconnected — connect button */}
       {step === 'disconnected' && (
-        <div className="space-y-3">
-          <button
-            onClick={handleConnect}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-          >
-            <ExternalLink className="w-4 h-4" />
-            Connect with Square
-          </button>
-
-          {/* Sandbox token input — server rejects if SQUARE_ENVIRONMENT=production */}
-          <div className="p-3 bg-amber-50/50 dark:bg-amber-900/5 border border-amber-200 dark:border-amber-800/30 rounded-lg space-y-2">
-              <p className="text-xs font-medium text-amber-800 dark:text-amber-300">
-                Sandbox: Paste access token from Square Developer Dashboard
-              </p>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={sandboxToken}
-                  onChange={(e) => setSandboxToken(e.target.value)}
-                  placeholder="EAAA..."
-                  className="flex-1 px-3 py-1.5 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary placeholder-gray-400 dark:placeholder-white/30 font-mono"
-                />
-                <button
-                  onClick={handleSandboxConnect}
-                  disabled={!sandboxToken.trim() || connectingSandbox}
-                  className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-sm font-medium hover:bg-amber-700 disabled:opacity-50 flex items-center gap-1.5 whitespace-nowrap"
-                >
-                  {connectingSandbox && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  {connectingSandbox ? 'Connecting...' : 'Connect'}
-                </button>
-              </div>
-              <p className="text-[10px] text-amber-600/70 dark:text-amber-400/50">
-                Go to Square Developer Dashboard → OAuth → copy the test account access token
-              </p>
-            </div>
-        </div>
+        <button
+          onClick={handleConnect}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+        >
+          <ExternalLink className="w-4 h-4" />
+          Connect with Square
+        </button>
       )}
 
       {/* Location selection */}

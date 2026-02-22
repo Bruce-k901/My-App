@@ -105,9 +105,16 @@ function StatusBadge({ status, comingSoon }: { status?: IntegrationStatus; comin
   }
 }
 
+interface SitePosInfo {
+  pos_provider: string | null;
+  pos_location_id: string | null;
+  pos_config: Record<string, unknown> | null;
+}
+
 export function IntegrationsTab() {
-  const { companyId, role } = useAppContext();
+  const { companyId, siteId, role } = useAppContext();
   const [connections, setConnections] = useState<IntegrationConnection[]>([]);
+  const [sitePos, setSitePos] = useState<SitePosInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [configuringType, setConfiguringType] = useState<IntegrationType | null>(null);
   const [configForm, setConfigForm] = useState<Record<string, string>>({});
@@ -118,13 +125,16 @@ export function IntegrationsTab() {
   useEffect(() => {
     if (!companyId) return;
     loadConnections();
-  }, [companyId]);
+  }, [companyId, siteId]);
 
   async function loadConnections() {
     try {
-      const res = await fetch(`/api/settings/integrations?companyId=${companyId}`);
+      const params = new URLSearchParams({ companyId });
+      if (siteId && siteId !== 'all') params.set('siteId', siteId);
+      const res = await fetch(`/api/settings/integrations?${params.toString()}`);
       const result = await res.json();
       setConnections(result.data || []);
+      setSitePos(result.sitePos || null);
     } catch {
       // Table may not exist yet
     } finally {
@@ -222,6 +232,10 @@ export function IntegrationsTab() {
             const Icon = card.icon;
             const connection = getConnection(card.type);
             const isConfiguring = configuringType === card.type;
+            // For POS, status reflects per-site: only "connected" if this site has a location
+            const effectiveStatus = card.type === 'pos_system' && connection?.status === 'connected' && !sitePos?.pos_location_id
+              ? 'pending' as IntegrationStatus
+              : connection?.status;
 
             return (
               <div
@@ -229,7 +243,7 @@ export function IntegrationsTab() {
                 className={`border rounded-xl p-5 transition-colors ${
                   card.comingSoon
                     ? 'border-theme bg-gray-50/50 dark:bg-white/[0.01] opacity-70'
-                    : connection?.status === 'connected'
+                    : effectiveStatus === 'connected'
                     ? 'border-emerald-200 dark:border-emerald-800/50 bg-emerald-50/30 dark:bg-emerald-900/5'
                     : 'border-theme bg-theme-surface hover:border-blue-300 dark:hover:border-blue-800'
                 }`}
@@ -239,21 +253,21 @@ export function IntegrationsTab() {
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                       card.comingSoon
                         ? 'bg-gray-100 dark:bg-white/[0.06]'
-                        : connection?.status === 'connected'
+                        : effectiveStatus === 'connected'
                         ? 'bg-emerald-100 dark:bg-emerald-900/30'
                         : 'bg-blue-100 dark:bg-blue-900/20'
                     }`}>
                       <Icon className={`w-5 h-5 ${
                         card.comingSoon
                           ? 'text-gray-400 dark:text-gray-500'
-                          : connection?.status === 'connected'
+                          : effectiveStatus === 'connected'
                           ? 'text-emerald-600 dark:text-emerald-400'
                           : 'text-blue-600 dark:text-blue-400'
                       }`} />
                     </div>
                     <div>
                       <h3 className="font-medium text-theme-primary">{card.name}</h3>
-                      <StatusBadge status={connection?.status} comingSoon={card.comingSoon} />
+                      <StatusBadge status={effectiveStatus} comingSoon={card.comingSoon} />
                     </div>
                   </div>
                 </div>
@@ -262,10 +276,18 @@ export function IntegrationsTab() {
 
                 {/* Custom flow for POS (Square) */}
                 {card.customFlow && card.type === 'pos_system' && (
-                  <SquareConnectionFlow
-                    connection={connection ?? null}
-                    onRefresh={loadConnections}
-                  />
+                  siteId === 'all' ? (
+                    <p className="text-xs text-amber-600 dark:text-amber-400 p-2 bg-amber-50 dark:bg-amber-900/10 rounded">
+                      Select a specific site to manage POS integrations
+                    </p>
+                  ) : (
+                    <SquareConnectionFlow
+                      connection={connection ?? null}
+                      siteHasLocation={!!sitePos?.pos_location_id}
+                      sitePosConfig={sitePos}
+                      onRefresh={loadConnections}
+                    />
+                  )
                 )}
 
                 {/* Generic integrations — error display, config form, action buttons */}

@@ -24,7 +24,19 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, data: data || [] });
+    // If siteId provided, also fetch the site's POS config
+    const siteId = searchParams.get('siteId');
+    let sitePos = null;
+    if (siteId && siteId !== 'all') {
+      const { data: site } = await supabase
+        .from('sites')
+        .select('pos_provider, pos_location_id, pos_config')
+        .eq('id', siteId)
+        .maybeSingle();
+      sitePos = site || null;
+    }
+
+    return NextResponse.json({ success: true, data: data || [], sitePos });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || 'Failed to load integrations' }, { status: 500 });
   }

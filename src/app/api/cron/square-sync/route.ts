@@ -42,69 +42,60 @@ export async function GET(request: NextRequest) {
     const dateTo = now.toISOString().split('T')[0];
 
     for (const conn of connections) {
-      const config = conn.config as Record<string, unknown>;
-      const locationId = config?.location_id as string | undefined;
-      if (!locationId) continue;
-
-      // Look up which site uses this location
-      const { data: site } = await supabase
+      // Find ALL sites using Square for this company
+      const { data: sites } = await supabase
         .from('sites')
-        .select('id')
-        .eq('pos_location_id', locationId)
+        .select('id, pos_location_id')
+        .eq('company_id', conn.company_id)
         .eq('pos_provider', 'square')
-        .maybeSingle();
+        .not('pos_location_id', 'is', null);
 
-      const siteId = site?.id;
-      if (!siteId) {
+      if (!sites?.length) {
         results.push({
           companyId: conn.company_id,
-          error: 'No site found for Square location',
+          error: 'No sites with Square locations configured',
         });
         continue;
       }
 
-      try {
-        const syncResult = await syncSquareSales(
-          conn.company_id,
-          siteId,
-          dateFrom,
-          dateTo,
-        );
+      for (const site of sites) {
+        try {
+          const syncResult = await syncSquareSales(
+            conn.company_id,
+            site.id,
+            dateFrom,
+            dateTo,
+          );
 
-        // Update connection status
-        await supabase
-          .from('integration_connections')
-          .update({
-            last_connected_at: new Date().toISOString(),
-            last_error: syncResult.success ? null : syncResult.error,
-            status: syncResult.success ? 'connected' : 'error',
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', conn.id);
+          results.push({
+            companyId: conn.company_id,
+            siteId: site.id,
+            ...syncResult,
+          });
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          console.error(`[cron/square-sync] Failed for company ${conn.company_id} site ${site.id}:`, msg);
 
-        results.push({
-          companyId: conn.company_id,
-          siteId,
-          ...syncResult,
-        });
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        console.error(`[cron/square-sync] Failed for company ${conn.company_id}:`, msg);
-
-        await supabase
-          .from('integration_connections')
-          .update({
-            last_error: msg,
-            status: 'error',
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', conn.id);
-
-        results.push({
-          companyId: conn.company_id,
-          error: msg,
-        });
+          results.push({
+            companyId: conn.company_id,
+            siteId: site.id,
+            error: msg,
+          });
+        }
       }
+
+      // Update connection status based on overall results
+      const siteResults = results.filter(r => r.companyId === conn.company_id);
+      const anyFailure = siteResults.some(r => r.error);
+      await supabase
+        .from('integration_connections')
+        .update({
+          last_connected_at: new Date().toISOString(),
+          last_error: anyFailure ? 'Some sites failed to sync — check logs' : null,
+          status: anyFailure ? 'error' : 'connected',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', conn.id);
     }
 
     return NextResponse.json({
