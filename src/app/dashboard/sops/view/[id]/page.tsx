@@ -201,6 +201,33 @@ export default function SOPViewPage() {
       };
     }
 
+    // Fallback: if no ingredients found anywhere but SOP has a linked recipe,
+    // fetch the recipe's ingredients directly from the database
+    const recipeId = data.linked_recipe_id || data.linked_recipe?.id;
+    if (ingredients.length === 0 && recipeId) {
+      console.log('⚠️ No ingredients in sop_data, fetching from linked recipe:', recipeId);
+      try {
+        const { data: recipeIngredients, error: riError } = await supabase
+          .from('recipe_ingredients')
+          .select('*')
+          .eq('recipe_id', recipeId)
+          .order('sort_order', { ascending: true });
+
+        if (!riError && recipeIngredients && recipeIngredients.length > 0) {
+          console.log('✅ Fetched', recipeIngredients.length, 'ingredients from recipe');
+          ingredients = recipeIngredients.map((ri: any) => ({
+            ingredient_name: ri.ingredient_name || 'Unknown',
+            quantity: ri.quantity || 0,
+            unit: ri.unit_abbreviation || 'g',
+            supplier: ri.supplier || '',
+            allergens: Array.isArray(ri.allergens) ? ri.allergens : (ri.allergens ? [ri.allergens] : [])
+          }));
+        }
+      } catch (err) {
+        console.warn('Could not fetch recipe ingredients:', err);
+      }
+    }
+
     // Build print data with multiplier support
     const ingredientNames = ingredients.map((ing: any) => ing.ingredient_name || ing.ingredient).filter(Boolean);
     let ingredientCostsMap: Record<string, number> = {};
