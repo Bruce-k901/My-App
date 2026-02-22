@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
-import { 
-  Receipt, 
+import {
+  Receipt,
   Plus,
   Upload,
   Calendar,
@@ -19,7 +19,8 @@ import {
   Users,
   DollarSign,
   Clock,
-  ArrowLeft
+  ArrowLeft,
+  CheckCircle
 } from '@/components/ui/icons';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -69,6 +70,14 @@ export default function SalesManagementPage() {
   const [showManualModal, setShowManualModal] = useState(false);
   const [importing, setImporting] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  // Square POS connection
+  const [squareConnection, setSquareConnection] = useState<{
+    status: string;
+    last_connected_at: string | null;
+    config: Record<string, unknown>;
+  } | null>(null);
+  const [squareSyncing, setSquareSyncing] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -91,8 +100,46 @@ export default function SalesManagementPage() {
 
   async function loadData() {
     setLoading(true);
-    await Promise.all([loadDailySummaries(), loadRecentImports()]);
+    await Promise.all([loadDailySummaries(), loadRecentImports(), loadSquareConnection()]);
     setLoading(false);
+  }
+
+  async function loadSquareConnection() {
+    if (!companyId) return;
+    try {
+      const res = await fetch(`/api/settings/integrations?companyId=${companyId}`);
+      const result = await res.json();
+      const conn = (result.data || []).find(
+        (c: { integration_type: string; integration_name: string }) =>
+          c.integration_type === 'pos_system' && c.integration_name === 'Square',
+      );
+      setSquareConnection(conn || null);
+    } catch {
+      // Not critical
+    }
+  }
+
+  async function handleSquareSync() {
+    if (!companyId || !siteId) return;
+    setSquareSyncing(true);
+    try {
+      const res = await fetch('/api/integrations/square/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ companyId, siteId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`Synced ${data.result?.ordersProcessed ?? 0} orders from Square`);
+        loadData();
+      } else {
+        toast.error(data.error || data.result?.error || 'Square sync failed');
+      }
+    } catch {
+      toast.error('Square sync failed');
+    } finally {
+      setSquareSyncing(false);
+    }
   }
 
   async function loadDailySummaries() {
@@ -459,6 +506,56 @@ export default function SalesManagementPage() {
           </button>
         </div>
       </div>
+
+      {/* Square POS sync banner */}
+      {squareConnection?.status === 'connected' && (
+        <div className="flex items-center justify-between p-3 bg-emerald-50/50 dark:bg-emerald-900/5 border border-emerald-200 dark:border-emerald-800/30 rounded-xl">
+          <div className="flex items-center gap-2 text-sm">
+            <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <span className="text-emerald-800 dark:text-emerald-300 font-medium">
+              Square POS connected
+            </span>
+            {squareConnection.config?.location_name && (
+              <span className="text-emerald-600/70 dark:text-emerald-400/50">
+                — {squareConnection.config.location_name as string}
+              </span>
+            )}
+            {squareConnection.last_connected_at && (
+              <span className="text-emerald-600/50 dark:text-emerald-400/30 text-xs ml-2">
+                Last sync: {new Date(squareConnection.last_connected_at).toLocaleString()}
+              </span>
+            )}
+          </div>
+          <button
+            onClick={handleSquareSync}
+            disabled={squareSyncing}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/20 disabled:opacity-50"
+          >
+            {squareSyncing ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <RefreshCw className="w-3.5 h-3.5" />
+            )}
+            {squareSyncing ? 'Syncing...' : 'Sync Now'}
+          </button>
+        </div>
+      )}
+      {squareConnection?.status === 'error' && (
+        <div className="flex items-center justify-between p-3 bg-amber-50/50 dark:bg-amber-900/5 border border-amber-200 dark:border-amber-800/30 rounded-xl">
+          <div className="flex items-center gap-2 text-sm">
+            <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            <span className="text-amber-800 dark:text-amber-300 font-medium">
+              Square POS sync error
+            </span>
+            <Link
+              href="/dashboard/settings?tab=integrations"
+              className="text-xs text-blue-600 dark:text-blue-400 hover:underline ml-2"
+            >
+              View in Settings
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* 30-Day Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">

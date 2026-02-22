@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { Printer, Receipt, Plug, CheckCircle, AlertTriangle, Loader2, X, Save } from '@/components/ui/icons';
 import { toast } from 'sonner';
+import { SquareConnectionFlow } from './SquareConnectionFlow';
 
 type IntegrationType = 'label_printer' | 'pos_system' | 'xero' | 'quickbooks' | 'other';
 type IntegrationStatus = 'connected' | 'disconnected' | 'error' | 'pending';
@@ -25,6 +26,7 @@ interface IntegrationCard {
   description: string;
   icon: React.ElementType;
   comingSoon: boolean;
+  customFlow?: boolean;
   configFields?: { key: string; label: string; type: string; placeholder: string }[];
 }
 
@@ -47,7 +49,8 @@ const INTEGRATION_CATALOG: IntegrationCard[] = [
     name: 'POS System',
     description: 'Sync sales data from your point-of-sale system for stock deductions and GP analysis.',
     icon: Receipt,
-    comingSoon: true,
+    comingSoon: false,
+    customFlow: true, // Uses SquareConnectionFlow instead of generic config fields
   },
   {
     type: 'xero',
@@ -110,7 +113,7 @@ export function IntegrationsTab() {
   const [configForm, setConfigForm] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
 
-  const isAdmin = role === 'Admin';
+  const isAdmin = ['Admin', 'Owner', 'General Manager'].includes(role);
 
   useEffect(() => {
     if (!companyId) return;
@@ -257,81 +260,94 @@ export function IntegrationsTab() {
 
                 <p className="text-sm text-theme-secondary mb-4">{card.description}</p>
 
-                {/* Error display */}
-                {connection?.status === 'error' && connection.last_error && (
-                  <p className="text-xs text-red-600 dark:text-red-400 mb-3 p-2 bg-red-50 dark:bg-red-900/10 rounded">
-                    {connection.last_error}
-                  </p>
+                {/* Custom flow for POS (Square) */}
+                {card.customFlow && card.type === 'pos_system' && (
+                  <SquareConnectionFlow
+                    connection={connection ?? null}
+                    onRefresh={loadConnections}
+                  />
                 )}
 
-                {/* Configuration form */}
-                {isConfiguring && card.configFields && (
-                  <div className="space-y-3 mb-4 p-4 bg-gray-50 dark:bg-white/[0.02] border border-theme rounded-lg">
-                    {card.configFields.map((field) => (
-                      <div key={field.key}>
-                        <label className="block text-xs font-medium text-theme-secondary mb-1">
-                          {field.label}
-                        </label>
-                        <input
-                          type={field.type}
-                          value={configForm[field.key] || ''}
-                          onChange={(e) => setConfigForm({ ...configForm, [field.key]: e.target.value })}
-                          placeholder={field.placeholder}
-                          className="w-full px-3 py-1.5 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary placeholder-gray-400 dark:placeholder-white/30"
-                        />
-                      </div>
-                    ))}
-                    <div className="flex gap-2 pt-1">
-                      <button
-                        onClick={() => handleSaveConfig(card)}
-                        disabled={saving}
-                        className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center gap-1.5"
-                      >
-                        {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                        {saving ? 'Saving...' : 'Save & Connect'}
-                      </button>
-                      <button
-                        onClick={() => setConfiguringType(null)}
-                        className="px-3 py-1.5 border border-theme rounded-lg text-sm text-theme-secondary hover:bg-theme-surface-elevated"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Action buttons */}
-                {!card.comingSoon && isAdmin && !isConfiguring && (
-                  <div className="flex gap-2">
-                    {connection?.status === 'connected' ? (
-                      <>
-                        <button
-                          onClick={() => openConfigure(card)}
-                          className="px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                        >
-                          Configure
-                        </button>
-                        <button
-                          onClick={() => handleDisconnect(card)}
-                          className="px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-1"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                          Disconnect
-                        </button>
-                      </>
-                    ) : (
-                      <button
-                        onClick={() => openConfigure(card)}
-                        className="px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                      >
-                        Configure
-                      </button>
+                {/* Generic integrations — error display, config form, action buttons */}
+                {!card.customFlow && (
+                  <>
+                    {/* Error display */}
+                    {connection?.status === 'error' && connection.last_error && (
+                      <p className="text-xs text-red-600 dark:text-red-400 mb-3 p-2 bg-red-50 dark:bg-red-900/10 rounded">
+                        {connection.last_error}
+                      </p>
                     )}
-                  </div>
-                )}
 
-                {!isAdmin && !card.comingSoon && (
-                  <p className="text-xs text-theme-tertiary">Admin access required to manage integrations</p>
+                    {/* Configuration form */}
+                    {isConfiguring && card.configFields && (
+                      <div className="space-y-3 mb-4 p-4 bg-gray-50 dark:bg-white/[0.02] border border-theme rounded-lg">
+                        {card.configFields.map((field) => (
+                          <div key={field.key}>
+                            <label className="block text-xs font-medium text-theme-secondary mb-1">
+                              {field.label}
+                            </label>
+                            <input
+                              type={field.type}
+                              value={configForm[field.key] || ''}
+                              onChange={(e) => setConfigForm({ ...configForm, [field.key]: e.target.value })}
+                              placeholder={field.placeholder}
+                              className="w-full px-3 py-1.5 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary placeholder-gray-400 dark:placeholder-white/30"
+                            />
+                          </div>
+                        ))}
+                        <div className="flex gap-2 pt-1">
+                          <button
+                            onClick={() => handleSaveConfig(card)}
+                            disabled={saving}
+                            className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center gap-1.5"
+                          >
+                            {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                            {saving ? 'Saving...' : 'Save & Connect'}
+                          </button>
+                          <button
+                            onClick={() => setConfiguringType(null)}
+                            className="px-3 py-1.5 border border-theme rounded-lg text-sm text-theme-secondary hover:bg-theme-surface-elevated"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action buttons */}
+                    {!card.comingSoon && isAdmin && !isConfiguring && (
+                      <div className="flex gap-2">
+                        {connection?.status === 'connected' ? (
+                          <>
+                            <button
+                              onClick={() => openConfigure(card)}
+                              className="px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                            >
+                              Configure
+                            </button>
+                            <button
+                              onClick={() => handleDisconnect(card)}
+                              className="px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-1"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                              Disconnect
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={() => openConfigure(card)}
+                            className="px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          >
+                            Configure
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {!isAdmin && !card.comingSoon && (
+                      <p className="text-xs text-theme-tertiary">Admin access required to manage integrations</p>
+                    )}
+                  </>
                 )}
               </div>
             );
