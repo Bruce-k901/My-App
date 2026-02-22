@@ -61,14 +61,16 @@ export default function SOPViewPage() {
     }
 
     // Extract structured data for print template
-    const metadata = data.metadata || {};
+    // Check for metadata: first in sop_data.metadata (embedded), then data.metadata (column)
+    const metadata = parsedData.metadata || data.metadata || {};
     const isTipTapFormat = parsedData.content && Array.isArray(parsedData.content);
-    
+
     console.log('🔍 Processing SOP data:', {
       hasMetadata: !!metadata.ingredients,
       metadataIngredientCount: metadata.ingredients?.length || 0,
       isTipTapFormat,
-      hasLinkedRecipe: !!data.linked_recipe_id
+      hasLinkedRecipe: !!data.linked_recipe_id,
+      metadataSource: parsedData.metadata ? 'embedded' : (data.metadata ? 'column' : 'none')
     });
     
     let ingredients: any[] = [];

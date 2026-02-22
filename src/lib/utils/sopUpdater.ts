@@ -9,18 +9,26 @@ export async function updateFoodSOPFromRecipe(
   sopId: string
 ): Promise<void> {
   try {
-    // 1. Fetch current recipe data with yield unit
+    // 1. Fetch current recipe data
     const { data: recipe, error: recipeError } = await supabase
       .from('recipes')
-      .select(`
-        *,
-        yield_unit:uom!yield_unit_id(abbreviation, name)
-      `)
+      .select('*')
       .eq('id', recipeId)
       .single();
 
     if (recipeError || !recipe) {
       throw new Error(`Failed to fetch recipe: ${recipeError?.message || 'Recipe not found'}`);
+    }
+
+    // Fetch yield unit separately (joining through a view is unreliable)
+    let yieldUnitData: { abbreviation?: string; name?: string } | null = null;
+    if (recipe.yield_unit_id) {
+      const { data: unitData } = await supabase
+        .from('uom')
+        .select('abbreviation, name')
+        .eq('id', recipe.yield_unit_id)
+        .maybeSingle();
+      yieldUnitData = unitData;
     }
 
     // Ensure we have the latest calculated cost and yield
@@ -338,7 +346,7 @@ export async function updateFoodSOPFromRecipe(
 
     // 11. Build structured metadata for print template
     // Get yield unit abbreviation if available
-    const yieldUnitAbbr = recipeWithCost.yield_unit?.abbreviation 
+    const yieldUnitAbbr = yieldUnitData?.abbreviation
       || (recipeWithCost.yield_unit_id ? 'g' : (recipeWithCost.output_unit_id ? 'g' : 'g'));
     
     const metadata = {
@@ -369,16 +377,19 @@ export async function updateFoodSOPFromRecipe(
         : []
     };
 
-    // 12. Update SOP entry - always update with current recipe data
-    // Note: metadata column doesn't exist in all schemas, so we only update sop_data
-    // The metadata structure is already included in sop_data (TipTap format)
+    // 12. Embed structured metadata inside sop_data for the print template
+    // (sop_entries table does not have a separate metadata column)
+    sopData.metadata = metadata;
+
+    // 13. Update SOP entry - always update with current recipe data
     console.log('Updating SOP with', ingredientRows.length, 'ingredients');
-    
+
     const { data: updatedSop, error: updateError } = await supabase
       .from('sop_entries')
       .update({
-        sop_data: sopData, // TipTap format for editor - contains all data including ingredients
-        updated_at: new Date().toISOString(),
+        sop_data: sopData, // TipTap format + embedded metadata
+        needs_update: false,
+        last_synced_with_recipe_at: new Date().toISOString(),
       })
       .eq('id', sopId)
       .select('sop_data')

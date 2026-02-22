@@ -154,7 +154,11 @@ export async function createFoodSOPFromRecipe(
       method_steps: [] // Will be populated when user adds method steps
     };
 
-    // 10. Create SOP entry
+    // 10. Embed structured metadata inside sop_data for the print template
+    // (sop_entries table does not have a separate metadata column)
+    sopData.metadata = metadata;
+
+    // 11. Create SOP entry
     const { data: sopEntry, error: sopError } = await supabase
       .from('sop_entries')
       .insert({
@@ -165,10 +169,9 @@ export async function createFoodSOPFromRecipe(
         status: 'Draft',
         author: authorName,
         category: 'Food Prep', // Must match sop_entries_category_check constraint
-        sop_data: sopData, // TipTap format for editor
-        metadata: metadata, // Structured format for print template
+        sop_data: sopData, // TipTap format for editor + embedded metadata
         linked_recipe_id: recipe.id,
-        version_number: 1.0,
+        version_number: 1,
         created_by: userId,
       })
       .select()
@@ -178,11 +181,20 @@ export async function createFoodSOPFromRecipe(
       throw new Error(`Failed to create SOP: ${sopError?.message || 'Unknown error'}`);
     }
     
-    // 10. Link recipe to SOP
+    // 12. Link recipe to SOP (bidirectional)
     await supabase
       .from('recipes')
       .update({ linked_sop_id: sopEntry.id })
       .eq('id', recipe.id);
+
+    // 13. Set sync timestamp
+    await supabase
+      .from('sop_entries')
+      .update({
+        needs_update: false,
+        last_synced_with_recipe_at: new Date().toISOString(),
+      })
+      .eq('id', sopEntry.id);
     
     return sopEntry.id;
   } catch (error: any) {

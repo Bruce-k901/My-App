@@ -1,7 +1,7 @@
 // Service Worker for PWA - Offline Support & Push Notifications
 // SW_VERSION is updated at build time by the prebuild script.
 // Changing this value forces the browser to detect a new SW and trigger updates.
-const SW_VERSION = '1771661370777';
+const SW_VERSION = '1771752713296';
 const CACHE_NAME = 'opsly-v5';
 const RUNTIME_CACHE = 'opsly-runtime-v5';
 

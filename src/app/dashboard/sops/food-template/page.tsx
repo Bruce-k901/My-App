@@ -1098,6 +1098,7 @@ function FoodSOPTemplatePageContent() {
     };
 
     // Build metadata for print template (keeps equipment/method in sync)
+    // Embedded inside sop_data since sop_entries has no separate metadata column
     const sopMetadata = {
       recipe: {
         name: title,
@@ -1123,6 +1124,9 @@ function FoodSOPTemplatePageContent() {
       equipment: equipment.map((eq: any) => eq.item || eq.name || '').filter(Boolean),
       method_steps: processSteps.map((step: any) => step.description || step.text || '').filter(Boolean)
     };
+
+    // Embed metadata inside sop_data JSONB
+    sopData.metadata = sopMetadata;
 
     try {
       setSaving(true);
@@ -1153,8 +1157,7 @@ function FoodSOPTemplatePageContent() {
           status,
           author,
           category,
-          sop_data: sopData,
-          metadata: sopMetadata,
+          sop_data: sopData, // metadata is already embedded inside sop_data
           linked_recipe_id: linkedRecipeId || originalSOP.linked_recipe_id || null, // Preserve linked recipe
           created_by: profile?.id,
           updated_by: profile?.id
@@ -1180,8 +1183,7 @@ function FoodSOPTemplatePageContent() {
           status,
           author,
           category,
-          sop_data: sopData,
-          metadata: sopMetadata,
+          sop_data: sopData, // metadata is already embedded inside sop_data
           created_by: profile?.id,
           updated_by: profile?.id
         };
