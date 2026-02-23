@@ -11,17 +11,16 @@ import { sendTicketNotificationDM } from '@/lib/messaging/ticket-bridge';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: ticketId } = await params;
     const supabase = await createServerSupabaseClient();
 
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const ticketId = params.id;
     const body = await request.json();
     const { content, source } = body;
 
@@ -74,7 +73,8 @@ export async function POST(
       const recipientId = ticket.assigned_to || null;
       if (recipientId && recipientId !== user.id) {
         const authorData = (comment as any)?.author;
-        sendTicketNotificationDM({
+        // Must await — serverless context dies after response is sent
+        await sendTicketNotificationDM({
           ticketId,
           ticketTitle: ticket.title || 'Support Ticket',
           ticketModule: ticket.module,
@@ -86,6 +86,7 @@ export async function POST(
           senderName: authorData?.full_name || authorData?.email,
           isAdminReply: false,
           eventType: 'comment',
+          supabase,
         });
       }
     }

@@ -201,6 +201,9 @@ export function TaskFromTemplateModal({
   
   // Instructions expandable state
   const [instructionsExpanded, setInstructionsExpanded] = useState(false);
+
+  // Frequency override — allows user to change frequency per site_checklist
+  const [frequencyOverride, setFrequencyOverride] = useState<string>('');
   
   // Available dayparts (including additional options)
   const availableDayparts = [
@@ -994,6 +997,9 @@ export function TaskFromTemplateModal({
         date_of_month: existingSiteChecklist.date_of_month || undefined,
         anniversary_date: existingSiteChecklist.anniversary_date || undefined,
       });
+
+      // Set frequency from site_checklist (may differ from template)
+      setFrequencyOverride(existingSiteChecklist.frequency || templateData.frequency || 'daily');
     }
     // Initialize form with existing task data if editing, otherwise use template defaults
     else if (existingTask) {
@@ -1156,6 +1162,11 @@ export function TaskFromTemplateModal({
           note: 'FormData state may not be immediately available in console'
         });
       }, 100);
+
+      // Set frequency from template for new configurations
+      if (!frequencyOverride) {
+        setFrequencyOverride(templateData.frequency || 'daily');
+      }
     }
   }
 
@@ -1625,7 +1636,8 @@ export function TaskFromTemplateModal({
           : formData.due_time || null;
         
         // Ensure dayparts are stored in task_data for daily tasks
-        if (template?.frequency === 'daily' && formData.dayparts && formData.dayparts.length > 0) {
+        const activeFrequency = frequencyOverride || template?.frequency || 'daily';
+        if (activeFrequency === 'daily' && formData.dayparts && formData.dayparts.length > 0) {
           taskData.dayparts = formData.dayparts;
           // Also store daypart_times mapping for reference
           const daypartTimes: Record<string, string> = {};
@@ -1731,8 +1743,8 @@ export function TaskFromTemplateModal({
           });
         }
         
-        // Determine frequency from template
-        const frequency = template?.frequency || 'daily';
+        // Use frequency override (user-editable) or fall back to template
+        const frequency = frequencyOverride || template?.frequency || 'daily';
         
         // Build site_checklist configuration
         // Use taskSiteId for new tasks, or existing site_id for editing
@@ -1970,6 +1982,12 @@ export function TaskFromTemplateModal({
 
             if (formData.selectedAssets && formData.selectedAssets.length > 0) {
               seedTaskData.selectedAssets = formData.selectedAssets;
+            }
+
+            // Carry reference documents from template
+            const templateDocs = template?.recurrence_pattern?.template_documents;
+            if (Array.isArray(templateDocs) && templateDocs.length > 0) {
+              seedTaskData.referenceDocuments = templateDocs;
             }
 
             // Determine daypart/time pairs to create tasks for
@@ -2245,6 +2263,23 @@ export function TaskFromTemplateModal({
 
               {/* Scheduling Section */}
               <div className="space-y-4">
+                {/* Frequency selector */}
+                <div>
+                  <label className="block text-sm font-medium text-theme-primary mb-2">Frequency</label>
+                  <select
+                    value={frequencyOverride || template?.frequency || 'daily'}
+                    onChange={(e) => setFrequencyOverride(e.target.value)}
+                    className="w-full px-4 py-2 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+                  >
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="annually">Annually</option>
+                    <option value="triggered">On Demand / Ad-hoc</option>
+                  </select>
+                </div>
+
+                {frequencyOverride !== 'triggered' && (
                 <div>
                   <label className="block text-sm font-medium text-theme-primary mb-2">Due Date *</label>
                   <input
@@ -2255,9 +2290,10 @@ export function TaskFromTemplateModal({
  className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                   />
                 </div>
+                )}
 
                 {/* Dayparts & Times for Daily Tasks - More Intuitive Layout */}
-                {template?.frequency === 'daily' ? (
+                {(frequencyOverride || template?.frequency) === 'daily' ? (
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <label className="block text-sm font-medium text-theme-primary">

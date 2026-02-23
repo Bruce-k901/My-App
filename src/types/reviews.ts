@@ -680,6 +680,22 @@ export interface ReviewWithDetails extends Review {
   responses: ReviewResponse[];
 }
 
+export interface EmployeeSicknessRecord {
+  id: string;
+  illness_onset_date: string;
+  symptoms: string;
+  exclusion_period_start: string;
+  exclusion_period_end?: string | null;
+  return_to_work_date?: string | null;
+  status: 'active' | 'cleared' | 'closed';
+  medical_clearance_required: boolean;
+  medical_clearance_received: boolean;
+  rtw_conducted_date?: string | null;
+  rtw_fit_for_full_duties?: boolean | null;
+  rtw_adjustments_needed?: boolean | null;
+  rtw_adjustments_details?: string | null;
+}
+
 export interface EmployeeFileData {
   employee: Profile;
   summary: EmployeeReviewSummary | null;
@@ -687,6 +703,7 @@ export interface EmployeeFileData {
   upcoming_schedules: EmployeeReviewSchedule[];
   pending_follow_ups: ReviewFollowUp[];
   timeline: TimelineEvent[];
+  sickness_records?: EmployeeSicknessRecord[];
 }
 
 export interface TimelineEvent {

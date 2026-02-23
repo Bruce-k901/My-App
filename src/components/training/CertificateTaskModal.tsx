@@ -15,8 +15,9 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { X, Calendar, Award, AlertCircle, Loader2, User, Clock, ExternalLink } from '@/components/ui/icons'
+import { X, Calendar, Award, AlertCircle, Loader2, User, Clock, ExternalLink, Mail } from '@/components/ui/icons'
 import type { ChecklistTaskWithTemplate } from '@/types/checklist-types'
+import { AssignCourseModal } from '@/components/training/AssignCourseModal'
 
 interface CertificateTaskModalProps {
   task: ChecklistTaskWithTemplate
@@ -54,6 +55,8 @@ export default function CertificateTaskModal({
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [employee, setEmployee] = useState<any>(null)
+  const [showAssignModal, setShowAssignModal] = useState(false)
+  const [resolvedCourse, setResolvedCourse] = useState<{ id: string; name: string } | null>(null)
 
   // Form state
   const [newExpiryDate, setNewExpiryDate] = useState('')
@@ -76,6 +79,40 @@ export default function CertificateTaskModal({
   const certificateLabel = isTrainingRecord
     ? (courseName || 'Training Certificate')
     : (CERTIFICATE_LABELS[certificateType] || certificateType)
+
+  // Resolve the training course for the assign button
+  useEffect(() => {
+    if (!isOpen || !employee?.company_id) return
+
+    const resolveCourse = async () => {
+      try {
+        if (isTrainingRecord && courseId && courseName) {
+          setResolvedCourse({ id: courseId, name: courseName })
+          return
+        }
+
+        // Resolve from certificate_type
+        const codeResolver = CERT_TYPE_TO_COURSE_CODE[certificateType]
+        if (!codeResolver) return
+        const courseCode = typeof codeResolver === 'function' ? codeResolver(level) : codeResolver
+
+        const { data: course } = await supabase
+          .from('training_courses')
+          .select('id, name')
+          .eq('company_id', employee.company_id)
+          .eq('code', courseCode)
+          .maybeSingle()
+
+        if (course) {
+          setResolvedCourse({ id: course.id, name: course.name })
+        }
+      } catch (err) {
+        console.error('Error resolving course:', err)
+      }
+    }
+
+    resolveCourse()
+  }, [isOpen, employee?.company_id, isTrainingRecord, courseId, courseName, certificateType, level])
 
   // Load employee data
   useEffect(() => {
@@ -371,7 +408,19 @@ export default function CertificateTaskModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-theme">
+        <div className="flex items-center justify-between gap-3 p-6 border-t border-theme">
+          <div>
+            {resolvedCourse && employee && (
+              <button
+                onClick={() => setShowAssignModal(true)}
+                disabled={submitting}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#D37E91] hover:bg-[#c06b7e] text-white rounded-lg transition-colors disabled:opacity-50"
+              >
+                <Mail className="w-4 h-4" />
+                Book Training Course
+              </button>
+            )}
+          </div>
           <button
             onClick={onClose}
             disabled={submitting}
@@ -381,6 +430,21 @@ export default function CertificateTaskModal({
           </button>
         </div>
       </div>
+
+      {/* Assign Course Modal */}
+      {showAssignModal && resolvedCourse && employee && (
+        <AssignCourseModal
+          isOpen={true}
+          onClose={() => setShowAssignModal(false)}
+          profileId={profileId}
+          profileName={employee.full_name || 'Employee'}
+          courseId={resolvedCourse.id}
+          courseName={resolvedCourse.name}
+          onSuccess={() => {
+            setShowAssignModal(false)
+          }}
+        />
+      )}
     </div>
   )
 }

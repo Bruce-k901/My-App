@@ -269,7 +269,8 @@ export async function PATCH(
     const isNowResolved = status === 'resolved' || status === 'closed';
     if (wasNotResolved && isNowResolved && ticket.created_by !== user.id) {
       const statusLabel = status === 'resolved' ? 'resolved' : 'closed';
-      sendTicketNotificationDM({
+      // Must await — serverless context dies after response is sent
+      await sendTicketNotificationDM({
         ticketId,
         ticketTitle: ticket.title || 'Support Ticket',
         ticketModule: ticket.module,

@@ -93,27 +93,53 @@ export function EmployeeTrainingTab({ employeeId, companyId, employeeName }: Emp
         })));
       }
 
-      // Load training records
-      const { data: recordsData } = await supabase
-        .from('training_records')
-        .select(`
-          id,
-          course_id,
-          status,
-          completed_at,
-          score_percentage,
-          certificate_number,
-          expiry_date,
-          course:training_courses(id, name, code, is_mandatory)
-        `)
+      // Load training records from compliance_matrix_view (single source of truth, same as Training Matrix)
+      const { data: matrixData } = await supabase
+        .from('compliance_matrix_view')
+        .select('*')
         .eq('profile_id', employeeId)
-        .order('completed_at', { ascending: false });
+        .eq('company_id', companyId);
 
-      if (recordsData) {
-        setTrainingRecords(recordsData.map((r: any) => ({
-          ...r,
-          course: r.course,
-        })));
+      if (matrixData) {
+        // Also fetch record IDs from training_records (needed for certificate download links)
+        const { data: recordIds } = await supabase
+          .from('training_records')
+          .select('id, course_id')
+          .eq('profile_id', employeeId);
+        const recordIdMap = new Map<string, string>();
+        if (recordIds) {
+          recordIds.forEach((r: any) => recordIdMap.set(r.course_id, r.id));
+        }
+
+        // Filter to entries with actual training data (not just required/optional placeholders)
+        const records = matrixData
+          .filter((r: any) =>
+            r.completed_at ||
+            r.training_status === 'completed' ||
+            r.training_status === 'in_progress'
+          )
+          .sort((a: any, b: any) => {
+            if (!a.completed_at && !b.completed_at) return 0;
+            if (!a.completed_at) return 1;
+            if (!b.completed_at) return -1;
+            return new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime();
+          })
+          .map((r: any) => ({
+            id: recordIdMap.get(r.course_id) || r.course_id,
+            course_id: r.course_id,
+            status: r.training_status || 'not_started',
+            completed_at: r.completed_at,
+            score_percentage: r.score_percentage,
+            certificate_number: r.certificate_number,
+            expiry_date: r.expiry_date,
+            course: {
+              id: r.course_id,
+              name: r.course_name,
+              code: r.course_code || '',
+              is_mandatory: r.is_mandatory,
+            },
+          }));
+        setTrainingRecords(records);
       }
     } catch (error) {
       console.error('Error loading training data:', error);

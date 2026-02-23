@@ -18,12 +18,15 @@ import {
   HeartPulse,
   Beaker,
   XCircle,
+  Mail,
 } from '@/components/ui/icons';
 import type { TrainingStats, CompanyTrainingOverview } from '@/types/teamly';
+import { AssignCourseModal } from '@/components/training/AssignCourseModal';
 
 interface ExpiringTraining {
   record_id: string;
   profile_id: string;
+  course_id: string;
   employee_name: string;
   course_name: string;
   course_code: string;
@@ -74,6 +77,12 @@ export default function TrainingPage() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [assignModal, setAssignModal] = useState<{
+    profileId: string;
+    profileName: string;
+    courseId: string;
+    courseName: string;
+  } | null>(null);
 
   useEffect(() => {
     if (profile?.company_id) {
@@ -143,6 +152,7 @@ export default function TrainingPage() {
           return {
             record_id: `${row.profile_id}-${row.course_id}`,
             profile_id: row.profile_id,
+            course_id: row.course_id,
             employee_name: row.full_name || 'Unknown',
             course_name: row.course_name,
             course_code: row.course_code || '',
@@ -431,17 +441,31 @@ export default function TrainingPage() {
           </div>
           <div className="space-y-2">
             {expiring.slice(0, 5).map((item) => (
-              <div key={item.record_id} className="flex items-center justify-between text-sm">
-                <div>
+              <div key={item.record_id} className="flex items-center justify-between text-sm gap-2">
+                <div className="flex-1 min-w-0">
                   <span className="text-theme-primary">{item.employee_name}</span>
                   <span className="text-theme-secondary"> - {item.course_name}</span>
                 </div>
-                <span className={item.is_expired ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}>
-                  {item.is_expired 
-                    ? `Expired ${Math.abs(item.days_until_expiry)} days ago`
-                    : `${item.days_until_expiry} days left`
-                  }
-                </span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className={item.is_expired ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}>
+                    {item.is_expired
+                      ? `Expired ${Math.abs(item.days_until_expiry)} days ago`
+                      : `${item.days_until_expiry} days left`
+                    }
+                  </span>
+                  <button
+                    onClick={() => setAssignModal({
+                      profileId: item.profile_id,
+                      profileName: item.employee_name,
+                      courseId: item.course_id,
+                      courseName: item.course_name,
+                    })}
+                    className="p-1 rounded hover:bg-amber-500/20 transition-colors"
+                    title="Assign course"
+                  >
+                    <Mail className="w-3.5 h-3.5 text-amber-500" />
+                  </button>
+                </div>
               </div>
             ))}
             {expiring.length > 5 && (
@@ -564,6 +588,22 @@ export default function TrainingPage() {
             View Compliance Matrix <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
+      )}
+
+      {/* Assign Course Modal */}
+      {assignModal !== null && (
+        <AssignCourseModal
+          isOpen={true}
+          onClose={() => setAssignModal(null)}
+          profileId={assignModal.profileId}
+          profileName={assignModal.profileName}
+          courseId={assignModal.courseId}
+          courseName={assignModal.courseName}
+          onSuccess={() => {
+            setAssignModal(null);
+            fetchData();
+          }}
+        />
       )}
     </div>
   );

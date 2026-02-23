@@ -50,6 +50,13 @@ export function TaskCompletionModalNew({
     setNotes,
     outOfRangeActions,
     setOutOfRangeAction,
+    customFields,
+    customFieldValues,
+    setCustomFieldValue,
+    customRecords,
+    addCustomRecord,
+    updateCustomRecord,
+    removeCustomRecord,
     loading,
     error
   } = useTaskState(task, isOpen, companyId, siteId);
@@ -121,8 +128,17 @@ export function TaskCompletionModalNew({
       // For now, we don't require all items to be completed
     }
 
+    // Validate required custom fields
+    if (enabledFeatures.customFields && customFields.length > 0) {
+      const topLevelRequired = customFields.filter(f => !f.parent_field_id && f.required);
+      for (const field of topLevelRequired) {
+        const val = customFieldValues[field.field_name];
+        if (val === null || val === undefined || val === '') return false;
+      }
+    }
+
     return true;
-  }, [enabledFeatures, assetIds, temperatures, checklistItems]);
+  }, [enabledFeatures, assetIds, temperatures, checklistItems, customFields, customFieldValues]);
 
   // Build and submit payload (defined first so other handlers can reference it)
   const handleSubmit = useCallback(async () => {
@@ -220,6 +236,12 @@ export function TaskCompletionModalNew({
       })
     };
 
+    // Include custom field values if present
+    if (enabledFeatures.customFields && customFields.length > 0) {
+      formData.custom_field_values = customFieldValues;
+      formData.custom_records = customRecords;
+    }
+
     const payload: TaskCompletionPayload = {
       taskId: task.id,
       status: 'completed',
@@ -235,7 +257,8 @@ export function TaskCompletionModalNew({
     await submitTask(payload);
   }, [
     task, profile, companyId, assetIds, temperatures, assetTempRanges,
-    assets, localOutOfRangeActions, checklistItems, yesNoItems, actionResponses, notes, photos, submitTask
+    assets, localOutOfRangeActions, checklistItems, yesNoItems, actionResponses, notes, photos, submitTask,
+    enabledFeatures, customFields, customFieldValues, customRecords
   ]);
 
   // Handle placing an out-of-range action
@@ -369,6 +392,13 @@ export function TaskCompletionModalNew({
               onRemoveAction={handleRemoveAction}
               notes={notes}
               onNotesChange={setNotes}
+              customFields={customFields}
+              customFieldValues={customFieldValues}
+              onCustomFieldChange={setCustomFieldValue}
+              customRecords={customRecords}
+              onAddRecord={addCustomRecord}
+              onUpdateRecord={updateCustomRecord}
+              onRemoveRecord={removeCustomRecord}
               disabled={submitting}
             />
           )}

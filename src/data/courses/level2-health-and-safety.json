@@ -329,6 +329,454 @@
         "text": "Who has a legal duty to assess risks in the workplace?",
         "options": ["Only employees", "Only the fire service", "Employers"],
         "correctAnswer": 2
+      },
+      {
+        "id": "q6",
+        "text": "What does RIDDOR stand for?",
+        "options": [
+          "Reporting of Injuries, Diseases and Dangerous Occurrences Regulations",
+          "Risk Identification and Detection of Dangerous Operations Report",
+          "Registration of Industrial Damage and Disaster Occurrence Records"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q7",
+        "text": "Under RIDDOR, which of the following must be reported?",
+        "options": ["A minor paper cut", "A fracture sustained at work", "Feeling tired at work"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q8",
+        "text": "What is a risk assessment?",
+        "options": [
+          "A document listing all employees",
+          "A process to identify hazards, evaluate risks, and decide on control measures",
+          "A fire drill schedule"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q9",
+        "text": "What is the difference between a hazard and a risk?",
+        "options": [
+          "There is no difference",
+          "A hazard is something that could cause harm; a risk is the likelihood of harm occurring",
+          "A risk is an object; a hazard is a process"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q10",
+        "text": "The Health and Safety at Work Act 1974 places duties on:",
+        "options": ["Employers only", "Employees only", "Both employers and employees"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q11",
+        "text": "Which colour fire extinguisher is used for electrical fires?",
+        "options": ["Red (water)", "Blue (dry powder) or black (CO2)", "Cream (foam)"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q12",
+        "text": "What should you do first if you discover a fire?",
+        "options": ["Try to extinguish it", "Raise the alarm", "Open windows to let smoke out"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q13",
+        "text": "How often should fire drills be carried out?",
+        "options": ["Once a year", "At least every 6 months", "Only when new staff join"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q14",
+        "text": "What is the correct order of actions in a fire emergency?",
+        "options": [
+          "Fight, Alert, Evacuate",
+          "Raise the alarm, Call the fire service, Evacuate",
+          "Evacuate, then call a manager"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q15",
+        "text": "What does COSHH stand for?",
+        "options": [
+          "Control of Substances Hazardous to Health",
+          "Certification of Safety and Health Handling",
+          "Compliance of Staff Health and Hygiene"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q16",
+        "text": "Under COSHH, employers must:",
+        "options": [
+          "Provide free food",
+          "Assess risks from hazardous substances and provide controls",
+          "Allow employees to use any chemicals they want"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q17",
+        "text": "What information does a Safety Data Sheet (SDS) provide?",
+        "options": [
+          "Staff rotas",
+          "Hazards, safe handling, storage and emergency measures for chemicals",
+          "Food recipes"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q18",
+        "text": "Manual handling injuries account for approximately what percentage of workplace injuries?",
+        "options": ["About 10%", "About a third", "About 5%"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q19",
+        "text": "Before manually handling a load, you should:",
+        "options": [
+          "Just pick it up quickly",
+          "Assess the weight, shape, and route, and plan the lift",
+          "Ask someone else to do it every time"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q20",
+        "text": "The acronym TILE in manual handling stands for:",
+        "options": [
+          "Task, Individual, Load, Environment",
+          "Time, Inspection, Lifting, Equipment",
+          "Training, Identification, Logistics, Evaluation"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q21",
+        "text": "Slips, trips and falls are:",
+        "options": [
+          "Rare in the workplace",
+          "The most common cause of workplace injury",
+          "Only a concern outdoors"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q22",
+        "text": "What should you do about a spillage on the floor?",
+        "options": [
+          "Walk around it",
+          "Clean it up immediately or put up a warning sign",
+          "Leave it for the cleaners"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q23",
+        "text": "What is PPE?",
+        "options": [
+          "Personal Protective Equipment",
+          "Professional Performance Evaluation",
+          "Planned Preventive Engineering"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q24",
+        "text": "Who is responsible for providing PPE?",
+        "options": ["The employee", "The employer", "The PPE manufacturer"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q25",
+        "text": "What should an employee do if their PPE is damaged?",
+        "options": [
+          "Continue using it",
+          "Report it and request a replacement",
+          "Repair it themselves"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q26",
+        "text": "DSE stands for:",
+        "options": ["Display Screen Equipment", "Daily Safety Exercise", "Danger Sign Evaluation"],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q27",
+        "text": "What is the purpose of a DSE assessment?",
+        "options": [
+          "To check computer speed",
+          "To assess the risks of using screens at work and reduce them",
+          "To test eyesight"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q28",
+        "text": "First aiders in the workplace must:",
+        "options": [
+          "Be qualified doctors",
+          "Hold a valid first aid certificate",
+          "Have at least 10 years experience"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q29",
+        "text": "What must be recorded in an accident book?",
+        "options": [
+          "Only accidents that require hospital treatment",
+          "All accidents, injuries, and near misses",
+          "Only accidents reported to the HSE"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q30",
+        "text": "Which body enforces health and safety law in the UK?",
+        "options": ["The police", "The Health and Safety Executive (HSE)", "Trading Standards"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q31",
+        "text": "A prohibition notice means:",
+        "options": [
+          "A written warning to improve",
+          "An immediate stop to a dangerous activity",
+          "A fine of up to £1,000"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q32",
+        "text": "What is workplace stress?",
+        "options": [
+          "Being too busy",
+          "A harmful reaction to excessive pressures or demands at work",
+          "Normal tiredness after a shift"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q33",
+        "text": "Who should report a hazard they notice in the workplace?",
+        "options": ["Only managers", "Only the health and safety representative", "Any employee"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q34",
+        "text": "What does the hierarchy of control prioritise first?",
+        "options": ["PPE", "Elimination of the hazard", "Administrative controls"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q35",
+        "text": "Which of these is an example of an engineering control?",
+        "options": [
+          "Wearing ear defenders",
+          "Installing a machine guard",
+          "Writing a safety policy"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q36",
+        "text": "Employers with five or more employees must:",
+        "options": [
+          "Have a written health and safety policy",
+          "Employ a full-time safety officer",
+          "Close during bad weather"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q37",
+        "text": "A near miss should be:",
+        "options": [
+          "Ignored because nobody was hurt",
+          "Reported and investigated to prevent future incidents",
+          "Only recorded if a manager witnesses it"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q38",
+        "text": "Electrical equipment should be:",
+        "options": [
+          "Checked and maintained regularly, with PAT testing where required",
+          "Replaced every year",
+          "Only inspected if it sparks"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q39",
+        "text": "What should you do if you see a frayed electrical cable?",
+        "options": [
+          "Tape it up yourself",
+          "Report it, stop using the equipment, and label it as faulty",
+          "Ignore it if the device still works"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q40",
+        "text": "Working at height means:",
+        "options": [
+          "Working above 3 metres only",
+          "Working in any place where a person could fall and be injured",
+          "Working on scaffolding only"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q41",
+        "text": "A safety sign with a blue circle means:",
+        "options": [
+          "Warning of danger",
+          "Mandatory instruction (you must do something)",
+          "Safe condition / exit route"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q42",
+        "text": "A safety sign with a yellow triangle means:",
+        "options": ["Mandatory instruction", "Warning of a hazard", "Fire equipment location"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q43",
+        "text": "Employees have a duty to:",
+        "options": [
+          "Write the company safety policy",
+          "Take reasonable care of their own and others' health and safety",
+          "Provide PPE for colleagues"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q44",
+        "text": "What is a safe system of work?",
+        "options": [
+          "A method that considers all hazards and defines safe procedures",
+          "Any system that has been used for more than 5 years",
+          "A checklist completed once a year"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q45",
+        "text": "Noise levels at work should be assessed if:",
+        "options": [
+          "Employees complain about music",
+          "People have to shout to be heard at 2 metres apart",
+          "It rains heavily"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q46",
+        "text": "What is the main purpose of workplace health and safety training?",
+        "options": [
+          "To pass inspections",
+          "To ensure employees can work safely and understand the risks",
+          "To complete paperwork"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q47",
+        "text": "An improvement notice requires:",
+        "options": [
+          "Immediate closure of the business",
+          "The employer to fix the issue within a set timeframe",
+          "The employee to resign"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q48",
+        "text": "What should be available at all fire exits?",
+        "options": [
+          "CCTV cameras",
+          "Clear signage, no obstructions, and emergency lighting",
+          "Security guards"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q49",
+        "text": "When using a ladder, you should:",
+        "options": [
+          "Lean as far as you can to avoid moving it",
+          "Maintain three points of contact at all times",
+          "Stand on the top two rungs for extra height"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q50",
+        "text": "What is the maximum weight recommended for a single manual lift?",
+        "options": [
+          "There is no fixed limit; it depends on the risk assessment",
+          "50 kg for all workers",
+          "25 kg for men and 16 kg for women as a guideline"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q51",
+        "text": "Lone workers should:",
+        "options": [
+          "Never be allowed to work alone",
+          "Have a risk assessment, communication plan, and check-in system",
+          "Only work during daylight hours"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q52",
+        "text": "What is the main purpose of safety induction training?",
+        "options": [
+          "To show new employees the canteen",
+          "To ensure new workers understand the hazards, procedures, and emergency plans at their workplace",
+          "To complete a form for HR"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q53",
+        "text": "Which of these is a biological hazard in the workplace?",
+        "options": ["A loose carpet", "Bloodborne pathogens", "Loud machinery"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q54",
+        "text": "Work equipment should be:",
+        "options": [
+          "Suitable for purpose, maintained, and used by trained people",
+          "The cheapest option available",
+          "Replaced only when completely broken"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q55",
+        "text": "What must employers consult employees about?",
+        "options": [
+          "The colour of the office walls",
+          "Health and safety arrangements that affect them",
+          "What to have for lunch"
+        ],
+        "correctAnswer": 1
       }
     ]
   }

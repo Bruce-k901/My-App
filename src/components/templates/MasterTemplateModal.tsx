@@ -8,7 +8,9 @@ import { toast } from 'sonner';
 import { getTemplateFeatures, featuresToEvidenceTypes } from '@/lib/template-features';
 import TimePicker from '@/components/ui/TimePicker';
 import NotificationConfigSection from '@/components/templates/NotificationConfigSection';
-import type { NotificationConfig } from '@/types/checklist';
+import type { NotificationConfig, TemplateField } from '@/types/checklist';
+import { FieldBuilderPanel } from '@/components/templates/field-builder/FieldBuilderPanel';
+import { ChecklistFeature, YesNoChecklistFeature, DocumentUploadFeature } from '@/components/templates/features';
 
 interface MasterTemplateModalProps {
   isOpen: boolean;
@@ -69,6 +71,7 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ id, name, description, enable
 export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, mode = 'template' }: MasterTemplateModalProps) {
   const { companyId, user, profile } = useAppContext();
   const [isSaving, setIsSaving] = useState(false);
+  const isTrailImport = editingTemplate?.tags?.includes('trail_import') ?? false;
   
   const [templateConfig, setTemplateConfig] = useState({
     templateName: '',
@@ -99,6 +102,21 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
 
   const [notificationConfig, setNotificationConfig] = useState<NotificationConfig | null>(null);
 
+  // Custom form builder state
+  const [useCustomFields, setUseCustomFields] = useState(false);
+  const [customFieldsList, setCustomFieldsList] = useState<TemplateField[]>([]);
+
+  // Checklist / Yes-No items state (editable from feature editors)
+  const [checklistItems, setChecklistItems] = useState<string[]>([]);
+  const [yesNoChecklistItems, setYesNoChecklistItems] = useState<any[]>([]);
+
+  // Template document uploads state
+  const [templateDocuments, setTemplateDocuments] = useState<Array<{ url: string; fileName: string; fileType: string; fileSize: number }>>([]);
+
+  // Compliance template linking state (for trail_import templates)
+  const [complianceTemplates, setComplianceTemplates] = useState<Array<{id: string, slug: string, name: string, category?: string}>>([]);
+  const [loadingCompliance, setLoadingCompliance] = useState(false);
+
   const [features, setFeatures] = useState({
     monitorCallout: false,
     checklist: false,
@@ -111,6 +129,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
     tempLogs: false,
     assetDropdown: false,
     sopUpload: false,
+    customFields: false,
   });
 
   // Load sites on modal open
@@ -178,6 +197,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         'daily': 'Daily',
         'weekly': 'Weekly',
         'monthly': 'Monthly',
+        'annually': 'Annually',
         'triggered': 'On Demand',
         'once': 'Once'
       };
@@ -250,13 +270,65 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         tempLogs: templateFeatures.tempLogs,
         assetDropdown: templateFeatures.assetSelection, // Map assetSelection to assetDropdown
         sopUpload: templateFeatures.requiresSOP,
+        customFields: !!editingTemplate.use_custom_fields,
       });
+
+      // Load checklist / yes-no items from recurrence_pattern
+      const defaultItems = editingTemplate.recurrence_pattern?.default_checklist_items || [];
+      if (templateFeatures.yesNoChecklist && Array.isArray(defaultItems)) {
+        const loaded = defaultItems
+          .map((item: any) => {
+            if (item && typeof item === 'object' && item.options && Array.isArray(item.options)) {
+              return { ...item, answer: null }; // Enhanced format
+            }
+            return {
+              text: typeof item === 'string' ? item : (item.text || item.label || ''),
+              answer: null,
+            };
+          })
+          .filter((item: any) => item.text && item.text.trim().length > 0);
+        setYesNoChecklistItems(loaded);
+        setChecklistItems([]);
+      } else if (Array.isArray(defaultItems)) {
+        const loaded = defaultItems
+          .map((item: any) => typeof item === 'string' ? item : (item.text || item.label || ''))
+          .filter((item: string) => item && item.trim().length > 0);
+        setChecklistItems(loaded);
+        setYesNoChecklistItems([]);
+      } else {
+        setChecklistItems([]);
+        setYesNoChecklistItems([]);
+      }
+
+      // Load template documents from recurrence_pattern
+      const docs = editingTemplate.recurrence_pattern?.template_documents;
+      if (Array.isArray(docs) && docs.length > 0) {
+        setTemplateDocuments(docs);
+      } else {
+        setTemplateDocuments([]);
+      }
 
       // Load notification config
       if (editingTemplate.notification_config) {
         setNotificationConfig(editingTemplate.notification_config);
       } else {
         setNotificationConfig(null);
+      }
+
+      // Load custom fields if template uses custom form builder
+      if (editingTemplate.use_custom_fields) {
+        setUseCustomFields(true);
+        (async () => {
+          const { data: fields } = await supabase
+            .from('template_fields')
+            .select('*')
+            .eq('template_id', editingTemplate.id)
+            .order('field_order');
+          if (fields) setCustomFieldsList(fields);
+        })();
+      } else {
+        setUseCustomFields(false);
+        setCustomFieldsList([]);
       }
     } else if (!editingTemplate && isOpen) {
       // Reset form for new template
@@ -288,10 +360,110 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         tempLogs: false,
         assetDropdown: false,
         sopUpload: false,
+        customFields: false,
       });
       setNotificationConfig(null);
+      setUseCustomFields(false);
+      setCustomFieldsList([]);
+      setChecklistItems([]);
+      setYesNoChecklistItems([]);
+      setTemplateDocuments([]);
     }
   }, [editingTemplate, isOpen]);
+
+  // Load pre-assigned sites for trail_import templates
+  useEffect(() => {
+    if (!editingTemplate?.id || !isTrailImport || !isOpen) return;
+    (async () => {
+      const { data } = await supabase
+        .from('template_site_assignments')
+        .select('site_id')
+        .eq('template_id', editingTemplate.id);
+      if (data && data.length > 0) {
+        setSelectedSites(data.map(a => a.site_id));
+        setApplyToAllSites(false);
+      }
+    })();
+  }, [editingTemplate?.id, isTrailImport, isOpen]);
+
+  // Load compliance library templates for trail_import template linking
+  useEffect(() => {
+    if (!isTrailImport || !isOpen || !companyId) {
+      setComplianceTemplates([]);
+      return;
+    }
+    setLoadingCompliance(true);
+    (async () => {
+      const { data } = await supabase
+        .from('task_templates')
+        .select('id, slug, name, category')
+        .eq('is_template_library', true)
+        .eq('is_active', true)
+        .or(`company_id.eq.${companyId},company_id.is.null`)
+        .order('name');
+      if (data) {
+        setComplianceTemplates(data);
+      }
+      setLoadingCompliance(false);
+    })();
+  }, [isTrailImport, isOpen, companyId]);
+
+  // Apply a compliance library template's configuration to the current form
+  const applyComplianceTemplate = async (templateId: string) => {
+    if (!templateId) return;
+    const { data: ct, error } = await supabase
+      .from('task_templates')
+      .select('*')
+      .eq('id', templateId)
+      .single();
+    if (error || !ct) {
+      toast.error('Failed to load compliance template');
+      return;
+    }
+
+    // Map compliance template's features
+    const templateFeatures = getTemplateFeatures(ct);
+
+    setFeatures({
+      monitorCallout: templateFeatures.monitorCallout,
+      checklist: templateFeatures.checklist,
+      yesNoChecklist: templateFeatures.yesNoChecklist,
+      passFail: templateFeatures.passFail,
+      libraryDropdown: templateFeatures.libraryDropdown,
+      raUpload: templateFeatures.raUpload,
+      photoEvidence: templateFeatures.photoEvidence,
+      documentUpload: templateFeatures.documentUpload,
+      tempLogs: templateFeatures.tempLogs,
+      assetDropdown: templateFeatures.assetSelection,
+      sopUpload: templateFeatures.requiresSOP,
+    });
+
+    // Map frequency
+    const frequencyReverseMap: Record<string, string> = {
+      'daily': 'Daily', 'weekly': 'Weekly', 'monthly': 'Monthly',
+      'annually': 'Annually', 'triggered': 'On Demand', 'once': 'Once'
+    };
+
+    setTemplateConfig(prev => ({
+      ...prev,
+      frequency: frequencyReverseMap[ct.frequency] || prev.frequency,
+      taskDescription: ct.description || prev.taskDescription,
+    }));
+
+    // Copy dayparts if available
+    if (ct.dayparts && Array.isArray(ct.dayparts) && ct.dayparts.length > 0) {
+      setSelectedDayparts(ct.dayparts);
+    }
+    if (ct.recurrence_pattern?.daypart_times) {
+      setDaypartTimes(ct.recurrence_pattern.daypart_times);
+    }
+
+    if (ct.notification_config) {
+      setNotificationConfig(ct.notification_config);
+    }
+
+    toast.success(`Applied "${ct.name}" configuration`);
+  };
 
   const toggleFeature = (featureName: keyof typeof features) => {
     setFeatures(prev => {
@@ -311,7 +483,12 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
       if (featureName === 'tempLogs' && newValue) {
         updated.monitorCallout = true;
       }
-      
+
+      // Sync customFields feature with useCustomFields state
+      if (featureName === 'customFields') {
+        setUseCustomFields(newValue);
+      }
+
       return updated;
     });
   };
@@ -447,7 +624,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
     setNextInstanceDates(instances);
   };
 
-  const handleSave = async () => {
+  const handleSave = async (withSchedule: boolean = false) => {
     if (!companyId) {
       toast.error('Company ID not found. Please refresh and try again.');
       return;
@@ -480,9 +657,9 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         'Daily': 'daily',
         'Weekly': 'weekly',
         'Monthly': 'monthly',
-        'Quarterly': 'monthly', // Map to monthly since quarterly not in schema
-        'Bi-Annually': 'monthly', // Map to monthly since biannual not in schema
-        'Annually': 'monthly', // Map to monthly since annually not in schema
+        'Quarterly': 'monthly', // Map to monthly since quarterly not in site_checklists schema
+        'Bi-Annually': 'annually', // Closest supported frequency
+        'Annually': 'annually',
         'On Demand': 'triggered',
         'Custom': 'triggered', // Map to triggered for custom schedules
       };
@@ -490,15 +667,18 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
       // Build instructions from purpose, importance, method, specialRequirements
       const instructions = `Purpose:\n${templateConfig.purpose}\n\nImportance:\n${templateConfig.importance}\n\nMethod:\n${templateConfig.method}\n\nSpecial Requirements:\n${templateConfig.specialRequirements}`;
 
-      // Build evidence types from features
-      // Use shared utility to map features to evidence_types
+      // Build evidence types from features (standard + custom can coexist)
       const evidenceTypes = featuresToEvidenceTypes({
         tempLogs: features.tempLogs,
         photoEvidence: features.photoEvidence,
         passFail: features.passFail,
         yesNoChecklist: features.yesNoChecklist,
         checklist: features.checklist,
+        documentUpload: features.documentUpload,
       });
+      if (useCustomFields) {
+        evidenceTypes.push('custom_fields');
+      }
 
       // Debug: Log the features being saved
       console.log('💾 Saving template with features:', {
@@ -525,7 +705,29 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
           return acc;
         }, {})
       };
-      
+
+      // Save checklist / yes-no items into recurrence_pattern
+      if (features.yesNoChecklist && yesNoChecklistItems.length > 0) {
+        const validItems = yesNoChecklistItems.filter((item: any) => item?.text?.trim());
+        if (validItems.length > 0) {
+          recurrencePattern.default_checklist_items = validItems;
+        }
+      } else if (features.checklist && checklistItems.length > 0) {
+        const validItems = checklistItems.filter((item: string) => item.trim());
+        if (validItems.length > 0) {
+          recurrencePattern.default_checklist_items = validItems.map(text => ({
+            id: crypto.randomUUID(),
+            text,
+            required: true,
+          }));
+        }
+      }
+
+      // Save template documents into recurrence_pattern
+      if (features.documentUpload && templateDocuments.length > 0) {
+        recurrencePattern.template_documents = templateDocuments;
+      }
+
       if (templateConfig.frequency === 'Weekly' && weeklyDays.length > 0) {
         recurrencePattern.weeklyDays = weeklyDays;
       } else if (templateConfig.frequency === 'Monthly') {
@@ -631,6 +833,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         is_active: false,
         is_template_library: false, // User-created templates, not library templates
         notification_config: notificationConfig,
+        use_custom_fields: useCustomFields,
       };
 
       // Set asset selection fields if asset dropdown feature is enabled
@@ -706,9 +909,62 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
           .eq('id', editingTemplate.id)
           .select()
           .single();
-        
+
         savedTemplate = data;
         error = updateError;
+
+        // Propagate frequency & timing changes to all site_checklists for this template
+        if (savedTemplate && !updateError) {
+          const siteChecklistUpdate: Record<string, any> = {
+            frequency: frequencyMap[templateConfig.frequency] || 'triggered',
+            updated_at: new Date().toISOString(),
+          };
+
+          // Build daypart_times object for site_checklists
+          if (selectedDayparts.length > 0) {
+            const dpTimes: Record<string, string> = {};
+            selectedDayparts.forEach(dp => {
+              dpTimes[dp] = daypartTimes[dp] || '';
+            });
+            siteChecklistUpdate.daypart_times = dpTimes;
+          } else {
+            siteChecklistUpdate.daypart_times = null;
+          }
+
+          // Set days_of_week for weekly tasks
+          if (templateConfig.frequency === 'Weekly' && weeklyDays.length > 0) {
+            siteChecklistUpdate.days_of_week = weeklyDays;
+          } else {
+            siteChecklistUpdate.days_of_week = null;
+          }
+
+          // Set date_of_month for monthly tasks
+          if (templateConfig.frequency === 'Monthly' && monthlyDay !== null) {
+            siteChecklistUpdate.date_of_month = monthlyDay;
+          } else {
+            siteChecklistUpdate.date_of_month = null;
+          }
+
+          // Set anniversary_date for annual tasks
+          if ((templateConfig.frequency === 'Annually' || templateConfig.frequency === 'Bi-Annually') && annualDate) {
+            siteChecklistUpdate.anniversary_date = annualDate;
+          } else {
+            siteChecklistUpdate.anniversary_date = null;
+          }
+
+          const { error: scError } = await supabase
+            .from('site_checklists')
+            .update(siteChecklistUpdate)
+            .eq('template_id', editingTemplate.id);
+
+          if (scError) {
+            console.error('Error propagating to site_checklists:', scError);
+            toast.error('Template saved but scheduling update failed. Try editing from My Tasks.');
+          } else {
+            console.log('Propagated timing changes to site_checklists');
+            toast.success('Scheduling updated for all sites');
+          }
+        }
       } else {
         // Create new template
         const { data, error: insertError } = await supabase
@@ -759,6 +1015,79 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             console.log(`Template assigned to ${selectedSites.length} sites`);
           }
         }
+      }
+
+      // Save custom fields if using custom form builder
+      if (savedTemplate && useCustomFields && customFieldsList.length > 0) {
+        // Delete existing template_fields for this template
+        await supabase
+          .from('template_fields')
+          .delete()
+          .eq('template_id', savedTemplate.id);
+
+        // Build a map from temp IDs to real IDs (for parent_field_id references)
+        const tempToRealId = new Map<string, string>();
+
+        // Insert top-level fields first
+        const topLevelFields = customFieldsList.filter(f => !f.parent_field_id);
+        for (const field of topLevelFields) {
+          const { data: inserted, error: fieldError } = await supabase
+            .from('template_fields')
+            .insert({
+              template_id: savedTemplate.id,
+              field_name: field.field_name,
+              field_type: field.field_type,
+              label: field.label,
+              placeholder: field.placeholder,
+              help_text: field.help_text,
+              options: field.options,
+              required: field.required,
+              field_order: field.field_order,
+              min_value: field.min_value,
+              max_value: field.max_value,
+              warn_threshold: field.warn_threshold,
+              fail_threshold: field.fail_threshold,
+              unit: field.unit,
+              default_value: field.default_value,
+              section_label: field.section_label,
+            })
+            .select()
+            .single();
+
+          if (inserted && !fieldError) {
+            tempToRealId.set(field.id, inserted.id);
+          } else if (fieldError) {
+            console.error('Error inserting field:', fieldError);
+          }
+        }
+
+        // Insert sub-fields with real parent_field_id
+        const subFields = customFieldsList.filter(f => f.parent_field_id);
+        for (const field of subFields) {
+          const realParentId = tempToRealId.get(field.parent_field_id!) || field.parent_field_id;
+          await supabase
+            .from('template_fields')
+            .insert({
+              template_id: savedTemplate.id,
+              field_name: field.field_name,
+              field_type: field.field_type,
+              label: field.label,
+              placeholder: field.placeholder,
+              help_text: field.help_text,
+              options: field.options,
+              required: field.required,
+              field_order: field.field_order,
+              min_value: field.min_value,
+              max_value: field.max_value,
+              warn_threshold: field.warn_threshold,
+              fail_threshold: field.fail_threshold,
+              unit: field.unit,
+              default_value: field.default_value,
+              parent_field_id: realParentId,
+            });
+        }
+
+        console.log(`✅ Saved ${customFieldsList.length} custom fields`);
       }
 
       if (error) {
@@ -822,15 +1151,74 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         return;
       }
 
-      toast.success(editingTemplate ? 'Template updated successfully!' : 'Template created successfully!');
+      // If Save & Schedule was clicked for a trail_import template, create site_checklists
+      if (withSchedule && isTrailImport && savedTemplate && selectedSites.length > 0) {
+        const siteFreqMap: Record<string, string> = {
+          'Daily': 'daily', 'Weekly': 'weekly', 'Monthly': 'monthly',
+          'Quarterly': 'monthly', 'Bi-Annually': 'annually',
+          'Annually': 'annually', 'On Demand': 'triggered',
+        };
+        const siteFreq = siteFreqMap[templateConfig.frequency] || 'triggered';
+
+        // Build daypart_times
+        const dpTimes: Record<string, string> = {};
+        selectedDayparts.forEach(dp => {
+          dpTimes[dp] = daypartTimes[dp] || '';
+        });
+
+        for (const sId of selectedSites) {
+          const siteChecklistData: Record<string, any> = {
+            template_id: savedTemplate.id,
+            company_id: companyId,
+            site_id: sId,
+            name: templateConfig.templateName,
+            frequency: siteFreq,
+            active: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+
+          if (Object.keys(dpTimes).length > 0) {
+            siteChecklistData.daypart_times = dpTimes;
+          }
+          if (templateConfig.frequency === 'Weekly' && weeklyDays.length > 0) {
+            siteChecklistData.days_of_week = weeklyDays;
+          }
+          if (templateConfig.frequency === 'Monthly' && monthlyDay !== null) {
+            siteChecklistData.date_of_month = monthlyDay;
+          }
+          if ((templateConfig.frequency === 'Annually' || templateConfig.frequency === 'Bi-Annually') && annualDate) {
+            siteChecklistData.anniversary_date = annualDate;
+          }
+
+          const { error: scError } = await supabase
+            .from('site_checklists')
+            .insert(siteChecklistData);
+
+          if (scError) {
+            console.error(`Failed to create site_checklist for site ${sId}:`, scError);
+          }
+        }
+
+        // Remove 'trail_import' tag — template is now fully configured
+        const updatedTags = (savedTemplate.tags || []).filter((t: string) => t !== 'trail_import');
+        await supabase
+          .from('task_templates')
+          .update({ tags: updatedTags.length > 0 ? updatedTags : null })
+          .eq('id', savedTemplate.id);
+
+        toast.success(`Template scheduled for ${selectedSites.length} site(s)!`);
+      } else {
+        toast.success(editingTemplate ? 'Template updated successfully!' : 'Template created successfully!');
+      }
 
       // Call onSave callback if provided - pass savedTemplate so parent can use it
       if (onSave) {
-        onSave({ 
-          template: templateConfig, 
-          features, 
+        onSave({
+          template: templateConfig,
+          features,
           savedTemplate,
-          shouldCreateTask: !editingTemplate // Only auto-create task for new templates
+          shouldCreateTask: !editingTemplate && !isTrailImport
         });
       }
 
@@ -859,6 +1247,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
     { id: 'tempLogs', name: 'Temperature Logs', description: 'Temperature monitoring' },
     { id: 'assetDropdown', name: 'Asset Dropdown', description: 'Equipment and assets' },
     { id: 'sopUpload', name: 'SOP Upload', description: 'SOP documentation' },
+    { id: 'customFields', name: 'Custom Form Fields', description: 'Build custom form with fields' },
   ];
 
   // Multi-site selector component
@@ -992,25 +1381,39 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
               />
             </div>
 
-            {/* Multi-Site Selector - Only show when creating new template */}
-            {(() => {
-              const shouldShow = !editingTemplate;
-              console.log('🔍 MultiSiteSelector render check:', { 
-                shouldShow, 
-                editingTemplate: !!editingTemplate,
-                editingTemplateId: editingTemplate?.id,
-                availableSitesCount: availableSites.length,
-                applyToAllSites,
-                selectedSitesCount: selectedSites.length
-              });
-              
-              if (!shouldShow) {
-                console.log('❌ MultiSiteSelector not showing: editingTemplate is set');
-                return null;
-              }
-              
-              return <MultiSiteSelector />;
-            })()}
+            {/* Compliance Template Linking - for trail_import templates */}
+            {isTrailImport && complianceTemplates.length > 0 && (
+              <div className="mt-4 p-4 rounded-lg border border-dashed border-[#D37E91]/40 bg-[#D37E91]/5">
+                <label className="block text-sm font-medium text-theme-primary mb-1">
+                  Apply Compliance Template Setup
+                </label>
+                <p className="text-xs text-theme-tertiary mb-2">
+                  Copy features, frequency and settings from an existing compliance template
+                </p>
+                <select
+                  onChange={e => {
+                    if (e.target.value) {
+                      applyComplianceTemplate(e.target.value);
+                      e.target.value = ''; // Reset dropdown after applying
+                    }
+                  }}
+                  className="w-full text-sm px-3 py-2 rounded border border-theme bg-theme-surface text-theme-primary"
+                  disabled={loadingCompliance}
+                >
+                  <option value="">
+                    {loadingCompliance ? 'Loading templates...' : 'Select a compliance template to apply...'}
+                  </option>
+                  {complianceTemplates.map(ct => (
+                    <option key={ct.id} value={ct.id}>
+                      {ct.name} {ct.category ? `(${ct.category})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Multi-Site Selector - Show for new templates and trail_import edits */}
+            {(!editingTemplate || isTrailImport) && <MultiSiteSelector />}
 
             {/* Task Name and Description fields removed from builder - they will be shown in curated template view */}
           </div>
@@ -1324,8 +1727,8 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
           {/* Template Features */}
           <div className="mb-6 pb-6 border-b border-theme">
             <h2 className="text-lg font-semibold text-theme-primary mb-1">Template Features</h2>
-            <p className="text-sm text-theme-secondary mb-4">Select the features and requirements for this template</p>
-            
+            <p className="text-sm text-theme-secondary mb-3">Select the features and requirements for this template</p>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {featureList.map((feature) => (
                 <FeatureItem
@@ -1338,6 +1741,48 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
                 />
               ))}
             </div>
+
+            {/* Inline feature editors — configure content for enabled features */}
+            {features.checklist && !features.yesNoChecklist && (
+              <div className="mt-4 border-t border-theme pt-4">
+                <ChecklistFeature
+                  items={checklistItems}
+                  defaultItems={editingTemplate?.recurrence_pattern?.default_checklist_items || []}
+                  onChange={setChecklistItems}
+                />
+              </div>
+            )}
+
+            {features.yesNoChecklist && (
+              <div className="mt-4 border-t border-theme pt-4">
+                <YesNoChecklistFeature
+                  items={yesNoChecklistItems}
+                  onChange={setYesNoChecklistItems}
+                />
+              </div>
+            )}
+
+            {features.documentUpload && (
+              <div className="mt-4 border-t border-theme pt-4">
+                <DocumentUploadFeature
+                  uploads={templateDocuments}
+                  onChange={setTemplateDocuments}
+                  label="Files & Links"
+                  helpText="Attach documents or link to files on OneDrive, Dropbox, Google Drive etc."
+                  maxFiles={20}
+                />
+              </div>
+            )}
+
+            {features.customFields && (
+              <div className="mt-4 border-t border-theme pt-4">
+                <h3 className="text-sm font-medium text-theme-primary mb-3">Custom Form Fields</h3>
+                <FieldBuilderPanel
+                  fields={customFieldsList}
+                  onChange={setCustomFieldsList}
+                />
+              </div>
+            )}
           </div>
 
           {/* Notification Configuration */}
@@ -1347,8 +1792,53 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             companyId={companyId || ''}
           />
 
-          {/* Task Instructions section hidden from builder - will be shown in curated template view */}
-          {/* Instructions are still saved to template, just not displayed in builder */}
+          {/* Task Instructions */}
+          <div className="mb-6 pb-6 border-b border-theme">
+            <h2 className="text-lg font-semibold text-theme-primary mb-1">Task Instructions</h2>
+            <p className="text-sm text-theme-secondary mb-3">Guide staff on how to complete this task</p>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-theme-primary mb-1">Purpose</label>
+                <textarea
+                  value={templateConfig.purpose}
+                  onChange={(e) => setTemplateConfig(prev => ({ ...prev, purpose: e.target.value }))}
+                  placeholder="Why is this task important?"
+                  rows={2}
+                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-[#D37E91] placeholder-theme-tertiary resize-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-theme-primary mb-1">Method</label>
+                <textarea
+                  value={templateConfig.method}
+                  onChange={(e) => setTemplateConfig(prev => ({ ...prev, method: e.target.value }))}
+                  placeholder="Step-by-step instructions for completing the task"
+                  rows={3}
+                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-[#D37E91] placeholder-theme-tertiary resize-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-theme-primary mb-1">Importance</label>
+                <textarea
+                  value={templateConfig.importance}
+                  onChange={(e) => setTemplateConfig(prev => ({ ...prev, importance: e.target.value }))}
+                  placeholder="What happens if this task is missed or done incorrectly?"
+                  rows={2}
+                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-[#D37E91] placeholder-theme-tertiary resize-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-theme-primary mb-1">Special Requirements</label>
+                <textarea
+                  value={templateConfig.specialRequirements}
+                  onChange={(e) => setTemplateConfig(prev => ({ ...prev, specialRequirements: e.target.value }))}
+                  placeholder="PPE, tools, certifications, or other requirements"
+                  rows={2}
+                  className="w-full px-3 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:border-[#D37E91] placeholder-theme-tertiary resize-none"
+                />
+              </div>
+            </div>
+          </div>
           </div>
         </div>
 
@@ -1360,14 +1850,29 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
           >
             Cancel
           </button>
+
+          {isTrailImport && (
+            <button
+              onClick={() => handleSave(false)}
+              disabled={isSaving}
+              className="w-full sm:w-auto px-5 py-2 border border-[#D37E91] text-[#D37E91] rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#D37E91]/10"
+            >
+              {isSaving ? 'Saving...' : 'Save Template'}
+            </button>
+          )}
+
           <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="w-full sm:w-auto px-5 py-2 bg-[#D37E91] hover:bg-[#D37E91] text-white rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+            onClick={() => handleSave(isTrailImport)}
+            disabled={isSaving || (isTrailImport && selectedSites.length === 0)}
+            className="w-full sm:w-auto px-5 py-2 bg-[#D37E91] hover:bg-[#D37E91]/90 text-white rounded-lg transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
           >
-            {isSaving 
-              ? (editingTemplate ? 'Updating...' : 'Creating...')
-              : (editingTemplate ? 'Update Template' : 'Create Template')
+            {isSaving
+              ? (isTrailImport ? 'Scheduling...' : editingTemplate ? 'Updating...' : 'Creating...')
+              : isTrailImport
+                ? 'Save & Schedule'
+                : editingTemplate
+                  ? 'Update Template'
+                  : 'Create Template'
             }
           </button>
         </div>

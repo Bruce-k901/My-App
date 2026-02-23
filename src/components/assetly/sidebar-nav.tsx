@@ -11,6 +11,7 @@ import {
   Calendar,
   Layers,
   UserCircle,
+  Wrench,
 } from '@/components/ui/icons';
 import { useSidebarMode } from '@/hooks/useSidebarMode';
 import { SidebarPin } from '@/components/layout/SidebarPin';
@@ -61,6 +62,12 @@ const navItems: NavItem[] = [
     label: 'PPM Groups',
     href: '/dashboard/assets/groups',
     icon: Layers,
+  },
+  {
+    type: 'link',
+    label: 'Troubleshoot AI',
+    href: '/dashboard/assets/troubleshoot-setup',
+    icon: Wrench,
   },
   {
     type: 'link',

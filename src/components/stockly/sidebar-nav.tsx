@@ -103,15 +103,17 @@ const navItems: NavItem[] = [
     label: 'PURCHASING',
     icon: ShoppingCart,
   },
-  // @salsa — Supplier nav with Approved List sub-link
   {
-    type: 'parent',
+    type: 'link',
     label: 'Suppliers',
     href: '/dashboard/stockly/suppliers',
     icon: Building2,
-    children: [
-      { label: 'Approved List', href: '/dashboard/stockly/suppliers/approved-list', icon: FileText },
-    ],
+  },
+  {
+    type: 'link',
+    label: 'Approved List',
+    href: '/dashboard/stockly/suppliers/approved-list',
+    icon: FileText,
   },
   {
     type: 'link',

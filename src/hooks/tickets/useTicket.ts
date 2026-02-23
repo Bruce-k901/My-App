@@ -131,16 +131,17 @@ export function useTicket({ ticketId, isAdmin = false }: UseTicketOptions): UseT
 
   const markAsRead = useCallback(async () => {
     try {
-      await fetch(`/api/admin/tickets/${ticketId}/mark-read`, {
-        method: 'POST',
-      });
+      const endpoint = isAdmin
+        ? `/api/admin/tickets/${ticketId}/mark-read`
+        : `/api/tickets/${ticketId}/mark-read`;
+      await fetch(endpoint, { method: 'POST' });
       // Silently refetch to update unread count (no loading flicker)
       await fetchTicket(false);
     } catch (err: any) {
       console.error('Error marking ticket as read:', err);
       // Non-critical, don't throw
     }
-  }, [ticketId, fetchTicket]);
+  }, [ticketId, isAdmin, fetchTicket]);
 
   return {
     ticket,

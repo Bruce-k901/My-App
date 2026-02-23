@@ -9,6 +9,9 @@ interface PageProps {
   params: Promise<{
     courseId: string;
   }>;
+  searchParams: Promise<{
+    assignmentId?: string;
+  }>;
 }
 
 /**
@@ -16,8 +19,9 @@ interface PageProps {
  * Food Safety, Health & Safety, and Allergen Awareness use Learn flow only.
  * Old PlayerShell (/training/courses/l2-food-hygiene/start) and selfstudy redirect → /learn/uk-l2-food-safety.
  */
-export default async function CoursePage({ params }: PageProps) {
+export default async function CoursePage({ params, searchParams }: PageProps) {
   const { courseId } = await params;
+  const { assignmentId } = await searchParams;
 
   let course: Course;
   if (courseId === 'uk-l2-food-safety') {
@@ -40,5 +44,5 @@ export default async function CoursePage({ params }: PageProps) {
     );
   }
 
-  return <CourseLayout course={course} />;
+  return <CourseLayout course={course} assignmentId={assignmentId || null} />;
 }

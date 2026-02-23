@@ -25,8 +25,9 @@ export function AssetSelectionFeature({
   const [selectedSiteFilter, setSelectedSiteFilter] = useState<string>('');
   
   // Sync with header site selector - use selectedSiteId from context
+  // Treat 'all' as no filter (show all assets)
   useEffect(() => {
-    if (selectedSiteId) {
+    if (selectedSiteId && selectedSiteId !== 'all') {
       setSelectedSiteFilter(selectedSiteId);
     } else {
       setSelectedSiteFilter('');

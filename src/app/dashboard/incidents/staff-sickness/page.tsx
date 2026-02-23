@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AlertTriangle, Plus, Filter, Search, Download, Eye, UserX, Calendar } from '@/components/ui/icons';
+import { AlertTriangle, Plus, Filter, Search, Download, Eye, UserX, Calendar, UserCheck } from '@/components/ui/icons';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 import { StaffMemberPicker } from '@/components/ui/StaffMemberPicker';
+import { ReturnToWorkModal } from '@/components/incidents/ReturnToWorkModal';
 
 interface StaffSicknessRecord {
   id: string;
@@ -30,6 +31,17 @@ interface StaffSicknessRecord {
   status: 'active' | 'cleared' | 'closed';
   notes?: string | null;
   created_at: string;
+  // Return to Work fields
+  rtw_conducted_by?: string | null;
+  rtw_conducted_date?: string | null;
+  rtw_fit_for_full_duties?: boolean | null;
+  rtw_gp_consulted?: boolean | null;
+  rtw_fit_note_provided?: boolean | null;
+  rtw_adjustments_needed?: boolean | null;
+  rtw_adjustments_details?: string | null;
+  rtw_follow_up_required?: boolean | null;
+  rtw_follow_up_date?: string | null;
+  rtw_notes?: string | null;
 }
 
 export default function StaffSicknessPage() {
@@ -40,6 +52,7 @@ export default function StaffSicknessPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<StaffSicknessRecord | null>(null);
+  const [rtwRecord, setRtwRecord] = useState<StaffSicknessRecord | null>(null);
   const [staffList, setStaffList] = useState<{ id: string; full_name: string; position_title: string | null }[]>([]);
 
   const [formData, setFormData] = useState<Partial<StaffSicknessRecord>>({
@@ -343,20 +356,87 @@ export default function StaffSicknessPage() {
                       ⚠️ CRITICAL: Staff member was symptomatic in food areas
                     </div>
                   )}
+
+                  {/* RTW Interview Summary — shown when completed */}
+                  {record.rtw_conducted_date && (
+                    <div className="mt-3 p-3 bg-green-50/50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <UserCheck className="w-4 h-4 text-green-600 dark:text-green-400" />
+                        <span className="text-sm font-medium text-green-700 dark:text-green-400">Return to Work Interview</span>
+                        <span className="text-xs text-green-600/70 dark:text-green-400/70">
+                          {new Date(record.rtw_conducted_date).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                        <div>
+                          <span className="text-theme-tertiary">Fit for full duties:</span>
+                          <p className={record.rtw_fit_for_full_duties ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}>
+                            {record.rtw_fit_for_full_duties ? 'Yes' : 'No — restricted'}
+                          </p>
+                        </div>
+                        <div>
+                          <span className="text-theme-tertiary">GP consulted:</span>
+                          <p className="text-theme-primary">{record.rtw_gp_consulted ? 'Yes' : 'No'}</p>
+                        </div>
+                        {record.rtw_adjustments_needed && record.rtw_adjustments_details && (
+                          <div className="col-span-2 sm:col-span-1">
+                            <span className="text-theme-tertiary">Adjustments:</span>
+                            <p className="text-theme-primary">{record.rtw_adjustments_details}</p>
+                          </div>
+                        )}
+                        {record.rtw_follow_up_required && record.rtw_follow_up_date && (
+                          <div>
+                            <span className="text-theme-tertiary">Follow-up:</span>
+                            <p className="text-theme-primary">{new Date(record.rtw_follow_up_date).toLocaleDateString()}</p>
+                          </div>
+                        )}
+                        {record.rtw_notes && (
+                          <div className="col-span-2 sm:col-span-3">
+                            <span className="text-theme-tertiary">Notes:</span>
+                            <p className="text-theme-primary">{record.rtw_notes}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                <button
-                  onClick={() => handleEdit(record)}
-                  className="p-2 hover:bg-theme-muted rounded-lg transition-colors"
-                  title="Edit record"
-                >
-                  <Eye className="w-4 h-4 text-theme-secondary" />
-                </button>
+                <div className="flex flex-col gap-1 shrink-0">
+                  <button
+                    onClick={() => handleEdit(record)}
+                    className="p-2 hover:bg-theme-muted rounded-lg transition-colors"
+                    title="Edit record"
+                  >
+                    <Eye className="w-4 h-4 text-theme-secondary" />
+                  </button>
+                  {record.status === 'active' && (
+                    <button
+                      onClick={() => setRtwRecord(record)}
+                      className="p-2 hover:bg-green-500/10 rounded-lg transition-colors"
+                      title="Return to Work Interview"
+                    >
+                      <UserCheck className="w-4 h-4 text-green-600 dark:text-green-400" />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))
         )}
       </div>
+
+      {/* Return to Work Modal */}
+      {rtwRecord && (
+        <ReturnToWorkModal
+          isOpen={true}
+          onClose={() => setRtwRecord(null)}
+          onComplete={() => {
+            setRtwRecord(null);
+            fetchRecords();
+          }}
+          record={rtwRecord}
+        />
+      )}
 
       {/* Add/Edit Modal */}
       {isModalOpen && (

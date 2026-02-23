@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   Wrench,
   Package,
+  Upload,
 } from '@/components/ui/icons';
 import { useState, useEffect } from 'react';
 import { useSidebarMode } from '@/hooks/useSidebarMode';
@@ -81,6 +82,12 @@ const navItems: NavItem[] = [
     label: 'Custom Templates',
     href: '/dashboard/tasks/templates',
     icon: FileText,
+  },
+  {
+    type: 'link',
+    label: 'Import Tasks',
+    href: '/dashboard/tasks/import/trail',
+    icon: Upload,
   },
   {
     type: 'section',

@@ -200,8 +200,9 @@ export async function POST(
     };
 
     // Send Msgly DM for non-internal replies (skip if source is msgly to prevent loops)
+    // Must await — serverless context dies after response is sent
     if (!is_internal && source !== 'msgly' && ticket.created_by !== user.id) {
-      sendTicketNotificationDM({
+      await sendTicketNotificationDM({
         ticketId,
         ticketTitle: ticket.title || 'Support Ticket',
         ticketModule: ticket.module,
@@ -213,6 +214,7 @@ export async function POST(
         senderName: authorProfile?.full_name || authorProfile?.email,
         isAdminReply: true,
         eventType: 'comment',
+        supabase,
       });
     }
 

@@ -230,6 +230,15 @@ export function useGlobalTaskAlerts({
     [settings.taskRemindersEnabled, isInQuietHours, isTaskSnoozed, getTaskName, getTaskCategory, alertTaskDue, alertUrgent, handleSnooze, handleDismiss]
   );
 
+  // On mount / context change: dismiss ALL toasts to clear stale duration:Infinity
+  // task alerts from previous mounts (activeToastIds ref resets on remount so we
+  // can't target specific ones — nuclear dismiss then let polling recreate valid ones)
+  useEffect(() => {
+    toast.dismiss();
+    activeToastIds.current.clear();
+    dismissedIds.current.clear();
+  }, [companyId, siteId]);
+
   // Main polling effect
   useEffect(() => {
     if (!enabled || !companyId || !settings.taskRemindersEnabled) return;
@@ -256,6 +265,9 @@ export function useGlobalTaskAlerts({
       mounted = false;
       clearTimeout(initialTimeout);
       clearInterval(interval);
+      // Dismiss all task toasts on unmount so they don't become orphaned
+      activeToastIds.current.forEach((toastId) => toast.dismiss(toastId));
+      activeToastIds.current.clear();
     };
   }, [enabled, companyId, checkIntervalMs, settings.taskRemindersEnabled, fetchTasks, resolveTemplateNames, checkAndAlert]);
 

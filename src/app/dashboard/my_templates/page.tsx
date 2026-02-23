@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Plus, Clock, FileText, Calendar, Edit2, Trash2 } from '@/components/ui/icons';
+import { useState, useEffect, useCallback } from 'react';
+import { Plus, Clock, FileText, Edit2, Trash2, ChevronDown, ChevronRight } from '@/components/ui/icons';
 import { toast } from 'sonner';
 import { MasterTemplateModal } from '@/components/templates/MasterTemplateModal';
 import { TaskFromTemplateModal } from '@/components/templates/TaskFromTemplateModal';
+import { TemplatePreviewPanel } from '@/components/templates/TemplatePreviewPanel';
+import { QuickScheduleModal } from '@/components/templates/QuickScheduleModal';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 
@@ -19,6 +21,12 @@ interface TaskTemplate {
   is_active: boolean;
   created_at: string;
   usage_count?: number;
+  tags: string[] | null;
+  evidence_types?: string[] | null;
+  use_custom_fields?: boolean;
+  instructions?: string | null;
+  task_description?: string | null;
+  recurrence_pattern?: any;
 }
 
 export default function TemplatesPage() {
@@ -29,6 +37,10 @@ export default function TemplatesPage() {
   const [templates, setTemplates] = useState<TaskTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingTemplateId, setDeletingTemplateId] = useState<string | null>(null);
+  const [expandedTemplateId, setExpandedTemplateId] = useState<string | null>(null);
+  const [previewFields, setPreviewFields] = useState<Record<string, any[]>>({});
+  const [loadingFields, setLoadingFields] = useState<Record<string, boolean>>({});
+  const [quickScheduleTemplate, setQuickScheduleTemplate] = useState<TaskTemplate | null>(null);
 
   useEffect(() => {
     if (companyId) {
@@ -44,30 +56,27 @@ export default function TemplatesPage() {
 
     setLoading(true);
     try {
-      // Fetch user-created templates (is_template_library = false)
-      // Note: We don't filter by is_active because custom templates are saved with is_active=false
-      // to prevent the old cron from auto-creating tasks. The is_active flag is not relevant for display.
       const { data, error } = await supabase
         .from('task_templates')
         .select('*')
         .eq('company_id', companyId)
-        .eq('is_template_library', false) // Only show user-created templates, not library templates
+        .eq('is_template_library', false)
         .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching templates:', error);
         setTemplates([]);
       } else {
-        // Fetch usage counts for each template
+        // Fetch usage counts
         const templateIds = (data || []).map(t => t.id);
         const usageCounts = new Map<string, number>();
-        
+
         if (templateIds.length > 0) {
           const { data: usageData } = await supabase
             .from('checklist_tasks')
             .select('template_id')
             .in('template_id', templateIds);
-          
+
           if (usageData) {
             usageData.forEach(task => {
               if (task.template_id) {
@@ -76,13 +85,20 @@ export default function TemplatesPage() {
             });
           }
         }
-        
-        // Combine templates with usage counts
+
         const templatesWithUsage = (data || []).map(t => ({
           ...t,
           usage_count: usageCounts.get(t.id) || 0
         }));
-        
+
+        // Sort: trail_import templates first, then by created_at desc
+        templatesWithUsage.sort((a, b) => {
+          const aImport = a.tags?.includes('trail_import') ? 1 : 0;
+          const bImport = b.tags?.includes('trail_import') ? 1 : 0;
+          if (aImport !== bImport) return bImport - aImport;
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+
         setTemplates(templatesWithUsage);
       }
     } catch (error) {
@@ -93,53 +109,81 @@ export default function TemplatesPage() {
     }
   }
 
+  // Lazy-load custom fields when a template with use_custom_fields is expanded
+  const loadCustomFields = useCallback(async (templateId: string) => {
+    if (previewFields[templateId]) return; // Already loaded
+    setLoadingFields(prev => ({ ...prev, [templateId]: true }));
+    try {
+      const { data: fields } = await supabase
+        .from('template_fields')
+        .select('*')
+        .eq('template_id', templateId)
+        .order('field_order');
+      setPreviewFields(prev => ({ ...prev, [templateId]: fields || [] }));
+    } catch (err) {
+      console.error('Failed to load custom fields:', err);
+      setPreviewFields(prev => ({ ...prev, [templateId]: [] }));
+    } finally {
+      setLoadingFields(prev => ({ ...prev, [templateId]: false }));
+    }
+  }, [previewFields]);
+
   const handleTemplateSaved = (result?: any) => {
     setIsBuilderOpen(false);
     setEditingTemplate(null);
-    
-    // If a new template was created and should create a task instance, open TaskFromTemplateModal
+
     if (result?.shouldCreateTask && result?.savedTemplate) {
-      // Refresh templates first to ensure the new template is in the list
       fetchTemplates().then(() => {
-        // Small delay to ensure state is updated
         setTimeout(() => {
           setSelectedTemplateId(result.savedTemplate.id);
         }, 100);
       });
     } else {
-      // Just refresh the list for updates
       fetchTemplates();
     }
   };
 
   const handleTaskCreated = () => {
-    setSelectedTemplateId(null); // Close modal
+    setSelectedTemplateId(null);
   };
 
   const handleUseTemplate = (templateId: string, e?: React.MouseEvent) => {
-    // Prevent triggering when clicking Edit button
-    if (e && (e.target as HTMLElement).closest('button')) {
+    if (e && (e.target as HTMLElement).closest('button')) return;
+
+    const template = templates.find(t => t.id === templateId);
+
+    // trail_import templates: toggle preview instead of opening modal
+    if (template?.tags?.includes('trail_import')) {
+      if (expandedTemplateId === templateId) {
+        setExpandedTemplateId(null);
+      } else {
+        setExpandedTemplateId(templateId);
+        if (template.use_custom_fields) {
+          loadCustomFields(templateId);
+        }
+      }
       return;
     }
+
     setSelectedTemplateId(templateId);
   };
 
   const handleEditTemplate = async (template: TaskTemplate, e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click
-    
-    // Fetch full template data including evidence_types
+    e.stopPropagation();
+
     try {
       const { data, error } = await supabase
         .from('task_templates')
         .select('*')
         .eq('id', template.id)
         .single();
-      
+
       if (error) {
         console.error('Error fetching template:', error);
         return;
       }
-      
+
+      setExpandedTemplateId(null);
       setEditingTemplate(data);
     } catch (error) {
       console.error('Failed to fetch template:', error);
@@ -152,19 +196,23 @@ export default function TemplatesPage() {
   };
 
   const handleDeleteTemplate = async (templateId: string, e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click
-    
+    e.stopPropagation();
+
     if (!confirm('Are you sure you want to delete this template? This action cannot be undone.')) {
       return;
     }
 
     setDeletingTemplateId(templateId);
-    
+
     try {
-      // Soft delete by setting is_active to false
+      await supabase
+        .from('template_site_assignments')
+        .delete()
+        .eq('template_id', templateId);
+
       const { error } = await supabase
         .from('task_templates')
-        .update({ is_active: false })
+        .delete()
         .eq('id', templateId);
 
       if (error) {
@@ -173,7 +221,7 @@ export default function TemplatesPage() {
       }
 
       toast.success('Template deleted successfully');
-      // Refresh templates list
+      if (expandedTemplateId === templateId) setExpandedTemplateId(null);
       fetchTemplates();
     } catch (error) {
       console.error('Error deleting template:', error);
@@ -185,28 +233,33 @@ export default function TemplatesPage() {
 
   const getFrequencyLabel = (frequency: string) => {
     const labels: Record<string, string> = {
-      'daily': 'Daily',
-      'weekly': 'Weekly',
-      'monthly': 'Monthly',
-      'triggered': 'On Demand',
-      'once': 'Once'
+      'daily': 'Daily', 'weekly': 'Weekly', 'monthly': 'Monthly',
+      'triggered': 'On Demand', 'once': 'Once',
     };
     return labels[frequency] || frequency;
   };
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      'food_safety': 'bg-green-500/10 text-green-400 border-green-500/20',
-      'h_and_s': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-      'fire': 'bg-red-500/10 text-red-400 border-red-500/20',
-      'cleaning': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-      'compliance': 'bg-module-fg/[0.15] text-module-fg border-module-fg/[0.20]'
+      'food_safety': 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20',
+      'h_and_s': 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
+      'fire': 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20',
+      'cleaning': 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20',
+      'compliance': 'bg-checkly-dark/10 dark:bg-checkly/10 text-checkly-dark dark:text-checkly border-checkly-dark/20 dark:border-checkly/20'
     };
-    return colors[category] || 'bg-theme-surface-elevated0/10 text-theme-tertiary border-gray-500/20';
+    return colors[category] || 'bg-theme-muted text-theme-tertiary border-theme';
+  };
+
+  const getCategoryLabel = (category: string) => {
+    const labels: Record<string, string> = {
+      'food_safety': 'Food Safety', 'h_and_s': 'H&S', 'fire': 'Fire',
+      'cleaning': 'Cleaning', 'compliance': 'Compliance',
+    };
+    return labels[category] || category || 'Other';
   };
 
   return (
-    <div className="bg-[rgb(var(--surface-elevated))] text-theme-primary border border-neutral-800 rounded-xl p-4 sm:p-6 lg:p-8">
+    <div className="bg-theme-surface-elevated text-theme-primary border border-theme rounded-xl p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
@@ -215,7 +268,7 @@ export default function TemplatesPage() {
         </div>
         <button
           onClick={handleNewTemplate}
-          className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-module-fg text-module-fg bg-transparent hover:bg-white/[0.04] transition-all duration-150"
+          className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-checkly-dark dark:border-checkly text-checkly-dark dark:text-checkly bg-transparent hover:bg-theme-hover transition-all duration-150"
           aria-label="Add Template"
         >
           <Plus className="h-5 w-5" />
@@ -229,75 +282,122 @@ export default function TemplatesPage() {
         </div>
       )}
 
-      {/* Templates Grid */}
+      {/* Import review banner */}
+      {!loading && (() => {
+        const importCount = templates.filter(t => t.tags?.includes('trail_import')).length;
+        if (importCount === 0) return null;
+        return (
+          <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+            <p className="text-sm text-amber-600 dark:text-amber-400 font-medium">
+              {importCount} imported template{importCount !== 1 ? 's' : ''} need{importCount === 1 ? 's' : ''} review
+            </p>
+            <p className="text-xs text-amber-600/70 dark:text-amber-400/70 mt-1">
+              Click a template to preview it, then edit or quick-schedule.
+            </p>
+          </div>
+        );
+      })()}
+
+      {/* Templates List */}
       {!loading && templates.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-          {templates.map((template) => (
-            <div
-              key={template.id}
-              onClick={(e) => handleUseTemplate(template.id, e)}
-              className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-5 hover:bg-white/[0.06] transition-colors cursor-pointer relative"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <h3 className="text-lg font-semibold text-theme-primary pr-2">{template.name}</h3>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={(e) => handleEditTemplate(template, e)}
-                    className="p-1.5 rounded hover:bg-white/10 text-theme-tertiary hover:text-white transition-colors"
-                    title="Edit Template"
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={(e) => handleDeleteTemplate(template.id, e)}
-                    disabled={deletingTemplateId === template.id}
-                    className="p-1.5 rounded hover:bg-white/10 text-theme-tertiary hover:text-red-400 transition-colors disabled:opacity-50"
-                    title="Delete Template"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-              
-              {template.description && (
-                <p className="text-theme-tertiary text-sm mb-3 line-clamp-2">{template.description}</p>
-              )}
+        <div className="mt-2 divide-y divide-theme">
+          {templates.map((template) => {
+            const isTrailImport = template.tags?.includes('trail_import');
+            const isExpanded = expandedTemplateId === template.id;
 
-              {/* Usage Count Tag */}
-              <div className="mb-3">
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                  Used {template.usage_count || 0} {template.usage_count === 1 ? 'time' : 'times'}
-                </span>
-              </div>
+            return (
+              <div key={template.id}>
+                <div
+                  onClick={(e) => handleUseTemplate(template.id, e)}
+                  className="flex items-center gap-4 py-3 px-2 -mx-2 rounded-lg hover:bg-theme-hover transition-colors cursor-pointer group"
+                >
+                  {/* Expand chevron for trail_import templates */}
+                  {isTrailImport && (
+                    <div className="shrink-0 w-4">
+                      {isExpanded
+                        ? <ChevronDown className="w-3.5 h-3.5 text-theme-tertiary" />
+                        : <ChevronRight className="w-3.5 h-3.5 text-theme-tertiary" />
+                      }
+                    </div>
+                  )}
 
-              <div className="flex items-center gap-4 text-xs text-theme-tertiary">
-                <div className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  <span>{getFrequencyLabel(template.frequency)}</span>
-                </div>
-                {template.dayparts && template.dayparts.length > 0 && (
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    <span>{template.dayparts.length} daypart{template.dayparts.length > 1 ? 's' : ''}</span>
+                  {/* Name + badges */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-theme-primary truncate">{template.name}</span>
+                      {isTrailImport && (
+                        <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                          Needs Review
+                        </span>
+                      )}
+                    </div>
                   </div>
+
+                  {/* Frequency */}
+                  <div className="hidden sm:flex items-center gap-1 text-xs text-theme-tertiary w-24 shrink-0">
+                    <Clock className="h-3 w-3" />
+                    <span>{getFrequencyLabel(template.frequency)}</span>
+                  </div>
+
+                  {/* Category */}
+                  <div className="hidden md:block w-24 shrink-0">
+                    <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border ${getCategoryColor(template.category)}`}>
+                      {getCategoryLabel(template.category)}
+                    </span>
+                  </div>
+
+                  {/* Usage count */}
+                  <div className="hidden sm:block text-xs text-theme-tertiary w-16 shrink-0 text-right">
+                    {template.usage_count || 0} use{template.usage_count === 1 ? '' : 's'}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={(e) => handleEditTemplate(template, e)}
+                      className="p-1.5 rounded hover:bg-theme-muted text-theme-tertiary hover:text-theme-primary transition-colors"
+                      title="Edit Template"
+                    >
+                      <Edit2 className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={(e) => handleDeleteTemplate(template.id, e)}
+                      disabled={deletingTemplateId === template.id}
+                      className="p-1.5 rounded hover:bg-theme-muted text-theme-tertiary hover:text-red-500 transition-colors disabled:opacity-50"
+                      title="Delete Template"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Expanded preview panel */}
+                {isTrailImport && isExpanded && (
+                  <TemplatePreviewPanel
+                    template={template}
+                    customFields={previewFields[template.id] || []}
+                    loadingFields={loadingFields[template.id] || false}
+                    onEdit={() => handleEditTemplate(template, { stopPropagation: () => {} } as React.MouseEvent)}
+                    onQuickSchedule={() => setQuickScheduleTemplate(template)}
+                  />
                 )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
       {/* Empty State */}
       {!loading && templates.length === 0 && (
         <div className="mt-8 text-center py-12">
-          <FileText className="h-12 w-12 text-white/20 mx-auto mb-4" />
+          <FileText className="h-12 w-12 text-theme-tertiary/30 mx-auto mb-4" />
           <p className="text-theme-tertiary mb-2">No templates yet</p>
           <p className="text-theme-tertiary text-sm">Create your first template to get started</p>
         </div>
       )}
 
       {/* Master Template Modal */}
-      <MasterTemplateModal 
+      <MasterTemplateModal
         isOpen={isBuilderOpen || editingTemplate !== null}
         onClose={() => {
           setIsBuilderOpen(false);
@@ -315,6 +415,20 @@ export default function TemplatesPage() {
           onSave={handleTaskCreated}
           templateId={selectedTemplateId}
           template={templates.find(t => t.id === selectedTemplateId)}
+        />
+      )}
+
+      {/* Quick Schedule Modal */}
+      {quickScheduleTemplate && (
+        <QuickScheduleModal
+          isOpen={true}
+          onClose={() => setQuickScheduleTemplate(null)}
+          onComplete={() => {
+            setQuickScheduleTemplate(null);
+            setExpandedTemplateId(null);
+            fetchTemplates();
+          }}
+          template={quickScheduleTemplate}
         />
       )}
     </div>

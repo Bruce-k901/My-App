@@ -166,6 +166,48 @@ function buildExtendedSection(title: string, data: any[], columns: { key: string
   </div>`
 }
 
+function buildStaffHealthSection(data: any[]): string {
+  if (!data || data.length === 0) return ''
+
+  const rows = data.slice(0, 100).map((row: any) => {
+    const statusClass = row.health_status === 'active' ? 'red' : row.health_status === 'cleared' ? 'green' : 'amber'
+    const statusLabel = row.health_status === 'active' ? 'Active' : row.health_status === 'cleared' ? 'Cleared' : 'Closed'
+    const critical = row.symptomatic_in_food_areas ? '<br/><span style="color:#991b1b;font-weight:600;">⚠ Symptomatic in food areas</span>' : ''
+    const rtwInfo = row.rtw_conducted_date
+      ? `RTW: ${formatDate(row.rtw_conducted_date)} — ${row.rtw_fit_for_full_duties ? 'Fit' : 'Restricted'}${row.rtw_adjustments_needed && row.rtw_adjustments_details ? ' (' + escapeHtml(row.rtw_adjustments_details) + ')' : ''}`
+      : ''
+
+    return `<tr>
+      <td>${escapeHtml(row.staff_name || 'N/A')}</td>
+      <td>${formatDate(row.declaration_date)}</td>
+      <td>${escapeHtml(row.symptoms || 'N/A')}${critical}</td>
+      <td>${formatDate(row.exclusion_start)} – ${row.exclusion_end ? formatDate(row.exclusion_end) : 'Ongoing'}</td>
+      <td class="center"><span class="badge ${statusClass}">${statusLabel}</span></td>
+      <td>${row.medical_clearance_required ? (row.medical_clearance_received ? '<span class="badge green">Received</span>' : '<span class="badge amber">Required</span>') : 'N/A'}</td>
+      <td>${rtwInfo || 'Pending'}</td>
+    </tr>`
+  }).join('')
+
+  return `<div class="section">
+    <h2>Staff Sickness & Return to Work</h2>
+    <p class="muted">${data.length} record(s)${data.length > 100 ? ' (showing first 100)' : ''}</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Staff Member</th>
+          <th>Onset Date</th>
+          <th>Symptoms</th>
+          <th>Exclusion Period</th>
+          <th class="center">Status</th>
+          <th>Medical Clearance</th>
+          <th>Return to Work</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`
+}
+
 function generatePdfHtml(
   siteName: string,
   siteAddress: string,
@@ -213,6 +255,7 @@ function generatePdfHtml(
       { key: 'performed_at', label: 'Date', format: 'date' },
       { key: 'performed_by_name', label: 'By' },
     ])
+    extendedSections += buildStaffHealthSection(extendedData.staff_health_declarations)
   }
 
   return `<!DOCTYPE html>

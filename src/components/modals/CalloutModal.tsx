@@ -1184,39 +1184,56 @@ export default function CalloutModal({
 
 
 
-  // Fetch troubleshooting questions based on asset category
+  // Fetch troubleshooting questions — asset-specific guide first, then category fallback
   const fetchTroubleshootingQuestions = async () => {
-    console.log('Fetching troubleshooting questions for category:', asset?.category);
-    if (!asset?.category) {
-      console.log('No asset category found');
-      return;
-    }
-    
+    if (!asset?.id && !asset?.category) return;
+
     setLoadingQuestions(true);
     try {
-      console.log('Querying troubleshooting_questions table...');
-      const { data: questions, error } = await supabase
-        .from('troubleshooting_questions')
-        .select('question_text, order_index')
-        .eq('category', asset.category)
-        .eq('is_active', true)
-        .order('order_index', { ascending: true });
+      // Step 1: Check for asset-specific AI-generated guide
+      if (asset?.id) {
+        try {
+          const { data: guide, error: guideError } = await supabase
+            .from('asset_troubleshooting_guides')
+            .select('ai_questions, custom_questions')
+            .eq('asset_id', asset.id)
+            .eq('is_active', true)
+            .single();
 
-      console.log('Troubleshooting questions query result:', { questions, error });
-
-      if (error) {
-        console.error('Error fetching troubleshooting questions:', error);
-        setTroubleshootingQuestions([]);
-        return;
+          if (!guideError && guide) {
+            const custom = Array.isArray(guide.custom_questions) ? guide.custom_questions as string[] : [];
+            const ai = Array.isArray(guide.ai_questions) ? guide.ai_questions as string[] : [];
+            const merged = [...custom, ...ai];
+            if (merged.length > 0) {
+              console.log('Using asset-specific troubleshooting guide:', merged.length, 'questions');
+              setTroubleshootingQuestions(merged);
+              return;
+            }
+          }
+        } catch (e: any) {
+          // 42P01 = table doesn't exist yet — fall through to category questions
+          if (e?.code !== '42P01') {
+            console.error('Error checking asset guide:', e);
+          }
+        }
       }
 
-      if (questions && questions.length > 0) {
-        console.log('Found troubleshooting questions:', questions);
-        setTroubleshootingQuestions(questions.map(q => q.question_text));
-      } else {
-        console.log('No troubleshooting questions found for category:', asset.category);
-        setTroubleshootingQuestions([]);
+      // Step 2: Fall back to category-based questions (existing behavior)
+      if (asset?.category) {
+        const { data: questions, error } = await supabase
+          .from('troubleshooting_questions')
+          .select('question_text, order_index')
+          .eq('category', asset.category)
+          .eq('is_active', true)
+          .order('order_index', { ascending: true });
+
+        if (!error && questions && questions.length > 0) {
+          setTroubleshootingQuestions(questions.map(q => q.question_text));
+          return;
+        }
       }
+
+      setTroubleshootingQuestions([]);
     } catch (error) {
       console.error('Error fetching troubleshooting questions:', error);
       setTroubleshootingQuestions([]);
@@ -1226,12 +1243,11 @@ export default function CalloutModal({
   };
 
   // Fetch troubleshooting questions when modal opens and asset is available
-  // Note: Questions are based on asset category, NOT callout type, so they don't need to be refetched when callout type changes
   useEffect(() => {
-    if (open && asset?.category) {
+    if (open && (asset?.id || asset?.category)) {
       fetchTroubleshootingQuestions();
     }
-  }, [open, asset?.category]);
+  }, [open, asset?.id, asset?.category]);
 
   const canCloseReopen = () => {
     return profile?.role === 'manager' || profile?.role === 'admin';

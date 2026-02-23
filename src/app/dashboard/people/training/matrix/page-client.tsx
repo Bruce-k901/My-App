@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle, XCircle, Clock, AlertTriangle } from '@/components/ui/icons';
+import { ArrowLeft, CheckCircle, XCircle, Clock, AlertTriangle, Mail, FileText } from '@/components/ui/icons';
 import type { ComplianceMatrixEntry } from '@/types/teamly';
 import { AssignCourseModal } from '@/components/training/AssignCourseModal';
 import RecordTrainingModal, { type RecordTrainingModalProps } from '@/components/training/RecordTrainingModal';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface Employee {
   id: string;
@@ -46,6 +47,13 @@ export function ComplianceMatrixPageClient() {
     courseId: string;
     courseName: string;
     existingRecord?: RecordTrainingModalProps['existingRecord'];
+  } | null>(null);
+
+  // Action picker state - shown when clicking cells that need training
+  const [actionPicker, setActionPicker] = useState<{
+    employee: Employee;
+    course: Course;
+    entry: ComplianceMatrixEntry | null;
   } | null>(null);
 
   useEffect(() => {
@@ -167,24 +175,24 @@ export function ComplianceMatrixPageClient() {
 
   const handleCellClick = async (entry: ComplianceMatrixEntry | null, employee: Employee, course: Course) => {
     if (!entry) {
-      // No entry at all - open assignment modal
-      setAssignmentModal({
-        isOpen: true,
-        profileId: employee.id,
-        profileName: employee.name,
-        courseId: course.id,
-        courseName: course.name,
-        siteId: null,
-        siteName: employee.site || null
-      });
+      // No entry at all - show action picker (assign or record)
+      setActionPicker({ employee, course, entry: null });
       return;
     }
 
     const status = entry.compliance_status?.toLowerCase() || 'optional';
-    const hasCompletion = ['compliant', 'current', 'expiring_soon', 'expired'].includes(status);
+    const needsTraining = ['expired', 'expiring_soon', 'required'].includes(status);
+
+    if (needsTraining) {
+      // Training needed - show action picker with both options
+      setActionPicker({ employee, course, entry });
+      return;
+    }
+
+    const hasCompletion = ['compliant', 'current'].includes(status);
 
     if (hasCompletion) {
-      // Has training data - look up existing record for edit mode
+      // Has current training data - look up existing record for edit mode
       const { data: records } = await supabase
         .from('training_records')
         .select('id, completed_at, expiry_date, score_percentage, certificate_number, trainer_name, notes')
@@ -202,7 +210,6 @@ export function ComplianceMatrixPageClient() {
           existingRecord: records[0],
         });
       } else {
-        // No record found in training_records (shouldn't happen after migration)
         setRecordModal({
           employeeId: employee.id,
           employeeName: employee.name,
@@ -211,7 +218,54 @@ export function ComplianceMatrixPageClient() {
         });
       }
     } else {
-      // No completion - open RecordTrainingModal to create new record
+      // in_progress, assigned, invited, optional - open RecordTrainingModal
+      setRecordModal({
+        employeeId: employee.id,
+        employeeName: employee.name,
+        courseId: course.id,
+        courseName: course.name,
+      });
+    }
+  };
+
+  const handleActionPickerAssign = () => {
+    if (!actionPicker) return;
+    setAssignmentModal({
+      isOpen: true,
+      profileId: actionPicker.employee.id,
+      profileName: actionPicker.employee.name,
+      courseId: actionPicker.course.id,
+      courseName: actionPicker.course.name,
+      siteId: null,
+      siteName: actionPicker.employee.site || null,
+    });
+    setActionPicker(null);
+  };
+
+  const handleActionPickerRecord = async () => {
+    if (!actionPicker) return;
+    const { employee, course, entry } = actionPicker;
+    setActionPicker(null);
+
+    // If entry has existing completion data, fetch the record
+    const status = entry?.compliance_status?.toLowerCase();
+    if (status && ['expired', 'expiring_soon'].includes(status)) {
+      const { data: records } = await supabase
+        .from('training_records')
+        .select('id, completed_at, expiry_date, score_percentage, certificate_number, trainer_name, notes')
+        .eq('profile_id', employee.id)
+        .eq('course_id', course.id)
+        .order('completed_at', { ascending: false })
+        .limit(1);
+
+      setRecordModal({
+        employeeId: employee.id,
+        employeeName: employee.name,
+        courseId: course.id,
+        courseName: course.name,
+        existingRecord: records?.[0] || undefined,
+      });
+    } else {
       setRecordModal({
         employeeId: employee.id,
         employeeName: employee.name,
@@ -274,7 +328,7 @@ export function ComplianceMatrixPageClient() {
         <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> In Progress</span>
         <span className="flex items-center gap-1.5"><AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" /> Required</span>
         <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-theme-tertiary" /> Not Assigned</span>
-        <span className="ml-auto text-theme-tertiary">Click any cell to record or edit training</span>
+        <span className="ml-auto text-theme-tertiary">Click any cell to assign or record training</span>
       </div>
 
       {data.length === 0 ? (
@@ -365,6 +419,48 @@ export function ComplianceMatrixPageClient() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {/* Action Picker - shown when clicking cells that need training */}
+      {actionPicker && (
+        <Dialog open={true} onOpenChange={() => setActionPicker(null)}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle className="text-theme-primary">
+                {actionPicker.course.name}
+              </DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-theme-secondary">
+              What would you like to do for <strong>{actionPicker.employee.name}</strong>?
+            </p>
+            <div className="grid gap-3 pt-2">
+              <button
+                onClick={handleActionPickerAssign}
+                className="flex items-center gap-3 p-3 rounded-lg border border-theme hover:bg-theme-hover transition-colors text-left"
+              >
+                <div className="w-9 h-9 rounded-full bg-teamly/10 flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-4 h-4 text-teamly dark:text-teamly" />
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-theme-primary">Assign Online Course</div>
+                  <div className="text-xs text-theme-tertiary">Send a course invitation to complete online</div>
+                </div>
+              </button>
+              <button
+                onClick={handleActionPickerRecord}
+                className="flex items-center gap-3 p-3 rounded-lg border border-theme hover:bg-theme-hover transition-colors text-left"
+              >
+                <div className="w-9 h-9 rounded-full bg-checkly/10 flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-4 h-4 text-checkly dark:text-checkly" />
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-theme-primary">Record Training</div>
+                  <div className="text-xs text-theme-tertiary">Manually record external or offline training</div>
+                </div>
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
 
       {/* Assign Course Modal */}

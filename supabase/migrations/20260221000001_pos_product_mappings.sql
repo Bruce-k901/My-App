@@ -41,18 +41,16 @@ ALTER TABLE stockly.pos_product_mappings ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view their company mappings" ON stockly.pos_product_mappings
   FOR SELECT USING (
-    company_id IN (SELECT company_id FROM public.profiles WHERE id = auth.uid())
+    public.is_service_role()
+    OR public.matches_current_tenant(company_id)
   );
 
 CREATE POLICY "Admins can manage mappings" ON stockly.pos_product_mappings
   FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM public.user_roles ur
-      JOIN public.roles r ON r.id = ur.role_id
-      JOIN public.profiles p ON p.id = ur.user_id
-      WHERE ur.user_id = auth.uid()
-        AND p.company_id = stockly.pos_product_mappings.company_id
-        AND r.name IN ('owner', 'admin')
-        AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
-    )
+    public.is_service_role()
+    OR public.matches_current_tenant(company_id)
+  )
+  WITH CHECK (
+    public.is_service_role()
+    OR public.matches_current_tenant(company_id)
   );

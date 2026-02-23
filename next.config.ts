@@ -7,10 +7,8 @@ const nextConfig: NextConfig = {
   // Ensure SSR build (not static export)
   // output: "standalone", // Only for production builds - causes issues in dev mode
 
-  // Explicitly set the project root to avoid Next.js mis-inferring workspace root
-  // This prevents issues when multiple lockfiles exist on the machine
-  // Using path.resolve ensures absolute path for better reliability
-  outputFileTracingRoot: process.cwd(),
+  // Only set outputFileTracingRoot in production — causes static asset 404s in dev mode
+  outputFileTracingRoot: process.env.NODE_ENV === 'production' ? process.cwd() : undefined,
 
   // Exclude native binary packages from webpack bundling (required for Puppeteer on Vercel)
   serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],

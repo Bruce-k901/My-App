@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, Suspense } from "react";
-import { Loader2, RefreshCw, GraduationCap, AlertTriangle, ChevronDown, ChevronRight, CalendarPlus, Edit2 } from '@/components/ui/icons';
+import { Loader2, RefreshCw, GraduationCap, AlertTriangle, ChevronDown, ChevronRight, CalendarPlus, Edit2, Mail } from '@/components/ui/icons';
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useAppContext } from "@/context/AppContext";
 import { supabase } from "@/lib/supabase";
 import RecordTrainingModal from "@/components/training/RecordTrainingModal";
+import { AssignCourseModal } from "@/components/training/AssignCourseModal";
 
 interface SiteOption {
   id: string;
@@ -167,6 +168,16 @@ function TrainingMatrixPageContent() {
       trainer_name?: string | null;
       notes?: string | null;
     };
+  } | null>(null);
+
+  // Assign course modal state
+  const [assignModal, setAssignModal] = useState<{
+    profileId: string;
+    profileName: string;
+    courseId: string;
+    courseName: string;
+    siteId?: string | null;
+    siteName?: string | null;
   } | null>(null);
 
   // Booking modal state
@@ -492,6 +503,20 @@ function TrainingMatrixPageContent() {
         <CalendarPlus className="h-4 w-4" />
         Book Training
       </button>
+      <button
+        onClick={() => {
+          if (allProfiles.length === 0) {
+            toast.error("No team members available to assign courses");
+            return;
+          }
+          // Open first profile as default - user picks via course cards
+          toast.info("Expand a team member and click 'Assign' on a course to send an invitation");
+        }}
+        className="inline-flex items-center gap-2 rounded-lg border border-amber-500/30 px-3 py-2 text-sm font-medium text-amber-300 transition hover:bg-amber-500/10"
+      >
+        <Mail className="h-4 w-4" />
+        Assign Course
+      </button>
     </div>
   );
 
@@ -625,13 +650,34 @@ function TrainingMatrixPageContent() {
                         key={course.course_id}
                         className="rounded-lg border border-white/10 bg-[rgb(var(--surface-elevated))] p-4 relative group"
                       >
-                        <button
-                          onClick={() => handleEditCourse(profile, course)}
-                          className="absolute top-2 right-2 p-1.5 rounded-md border border-white/10 bg-white/5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-white/10 hover:border-magenta-500/40"
-                          title="Edit training record"
-                        >
-                          <Edit2 className="h-3.5 w-3.5 text-theme-tertiary hover:text-magenta-400" />
-                        </button>
+                        <div className="absolute top-2 right-2 flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                          {['expired', 'required', 'missing', 'not_trained'].some(s =>
+                            course.compliance_status?.toLowerCase().includes(s) ||
+                            (!['compliant', 'current', 'expiring_soon', 'in_progress', 'assigned', 'invited'].includes(course.compliance_status?.toLowerCase() || ''))
+                          ) && (
+                            <button
+                              onClick={() => setAssignModal({
+                                profileId: profile.id,
+                                profileName: profile.full_name,
+                                courseId: course.course_id,
+                                courseName: course.course_name,
+                                siteId: profile.home_site,
+                                siteName: profile.site_name,
+                              })}
+                              className="p-1.5 rounded-md border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 hover:border-amber-500/40"
+                              title="Assign course to employee"
+                            >
+                              <Mail className="h-3.5 w-3.5 text-amber-400" />
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleEditCourse(profile, course)}
+                            className="p-1.5 rounded-md border border-white/10 bg-white/5 hover:bg-white/10 hover:border-magenta-500/40"
+                            title="Edit training record"
+                          >
+                            <Edit2 className="h-3.5 w-3.5 text-theme-tertiary hover:text-magenta-400" />
+                          </button>
+                        </div>
                         <div className="flex items-center justify-between gap-3 pr-8">
                           <h4 className="text-sm font-semibold text-theme-primary">{course.course_name}</h4>
                           <StatusBadge status={status}>{label}</StatusBadge>
@@ -682,6 +728,24 @@ function TrainingMatrixPageContent() {
           courseId={recordModal.courseId}
           courseName={recordModal.courseName}
           existingRecord={recordModal.existingRecord}
+        />
+      )}
+
+      {/* Assign Course Modal */}
+      {assignModal !== null && (
+        <AssignCourseModal
+          isOpen={true}
+          onClose={() => setAssignModal(null)}
+          profileId={assignModal.profileId}
+          profileName={assignModal.profileName}
+          courseId={assignModal.courseId}
+          courseName={assignModal.courseName}
+          siteId={assignModal.siteId}
+          siteName={assignModal.siteName}
+          onSuccess={() => {
+            setAssignModal(null);
+            fetchMatrixData();
+          }}
         />
       )}
 

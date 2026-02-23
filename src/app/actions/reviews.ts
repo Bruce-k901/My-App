@@ -1401,8 +1401,14 @@ export async function getEmployeeFile(employeeId: string): Promise<EmployeeFileD
     .in('status', ['pending', 'in_progress'])
     .order('due_date', { ascending: true });
     
+  const { data: sickness_records } = await supabase
+    .from('staff_sickness_records')
+    .select('id, illness_onset_date, symptoms, exclusion_period_start, exclusion_period_end, return_to_work_date, status, medical_clearance_required, medical_clearance_received, rtw_conducted_date, rtw_fit_for_full_duties, rtw_adjustments_needed, rtw_adjustments_details')
+    .eq('staff_member_id', employeeId)
+    .order('illness_onset_date', { ascending: false });
+
   const timeline = buildTimeline(reviews || [], upcoming_schedules || [], pending_follow_ups || []);
-  
+
   return {
     employee,
     summary: summary || null,
@@ -1410,6 +1416,7 @@ export async function getEmployeeFile(employeeId: string): Promise<EmployeeFileD
     upcoming_schedules: upcoming_schedules || [],
     pending_follow_ups: pending_follow_ups || [],
     timeline,
+    sickness_records: sickness_records || [],
   };
 }
 

@@ -42,6 +42,7 @@ export type TaskTemplate = {
   is_active: boolean
   is_template_library: boolean
   notification_config: NotificationConfig | null
+  use_custom_fields: boolean
   created_at: string
   updated_at: string
 }
@@ -121,6 +122,10 @@ export type TemplateField = {
   options: Record<string, any> | null
   field_order: number
   help_text: string | null
+  unit: string | null
+  default_value: string | null
+  parent_field_id: string | null
+  section_label: string | null
   created_at: string
 }
 
@@ -207,7 +212,9 @@ export enum FieldType {
   PASS_FAIL = 'pass_fail',
   SIGNATURE = 'signature',
   DATE = 'date',
-  TIME = 'time'
+  TIME = 'time',
+  YES_NO = 'yes_no',
+  TEMPERATURE = 'temperature'
 }
 
 export enum ContractorType {

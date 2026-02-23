@@ -79,6 +79,11 @@ Deno.serve(async (req)=>{
             taskData.checklistItems = defaultChecklistItems.map((item)=>typeof item === "string" ? item : item.text || item.label || "").filter((item)=>item && item.trim().length > 0);
           }
         }
+        // Carry template reference documents (SOPs, RAs, guides) into task_data
+        const templateDocs = recurrencePattern?.template_documents;
+        if (Array.isArray(templateDocs) && templateDocs.length > 0) {
+          taskData.referenceDocuments = templateDocs;
+        }
       }
       // ========================================================================
       // 2. POPULATE EQUIPMENT/ASSET DATA

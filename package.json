@@ -3,8 +3,8 @@
   "version": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
-    "dev:turbo": "next dev --turbopack",
+    "dev": "next dev --turbopack",
+    "dev:webpack": "next dev --webpack",
     "prebuild": "node scripts/stamp-sw-version.js",
     "build": "next build --webpack",
     "start": "next start",

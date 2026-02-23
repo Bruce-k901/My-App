@@ -44,6 +44,18 @@ export interface TaskDataBase {
     temp_max?: number | null;
   }>;
 
+  // Custom form builder fields
+  custom_field_values?: Record<string, any>;
+  custom_records?: Record<string, any>[];
+
+  // Reference documents from template (SOPs, RAs, guides)
+  referenceDocuments?: Array<{
+    url: string;
+    fileName: string;
+    fileType: string;
+    fileSize: number;
+  }>;
+
   // Dynamic repeatable fields (e.g., asset_name, fridge_name)
   [key: string]: any;
 }
@@ -57,7 +69,8 @@ export type EvidenceType =
   | 'pass_fail'
   | 'signature'
   | 'document'
-  | 'asset_selection';
+  | 'asset_selection'
+  | 'custom_fields';
 
 export interface ComplianceTemplate {
   id: string;
@@ -129,6 +142,17 @@ export interface EnabledFeatures {
   assetSelection: boolean;
   documentUpload: boolean;
   signature: boolean;
+  customFields: boolean;
+}
+
+// Custom field value stored in completion data
+export interface CustomFieldValue {
+  field_id: string;
+  field_name: string;
+  field_type: string;
+  label: string;
+  value: any;
+  unit?: string | null;
 }
 
 // Out of range asset

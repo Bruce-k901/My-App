@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { ChecklistTask, TaskDataBase, Asset, EnabledFeatures } from '@/types/task-completion.types';
+import type { TemplateField } from '@/types/checklist';
 
 interface UseTaskStateResult {
   // Data
@@ -48,6 +49,15 @@ interface UseTaskStateResult {
   outOfRangeActions: Map<string, { action: 'monitor' | 'callout'; duration?: number; notes?: string }>;
   setOutOfRangeAction: (assetId: string, action: 'monitor' | 'callout', options?: { duration?: number; notes?: string }) => void;
 
+  // Custom fields (form builder)
+  customFields: TemplateField[];
+  customFieldValues: Record<string, any>;
+  setCustomFieldValue: (fieldName: string, value: any) => void;
+  customRecords: Record<string, any>[];
+  addCustomRecord: () => void;
+  updateCustomRecord: (index: number, fieldName: string, value: any) => void;
+  removeCustomRecord: (index: number) => void;
+
   // Loading states
   loading: boolean;
   error: string | null;
@@ -75,6 +85,11 @@ export function useTaskState(
   const [notes, setNotes] = useState('');
   const [outOfRangeActions, setOutOfRangeActions] = useState<Map<string, { action: 'monitor' | 'callout'; duration?: number; notes?: string }>>(new Map());
 
+  // Custom fields state
+  const [customFields, setCustomFields] = useState<TemplateField[]>([]);
+  const [customFieldValues, setCustomFieldValues] = useState<Record<string, any>>({});
+  const [customRecords, setCustomRecords] = useState<Record<string, any>[]>([]);
+
   // Loading states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -99,7 +114,23 @@ export function useTaskState(
         passFailChecks: false,
         assetSelection: false,
         documentUpload: false,
-        signature: false
+        signature: false,
+        customFields: false
+      };
+    }
+
+    // If template uses custom fields, disable all legacy features
+    if (template.use_custom_fields) {
+      return {
+        checklist: false,
+        yesNoChecklist: false,
+        temperature: false,
+        photoEvidence: false,
+        passFailChecks: false,
+        assetSelection: false,
+        documentUpload: false,
+        signature: false,
+        customFields: true
       };
     }
 
@@ -120,7 +151,8 @@ export function useTaskState(
       passFailChecks: evidenceTypes.includes('pass_fail'),
       assetSelection: !!template.repeatable_field_name || evidenceTypes.includes('asset_selection'),
       documentUpload: evidenceTypes.includes('document'),
-      signature: evidenceTypes.includes('signature')
+      signature: evidenceTypes.includes('signature'),
+      customFields: false
     };
 
     console.log('✅ [FEATURES] Enabled features:', features);
@@ -144,6 +176,9 @@ export function useTaskState(
       setPhotos([]);
       setNotes('');
       setOutOfRangeActions(new Map());
+      setCustomFields([]);
+      setCustomFieldValues({});
+      setCustomRecords([]);
       setLoading(true);
       setError(null);
       return;
@@ -221,6 +256,46 @@ export function useTaskState(
           }
 
           setTemplate(templateData);
+
+          // Load custom fields if template uses custom form builder
+          if (templateData.use_custom_fields) {
+            console.log('📝 [CUSTOM_FIELDS] Loading template_fields for custom form...');
+            const { data: fields, error: fieldsError } = await supabase
+              .from('template_fields')
+              .select('*')
+              .eq('template_id', templateData.id)
+              .order('field_order');
+
+            if (fields && !fieldsError) {
+              console.log(`✅ [CUSTOM_FIELDS] Loaded ${fields.length} fields`);
+              setCustomFields(fields);
+
+              // Initialize values from task_data or defaults
+              const initValues: Record<string, any> = {};
+              const topFields = fields.filter((f: any) => !f.parent_field_id);
+              topFields.forEach((f: any) => {
+                if (rawTaskData.custom_field_values?.[f.field_name] !== undefined) {
+                  initValues[f.field_name] = rawTaskData.custom_field_values[f.field_name];
+                } else if (f.default_value) {
+                  initValues[f.field_name] = f.default_value;
+                }
+              });
+              setCustomFieldValues(initValues);
+
+              // Initialize records from task_data
+              if (rawTaskData.custom_records && Array.isArray(rawTaskData.custom_records)) {
+                setCustomRecords(rawTaskData.custom_records);
+              } else {
+                // Start with one empty record if there's a repeatable field
+                const hasRepeatable = topFields.some((f: any) => f.field_type === 'repeatable_record');
+                if (hasRepeatable) {
+                  setCustomRecords([{}]);
+                }
+              }
+            } else if (fieldsError) {
+              console.error('❌ [CUSTOM_FIELDS] Error loading fields:', fieldsError);
+            }
+          }
         } else {
           console.warn('⚠️ [TEMPLATE] No template available');
         }
@@ -465,6 +540,27 @@ export function useTaskState(
     });
   }, []);
 
+  // Custom field callbacks
+  const setCustomFieldValue = useCallback((fieldName: string, value: any) => {
+    setCustomFieldValues(prev => ({ ...prev, [fieldName]: value }));
+  }, []);
+
+  const addCustomRecord = useCallback(() => {
+    setCustomRecords(prev => [...prev, {}]);
+  }, []);
+
+  const updateCustomRecord = useCallback((index: number, fieldName: string, value: any) => {
+    setCustomRecords(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [fieldName]: value };
+      return updated;
+    });
+  }, []);
+
+  const removeCustomRecord = useCallback((index: number) => {
+    setCustomRecords(prev => prev.filter((_, i) => i !== index));
+  }, []);
+
   // Debug: Log final state (inline, not in useEffect to avoid hook order issues)
   if (isOpen && !loading) {
     console.log('📊 [FINAL STATE]', {
@@ -504,6 +600,13 @@ export function useTaskState(
     setNotes,
     outOfRangeActions,
     setOutOfRangeAction,
+    customFields,
+    customFieldValues,
+    setCustomFieldValue,
+    customRecords,
+    addCustomRecord,
+    updateCustomRecord,
+    removeCustomRecord,
     loading,
     error
   };

@@ -32,18 +32,18 @@ export async function POST(
       return NextResponse.json({ error: 'Ticket not found' }, { status: 404 });
     }
 
-    // Upsert notification record
+    // UPDATE existing notification row (created by the DB trigger)
+    // Using UPDATE instead of UPSERT avoids needing an INSERT policy
+    // (the "System can insert ticket notifications" policy was dropped)
     const { error: notificationError } = await supabase
       .from('ticket_notifications')
-      .upsert({
-        ticket_id: ticketId,
-        user_id: user.id,
+      .update({
         last_read_at: new Date().toISOString(),
         unread_count: 0,
         updated_at: new Date().toISOString(),
-      }, {
-        onConflict: 'ticket_id,user_id'
-      });
+      })
+      .eq('ticket_id', ticketId)
+      .eq('user_id', user.id);
 
     if (notificationError) {
       console.error('Error marking ticket as read:', notificationError);
