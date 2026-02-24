@@ -51,12 +51,12 @@ export function useSidebarMode() {
     };
   }, []);
 
-  // Auto-collapse on tablet-sized viewports (below xl / 1280px) to free up content space
-  const belowXl = useMediaQuery('(max-width: 1279px)');
+  // Auto-collapse on mobile/tablet viewports (below lg / 1024px) — matches sidebar visibility breakpoint
+  const belowLg = useMediaQuery('(max-width: 1023px)');
 
-  const mode: SidebarMode = belowXl ? 'collapsed' : (pinOverride ?? prefMode);
+  const mode: SidebarMode = belowLg ? 'collapsed' : (pinOverride ?? prefMode);
   const isCollapsed = mode === 'collapsed';
-  const canPin = !belowXl;
+  const canPin = !belowLg;
 
   // Whether to render expanded content (pinned expanded OR hover-expanded)
   const showExpanded = !isCollapsed || isHoverExpanded;

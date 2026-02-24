@@ -266,6 +266,33 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
     icon: 'CalendarCheck',
     check: { table: 'ppm_schedules', column: 'company_id' },
   },
+  {
+    stepId: 'assetly_building_assets',
+    section: 'assetly',
+    name: 'Building Register',
+    description: 'Add building fabric assets (roof, walls, HVAC, plumbing)',
+    href: '/dashboard/assets/rm',
+    icon: 'Building2',
+    check: { table: 'building_assets', column: 'company_id' },
+  },
+  {
+    stepId: 'assetly_inspections',
+    section: 'assetly',
+    name: 'Inspection Schedules',
+    description: 'Set up recurring inspection schedules for buildings',
+    href: '/dashboard/assets/rm/inspections',
+    icon: 'Calendar',
+    check: { table: 'building_inspection_schedules', column: 'company_id' },
+  },
+  {
+    stepId: 'assetly_work_orders',
+    section: 'assetly',
+    name: 'Work Orders',
+    description: 'Create your first R&M work order',
+    href: '/dashboard/assets/rm/work-orders',
+    icon: 'ClipboardList',
+    check: { table: 'work_orders', column: 'company_id' },
+  },
 
   // ── Planly ──
   {

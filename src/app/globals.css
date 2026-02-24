@@ -218,13 +218,15 @@
 /* ----------------------------- */
 /* Font size scaling              */
 /* ----------------------------- */
+html {
+  font-size: 14px;
+}
 .font-size-small {
   font-size: 13px !important;
 }
 .font-size-large {
   font-size: 16px !important;
 }
-/* medium = 14px default — no class needed */
 
 /* ----------------------------------------- */
 /* Messaging Panel - Fixed size (like WhatsApp) */
@@ -272,25 +274,6 @@
   }
 }
 
-/* ----------------------------- */
-/* High contrast mode             */
-/* ----------------------------- */
-.high-contrast {
-  --text-secondary: 40 40 40;
-  --text-tertiary: 60 60 60;
-  --text-disabled: 100 100 100;
-  --border: 0 0 0 / 0.25;
-  --border-hover: 0 0 0 / 0.35;
-}
-
-.dark.high-contrast {
-  --text-secondary: 255 255 255 / 0.95;
-  --text-tertiary: 255 255 255 / 0.8;
-  --text-disabled: 255 255 255 / 0.6;
-  --border: 255 255 255 / 0.2;
-  --border-hover: 255 255 255 / 0.3;
-}
-
 .light {
   --background: 250 250 247; /* Warm light gray #FAFAF7 */
   --foreground: 17 17 19; /* Darker, richer dark gray #111113 */
@@ -309,6 +292,29 @@
   --theme-bg-muted: rgba(0, 0, 0, 0.05);
   --theme-bg-muted-strong: rgba(0, 0, 0, 0.1);
   --theme-bg-hover: rgba(0, 0, 0, 0.04);
+}
+
+/* ----------------------------- */
+/* High contrast mode             */
+/* Placed AFTER .light so cascade + specificity both guarantee override */
+/* ----------------------------- */
+.light.high-contrast {
+  --text-primary: 0 0 0;
+  --text-secondary: 20 20 20;
+  --text-tertiary: 40 40 40;
+  --text-disabled: 70 70 70;
+  --border: 0 0 0 / 0.35;
+  --border-hover: 0 0 0 / 0.5;
+}
+
+.dark.high-contrast,
+:root.high-contrast:not(.light) {
+  --text-primary: 255 255 255;
+  --text-secondary: 255 255 255;
+  --text-tertiary: 255 255 255 / 0.92;
+  --text-disabled: 255 255 255 / 0.7;
+  --border: 255 255 255 / 0.3;
+  --border-hover: 255 255 255 / 0.45;
 }
 
 /* Theme-Aware Utility Classes */

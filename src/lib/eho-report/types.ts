@@ -247,6 +247,54 @@ export interface TrainingMatrixItem {
     | "not_started";
 }
 
+export interface PestControlVisitRecord {
+  id: string;
+  visit_date: string;
+  visit_type: string;
+  contractor_name: string | null;
+  technician_name: string | null;
+  evidence_found: boolean;
+  evidence_type: string[] | null;
+  pest_types: string[] | null;
+  treatments_applied: string[] | null;
+  chemicals_used: any[] | null;
+  total_cost: number | null;
+  proofing_required: boolean;
+  proofing_details: string | null;
+  service_report_file: string | null;
+}
+
+export interface PestSightingRecord {
+  id: string;
+  sighting_date: string;
+  pest_type: string;
+  evidence_type: string;
+  location_area: string;
+  severity: string;
+  resolved: boolean;
+  reported_by_name: string | null;
+}
+
+export interface PestControlDeviceRecord {
+  device_number: string;
+  device_type: string;
+  location_area: string;
+  status: string;
+  activity_count_ytd: number;
+  last_activity_date: string | null;
+}
+
+export interface PestControlContractRecord {
+  contractor_name: string | null;
+  contract_start_date: string;
+  contract_end_date: string | null;
+  routine_visits_per_year: number;
+  bpca_certified: boolean;
+  basis_registered: boolean;
+  insurance_expiry_date: string | null;
+  coverage_includes: string[] | null;
+}
+
 export interface EHOReportData {
   site: SiteInfo;
   company: CompanyInfo | null;
@@ -273,4 +321,10 @@ export interface EHOReportData {
   staffProfiles: StaffProfile[];
   trainingMatrix: TrainingMatrixItem[];
   contractorCallouts: ContractorCallout[];
+
+  // Pest control management data
+  pestControlVisits: PestControlVisitRecord[];
+  pestSightings: PestSightingRecord[];
+  pestControlDevices: PestControlDeviceRecord[];
+  pestControlContract: PestControlContractRecord | null;
 }

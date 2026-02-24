@@ -57,6 +57,7 @@ const moduleActions: Record<string, QuickAction[]> = {
   ],
   assetly: [
     { id: 'callout', icon: Wrench, label: 'Place Callout', href: '/dashboard/assets/callout-logs', color: '#f44336' },
+    { id: 'report-issue', icon: Wrench, label: 'Report Issue', href: '/dashboard/assets/rm/work-orders', color: '#f44336' },
     { id: 'assets', icon: Eye, label: 'View Assets', href: '/dashboard/assets', color: '#0EA5E9' },
     { id: 'contractors', icon: Wrench, label: 'Contractors', href: '/dashboard/assets/contractors', color: '#0EA5E9' },
   ],

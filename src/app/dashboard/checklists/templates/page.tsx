@@ -27,12 +27,22 @@ const FREQUENCY_LABELS = {
 }
 
 // Category labels
-const CATEGORY_LABELS = {
+const CATEGORY_LABELS: Record<string, string> = {
   food_safety: 'Food Safety',
   health_and_safety: 'Health & Safety',
-  fire: 'Fire & Security', 
+  health_safety: 'Health & Safety',
+  h_and_s: 'Health & Safety',
+  fire: 'Fire & Security',
+  fire_safety: 'Fire Safety',
   cleaning: 'Cleaning & Maintenance',
-  compliance: 'Compliance & Audit'
+  cleaning_premises: 'Cleaning & Premises',
+  handling_storage: 'Handling & Storage',
+  welfare_first_aid: 'Welfare & First Aid',
+  personal_hygiene: 'Personal Hygiene',
+  policy_organisation: 'Policy & Organisation',
+  risk_assessment: 'Risk Assessment',
+  compliance: 'Compliance & Audit',
+  salsa: 'SALSA',
 }
 
 type TemplateWithUsage = TaskTemplate & {

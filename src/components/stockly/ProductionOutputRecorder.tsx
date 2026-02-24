@@ -1,15 +1,25 @@
 // @salsa - SALSA Compliance: Record finished product output for production batch
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
-import { Package, AlertTriangle } from '@/components/ui/icons';
+import { Package, AlertTriangle, Info } from '@/components/ui/icons';
+
+interface RecipeOutputStockItem {
+  id: string;
+  name: string;
+  stock_unit: string | null;
+}
 
 interface ProductionOutputRecorderProps {
   productionBatchId: string;
   companyId: string;
   productionDate?: string;
+  recipeOutputStockItem?: RecipeOutputStockItem | null;
+  plannedQuantity?: number | null;
+  plannedUnit?: string | null;
+  recipeShelfLifeDays?: number | null;
   onSaved: () => void;
   onCancel: () => void;
 }
@@ -35,6 +45,10 @@ export default function ProductionOutputRecorder({
   productionBatchId,
   companyId,
   productionDate,
+  recipeOutputStockItem,
+  plannedQuantity,
+  plannedUnit,
+  recipeShelfLifeDays,
   onSaved,
   onCancel,
 }: ProductionOutputRecorderProps) {
@@ -53,6 +67,9 @@ export default function ProductionOutputRecorder({
   const [calculatedUseByDate, setCalculatedUseByDate] = useState<string | null>(null);
   const [dateOverrideWarning, setDateOverrideWarning] = useState<string | null>(null);
 
+  // Track whether we've auto-populated from recipe (only do once)
+  const autoPopulated = useRef(false);
+
   useEffect(() => {
     async function loadStockItems() {
       const { data } = await supabase
@@ -62,9 +79,28 @@ export default function ProductionOutputRecorder({
         .eq('is_active', true)
         .order('name');
       setStockItems(data || []);
+
+      // Auto-populate from recipe output stock item (once, after items load)
+      if (!autoPopulated.current && recipeOutputStockItem && data) {
+        const exists = data.some((item: any) => item.id === recipeOutputStockItem.id);
+        if (exists) {
+          autoPopulated.current = true;
+          setStockItemId(recipeOutputStockItem.id);
+          if (recipeOutputStockItem.stock_unit) setUnit(recipeOutputStockItem.stock_unit);
+          if (plannedQuantity) setQuantity(String(plannedQuantity));
+          else if (plannedUnit) setUnit(plannedUnit);
+
+          // If recipe has shelf_life_days and no product spec will override, pre-calculate
+          if (recipeShelfLifeDays && productionDate) {
+            const calculated = calculateShelfLifeDate(productionDate, recipeShelfLifeDays);
+            setUseByDate(calculated);
+            setCalculatedUseByDate(calculated);
+          }
+        }
+      }
     }
     loadStockItems();
-  }, [companyId]);
+  }, [companyId, recipeOutputStockItem, plannedQuantity, plannedUnit, recipeShelfLifeDays, productionDate]);
 
   // Fetch product specification when stock item changes
   useEffect(() => {
@@ -87,9 +123,15 @@ export default function ProductionOutputRecorder({
       const activeSpec = data?.[0] || null;
       setSpec(activeSpec);
 
-      // Auto-calculate use-by date from shelf life
+      // Product spec shelf life takes priority over recipe shelf life
       if (activeSpec?.shelf_life_days && productionDate) {
         const calculated = calculateShelfLifeDate(productionDate, activeSpec.shelf_life_days);
+        setCalculatedUseByDate(calculated);
+        setUseByDate(calculated);
+        setDateOverrideWarning(null);
+      } else if (recipeShelfLifeDays && productionDate && !activeSpec) {
+        // Fallback to recipe shelf life if no product spec
+        const calculated = calculateShelfLifeDate(productionDate, recipeShelfLifeDays);
         setCalculatedUseByDate(calculated);
         setUseByDate(calculated);
         setDateOverrideWarning(null);
@@ -98,18 +140,19 @@ export default function ProductionOutputRecorder({
       }
     }
     loadSpec();
-  }, [stockItemId, productionDate]);
+  }, [stockItemId, productionDate, recipeShelfLifeDays]);
 
   // Check for date override warning
   useEffect(() => {
     if (calculatedUseByDate && useByDate && useByDate !== calculatedUseByDate) {
+      const source = spec?.shelf_life_days ? `${spec.shelf_life_days} ${spec.shelf_life_unit || 'days'}` : `${recipeShelfLifeDays} days (recipe)`;
       setDateOverrideWarning(
-        `This date differs from the calculated shelf life (${spec?.shelf_life_days} ${spec?.shelf_life_unit || 'days'} from production). Ensure this is authorised.`
+        `This date differs from the calculated shelf life (${source} from production). Ensure this is authorised.`
       );
     } else {
       setDateOverrideWarning(null);
     }
-  }, [useByDate, calculatedUseByDate, spec]);
+  }, [useByDate, calculatedUseByDate, spec, recipeShelfLifeDays]);
 
   const handleStockItemChange = (id: string) => {
     setStockItemId(id);
@@ -151,11 +194,27 @@ export default function ProductionOutputRecorder({
     }
   };
 
+  const shelfLifeSource = spec?.shelf_life_days
+    ? `${spec.shelf_life_days} ${spec.shelf_life_unit || 'days'}`
+    : recipeShelfLifeDays
+    ? `${recipeShelfLifeDays} days (from recipe)`
+    : null;
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
         <div className="p-3 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-700 dark:text-red-400">
           {error}
+        </div>
+      )}
+
+      {/* Auto-populated info */}
+      {recipeOutputStockItem && stockItemId === recipeOutputStockItem.id && (
+        <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-blue-700 dark:text-blue-400">
+            Pre-filled from recipe. Review and adjust if needed.
+          </p>
         </div>
       )}
 
@@ -214,9 +273,9 @@ export default function ProductionOutputRecorder({
         <div>
           <label className="block text-sm font-medium text-theme-secondary mb-1">
             Use By Date
-            {spec?.shelf_life_days && (
+            {shelfLifeSource && (
               <span className="text-theme-tertiary font-normal ml-1">
-                ({spec.shelf_life_days} {spec.shelf_life_unit || 'days'} shelf life)
+                ({shelfLifeSource} shelf life)
               </span>
             )}
           </label>

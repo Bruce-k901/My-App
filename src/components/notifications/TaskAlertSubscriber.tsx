@@ -1,24 +1,23 @@
 'use client';
 
 import { useAppContext } from '@/context/AppContext';
-import { useGlobalTaskAlerts } from '@/hooks/useGlobalTaskAlerts';
+import { useTaskTimers } from '@/hooks/useTaskTimers';
 
 /**
- * Global component that polls for due/overdue tasks and triggers
- * persistent popup alerts with snooze options on any page.
+ * Global component that schedules per-task timers for due/overdue alerts
+ * with snooze options. Uses Supabase Realtime to stay in sync.
  *
  * Should be included in the root layout (alongside MessageAlertSubscriber).
  */
 export function TaskAlertSubscriber() {
   const { companyId, siteId, userId, profile } = useAppContext();
 
-  useGlobalTaskAlerts({
+  useTaskTimers({
     companyId,
     siteId,
     userId: userId || profile?.id || null,
     userRole: profile?.app_role || null,
     enabled: !!profile && !!companyId,
-    checkIntervalMs: 60000,
   });
 
   return null;

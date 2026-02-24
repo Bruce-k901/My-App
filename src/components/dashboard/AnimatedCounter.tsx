@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSpring, useMotionValue, useReducedMotion } from 'framer-motion';
+import { useSpring, useMotionValue } from 'framer-motion';
+import { useUserPreferences } from '@/context/UserPreferencesContext';
 
 interface AnimatedCounterProps {
   value: number;
@@ -13,7 +14,7 @@ interface AnimatedCounterProps {
 
 /**
  * AnimatedCounter — counts up from 0 (or previous value) to target value.
- * Respects prefers-reduced-motion. Colour is controlled by parent via className.
+ * Respects app reduce_animations preference. Colour is controlled by parent via className.
  */
 export function AnimatedCounter({
   value,
@@ -22,30 +23,31 @@ export function AnimatedCounter({
   className = '',
   formatFn,
 }: AnimatedCounterProps) {
-  const prefersReducedMotion = useReducedMotion();
+  const { preferences } = useUserPreferences();
+  const skipAnimation = preferences.reduce_animations ?? false;
   const motionValue = useMotionValue(0);
   const spring = useSpring(motionValue, {
     stiffness: 80,
     damping: 20,
     restDelta: 0.5,
   });
-  const [display, setDisplay] = useState(prefersReducedMotion ? value : 0);
+  const [display, setDisplay] = useState(skipAnimation ? value : 0);
 
   useEffect(() => {
-    if (prefersReducedMotion) {
+    if (skipAnimation) {
       setDisplay(value);
       return;
     }
     motionValue.set(value);
-  }, [value, motionValue, prefersReducedMotion]);
+  }, [value, motionValue, skipAnimation]);
 
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    if (skipAnimation) return;
     const unsubscribe = spring.on('change', (latest) => {
       setDisplay(Math.round(latest));
     });
     return unsubscribe;
-  }, [spring, prefersReducedMotion]);
+  }, [spring, skipAnimation]);
 
   const formatted = formatFn ? formatFn(display) : display.toLocaleString();
 

@@ -35,6 +35,8 @@ export const ROLE_DEFAULT_WIDGETS: Record<RoleSlug, string[]> = {
     // Assetly
     'overdue_maintenance',
     'asset_issues',
+    'open_work_orders',
+    'rm_monthly_spend',
     // Msgly
     'unread_messages',
   ],
@@ -59,6 +61,8 @@ export const ROLE_DEFAULT_WIDGETS: Record<RoleSlug, string[]> = {
     'pending_customer_orders',
     'overdue_maintenance',
     'asset_issues',
+    'open_work_orders',
+    'rm_monthly_spend',
     'unread_messages',
   ],
   site_manager: [
@@ -75,6 +79,7 @@ export const ROLE_DEFAULT_WIDGETS: Record<RoleSlug, string[]> = {
     'whos_on_today',
     'training_expiries',
     'asset_issues',
+    'open_work_orders',
     'unread_messages',
   ],
   kitchen: [
@@ -98,6 +103,7 @@ export const ROLE_DEFAULT_WIDGETS: Record<RoleSlug, string[]> = {
     'stock_value',
     'whos_on_today',
     'overdue_maintenance',
+    'open_work_orders',
     'unread_messages',
   ],
   staff: [

@@ -167,6 +167,30 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
     return (data || []).map(site => ({ value: site.id, label: site.name }));
   };
 
+  // Category options for category dropdown
+  const fetchCategories = async () => {
+    return [
+      { value: 'refrigeration', label: 'Refrigeration' },
+      { value: 'cooking', label: 'Cooking Equipment' },
+      { value: 'dishwashing', label: 'Dishwashing' },
+      { value: 'coffee', label: 'Coffee Equipment' },
+      { value: 'safety', label: 'Safety Systems' },
+      { value: 'temperature_probes', label: 'Temperature Probes' },
+      { value: 'refrigeration_equipment', label: 'Refrigeration Equipment' },
+      { value: 'other', label: 'Other' },
+    ];
+  };
+
+  // Status options for status dropdown
+  const fetchStatuses = async () => {
+    return [
+      { value: 'active', label: 'Active' },
+      { value: 'inactive', label: 'Inactive' },
+      { value: 'maintenance', label: 'Maintenance' },
+      { value: 'retired', label: 'Retired' },
+    ];
+  };
+
   // Fetch contractors for contractor dropdowns
   const fetchContractors = async () => {
     const { data, error } = await supabase
@@ -319,12 +343,13 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
                   fetchOptions={fetchSites}
                   onSave={handleSiteChange}
                 />
-                <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
- <span className="text-gray-500 dark:text-theme-tertiary">Category</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-theme-primary font-medium">{asset.category}</span>
-                  </div>
-                </div>
+                <EditableField
+                  label="Category"
+                  value={asset.category}
+                  type="select"
+                  fetchOptions={fetchCategories}
+                  onSave={(value) => handleFieldUpdate('category', value)}
+                />
               </div>
             </div>
 
@@ -335,30 +360,34 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
               </h3>
               <div className="grid grid-cols-2 gap-x-12 gap-y-4 items-center text-sm mt-4 py-2 relative">
                 <div className="absolute left-1/2 top-0 bottom-0 w-px bg-cyan-300 dark:bg-cyan-500/40"></div>
-                <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
- <span className="text-gray-500 dark:text-theme-tertiary">Asset Name</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-theme-primary font-medium">{asset.name}</span>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
- <span className="text-gray-500 dark:text-theme-tertiary">Brand</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-theme-primary font-medium">{asset.brand || '—'}</span>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
- <span className="text-gray-500 dark:text-theme-tertiary">Model</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-theme-primary font-medium">{asset.model || '—'}</span>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
- <span className="text-gray-500 dark:text-theme-tertiary">Serial Number</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-theme-primary font-medium">{asset.serial_number || '—'}</span>
-                  </div>
-                </div>
+                <EditableField
+                  label="Asset Name"
+                  value={asset.name}
+                  type="text"
+                  onSave={(value) => handleFieldUpdate('name', value)}
+                  required
+                />
+                <EditableField
+                  label="Brand"
+                  value={asset.brand}
+                  type="text"
+                  onSave={(value) => handleFieldUpdate('brand', value)}
+                  placeholder="e.g. Samsung"
+                />
+                <EditableField
+                  label="Model"
+                  value={asset.model}
+                  type="text"
+                  onSave={(value) => handleFieldUpdate('model', value)}
+                  placeholder="e.g. RF-500"
+                />
+                <EditableField
+                  label="Serial Number"
+                  value={asset.serial_number}
+                  type="text"
+                  onSave={(value) => handleFieldUpdate('serial_number', value)}
+                  placeholder="e.g. SN12345"
+                />
               </div>
             </div>
 
@@ -369,22 +398,18 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
               </h3>
               <div className="grid grid-cols-2 gap-x-12 gap-y-4 items-center text-sm mt-4 py-2 relative">
                 <div className="absolute left-1/2 top-0 bottom-0 w-px bg-cyan-300 dark:bg-cyan-500/40"></div>
-                <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
- <span className="text-gray-500 dark:text-theme-tertiary">Install Date</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-theme-primary font-medium">
-                      {asset.install_date ? new Date(asset.install_date).toLocaleDateString() : '—'}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
- <span className="text-gray-500 dark:text-theme-tertiary">Warranty End</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-theme-primary font-medium">
-                      {asset.warranty_end ? new Date(asset.warranty_end).toLocaleDateString() : '—'}
-                    </span>
-                  </div>
-                </div>
+                <EditableField
+                  label="Install Date"
+                  value={asset.install_date}
+                  type="date"
+                  onSave={(value) => handleFieldUpdate('install_date', value)}
+                />
+                <EditableField
+                  label="Warranty End"
+                  value={asset.warranty_end}
+                  type="date"
+                  onSave={(value) => handleFieldUpdate('warranty_end', value)}
+                />
                 {asset.ppm_group_id ? (
                   <div className="col-span-2 flex items-center gap-2 px-2 py-2 rounded-lg bg-cyan-50 dark:bg-module-fg/10 border border-cyan-200 dark:border-module-fg/30 text-sm">
                     <Layers className="w-4 h-4 text-module-fg flex-shrink-0" />
@@ -465,12 +490,13 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
               </h3>
               <div className="grid grid-cols-2 gap-x-12 gap-y-4 items-center text-sm mt-4 py-2 relative">
                 <div className="absolute left-1/2 top-0 bottom-0 w-px bg-cyan-300 dark:bg-cyan-500/40"></div>
-                <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
- <span className="text-gray-500 dark:text-theme-tertiary">Status</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-theme-primary font-medium">{asset.status}</span>
-                  </div>
-                </div>
+                <EditableField
+                  label="Status"
+                  value={asset.status}
+                  type="select"
+                  fetchOptions={fetchStatuses}
+                  onSave={(value) => handleFieldUpdate('status', value)}
+                />
                 <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
  <span className="text-gray-500 dark:text-theme-tertiary">Warranty Status</span>
                   <div className="flex items-center gap-2">
@@ -508,23 +534,13 @@ export default function AssetCard({ asset, onArchive, onEdit }: AssetCardProps) 
                   onSave={(value) => handleFieldUpdate('notes', value)}
                   placeholder="Enter any additional notes..."
                 />
-                <div className="flex justify-between items-center border-b border-gray-200 dark:border-neutral-800 pb-1">
- <span className="text-gray-500 dark:text-theme-tertiary">Document URL</span>
-                  <div className="flex items-center gap-2">
-                    {asset.document_url ? (
-                      <a
-                        href={asset.document_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-module-fg hover:text-cyan-700 dark:hover:text-cyan-300 text-sm underline"
-                      >
-                        View Document
-                      </a>
-                    ) : (
-                      <span className="text-theme-primary font-medium">—</span>
-                    )}
-                  </div>
-                </div>
+                <EditableField
+                  label="Document URL"
+                  value={asset.document_url}
+                  type="text"
+                  onSave={(value) => handleFieldUpdate('document_url', value)}
+                  placeholder="https://..."
+                />
               </div>
             </div>
           </div>

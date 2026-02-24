@@ -170,6 +170,22 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     defaultRoles: ['Admin', 'Owner', 'Manager'],
     component: safeLazy(() => import('@/components/dashboard/widgets-v2/AssetIssuesWidget')),
   },
+  open_work_orders: {
+    id: 'open_work_orders',
+    title: 'Open Work Orders',
+    module: 'assetly',
+    size: 'medium',
+    defaultRoles: ['Admin', 'Owner', 'Manager'],
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/OpenWorkOrdersWidget')),
+  },
+  rm_monthly_spend: {
+    id: 'rm_monthly_spend',
+    title: 'R&M Monthly Spend',
+    module: 'assetly',
+    size: 'medium',
+    defaultRoles: ['Admin', 'Owner'],
+    component: safeLazy(() => import('@/components/dashboard/widgets-v2/RMSpendWidget')),
+  },
 
   // ── DATA HEALTH ──
   data_health: {

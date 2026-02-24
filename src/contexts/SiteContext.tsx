@@ -39,7 +39,7 @@ const SiteContext = createContext<SiteContextType | undefined>(undefined);
  * Integrates with AppContext to get the current user.
  */
 export function SiteContextProvider({ children }: { children: ReactNode }) {
-  const { user, loading: appLoading } = useAppContext();
+  const { user, loading: appLoading, viewingAsCompanyId, companyId } = useAppContext();
   
   // State
   const [selectedSiteId, setSelectedSiteIdState] = useState<string | "all">("all");
@@ -75,8 +75,31 @@ export function SiteContextProvider({ children }: { children: ReactNode }) {
       try {
         setLoading(true);
 
-        // 1. Get accessible sites
-        const sites = await getUserAccessibleSitesClient(user.id);
+        let sites: AccessibleSite[];
+
+        // When in View As mode, load sites for the viewed company directly
+        if (viewingAsCompanyId) {
+          const { data: viewedSites, error: viewedSitesError } = await supabase
+            .from("sites")
+            .select("id, name")
+            .eq("company_id", viewingAsCompanyId)
+            .order("name");
+
+          if (viewedSitesError || !viewedSites) {
+            console.error("Failed to fetch sites for viewed company:", viewedSitesError);
+            sites = [];
+          } else {
+            sites = viewedSites.map((site, i) => ({
+              id: site.id,
+              name: site.name,
+              is_home: i === 0, // Mark first site as default
+            }));
+          }
+        } else {
+          // Normal mode: get accessible sites for the logged-in user
+          sites = await getUserAccessibleSitesClient(user.id);
+        }
+
         setAccessibleSites(sites);
 
         // Get user role and home site from profile
@@ -85,30 +108,36 @@ export function SiteContextProvider({ children }: { children: ReactNode }) {
           .select("app_role, home_site")
           .eq("id", user.id)
           .single();
-        
+
         if (profileData) {
           setUserRole((profileData.app_role || "Staff") as UserRole);
-          if (profileData.home_site) {
+          if (!viewingAsCompanyId && profileData.home_site) {
             setUserHomeSite(profileData.home_site);
           }
         }
 
         // Also find home site from accessible sites (as backup)
         const homeSite = sites.find(s => s.is_home);
-        if (homeSite && !profileData?.home_site) {
+        if (homeSite && (!profileData?.home_site || viewingAsCompanyId)) {
           setUserHomeSite(homeSite.id);
         }
 
         // 2. Get default site to show
-        const defaultSiteId = await getDefaultSiteIdClient(user.id);
+        let defaultSiteId: string | "all";
+        if (viewingAsCompanyId) {
+          // In View As mode, default to first site or "all"
+          defaultSiteId = sites.length > 0 ? sites[0].id : "all";
+        } else {
+          defaultSiteId = await getDefaultSiteIdClient(user.id);
+        }
 
-        // 3. Check localStorage for last selected site (only if mounted)
+        // 3. Check localStorage for last selected site (only if mounted and not in View As)
         let initialSiteId: string | "all" = defaultSiteId;
-        
-        if (isMounted) {
+
+        if (isMounted && !viewingAsCompanyId) {
           try {
             const storedSiteId = localStorage.getItem("selectedSiteId");
-            
+
             // 4. Validate stored site is still accessible
             if (storedSiteId && storedSiteId !== "all") {
               const canAccess = await canAccessSiteClient(user.id, storedSiteId);
@@ -129,8 +158,8 @@ export function SiteContextProvider({ children }: { children: ReactNode }) {
 
         setSelectedSiteIdState(initialSiteId);
 
-        // Persist to localStorage
-        if (isMounted) {
+        // Persist to localStorage (only in normal mode)
+        if (isMounted && !viewingAsCompanyId) {
           try {
             localStorage.setItem("selectedSiteId", initialSiteId);
           } catch (error) {
@@ -150,7 +179,7 @@ export function SiteContextProvider({ children }: { children: ReactNode }) {
     }
 
     initializeSiteContext();
-  }, [user?.id, appLoading, isMounted]); // Re-run when user changes or app finishes loading
+  }, [user?.id, appLoading, isMounted, viewingAsCompanyId]); // Re-run when user or viewed company changes
 
   // Function to change selected site
   const setSelectedSite = useCallback((siteId: string | "all") => {

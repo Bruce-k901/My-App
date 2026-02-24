@@ -228,10 +228,14 @@ export async function POST(request: NextRequest) {
 
         // Insert template_fields (if any detected from CSV record log)
         if (tmpl.detectedFields?.fields?.length > 0) {
+          // Map Trail field types to app FieldType enum values
+          const TRAIL_FIELD_TYPE_MAP: Record<string, string> = {
+            'checkbox': 'yes_no',
+          };
           const fieldsToInsert = tmpl.detectedFields.fields.map(f => ({
             template_id: inserted.id,
             field_name: f.field_name,
-            field_type: f.field_type,
+            field_type: TRAIL_FIELD_TYPE_MAP[f.field_type] || f.field_type,
             label: f.label,
             required: f.required,
             field_order: f.field_order,

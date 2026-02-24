@@ -46,9 +46,13 @@ export function SuppressConsoleWarnings() {
       // Recharts ResponsiveContainer warns during initial render before layout
       const isRechartsLayoutWarning = msg.includes("width") && msg.includes("height") && msg.includes("chart should be greater than 0");
 
+      // Framer-motion reduced motion warning (app handles this via its own preference)
+      const isFramerMotionWarning = msg.includes("reduced motion") && msg.includes("motion.dev");
+
       return (
         isPreloadWarning ||
         isRechartsLayoutWarning ||
+        isFramerMotionWarning ||
         // Suppress push subscription errors (expected when table doesn't exist or profile missing)
         msg.includes("error saving push subscription") ||
         msg.includes("error registering push subscription") ||

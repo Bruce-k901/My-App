@@ -1,18 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Palette, Bell, Workflow, Accessibility } from '@/components/ui/icons';
+import { Palette, Bell, Workflow } from '@/components/ui/icons';
 import { PWAInstallSection } from '@/components/pwa/PWAInstallSection';
 import { AppearanceTab } from '@/components/settings/AppearanceTab';
 import { NotificationsTab } from '@/components/settings/NotificationsTab';
 import { WorkflowTab } from '@/components/settings/WorkflowTab';
-import { AccessibilityTab } from '@/components/settings/AccessibilityTab';
 
 const TABS = [
   { id: 'appearance',     label: 'Appearance',     icon: Palette },
   { id: 'notifications',  label: 'Notifications',  icon: Bell },
   { id: 'workflow',        label: 'Workflow',        icon: Workflow },
-  { id: 'accessibility',  label: 'Accessibility',  icon: Accessibility },
 ] as const;
 
 type TabId = (typeof TABS)[number]['id'];
@@ -53,7 +51,6 @@ function SettingsInner() {
         {activeTab === 'appearance' && <AppearanceTab />}
         {activeTab === 'notifications' && <NotificationsTab />}
         {activeTab === 'workflow' && <WorkflowTab />}
-        {activeTab === 'accessibility' && <AccessibilityTab />}
       </div>
 
       {/* PWA Install — always at the bottom */}

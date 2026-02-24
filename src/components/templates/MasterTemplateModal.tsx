@@ -160,17 +160,22 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         if (sites && !error) {
           console.log(`✅ Loaded ${sites.length} sites for template builder:`, sites.map(s => s.name));
           setAvailableSites(sites);
-          
-          // Default to home site only (if available), otherwise empty
-          const homeSiteId = profile?.home_site;
-          if (homeSiteId && sites.some(s => s.id === homeSiteId)) {
-            console.log('🏠 Defaulting to home site only:', homeSiteId);
-            setSelectedSites([homeSiteId]);
-            setApplyToAllSites(false);
+
+          // For trail_import templates, let the pre-assigned sites effect handle selection
+          if (isTrailImport) {
+            console.log('📋 Trail import template — skipping default site selection (pre-assigned sites effect will handle it)');
           } else {
-            console.log('⚠️ No home site found or home site not in available sites, defaulting to empty selection');
-            setSelectedSites([]);
-            setApplyToAllSites(false);
+            // Default to home site only (if available), otherwise empty
+            const homeSiteId = profile?.home_site;
+            if (homeSiteId && sites.some(s => s.id === homeSiteId)) {
+              console.log('🏠 Defaulting to home site only:', homeSiteId);
+              setSelectedSites([homeSiteId]);
+              setApplyToAllSites(false);
+            } else {
+              console.log('⚠️ No home site found or home site not in available sites, defaulting to empty selection');
+              setSelectedSites([]);
+              setApplyToAllSites(false);
+            }
           }
         } else {
           console.error('❌ Error loading sites for template builder:', error);
@@ -324,7 +329,15 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
             .select('*')
             .eq('template_id', editingTemplate.id)
             .order('field_order');
-          if (fields) setCustomFieldsList(fields);
+          if (fields) {
+            // Normalize field types from Trail imports (e.g. 'checkbox' → 'yes_no')
+            const FIELD_TYPE_NORMALIZE: Record<string, string> = { 'checkbox': 'yes_no' };
+            const normalized = fields.map(f => ({
+              ...f,
+              field_type: FIELD_TYPE_NORMALIZE[f.field_type] || f.field_type,
+            }));
+            setCustomFieldsList(normalized);
+          }
         })();
       } else {
         setUseCustomFields(false);
@@ -382,9 +395,15 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
       if (data && data.length > 0) {
         setSelectedSites(data.map(a => a.site_id));
         setApplyToAllSites(false);
+      } else {
+        // No pre-assigned sites — fall back to home site so button isn't greyed out
+        const homeSiteId = profile?.home_site;
+        if (homeSiteId) {
+          setSelectedSites([homeSiteId]);
+        }
       }
     })();
-  }, [editingTemplate?.id, isTrailImport, isOpen]);
+  }, [editingTemplate?.id, isTrailImport, isOpen, profile?.home_site]);
 
   // Load compliance library templates for trail_import template linking
   useEffect(() => {
@@ -820,7 +839,7 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
         name: templateConfig.templateName,
         slug: slug,
         description: templateConfig.taskDescription,
-        category: 'compliance',
+        category: editingTemplate?.category || 'compliance',
         frequency: frequencyMap[templateConfig.frequency] || 'monthly',
         dayparts: dayparts,
         instructions: instructions,

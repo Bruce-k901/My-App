@@ -20,6 +20,7 @@ import {
   Wrench,
   Package,
   Upload,
+  Bug,
 } from '@/components/ui/icons';
 import { useState, useEffect } from 'react';
 import { useSidebarMode } from '@/hooks/useSidebarMode';
@@ -153,6 +154,24 @@ const navItems: NavItem[] = [
     children: [
       { label: 'Equipment Library', href: '/dashboard/equipment', icon: Wrench },
       { label: 'Assets', href: '/dashboard/equipment/assets', icon: Package },
+    ],
+  },
+  {
+    type: 'section',
+    label: 'PEST CONTROL',
+    icon: Bug,
+  },
+  {
+    type: 'parent',
+    label: 'Pest Control',
+    href: '/dashboard/pest-control',
+    icon: Bug,
+    children: [
+      { label: 'Overview', href: '/dashboard/pest-control', icon: LayoutDashboard },
+      { label: 'Visits', href: '/dashboard/pest-control/visits', icon: Calendar },
+      { label: 'Device Register', href: '/dashboard/pest-control/devices', icon: Package },
+      { label: 'Sightings', href: '/dashboard/pest-control/sightings', icon: AlertTriangle },
+      { label: 'Contract', href: '/dashboard/pest-control/contract', icon: FileText },
     ],
   },
   {
@@ -301,6 +320,7 @@ const APP_NAME = 'Checkly';
 
 export function ChecklySidebar() {
   const { profile } = useAppContext();
+  const router = useRouter();
   const { isCollapsed, showExpanded, isHoverExpanded, displayWidth, canPin, togglePin, handleMouseEnter, handleMouseLeave } = useSidebarMode();
 
   return (
@@ -348,26 +368,27 @@ export function ChecklySidebar() {
       {/* Profile + Pin */}
       <div className="border-t border-module-fg/[0.18]">
         {showExpanded ? (
-          <div className="p-4 pb-0">
-            <Link
-              href={`/dashboard/people/${profile?.id}`}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#888] dark:text-theme-tertiary hover:bg-checkly-dark/[0.04] dark:hover:bg-checkly/5 hover:text-[#555] dark:hover:text-theme-secondary transition-colors"
+          <div className="p-4 flex items-center gap-1">
+            <button
+              onClick={() => router.push(`/dashboard/people/${profile?.id}`)}
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#888] dark:text-theme-tertiary hover:bg-checkly-dark/[0.04] dark:hover:bg-checkly/5 hover:text-[#555] dark:hover:text-theme-secondary transition-colors flex-1 min-w-0 text-left"
             >
-              <UserCircle className="w-5 h-5" />
+              <UserCircle className="w-5 h-5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="truncate text-[#1a1a1a] dark:text-white">{profile?.full_name || 'My Profile'}</p>
                 <p className="truncate text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">{profile?.position_title || 'Employee'}</p>
               </div>
-            </Link>
+            </button>
+            {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
           </div>
         ) : (
-          <div className="flex justify-center py-2">
-            <Link href={`/dashboard/people/${profile?.id}`} title={profile?.full_name || 'My Profile'} className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors">
+          <div className="flex flex-col items-center gap-1 py-2">
+            <button onClick={() => router.push(`/dashboard/people/${profile?.id}`)} title={profile?.full_name || 'My Profile'} className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] transition-colors">
               <UserCircle className="w-5 h-5" />
-            </Link>
+            </button>
+            {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
           </div>
         )}
-        {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
       </div>
     </aside>
   );

@@ -22,6 +22,8 @@ export function useMessageAlerts({
 }: UseMessageAlertsOptions) {
   const { alertNewMessage, settings } = useAlerts();
   const pathname = usePathname();
+  const pathnameRef = useRef(pathname);
+  pathnameRef.current = pathname;
   const lastAlertedMessageId = useRef<string | null>(null);
 
   const handleNewMessage = useCallback((message: Message) => {
@@ -40,8 +42,9 @@ export function useMessageAlerts({
     const conversationId = message.channel_id || message.conversation_id;
 
     // Don't alert if user is already on the messages page viewing this conversation
-    const isViewingConversation = pathname?.includes('/messages') &&
-      conversationId && pathname?.includes(conversationId);
+    const currentPath = pathnameRef.current;
+    const isViewingConversation = currentPath?.includes('/messages') &&
+      conversationId && currentPath?.includes(conversationId);
     if (isViewingConversation) return;
 
     // Trigger alert
@@ -72,7 +75,7 @@ export function useMessageAlerts({
         },
       },
     });
-  }, [enabled, currentUserId, pathname, alertNewMessage, settings.messagesEnabled]);
+  }, [enabled, currentUserId, alertNewMessage, settings.messagesEnabled]);
 
   // Clear the last alerted message (useful when switching conversations)
   const clearLastAlerted = useCallback(() => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Clock, FileText, Edit2, Trash2, ChevronDown, ChevronRight } from '@/components/ui/icons';
+import { Plus, Clock, FileText, Edit2, Trash2, ChevronDown, ChevronRight, Search } from '@/components/ui/icons';
 import { toast } from 'sonner';
 import { MasterTemplateModal } from '@/components/templates/MasterTemplateModal';
 import { TaskFromTemplateModal } from '@/components/templates/TaskFromTemplateModal';
@@ -41,6 +41,8 @@ export default function TemplatesPage() {
   const [previewFields, setPreviewFields] = useState<Record<string, any[]>>({});
   const [loadingFields, setLoadingFields] = useState<Record<string, boolean>>({});
   const [quickScheduleTemplate, setQuickScheduleTemplate] = useState<TaskTemplate | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
   useEffect(() => {
     if (companyId) {
@@ -119,7 +121,13 @@ export default function TemplatesPage() {
         .select('*')
         .eq('template_id', templateId)
         .order('field_order');
-      setPreviewFields(prev => ({ ...prev, [templateId]: fields || [] }));
+      // Normalize field types from Trail imports (e.g. 'checkbox' → 'yes_no')
+      const FIELD_TYPE_NORMALIZE: Record<string, string> = { 'checkbox': 'yes_no' };
+      const normalized = (fields || []).map((f: any) => ({
+        ...f,
+        field_type: FIELD_TYPE_NORMALIZE[f.field_type] || f.field_type,
+      }));
+      setPreviewFields(prev => ({ ...prev, [templateId]: normalized }));
     } catch (err) {
       console.error('Failed to load custom fields:', err);
       setPreviewFields(prev => ({ ...prev, [templateId]: [] }));
@@ -152,20 +160,15 @@ export default function TemplatesPage() {
 
     const template = templates.find(t => t.id === templateId);
 
-    // trail_import templates: toggle preview instead of opening modal
-    if (template?.tags?.includes('trail_import')) {
-      if (expandedTemplateId === templateId) {
-        setExpandedTemplateId(null);
-      } else {
-        setExpandedTemplateId(templateId);
-        if (template.use_custom_fields) {
-          loadCustomFields(templateId);
-        }
+    // Toggle expand/collapse preview for all templates
+    if (expandedTemplateId === templateId) {
+      setExpandedTemplateId(null);
+    } else {
+      setExpandedTemplateId(templateId);
+      if (template?.use_custom_fields) {
+        loadCustomFields(templateId);
       }
-      return;
     }
-
-    setSelectedTemplateId(templateId);
   };
 
   const handleEditTemplate = async (template: TaskTemplate, e: React.MouseEvent) => {
@@ -275,6 +278,53 @@ export default function TemplatesPage() {
         </button>
       </div>
 
+      {/* Search + Category Filters */}
+      {!loading && templates.length > 0 && (
+        <div className="mb-4 space-y-3">
+          <div className="relative max-w-md w-full">
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-theme-tertiary" />
+            <input
+              type="text"
+              placeholder="Search templates..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-neutral-500 focus:outline-none focus:border-[#D37E91] text-sm"
+            />
+          </div>
+          {(() => {
+            const categories = Array.from(new Set(templates.map(t => t.category).filter(Boolean)));
+            if (categories.length <= 1) return null;
+            return (
+              <div className="flex flex-wrap gap-1.5">
+                <button
+                  onClick={() => setCategoryFilter('all')}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
+                    categoryFilter === 'all'
+                      ? 'bg-[#D37E91]/10 text-[#D37E91] border-[#D37E91]/30'
+                      : 'bg-theme-surface text-theme-tertiary border-theme hover:border-theme-hover'
+                  }`}
+                >
+                  All ({templates.length})
+                </button>
+                {categories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setCategoryFilter(cat)}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
+                      categoryFilter === cat
+                        ? 'bg-[#D37E91]/10 text-[#D37E91] border-[#D37E91]/30'
+                        : 'bg-theme-surface text-theme-tertiary border-theme hover:border-theme-hover'
+                    }`}
+                  >
+                    {getCategoryLabel(cat)} ({templates.filter(t => t.category === cat).length})
+                  </button>
+                ))}
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
       {/* Loading State */}
       {loading && (
         <div className="mt-8 text-center">
@@ -299,9 +349,30 @@ export default function TemplatesPage() {
       })()}
 
       {/* Templates List */}
-      {!loading && templates.length > 0 && (
+      {!loading && templates.length > 0 && (() => {
+        const filtered = templates.filter(t => {
+          if (categoryFilter !== 'all' && t.category !== categoryFilter) return false;
+          if (searchTerm) {
+            const q = searchTerm.toLowerCase();
+            return (
+              t.name.toLowerCase().includes(q) ||
+              t.description?.toLowerCase().includes(q) ||
+              t.category?.toLowerCase().includes(q) ||
+              t.frequency?.toLowerCase().includes(q)
+            );
+          }
+          return true;
+        });
+        if (filtered.length === 0) {
+          return (
+            <div className="mt-4 text-center py-8">
+              <p className="text-theme-tertiary text-sm">No templates match your filters.</p>
+            </div>
+          );
+        }
+        return (
         <div className="mt-2 divide-y divide-theme">
-          {templates.map((template) => {
+          {filtered.map((template) => {
             const isTrailImport = template.tags?.includes('trail_import');
             const isExpanded = expandedTemplateId === template.id;
 
@@ -311,15 +382,13 @@ export default function TemplatesPage() {
                   onClick={(e) => handleUseTemplate(template.id, e)}
                   className="flex items-center gap-4 py-3 px-2 -mx-2 rounded-lg hover:bg-theme-hover transition-colors cursor-pointer group"
                 >
-                  {/* Expand chevron for trail_import templates */}
-                  {isTrailImport && (
-                    <div className="shrink-0 w-4">
-                      {isExpanded
-                        ? <ChevronDown className="w-3.5 h-3.5 text-theme-tertiary" />
-                        : <ChevronRight className="w-3.5 h-3.5 text-theme-tertiary" />
-                      }
-                    </div>
-                  )}
+                  {/* Expand chevron */}
+                  <div className="shrink-0 w-4">
+                    {isExpanded
+                      ? <ChevronDown className="w-3.5 h-3.5 text-theme-tertiary" />
+                      : <ChevronRight className="w-3.5 h-3.5 text-theme-tertiary" />
+                    }
+                  </div>
 
                   {/* Name + badges */}
                   <div className="flex-1 min-w-0">
@@ -372,20 +441,22 @@ export default function TemplatesPage() {
                 </div>
 
                 {/* Expanded preview panel */}
-                {isTrailImport && isExpanded && (
+                {isExpanded && (
                   <TemplatePreviewPanel
                     template={template}
                     customFields={previewFields[template.id] || []}
                     loadingFields={loadingFields[template.id] || false}
                     onEdit={() => handleEditTemplate(template, { stopPropagation: () => {} } as React.MouseEvent)}
-                    onQuickSchedule={() => setQuickScheduleTemplate(template)}
+                    onQuickSchedule={isTrailImport ? () => setQuickScheduleTemplate(template) : undefined}
+                    onCreateTask={!isTrailImport ? () => { setExpandedTemplateId(null); setSelectedTemplateId(template.id); } : undefined}
                   />
                 )}
               </div>
             );
           })}
         </div>
-      )}
+        );
+      })()}
 
       {/* Empty State */}
       {!loading && templates.length === 0 && (

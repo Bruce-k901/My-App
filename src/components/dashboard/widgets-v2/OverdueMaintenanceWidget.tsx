@@ -41,6 +41,7 @@ export default function OverdueMaintenanceWidget({ siteId, companyId }: OverdueM
         const { data: schedules, error: schedulesError } = await supabase
           .from('ppm_schedules')
           .select('id, asset_id, next_due_date, task_type, description')
+          .eq('company_id', companyId)
           .lt('next_due_date', todayStr);
 
         if (schedulesError) {

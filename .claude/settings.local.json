@@ -149,7 +149,13 @@
       "Bash(bash:*)",
       "Bash(netstat:*)",
       "Bash(ss:*)",
-      "Bash(lsof:*)"
+      "Bash(lsof:*)",
+      "Bash(git fetch:*)",
+      "mcp__claude_ai_Vercel__deploy_to_vercel",
+      "Bash(timeout:*)",
+      "Bash(forfiles:*)",
+      "Bash(python3:*)",
+      "Bash(psql:*)"
     ]
   }
 }

@@ -22,20 +22,24 @@ import {
   Printer,
   Mail,
   MoreVertical,
-  Clock
+  Clock,
+  MessageCircle
 } from '@/components/ui/icons';
 import SmartOrderSuggestions from '@/components/stockly/SmartOrderSuggestions';
 import DeliveryScheduleInfo from '@/components/stockly/DeliveryScheduleInfo';
+import SendDialog from '@/components/whatsapp/SendDialog';
 
 interface Supplier {
   id: string;
   name: string;
   code?: string;
+  contact_name?: string;
   lead_time_days: number | null;
   minimum_order_value: number | null;
   email: string | null;
   phone?: string | null;
   ordering_method?: string | null;
+  ordering_config?: { whatsapp_number?: string; portal_url?: string; rep_name?: string } | null;
 }
 
 interface StockItem {
@@ -144,6 +148,7 @@ export default function PurchaseOrderDetailPage() {
   });
   
   const [showActions, setShowActions] = useState(false);
+  const [showWhatsApp, setShowWhatsApp] = useState(false);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -183,7 +188,7 @@ export default function PurchaseOrderDetailPage() {
     try {
       const { data, error } = await supabase
         .from('suppliers')
-        .select('id, name, code, lead_time_days, minimum_order_value, email, phone, ordering_method')
+        .select('id, name, code, contact_name, lead_time_days, minimum_order_value, email, phone, ordering_method, ordering_config')
         .eq('company_id', companyId)
         .eq('is_active', true)
         .order('name');
@@ -1003,6 +1008,16 @@ export default function PurchaseOrderDetailPage() {
             </div>
           )}
           
+          {!isNew && selectedSupplier?.ordering_config?.whatsapp_number && ['approved', 'sent', 'draft'].includes(order.status) && (
+            <button
+              onClick={() => setShowWhatsApp(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg transition-colors"
+            >
+              <MessageCircle className="w-5 h-5" />
+              Send via WhatsApp
+            </button>
+          )}
+
           {canEdit && (
             <button
               onClick={handleSave}
@@ -1378,6 +1393,41 @@ export default function PurchaseOrderDetailPage() {
       </div>
       </div>
 
+      {/* WhatsApp Send Dialog */}
+      {selectedSupplier?.ordering_config?.whatsapp_number && (
+        <SendDialog
+          isOpen={showWhatsApp}
+          onClose={() => setShowWhatsApp(false)}
+          phoneNumber={selectedSupplier.ordering_config.whatsapp_number}
+          recipientName={selectedSupplier.contact_name || selectedSupplier.name}
+          templateName="supplier_order_v1"
+          templateParams={{
+            '1': selectedSupplier.contact_name || selectedSupplier.name,
+            '2': 'your site',
+            '3': order.order_number,
+            '4': order.items
+              .slice(0, 5)
+              .map((item) => `${item.ordered_quantity}x ${item.name}`)
+              .join(', ') +
+              (order.items.length > 5 ? `, +${order.items.length - 5} more` : ''),
+            '5': order.expected_delivery_date
+              ? new Date(order.expected_delivery_date).toLocaleDateString('en-GB', {
+                  weekday: 'short',
+                  day: 'numeric',
+                  month: 'short',
+                })
+              : 'TBC',
+          }}
+          linkedEntityType="purchase_order"
+          linkedEntityId={order.id}
+          onSent={() => {
+            // Optionally update PO status to 'sent'
+            if (order.status === 'draft' || order.status === 'approved') {
+              handleStatusChange('sent');
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -326,6 +326,9 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
           recipeId={batch.recipe_id}
           isEditable={isEditable}
           onUpdated={loadBatch}
+          plannedQuantity={batch.planned_quantity}
+          recipeYieldQuantity={batch.recipe?.yield_quantity}
+          recipeYieldUnit={batch.recipe?.yield_unit}
         />
       )}
 
@@ -371,6 +374,10 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
                 productionBatchId={batch.id}
                 companyId={batch.company_id}
                 productionDate={batch.production_date}
+                recipeOutputStockItem={batch.recipe?.output_stock_item}
+                plannedQuantity={batch.planned_quantity}
+                plannedUnit={batch.unit}
+                recipeShelfLifeDays={batch.recipe?.shelf_life_days}
                 onSaved={() => {
                   setShowOutputForm(false);
                   loadBatch();

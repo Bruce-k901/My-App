@@ -74,6 +74,7 @@
     "idb": "^8.0.3",
     "jspdf": "^4.2.0",
     "jspdf-autotable": "^5.0.7",
+    "libphonenumber-js": "^1.12.37",
     "lodash": "^4.17.21",
     "lru-cache": "^11.2.2",
     "next": "^16.1.1",

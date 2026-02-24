@@ -55,7 +55,6 @@ export const SEARCH_INDEX: SearchItem[] = [
 
   // ─── Stockly (Inventory & Stock Management) ─────────────
   { id: "stockly-dashboard", label: "Stockly Dashboard", href: "/dashboard/stockly", section: "Stockly", keywords: ["inventory", "stock", "overview"] },
-  { id: "stockly-stock-items", label: "Stock Items", href: "/dashboard/stockly/stock-items", section: "Stockly", keywords: ["inventory", "products", "items"] },
   { id: "stockly-storage", label: "Storage Areas", href: "/dashboard/stockly/storage-areas", section: "Stockly", keywords: ["warehouse", "shelves", "locations"] },
   { id: "stockly-counts", label: "Stock Counts", href: "/dashboard/stockly/stock-counts", section: "Stockly", keywords: ["stocktake", "inventory count", "audit"] },
   { id: "stockly-suppliers", label: "Suppliers", href: "/dashboard/stockly/suppliers", section: "Stockly", keywords: ["vendors", "providers"] },
@@ -142,6 +141,10 @@ export const SEARCH_INDEX: SearchItem[] = [
   { id: "assetly-contractors", label: "Contractors", href: "/dashboard/assets/contractors", section: "Assetly", keywords: ["vendors", "service providers", "engineers"] },
   { id: "assetly-callouts", label: "Callout Logs", href: "/dashboard/assets/callout-logs", section: "Assetly", keywords: ["repairs", "service calls", "maintenance"] },
   { id: "assetly-ppm", label: "PPM Schedule", href: "/dashboard/ppm", section: "Assetly", keywords: ["planned preventive maintenance", "servicing", "schedule"] },
+  { id: "assetly-rm-register", label: "Building Register", href: "/dashboard/assets/rm", section: "Assetly", keywords: ["building", "fabric", "roof", "plumbing", "electrical", "walls", "hvac", "fire systems", "repairs", "maintenance"] },
+  { id: "assetly-rm-work-orders", label: "Work Orders", href: "/dashboard/assets/rm/work-orders", section: "Assetly", keywords: ["work order", "repair", "maintenance", "reactive", "planned", "emergency", "SLA"] },
+  { id: "assetly-rm-inspections", label: "Building Inspections", href: "/dashboard/assets/rm/inspections", section: "Assetly", keywords: ["inspection", "schedule", "building", "survey", "audit"] },
+  { id: "assetly-rm-costs", label: "R&M Costs", href: "/dashboard/assets/rm/costs", section: "Assetly", keywords: ["costs", "spend", "budget", "maintenance", "invoice"] },
 
   // ─── Libraries ─────────────────────────────────────────
   { id: "lib-all", label: "All Libraries", href: "/dashboard/libraries", section: "Libraries", keywords: ["browse", "all"] },

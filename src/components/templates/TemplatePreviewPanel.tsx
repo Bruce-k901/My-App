@@ -27,16 +27,32 @@ const FREQUENCY_LABELS: Record<string, string> = {
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
-  food_safety: 'Food Safety', h_and_s: 'Health & Safety',
-  fire: 'Fire Safety', cleaning: 'Cleaning', compliance: 'Compliance',
+  food_safety: 'Food Safety', h_and_s: 'Health & Safety', health_and_safety: 'Health & Safety',
+  health_safety: 'Health & Safety',
+  fire: 'Fire Safety', fire_safety: 'Fire Safety',
+  cleaning: 'Cleaning', cleaning_premises: 'Cleaning & Premises',
+  handling_storage: 'Handling & Storage', welfare_first_aid: 'Welfare & First Aid',
+  personal_hygiene: 'Personal Hygiene', policy_organisation: 'Policy & Organisation',
+  risk_assessment: 'Risk Assessment',
+  compliance: 'Compliance', salsa: 'SALSA',
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
   food_safety: 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20',
   h_and_s: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
+  health_and_safety: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
+  health_safety: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
   fire: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20',
+  fire_safety: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20',
   cleaning: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20',
+  cleaning_premises: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20',
+  handling_storage: 'bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20',
+  welfare_first_aid: 'bg-pink-500/10 text-pink-700 dark:text-pink-400 border-pink-500/20',
+  personal_hygiene: 'bg-teal-500/10 text-teal-700 dark:text-teal-400 border-teal-500/20',
+  policy_organisation: 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border-indigo-500/20',
+  risk_assessment: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
   compliance: 'bg-checkly-dark/10 dark:bg-checkly/10 text-checkly-dark dark:text-checkly border-checkly-dark/20 dark:border-checkly/20',
+  salsa: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
 };
 
 interface TemplatePreviewPanelProps {
@@ -55,8 +71,9 @@ interface TemplatePreviewPanelProps {
   };
   customFields: CustomField[];
   loadingFields: boolean;
-  onEdit: () => void;
-  onQuickSchedule: () => void;
+  onEdit?: () => void;
+  onQuickSchedule?: () => void;
+  onCreateTask?: () => void;
 }
 
 function parseInstructions(raw: string | null | undefined) {
@@ -73,7 +90,7 @@ function parseInstructions(raw: string | null | undefined) {
   return sections.length > 0 ? sections : null;
 }
 
-export function TemplatePreviewPanel({ template, customFields, loadingFields, onEdit, onQuickSchedule }: TemplatePreviewPanelProps) {
+export function TemplatePreviewPanel({ template, customFields, loadingFields, onEdit, onQuickSchedule, onCreateTask }: TemplatePreviewPanelProps) {
   const [showInstructions, setShowInstructions] = useState(false);
 
   const evidenceTypes = template.evidence_types || [];
@@ -429,18 +446,30 @@ export function TemplatePreviewPanel({ template, customFields, loadingFields, on
 
       {/* Action buttons */}
       <div className="flex items-center gap-2 px-4 py-3 border-t border-theme bg-gray-50 dark:bg-white/[0.02]">
-        <button
-          onClick={onEdit}
-          className="px-3 py-1.5 text-xs font-medium rounded-lg border border-theme text-theme-primary hover:bg-theme-hover transition-colors"
-        >
-          Edit Template
-        </button>
-        <button
-          onClick={onQuickSchedule}
-          className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#D37E91] hover:bg-[#D37E91]/90 text-white transition-colors"
-        >
-          Quick Schedule
-        </button>
+        {onEdit && (
+          <button
+            onClick={onEdit}
+            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-theme text-theme-primary hover:bg-theme-hover transition-colors"
+          >
+            Edit Template
+          </button>
+        )}
+        {onQuickSchedule && (
+          <button
+            onClick={onQuickSchedule}
+            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#D37E91] hover:bg-[#D37E91]/90 text-white transition-colors"
+          >
+            Quick Schedule
+          </button>
+        )}
+        {onCreateTask && (
+          <button
+            onClick={onCreateTask}
+            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-checkly-dark dark:bg-checkly text-white dark:text-[#1C1916] hover:opacity-90 transition-colors"
+          >
+            Create Task
+          </button>
+        )}
       </div>
     </div>
   );

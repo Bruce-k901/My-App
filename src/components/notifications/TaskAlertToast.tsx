@@ -21,9 +21,19 @@ interface TaskAlertToastProps {
 const CATEGORY_LABELS: Record<string, string> = {
   food_safety: 'Food Safety',
   h_and_s: 'Health & Safety',
+  health_and_safety: 'Health & Safety',
+  health_safety: 'Health & Safety',
   fire: 'Fire Safety',
+  fire_safety: 'Fire Safety',
   cleaning: 'Cleaning',
+  cleaning_premises: 'Cleaning & Premises',
+  handling_storage: 'Handling & Storage',
+  welfare_first_aid: 'Welfare & First Aid',
+  personal_hygiene: 'Personal Hygiene',
+  policy_organisation: 'Policy & Organisation',
+  risk_assessment: 'Risk Assessment',
   compliance: 'Compliance',
+  salsa: 'SALSA',
 };
 
 const DAYPART_LABELS: Record<string, string> = {

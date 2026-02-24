@@ -66,6 +66,7 @@ export default function SupplierDetailPage() {
     address_postcode: '',
     ordering_method: '',
     whatsapp_number: '',
+    wa_opted_in: false,
     portal_url: '',
     rep_name: '',
     payment_terms_days: 30,
@@ -113,6 +114,7 @@ export default function SupplierDetailPage() {
         address_postcode: s.address?.postcode || '',
         ordering_method: s.ordering_method || '',
         whatsapp_number: s.ordering_config?.whatsapp_number || '',
+        wa_opted_in: s.ordering_config?.wa_opted_in || false,
         portal_url: s.ordering_config?.portal_url || '',
         rep_name: s.ordering_config?.rep_name || '',
         payment_terms_days: s.payment_terms_days || 30,
@@ -158,9 +160,10 @@ export default function SupplierDetailPage() {
         postcode: formData.address_postcode || undefined,
       };
 
-      const ordering_config: Record<string, string> = {};
+      const ordering_config: Record<string, string | boolean> = {};
       if (formData.ordering_method === 'whatsapp' && formData.whatsapp_number) {
         ordering_config.whatsapp_number = formData.whatsapp_number;
+        ordering_config.wa_opted_in = formData.wa_opted_in;
       }
       if (formData.ordering_method === 'portal' && formData.portal_url) {
         ordering_config.portal_url = formData.portal_url;
@@ -197,6 +200,22 @@ export default function SupplierDetailPage() {
 
       const result = await res.json();
       if (!result.success) throw new Error(result.error);
+
+      // Sync WhatsApp contact if ordering method is WhatsApp
+      if (formData.ordering_method === 'whatsapp' && formData.whatsapp_number) {
+        fetch('/api/whatsapp/contacts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone_number: formData.whatsapp_number,
+            display_name: formData.contact_name || formData.name,
+            contact_type: 'supplier',
+            opted_in: formData.wa_opted_in,
+            supplier_id: supplierId,
+          }),
+        }).catch(() => {}); // Fire-and-forget
+      }
+
       toast.success('Supplier updated');
       fetchSupplier();
     } catch (err: any) {
@@ -346,7 +365,21 @@ export default function SupplierDetailPage() {
                 </div>
 
                 {formData.ordering_method === 'whatsapp' && (
-                  <Input value={formData.whatsapp_number} onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })} placeholder="WhatsApp number" />
+                  <div className="space-y-3">
+                    <Input value={formData.whatsapp_number} onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })} placeholder="WhatsApp number (e.g. +44 7700 900000)" />
+                    <div className="flex items-center gap-2 p-3 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800/30 rounded-lg">
+                      <input
+                        type="checkbox"
+                        id="wa_opted_in"
+                        checked={formData.wa_opted_in}
+                        onChange={(e) => setFormData({ ...formData, wa_opted_in: e.target.checked })}
+                        className="w-4 h-4 rounded border-theme text-emerald-600 focus:ring-emerald-500"
+                      />
+                      <label htmlFor="wa_opted_in" className="text-sm text-theme-secondary">
+                        Supplier has given opt-in consent for WhatsApp messages
+                      </label>
+                    </div>
+                  </div>
                 )}
                 {formData.ordering_method === 'portal' && (
                   <Input value={formData.portal_url} onChange={(e) => setFormData({ ...formData, portal_url: e.target.value })} placeholder="Portal URL" />

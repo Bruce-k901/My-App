@@ -1,211 +1,147 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { TaskFromTemplateModal } from "@/components/templates/TaskFromTemplateModal";
-import { Search, CheckCircle2, Calendar, Edit2, ChevronDown, ChevronUp, Utensils, ShieldAlert, Flame, Sparkles, ClipboardCheck } from '@/components/ui/icons';
+import { MasterTemplateModal } from "@/components/templates/MasterTemplateModal";
+import { TemplatePreviewPanel } from "@/components/templates/TemplatePreviewPanel";
+import { Search, CheckCircle2, Clock, ChevronDown, ChevronRight } from '@/components/ui/icons';
 import { TaskTemplate } from "@/types/checklist-types";
 import { useAppContext } from "@/context/AppContext";
 import { COMPLIANCE_MODULE_SLUGS } from "@/data/compliance-templates";
 import { enrichTemplateWithDefinition } from "@/lib/templates/enrich-template";
 
 const FREQUENCY_LABELS: Record<string, string> = {
-  daily: 'Daily',
-  weekly: 'Weekly',
-  monthly: 'Monthly',
-  quarterly: 'Quarterly',
-  annually: 'Annually',
-  triggered: 'As Needed',
-  once: 'One Time'
+  daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly',
+  quarterly: 'Quarterly', annually: 'Annually',
+  'bi-annually': 'Bi-Annually', triggered: 'As Needed', once: 'One Time',
 };
 
-interface TemplateStatus {
-  templateId: string;
-  inUse: boolean; // Has active task instances
-  edited: boolean; // Has been modified from original
-}
+const AUDIT_CATEGORY_LABELS: Record<string, string> = {
+  food_safety: 'Food Safety',
+  fire_safety: 'Fire Safety',
+  health_and_safety: 'Health & Safety',
+  health_safety: 'Health & Safety',
+  h_and_s: 'Health & Safety',
+  cleaning: 'Cleaning',
+  cleaning_premises: 'Cleaning & Premises',
+  handling_storage: 'Handling & Storage',
+  welfare_first_aid: 'Welfare & First Aid',
+  personal_hygiene: 'Personal Hygiene',
+  policy_organisation: 'Policy & Organisation',
+  risk_assessment: 'Risk Assessment',
+  compliance: 'Compliance',
+  salsa: 'SALSA',
+  fire: 'Fire Safety',
+};
+
+const AUDIT_CATEGORY_COLORS: Record<string, string> = {
+  food_safety: 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20',
+  fire_safety: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20',
+  health_and_safety: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
+  health_safety: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
+  h_and_s: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
+  cleaning: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20',
+  cleaning_premises: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20',
+  handling_storage: 'bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20',
+  welfare_first_aid: 'bg-pink-500/10 text-pink-700 dark:text-pink-400 border-pink-500/20',
+  personal_hygiene: 'bg-teal-500/10 text-teal-700 dark:text-teal-400 border-teal-500/20',
+  policy_organisation: 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border-indigo-500/20',
+  risk_assessment: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
+  compliance: 'bg-checkly-dark/10 dark:bg-checkly/10 text-checkly-dark dark:text-checkly border-checkly-dark/20 dark:border-checkly/20',
+  salsa: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
+  fire: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20',
+};
 
 export default function ComplianceTemplatesPage() {
   const { companyId } = useAppContext();
   const [templates, setTemplates] = useState<TaskTemplate[]>([]);
-  const [filteredTemplates, setFilteredTemplates] = useState<TaskTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [templateStatuses, setTemplateStatuses] = useState<Map<string, TemplateStatus>>(new Map());
-  const [expandedTemplates, setExpandedTemplates] = useState<Set<string>>(new Set());
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [inUseTemplateIds, setInUseTemplateIds] = useState<Set<string>>(new Set());
+  const [expandedTemplateId, setExpandedTemplateId] = useState<string | null>(null);
+  const [previewFields, setPreviewFields] = useState<Record<string, any[]>>({});
+  const [loadingFields, setLoadingFields] = useState<Record<string, boolean>>({});
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+  const [editingTemplate, setEditingTemplate] = useState<TaskTemplate | null>(null);
   const hasAttemptedSeed = useRef(false);
   const shouldAutoSeed = process.env.NEXT_PUBLIC_ENABLE_COMPLIANCE_TEMPLATE_AUTOFILL === "true";
 
   async function seedGlobalTemplates() {
-    if (!shouldAutoSeed) {
-      return false;
-    }
-    if (hasAttemptedSeed.current) {
-      return false;
-    }
-
+    if (!shouldAutoSeed || hasAttemptedSeed.current) return false;
     hasAttemptedSeed.current = true;
-
     try {
       const response = await fetch("/api/compliance/import-templates", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ company_id: null }),
       });
-
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        console.error("Failed to seed compliance templates:", errorBody);
-        return false;
-      }
-
-      const result = await response.json().catch(() => ({}));
-      console.log("Compliance templates seeded:", result);
+      if (!response.ok) return false;
       return true;
-    } catch (error) {
-      console.error("Error seeding compliance templates:", error);
-      return false;
-    }
+    } catch { return false; }
   }
 
-  const handleUseTemplate = (templateId: string, e?: React.MouseEvent) => {
-    // Prevent triggering when clicking Edit or Expand buttons
-    if (e && (e.target as HTMLElement).closest('button')) {
-      return;
-    }
-    setSelectedTemplateId(templateId);
-  };
-
-  const handleTaskCreated = () => {
-    setSelectedTemplateId(null); // Close modal
-    // Optionally refresh templates to update "In Use" status
-    fetchTemplates();
-  };
-
-  useEffect(() => {
-    fetchTemplates();
-  }, []);
-
-  useEffect(() => {
-    let filtered = templates;
-
-    if (searchTerm) {
-      filtered = filtered.filter(t =>
-        t.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        t.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        t.audit_category?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    setFilteredTemplates(filtered);
-  }, [templates, searchTerm]);
+  useEffect(() => { fetchTemplates(); }, []);
 
   async function fetchTemplates() {
     try {
-      // Get current user's profile to get company_id
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.error('No user logged in');
-        setTemplates([]);
-        setLoading(false);
-        return;
-      }
+      if (!user) { setTemplates([]); setLoading(false); return; }
 
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('company_id')
-        .eq('id', user.id)
-        .single();
+      const { data: profile } = await supabase
+        .from('profiles').select('company_id').eq('id', user.id).single();
+      if (!profile?.company_id) { setTemplates([]); setLoading(false); return; }
 
-      if (profileError || !profile?.company_id) {
-        console.error('Error fetching profile or no company_id:', profileError);
-        setTemplates([]);
-        setLoading(false);
-        return;
-      }
-
-      // Fetch templates - include both global (company_id IS NULL) and company-specific
-      // For compliance templates, we want global templates (company_id IS NULL) that are library templates
       const { data, error } = await supabase
         .from('task_templates')
         .select('*')
-        .is('company_id', null) // Only global templates for compliance page
+        .is('company_id', null)
         .eq('is_template_library', true)
         .eq('is_active', true)
         .order('audit_category')
         .order('name');
 
-      if (error) {
-        console.error('Database error fetching compliance templates:', error);
-        setTemplates([]);
-        return;
-      }
-      
-      console.log('Fetched compliance templates:', data?.length || 0, 'templates');
-      if (data && data.length > 0) {
-        console.log('Template names:', data.map(t => t.name));
-      }
+      if (error) { setTemplates([]); return; }
 
       const requiredSlugs = new Set(COMPLIANCE_MODULE_SLUGS);
-      const presentSlugs = new Set((data || []).map(template => template.slug));
-      const missingSlugs = COMPLIANCE_MODULE_SLUGS.filter(slug => !presentSlugs.has(slug));
-
-      // Debug: Log all slugs to verify template is included
-      console.log('COMPLIANCE_MODULE_SLUGS:', COMPLIANCE_MODULE_SLUGS);
-      console.log('Required slugs set:', Array.from(requiredSlugs));
-      console.log('Present slugs from DB:', Array.from(presentSlugs));
-      console.log('Is competent_health_safety_person_appointment in requiredSlugs?', requiredSlugs.has('competent_health_safety_person_appointment'));
+      const presentSlugs = new Set((data || []).map(t => t.slug));
+      const missingSlugs = COMPLIANCE_MODULE_SLUGS.filter(s => !presentSlugs.has(s));
 
       if (shouldAutoSeed && missingSlugs.length > 0) {
-        console.log('Missing compliance templates detected:', missingSlugs);
         const seeded = await seedGlobalTemplates();
-        if (seeded) {
-          await fetchTemplates();
-          return;
-        }
+        if (seeded) { await fetchTemplates(); return; }
       }
 
-      // Filter out draft templates and exclude legacy uploads
-      const filteredData = (data || []).filter(template => {
-        const isDraft = template.name.toLowerCase().includes('(draft)') ||
-          template.description?.toLowerCase().includes('draft');
-        const isModuleTemplate = template.slug ? requiredSlugs.has(template.slug) : false;
-        if (template.slug === 'competent_health_safety_person_appointment') {
-          console.log('Found competent_health_safety_person_appointment template:', {
-            slug: template.slug,
-            isDraft,
-            isModuleTemplate,
-            inRequiredSlugs: requiredSlugs.has(template.slug)
-          });
-        }
-        return !isDraft && isModuleTemplate;
+      const filteredData = (data || []).filter(t => {
+        const isDraft = t.name.toLowerCase().includes('(draft)') || t.description?.toLowerCase().includes('draft');
+        return !isDraft && t.slug && requiredSlugs.has(t.slug);
       });
-      
-      console.log('Filtered compliance templates (after draft filter):', filteredData.length);
-      
-      // Deduplicate templates by name - keep the most recent one if duplicates exist
+
+      // Deduplicate by name
       const templatesMap = new Map<string, TaskTemplate>();
-      filteredData.forEach(template => {
-        const existing = templatesMap.get(template.name);
-        if (!existing || new Date(template.created_at) > new Date(existing.created_at)) {
-          templatesMap.set(template.name, template);
+      filteredData.forEach(t => {
+        const existing = templatesMap.get(t.name);
+        if (!existing || new Date(t.created_at) > new Date(existing.created_at)) {
+          templatesMap.set(t.name, t);
         }
       });
 
-      const deduplicatedTemplates = Array.from(templatesMap.values()).map((template) =>
-        enrichTemplateWithDefinition(template),
+      const deduped = Array.from(templatesMap.values()).map(t =>
+        enrichTemplateWithDefinition(t)
       ) as TaskTemplate[];
 
-      setTemplates(deduplicatedTemplates);
-      
-      // Fetch status information for templates (in use, edited)
-      if (deduplicatedTemplates.length > 0) {
-        await fetchTemplateStatuses(deduplicatedTemplates, profile.company_id);
-      } else {
-        setTemplateStatuses(new Map());
+      setTemplates(deduped);
+
+      // Fetch "in use" status
+      if (deduped.length > 0) {
+        const templateIds = deduped.map(t => t.id);
+        const { data: tasks } = await supabase
+          .from('checklist_tasks')
+          .select('template_id')
+          .in('template_id', templateIds)
+          .eq('company_id', profile.company_id);
+        setInUseTemplateIds(new Set(tasks?.map(t => t.template_id) || []));
       }
     } catch (error) {
       console.error('Failed to fetch compliance templates:', error);
@@ -214,315 +150,216 @@ export default function ComplianceTemplatesPage() {
     }
   }
 
-  // Fetch template statuses (in use, edited)
-  async function fetchTemplateStatuses(templateList: TaskTemplate[], companyId: string) {
+  // Lazy-load custom fields for preview
+  const loadCustomFields = useCallback(async (templateId: string) => {
+    if (previewFields[templateId]) return;
+    setLoadingFields(prev => ({ ...prev, [templateId]: true }));
     try {
-      if (templateList.length === 0) {
-        setTemplateStatuses(new Map());
+      const { data: fields } = await supabase
+        .from('template_fields').select('*').eq('template_id', templateId).order('field_order');
+      setPreviewFields(prev => ({ ...prev, [templateId]: fields || [] }));
+    } catch {
+      setPreviewFields(prev => ({ ...prev, [templateId]: [] }));
+    } finally {
+      setLoadingFields(prev => ({ ...prev, [templateId]: false }));
+    }
+  }, [previewFields]);
+
+  const handleRowClick = (templateId: string, e?: React.MouseEvent) => {
+    if (e && (e.target as HTMLElement).closest('button')) return;
+    const template = templates.find(t => t.id === templateId);
+    if (expandedTemplateId === templateId) {
+      setExpandedTemplateId(null);
+    } else {
+      setExpandedTemplateId(templateId);
+      if (template?.use_custom_fields) loadCustomFields(templateId);
+    }
+  };
+
+  const handleEditTemplate = async (templateId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('task_templates')
+        .select('*')
+        .eq('id', templateId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching template for edit:', error);
         return;
       }
 
-      const templateIds = templateList.map(t => t.id);
-      const statusMap = new Map<string, TemplateStatus>();
-      
-      // Check which templates are "in use" (have any task instances, not just active ones)
-      // This indicates the template has been deployed and is generating tasks
-      const { data: taskInstances } = await supabase
-        .from('checklist_tasks')
-        .select('template_id')
-        .in('template_id', templateIds)
-        .eq('company_id', companyId);
-      
-      // Build set of template IDs that are in use (have generated tasks)
-      const inUseTemplateIds = new Set(
-        taskInstances?.map(t => t.template_id) || []
-      );
-      
-      // Check which templates have fields that were added AFTER the template was created
-      // This indicates the template was customized by the user, not just imported
-      const { data: templateFields } = await supabase
-        .from('template_fields')
-        .select('template_id, created_at')
-        .in('template_id', templateIds);
-      
-      // Build a map of template IDs to their field creation times
-      const templateFieldTimes = new Map<string, Date[]>();
-      templateFields?.forEach(field => {
-        if (!templateFieldTimes.has(field.template_id)) {
-          templateFieldTimes.set(field.template_id, []);
-        }
-        templateFieldTimes.get(field.template_id)?.push(new Date(field.created_at));
-      });
-      
-      // For each template, determine status
-      templateList.forEach(template => {
-        const inUse = inUseTemplateIds.has(template.id);
-        
-        // Check if edited: 
-        // Only mark as "edited" if user clearly customized it AFTER import/creation
-        // This means checking for user activity significantly after the template was created
-        const templateCreatedAt = new Date(template.created_at);
-        const templateUpdatedAt = new Date(template.updated_at);
-        
-        // Check if any fields were created AFTER template creation
-        // Imported templates have fields created at the same time (within minutes)
-        // User-edited templates have fields created hours or days later
-        const fieldTimes = templateFieldTimes.get(template.id) || [];
-        const hasFieldsAddedLater = fieldTimes.some(fieldTime => {
-          const timeDiff = fieldTime.getTime() - templateCreatedAt.getTime();
-          const hoursDiff = timeDiff / (1000 * 60 * 60);
-          // Field created more than 6 hours after template creation
-          // This catches user edits while avoiding import artifacts
-          return hoursDiff > 6;
-        });
-        
-        // Check if template metadata was updated after creation
-        // Imported templates typically have created_at and updated_at very close (seconds/minutes)
-        // User-edited templates have updated_at significantly later
-        const updateTimeDiff = templateUpdatedAt.getTime() - templateCreatedAt.getTime();
-        const updateDaysDiff = updateTimeDiff / (1000 * 60 * 60 * 24);
-        const updateHoursDiff = updateTimeDiff / (1000 * 60 * 60);
-        
-        // Updated more than 1 day after creation, OR updated more than 2 hours after with fields
-        // This catches both recent edits (same day) and older edits
-        const wasUpdatedLater = updateDaysDiff > 1 || (updateHoursDiff > 2 && fieldTimes.length > 0);
-        
-        // Mark as edited if fields were added later OR template was updated later
-        // This prevents false positives from imports while catching user edits
-        const edited = hasFieldsAddedLater || wasUpdatedLater;
-        
-        statusMap.set(template.id, {
-          templateId: template.id,
-          inUse,
-          edited
-        });
-      });
-      
-      setTemplateStatuses(statusMap);
+      setEditingTemplate(data);
     } catch (error) {
-      console.error('Error fetching template statuses:', error);
+      console.error('Failed to fetch template:', error);
     }
-  }
-
-
-  // Helper function to get icon based on category/audit_category
-  const getTemplateIcon = (template: TaskTemplate) => {
-    const category = template.category?.toLowerCase() || template.audit_category?.toLowerCase() || '';
-    const name = template.name?.toLowerCase() || '';
-    
-    if (category.includes('food') || name.includes('food') || name.includes('temperature') || name.includes('fridge')) {
-      return Utensils;
-    }
-    if (category.includes('fire') || name.includes('fire') || name.includes('alarm') || name.includes('emergency light')) {
-      return Flame;
-    }
-    if (category.includes('health') || category.includes('safety') || name.includes('health') || name.includes('safety')) {
-      return ShieldAlert;
-    }
-    if (category.includes('clean') || name.includes('clean')) {
-      return Sparkles;
-    }
-    return ClipboardCheck;
   };
 
-  // Toggle expand/collapse for a template
-  const toggleExpand = (templateId: string) => {
-    setExpandedTemplates(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(templateId)) {
-        newSet.delete(templateId);
-      } else {
-        newSet.add(templateId);
-      }
-      return newSet;
-    });
-  };
-
-  // Handle edit button click - For compliance templates, editing opens the template in TaskFromTemplateModal
-  const handleEditTemplate = async (template: TaskTemplate, e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click
-    // For compliance templates, "edit" means create a task from it
-    setSelectedTemplateId(template.id);
-  };
-
-  // Group templates by audit_category
-  const groupedTemplates = filteredTemplates.reduce((acc, template) => {
-    const category = template.audit_category || 'Other';
-    if (!acc[category]) {
-      acc[category] = [];
+  // Filter templates
+  const filteredTemplates = templates.filter(t => {
+    if (categoryFilter !== 'all' && t.audit_category !== categoryFilter) return false;
+    if (searchTerm) {
+      const q = searchTerm.toLowerCase();
+      return (
+        t.name.toLowerCase().includes(q) ||
+        t.description?.toLowerCase().includes(q) ||
+        t.audit_category?.toLowerCase().includes(q) ||
+        t.slug?.toLowerCase().includes(q) ||
+        t.evidence_types?.some(e => e.toLowerCase().includes(q))
+      );
     }
-    acc[category].push(template);
+    return true;
+  });
+
+  // Group by audit_category
+  const groupedTemplates = filteredTemplates.reduce((acc, t) => {
+    const cat = t.audit_category || 'Other';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(t);
     return acc;
   }, {} as Record<string, TaskTemplate[]>);
 
+  // Unique categories for filter pills
+  const categories = Array.from(new Set(templates.map(t => t.audit_category).filter(Boolean)));
+
   return (
-    <div className="p-4 sm:p-6 md:p-8">
-      <div className="mb-6 sm:mb-8">
+    <div className="bg-theme-surface-elevated text-theme-primary border border-theme rounded-xl p-4 sm:p-6 lg:p-8">
+      {/* Header */}
+      <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-theme-primary mb-2">Compliance Templates</h1>
-        <p className="text-theme-tertiary text-sm sm:text-base">Pre-built EHO compliance task templates for food safety, health & safety, and regulatory requirements</p>
+        <p className="text-theme-tertiary text-sm sm:text-base">Pre-built EHO compliance task templates</p>
       </div>
 
-      {/* Search */}
-      <div className="mb-4 sm:mb-6">
+      {/* Search + Category Filters */}
+      <div className="mb-4 space-y-3">
         <div className="relative max-w-md w-full">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-theme-tertiary" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-theme-tertiary" />
           <input
             type="text"
-            placeholder="Search compliance templates..."
+            placeholder="Search templates..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg text-theme-primary placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-module-fg/[0.50] text-sm sm:text-base"
+            className="w-full pl-10 pr-4 py-2 bg-theme-surface border border-theme rounded-lg text-theme-primary placeholder-neutral-500 focus:outline-none focus:border-[#D37E91] text-sm"
           />
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          <button
+            onClick={() => setCategoryFilter('all')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
+              categoryFilter === 'all'
+                ? 'bg-[#D37E91]/10 text-[#D37E91] border-[#D37E91]/30'
+                : 'bg-theme-surface text-theme-tertiary border-theme hover:border-theme-hover'
+            }`}
+          >
+            All ({templates.length})
+          </button>
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setCategoryFilter(cat!)}
+              className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
+                categoryFilter === cat
+                  ? 'bg-[#D37E91]/10 text-[#D37E91] border-[#D37E91]/30'
+                  : 'bg-theme-surface text-theme-tertiary border-theme hover:border-theme-hover'
+              }`}
+            >
+              {AUDIT_CATEGORY_LABELS[cat!] || cat} ({templates.filter(t => t.audit_category === cat).length})
+            </button>
+          ))}
         </div>
       </div>
 
+      {/* Loading */}
+      {loading && (
+        <div className="mt-8 text-center">
+          <p className="text-theme-tertiary">Loading compliance templates...</p>
+        </div>
+      )}
+
       {/* Templates List */}
-      {loading ? (
-        <div className="text-theme-primary text-center py-8">Loading compliance templates...</div>
-      ) : filteredTemplates.length > 0 ? (
-        <div className="space-y-6 sm:space-y-8">
+      {!loading && filteredTemplates.length > 0 && (
+        <div className="space-y-6">
           {Object.entries(groupedTemplates).map(([category, categoryTemplates]) => (
             <div key={category}>
-              <h2 className="text-lg sm:text-xl font-semibold text-theme-primary mb-3 sm:mb-4">{category}</h2>
-              <div className="space-y-3 sm:space-y-4">
+              <h2 className="text-sm font-semibold text-theme-secondary mb-2 uppercase tracking-wider">
+                {AUDIT_CATEGORY_LABELS[category] || category}
+              </h2>
+              <div className="divide-y divide-theme">
                 {categoryTemplates.map((template) => {
-                  const Icon = getTemplateIcon(template);
-                  const isExpanded = expandedTemplates.has(template.id);
-                  const status = templateStatuses.get(template.id);
-                  const isInUse = status?.inUse || false;
-                  
+                  const isExpanded = expandedTemplateId === template.id;
+                  const isInUse = inUseTemplateIds.has(template.id);
+
                   return (
-                    <div
-                      key={template.id}
-                      onClick={(e) => handleUseTemplate(template.id, e)}
-                      className="bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden hover:border-module-fg/[0.30] transition-colors cursor-pointer"
-                    >
-                      {/* Collapsed Card View */}
-                      <div className="p-3 sm:p-4">
-                        <div className="flex items-start gap-3 sm:gap-4">
-                          {/* Icon */}
-                          <div className="flex-shrink-0 p-2 bg-white/[0.08] rounded-lg">
-                            <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-theme-primary" />
-                          </div>
-                          
-                          {/* Content */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                  <h3 className="text-sm sm:text-base font-semibold text-theme-primary break-words">{template.name}</h3>
-                                  {isInUse && (
-                                    <span className="px-2 py-0.5 text-xs font-medium bg-green-500/20 text-green-400 rounded border border-green-500/30 flex items-center gap-1 flex-shrink-0">
-                                      <CheckCircle2 className="w-3 h-3" />
-                                      In Use
-                                    </span>
-                                  )}
-                                  {template.is_critical && (
-                                    <span className="px-2 py-0.5 text-xs font-medium bg-red-500/20 text-red-400 rounded border border-red-500/30 flex-shrink-0">
-                                      Critical
-                                    </span>
-                                  )}
-                                </div>
-                                {template.description && (
-                                  <p className="text-sm text-theme-tertiary line-clamp-1">
-                                    {template.description}
-                                  </p>
-                                )}
-                              </div>
-                              
-                              {/* Actions */}
-                              <div className="flex items-center gap-2 flex-shrink-0">
-                                <button
-                                  onClick={(e) => handleEditTemplate(template, e)}
-                                  className="p-2 hover:bg-white/[0.08] rounded-lg transition-colors"
-                                  title="Use template to create task"
-                                >
-                                  <Edit2 className="w-4 h-4 text-theme-tertiary hover:text-white" />
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleExpand(template.id);
-                                  }}
-                                  className="p-2 hover:bg-white/[0.08] rounded-lg transition-colors"
-                                  title={isExpanded ? "Collapse" : "Expand"}
-                                >
-                                  {isExpanded ? (
-                                    <ChevronUp className="w-4 h-4 text-theme-tertiary hover:text-white" />
-                                  ) : (
-                                    <ChevronDown className="w-4 h-4 text-theme-tertiary hover:text-white" />
-                                  )}
-                                </button>
-                              </div>
-                            </div>
+                    <div key={template.id}>
+                      <div
+                        onClick={(e) => handleRowClick(template.id, e)}
+                        className="flex items-center gap-4 py-3 px-2 -mx-2 rounded-lg hover:bg-theme-hover transition-colors cursor-pointer group"
+                      >
+                        {/* Chevron */}
+                        <div className="shrink-0 w-4">
+                          {isExpanded
+                            ? <ChevronDown className="w-3.5 h-3.5 text-theme-tertiary" />
+                            : <ChevronRight className="w-3.5 h-3.5 text-theme-tertiary" />
+                          }
+                        </div>
+
+                        {/* Name + badges */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-theme-primary truncate">{template.name}</span>
+                            {isInUse && (
+                              <span className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
+                                <CheckCircle2 className="w-2.5 h-2.5" />
+                                In Use
+                              </span>
+                            )}
+                            {template.is_critical && (
+                              <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
+                                Critical
+                              </span>
+                            )}
                           </div>
                         </div>
 
-                        {/* Expanded Content */}
-                        {isExpanded && (
-                          <div className="mt-4 pt-4 border-t border-white/[0.06] space-y-3">
-                            {/* Description (full) */}
-                            {template.description && (
-                              <div>
-                                <p className="text-xs text-theme-tertiary mb-1">Description</p>
-                                <p className="text-sm text-theme-secondary">{template.description}</p>
-                              </div>
-                            )}
+                        {/* Frequency */}
+                        <div className="hidden sm:flex items-center gap-1 text-xs text-theme-tertiary w-24 shrink-0">
+                          <Clock className="h-3 w-3" />
+                          <span>{FREQUENCY_LABELS[template.frequency] || template.frequency}</span>
+                        </div>
 
-                            {/* Frequency */}
-                            {template.frequency && (
-                              <div className="flex items-center gap-2 text-sm text-theme-tertiary">
-                                <Calendar className="w-4 h-4" />
-                                <span className="text-xs text-theme-tertiary mr-2">Frequency:</span>
-                                <span>{FREQUENCY_LABELS[template.frequency] || template.frequency}</span>
-                              </div>
-                            )}
-
-                            {/* Category */}
-                            {template.audit_category && (
-                              <div>
-                                <p className="text-xs text-theme-tertiary mb-1">Category</p>
-                                <p className="text-sm text-theme-secondary">{template.audit_category}</p>
-                              </div>
-                            )}
-
-                            {/* Compliance Standard */}
-                            {template.compliance_standard && (
-                              <div>
-                                <p className="text-xs text-theme-tertiary mb-1">Regulation</p>
-                                <p className="text-sm text-theme-secondary">{template.compliance_standard}</p>
-                              </div>
-                            )}
-
-                            {/* Evidence Types */}
-                            {template.evidence_types && template.evidence_types.length > 0 && (
-                              <div>
-                                <p className="text-xs text-theme-tertiary mb-2">Required Evidence</p>
-                                <div className="flex flex-wrap gap-2">
-                                  {template.evidence_types.map((evidence, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="px-2 py-1 text-xs bg-module-fg/[0.15] text-module-fg rounded border border-module-fg/[0.20]"
-                                    >
-                                      {evidence}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Edited Status */}
-                            {status?.edited && (
-                              <div className="flex items-center gap-2 text-sm">
-                                <span className="px-2 py-1 text-xs font-medium bg-blue-500/20 text-blue-400 rounded border border-blue-500/30 flex items-center gap-1">
-                                  <Edit2 className="w-3 h-3" />
-                                  Edited
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                        {/* Category */}
+                        <div className="hidden md:block w-28 shrink-0">
+                          <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border ${AUDIT_CATEGORY_COLORS[template.audit_category || ''] || 'bg-theme-muted text-theme-tertiary border-theme'}`}>
+                            {AUDIT_CATEGORY_LABELS[template.audit_category || ''] || template.audit_category || 'Other'}
+                          </span>
+                        </div>
                       </div>
+
+                      {/* Preview panel */}
+                      {isExpanded && (
+                        <TemplatePreviewPanel
+                          template={{
+                            id: template.id,
+                            name: template.name,
+                            description: template.description,
+                            task_description: template.task_description,
+                            category: template.category || template.audit_category || '',
+                            frequency: template.frequency,
+                            dayparts: template.dayparts,
+                            evidence_types: template.evidence_types,
+                            instructions: template.instructions,
+                            recurrence_pattern: template.recurrence_pattern,
+                            use_custom_fields: template.use_custom_fields,
+                          }}
+                          customFields={previewFields[template.id] || []}
+                          loadingFields={loadingFields[template.id] || false}
+                          onEdit={() => handleEditTemplate(template.id)}
+                          onCreateTask={() => {
+                            setExpandedTemplateId(null);
+                            setSelectedTemplateId(template.id);
+                          }}
+                        />
+                      )}
                     </div>
                   );
                 })}
@@ -530,33 +367,43 @@ export default function ComplianceTemplatesPage() {
             </div>
           ))}
         </div>
-      ) : null}
+      )}
 
-      {/* No templates found message - only show if searching and no results */}
-      {!loading && searchTerm && filteredTemplates.length === 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-8 text-center">
-          <p className="text-theme-tertiary">
-            No templates found matching your search "{searchTerm}".
+      {/* No results */}
+      {!loading && filteredTemplates.length === 0 && (
+        <div className="mt-8 text-center py-12">
+          <p className="text-theme-tertiary mb-2">
+            {searchTerm || categoryFilter !== 'all'
+              ? `No templates found matching your filters.`
+              : 'No compliance templates available.'
+            }
           </p>
         </div>
       )}
 
-      {/* Template count */}
-      {!loading && filteredTemplates.length > 0 && (
-        <div className="mt-8 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-          <p className="text-sm text-blue-200">
-            <strong>Total Templates:</strong> {filteredTemplates.length} compliance templates available
-          </p>
-        </div>
+      {/* MasterTemplateModal for full editing */}
+      {editingTemplate && (
+        <MasterTemplateModal
+          isOpen={true}
+          onClose={() => setEditingTemplate(null)}
+          onSave={() => {
+            setEditingTemplate(null);
+            fetchTemplates();
+          }}
+          editingTemplate={editingTemplate}
+        />
       )}
 
-      {/* TaskFromTemplateModal - Opens when a template is clicked */}
+      {/* TaskFromTemplateModal */}
       {selectedTemplateId && (
         <TaskFromTemplateModal
           isOpen={!!selectedTemplateId}
           onClose={() => setSelectedTemplateId(null)}
           templateId={selectedTemplateId}
-          onSave={handleTaskCreated}
+          onSave={() => {
+            setSelectedTemplateId(null);
+            fetchTemplates();
+          }}
         />
       )}
     </div>

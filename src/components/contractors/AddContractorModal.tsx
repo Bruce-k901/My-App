@@ -47,6 +47,7 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
     type: "",
     status: "active",
     is_active: true,
+    wa_opted_in: false,
     contract_start: "",
     contract_expiry: "",
     contract_file: "",
@@ -103,6 +104,7 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
         type: contractor.type || "",
         status: contractor.status || "active",
         is_active: contractor.is_active !== undefined ? contractor.is_active : true,
+        wa_opted_in: contractor.wa_opted_in || false,
         contract_start: contractor.contract_start ? (typeof contractor.contract_start === 'string' ? contractor.contract_start.split('T')[0] : contractor.contract_start) : "",
         contract_expiry: contractor.contract_expiry ? (typeof contractor.contract_expiry === 'string' ? contractor.contract_expiry.split('T')[0] : contractor.contract_expiry) : "",
         contract_file: contractor.contract_file || "",
@@ -132,6 +134,7 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
         type: "",
         status: "active",
         is_active: true,
+        wa_opted_in: false,
         contract_start: "",
         contract_expiry: "",
         contract_file: "",
@@ -158,6 +161,7 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
         type: "",
         status: "active",
         is_active: true,
+        wa_opted_in: false,
         contract_start: "",
         contract_expiry: "",
         contract_file: "",
@@ -600,6 +604,20 @@ export default function AddContractorModal({ isOpen, onClose, onSuccess, contrac
             console.warn("⚠️ type mismatch:", { sent: sentType, saved: savedType });
           }
         }
+      }
+
+      // Sync WhatsApp contact if phone provided and opted in
+      if (form.phone && form.wa_opted_in) {
+        fetch('/api/whatsapp/contacts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone_number: form.phone,
+            display_name: form.contact_name || form.name,
+            contact_type: 'contractor',
+            opted_in: true,
+          }),
+        }).catch(() => {}); // Fire-and-forget
       }
 
       onSuccess();

@@ -157,7 +157,6 @@ export async function fetchAllReportData(
     // 16: Contractor callouts (pest control) — table may not exist yet
     Promise.resolve({ data: [], error: null }),
     // 17: Site-specific user access (to filter profiles by site)
-    // 17: Site-specific user access (to filter profiles by site)
     supabase.from("user_site_access").select("profile_id, auth_user_id").eq(
       "site_id",
       siteId,
@@ -168,6 +167,35 @@ export async function fetchAllReportData(
         "profile_id, full_name, app_role, course_code, course_name, expiry_date, compliance_status",
       ).eq("company_id", companyId)
       : Promise.resolve({ data: [], error: null }),
+    // 19: Pest control visits (from pest_control_visits table)
+    supabase.from("pest_control_visits").select(
+      "id, visit_date, visit_type, technician_name, evidence_found, evidence_type, pest_types, treatments_applied, chemicals_used, total_cost, proofing_required, proofing_details, service_report_file, contractor:contractors(name)",
+    ).eq("site_id", siteId)
+      .gte("visit_date", startDate)
+      .lte("visit_date", endDate)
+      .order("visit_date", { ascending: false }),
+    // 20: Pest sightings
+    supabase.from("pest_sightings").select(
+      "id, sighting_date, pest_type, evidence_type, location_area, severity, resolved, reported_by_name",
+    ).eq("site_id", siteId)
+      .gte("sighting_date", startDate)
+      .lte("sighting_date", endDate)
+      .order("sighting_date", { ascending: false }),
+    // 21: Pest control devices (active)
+    supabase.from("pest_control_devices").select(
+      "device_number, device_type, location_area, status, activity_count_ytd, last_activity_date",
+    ).eq("site_id", siteId)
+      .eq("is_active", true)
+      .order("device_number"),
+    // 22: Pest control contract (active)
+    companyId
+      ? supabase.from("pest_control_contracts").select(
+        "contractor:contractors(name), contract_start_date, contract_end_date, routine_visits_per_year, bpca_certified, basis_registered, insurance_expiry_date, coverage_includes",
+      ).eq("company_id", companyId)
+        .eq("is_active", true)
+        .limit(1)
+        .maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
   ]);
 
   // Post-process temperature logs into TemperatureRecord format
@@ -220,5 +248,38 @@ export async function fetchAllReportData(
     staffProfiles,
     trainingMatrix: safeData(results[18], "matrix") || [],
     contractorCallouts: safeData(results[16], "callouts") || [],
+    // Pest control management data
+    pestControlVisits: ((safeData(results[19], "pest_visits") as any[]) || []).map((v: any) => ({
+      id: v.id,
+      visit_date: v.visit_date,
+      visit_type: v.visit_type,
+      contractor_name: v.contractor?.name || null,
+      technician_name: v.technician_name,
+      evidence_found: v.evidence_found,
+      evidence_type: v.evidence_type,
+      pest_types: v.pest_types,
+      treatments_applied: v.treatments_applied,
+      chemicals_used: v.chemicals_used,
+      total_cost: v.total_cost,
+      proofing_required: v.proofing_required,
+      proofing_details: v.proofing_details,
+      service_report_file: v.service_report_file,
+    })),
+    pestSightings: (safeData(results[20], "pest_sightings") || []) as EHOReportData["pestSightings"],
+    pestControlDevices: (safeData(results[21], "pest_devices") || []) as EHOReportData["pestControlDevices"],
+    pestControlContract: (() => {
+      const raw = safeData(results[22], "pest_contract") as any;
+      if (!raw) return null;
+      return {
+        contractor_name: raw.contractor?.name || null,
+        contract_start_date: raw.contract_start_date,
+        contract_end_date: raw.contract_end_date,
+        routine_visits_per_year: raw.routine_visits_per_year,
+        bpca_certified: raw.bpca_certified,
+        basis_registered: raw.basis_registered,
+        insurance_expiry_date: raw.insurance_expiry_date,
+        coverage_includes: raw.coverage_includes,
+      };
+    })(),
   };
 }

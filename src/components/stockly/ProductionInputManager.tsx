@@ -1,12 +1,12 @@
 // @salsa - SALSA Compliance: Manage input batches for production batch (with rework support)
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ProductionBatchInput } from '@/lib/types/stockly';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import BatchSelector from '@/components/stockly/BatchSelector';
-import { Trash2, Plus, AlertTriangle, RefreshCw } from '@/components/ui/icons';
+import { Trash2, Plus, AlertTriangle, RefreshCw, CheckCircle, ChefHat, Package } from '@/components/ui/icons';
 import { allergenKeyToLabel } from '@/lib/stockly/allergens';
 
 interface ProductionInputManagerProps {
@@ -17,13 +17,27 @@ interface ProductionInputManagerProps {
   recipeId: string | null;
   isEditable: boolean;
   onUpdated: () => void;
+  plannedQuantity?: number | null;
+  recipeYieldQuantity?: number | null;
+  recipeYieldUnit?: string | null;
 }
 
-interface RecipeIngredient {
-  stock_item_id: string;
-  stock_item_name: string;
+interface ResolvedRecipeIngredient {
+  ingredient_id: string;
+  ingredient_name: string;
   quantity: number;
   unit: string;
+  stock_item_id: string | null;
+  stock_item_name: string | null;
+  stock_unit: string | null;
+  is_sub_recipe: boolean;
+  sub_recipe_name: string | null;
+  allergens: string[] | null;
+}
+
+interface RowState {
+  selectedBatchId: string | null;
+  quantity: string;
 }
 
 interface ReworkBatch {
@@ -45,22 +59,49 @@ export default function ProductionInputManager({
   recipeId,
   isEditable,
   onUpdated,
+  plannedQuantity,
+  recipeYieldQuantity,
+  recipeYieldUnit,
 }: ProductionInputManagerProps) {
-  const [showAddForm, setShowAddForm] = useState(false);
+  // Scale factor: if batch planned_quantity differs from recipe yield, scale ingredients
+  const scaleFactor = (plannedQuantity && recipeYieldQuantity && recipeYieldQuantity > 0)
+    ? plannedQuantity / recipeYieldQuantity
+    : 1;
+  // Manual add form state (for extras / non-recipe items)
+  const [showManualAdd, setShowManualAdd] = useState(false);
   const [inputType, setInputType] = useState<'stock' | 'rework'>('stock');
   const [selectedStockItemId, setSelectedStockItemId] = useState<string | null>(null);
   const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
   const [quantity, setQuantity] = useState('');
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
-  const [recipeIngredients, setRecipeIngredients] = useState<RecipeIngredient[]>([]);
   const [stockItems, setStockItems] = useState<{ id: string; name: string; stock_unit: string | null }[]>([]);
   const [reworkBatches, setReworkBatches] = useState<ReworkBatch[]>([]);
   const [selectedReworkBatch, setSelectedReworkBatch] = useState<ReworkBatch | null>(null);
 
-  // Load stock items and recipe ingredients
+  // Recipe-driven state
+  const [resolvedIngredients, setResolvedIngredients] = useState<ResolvedRecipeIngredient[]>([]);
+  const [rowStates, setRowStates] = useState<Map<string, RowState>>(new Map());
+  const [addingIngredient, setAddingIngredient] = useState<string | null>(null);
+  const [addingAll, setAddingAll] = useState(false);
+  const [loadingIngredients, setLoadingIngredients] = useState(false);
+
+  // Check if a recipe ingredient is already added as an input
+  const isAlreadyAdded = useCallback((ingredient: ResolvedRecipeIngredient): boolean => {
+    if (!ingredient.stock_item_id) return false;
+    return inputs.some(input => input.stock_item_id === ingredient.stock_item_id);
+  }, [inputs]);
+
+  // Get the existing input for an ingredient (if already added)
+  const getExistingInput = useCallback((ingredient: ResolvedRecipeIngredient): ProductionBatchInput | undefined => {
+    if (!ingredient.stock_item_id) return undefined;
+    return inputs.find(input => input.stock_item_id === ingredient.stock_item_id);
+  }, [inputs]);
+
+  // Load stock items and resolve recipe ingredients
   useEffect(() => {
     async function load() {
+      // Load all stock items (for manual add)
       const { data: items } = await supabase
         .from('stock_items')
         .select('id, name, stock_unit')
@@ -69,34 +110,85 @@ export default function ProductionInputManager({
         .order('name');
       setStockItems(items || []);
 
+      // Load and resolve recipe ingredients
       if (recipeId) {
-        const { data: ingredients } = await supabase
-          .from('recipe_ingredients')
-          .select('stock_item_id, stock_items(name), quantity, unit')
-          .eq('recipe_id', recipeId);
+        setLoadingIngredients(true);
+        try {
+          const { data: ingredients } = await supabase
+            .from('recipe_ingredients')
+            .select('id, ingredient_id, ingredient_name, quantity, unit_abbreviation, sub_recipe_id, sub_recipe_name, allergens')
+            .eq('recipe_id', recipeId)
+            .order('sort_order');
 
-        if (ingredients) {
-          setRecipeIngredients(
-            ingredients.map((ing: any) => ({
-              stock_item_id: ing.stock_item_id,
-              stock_item_name: ing.stock_items?.name || 'Unknown',
-              quantity: ing.quantity,
-              unit: ing.unit,
-            }))
-          );
+          if (ingredients && ingredients.length > 0) {
+            // Get ingredient IDs that are regular ingredients (not sub-recipes)
+            const ingredientIds = ingredients
+              .filter((i: any) => i.ingredient_id && !i.sub_recipe_id)
+              .map((i: any) => i.ingredient_id);
+
+            // Find matching stock items via library_item_id
+            let stockItemMap = new Map<string, { id: string; name: string; stock_unit: string | null }>();
+            if (ingredientIds.length > 0) {
+              const { data: matchedItems } = await supabase
+                .from('stock_items')
+                .select('id, library_item_id, name, stock_unit')
+                .eq('company_id', companyId)
+                .eq('library_type', 'ingredients_library')
+                .in('library_item_id', ingredientIds)
+                .eq('is_active', true);
+
+              if (matchedItems) {
+                stockItemMap = new Map(
+                  matchedItems.map((si: any) => [si.library_item_id, { id: si.id, name: si.name, stock_unit: si.stock_unit }])
+                );
+              }
+            }
+
+            // Build resolved ingredients
+            const resolved: ResolvedRecipeIngredient[] = ingredients.map((ing: any) => {
+              const stockItem = ing.ingredient_id ? stockItemMap.get(ing.ingredient_id) : null;
+              return {
+                ingredient_id: ing.ingredient_id || ing.sub_recipe_id,
+                ingredient_name: ing.ingredient_name || ing.sub_recipe_name || 'Unknown',
+                quantity: ing.quantity,
+                unit: ing.unit_abbreviation || '',
+                stock_item_id: stockItem?.id || null,
+                stock_item_name: stockItem?.name || null,
+                stock_unit: stockItem?.stock_unit || null,
+                is_sub_recipe: !!ing.sub_recipe_id,
+                sub_recipe_name: ing.sub_recipe_name || null,
+                allergens: ing.allergens || null,
+              };
+            });
+
+            setResolvedIngredients(resolved);
+
+            // Initialise row states with scaled recipe quantities
+            const initialRowStates = new Map<string, RowState>();
+            resolved.forEach(ing => {
+              if (!ing.is_sub_recipe && ing.stock_item_id) {
+                const scaledQty = Math.round(ing.quantity * scaleFactor * 1000) / 1000;
+                initialRowStates.set(ing.ingredient_id, {
+                  selectedBatchId: null,
+                  quantity: String(scaledQty),
+                });
+              }
+            });
+            setRowStates(initialRowStates);
+          }
+        } finally {
+          setLoadingIngredients(false);
         }
       }
     }
     load();
-  }, [companyId, recipeId]);
+  }, [companyId, recipeId, scaleFactor]);
 
   // Load rework batches when rework tab is selected
   useEffect(() => {
     if (inputType !== 'rework') return;
 
     async function loadReworkBatches() {
-      // Rework batches are stock_batches that came from production (production_batch_id IS NOT NULL)
-      // and still have remaining quantity
       const { data } = await supabase
         .from('stock_batches')
         .select('id, batch_code, stock_item_id, quantity_remaining, unit, production_batch_id, allergens, stock_items(name)')
@@ -104,7 +196,7 @@ export default function ProductionInputManager({
         .eq('status', 'active')
         .not('production_batch_id', 'is', null)
         .gt('quantity_remaining', 0)
-        .neq('production_batch_id', productionBatchId) // Don't allow self-reference
+        .neq('production_batch_id', productionBatchId)
         .order('created_at', { ascending: false });
 
       setReworkBatches(
@@ -123,7 +215,70 @@ export default function ProductionInputManager({
     loadReworkBatches();
   }, [inputType, companyId, productionBatchId]);
 
-  const handleAddInput = async () => {
+  // Update a row's state
+  const updateRowState = (ingredientId: string, updates: Partial<RowState>) => {
+    setRowStates(prev => {
+      const next = new Map(prev);
+      const current = next.get(ingredientId) || { selectedBatchId: null, quantity: '' };
+      next.set(ingredientId, { ...current, ...updates });
+      return next;
+    });
+  };
+
+  // Add a single recipe ingredient as input
+  const handleAddRecipeIngredient = async (ingredient: ResolvedRecipeIngredient) => {
+    const row = rowStates.get(ingredient.ingredient_id);
+    if (!row?.selectedBatchId || !row?.quantity || !ingredient.stock_item_id) return;
+
+    setAddingIngredient(ingredient.ingredient_id);
+    try {
+      const res = await fetch(`/api/stockly/production-batches/${productionBatchId}/inputs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          stock_batch_id: row.selectedBatchId,
+          stock_item_id: ingredient.stock_item_id,
+          actual_quantity: parseFloat(row.quantity),
+          unit: ingredient.stock_unit || ingredient.unit || null,
+        }),
+      });
+      if (res.ok) onUpdated();
+    } finally {
+      setAddingIngredient(null);
+    }
+  };
+
+  // Bulk add all remaining recipe ingredients
+  const handleAddAllRemaining = async () => {
+    setAddingAll(true);
+    try {
+      for (const ingredient of resolvedIngredients) {
+        if (isAlreadyAdded(ingredient)) continue;
+        if (!ingredient.stock_item_id || ingredient.is_sub_recipe) continue;
+
+        const row = rowStates.get(ingredient.ingredient_id);
+        if (!row?.selectedBatchId || !row?.quantity) continue;
+
+        const res = await fetch(`/api/stockly/production-batches/${productionBatchId}/inputs`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            stock_batch_id: row.selectedBatchId,
+            stock_item_id: ingredient.stock_item_id,
+            actual_quantity: parseFloat(row.quantity),
+            unit: ingredient.stock_unit || ingredient.unit || null,
+          }),
+        });
+        if (!res.ok) break; // Stop on first error
+      }
+      onUpdated();
+    } finally {
+      setAddingAll(false);
+    }
+  };
+
+  // Manual add handlers (for extras / non-recipe items)
+  const handleManualAddInput = async () => {
     if (inputType === 'rework') {
       if (!selectedReworkBatch || !quantity) return;
       setSaving(true);
@@ -141,7 +296,7 @@ export default function ProductionInputManager({
           }),
         });
         if (res.ok) {
-          resetForm();
+          resetManualForm();
           onUpdated();
         }
       } finally {
@@ -162,7 +317,7 @@ export default function ProductionInputManager({
           }),
         });
         if (res.ok) {
-          resetForm();
+          resetManualForm();
           onUpdated();
         }
       } finally {
@@ -171,8 +326,8 @@ export default function ProductionInputManager({
     }
   };
 
-  const resetForm = () => {
-    setShowAddForm(false);
+  const resetManualForm = () => {
+    setShowManualAdd(false);
     setSelectedBatchId(null);
     setSelectedStockItemId(null);
     setSelectedReworkBatch(null);
@@ -193,10 +348,22 @@ export default function ProductionInputManager({
     }
   };
 
+  // Count pending ingredients (not yet added, have stock item, not sub-recipe)
+  const pendingIngredients = resolvedIngredients.filter(
+    ing => !ing.is_sub_recipe && ing.stock_item_id && !isAlreadyAdded(ing)
+  );
+  const addedCount = resolvedIngredients.filter(
+    ing => !ing.is_sub_recipe && ing.stock_item_id && isAlreadyAdded(ing)
+  ).length;
+  const readyToAddCount = pendingIngredients.filter(ing => {
+    const row = rowStates.get(ing.ingredient_id);
+    return row?.selectedBatchId && row?.quantity;
+  }).length;
+
   return (
     <div className="space-y-4">
-      {/* Existing inputs */}
-      {inputs.length > 0 ? (
+      {/* Existing inputs list */}
+      {inputs.length > 0 && (
         <div className="space-y-2">
           {inputs.map(input => (
             <div
@@ -243,36 +410,188 @@ export default function ProductionInputManager({
             </div>
           ))}
         </div>
-      ) : (
-        <p className="text-sm text-theme-tertiary text-center py-4">No input batches recorded yet.</p>
       )}
 
-      {/* Suggested ingredients from recipe */}
-      {recipeIngredients.length > 0 && inputs.length === 0 && isEditable && (
-        <div className="p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <p className="text-xs font-medium text-blue-700 dark:text-blue-400 mb-2">Recipe Ingredients (suggested)</p>
-          <div className="space-y-1">
-            {recipeIngredients.map(ing => (
-              <div key={ing.stock_item_id} className="text-xs text-blue-600 dark:text-blue-300">
-                {ing.stock_item_name}: {ing.quantity} {ing.unit}
-              </div>
-            ))}
+      {/* Recipe ingredients section */}
+      {recipeId && resolvedIngredients.length > 0 && isEditable && (
+        <div className="border border-theme rounded-lg overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3 bg-theme-surface-elevated border-b border-theme">
+            <div className="flex items-center gap-2 flex-wrap">
+              <ChefHat className="w-4 h-4 text-stockly-dark dark:text-stockly" />
+              <span className="text-sm font-medium text-theme-primary">Recipe Ingredients</span>
+              <span className="text-xs text-theme-tertiary">
+                ({addedCount} of {addedCount + pendingIngredients.length} added)
+              </span>
+              {scaleFactor !== 1 && (
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                  {scaleFactor > 1 ? `${scaleFactor.toFixed(2)}x` : `${scaleFactor.toFixed(2)}x`} recipe
+                </span>
+              )}
+            </div>
+            {pendingIngredients.length > 0 && readyToAddCount > 0 && (
+              <button
+                onClick={handleAddAllRemaining}
+                disabled={addingAll || addingIngredient !== null}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-stockly-dark dark:bg-stockly text-white dark:text-gray-900 rounded-lg text-xs font-medium disabled:opacity-50 transition-colors"
+              >
+                {addingAll ? (
+                  'Adding...'
+                ) : (
+                  <>
+                    <Plus className="w-3.5 h-3.5" />
+                    Add Remaining ({readyToAddCount})
+                  </>
+                )}
+              </button>
+            )}
           </div>
+
+          {/* Loading skeleton */}
+          {loadingIngredients && (
+            <div className="p-4 space-y-3">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="h-16 bg-theme-surface-elevated rounded-lg animate-pulse" />
+              ))}
+            </div>
+          )}
+
+          {/* Ingredient rows */}
+          {!loadingIngredients && (
+            <div className="divide-y divide-theme">
+              {resolvedIngredients.map(ingredient => {
+                const added = isAlreadyAdded(ingredient);
+                const existingInput = getExistingInput(ingredient);
+                const row = rowStates.get(ingredient.ingredient_id);
+
+                // Sub-recipe row
+                if (ingredient.is_sub_recipe) {
+                  return (
+                    <div key={ingredient.ingredient_id} className="px-4 py-3 bg-theme-surface">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-theme-secondary">{ingredient.sub_recipe_name || ingredient.ingredient_name}</span>
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                          Sub-recipe
+                        </span>
+                        <span className="text-xs text-theme-tertiary ml-auto">{ingredient.quantity} {ingredient.unit}</span>
+                      </div>
+                      <p className="text-xs text-theme-tertiary mt-1">Track inputs separately when making this prep item</p>
+                    </div>
+                  );
+                }
+
+                // No stock item mapped
+                if (!ingredient.stock_item_id) {
+                  return (
+                    <div key={ingredient.ingredient_id} className="px-4 py-3 bg-theme-surface">
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                        <span className="text-sm text-theme-secondary">{ingredient.ingredient_name}</span>
+                        <span className="text-xs text-theme-tertiary ml-auto">{ingredient.quantity} {ingredient.unit}</span>
+                      </div>
+                      <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                        Not set up as a stock item — add it in Stock Items to track batches
+                      </p>
+                    </div>
+                  );
+                }
+
+                // Already added
+                if (added && existingInput) {
+                  return (
+                    <div key={ingredient.ingredient_id} className="px-4 py-3 bg-emerald-50/50 dark:bg-emerald-900/5">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                        <span className="text-sm font-medium text-theme-primary">{ingredient.ingredient_name}</span>
+                        <span className="text-xs font-mono text-theme-tertiary">
+                          {existingInput.stock_batch?.batch_code || ''}
+                        </span>
+                        <span className="text-xs text-theme-tertiary ml-auto">
+                          {existingInput.actual_quantity || existingInput.planned_quantity} {existingInput.unit || ingredient.unit}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                }
+
+                // Pending — interactive row
+                return (
+                  <div key={ingredient.ingredient_id} className="px-4 py-3 bg-theme-surface space-y-2">
+                    {/* Ingredient header */}
+                    <div className="flex items-center gap-2">
+                      <Package className="w-4 h-4 text-stockly-dark dark:text-stockly flex-shrink-0" />
+                      <span className="text-sm font-medium text-theme-primary">{ingredient.ingredient_name}</span>
+                      {ingredient.allergens && ingredient.allergens.length > 0 && (
+                        <div className="flex gap-1">
+                          {ingredient.allergens.map((a: string) => (
+                            <span key={a} className="px-1 py-0.5 rounded text-[10px] bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                              {allergenKeyToLabel(a)}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <span className="text-xs text-theme-tertiary ml-auto">
+                        Need: {Math.round(ingredient.quantity * scaleFactor * 1000) / 1000} {ingredient.unit}
+                        {scaleFactor !== 1 && (
+                          <span className="text-theme-tertiary/60 ml-1">(recipe: {ingredient.quantity})</span>
+                        )}
+                      </span>
+                    </div>
+
+                    {/* Batch selector + quantity + add button */}
+                    <div className="flex items-end gap-2">
+                      <div className="flex-1 min-w-0">
+                        <BatchSelector
+                          stockItemId={ingredient.stock_item_id}
+                          selectedBatchId={row?.selectedBatchId || null}
+                          onSelect={(batchId) => updateRowState(ingredient.ingredient_id, { selectedBatchId: batchId })}
+                        />
+                      </div>
+                      <div className="w-24 flex-shrink-0">
+                        <label className="block text-xs font-medium text-theme-secondary mb-1">Qty</label>
+                        <input
+                          type="number"
+                          step="0.001"
+                          value={row?.quantity || ''}
+                          onChange={(e) => updateRowState(ingredient.ingredient_id, { quantity: e.target.value })}
+                          className="w-full px-2 py-2 bg-theme-surface border border-theme rounded-lg text-sm text-theme-primary"
+                          placeholder="0"
+                        />
+                      </div>
+                      <button
+                        onClick={() => handleAddRecipeIngredient(ingredient)}
+                        disabled={addingIngredient === ingredient.ingredient_id || addingAll || !row?.selectedBatchId || !row?.quantity}
+                        className="flex-shrink-0 px-3 py-2 bg-stockly-dark dark:bg-stockly text-white dark:text-gray-900 rounded-lg text-xs font-medium disabled:opacity-50 transition-colors"
+                      >
+                        {addingIngredient === ingredient.ingredient_id ? '...' : 'Add'}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
-      {/* Add input form */}
-      {isEditable && !showAddForm && (
+      {/* Empty state when no inputs and no recipe */}
+      {inputs.length === 0 && (!recipeId || resolvedIngredients.length === 0) && !loadingIngredients && (
+        <p className="text-sm text-theme-tertiary text-center py-4">No input batches recorded yet.</p>
+      )}
+
+      {/* Manual add button (for extras / non-recipe items) */}
+      {isEditable && !showManualAdd && (
         <button
-          onClick={() => setShowAddForm(true)}
+          onClick={() => setShowManualAdd(true)}
           className="flex items-center gap-2 w-full px-3 py-2 border border-dashed border-theme rounded-lg text-sm text-theme-tertiary hover:text-theme-secondary hover:border-stockly-dark/30 dark:hover:border-stockly/30 transition-colors"
         >
           <Plus className="w-4 h-4" />
-          Add Input Batch
+          {recipeId ? 'Add Extra Input' : 'Add Input Batch'}
         </button>
       )}
 
-      {showAddForm && (
+      {/* Manual add form */}
+      {showManualAdd && (
         <div className="p-4 bg-theme-surface-elevated border border-theme rounded-lg space-y-3">
           {/* Input type toggle */}
           <div className="flex bg-theme-surface rounded-lg p-1 border border-theme">
@@ -381,14 +700,14 @@ export default function ProductionInputManager({
 
           <div className="flex gap-2">
             <button
-              onClick={handleAddInput}
+              onClick={handleManualAddInput}
               disabled={saving || !quantity || (inputType === 'stock' ? !selectedBatchId : !selectedReworkBatch)}
               className="px-4 py-2 bg-stockly-dark dark:bg-stockly text-white dark:text-gray-900 rounded-lg text-sm font-medium disabled:opacity-50"
             >
               {saving ? 'Adding...' : 'Add'}
             </button>
             <button
-              onClick={resetForm}
+              onClick={resetManualForm}
               className="px-4 py-2 border border-theme rounded-lg text-sm text-theme-secondary hover:bg-theme-surface-elevated"
             >
               Cancel

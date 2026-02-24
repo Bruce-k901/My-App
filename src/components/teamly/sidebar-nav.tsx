@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAppContext } from '@/context/AppContext';
 import {
@@ -280,6 +280,7 @@ const APP_NAME = 'Teamly';
 
 export function TeamlySidebar() {
   const { profile } = useAppContext();
+  const router = useRouter();
   const { isCollapsed, showExpanded, isHoverExpanded, displayWidth, canPin, togglePin, handleMouseEnter, handleMouseLeave } = useSidebarMode();
   const userRole = profile?.app_role?.toLowerCase() || 'staff';
 
@@ -331,26 +332,27 @@ export function TeamlySidebar() {
       {/* Profile + Pin */}
       <div className="border-t border-module-fg/[0.18]">
         {showExpanded ? (
-          <div className="p-4 pb-0">
-            <Link
-              href={`/dashboard/people/${profile?.id}`}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#888] dark:text-theme-tertiary hover:text-[#555] dark:hover:text-theme-secondary hover:bg-teamly-dark/[0.04] dark:hover:bg-teamly/5 transition-colors"
+          <div className="p-4 flex items-center gap-1">
+            <button
+              onClick={() => router.push(`/dashboard/people/${profile?.id}`)}
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#888] dark:text-theme-tertiary hover:text-[#555] dark:hover:text-theme-secondary hover:bg-teamly-dark/[0.04] dark:hover:bg-teamly/5 transition-colors flex-1 min-w-0 text-left"
             >
-              <UserCircle className="w-5 h-5" />
+              <UserCircle className="w-5 h-5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="truncate text-[#1a1a1a] dark:text-white">{profile?.full_name || 'My Profile'}</p>
                 <p className="truncate text-xs text-theme-tertiary">{profile?.position_title || 'Employee'}</p>
               </div>
-            </Link>
+            </button>
+            {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
           </div>
         ) : (
-          <div className="flex justify-center py-2">
-            <Link href={`/dashboard/people/${profile?.id}`} title={profile?.full_name || 'My Profile'} className="text-theme-secondary hover:text-theme-primary transition-colors">
+          <div className="flex flex-col items-center gap-1 py-2">
+            <button onClick={() => router.push(`/dashboard/people/${profile?.id}`)} title={profile?.full_name || 'My Profile'} className="text-theme-secondary hover:text-theme-primary transition-colors">
               <UserCircle className="w-5 h-5" />
-            </Link>
+            </button>
+            {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
           </div>
         )}
-        {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
       </div>
     </aside>
   );

@@ -9,14 +9,14 @@ interface SidebarPinProps {
 }
 
 /**
- * Small pin/toggle button rendered at the bottom of module sidebars.
- * Collapsed: shows expand icon. Expanded: shows collapse icon.
+ * Small pin/toggle button rendered inline next to the profile section in module sidebars.
+ * Collapsed sidebar: shows expand icon. Expanded sidebar: shows collapse icon.
  */
 export function SidebarPin({ isCollapsed, onToggle, accentColor }: SidebarPinProps) {
   return (
     <button
-      onClick={onToggle}
-      className="flex items-center justify-center w-full py-2 text-theme-tertiary hover:text-theme-secondary dark:hover:text-theme-secondary transition-colors group"
+      onClick={(e) => { e.stopPropagation(); onToggle(); }}
+      className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg text-theme-tertiary hover:text-theme-secondary dark:hover:text-theme-secondary transition-colors group"
       title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
     >

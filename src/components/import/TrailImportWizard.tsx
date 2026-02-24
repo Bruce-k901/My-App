@@ -3,6 +3,9 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
+import { History, Clock, ArrowRight, ChevronDown, ChevronRight, Trash2 } from '@/components/ui/icons';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { UploadStep } from './steps/UploadStep';
 import { ReviewMapStep } from './steps/ReviewMapStep';
 import { SiteAssignmentStep } from './steps/SiteAssignmentStep';
@@ -57,6 +60,10 @@ export function TrailImportWizard() {
   const [importError, setImportError] = useState<string | null>(null);
   const [existingNames, setExistingNames] = useState<Set<string>>(new Set());
   const [complianceTemplates, setComplianceTemplates] = useState<Array<{id: string, slug: string, name: string}>>([]);
+  const [previousImports, setPreviousImports] = useState<Array<{ date: string; templates: Array<{ id: string; name: string; category: string; frequency: string }> }>>([]);
+  const [expandedBatch, setExpandedBatch] = useState<string | null>(null);
+  const [deletingImport, setDeletingImport] = useState(false);
+  const router = useRouter();
 
   // Persist wizard state to sessionStorage on changes
   useEffect(() => {
@@ -94,6 +101,35 @@ export function TrailImportWizard() {
         .order('name');
       if (library) {
         setComplianceTemplates(library);
+      }
+
+      // Previous imports — templates still tagged trail_import
+      const { data: imported } = await supabase
+        .from('task_templates')
+        .select('id, name, category, frequency, created_at')
+        .eq('company_id', companyId)
+        .contains('tags', ['trail_import'])
+        .order('created_at', { ascending: false });
+
+      if (imported && imported.length > 0) {
+        // Group by import batch (templates created within 2 minutes of each other)
+        const batches: Array<{ date: string; templates: Array<{ id: string; name: string; category: string; frequency: string }> }> = [];
+        let currentBatch: typeof batches[0] | null = null;
+
+        for (const t of imported) {
+          const ts = new Date(t.created_at).getTime();
+          const batchTs = currentBatch ? new Date(currentBatch.date).getTime() : 0;
+
+          if (!currentBatch || Math.abs(ts - batchTs) > 2 * 60 * 1000) {
+            currentBatch = { date: t.created_at, templates: [] };
+            batches.push(currentBatch);
+          }
+          currentBatch.templates.push({ id: t.id, name: t.name, category: t.category, frequency: t.frequency });
+        }
+
+        setPreviousImports(batches);
+      } else {
+        setPreviousImports([]);
       }
     })();
   }, [companyId]);
@@ -165,6 +201,47 @@ export function TrailImportWizard() {
       setIsImporting(false);
     }
   }, [companyId, selectedSites, includedTemplates]);
+
+  const handleDeleteBatch = useCallback(async (batchDate: string) => {
+    const batch = previousImports.find(b => b.date === batchDate);
+    if (!batch || !companyId) return;
+
+    const confirmed = window.confirm(`Delete ${batch.templates.length} imported template(s) from this batch? This cannot be undone.`);
+    if (!confirmed) return;
+
+    setDeletingImport(true);
+    try {
+      const templateIds = batch.templates.map(t => t.id);
+
+      // Delete associated data first
+      await supabase.from('template_site_assignments').delete().in('template_id', templateIds);
+      await supabase.from('site_checklists').delete().in('template_id', templateIds);
+
+      const { error } = await supabase.from('task_templates').delete().in('id', templateIds);
+
+      if (error) {
+        toast.error('Failed to delete: ' + error.message);
+      } else {
+        setPreviousImports(prev => prev.filter(b => b.date !== batchDate));
+        toast.success(`Deleted ${batch.templates.length} template(s)`);
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to delete import batch');
+    } finally {
+      setDeletingImport(false);
+    }
+  }, [previousImports, companyId]);
+
+  const formatCategory = (cat: string) => {
+    const labels: Record<string, string> = {
+      food_safety: 'Food Safety',
+      h_and_s: 'Health & Safety',
+      fire: 'Fire Safety',
+      cleaning: 'Cleaning',
+      compliance: 'Compliance',
+    };
+    return labels[cat] || cat;
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -256,6 +333,108 @@ export function TrailImportWizard() {
           />
         )}
       </div>
+
+      {/* Previous Imports */}
+      {previousImports.length > 0 && step === 'upload' && (
+        <div className="mt-8">
+          <div className="flex items-center gap-2 mb-3">
+            <History className="w-4 h-4 text-theme-tertiary" />
+            <h3 className="text-sm font-medium text-theme-primary">Previous Imports</h3>
+            <span className="text-xs text-theme-tertiary">
+              ({previousImports.reduce((sum, b) => sum + b.templates.length, 0)} pending review)
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            {previousImports.map(batch => {
+              const isExpanded = expandedBatch === batch.date;
+              const categories = [...new Set(batch.templates.map(t => t.category))];
+
+              return (
+                <div
+                  key={batch.date}
+                  className="bg-theme-surface-elevated border border-theme rounded-lg overflow-hidden"
+                >
+                  {/* Batch header */}
+                  <button
+                    type="button"
+                    onClick={() => setExpandedBatch(isExpanded ? null : batch.date)}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-theme-hover transition-colors text-left"
+                  >
+                    {isExpanded ? (
+                      <ChevronDown className="w-4 h-4 text-theme-tertiary shrink-0" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-theme-tertiary shrink-0" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-theme-primary">
+                          {batch.templates.length} template{batch.templates.length !== 1 ? 's' : ''}
+                        </span>
+                        <span className="text-xs text-theme-tertiary flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {new Date(batch.date).toLocaleDateString('en-GB', {
+                            day: 'numeric', month: 'short', year: 'numeric',
+                            hour: '2-digit', minute: '2-digit',
+                          })}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        {categories.map(cat => (
+                          <span
+                            key={cat}
+                            className="px-1.5 py-0.5 text-[10px] font-medium rounded bg-theme-muted text-theme-secondary"
+                          >
+                            {formatCategory(cat)}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
+                      Needs Review
+                    </span>
+                  </button>
+
+                  {/* Expanded template list */}
+                  {isExpanded && (
+                    <div className="border-t border-theme">
+                      <div className="max-h-64 overflow-y-auto divide-y divide-theme/50">
+                        {batch.templates.map(t => (
+                          <div key={t.id} className="flex items-center gap-3 px-4 py-2 text-sm">
+                            <span className="flex-1 text-theme-secondary truncate">{t.name}</span>
+                            <span className="text-[10px] text-theme-tertiary shrink-0">{t.frequency}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Batch actions */}
+                      <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-theme bg-theme-surface/50">
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteBatch(batch.date)}
+                          disabled={deletingImport}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          Delete Batch
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => router.push('/dashboard/my_templates')}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-checkly-dark dark:bg-checkly text-white dark:text-[#1C1916] hover:opacity-90 transition-colors"
+                        >
+                          Review Templates
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

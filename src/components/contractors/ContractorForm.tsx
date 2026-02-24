@@ -275,6 +275,22 @@ export default function ContractorForm({ form, setForm, isEditing = false }: Pro
           </div>
         </div>
 
+        {/* WhatsApp opt-in */}
+        {form.phone && (
+          <div className="flex items-center gap-2 p-3 bg-emerald-900/10 border border-emerald-800/30 rounded-lg">
+            <input
+              type="checkbox"
+              id="wa_opted_in"
+              checked={form.wa_opted_in || false}
+              onChange={(e) => setForm({ ...form, wa_opted_in: e.target.checked })}
+              className="w-4 h-4 rounded border-gray-600 text-emerald-600 focus:ring-emerald-500"
+            />
+            <label htmlFor="wa_opted_in" className="text-sm text-theme-tertiary">
+              WhatsApp opt-in — contractor consents to receive callout messages via WhatsApp
+            </label>
+          </div>
+        )}
+
         <div>
           <label className="block text-sm font-medium text-theme-tertiary">Email</label>
           <input

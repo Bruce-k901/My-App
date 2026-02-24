@@ -68,7 +68,6 @@ const navItems: NavItem[] = [
   {
     type: 'parent',
     label: 'Stock Items',
-    href: '/dashboard/stockly/stock-items',
     icon: Package,
     children: [
       { label: 'Ingredients', href: '/dashboard/stockly/libraries/ingredients', icon: Package },
@@ -275,12 +274,11 @@ export function StocklyNavItem({ item }: { item: NavItem }) {
       ? isOpen 
       : (isOpen || childActive || isParentActive);
 
-    const handleClick = (e: React.MouseEvent) => {
-      e.preventDefault();
+    const handleClick = () => {
       const newIsOpen = !isOpen;
       setManuallyToggled(true);
       setIsOpen(newIsOpen);
-      // Only navigate if expanding (not collapsing)
+      // Only navigate if expanding AND parent has its own page
       if (newIsOpen && item.href) {
         router.push(item.href);
       }
@@ -289,28 +287,51 @@ export function StocklyNavItem({ item }: { item: NavItem }) {
     const IconComponent = item.icon;
     // Only highlight parent if it's the exact page AND no child is active
     const shouldHighlightParent = isParentActive && !childActive;
-    
+
+    const parentEl = item.href ? (
+      <Link
+        href={item.href}
+        onClick={(e) => { e.preventDefault(); handleClick(); }}
+        className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors w-full ${
+          shouldHighlightParent
+            ? 'bg-stockly-dark/[0.08] dark:bg-stockly/10 text-stockly-dark dark:text-stockly font-medium'
+            : 'text-[#888] dark:text-theme-tertiary hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-theme-secondary'
+        }`}
+      >
+        <IconComponent className="w-5 h-5 flex-shrink-0" suppressHydrationWarning />
+        <span className="flex-1 text-left" suppressHydrationWarning>{item.label}</span>
+        <span className="text-[#999] dark:text-theme-tertiary">
+          {shouldExpand ? (
+            <ChevronDown className="w-4 h-4" suppressHydrationWarning />
+          ) : (
+            <ChevronRight className="w-4 h-4" suppressHydrationWarning />
+          )}
+        </span>
+      </Link>
+    ) : (
+      <button
+        onClick={handleClick}
+        className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors w-full ${
+          childActive
+            ? 'text-stockly-dark dark:text-stockly font-medium'
+            : 'text-[#888] dark:text-theme-tertiary hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-theme-secondary'
+        }`}
+      >
+        <IconComponent className="w-5 h-5 flex-shrink-0" suppressHydrationWarning />
+        <span className="flex-1 text-left" suppressHydrationWarning>{item.label}</span>
+        <span className="text-[#999] dark:text-theme-tertiary">
+          {shouldExpand ? (
+            <ChevronDown className="w-4 h-4" suppressHydrationWarning />
+          ) : (
+            <ChevronRight className="w-4 h-4" suppressHydrationWarning />
+          )}
+        </span>
+      </button>
+    );
+
     return (
       <div>
-        <Link
-          href={item.href!}
-          onClick={handleClick}
-          className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
-            shouldHighlightParent
-              ? 'bg-stockly-dark/[0.08] dark:bg-stockly/10 text-stockly-dark dark:text-stockly font-medium'
-              : 'text-[#888] dark:text-theme-tertiary hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-theme-secondary'
-          }`}
-        >
-          <IconComponent className="w-5 h-5 flex-shrink-0" suppressHydrationWarning />
-          <span className="flex-1" suppressHydrationWarning>{item.label}</span>
-          <span className="text-[#999] dark:text-theme-tertiary">
-            {shouldExpand ? (
-              <ChevronDown className="w-4 h-4" suppressHydrationWarning />
-            ) : (
-              <ChevronRight className="w-4 h-4" suppressHydrationWarning />
-            )}
-          </span>
-        </Link>
+        {parentEl}
 
         {shouldExpand && (
           <div className="ml-8 mt-1 space-y-1">
@@ -347,6 +368,7 @@ const APP_NAME = 'Stockly';
 
 export function StocklySidebar() {
   const { profile } = useAppContext();
+  const router = useRouter();
   const { isCollapsed, showExpanded, isHoverExpanded, displayWidth, canPin, togglePin, handleMouseEnter, handleMouseLeave } = useSidebarMode();
 
   return (
@@ -389,23 +411,24 @@ export function StocklySidebar() {
       {/* Profile + Pin */}
       <div className="border-t border-module-fg/[0.18]">
         {showExpanded ? (
-          <div className="p-4 pb-0">
-            <Link href={`/dashboard/people/${profile?.id}`} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#888] dark:text-theme-tertiary hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-theme-secondary transition-colors">
-              <UserCircle className="w-5 h-5" />
+          <div className="p-4 flex items-center gap-1">
+            <button onClick={() => router.push(`/dashboard/people/${profile?.id}`)} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#888] dark:text-theme-tertiary hover:bg-stockly-dark/[0.04] dark:hover:bg-stockly/5 hover:text-[#555] dark:hover:text-theme-secondary transition-colors flex-1 min-w-0 text-left">
+              <UserCircle className="w-5 h-5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="truncate text-[#1a1a1a] dark:text-white">{profile?.full_name || 'My Profile'}</p>
                 <p className="truncate text-xs text-[#999] dark:text-theme-tertiary">{profile?.position_title || 'Employee'}</p>
               </div>
-            </Link>
+            </button>
+            {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
           </div>
         ) : (
-          <div className="flex justify-center py-2">
-            <Link href={`/dashboard/people/${profile?.id}`} title={profile?.full_name || 'My Profile'} className="text-theme-secondary hover:text-theme-primary transition-colors">
+          <div className="flex flex-col items-center gap-1 py-2">
+            <button onClick={() => router.push(`/dashboard/people/${profile?.id}`)} title={profile?.full_name || 'My Profile'} className="text-theme-secondary hover:text-theme-primary transition-colors">
               <UserCircle className="w-5 h-5" />
-            </Link>
+            </button>
+            {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
           </div>
         )}
-        {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
       </div>
     </aside>
   );

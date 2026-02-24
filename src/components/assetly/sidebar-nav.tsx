@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAppContext } from '@/context/AppContext';
 import {
@@ -12,6 +12,10 @@ import {
   Layers,
   UserCircle,
   Wrench,
+  Building2,
+  ClipboardList,
+  DollarSign,
+  Hammer,
 } from '@/components/ui/icons';
 import { useSidebarMode } from '@/hooks/useSidebarMode';
 import { SidebarPin } from '@/components/layout/SidebarPin';
@@ -30,8 +34,8 @@ interface NavItem {
 const navItems: NavItem[] = [
   {
     type: 'link',
-    label: 'Assets',
-    href: '/dashboard/assets',
+    label: 'Overview',
+    href: '/dashboard/assets/overview',
     icon: LayoutDashboard,
   },
   {
@@ -75,6 +79,35 @@ const navItems: NavItem[] = [
     href: '/dashboard/ppm',
     icon: Calendar,
   },
+  {
+    type: 'section',
+    label: 'REPAIRS & MAINTENANCE',
+    icon: Hammer,
+  },
+  {
+    type: 'link',
+    label: 'Building Register',
+    href: '/dashboard/assets/rm',
+    icon: Building2,
+  },
+  {
+    type: 'link',
+    label: 'Work Orders',
+    href: '/dashboard/assets/rm/work-orders',
+    icon: ClipboardList,
+  },
+  {
+    type: 'link',
+    label: 'Inspections',
+    href: '/dashboard/assets/rm/inspections',
+    icon: Calendar,
+  },
+  {
+    type: 'link',
+    label: 'R&M Costs',
+    href: '/dashboard/assets/rm/costs',
+    icon: DollarSign,
+  },
 ];
 
 export function AssetlyNavItem({ item }: { item: NavItem }) {
@@ -94,7 +127,7 @@ export function AssetlyNavItem({ item }: { item: NavItem }) {
 
   if (item.type === 'link') {
     const isActive = item.href === '/dashboard/assets'
-      ? pathname === item.href || pathname === '/dashboard/assets'
+      ? pathname === '/dashboard/assets'
       : pathname === item.href || pathname.startsWith(item.href + '/');
 
     const IconComponent = item.icon;
@@ -120,6 +153,7 @@ const APP_NAME = 'Assetly';
 
 export function AssetlySidebar() {
   const { profile } = useAppContext();
+  const router = useRouter();
   const { isCollapsed, showExpanded, isHoverExpanded, displayWidth, canPin, togglePin, handleMouseEnter, handleMouseLeave } = useSidebarMode();
 
   return (
@@ -167,26 +201,27 @@ export function AssetlySidebar() {
       {/* Profile + Pin */}
       <div className="border-t border-module-fg/[0.18]">
         {showExpanded ? (
-          <div className="p-4 pb-0">
-            <Link
-              href={`/dashboard/people/${profile?.id}`}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#888] dark:text-theme-tertiary hover:bg-assetly-dark/[0.04] dark:hover:bg-assetly/5 hover:text-[#555] dark:hover:text-theme-secondary transition-colors"
+          <div className="p-4 flex items-center gap-1">
+            <button
+              onClick={() => router.push(`/dashboard/people/${profile?.id}`)}
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#888] dark:text-theme-tertiary hover:bg-assetly-dark/[0.04] dark:hover:bg-assetly/5 hover:text-[#555] dark:hover:text-theme-secondary transition-colors flex-1 min-w-0 text-left"
             >
-              <UserCircle className="w-5 h-5" />
+              <UserCircle className="w-5 h-5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="truncate text-[#1a1a1a] dark:text-white">{profile?.full_name || 'My Profile'}</p>
                 <p className="truncate text-xs text-[#999] dark:text-theme-tertiary">{profile?.position_title || 'Employee'}</p>
               </div>
-            </Link>
+            </button>
+            {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
           </div>
         ) : (
-          <div className="flex justify-center py-2">
-            <Link href={`/dashboard/people/${profile?.id}`} title={profile?.full_name || 'My Profile'} className="text-[#888] dark:text-theme-tertiary hover:text-[#555] dark:hover:text-theme-secondary transition-colors">
+          <div className="flex flex-col items-center gap-1 py-2">
+            <button onClick={() => router.push(`/dashboard/people/${profile?.id}`)} title={profile?.full_name || 'My Profile'} className="text-[#888] dark:text-theme-tertiary hover:text-[#555] dark:hover:text-theme-secondary transition-colors">
               <UserCircle className="w-5 h-5" />
-            </Link>
+            </button>
+            {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
           </div>
         )}
-        {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
       </div>
     </aside>
   );

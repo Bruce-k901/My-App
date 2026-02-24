@@ -82,11 +82,11 @@ async function upsertEquipmentPositions(
             company_id: companyId,
             current_asset_id: assetId,
             nickname: nickname,
-            position_type: 'temperature_monitored'
+            position_type: 'other'
           });
 
         if (insertError) {
-          console.error('❌ [POSITIONS] Insert error:', insertError);
+          console.error('❌ [POSITIONS] Insert error:', insertError.message, insertError.code, insertError);
         } else {
           console.log(`✅ [POSITIONS] Created position ${nickname} (${assetId})`);
         }
@@ -1778,12 +1778,12 @@ export function TaskFromTemplateModal({
           await upsertEquipmentPositions(effectiveSiteId, companyId, equipmentConfig);
         }
 
-        // Add scheduling for weekly/monthly/annual
+        // Add scheduling for weekly/monthly/quarterly/bi-annually/annual
         if (frequency === 'weekly' && formData.days_of_week) {
           siteChecklistData.days_of_week = formData.days_of_week;
         } else if (frequency === 'monthly' && formData.date_of_month) {
           siteChecklistData.date_of_month = formData.date_of_month;
-        } else if (frequency === 'annually' && formData.anniversary_date) {
+        } else if (['quarterly', 'bi-annually', 'annually'].includes(frequency) && formData.anniversary_date) {
           siteChecklistData.anniversary_date = formData.anniversary_date;
         }
         
@@ -2274,6 +2274,8 @@ export function TaskFromTemplateModal({
                     <option value="daily">Daily</option>
                     <option value="weekly">Weekly</option>
                     <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="bi-annually">Bi-Annually (Every 6 months)</option>
                     <option value="annually">Annually</option>
                     <option value="triggered">On Demand / Ad-hoc</option>
                   </select>
@@ -2290,6 +2292,24 @@ export function TaskFromTemplateModal({
  className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
                   />
                 </div>
+                )}
+
+                {/* Anniversary date for quarterly/bi-annually */}
+                {(['quarterly', 'bi-annually'].includes(frequencyOverride || template?.frequency || '')) && (
+                  <div>
+                    <label className="block text-sm font-medium text-theme-primary mb-2">
+                      {frequencyOverride === 'quarterly' ? 'Quarterly' : 'Bi-Annual'} Anchor Date
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.anniversary_date || ''}
+                      onChange={(e) => setFormData({ ...formData, anniversary_date: e.target.value })}
+                      className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91] focus:border-[#D37E91]"
+                    />
+                    <p className="text-xs text-theme-tertiary mt-1">
+                      Tasks will be scheduled {frequencyOverride === 'quarterly' ? 'every 3 months' : 'every 6 months'} from this date
+                    </p>
+                  </div>
                 )}
 
                 {/* Dayparts & Times for Daily Tasks - More Intuitive Layout */}

@@ -1700,7 +1700,7 @@ function InsertDividerModal({
 // ============================================
 
 export default function RotaBuilderPage() {
-  const { profile, role } = useAppContext();
+  const { profile, role, companyId } = useAppContext();
   const siteContext = useSiteContext();
   const searchParams = useSearchParams();
   const mountedRef = useRef(true);
@@ -1835,7 +1835,7 @@ export default function RotaBuilderPage() {
   // ============================================
 
   const loadSites = useCallback(async () => {
-    if (!profile?.company_id || siteContext.loading) return;
+    if (!companyId || siteContext.loading) return;
     
     try {
       // Use accessible sites from SiteContext instead of loading all company sites
@@ -1877,24 +1877,24 @@ export default function RotaBuilderPage() {
       setError(err.message || 'Failed to load sites');
       setSites([]);
     }
-  }, [profile?.company_id, siteContext.accessibleSites, siteContext.selectedSiteId, siteContext.loading, searchParams]);
+  }, [companyId, siteContext.accessibleSites, siteContext.selectedSiteId, siteContext.loading, searchParams]);
 
   useEffect(() => {
-    if (profile?.company_id && !siteContext.loading && sites.length === 0 && !error) {
+    if (companyId && !siteContext.loading && sites.length === 0 && !error) {
       loadSites();
     }
      
-  }, [profile?.company_id, siteContext.loading, siteContext.accessibleSites]);
+  }, [companyId, siteContext.loading, siteContext.accessibleSites]);
 
   useEffect(() => {
-    if (selectedSite && profile?.company_id && !siteContext.loading) {
+    if (selectedSite && companyId && !siteContext.loading) {
       loadData();
     }
      
-  }, [selectedSite, weekStarting, profile?.company_id, siteContext.loading, siteContext.accessibleSites]);
+  }, [selectedSite, weekStarting, companyId, siteContext.loading, siteContext.accessibleSites]);
 
   const loadData = useCallback(async () => {
-    if (!selectedSite || !profile?.company_id) return;
+    if (!selectedSite || !companyId) return;
     if (!mountedRef.current) return;
     
     // Validate user can access this site
@@ -1917,6 +1917,7 @@ export default function RotaBuilderPage() {
       const { data: existingRota, error: rotaErr } = await supabase
         .from('rotas')
         .select('id, status')
+        .eq('company_id', companyId)
         .eq('site_id', selectedSite)
         .eq('week_starting', weekStr)
         .maybeSingle();
@@ -1933,7 +1934,7 @@ export default function RotaBuilderPage() {
           const { data: newRota, error: createErr } = await supabase
             .from('rotas')
             .insert({
-              company_id: profile.company_id,
+              company_id: companyId,
               site_id: selectedSite,
               week_starting: weekStr,
               status: 'draft',
@@ -1962,7 +1963,7 @@ export default function RotaBuilderPage() {
         const { data: assignmentsData, error: assignmentsErr } = await supabase
           .from('employee_site_assignments')
           .select('profile_id, borrowed_site_id, start_date, end_date')
-          .eq('company_id', profile.company_id)
+          .eq('company_id', companyId)
           .eq('is_active', true);
         
         if (assignmentsErr) {
@@ -2073,6 +2074,7 @@ export default function RotaBuilderPage() {
                 const { data: homeRota } = await supabase
                   .from('rotas')
                   .select('id')
+                  .eq('company_id', companyId)
                   .eq('site_id', homeSiteId)
                   .eq('week_starting', weekStr)
                   .maybeSingle();
@@ -2135,6 +2137,7 @@ export default function RotaBuilderPage() {
               const { data: borrowedRota } = await supabase
                 .from('rotas')
                 .select('id')
+                .eq('company_id', companyId)
                 .eq('site_id', borrowedSiteId)
                 .eq('week_starting', weekStr)
                 .maybeSingle();
@@ -2227,6 +2230,7 @@ export default function RotaBuilderPage() {
                 const { data: homeRota } = await supabase
                   .from('rotas')
                   .select('id')
+                  .eq('company_id', companyId)
                   .eq('site_id', homeSiteId)
                   .eq('week_starting', weekStr)
                   .maybeSingle();
@@ -2299,6 +2303,7 @@ export default function RotaBuilderPage() {
               const { data: borrowedRota } = await supabase
                 .from('rotas')
                 .select('id')
+                .eq('company_id', companyId)
                 .eq('site_id', borrowedSiteId)
                 .eq('week_starting', weekStr)
                 .maybeSingle();
@@ -2408,7 +2413,7 @@ export default function RotaBuilderPage() {
       const { data: companyClosuresData, error: companyClosuresError } = await supabase
         .from('company_closures')
         .select('id, company_id, closure_start, closure_end, is_active, notes')
-        .eq('company_id', profile.company_id)
+        .eq('company_id', companyId)
         .eq('is_active', true)
         // Fetch closures that overlap with the current week
         .lte('closure_start', weekEndStr)
@@ -2434,7 +2439,7 @@ export default function RotaBuilderPage() {
       const { data: leaveData, error: leaveError } = await supabase
         .from('leave_requests')
         .select('id, profile_id, start_date, end_date, status')
-        .eq('company_id', profile.company_id)
+        .eq('company_id', companyId)
         .in('status', ['approved', 'taken'])
         // Fetch leave that overlaps with the current week
         // Leave overlaps if: start_date <= week_end AND end_date >= week_start
@@ -2450,7 +2455,7 @@ export default function RotaBuilderPage() {
       }
 
       // 5. Load ALL staff for the company using RPC to bypass RLS issues
-      console.log('Loading staff for company:', profile.company_id);
+      console.log('Loading staff for company:', companyId);
       
       // Helper function to calculate hourly rate from salary: salary / 52 / contracted_hours
       // Note: salary field in database is always stored as ANNUAL salary in pounds
@@ -2473,7 +2478,7 @@ export default function RotaBuilderPage() {
       // Try RPC function first (same as employees page) - bypasses RLS
       try {
         const rpcResult = await supabase.rpc('get_company_profiles', {
-          p_company_id: profile.company_id
+          p_company_id: companyId
         });
         
         if (rpcResult.error) {
@@ -2618,7 +2623,7 @@ export default function RotaBuilderPage() {
             contracted_hours_per_week, hourly_rate, home_site, salary, pay_type, pay_frequency,
             sites:home_site (id, name)
           `)
-          .eq('company_id', profile.company_id)
+          .eq('company_id', companyId)
           .order('full_name');
         
         // If no employee param, filter by active status
@@ -2693,7 +2698,7 @@ export default function RotaBuilderPage() {
 
         console.log('Formatted staff:', {
           total: formattedStaff.length,
-          company_id: profile.company_id,
+          company_id: companyId,
           selectedSite,
           bySite: formattedStaff.reduce((acc: any, s: any) => {
             const siteName = s.home_site_name || (s.home_site === selectedSite ? 'Selected Site' : 'Other Site') || 'No Site';
@@ -2714,7 +2719,7 @@ export default function RotaBuilderPage() {
         const { data: sectionsData, error: sectionsErr } = await supabase
           .from('rota_sections')
           .select('id, name, color, sort_order')
-          .eq('company_id', profile.company_id)
+          .eq('company_id', companyId)
           .eq('site_id', selectedSite)
           .eq('is_active', true)
           .order('sort_order')
@@ -2770,7 +2775,7 @@ export default function RotaBuilderPage() {
         setLoading(false);
       }
     }
-  }, [selectedSite, weekStarting, profile?.company_id]);
+  }, [selectedSite, weekStarting, companyId]);
 
   // ============================================
   // COMPUTED VALUES
@@ -3312,7 +3317,7 @@ export default function RotaBuilderPage() {
   // ============================================
   const notifyTeamAboutOpenShifts = useCallback(async () => {
     if (!canManageRota) return;
-    if (!rota || !selectedSite || !profile?.company_id) return;
+    if (!rota || !selectedSite || !companyId) return;
 
     const openCount = shifts.filter((s) => !s.profile_id && s.status !== 'cancelled').length;
     if (openCount === 0) {
@@ -3358,11 +3363,11 @@ export default function RotaBuilderPage() {
     } finally {
       setNotifyingOpenShifts(false);
     }
-  }, [assignmentStaff, canManageRota, profile?.company_id, rota, selectedSite, shifts]);
+  }, [assignmentStaff, canManageRota, companyId, rota, selectedSite, shifts]);
 
   const handleAddShift = async (data: { profile_id: string | null; start_time: string; end_time: string; break_minutes: number; color: string; section_id: string | null }) => {
-    if (!rota || !addingShiftDate || !profile?.company_id) {
-      console.error('Cannot add shift: missing rota, date, or company_id', { rota, addingShiftDate, company_id: profile?.company_id });
+    if (!rota || !addingShiftDate || !companyId) {
+      console.error('Cannot add shift: missing rota, date, or company_id', { rota, addingShiftDate, company_id: companyId });
       return;
     }
 
@@ -3390,7 +3395,7 @@ export default function RotaBuilderPage() {
 
       const insertPayload: any = {
         rota_id: rota.id,
-        company_id: profile.company_id,
+        company_id: companyId,
         profile_id: data.profile_id,
         shift_date: addingShiftDate.toISOString().split('T')[0],
         start_time: data.start_time,
@@ -3479,7 +3484,7 @@ export default function RotaBuilderPage() {
 
   const handleCopyShift = async (shiftId: string, targetDate?: string) => {
     const shift = shifts.find(s => s.id === shiftId);
-    if (!shift || !rota || !profile?.company_id) {
+    if (!shift || !rota || !companyId) {
       console.error('Cannot copy shift: missing shift, rota, or company_id');
       return;
     }
@@ -3491,7 +3496,7 @@ export default function RotaBuilderPage() {
 
       const { error } = await supabase.from('rota_shifts').insert({
         rota_id: rota.id,
-        company_id: profile.company_id,
+        company_id: companyId,
         profile_id: shift.profile_id,
         ...(sectionsEnabled ? { section_id: shift.section_id } : {}),
         shift_date: targetDateStr,
@@ -3519,7 +3524,7 @@ export default function RotaBuilderPage() {
   };
 
   const handleCopyShiftToDates = async (shift: Shift, targetDates: string[]) => {
-    if (!rota || !profile?.company_id) return;
+    if (!rota || !companyId) return;
 
     const uniqueDates = Array.from(new Set(targetDates)).filter(Boolean);
     if (uniqueDates.length === 0) return;
@@ -3532,7 +3537,7 @@ export default function RotaBuilderPage() {
       const rows = uniqueDates.map((dateStr) => {
         const row: any = {
           rota_id: rota.id,
-          company_id: profile.company_id,
+          company_id: companyId,
           profile_id: shift.profile_id,
           shift_date: dateStr,
           start_time: shift.start_time,
@@ -3652,10 +3657,11 @@ export default function RotaBuilderPage() {
       const updateData: any = {
         shift_date: dateStr,
       };
-      if (staffId && staffId !== 'null' && staffId !== 'undefined') {
-        updateData.profile_id = staffId;
-      } else {
-        updateData.profile_id = null;
+      // Only update profile_id when it actually changes to avoid
+      // triggering the cost recalculation unnecessarily
+      const newProfileId = (staffId && staffId !== 'null' && staffId !== 'undefined') ? staffId : null;
+      if (newProfileId !== (shift.profile_id ?? null)) {
+        updateData.profile_id = newProfileId;
       }
 
       const { error } = await supabase
@@ -3727,7 +3733,7 @@ export default function RotaBuilderPage() {
   }, [rosterItemsForPeopleView, selectedSite]);
 
   const handleCopyDay = async (sourceDate: string, targetDate: string) => {
-    if (!rota || !profile?.company_id) {
+    if (!rota || !companyId) {
       console.error('Cannot copy day: missing rota or company_id');
       return;
     }
@@ -3746,7 +3752,7 @@ export default function RotaBuilderPage() {
         
         const base: any = {
           rota_id: rota.id,
-          company_id: profile.company_id,
+          company_id: companyId,
           profile_id: shift.profile_id,
           shift_date: targetDate,
           start_time: shift.start_time,
@@ -3844,7 +3850,7 @@ export default function RotaBuilderPage() {
   };
 
   const handleCopyLastWeek = async () => {
-    if (!rota || !profile?.company_id) return;
+    if (!rota || !companyId) return;
 
     const lastWeek = new Date(weekStarting);
     lastWeek.setDate(lastWeek.getDate() - 7);
@@ -3852,6 +3858,7 @@ export default function RotaBuilderPage() {
     const { data: lastRota } = await supabase
       .from('rotas')
       .select('id')
+      .eq('company_id', companyId)
       .eq('site_id', selectedSite)
       .eq('week_starting', lastWeek.toISOString().split('T')[0])
       .maybeSingle();
@@ -3890,7 +3897,7 @@ export default function RotaBuilderPage() {
       oldDate.setDate(oldDate.getDate() + 7);
       return {
         rota_id: rota.id,
-        company_id: profile.company_id,
+        company_id: companyId,
         profile_id: s.profile_id,
         shift_date: oldDate.toISOString().split('T')[0],
         start_time: s.start_time,
@@ -3943,7 +3950,7 @@ export default function RotaBuilderPage() {
   // publishCurrentRota removed — approved is now the final visible state
 
   const handleSaveForecast = async (date: string, data: DayForecast) => {
-    if (!rota || !profile?.company_id) return;
+    if (!rota || !companyId) return;
 
     // Use upsert on (rota_id, forecast_date) so it works for both create + update
     // IMPORTANT: rota_forecasts does NOT have company_id/site_id columns.
@@ -4395,7 +4402,7 @@ export default function RotaBuilderPage() {
           onRecordAbsence={async (shiftId, profileId, reason, notes) => {
             const { error } = await supabase.from('staff_attendance').insert({
               profile_id: profileId,
-              company_id: profile?.company_id,
+              company_id: companyId,
               site_id: selectedSite,
               clock_in_time: new Date().toISOString(),
               shift_status: 'absent',
@@ -5323,9 +5330,9 @@ export default function RotaBuilderPage() {
         />
       )}
 
-      {showManageSections && canManageRota && selectedSite && profile?.company_id && (
+      {showManageSections && canManageRota && selectedSite && companyId && (
         <ManageSectionsModal
-          companyId={profile.company_id}
+          companyId={companyId}
           siteId={selectedSite}
           sections={sections}
           sectionsEnabled={sectionsEnabled}

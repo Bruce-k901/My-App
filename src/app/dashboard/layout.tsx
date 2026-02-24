@@ -36,7 +36,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
     const isMessagingPage = pathname?.includes('/messaging');
     const isTeamlyPage = pathname?.includes('/people') || pathname?.startsWith('/dashboard/courses');
     const isStocklyPage = pathname?.includes('/stockly');
-    const isChecklyPage = pathname?.includes('/todays_tasks') || pathname?.includes('/tasks') || pathname?.includes('/checklists') || pathname?.includes('/incidents') || pathname?.includes('/sops') || pathname?.includes('/risk-assessments') || pathname?.includes('/logs') || pathname?.includes('/equipment');
+    const isChecklyPage = pathname?.includes('/todays_tasks') || pathname?.includes('/tasks') || pathname?.includes('/checklists') || pathname?.includes('/incidents') || pathname?.includes('/sops') || pathname?.includes('/risk-assessments') || pathname?.includes('/logs') || pathname?.includes('/equipment') || pathname?.includes('/pest-control') || pathname?.includes('/settings');
     const isPlanlyPage = pathname?.includes('/planly');
     const isAssetlyPage = pathname?.includes('/assets') || pathname?.includes('/ppm');
 
@@ -64,7 +64,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   }
 
   // Determine which module sidebar to show
-  const isCheckly = pathname?.startsWith('/dashboard/todays_tasks') || pathname?.startsWith('/dashboard/tasks') || pathname?.startsWith('/dashboard/checklists') || pathname?.startsWith('/dashboard/incidents') || pathname?.startsWith('/dashboard/sops') || pathname?.startsWith('/dashboard/risk-assessments') || pathname?.startsWith('/dashboard/logs') || pathname?.startsWith('/dashboard/equipment');
+  const isCheckly = pathname?.startsWith('/dashboard/todays_tasks') || pathname?.startsWith('/dashboard/tasks') || pathname?.startsWith('/dashboard/checklists') || pathname?.startsWith('/dashboard/incidents') || pathname?.startsWith('/dashboard/sops') || pathname?.startsWith('/dashboard/risk-assessments') || pathname?.startsWith('/dashboard/logs') || pathname?.startsWith('/dashboard/equipment') || pathname?.startsWith('/dashboard/pest-control') || pathname?.startsWith('/dashboard/settings');
   const isStockly = pathname?.startsWith('/dashboard/stockly') || pathname?.startsWith('/dashboard/reports/stockly');
   const isTeamly = pathname?.startsWith('/dashboard/people') || pathname?.startsWith('/dashboard/courses');
   const isPlanly = pathname?.startsWith('/dashboard/planly');

@@ -15,7 +15,7 @@ export async function GET(
       .from('production_batches')
       .select(`
         *,
-        recipe:recipes(id, name, allergens, may_contain_allergens)
+        recipe:recipes(id, name, allergens, may_contain_allergens, yield_quantity, yield_unit, output_ingredient_id, shelf_life_days)
       `)
       .eq('id', id)
       .single();
@@ -25,6 +25,23 @@ export async function GET(
         return NextResponse.json({ error: 'Table not found' }, { status: 404 });
       }
       return NextResponse.json({ error: 'Production batch not found' }, { status: 404 });
+    }
+
+    // Resolve recipe's output_ingredient_id to a stock_item_id
+    if (batch.recipe?.output_ingredient_id) {
+      const { data: outputStockItem } = await supabase
+        .from('stock_items')
+        .select('id, name, stock_unit')
+        .eq('company_id', batch.company_id)
+        .eq('library_item_id', batch.recipe.output_ingredient_id)
+        .eq('library_type', 'ingredients_library')
+        .eq('is_active', true)
+        .limit(1)
+        .single();
+
+      if (outputStockItem) {
+        batch.recipe.output_stock_item = outputStockItem;
+      }
     }
 
     // Fetch inputs with stock batch + stock item details
@@ -99,7 +116,7 @@ export async function PATCH(
       .eq('id', id)
       .select(`
         *,
-        recipe:recipes(id, name, allergens, may_contain_allergens)
+        recipe:recipes(id, name, allergens, may_contain_allergens, yield_quantity, yield_unit, output_ingredient_id, shelf_life_days)
       `)
       .single();
 

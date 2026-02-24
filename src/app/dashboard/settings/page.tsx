@@ -5,13 +5,14 @@ import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
-import { User, Bell, Building2, Lock, Mail, Save, Eye, EyeOff, Upload, Image as ImageIcon, Palette, Workflow, Accessibility, Loader2, Send, CheckCircle, Plug } from '@/components/ui/icons';
+import { User, Bell, Building2, Lock, Mail, Save, Eye, EyeOff, Upload, Image as ImageIcon, Palette, Workflow, Loader2, Send, CheckCircle, Plug, MessageCircle } from '@/components/ui/icons';
 import SiteSelector from '@/components/ui/SiteSelector';
 import { AlertSettingsCard } from '@/components/settings/AlertSettingsCard';
 import { AppearanceTab } from '@/components/settings/AppearanceTab';
 import { WorkflowTab } from '@/components/settings/WorkflowTab';
-import { AccessibilityTab } from '@/components/settings/AccessibilityTab';
+
 import { IntegrationsTab } from '@/components/settings/IntegrationsTab';
+import { WhatsAppSettingsTab } from '@/components/settings/WhatsAppSettingsTab';
 
 type ProfileSettings = {
   user_id: string;
@@ -24,7 +25,7 @@ type ProfileSettings = {
   sound_vibration: boolean;
 };
 
-type Tab = 'profile' | 'appearance' | 'notifications' | 'workflow' | 'accessibility' | 'integrations' | 'company';
+type Tab = 'profile' | 'appearance' | 'notifications' | 'workflow' | 'integrations' | 'whatsapp' | 'company';
 
 export default function SettingsPage() {
   const { profile, companyId, siteId, company, role, userId } = useAppContext();
@@ -356,8 +357,8 @@ export default function SettingsPage() {
     { id: 'appearance' as Tab, label: 'Appearance', icon: Palette },
     { id: 'notifications' as Tab, label: 'Notifications', icon: Bell },
     { id: 'workflow' as Tab, label: 'Workflow', icon: Workflow },
-    { id: 'accessibility' as Tab, label: 'Accessibility', icon: Accessibility },
     { id: 'integrations' as Tab, label: 'Integrations', icon: Plug },
+    { id: 'whatsapp' as Tab, label: 'WhatsApp', icon: MessageCircle },
     ...(role === 'Admin' ? [{ id: 'company' as Tab, label: 'Company', icon: Building2 }] : []),
   ];
 
@@ -724,11 +725,11 @@ export default function SettingsPage() {
       {/* Workflow Tab */}
       {activeTab === 'workflow' && <WorkflowTab />}
 
-      {/* Accessibility Tab */}
-      {activeTab === 'accessibility' && <AccessibilityTab />}
-
       {/* Integrations Tab */}
       {activeTab === 'integrations' && <IntegrationsTab />}
+
+      {/* WhatsApp Tab */}
+      {activeTab === 'whatsapp' && <WhatsAppSettingsTab />}
 
       {/* Company Tab (Admin only) */}
       {activeTab === 'company' && role === 'Admin' && (
