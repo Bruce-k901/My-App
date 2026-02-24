@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 interface NumericKeyboardProps {
@@ -12,10 +12,9 @@ interface NumericKeyboardProps {
 }
 
 /**
- * Custom numeric keyboard component for temperature inputs
- * Includes numbers 0-9, decimal point, minus sign, backspace, and enter
- * Only shows on mobile/touch devices
- * Renders via portal to escape modal/backdrop stacking contexts
+ * Custom numeric keyboard component for temperature inputs.
+ * Uses pointer events for reliable touch/mouse handling.
+ * Renders via portal to escape modal/backdrop stacking contexts.
  */
 export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, onDismiss, isVisible }: NumericKeyboardProps) {
   const keyboardRef = useRef<HTMLDivElement>(null);
@@ -36,18 +35,6 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, onDismiss, i
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Attach non-passive touchstart on the container to prevent input blur.
-  // This blocks click synthesis, so buttons use onTouchEnd instead.
-  useEffect(() => {
-    const el = keyboardRef.current;
-    if (!el) return;
-    const handler = (e: TouchEvent) => {
-      e.preventDefault();
-    };
-    el.addEventListener('touchstart', handler, { passive: false });
-    return () => el.removeEventListener('touchstart', handler);
-  });
-
   const handleKeyClick = useCallback((key: string) => {
     onKeyPress(key);
   }, [onKeyPress]);
@@ -64,12 +51,20 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, onDismiss, i
     return null;
   }
 
-  // Button helper: onTouchEnd for mobile (click is blocked by container touchstart preventDefault),
-  // onClick as fallback for desktop/mouse
+  // Unified button handler: pointerDown prevents focus steal,
+  // pointerUp fires the action. Works for both touch and mouse.
   const btnProps = (action: () => void) => ({
-    onTouchEnd: (e: React.TouchEvent) => { e.stopPropagation(); action(); },
-    onClick: action,
+    onPointerDown: (e: React.PointerEvent) => {
+      e.preventDefault(); // prevent focus moving away from input
+    },
+    onPointerUp: (e: React.PointerEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      action();
+    },
   });
+
+  const btnClass = "h-12 bg-gray-100 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-theme-primary text-lg font-medium active:bg-gray-200 dark:active:bg-white/[0.08] transition-colors select-none";
 
   const keyboard = (
     <div
@@ -78,42 +73,21 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, onDismiss, i
       className="fixed bottom-0 left-0 right-0 z-[10001] bg-white dark:bg-[#0B0D13] border-t border-gray-200 dark:border-white/[0.06] p-2 pb-[env(safe-area-inset-bottom,8px)]"
       style={{
         boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.15)',
+        touchAction: 'none', // prevent browser touch handling (scroll, zoom)
       }}
       onMouseDown={(e) => {
-        e.preventDefault();
+        e.preventDefault(); // fallback focus-steal prevention
       }}
     >
       <div className="max-w-md mx-auto">
         {/* Number pad */}
         <div className="grid grid-cols-3 gap-2 mb-2">
-          {[1, 2, 3].map((num) => (
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
             <button
               key={num}
               type="button"
               {...btnProps(() => handleKeyClick(num.toString()))}
-              className="h-12 bg-gray-100 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-theme-primary text-lg font-medium active:bg-gray-200 dark:active:bg-white/[0.08] transition-colors touch-manipulation"
-            >
-              {num}
-            </button>
-          ))}
-
-          {[4, 5, 6].map((num) => (
-            <button
-              key={num}
-              type="button"
-              {...btnProps(() => handleKeyClick(num.toString()))}
-              className="h-12 bg-gray-100 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-theme-primary text-lg font-medium active:bg-gray-200 dark:active:bg-white/[0.08] transition-colors touch-manipulation"
-            >
-              {num}
-            </button>
-          ))}
-
-          {[7, 8, 9].map((num) => (
-            <button
-              key={num}
-              type="button"
-              {...btnProps(() => handleKeyClick(num.toString()))}
-              className="h-12 bg-gray-100 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-theme-primary text-lg font-medium active:bg-gray-200 dark:active:bg-white/[0.08] transition-colors touch-manipulation"
+              className={btnClass}
             >
               {num}
             </button>
@@ -123,21 +97,21 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, onDismiss, i
           <button
             type="button"
             {...btnProps(() => handleKeyClick('-'))}
-            className="h-12 bg-blue-100 dark:bg-blue-500/20 border border-blue-300 dark:border-blue-500/40 rounded-lg text-blue-600 dark:text-blue-400 text-xl font-bold active:bg-blue-200 dark:active:bg-blue-500/30 transition-colors touch-manipulation"
+            className="h-12 bg-blue-100 dark:bg-blue-500/20 border border-blue-300 dark:border-blue-500/40 rounded-lg text-blue-600 dark:text-blue-400 text-xl font-bold active:bg-blue-200 dark:active:bg-blue-500/30 transition-colors select-none"
           >
             −
           </button>
           <button
             type="button"
             {...btnProps(() => handleKeyClick('0'))}
-            className="h-12 bg-gray-100 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-theme-primary text-lg font-medium active:bg-gray-200 dark:active:bg-white/[0.08] transition-colors touch-manipulation"
+            className={btnClass}
           >
             0
           </button>
           <button
             type="button"
             {...btnProps(() => handleKeyClick('.'))}
-            className="h-12 bg-gray-100 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-theme-primary text-lg font-medium active:bg-gray-200 dark:active:bg-white/[0.08] transition-colors touch-manipulation"
+            className={btnClass}
           >
             .
           </button>
@@ -148,7 +122,7 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, onDismiss, i
           <button
             type="button"
             {...btnProps(handleBackspaceClick)}
-            className="h-12 bg-gray-100 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-theme-primary text-sm font-medium active:bg-gray-200 dark:active:bg-white/[0.08] transition-colors touch-manipulation flex items-center justify-center"
+            className="h-12 bg-gray-100 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] rounded-lg text-gray-900 dark:text-theme-primary text-sm font-medium active:bg-gray-200 dark:active:bg-white/[0.08] transition-colors select-none flex items-center justify-center"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -170,7 +144,7 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, onDismiss, i
             <button
               type="button"
               {...btnProps(onDismiss)}
-              className="h-12 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-500 dark:text-theme-tertiary text-sm font-medium active:bg-gray-200 dark:active:bg-white/[0.1] transition-colors touch-manipulation flex items-center justify-center gap-1.5"
+              className="h-12 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.1] rounded-lg text-gray-500 dark:text-theme-tertiary text-sm font-medium active:bg-gray-200 dark:active:bg-white/[0.1] transition-colors select-none flex items-center justify-center gap-1.5"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -182,7 +156,7 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, onDismiss, i
             <button
               type="button"
               {...btnProps(handleEnterClick)}
-              className="h-12 bg-[#D37E91]/10 dark:bg-[#D37E91]/20 border border-[#D37E91] rounded-lg text-[#D37E91] text-sm font-medium active:bg-[#D37E91]/25 dark:active:bg-[#D37E91]/30 transition-colors touch-manipulation"
+              className="h-12 bg-[#D37E91]/10 dark:bg-[#D37E91]/20 border border-[#D37E91] rounded-lg text-[#D37E91] text-sm font-medium active:bg-[#D37E91]/25 dark:active:bg-[#D37E91]/30 transition-colors select-none"
             >
               Enter
             </button>
