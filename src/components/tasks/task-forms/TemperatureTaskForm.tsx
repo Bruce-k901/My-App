@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { Camera, X } from '@/components/ui/icons'
 import type { ChecklistTaskWithTemplate } from '@/types/checklist-types'
 import type { TemperatureTaskData, TaskCompletionPayload, OutOfRangeAsset, Asset } from '@/types/task-completion-types'
-import { AssetTemperatureInput } from '../components/AssetTemperatureInput'
+import { AssetTemperatureInput, type AssetTemperatureInputHandle } from '../components/AssetTemperatureInput'
+import { NumericKeyboard } from '@/components/ui/NumericKeyboard'
 import { OutOfRangeWarning } from '../components/OutOfRangeWarning'
 import { useTemperatureValidation } from '@/hooks/useTemperatureValidation'
 import { useAppContext } from '@/context/AppContext'
@@ -33,6 +34,23 @@ export function TemperatureTaskForm({
   const [photos, setPhotos] = useState<File[]>([])
   const [notes, setNotes] = useState('')
   const [outOfRangeActions, setOutOfRangeActions] = useState<Map<string, OutOfRangeAsset>>(new Map())
+
+  // Shared keyboard state
+  const [focusedAssetId, setFocusedAssetId] = useState<string | null>(null)
+  const [showKeyboard, setShowKeyboard] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const inputRefs = useRef<Map<string, AssetTemperatureInputHandle>>(new Map())
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+      const isSmallScreen = window.innerWidth <= 768
+      setIsMobile(hasTouch && isSmallScreen)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Get the list of asset IDs to show inputs for
   const assetIds = useMemo(() => {
@@ -205,6 +223,61 @@ export function TemperatureTaskForm({
     await onSubmit(payload)
   }
 
+  // Shared keyboard handlers
+  const handleKeyPress = useCallback((key: string) => {
+    if (!focusedAssetId) return
+    inputRefs.current.get(focusedAssetId)?.handleKeyPress(key)
+  }, [focusedAssetId])
+
+  const handleBackspace = useCallback(() => {
+    if (!focusedAssetId) return
+    inputRefs.current.get(focusedAssetId)?.handleBackspace()
+  }, [focusedAssetId])
+
+  const handleEnter = useCallback(() => {
+    if (!focusedAssetId) return
+    const currentIndex = assetIds.indexOf(focusedAssetId)
+    if (currentIndex < assetIds.length - 1) {
+      const nextId = assetIds[currentIndex + 1]
+      inputRefs.current.get(nextId)?.focus()
+      setFocusedAssetId(nextId)
+    } else {
+      inputRefs.current.get(focusedAssetId)?.blur()
+      setShowKeyboard(false)
+      setFocusedAssetId(null)
+    }
+  }, [focusedAssetId, assetIds])
+
+  const handleDismiss = useCallback(() => {
+    if (focusedAssetId) inputRefs.current.get(focusedAssetId)?.blur()
+    setShowKeyboard(false)
+    setFocusedAssetId(null)
+  }, [focusedAssetId])
+
+  const handleInputFocus = useCallback((assetId: string) => {
+    setFocusedAssetId(assetId)
+    if (isMobile) setShowKeyboard(true)
+  }, [isMobile])
+
+  const handleInputBlur = useCallback((assetId: string) => {
+    setTimeout(() => {
+      const kbEl = document.querySelector('[data-numeric-keyboard]')
+      if (kbEl && kbEl.contains(document.activeElement)) return
+      setFocusedAssetId(prev => {
+        if (prev === assetId) {
+          setShowKeyboard(false)
+          return null
+        }
+        return prev
+      })
+    }, 150)
+  }, [])
+
+  const setInputRef = useCallback((assetId: string) => (handle: AssetTemperatureInputHandle | null) => {
+    if (handle) inputRefs.current.set(assetId, handle)
+    else inputRefs.current.delete(assetId)
+  }, [])
+
   // Validation
   const hasAllTemperatures = assetIds.every(assetId =>
     temperatures[assetId] !== null && temperatures[assetId] !== undefined
@@ -237,14 +310,20 @@ export function TemperatureTaskForm({
 
             return (
               <AssetTemperatureInput
+                ref={setInputRef(assetId)}
                 key={assetId}
-                asset={displayAsset}
+                assetId={assetId}
+                assetName={displayAsset.name}
                 nickname={nickname}
                 value={temperatures[assetId] ?? null}
                 min={range.min}
                 max={range.max}
                 onChange={handleTemperatureChange}
                 disabled={submitting}
+                isKeyboardTarget={focusedAssetId === assetId && showKeyboard}
+                onInputFocus={handleInputFocus}
+                onInputBlur={handleInputBlur}
+                isMobile={isMobile}
               />
             )
           })}
@@ -340,6 +419,17 @@ export function TemperatureTaskForm({
           {!hasAllTemperatures && 'Please enter all temperatures'}
           {hasAllTemperatures && !allOutOfRangeHandled && 'Please handle all out-of-range temperatures'}
         </div>
+      )}
+
+      {/* Single shared numeric keyboard */}
+      {isMobile && (
+        <NumericKeyboard
+          onKeyPress={handleKeyPress}
+          onBackspace={handleBackspace}
+          onEnter={handleEnter}
+          onDismiss={handleDismiss}
+          isVisible={showKeyboard}
+        />
       )}
     </div>
   )

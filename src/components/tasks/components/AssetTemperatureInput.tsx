@@ -1,13 +1,19 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Thermometer, AlertCircle, Clock, Phone, X } from '@/components/ui/icons';
-import { NumericKeyboard } from '@/components/ui/NumericKeyboard';
 
 interface PlacedAction {
   action: 'monitor' | 'callout';
   duration?: number;
   notes?: string;
+}
+
+export interface AssetTemperatureInputHandle {
+  handleKeyPress: (key: string) => void;
+  handleBackspace: () => void;
+  focus: () => void;
+  blur: () => void;
 }
 
 interface AssetTemperatureInputProps {
@@ -23,9 +29,14 @@ interface AssetTemperatureInputProps {
   placedAction?: PlacedAction | null;
   onPlaceAction?: (action: 'monitor' | 'callout', options?: { duration?: number; notes?: string }) => void;
   onRemoveAction?: () => void;
+  // Keyboard coordination (parent manages keyboard)
+  isKeyboardTarget?: boolean;
+  onInputFocus?: (assetId: string) => void;
+  onInputBlur?: (assetId: string) => void;
+  isMobile?: boolean;
 }
 
-export function AssetTemperatureInput({
+export const AssetTemperatureInput = forwardRef<AssetTemperatureInputHandle, AssetTemperatureInputProps>(function AssetTemperatureInput({
   assetId,
   assetName,
   nickname,
@@ -36,30 +47,19 @@ export function AssetTemperatureInput({
   disabled = false,
   placedAction,
   onPlaceAction,
-  onRemoveAction
-}: AssetTemperatureInputProps) {
+  onRemoveAction,
+  isKeyboardTarget = false,
+  onInputFocus,
+  onInputBlur,
+  isMobile = false,
+}, ref) {
   const [tempValue, setTempValue] = useState<string>(value?.toString() || '');
   const [showActionPicker, setShowActionPicker] = useState(false);
   const [selectedAction, setSelectedAction] = useState<'monitor' | 'callout' | null>(null);
   const [monitorDuration, setMonitorDuration] = useState(60);
   const [calloutNotes, setCalloutNotes] = useState('');
 
-  // Mobile keyboard state
-  const [showKeyboard, setShowKeyboard] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Mobile detection: touch support AND small screen
-  useEffect(() => {
-    const checkMobile = () => {
-      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      const isSmallScreen = window.innerWidth <= 768;
-      setIsMobile(hasTouch && isSmallScreen);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   // Sync with external value changes
   useEffect(() => {
@@ -82,66 +82,60 @@ export function AssetTemperatureInput({
     }
   };
 
-  // Keyboard handlers for mobile NumericKeyboard
+  // Keyboard handlers for mobile NumericKeyboard (exposed to parent via ref)
   const handleKeyPress = (key: string) => {
-    let newValue = '';
-    if (key === '-') {
-      // Toggle minus sign
-      if (tempValue.startsWith('-')) {
-        newValue = tempValue.slice(1);
+    setTempValue(prev => {
+      let newValue = '';
+      if (key === '-') {
+        newValue = prev.startsWith('-') ? prev.slice(1) : '-' + prev;
+      } else if (key === '.') {
+        if (prev.includes('.')) return prev;
+        newValue = prev + '.';
       } else {
-        newValue = '-' + tempValue;
+        newValue = prev + key;
       }
-    } else if (key === '.') {
-      // Only allow one decimal point
-      if (!tempValue.includes('.')) {
-        newValue = tempValue + '.';
-      } else {
-        return; // Don't add if already exists
-      }
-    } else {
-      newValue = tempValue + key;
-    }
 
-    // Validate and update
-    if (newValue === '' || newValue === '-' || /^-?\d*\.?\d*$/.test(newValue)) {
-      setTempValue(newValue);
-      if (newValue !== '' && newValue !== '-') {
-        const num = parseFloat(newValue);
-        if (!isNaN(num)) {
-          onChange(assetId, num);
+      if (newValue === '' || newValue === '-' || /^-?\d*\.?\d*$/.test(newValue)) {
+        if (newValue !== '' && newValue !== '-') {
+          const num = parseFloat(newValue);
+          if (!isNaN(num)) onChange(assetId, num);
+        } else {
+          onChange(assetId, null);
         }
-      } else {
-        onChange(assetId, null);
+        return newValue;
       }
-    }
-    inputRef.current?.focus();
+      return prev;
+    });
   };
 
   const handleBackspace = () => {
-    if (tempValue.length > 0) {
-      const newValue = tempValue.slice(0, -1);
-      setTempValue(newValue);
+    setTempValue(prev => {
+      if (prev.length === 0) return prev;
+      const newValue = prev.slice(0, -1);
       if (newValue === '' || newValue === '-') {
         onChange(assetId, null);
       } else {
         const num = parseFloat(newValue);
-        if (!isNaN(num)) {
-          onChange(assetId, num);
-        }
+        if (!isNaN(num)) onChange(assetId, num);
       }
-    }
-    inputRef.current?.focus();
+      return newValue;
+    });
   };
 
+  // Expose handlers to parent for shared keyboard
+  useImperativeHandle(ref, () => ({
+    handleKeyPress,
+    handleBackspace,
+    focus: () => inputRef.current?.focus(),
+    blur: () => inputRef.current?.blur(),
+  }));
+
   const handleInputFocus = () => {
-    if (isMobile) {
-      setShowKeyboard(true);
-    }
+    onInputFocus?.(assetId);
   };
 
   const handleInputBlur = () => {
-    // Delay to allow keyboard clicks to register
+    // Delay to allow keyboard taps to register before hiding
     setTimeout(() => {
       const keyboardElement = document.querySelector('[data-numeric-keyboard]');
       if (keyboardElement && keyboardElement.contains(document.activeElement)) {
@@ -149,7 +143,7 @@ export function AssetTemperatureInput({
         return;
       }
       if (document.activeElement !== inputRef.current) {
-        setShowKeyboard(false);
+        onInputBlur?.(assetId);
       }
     }, 150);
   };
@@ -221,7 +215,7 @@ export function AssetTemperatureInput({
           <input
             ref={inputRef}
             type="text"
-            inputMode={isMobile && showKeyboard ? 'none' : 'decimal'}
+            inputMode={isMobile && isKeyboardTarget ? 'none' : 'decimal'}
             pattern="-?[0-9]*\.?[0-9]*"
             value={tempValue}
             onChange={handleChange}
@@ -381,15 +375,6 @@ export function AssetTemperatureInput({
         </div>
       )}
 
-      {/* Mobile numeric keyboard with minus button for freezer temps */}
-      {isMobile && (
-        <NumericKeyboard
-          onKeyPress={handleKeyPress}
-          onBackspace={handleBackspace}
-          onDismiss={() => { setShowKeyboard(false); inputRef.current?.blur(); }}
-          isVisible={showKeyboard}
-        />
-      )}
     </div>
   );
-}
+});
