@@ -78,6 +78,14 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (activeShift) {
+      console.error('[Clock-in] Blocked by active shift:', {
+        authUserId: user.id,
+        profileId: profile.id,
+        profileIdMatchesAuth: profile.id === user.id,
+        activeShiftId: activeShift.id,
+        activeShiftClockIn: activeShift.clock_in_time,
+      });
+
       // Auto-close stale shifts (open for 16+ hours) so staff aren't stuck
       const shiftAge = Date.now() - new Date(activeShift.clock_in_time).getTime();
       const sixteenHours = 16 * 60 * 60 * 1000;
