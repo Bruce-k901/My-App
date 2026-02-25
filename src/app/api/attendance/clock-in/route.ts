@@ -112,8 +112,9 @@ export async function POST(request: NextRequest) {
           .eq('status', 'active')
           .is('clock_out', null);
       } else {
+        const shiftDate = new Date(activeShift.clock_in_time).toLocaleString('en-GB', { timeZone: 'Europe/London' });
         return NextResponse.json(
-          { error: 'You already have an active shift. Please clock out first.' },
+          { error: `Active shift found (clocked in: ${shiftDate}, profile: ${profile.id}, auth: ${user.id}, shift: ${activeShift.id})` },
           { status: 400 }
         );
       }
