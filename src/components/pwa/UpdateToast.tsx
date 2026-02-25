@@ -39,16 +39,18 @@ export function UpdateToast() {
         </span>
         <button
           onClick={handleUpdate}
-          className="px-3 py-1.5 rounded-lg bg-[#D37E91] hover:bg-[#c06d7f] text-white text-sm font-medium transition-colors whitespace-nowrap"
+          onTouchEnd={(e) => { e.preventDefault(); handleUpdate(); }}
+          className="px-5 py-2.5 rounded-lg bg-[#D37E91] hover:bg-[#c06d7f] active:bg-[#b0607a] text-white text-sm font-semibold transition-colors whitespace-nowrap cursor-pointer select-none"
         >
           Update
         </button>
         <button
           onClick={() => setVisible(false)}
-          className="p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/10 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary transition-colors"
+          onTouchEnd={(e) => { e.preventDefault(); setVisible(false); }}
+          className="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 active:bg-black/10 dark:active:bg-white/20 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary transition-colors cursor-pointer"
           aria-label="Dismiss"
         >
-          <X className="w-4 h-4" />
+          <X className="w-5 h-5" />
         </button>
       </div>
     </div>
