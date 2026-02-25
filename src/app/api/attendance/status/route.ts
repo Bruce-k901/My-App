@@ -53,6 +53,26 @@ export async function GET(request: NextRequest) {
         const clockInTime = new Date(fallbackShift.clock_in_time);
         const hoursOnShift = (Date.now() - clockInTime.getTime()) / (1000 * 60 * 60);
 
+        // Self-heal: ensure time_entries record exists so TimeClock UI stays in sync
+        const { data: existingEntry } = await supabase
+          .from('time_entries')
+          .select('id')
+          .eq('profile_id', profile.id)
+          .eq('status', 'active')
+          .is('clock_out', null)
+          .maybeSingle();
+
+        if (!existingEntry) {
+          await supabase.from('time_entries').insert({
+            profile_id: profile.id,
+            company_id: fallbackShift.company_id,
+            site_id: fallbackShift.site_id,
+            clock_in: fallbackShift.clock_in_time,
+            status: 'active',
+            entry_type: 'shift',
+          });
+        }
+
         return NextResponse.json({
           onShift: true,
           shift: {
@@ -69,9 +89,30 @@ export async function GET(request: NextRequest) {
     }
 
     if (activeShift && activeShift.length > 0) {
+      // Self-heal: ensure time_entries record exists so TimeClock UI stays in sync
+      const shift = activeShift[0];
+      const { data: existingEntry } = await supabase
+        .from('time_entries')
+        .select('id')
+        .eq('profile_id', profile.id)
+        .eq('status', 'active')
+        .is('clock_out', null)
+        .maybeSingle();
+
+      if (!existingEntry && shift.company_id && shift.site_id) {
+        await supabase.from('time_entries').insert({
+          profile_id: profile.id,
+          company_id: shift.company_id,
+          site_id: shift.site_id,
+          clock_in: shift.clock_in_time,
+          status: 'active',
+          entry_type: 'shift',
+        });
+      }
+
       return NextResponse.json({
         onShift: true,
-        shift: activeShift[0],
+        shift,
       });
     }
 
