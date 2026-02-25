@@ -37,8 +37,8 @@ export function ClockInButton() {
   }, [isClockedIn, currentAttendance?.clock_in_time, currentAttendance?.clock_in_at])
 
   const handleClockInClick = useCallback(() => {
-    if (!siteId) {
-      alert('Please select a site first')
+    if (!siteId || siteId === 'all') {
+      alert('Please select a specific site first')
       return
     }
     setShowClockInConfirm(true)
@@ -188,7 +188,7 @@ export function ClockInButton() {
     <>
       <button
         onClick={handleClockInClick}
-        disabled={requestingLocation || !siteId}
+        disabled={requestingLocation || !siteId || siteId === 'all'}
         className="flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 bg-[#D37E91]/10 hover:bg-[#D37E91]/10 dark:bg-[#D37E91]/25 dark:hover:bg-[#D37E91]/35 border border-[#D37E91] dark:border-[#D37E91]/50 text-[#D37E91] dark:text-[#D37E91] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed h-9 md:h-10"
       >
         {requestingLocation ? (

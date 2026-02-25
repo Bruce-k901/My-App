@@ -49,8 +49,8 @@ export function useAttendance() {
     location?: { lat: number; lng: number; accuracy: number },
     notes?: string
   ) => {
-    if (!siteId) {
-      throw new Error('No site selected')
+    if (!siteId || siteId === 'all') {
+      throw new Error('Please select a specific site first')
     }
 
     setLoading(true)

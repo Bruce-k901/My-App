@@ -48,11 +48,11 @@ export function useOfflineAttendance() {
             throw new Error('Server error');
           }
 
-          // Client error
-          const error = await response.json();
-          toast.error(error.message || 'Failed to clock in');
+          // Client error (API returns { error: "..." })
+          const data = await response.json();
+          toast.error(data.error || 'Failed to clock in');
           setIsProcessing(false);
-          return { success: false, error: error.message };
+          return { success: false, error: data.error };
 
         } catch (networkError) {
           console.warn('[Clock In] Network error, queueing:', networkError);
@@ -112,11 +112,11 @@ export function useOfflineAttendance() {
             throw new Error('Server error');
           }
 
-          // Client error
-          const error = await response.json();
-          toast.error(error.message || 'Failed to clock out');
+          // Client error (API returns { error: "..." })
+          const data = await response.json();
+          toast.error(data.error || 'Failed to clock out');
           setIsProcessing(false);
-          return { success: false, error: error.message };
+          return { success: false, error: data.error };
 
         } catch (networkError) {
           console.warn('[Clock Out] Network error, queueing:', networkError);
