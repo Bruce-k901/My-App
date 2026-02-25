@@ -68,23 +68,48 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already has an active shift
+    const clockInTime = new Date().toISOString();
     const { data: activeShift } = await supabase
       .from('staff_attendance')
-      .select('id')
+      .select('id, clock_in_time')
       .eq('profile_id', profile.id)
       .eq('shift_status', 'on_shift')
       .is('clock_out_time', null)
       .maybeSingle();
 
     if (activeShift) {
-      return NextResponse.json(
-        { error: 'You already have an active shift. Please clock out first.' },
-        { status: 400 }
-      );
-    }
+      // Auto-close stale shifts (open for 16+ hours) so staff aren't stuck
+      const shiftAge = Date.now() - new Date(activeShift.clock_in_time).getTime();
+      const sixteenHours = 16 * 60 * 60 * 1000;
 
-    // Create new attendance record
-    const clockInTime = new Date().toISOString();
+      if (shiftAge > sixteenHours) {
+        await supabase
+          .from('staff_attendance')
+          .update({
+            clock_out_time: clockInTime,
+            shift_status: 'off_shift',
+            shift_notes: 'Auto-closed: stale shift on new clock-in',
+          })
+          .eq('id', activeShift.id);
+
+        // Also close any matching time_entries
+        await supabase
+          .from('time_entries')
+          .update({
+            clock_out: clockInTime,
+            status: 'completed',
+            notes: 'Auto-closed: stale shift on new clock-in',
+          })
+          .eq('profile_id', profile.id)
+          .eq('status', 'active')
+          .is('clock_out', null);
+      } else {
+        return NextResponse.json(
+          { error: 'You already have an active shift. Please clock out first.' },
+          { status: 400 }
+        );
+      }
+    }
     const { data: attendance, error: insertError } = await supabase
       .from('staff_attendance')
       .insert({

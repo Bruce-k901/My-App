@@ -79,9 +79,10 @@ export async function clockIn(
     }
 
     // Check if already clocked in (any active shift)
+    const clockInTime = new Date().toISOString();
     const { data: existing } = await supabase
       .from("staff_attendance")
-      .select("id")
+      .select("id, clock_in_time")
       .eq("profile_id", user.id)
       .eq("shift_status", "on_shift")
       .is("clock_out_time", null)
@@ -90,14 +91,37 @@ export async function clockIn(
       .maybeSingle();
 
     if (existing) {
-      return {
-        success: false,
-        error: "Already clocked in. Please clock out first.",
-      };
-    }
+      // Auto-close stale shifts (open for 16+ hours) so staff aren't stuck
+      const shiftAge = Date.now() - new Date(existing.clock_in_time).getTime();
+      const sixteenHours = 16 * 60 * 60 * 1000;
 
-    // Create attendance log
-    const clockInTime = new Date().toISOString();
+      if (shiftAge > sixteenHours) {
+        await supabase
+          .from("staff_attendance")
+          .update({
+            clock_out_time: clockInTime,
+            shift_status: "off_shift",
+            shift_notes: "Auto-closed: stale shift on new clock-in",
+          })
+          .eq("id", existing.id);
+
+        await supabase
+          .from("time_entries")
+          .update({
+            clock_out: clockInTime,
+            status: "completed",
+            notes: "Auto-closed: stale shift on new clock-in",
+          })
+          .eq("profile_id", user.id)
+          .eq("status", "active")
+          .is("clock_out", null);
+      } else {
+        return {
+          success: false,
+          error: "Already clocked in. Please clock out first.",
+        };
+      }
+    }
     const insertData = {
       profile_id: user.id,
       company_id: profile.company_id,
