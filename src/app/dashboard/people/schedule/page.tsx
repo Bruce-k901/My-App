@@ -9,13 +9,13 @@ import { useSiteContext } from '@/contexts/SiteContext';
 import { supabase } from '@/lib/supabase';
 import {
   DndContext,
-  closestCenter,
+  DragOverlay,
   KeyboardSensor,
   PointerSensor,
+  pointerWithin,
   useSensor,
   useSensors,
   DragEndEvent,
-  DragStartEvent,
   useDroppable,
 } from '@dnd-kit/core';
 import {
@@ -848,14 +848,15 @@ function SortableShift({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.3 : 1,
+    pointerEvents: isDragging ? 'none' as const : undefined,
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="relative"
+      className={`relative ${isDragging ? 'z-0' : ''}`}
     >
       {/* Top indicator strip for borrowed shifts */}
       {shift.isFromOtherSite && (
@@ -935,6 +936,23 @@ function SortableShift({
         {getShiftNetHours(shift).toFixed(1)}h
       </div>
     </div>
+    </div>
+  );
+}
+
+// Lightweight drag overlay preview — rendered via portal so it floats above everything
+function ShiftDragPreview({ shift }: { shift: Shift }) {
+  return (
+    <div className="px-3 py-1.5 rounded-lg bg-theme-surface border-2 border-module-fg shadow-lg shadow-black/30 opacity-95 min-w-[120px] pointer-events-none">
+      <div className="text-[11px] font-semibold text-module-fg">
+        {formatTime(shift.start_time)}–{formatTime(shift.end_time)}
+      </div>
+      <div className="text-[10px] text-theme-secondary truncate max-w-[160px]">
+        {shift.profile_name || 'Open shift'}
+      </div>
+      <div className="text-[9px] text-theme-tertiary">
+        {getShiftNetHours(shift).toFixed(1)}h
+      </div>
     </div>
   );
 }
@@ -4759,7 +4777,7 @@ export default function RotaBuilderPage() {
                 {/* Staff rows */}
                 <DndContext
                   sensors={sensors}
-                  collisionDetection={closestCenter}
+                  collisionDetection={pointerWithin}
                   onDragStart={(event) => setActiveId(event.active.id as string)}
                   onDragEnd={(event) => {
                     setActiveId(null);
@@ -4769,6 +4787,7 @@ export default function RotaBuilderPage() {
                       handleShiftDragEnd(event);
                     }
                   }}
+                  onDragCancel={() => setActiveId(null)}
                 >
                   <SortableContext
                     items={rosterItemsForPeopleView
@@ -4951,6 +4970,13 @@ export default function RotaBuilderPage() {
                       );
                     })}
                 </div>
+                  {/* Floating drag preview — rendered via portal above everything */}
+                  <DragOverlay dropAnimation={null}>
+                    {activeId?.startsWith('shift-') ? (() => {
+                      const s = shifts.find((sh) => `shift-${sh.id}` === activeId);
+                      return s ? <ShiftDragPreview shift={s} /> : null;
+                    })() : null}
+                  </DragOverlay>
                 </DndContext>
 
                 {/* Day totals footer (keeps header clean) */}
