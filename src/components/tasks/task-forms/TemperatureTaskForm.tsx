@@ -223,7 +223,7 @@ export function TemperatureTaskForm({
     await onSubmit(payload)
   }
 
-  // Shared keyboard handlers
+  // Shared keyboard handlers — route to active input
   const handleKeyPress = useCallback((key: string) => {
     if (!focusedAssetId) return
     inputRefs.current.get(focusedAssetId)?.handleKeyPress(key)
@@ -234,44 +234,67 @@ export function TemperatureTaskForm({
     inputRefs.current.get(focusedAssetId)?.handleBackspace()
   }, [focusedAssetId])
 
+  // Enter advances to next sensor (state-only, no DOM focus)
   const handleEnter = useCallback(() => {
     if (!focusedAssetId) return
     const currentIndex = assetIds.indexOf(focusedAssetId)
     if (currentIndex < assetIds.length - 1) {
-      const nextId = assetIds[currentIndex + 1]
-      inputRefs.current.get(nextId)?.focus()
-      setFocusedAssetId(nextId)
+      setFocusedAssetId(assetIds[currentIndex + 1])
     } else {
-      inputRefs.current.get(focusedAssetId)?.blur()
+      // Last sensor — dismiss keyboard
       setShowKeyboard(false)
       setFocusedAssetId(null)
     }
   }, [focusedAssetId, assetIds])
 
   const handleDismiss = useCallback(() => {
-    if (focusedAssetId) inputRefs.current.get(focusedAssetId)?.blur()
     setShowKeyboard(false)
     setFocusedAssetId(null)
-  }, [focusedAssetId])
+  }, [])
 
   const handleInputFocus = useCallback((assetId: string) => {
     setFocusedAssetId(assetId)
     if (isMobile) setShowKeyboard(true)
   }, [isMobile])
 
-  const handleInputBlur = useCallback((assetId: string) => {
-    setTimeout(() => {
-      const kbEl = document.querySelector('[data-numeric-keyboard]')
-      if (kbEl && kbEl.contains(document.activeElement)) return
-      setFocusedAssetId(prev => {
-        if (prev === assetId) {
-          setShowKeyboard(false)
-          return null
-        }
-        return prev
-      })
-    }, 150)
-  }, [])
+  const handleInputBlur = useCallback((_assetId: string) => {
+    // On mobile, outside-click handler manages dismissal
+    // On desktop, clear state directly
+    if (!isMobile) {
+      setFocusedAssetId(null)
+      setShowKeyboard(false)
+    }
+  }, [isMobile])
+
+  // Outside-click dismissal for mobile keyboard
+  useEffect(() => {
+    if (!isMobile || !showKeyboard) return
+
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      const keyboard = document.querySelector('[data-numeric-keyboard]')
+
+      // Ignore clicks on the keyboard itself
+      if (keyboard?.contains(target)) return
+
+      // Check if clicked on a temperature input (let onFocus handle switching)
+      const clickedInput = target.closest('[data-temp-input]')
+      if (clickedInput) return
+
+      // Clicked outside — dismiss keyboard
+      setShowKeyboard(false)
+      setFocusedAssetId(null)
+    }
+
+    const timer = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside)
+    }, 0)
+
+    return () => {
+      clearTimeout(timer)
+      document.removeEventListener('click', handleClickOutside)
+    }
+  }, [isMobile, showKeyboard])
 
   const setInputRef = useCallback((assetId: string) => (handle: AssetTemperatureInputHandle | null) => {
     if (handle) inputRefs.current.set(assetId, handle)

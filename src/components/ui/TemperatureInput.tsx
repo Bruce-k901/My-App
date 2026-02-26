@@ -19,9 +19,10 @@ interface TemperatureInputProps {
 }
 
 /**
- * Temperature input component with custom numeric keyboard
- * Includes minus button for negative temperatures
- * Only shows custom keyboard on mobile/touch devices
+ * Temperature input component with custom numeric keyboard.
+ * Includes minus button for negative temperatures.
+ * On mobile: input is readOnly, all entry goes through the custom keyboard.
+ * On desktop: uses native input with decimal keyboard.
  */
 export function TemperatureInput({
   value,
@@ -36,24 +37,17 @@ export function TemperatureInput({
   name,
   fontSize,
 }: TemperatureInputProps) {
-  const [isFocused, setIsFocused] = useState(false);
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  
-  // Strict mobile detection: only show keyboard on actual mobile devices
-  // Checks for touch support AND small screen width (mobile/tablet)
+
   useEffect(() => {
     const checkMobile = () => {
       const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
       const isSmallScreen = window.innerWidth <= 768;
       setIsMobile(hasTouch && isSmallScreen);
     };
-    
-    // Check on mount
     checkMobile();
-    
-    // Check on resize (in case window is resized)
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
@@ -61,39 +55,23 @@ export function TemperatureInput({
   // Convert value to string for display
   const displayValue = value === undefined || value === null ? '' : String(value);
 
-  const handleFocus = () => {
-    setIsFocused(true);
+  const handleTap = () => {
     if (isMobile) {
       setShowKeyboard(true);
     }
     onFocus?.();
   };
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    // Use a timeout to check if the blur was caused by clicking the keyboard
-    // This allows the click event to fire first
-    setTimeout(() => {
-      const activeElement = document.activeElement;
-      const keyboardElement = document.querySelector('[data-numeric-keyboard]');
-      
-      // If the active element is inside the keyboard, keep the input focused
-      if (keyboardElement && activeElement && keyboardElement.contains(activeElement)) {
-        inputRef.current?.focus();
-        return;
-      }
-      
-      // Only hide keyboard if input is truly not focused
-      if (document.activeElement !== inputRef.current) {
-        setIsFocused(false);
-        setShowKeyboard(false);
-        onBlur?.();
-      }
-    }, 150);
+  const handleBlur = () => {
+    // On mobile, keyboard manages its own dismissal via outside-click
+    if (!isMobile) {
+      onBlur?.();
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Desktop only — mobile inputs are readOnly
     const newValue = e.target.value;
-    // Allow negative numbers, decimals, and empty string
     if (newValue === '' || newValue === '-' || /^-?\d*\.?\d*$/.test(newValue)) {
       onChange(newValue);
     }
@@ -104,39 +82,22 @@ export function TemperatureInput({
     let newValue = '';
 
     if (key === '-') {
-      // Toggle minus sign at the start
-      if (currentValue.startsWith('-')) {
-        newValue = currentValue.slice(1);
-      } else {
-        newValue = '-' + currentValue;
-      }
+      newValue = currentValue.startsWith('-') ? currentValue.slice(1) : '-' + currentValue;
     } else if (key === '.') {
-      // Only allow one decimal point
-      if (!currentValue.includes('.')) {
-        newValue = currentValue + '.';
-      } else {
-        newValue = currentValue; // Don't add if already exists
-      }
+      if (currentValue.includes('.')) return;
+      newValue = currentValue + '.';
     } else {
-      // Regular number
       newValue = currentValue + key;
     }
 
-    // Validate the new value
     if (newValue === '' || newValue === '-' || /^-?\d*\.?\d*$/.test(newValue)) {
       onChange(newValue);
-      // Keep focus on input
-      inputRef.current?.focus();
     }
   };
 
   const handleBackspace = () => {
-    const currentValue = displayValue;
-    if (currentValue.length > 0) {
-      const newValue = currentValue.slice(0, -1);
-      onChange(newValue);
-      // Keep focus on input
-      inputRef.current?.focus();
+    if (displayValue.length > 0) {
+      onChange(displayValue.slice(0, -1));
     }
   };
 
@@ -144,32 +105,54 @@ export function TemperatureInput({
     if (onSubmit) {
       onSubmit();
     }
-    // Blur the input to hide keyboard
-    inputRef.current?.blur();
+    setShowKeyboard(false);
+    onBlur?.();
   };
 
-  // Prevent default keyboard on mobile when using custom keyboard
+  const handleDismiss = () => {
+    setShowKeyboard(false);
+    onBlur?.();
+  };
+
+  // Outside-click dismissal for mobile keyboard
   useEffect(() => {
-    if (isMobile && showKeyboard && inputRef.current) {
-      // Set inputMode to 'none' to prevent default keyboard
-      inputRef.current.setAttribute('inputmode', 'none');
-    } else if (inputRef.current) {
-      // Restore decimal input mode when keyboard is hidden
-      inputRef.current.setAttribute('inputmode', 'decimal');
-    }
-  }, [showKeyboard, isMobile]);
+    if (!isMobile || !showKeyboard) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const keyboard = document.querySelector('[data-numeric-keyboard]');
+
+      if (keyboard?.contains(target)) return;
+      if (inputRef.current?.contains(target)) return;
+
+      setShowKeyboard(false);
+      onBlur?.();
+    };
+
+    // Use setTimeout so the click that opened the keyboard doesn't immediately close it
+    const timer = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 0);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isMobile, showKeyboard, onBlur]);
 
   return (
     <>
       <input
         ref={inputRef}
         type="text"
-        inputMode={isMobile && showKeyboard ? 'none' : 'decimal'}
+        readOnly={isMobile}
+        inputMode={isMobile ? 'none' : 'decimal'}
         pattern="-?[0-9]*\.?[0-9]*"
         value={displayValue}
         onChange={handleChange}
-        onFocus={handleFocus}
+        onFocus={handleTap}
         onBlur={handleBlur}
+        onClick={handleTap}
         placeholder={placeholder}
         disabled={disabled}
         id={id}
@@ -178,10 +161,10 @@ export function TemperatureInput({
           "w-full rounded-lg bg-theme-surface border border-gray-300 dark:border-theme text-theme-primary px-3 py-2",
           "placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D37E91]/50 focus-visible:border-[#D37E91]/50",
           "hover:bg-theme-surface-elevated dark:hover:bg-neutral-700 hover:border-gray-400 dark:hover:border-neutral-600 transition-colors",
+          showKeyboard && isMobile && "ring-2 ring-[#D37E91]/50 border-[#D37E91]/50",
           className
         )}
         // Use fontSize prop if provided, otherwise prevent zoom on iOS (16px) or use default 14px
-        // Important: fontSize must be in style to override any className font-size
         style={{ fontSize: fontSize ? fontSize : (isMobile ? '16px' : '14px'), fontFamily: 'inherit' }}
       />
       {isMobile && (
@@ -189,13 +172,10 @@ export function TemperatureInput({
           onKeyPress={handleKeyPress}
           onBackspace={handleBackspace}
           onEnter={onSubmit ? handleEnter : undefined}
-          onDismiss={() => { setShowKeyboard(false); setIsFocused(false); inputRef.current?.blur(); onBlur?.(); }}
+          onDismiss={handleDismiss}
           isVisible={showKeyboard}
         />
       )}
     </>
   );
 }
-
-
-

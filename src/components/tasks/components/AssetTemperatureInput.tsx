@@ -12,8 +12,6 @@ interface PlacedAction {
 export interface AssetTemperatureInputHandle {
   handleKeyPress: (key: string) => void;
   handleBackspace: () => void;
-  focus: () => void;
-  blur: () => void;
 }
 
 interface AssetTemperatureInputProps {
@@ -67,8 +65,8 @@ export const AssetTemperatureInput = forwardRef<AssetTemperatureInputHandle, Ass
   }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Desktop only — mobile inputs are readOnly
     const newValue = e.target.value;
-    // Allow negative numbers, decimals, and empty string
     if (newValue === '' || newValue === '-' || /^-?\d*\.?\d*$/.test(newValue)) {
       setTempValue(newValue);
       if (newValue === '' || newValue === '-') {
@@ -126,30 +124,20 @@ export const AssetTemperatureInput = forwardRef<AssetTemperatureInputHandle, Ass
   useImperativeHandle(ref, () => ({
     handleKeyPress,
     handleBackspace,
-    focus: () => inputRef.current?.focus(),
-    blur: () => inputRef.current?.blur(),
   }));
 
-  const handleInputFocus = () => {
+  const handleInputTap = () => {
     onInputFocus?.(assetId);
   };
 
   const handleInputBlur = () => {
-    // Delay to allow keyboard taps to register before hiding
-    setTimeout(() => {
-      const keyboardElement = document.querySelector('[data-numeric-keyboard]');
-      if (keyboardElement && keyboardElement.contains(document.activeElement)) {
-        inputRef.current?.focus();
-        return;
-      }
-      if (document.activeElement !== inputRef.current) {
-        onInputBlur?.(assetId);
-      }
-    }, 150);
+    // On mobile, parent manages keyboard dismissal via outside-click
+    if (!isMobile) {
+      onInputBlur?.(assetId);
+    }
   };
 
   // Check if current value is out of range
-  // Note: Ranges are already corrected in useTaskState, so simple comparison
   const isOutOfRange = value !== null && (
     (min !== null && value < min) ||
     (max !== null && value > max)
@@ -195,10 +183,12 @@ export const AssetTemperatureInput = forwardRef<AssetTemperatureInputHandle, Ass
   return (
     <div className="space-y-2">
       {/* Temperature Input Row */}
-      <div className={`flex items-center gap-4 p-3 rounded-lg border transition-colors ${
-        isOutOfRange
-          ? 'bg-red-100 dark:bg-red-500/10 border-red-200 dark:border-red-500/30'
-          : 'bg-theme-hover border-theme'
+      <div data-temp-input className={`flex items-center gap-4 p-3 rounded-lg border transition-colors ${
+        isKeyboardTarget
+          ? 'bg-[#D37E91]/5 dark:bg-[#D37E91]/10 border-[#D37E91]/50 ring-2 ring-[#D37E91]/30'
+          : isOutOfRange
+            ? 'bg-red-100 dark:bg-red-500/10 border-red-200 dark:border-red-500/30'
+            : 'bg-theme-hover border-theme'
       }`}>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -215,11 +205,13 @@ export const AssetTemperatureInput = forwardRef<AssetTemperatureInputHandle, Ass
           <input
             ref={inputRef}
             type="text"
-            inputMode={isMobile && isKeyboardTarget ? 'none' : 'decimal'}
+            readOnly={isMobile}
+            inputMode={isMobile ? 'none' : 'decimal'}
             pattern="-?[0-9]*\.?[0-9]*"
             value={tempValue}
             onChange={handleChange}
-            onFocus={handleInputFocus}
+            onFocus={handleInputTap}
+            onClick={handleInputTap}
             onBlur={handleInputBlur}
             disabled={disabled}
             placeholder="--"
