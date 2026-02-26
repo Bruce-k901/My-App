@@ -126,7 +126,12 @@ export const AssetTemperatureInput = forwardRef<AssetTemperatureInputHandle, Ass
     handleBackspace,
   }));
 
-  const handleInputTap = () => {
+  const handleInputTap = (e: React.FocusEvent<HTMLInputElement> | React.MouseEvent<HTMLInputElement>) => {
+    if (isMobile && 'target' in e && e.target instanceof HTMLInputElement) {
+      // Immediately blur so iOS never has an active focused input
+      // (matches CalculatorKeypad pattern — prevents PWA standalone focus issues)
+      e.target.blur();
+    }
     onInputFocus?.(assetId);
   };
 

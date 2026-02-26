@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import { haptics } from '@/lib/haptics';
 import { MOBILE_Z } from '@/lib/mobile-layout';
+import { portalToOverlayRoot } from '@/lib/overlay-portal';
 
 interface NumericKeyboardProps {
   onKeyPress: (key: string) => void;
@@ -70,6 +70,7 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, onDismiss, i
       style={{
         boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.15)',
       }}
+      onPointerDown={(e) => e.preventDefault()}
     >
       <div className="max-w-md mx-auto">
         {/* Number pad */}
@@ -180,10 +181,6 @@ export function NumericKeyboard({ onKeyPress, onBackspace, onEnter, onDismiss, i
     </div>
   );
 
-  // Render via portal to escape any parent stacking contexts (modals, backdrop-blur)
-  if (typeof document !== 'undefined') {
-    return createPortal(keyboard, document.body);
-  }
-
-  return keyboard;
+  // Portal to #overlay-root (escapes iOS stacking context trap in PWA standalone mode)
+  return portalToOverlayRoot(keyboard);
 }

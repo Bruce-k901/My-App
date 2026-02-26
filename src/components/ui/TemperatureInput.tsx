@@ -55,8 +55,13 @@ export function TemperatureInput({
   // Convert value to string for display
   const displayValue = value === undefined || value === null ? '' : String(value);
 
-  const handleTap = () => {
+  const handleTap = (e: React.FocusEvent<HTMLInputElement> | React.MouseEvent<HTMLInputElement>) => {
     if (isMobile) {
+      // Immediately blur so iOS never has an active focused input
+      // (matches CalculatorKeypad pattern — prevents PWA standalone focus issues)
+      if ('target' in e && e.target instanceof HTMLInputElement) {
+        e.target.blur();
+      }
       setShowKeyboard(true);
     }
     onFocus?.();
