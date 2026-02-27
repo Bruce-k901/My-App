@@ -17,23 +17,34 @@ export async function GET(request: Request) {
   
   let verifiedUser = null;
   
-  // If we have a token_hash, verify it first (email confirmation flow)
-  if (token_hash && type === 'email') {
-    console.log('🔐 Verifying email confirmation token...');
+  // Verify token_hash for all auth flows (email confirmation, invite, recovery, etc.)
+  const verifiableTypes = ['email', 'invite', 'recovery', 'magiclink', 'signup', 'email_change'] as const;
+  type VerifiableType = typeof verifiableTypes[number];
+
+  if (token_hash && type && verifiableTypes.includes(type as VerifiableType)) {
+    console.log(`🔐 Verifying ${type} token...`);
     const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({
-      type: 'email',
+      type: type as VerifiableType,
       token_hash,
     });
 
     if (verifyError || !verifyData.user) {
-      console.error('❌ Email verification failed:', verifyError);
-      return NextResponse.redirect(new URL(`/login?error=email_verification_failed`, request.url));
+      console.error(`❌ ${type} verification failed:`, verifyError);
+      return NextResponse.redirect(new URL(`/login?error=verification_failed`, request.url));
     }
 
     verifiedUser = verifyData.user;
-    console.log('✅ Email verified, user:', verifiedUser.id);
-    // Token verified - user is now confirmed and session is created
-    // Continue with signup completion below
+    console.log(`✅ ${type} verified, user:`, verifiedUser.id);
+
+    // For invite/recovery flows, redirect immediately with session tokens in hash
+    // so the client-side Supabase client can establish the correct session
+    // (the server-side session lives in cookies, but the client reads from localStorage)
+    if ((type === 'invite' || type === 'recovery') && verifyData.session) {
+      const redirectUrl = new URL(next, request.url);
+      redirectUrl.hash = `access_token=${verifyData.session.access_token}&refresh_token=${verifyData.session.refresh_token}`;
+      console.log(`🚀 ${type} flow — redirecting to ${next} with session tokens`);
+      return NextResponse.redirect(redirectUrl);
+    }
   }
   
   // Get the current user (either from verified token or existing session)

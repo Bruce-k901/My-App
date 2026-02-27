@@ -80,7 +80,11 @@ export default function LoginPage() {
       // Only update state if component is still mounted
       if (isMountedRef.current) {
         console.error("Login error:", err);
-        setError(err.message || "Failed to sign in");
+        const friendly =
+          err.message === "Invalid login credentials"
+            ? "Incorrect email or password. If you were recently invited, please check your email and set up your account first."
+            : err.message || "Failed to sign in";
+        setError(friendly);
         setLoading(false);
       }
     }

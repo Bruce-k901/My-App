@@ -87,6 +87,7 @@ function SetupAccountContent() {
   // Profile data fetched after step 1
   const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [siteName, setSiteName] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
 
   // Step 1 — Account Security
   const [password, setPassword] = useState("");
@@ -194,6 +195,19 @@ function SetupAccountContent() {
       });
     }
   }, [searchParams]);
+
+  /* ---------------------------------------------------------------- */
+  /*  Fetch user name from auth metadata for welcome message           */
+  /* ---------------------------------------------------------------- */
+
+  useEffect(() => {
+    if (!canSetup) return;
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.user_metadata?.full_name) {
+        setUserName(user.user_metadata.full_name);
+      }
+    });
+  }, [canSetup]);
 
   /* ---------------------------------------------------------------- */
   /*  Fetch profile after session is ready                             */
@@ -518,6 +532,18 @@ function SetupAccountContent() {
 
   const renderStep1 = () => (
     <form onSubmit={handleStep1Submit} className="space-y-4">
+      {/* Welcome message */}
+      {canSetup && (
+        <div className="rounded-xl bg-teamly/5 border border-teamly/20 px-4 py-3 mb-2">
+          <p className="text-sm text-theme-secondary">
+            Hi{userName ? <> <span className="font-semibold text-theme-primary">{userName}</span></> : ""}, welcome to Opsly!
+          </p>
+          <p className="text-xs text-theme-tertiary mt-1">
+            Please take a moment to set up your account and check your details.
+          </p>
+        </div>
+      )}
+
       {!canSetup && (
         <p className="text-theme-tertiary text-sm text-center">
           Waiting for invitation session&hellip; If this page wasn&apos;t opened
@@ -547,6 +573,20 @@ function SetupAccountContent() {
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         </div>
+        <ul className="mt-1.5 space-y-0.5 text-xs text-theme-tertiary">
+          <li className={password.length >= 8 ? "text-green-400" : ""}>
+            &bull; At least 8 characters
+          </li>
+          <li className={/[A-Z]/.test(password) ? "text-green-400" : ""}>
+            &bull; One uppercase letter
+          </li>
+          <li className={/[a-z]/.test(password) ? "text-green-400" : ""}>
+            &bull; One lowercase letter
+          </li>
+          <li className={/[0-9]/.test(password) ? "text-green-400" : ""}>
+            &bull; One number
+          </li>
+        </ul>
         <button
           type="button"
           onClick={generatePassword}
@@ -652,8 +692,8 @@ function SetupAccountContent() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="col-span-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="sm:col-span-2">
           <label className={labelClass}>Phone Number</label>
           <input
             type="tel"
@@ -686,7 +726,7 @@ function SetupAccountContent() {
             <option value="prefer_not_to_say">Prefer not to say</option>
           </select>
         </div>
-        <div className="col-span-2">
+        <div className="sm:col-span-2">
           <label className={labelClass}>Nationality</label>
           <input
             type="text"
