@@ -1967,8 +1967,27 @@ export default function RotaBuilderPage() {
             .select('id, status')
             .single();
 
-          if (createErr) throw createErr;
-          rotaData = newRota;
+          if (createErr) {
+            // Race condition: another call already created this rota — re-fetch it
+            if (createErr.code === '23505') {
+              const { data: reFetched } = await supabase
+                .from('rotas')
+                .select('id, status')
+                .eq('company_id', companyId)
+                .eq('site_id', selectedSite)
+                .eq('week_starting', weekStr)
+                .maybeSingle();
+              if (reFetched) {
+                rotaData = reFetched;
+              } else {
+                throw createErr;
+              }
+            } else {
+              throw createErr;
+            }
+          } else {
+            rotaData = newRota;
+          }
         } else {
           // Staff members can't create rotas - show message that rota doesn't exist yet
           setError('No rota exists for this site and week. Please contact a manager to create one.');
