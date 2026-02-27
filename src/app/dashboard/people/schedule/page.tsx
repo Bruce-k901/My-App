@@ -57,6 +57,7 @@ import { RotaPDF } from '@/lib/pdf/templates/RotaPDF';
 import { DayApprovalPanel } from '@/components/rota/DayApprovalPanel';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { ShiftActionSheet } from '@/components/rota/ShiftActionSheet';
+import { useShiftPatterns } from '@/hooks/use-shift-patterns';
 
 // ============================================
 // TYPES
@@ -171,10 +172,10 @@ const getShiftNetHours = (shift: { start_time: string; end_time: string; break_m
   calculateNetHours(shift.start_time, shift.end_time, shift.break_minutes || 0);
 
 // ============================================
-// DEFAULT SHIFT TEMPLATES (if table doesn't exist)
+// FALLBACK SHIFT TEMPLATES (used when DB returns empty)
 // ============================================
 
-const DEFAULT_TEMPLATES: ShiftTemplate[] = [
+const FALLBACK_TEMPLATES: ShiftTemplate[] = [
   { id: '1', name: 'Opening', short_name: 'OPEN', start_time: '06:00', end_time: '14:00', break_minutes: 30, net_hours: 7.5, color: '#22c55e' },
   { id: '2', name: 'Morning', short_name: 'AM', start_time: '08:00', end_time: '16:00', break_minutes: 30, net_hours: 7.5, color: '#3b82f6' },
   { id: '3', name: 'Mid', short_name: 'MID', start_time: '11:00', end_time: '19:00', break_minutes: 30, net_hours: 7.5, color: '#8b5cf6' },
@@ -1766,7 +1767,19 @@ export default function RotaBuilderPage() {
   const [rota, setRota] = useState<{ id: string; status: string } | null>(null);
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [staff, setStaff] = useState<Staff[]>([]);
-  const [templates] = useState<ShiftTemplate[]>(DEFAULT_TEMPLATES);
+  const { data: shiftPatterns = [] } = useShiftPatterns();
+  const templates: ShiftTemplate[] = shiftPatterns.length > 0
+    ? shiftPatterns.map(p => ({
+        id: p.id,
+        name: p.name,
+        short_name: p.short_code || p.name.substring(0, 4).toUpperCase(),
+        start_time: p.start_time,
+        end_time: p.end_time,
+        break_minutes: p.break_duration_minutes,
+        net_hours: p.total_hours,
+        color: p.color,
+      }))
+    : FALLBACK_TEMPLATES;
   const [forecasts, setForecasts] = useState<Record<string, DayForecast>>({});
   const [sections, setSections] = useState<RotaSection[]>(FALLBACK_SECTIONS);
   const [sectionsEnabled, setSectionsEnabled] = useState(false);
@@ -2766,6 +2779,23 @@ export default function RotaBuilderPage() {
         setSections(FALLBACK_SECTIONS);
       }
 
+      // 7. Load persisted staff order from rota_site_settings
+      try {
+        const { data: settingsData } = await supabase
+          .from('rota_site_settings')
+          .select('staff_order')
+          .eq('company_id', companyId)
+          .eq('site_id', selectedSite)
+          .maybeSingle();
+
+        if (settingsData?.staff_order && Array.isArray(settingsData.staff_order) && settingsData.staff_order.length > 0) {
+          if (!mountedRef.current) return;
+          setRosterOrder(settingsData.staff_order as RosterItem[]);
+        }
+      } catch (orderErr) {
+        console.warn('Could not load staff order (table may not exist yet):', orderErr);
+      }
+
     } catch (err: any) {
       if (!mountedRef.current) return;
       
@@ -3143,18 +3173,38 @@ export default function RotaBuilderPage() {
     return siteStaff;
   }, [selectedSite, siteStaff, staff]);
 
-  // Persisted roster ordering (per site) for People view
+  // Persisted roster ordering — DB is source of truth (loaded in loadData step 7).
+  // localStorage is used only as an optimistic cache for instant rendering on page load.
   useEffect(() => {
     if (!selectedSite) return;
     try {
       const key = `rota_roster_order:${selectedSite}`;
       const raw = localStorage.getItem(key);
       const parsed = raw ? (JSON.parse(raw) as RosterItem[]) : [];
-      if (Array.isArray(parsed)) setRosterOrder(parsed);
+      if (Array.isArray(parsed) && parsed.length > 0) setRosterOrder(parsed);
     } catch {
       // ignore
     }
   }, [selectedSite]);
+
+  // Save roster order to localStorage (instant) + DB (durable)
+  const persistRosterOrder = useCallback((order: RosterItem[]) => {
+    if (!selectedSite || !companyId) return;
+    // localStorage — fast cache
+    try {
+      localStorage.setItem(`rota_roster_order:${selectedSite}`, JSON.stringify(order));
+    } catch { /* ignore */ }
+    // DB — durable store (fire-and-forget)
+    supabase
+      .from('rota_site_settings')
+      .upsert(
+        { company_id: companyId, site_id: selectedSite, staff_order: order, updated_at: new Date().toISOString() },
+        { onConflict: 'company_id,site_id' }
+      )
+      .then(({ error }) => {
+        if (error) console.warn('Could not persist staff order:', error.message);
+      });
+  }, [selectedSite, companyId]);
 
   const rosterItemsForPeopleView = useMemo(() => {
     const baseStaff = assignmentStaff;
@@ -3603,15 +3653,10 @@ export default function RotaBuilderPage() {
       next[index] = next[swapWith];
       next[swapWith] = tmp;
 
-      try {
-        localStorage.setItem(`rota_roster_order:${selectedSite}`, JSON.stringify(next));
-      } catch {
-        // ignore
-      }
-
+      persistRosterOrder(next);
       return next;
     });
-  }, [rosterItemsForPeopleView, selectedSite]);
+  }, [rosterItemsForPeopleView, selectedSite, persistRosterOrder]);
 
   // Handle drag end for staff reordering
   const handleStaffDragEnd = useCallback((event: DragEndEvent) => {
@@ -3638,14 +3683,10 @@ export default function RotaBuilderPage() {
       if (activeIndex === -1 || overIndex === -1) return prev;
 
       const next = arrayMove(current, activeIndex, overIndex);
-      try {
-        localStorage.setItem(`rota_roster_order:${selectedSite}`, JSON.stringify(next));
-      } catch {
-        // ignore
-      }
+      persistRosterOrder(next);
       return next;
     });
-  }, [rosterItemsForPeopleView, selectedSite]);
+  }, [rosterItemsForPeopleView, selectedSite, persistRosterOrder]);
 
   // Handle drag end for shift moving
   const handleShiftDragEnd = useCallback(async (event: DragEndEvent) => {
@@ -3710,14 +3751,10 @@ export default function RotaBuilderPage() {
     setRosterOrder((prev) => {
       const base = prev.length ? [...prev] : [...rosterItemsForPeopleView];
       const next = [...base, item];
-      try {
-        localStorage.setItem(`rota_roster_order:${selectedSite}`, JSON.stringify(next));
-      } catch {
-        // ignore
-      }
+      persistRosterOrder(next);
       return next;
     });
-  }, [rosterItemsForPeopleView, selectedSite]);
+  }, [rosterItemsForPeopleView, selectedSite, persistRosterOrder]);
 
   const insertDividerToRosterAt = useCallback((section: RotaSection, index: number) => {
     if (!selectedSite) return;
@@ -3726,14 +3763,10 @@ export default function RotaBuilderPage() {
       const base = prev.length ? [...prev] : [...rosterItemsForPeopleView];
       const safeIndex = Math.max(0, Math.min(index, base.length));
       const next = [...base.slice(0, safeIndex), item, ...base.slice(safeIndex)];
-      try {
-        localStorage.setItem(`rota_roster_order:${selectedSite}`, JSON.stringify(next));
-      } catch {
-        // ignore
-      }
+      persistRosterOrder(next);
       return next;
     });
-  }, [rosterItemsForPeopleView, selectedSite]);
+  }, [rosterItemsForPeopleView, selectedSite, persistRosterOrder]);
 
   const removeDividerFromRoster = useCallback((index: number) => {
     if (!selectedSite) return;
@@ -3741,14 +3774,10 @@ export default function RotaBuilderPage() {
       const current = prev.length ? [...prev] : rosterItemsForPeopleView;
       if (index < 0 || index >= current.length) return prev;
       const next = current.filter((_, i) => i !== index);
-      try {
-        localStorage.setItem(`rota_roster_order:${selectedSite}`, JSON.stringify(next));
-      } catch {
-        // ignore
-      }
+      persistRosterOrder(next);
       return next;
     });
-  }, [rosterItemsForPeopleView, selectedSite]);
+  }, [rosterItemsForPeopleView, selectedSite, persistRosterOrder]);
 
   const handleCopyDay = async (sourceDate: string, targetDate: string) => {
     if (!rota || !companyId) {
