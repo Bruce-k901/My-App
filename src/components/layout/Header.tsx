@@ -34,7 +34,7 @@ export function Header({
   const { role, profile, user, signOut } = useAppContext();
   const siteContext = useSiteContext();
   const pathname = usePathname();
-  const { setAiAssistantOpen, setCalendarOpen, setSearchOpen, setMessagingOpen } = usePanelStore();
+  const { setAiAssistantOpen, setCalendarOpen, setSearchOpen } = usePanelStore();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -172,18 +172,16 @@ export function Header({
           <MessageButton />
 
           {/* Notifications Bell - Desktop only */}
-          <button
-            onClick={() => setMessagingOpen(true)}
+          <Link
+            href="/notifications"
             className="hidden lg:flex items-center justify-center w-10 h-10 rounded-lg bg-module-fg/10 border border-module-fg/30 hover:bg-module-fg/15 hover:shadow-module-glow transition-all relative group"
             aria-label="Notifications"
-            style={{ 
+            style={{
               color: moduleColor || 'rgb(var(--text-secondary))'
             }}
           >
             <Bell className="w-5 h-5" />
-            {/* Notification Badge - uncomment when connected to data */}
-            {/* <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span> */}
-          </button>
+          </Link>
 
           {/* Calendar Button */}
           <button
