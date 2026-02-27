@@ -53,35 +53,66 @@ function parseDayparts(daypart: any): string[] {
   return []
 }
 
-// Daypart time ranges for visual grouping
+// Daypart time ranges for visual grouping — driven by site operating schedule
 type TimeDaypart = 'morning' | 'afternoon' | 'evening' | 'night'
 
-const DAYPART_CONFIG: Record<TimeDaypart, {
+const DAYPART_ORDER_LIST: TimeDaypart[] = ['morning', 'afternoon', 'evening', 'night']
+
+function buildDaypartConfig(openHour: number): Record<TimeDaypart, {
   label: string
   timeRange: string
   icon: typeof Sunrise
   startHour: number
   endHour: number
-}> = {
-  morning:   { label: 'Morning',   timeRange: '5:00 AM – 11:59 AM', icon: Sunrise, startHour: 5,  endHour: 12 },
-  afternoon: { label: 'Afternoon', timeRange: '12:00 PM – 4:59 PM', icon: Sun,     startHour: 12, endHour: 17 },
-  evening:   { label: 'Evening',   timeRange: '5:00 PM – 9:59 PM',  icon: Sunset,  startHour: 17, endHour: 22 },
-  night:     { label: 'Night',     timeRange: '10:00 PM – 4:59 AM', icon: Moon,    startHour: 22, endHour: 5  },
+}> {
+  const morningEnd = (openHour + 7) % 24
+  const afternoonEnd = (openHour + 12) % 24
+  const eveningEnd = (openHour + 17) % 24
+
+  const fmt = (h: number) => {
+    const suffix = h >= 12 ? 'PM' : 'AM'
+    const display = h === 0 ? 12 : h > 12 ? h - 12 : h
+    return `${display}:00 ${suffix}`
+  }
+  const fmtEnd = (endH: number) => {
+    const prev = (endH + 23) % 24
+    const suffix = prev >= 12 ? 'PM' : 'AM'
+    const display = prev === 0 ? 12 : prev > 12 ? prev - 12 : prev
+    return `${display}:59 ${suffix}`
+  }
+
+  return {
+    morning:   { label: 'Morning',   timeRange: `${fmt(openHour)} – ${fmtEnd(morningEnd)}`,    icon: Sunrise, startHour: openHour,    endHour: morningEnd },
+    afternoon: { label: 'Afternoon', timeRange: `${fmt(morningEnd)} – ${fmtEnd(afternoonEnd)}`, icon: Sun,     startHour: morningEnd,  endHour: afternoonEnd },
+    evening:   { label: 'Evening',   timeRange: `${fmt(afternoonEnd)} – ${fmtEnd(eveningEnd)}`, icon: Sunset,  startHour: afternoonEnd, endHour: eveningEnd },
+    night:     { label: 'Night',     timeRange: `${fmt(eveningEnd)} – ${fmtEnd(openHour)}`,     icon: Moon,    startHour: eveningEnd,  endHour: openHour },
+  }
 }
 
-const DAYPART_ORDER_LIST: TimeDaypart[] = ['morning', 'afternoon', 'evening', 'night']
-
-function getTimeDaypart(dueTime: string | null | undefined): TimeDaypart {
-  if (!dueTime) return 'night' // Tasks without a time go to the end
+function getTimeDaypart(dueTime: string | null | undefined, openHour: number): TimeDaypart {
+  if (!dueTime) return 'night'
   const hour = parseInt(dueTime.split(':')[0], 10)
   if (isNaN(hour)) return 'night'
-  if (hour >= 5 && hour < 12) return 'morning'
-  if (hour >= 12 && hour < 17) return 'afternoon'
-  if (hour >= 17 && hour < 22) return 'evening'
-  return 'night' // 22-23 and 0-4
+
+  const morningEnd = (openHour + 7) % 24
+  const afternoonEnd = (openHour + 12) % 24
+  const eveningEnd = (openHour + 17) % 24
+
+  const inRange = (h: number, start: number, end: number) => {
+    if (start < end) return h >= start && h < end
+    return h >= start || h < end // wraps midnight
+  }
+
+  // Pre-open hours (e.g. 3:30 AM before 6 AM open) are prep — show in morning
+  if (hour < openHour && hour < morningEnd) return 'morning'
+
+  if (inRange(hour, openHour, morningEnd)) return 'morning'
+  if (inRange(hour, morningEnd, afternoonEnd)) return 'afternoon'
+  if (inRange(hour, afternoonEnd, eveningEnd)) return 'evening'
+  return 'night'
 }
 
-function groupTasksByDaypart(tasks: ChecklistTaskWithTemplate[]): Record<TimeDaypart, ChecklistTaskWithTemplate[]> {
+function groupTasksByDaypart(tasks: ChecklistTaskWithTemplate[], openHour: number): Record<TimeDaypart, ChecklistTaskWithTemplate[]> {
   const groups: Record<TimeDaypart, ChecklistTaskWithTemplate[]> = {
     morning: [],
     afternoon: [],
@@ -89,7 +120,7 @@ function groupTasksByDaypart(tasks: ChecklistTaskWithTemplate[]): Record<TimeDay
     night: [],
   }
   for (const task of tasks) {
-    const dp = getTimeDaypart(task.due_time)
+    const dp = getTimeDaypart(task.due_time, openHour)
     groups[dp].push(task)
   }
   return groups
@@ -122,6 +153,7 @@ export default function DailyChecklistPage() {
   const { isOnline, isCachedData, cacheTasks, getCachedTasks, markLiveData } = useOfflineTaskCache()
   const [activeTab, setActiveTab] = useState<'scheduled' | 'adhoc'>('scheduled')
   const [startingAdHocTaskId, setStartingAdHocTaskId] = useState<string | null>(null)
+  const [siteOpenHour, setSiteOpenHour] = useState<number>(5) // default fallback, updated from site operating_schedule
 
   // Ad hoc tasks hook
   const {
@@ -238,7 +270,26 @@ export default function DailyChecklistPage() {
         return
       }
 
-      setUpcomingTasks(data || [])
+      // Filter out orphaned tasks (callout was deleted)
+      const calloutIds = (data || [])
+        .map((t: any) => t.task_data?.source_id || t.task_data?.callout_id)
+        .filter(Boolean)
+
+      if (calloutIds.length > 0) {
+        const { data: existingCallouts } = await supabase
+          .from('callouts')
+          .select('id')
+          .in('id', calloutIds)
+
+        const existingIds = new Set((existingCallouts || []).map((c: any) => c.id))
+        const validTasks = (data || []).filter((t: any) => {
+          const cId = t.task_data?.source_id || t.task_data?.callout_id
+          return !cId || existingIds.has(cId)
+        })
+        setUpcomingTasks(validTasks)
+      } else {
+        setUpcomingTasks(data || [])
+      }
     } catch (error) {
       console.error('Failed to fetch upcoming tasks:', error)
     }
@@ -260,6 +311,10 @@ export default function DailyChecklistPage() {
       setLoading(true)
       const today = new Date()
       const todayStr = today.toISOString().split('T')[0]
+
+      // Track the resolved open hour locally to avoid stale closure issues
+      // (setSiteOpenHour updates state for the next render, but we need the value NOW)
+      let resolvedOpenHour = 5 // default fallback
 
       // OFFLINE: If offline, load from IndexedDB cache
       if (!isOnline) {
@@ -328,7 +383,63 @@ export default function DailyChecklistPage() {
         }
         console.log('🔍 Staff: Filtering tasks by home site:', filterSiteId);
       }
-      
+
+      // Fetch site operating schedule to determine day boundaries
+      const targetSiteId = filterSiteId || (selectedSiteId && selectedSiteId !== 'all' ? selectedSiteId : null);
+      const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+
+      if (targetSiteId) {
+        try {
+          const { data: siteData } = await supabase
+            .from('sites')
+            .select('operating_schedule')
+            .eq('id', targetSiteId)
+            .single();
+
+          if (siteData?.operating_schedule) {
+            const daySchedule = (siteData.operating_schedule as any)[todayName];
+            if (daySchedule?.active && daySchedule?.open?.hh) {
+              const openHour = parseInt(daySchedule.open.hh, 10);
+              if (!isNaN(openHour)) {
+                resolvedOpenHour = openHour;
+                console.log('📅 Site day starts at hour:', openHour);
+              }
+            }
+          }
+        } catch (err) {
+          console.warn('Could not fetch site schedule, using default day start');
+        }
+      } else if (companyId) {
+        // "All Sites" mode — find the earliest opening hour across all company sites
+        try {
+          const { data: allSites } = await supabase
+            .from('sites')
+            .select('operating_schedule')
+            .eq('company_id', companyId)
+            .eq('status', 'active');
+
+          if (allSites?.length) {
+            let earliest = 24;
+            for (const site of allSites) {
+              const sched = (site.operating_schedule as any)?.[todayName];
+              if (sched?.active && sched?.open?.hh) {
+                const h = parseInt(sched.open.hh, 10);
+                if (!isNaN(h) && h < earliest) earliest = h;
+              }
+            }
+            if (earliest < 24) {
+              resolvedOpenHour = earliest;
+              console.log('📅 Earliest site open hour across company:', earliest);
+            }
+          }
+        } catch (err) {
+          console.warn('Could not fetch company site schedules, using default day start');
+        }
+      }
+
+      // Update state for the render (visual grouping)
+      setSiteOpenHour(resolvedOpenHour);
+
       // First, let's check what tasks exist for debugging
       let debugQuery = supabase
         .from('checklist_tasks')
@@ -953,17 +1064,28 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
           }
         }
         
-        // 4. For callout follow-up tasks, check if the callout's asset is archived
+        // 4. For callout follow-up tasks, check if the callout still exists and its asset is not archived
         // Use the calloutToAssetMap to get the asset_id from the callout_id (source_id)
         if (task.task_data?.source_type === 'callout_followup' && task.task_data?.source_id) {
           const calloutAssetId = calloutToAssetMap.get(task.task_data.source_id)
-          if (calloutAssetId) {
-            const isArchived = archivedAssetIds.has(calloutAssetId)
-            console.log(`🔍 Checking callout task ${task.id}: callout_id=${task.task_data.source_id}, asset_id=${calloutAssetId}, isArchived=${isArchived}`)
-            if (isArchived) {
-              console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: linked to archived asset ${calloutAssetId} (from callout ${task.task_data.source_id})`)
-              return false
-            }
+          if (!calloutAssetId) {
+            // Callout was deleted (e.g. cascade from asset deletion) — orphaned task
+            console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: callout ${task.task_data.source_id} no longer exists`)
+            return false
+          }
+          const isArchived = archivedAssetIds.has(calloutAssetId)
+          if (isArchived) {
+            console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: linked to archived asset ${calloutAssetId} (from callout ${task.task_data.source_id})`)
+            return false
+          }
+        }
+
+        // 5. For ppm_followup tasks, check if the callout still exists
+        if (task.task_data?.source_type === 'ppm_followup' && task.task_data?.source_id) {
+          const calloutAssetId = calloutToAssetMap.get(task.task_data.source_id)
+          if (!calloutAssetId && calloutIdsToLookup.has(task.task_data.source_id)) {
+            console.log(`🚫 Task ${task.id} (${task.custom_name}) filtered: callout ${task.task_data.source_id} no longer exists (ppm_followup)`)
+            return false
           }
         }
         
@@ -1016,33 +1138,32 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
         // Normalize daypart first
         const normalizedDaypart = normalizeDaypart(daypart)
         
-        // If template has a specific time, use it as base
-        // Otherwise, use default times per daypart
+        // Use resolvedOpenHour (local variable, NOT stale siteOpenHour from closure)
+        const openTimeStr = `${String(resolvedOpenHour).padStart(2, '0')}:00`
         const defaultTimes: Record<string, string> = {
-          'before_open': '08:00',
+          'before_open': openTimeStr,
           'during_service': '12:00',
           'after_service': '18:00',
-          'anytime': templateTime || '09:00'
+          'anytime': templateTime || openTimeStr
         }
-        
+
         // If template has a time, try to adjust it based on daypart
         if (templateTime) {
-          const [hours, minutes] = templateTime.split(':').map(Number)
-          
-          // Adjust based on daypart if needed
+          const [hours] = templateTime.split(':').map(Number)
+
+          // Only override template time if it's clearly wrong for this daypart
           if (normalizedDaypart === 'before_open' && hours >= 9) {
-            return '08:00' // Earlier for before open
+            return openTimeStr // Use actual site open time, not hardcoded 08:00
           } else if (normalizedDaypart === 'during_service' && hours < 11) {
-            return '12:00' // Midday for during service
+            return '12:00'
           } else if (normalizedDaypart === 'after_service' && hours < 17) {
-            return '18:00' // Evening for after service
+            return '18:00'
           }
-          
-          // Use template time if it's already appropriate
+
           return templateTime
         }
-        
-        return defaultTimes[normalizedDaypart] || '09:00'
+
+        return defaultTimes[normalizedDaypart] || openTimeStr
       }
       
       validTasks.forEach(task => {
@@ -1672,12 +1793,40 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
     // Note: loadBreachActions is called at the end but doesn't need to be in dependencies
     // since it's just a side effect, not used in the logic
      
-  }, [companyId, siteId, isOnline]) // Dependencies for fetchTodaysTasks
+  }, [companyId, siteId, selectedSiteId, isOnline]) // Dependencies for fetchTodaysTasks
 
   // Update ref whenever fetchTodaysTasks changes
   useEffect(() => {
     fetchTodaysTasksRef.current = fetchTodaysTasks
   }, [fetchTodaysTasks])
+
+  // Dismiss a task (mark as completed with dismissed flag, remove from list)
+  const handleDismissTask = useCallback(async (taskId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { error } = await supabase
+        .from('checklist_tasks')
+        .update({
+          status: 'completed',
+          completed_at: new Date().toISOString(),
+          completed_by: user.id,
+          completion_notes: JSON.stringify({ dismissed: true, reason: 'Manually dismissed by user' })
+        })
+        .eq('id', taskId)
+
+      if (error) throw error
+
+      // Remove from local state immediately
+      setTasks(prev => prev.filter(t => t.id !== taskId))
+      setUpcomingTasks(prev => prev.filter(t => t.id !== taskId))
+      toast.success('Task dismissed')
+    } catch (err) {
+      console.error('Error dismissing task:', err)
+      toast.error('Failed to dismiss task')
+    }
+  }, [])
 
   // Now define the useEffect that uses these functions
   // CRITICAL: Don't include the callback functions in dependencies to avoid infinite loops
@@ -1693,7 +1842,7 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
       setTasks([])
     }
      
-  }, [siteId, companyId, isOnline]) // Re-fetch when online status changes (auto-refresh on reconnect)
+  }, [siteId, companyId, selectedSiteId, isOnline]) // Re-fetch when site selection or online status changes
 
   // Listen for refresh events (e.g., after clock-in)
   useEffect(() => {
@@ -1977,10 +2126,11 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
       ) : (
         <div className="space-y-8">
           {(() => {
-            const grouped = groupTasksByDaypart(tasks)
+            const daypartConfig = buildDaypartConfig(siteOpenHour)
+            const grouped = groupTasksByDaypart(tasks, siteOpenHour)
             const populatedDayparts = DAYPART_ORDER_LIST.filter(dp => grouped[dp].length > 0)
             return populatedDayparts.map((dp, dpIndex) => {
-              const config = DAYPART_CONFIG[dp]
+              const config = daypartConfig[dp]
               const Icon = config.icon
               const dpTasks = grouped[dp]
               return (
@@ -2021,6 +2171,7 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
                             setSelectedTask(task)
                             setShowCompletion(true)
                           }}
+                          onDismiss={handleDismissTask}
                         />
                       )
                     })}
@@ -2058,6 +2209,7 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
                     setSelectedTask(task)
                     setShowCompletion(true)
                   }}
+                  onDismiss={handleDismissTask}
                 />
               );
             })}
