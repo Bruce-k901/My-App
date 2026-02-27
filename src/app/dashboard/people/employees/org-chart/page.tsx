@@ -601,7 +601,7 @@ export default function OrgChartPage() {
                     </button>
 
                     {/* Assign button */}
-                    {canManage && regions.length > 0 && assigningSiteId !== site.id && (
+                    {canManage && regions.some((r) => r.areas.length > 0) && assigningSiteId !== site.id && (
                       <button
                         onClick={() => setAssigningSiteId(site.id)}
                         className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-module-fg bg-module-fg/10 rounded-lg hover:bg-module-fg/20 transition-colors flex-shrink-0"
@@ -613,35 +613,44 @@ export default function OrgChartPage() {
                   </div>
 
                   {/* Inline area assignment dropdown */}
-                  {assigningSiteId === site.id && (
-                    <div className="ml-11 mt-2 flex items-center gap-2">
-                      <select
-                        autoFocus
-                        disabled={assigning}
-                        defaultValue=""
-                        onChange={(e) => handleAssignSite(site.id, e.target.value)}
-                        className="pl-3 pr-10 py-1.5 text-sm bg-theme-surface border border-module-fg/20 rounded-lg text-theme-primary focus:border-module-fg focus:ring-1 focus:ring-module-fg"
-                      >
-                        <option value="" disabled>Select area...</option>
-                        {regions.map((region) => (
-                          <optgroup key={region.id} label={region.name}>
-                            {region.areas.map((area) => (
-                              <option key={area.id} value={area.id}>
-                                {area.name}
-                              </option>
-                            ))}
-                          </optgroup>
-                        ))}
-                      </select>
-                      <button
-                        onClick={() => setAssigningSiteId(null)}
-                        className="p-1.5 text-theme-tertiary hover:text-theme-primary rounded transition-colors"
-                        title="Cancel"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  )}
+                  {assigningSiteId === site.id && (() => {
+                    const allAreas = regions.flatMap((r) => r.areas.map((a) => ({ ...a, regionName: r.name })));
+                    return (
+                      <div className="ml-11 mt-2 flex items-center gap-2">
+                        {allAreas.length === 0 ? (
+                          <p className="text-xs text-theme-tertiary">No areas defined. Create areas in People &gt; Settings &gt; Areas first.</p>
+                        ) : (
+                          <select
+                            autoFocus
+                            disabled={assigning}
+                            defaultValue=""
+                            onChange={(e) => handleAssignSite(site.id, e.target.value)}
+                            className="pl-3 pr-10 py-1.5 text-sm bg-theme-surface border border-module-fg/20 rounded-lg text-theme-primary focus:border-module-fg focus:ring-1 focus:ring-module-fg"
+                          >
+                            <option value="" disabled className="bg-[#1C1916] text-white">Select area...</option>
+                            {regions.map((region) =>
+                              region.areas.length > 0 ? (
+                                <optgroup key={region.id} label={region.name} className="bg-[#1C1916] text-white">
+                                  {region.areas.map((area) => (
+                                    <option key={area.id} value={area.id} className="bg-[#1C1916] text-white">
+                                      {area.name}
+                                    </option>
+                                  ))}
+                                </optgroup>
+                              ) : null
+                            )}
+                          </select>
+                        )}
+                        <button
+                          onClick={() => setAssigningSiteId(null)}
+                          className="p-1.5 text-theme-tertiary hover:text-theme-primary rounded transition-colors"
+                          title="Cancel"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    );
+                  })()}
 
                   {/* Employees at site */}
                   {expandedSites.has(site.id) && site.employees.length > 0 && (

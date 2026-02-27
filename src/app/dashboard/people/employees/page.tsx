@@ -1444,17 +1444,17 @@ function ExpandedEmployeeView({
   const [activeTab, setActiveTab] = useState<'personal' | 'employment' | 'compliance' | 'banking' | 'leave' | 'pay' | 'training'>('personal');
 
   const getSiteName = (siteId: string | null) => {
-    if (!siteId) return 'â€”';
+    if (!siteId) return '\u2014';
     return sites.find(s => s.id === siteId)?.name || siteId;
   };
 
   const getManagerName = (managerId: string | null) => {
-    if (!managerId) return 'â€”';
+    if (!managerId) return '\u2014';
     return managers.find(m => m.id === managerId)?.full_name || managerId;
   };
 
   const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return 'â€”';
+    if (!dateStr) return '\u2014';
     try {
       return new Date(dateStr).toLocaleDateString('en-GB');
     } catch {
@@ -1463,9 +1463,9 @@ function ExpandedEmployeeView({
   };
 
   const formatCurrency = (value: number | string | null, isPence: boolean = false) => {
-    if (!value && value !== 0) return 'â€”';
+    if (!value && value !== 0) return '\u2014';
     const num = typeof value === 'string' ? parseFloat(value) : value;
-    if (isNaN(num)) return 'â€”';
+    if (isNaN(num)) return '\u2014';
     // If isPence is true (like hourly_rate), convert to pounds
     // Otherwise assume the value is already in pounds
     const displayValue = isPence ? num / 100 : num;
@@ -1556,18 +1556,18 @@ function ExpandedEmployeeView({
               Personal Information
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InfoRow label="Full Name" value={employee.full_name || 'â€”'} fieldName="full_name" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Email" value={employee.email || 'â€”'} fieldName="email" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Phone Number" value={employee.phone_number || employee.phone || 'â€”'} fieldName="phone_number" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Date of Birth" value={formatDate(employee.date_of_birth) || 'â€”'} fieldName="date_of_birth" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-              <InfoRow label="Gender" value={employee.gender || 'â€”'} fieldName="gender" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+              <InfoRow label="Full Name" value={employee.full_name || '\u2014'} fieldName="full_name" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Email" value={employee.email || '\u2014'} fieldName="email" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Phone Number" value={employee.phone_number || employee.phone || '\u2014'} fieldName="phone_number" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Date of Birth" value={formatDate(employee.date_of_birth) || '\u2014'} fieldName="date_of_birth" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="Gender" value={employee.gender || '\u2014'} fieldName="gender" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                 { value: 'male', label: 'Male' },
                 { value: 'female', label: 'Female' },
                 { value: 'non_binary', label: 'Non-binary' },
                 { value: 'prefer_not_to_say', label: 'Prefer not to say' },
                 { value: 'other', label: 'Other' }
               ]} />
-              <InfoRow label="Nationality" value={employee.nationality || 'â€”'} fieldName="nationality" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Nationality" value={employee.nationality || '\u2014'} fieldName="nationality" employeeId={employee.id} onUpdate={onUpdate} />
             </div>
             
             {/* Address */}
@@ -1575,14 +1575,14 @@ function ExpandedEmployeeView({
               <h5 className="text-sm font-medium text-theme-primary mb-3">Address</h5>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div className="md:col-span-2">
-                  <InfoRow label="Address Line 1" value={employee.address_line_1 || 'â€”'} fieldName="address_line_1" employeeId={employee.id} onUpdate={onUpdate} />
+                  <InfoRow label="Address Line 1" value={employee.address_line_1 || '\u2014'} fieldName="address_line_1" employeeId={employee.id} onUpdate={onUpdate} />
                 </div>
                 <div className="md:col-span-2">
-                  <InfoRow label="Address Line 2" value={employee.address_line_2 || 'â€”'} fieldName="address_line_2" employeeId={employee.id} onUpdate={onUpdate} />
+                  <InfoRow label="Address Line 2" value={employee.address_line_2 || '\u2014'} fieldName="address_line_2" employeeId={employee.id} onUpdate={onUpdate} />
                 </div>
-                <InfoRow label="City" value={employee.city || 'â€”'} fieldName="city" employeeId={employee.id} onUpdate={onUpdate} />
-                <InfoRow label="County" value={employee.county || 'â€”'} fieldName="county" employeeId={employee.id} onUpdate={onUpdate} />
-                <InfoRow label="Postcode" value={employee.postcode || 'â€”'} fieldName="postcode" employeeId={employee.id} onUpdate={onUpdate} />
+                <InfoRow label="City" value={employee.city || '\u2014'} fieldName="city" employeeId={employee.id} onUpdate={onUpdate} />
+                <InfoRow label="County" value={employee.county || '\u2014'} fieldName="county" employeeId={employee.id} onUpdate={onUpdate} />
+                <InfoRow label="Postcode" value={employee.postcode || '\u2014'} fieldName="postcode" employeeId={employee.id} onUpdate={onUpdate} />
                 <InfoRow label="Country" value={employee.country || 'United Kingdom'} fieldName="country" employeeId={employee.id} onUpdate={onUpdate} />
               </div>
             </div>
@@ -1595,10 +1595,10 @@ function ExpandedEmployeeView({
                   {emergencyContacts.map((contact: any, idx: number) => (
                     <div key={idx} className="p-3 bg-white/[0.03] rounded">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        <InfoRow label="Name" value={contact.name || 'â€”'} />
-                        <InfoRow label="Relationship" value={contact.relationship || 'â€”'} />
-                        <InfoRow label="Phone" value={contact.phone || 'â€”'} />
-                        <InfoRow label="Email" value={contact.email || 'â€”'} />
+                        <InfoRow label="Name" value={contact.name || '\u2014'} />
+                        <InfoRow label="Relationship" value={contact.relationship || '\u2014'} />
+                        <InfoRow label="Phone" value={contact.phone || '\u2014'} />
+                        <InfoRow label="Email" value={contact.email || '\u2014'} />
                       </div>
                     </div>
                   ))}
@@ -1615,9 +1615,9 @@ function ExpandedEmployeeView({
               Employment Details
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InfoRow label="Employee Number" value={employee.employee_number || 'â€”'} fieldName="employee_number" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Position / Job Title" value={employee.position_title || 'â€”'} fieldName="position_title" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Department" value={employee.department || 'â€”'} fieldName="department" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Employee Number" value={employee.employee_number || '\u2014'} fieldName="employee_number" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Position / Job Title" value={employee.position_title || '\u2014'} fieldName="position_title" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Department" value={employee.department || '\u2014'} fieldName="department" employeeId={employee.id} onUpdate={onUpdate} />
               <InfoRow label="App Role" value={employee.app_role || 'Staff'} fieldName="app_role" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                 { value: 'staff', label: 'Staff' },
                 { value: 'manager', label: 'Manager' },
@@ -1675,8 +1675,8 @@ function ExpandedEmployeeView({
                 { value: 'BOH', label: 'BOH' },
                 { value: 'BOTH', label: 'Both' }
               ]} />
-              <InfoRow label="Start Date" value={formatDate(employee.start_date) || 'â€”'} fieldName="start_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-              <InfoRow label="Probation End Date" value={formatDate(employee.probation_end_date) || 'â€”'} fieldName="probation_end_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="Start Date" value={formatDate(employee.start_date) || '\u2014'} fieldName="start_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="Probation End Date" value={formatDate(employee.probation_end_date) || '\u2014'} fieldName="probation_end_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
               <InfoRow label="Contract Type" value={employee.contract_type || 'permanent'} fieldName="contract_type" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                 { value: 'permanent', label: 'Permanent' },
                 { value: 'fixed_term', label: 'Fixed Term' },
@@ -1686,9 +1686,9 @@ function ExpandedEmployeeView({
                 { value: 'contractor', label: 'Contractor' },
                 { value: 'apprentice', label: 'Apprentice' }
               ]} />
-              <InfoRow label="Contracted Hours (per week)" value={employee.contracted_hours?.toString() || employee.contracted_hours_per_week?.toString() || 'â€”'} fieldName="contracted_hours_per_week" employeeId={employee.id} onUpdate={onUpdate} type="number" />
-              <InfoRow label="Hourly Rate" value={employee.hourly_rate ? formatCurrency(typeof employee.hourly_rate === 'string' ? parseFloat(employee.hourly_rate) : employee.hourly_rate, true) : 'â€”'} fieldName="hourly_rate" employeeId={employee.id} onUpdate={onUpdate} type="number" />
-              <InfoRow label="Annual Salary" value={formatCurrency(employee.salary) || 'â€”'} fieldName="salary" employeeId={employee.id} onUpdate={onUpdate} type="number" />
+              <InfoRow label="Contracted Hours (per week)" value={employee.contracted_hours?.toString() || employee.contracted_hours_per_week?.toString() || '\u2014'} fieldName="contracted_hours_per_week" employeeId={employee.id} onUpdate={onUpdate} type="number" />
+              <InfoRow label="Hourly Rate" value={employee.hourly_rate ? formatCurrency(typeof employee.hourly_rate === 'string' ? parseFloat(employee.hourly_rate) : employee.hourly_rate, true) : '\u2014'} fieldName="hourly_rate" employeeId={employee.id} onUpdate={onUpdate} type="number" />
+              <InfoRow label="Annual Salary" value={formatCurrency(employee.salary) || '\u2014'} fieldName="salary" employeeId={employee.id} onUpdate={onUpdate} type="number" />
               <InfoRow label="Pay Frequency" value={employee.pay_frequency || 'monthly'} fieldName="pay_frequency" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                 { value: 'weekly', label: 'Weekly' },
                 { value: 'fortnightly', label: 'Fortnightly' },
@@ -1707,22 +1707,22 @@ function ExpandedEmployeeView({
               Compliance & Right to Work
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InfoRow label="National Insurance Number" value={employee.national_insurance_number || 'â€”'} fieldName="national_insurance_number" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="National Insurance Number" value={employee.national_insurance_number || '\u2014'} fieldName="national_insurance_number" employeeId={employee.id} onUpdate={onUpdate} />
               <InfoRow label="Right to Work Status" value={employee.right_to_work_status || 'pending'} fieldName="right_to_work_status" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                 { value: 'pending', label: 'Pending' },
                 { value: 'verified', label: 'Verified' },
                 { value: 'expired', label: 'Expired' },
                 { value: 'not_required', label: 'Not Required' }
               ]} />
-              <InfoRow label="RTW Document Type" value={employee.right_to_work_document_type || 'â€”'} fieldName="right_to_work_document_type" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+              <InfoRow label="RTW Document Type" value={employee.right_to_work_document_type || '\u2014'} fieldName="right_to_work_document_type" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                 { value: 'passport', label: 'Passport' },
                 { value: 'biometric_residence_permit', label: 'Biometric Residence Permit' },
                 { value: 'share_code', label: 'Share Code' },
                 { value: 'visa', label: 'Visa' },
                 { value: 'other', label: 'Other' }
               ]} />
-              <InfoRow label="RTW Document Number" value={employee.right_to_work_document_number || 'â€”'} fieldName="right_to_work_document_number" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="RTW Expiry Date" value={formatDate(employee.right_to_work_expiry) || 'â€”'} fieldName="right_to_work_expiry" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="RTW Document Number" value={employee.right_to_work_document_number || '\u2014'} fieldName="right_to_work_document_number" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="RTW Expiry Date" value={formatDate(employee.right_to_work_expiry) || '\u2014'} fieldName="right_to_work_expiry" employeeId={employee.id} onUpdate={onUpdate} type="date" />
             </div>
             
             {/* DBS Section */}
@@ -1735,8 +1735,8 @@ function ExpandedEmployeeView({
                   { value: 'clear', label: 'Clear' },
                   { value: 'issues_found', label: 'Issues Found' }
                 ]} />
-                <InfoRow label="DBS Certificate Number" value={employee.dbs_certificate_number || 'â€”'} fieldName="dbs_certificate_number" employeeId={employee.id} onUpdate={onUpdate} />
-                <InfoRow label="DBS Check Date" value={formatDate(employee.dbs_check_date) || 'â€”'} fieldName="dbs_check_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+                <InfoRow label="DBS Certificate Number" value={employee.dbs_certificate_number || '\u2014'} fieldName="dbs_certificate_number" employeeId={employee.id} onUpdate={onUpdate} />
+                <InfoRow label="DBS Check Date" value={formatDate(employee.dbs_check_date) || '\u2014'} fieldName="dbs_check_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
               </div>
             </div>
           </div>
@@ -1752,10 +1752,10 @@ function ExpandedEmployeeView({
               Bank details are used for payroll export only and are stored securely.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InfoRow label="Bank Name" value={employee.bank_name || 'â€”'} fieldName="bank_name" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Account Holder Name" value={employee.bank_account_name || 'â€”'} fieldName="bank_account_name" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Sort Code" value={employee.bank_sort_code || 'â€”'} fieldName="bank_sort_code" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Account Number" value={employee.bank_account_number ? 'â€¢â€¢â€¢â€¢' : 'â€”'} fieldName="bank_account_number" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Bank Name" value={employee.bank_name || '\u2014'} fieldName="bank_name" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Account Holder Name" value={employee.bank_account_name || '\u2014'} fieldName="bank_account_name" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Sort Code" value={employee.bank_sort_code || '\u2014'} fieldName="bank_sort_code" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Account Number" value={employee.bank_account_number ? '\u2022\u2022\u2022\u2022' : '\u2014'} fieldName="bank_account_number" employeeId={employee.id} onUpdate={onUpdate} />
             </div>
           </div>
         )}
@@ -1780,23 +1780,23 @@ function ExpandedEmployeeView({
               Pay & Tax Details
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InfoRow label="Tax Code" value={employee.tax_code || 'â€”'} fieldName="tax_code" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Tax Code" value={employee.tax_code || '\u2014'} fieldName="tax_code" employeeId={employee.id} onUpdate={onUpdate} />
               <InfoRow label="Student Loan" value={employee.student_loan === true ? 'Yes' : (employee.student_loan === false ? 'No' : 'Not set')} fieldName="student_loan" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
               {employee.student_loan && (
-                <InfoRow label="Student Loan Plan" value={employee.student_loan_plan || 'â€”'} fieldName="student_loan_plan" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+                <InfoRow label="Student Loan Plan" value={employee.student_loan_plan || '\u2014'} fieldName="student_loan_plan" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                   { value: 'plan_1', label: 'Plan 1' },
                   { value: 'plan_2', label: 'Plan 2' },
                   { value: 'plan_4', label: 'Plan 4' },
                   { value: 'plan_5', label: 'Plan 5' }
                 ]} />
               )}
-              <InfoRow label="Pension Enrolled" value={employee.pension_enrolled === true ? 'Yes' : (employee.pension_enrolled === false ? 'No' : 'â€”')} fieldName="pension_enrolled" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
+              <InfoRow label="Pension Enrolled" value={employee.pension_enrolled === true ? 'Yes' : (employee.pension_enrolled === false ? 'No' : '\u2014')} fieldName="pension_enrolled" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
               {employee.pension_enrolled && (
-                <InfoRow label="Pension Contribution (%)" value={employee.pension_contribution_percent ? `${employee.pension_contribution_percent}%` : 'â€”'} fieldName="pension_contribution_percent" employeeId={employee.id} onUpdate={onUpdate} type="number" />
+                <InfoRow label="Pension Contribution (%)" value={employee.pension_contribution_percent ? `${employee.pension_contribution_percent}%` : '\u2014'} fieldName="pension_contribution_percent" employeeId={employee.id} onUpdate={onUpdate} type="number" />
               )}
               <InfoRow label="P45 Received" value={employee.p45_received === true ? 'Yes' : (employee.p45_received === false ? 'No' : 'Not set')} fieldName="p45_received" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
-              <InfoRow label="P45 Date" value={formatDate(employee.p45_date) || 'â€”'} fieldName="p45_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-              <InfoRow label="P45 Reference" value={employee.p45_reference || 'â€”'} fieldName="p45_reference" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="P45 Date" value={formatDate(employee.p45_date) || '\u2014'} fieldName="p45_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="P45 Reference" value={employee.p45_reference || '\u2014'} fieldName="p45_reference" employeeId={employee.id} onUpdate={onUpdate} />
             </div>
           </div>
         )}

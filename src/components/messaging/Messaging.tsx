@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { ConversationList } from './ConversationList';
 import { MessageThread } from './MessageThread';
@@ -30,12 +30,30 @@ export function Messaging() {
     senderName: string;
   } | null>(null);
 
+  // Track mobile keyboard height via visualViewport API
+  // On iOS PWA, the keyboard overlays fixed content without resizing the viewport.
+  // visualViewport.height shrinks when the keyboard opens, so we use the delta as padding.
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const handleResize = () => {
+      const kbh = Math.round(window.innerHeight - vv.height);
+      setKeyboardHeight(kbh > 40 ? kbh : 0); // ignore tiny shifts (address bar etc)
+    };
+
+    vv.addEventListener('resize', handleResize);
+    return () => vv.removeEventListener('resize', handleResize);
+  }, []);
+
   // Detect mobile on mount and resize
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -126,7 +144,10 @@ export function Messaging() {
   });
 
   return (
-    <div className="flex h-full w-full bg-white dark:bg-[#0B0D13] overflow-hidden relative">
+    <div
+      className="flex w-full bg-white dark:bg-[#0B0D13] overflow-hidden relative"
+      style={{ height: keyboardHeight > 0 ? `calc(100% - ${keyboardHeight}px)` : '100%' }}
+    >
       {/* Mobile: Back Button - Only show when viewing a conversation */}
       {selectedConversationId && isMobile && (
         <button

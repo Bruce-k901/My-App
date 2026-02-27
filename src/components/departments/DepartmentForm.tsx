@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Department, DepartmentForm, DEFAULT_DEPARTMENT_FORM } from '@/types/departments';
 import { useStandardDepartments } from '@/hooks/use-standard-departments';
 import Input from '@/components/ui/Input';
@@ -39,6 +39,7 @@ export default function DepartmentFormComponent({
   const [pendingParentName, setPendingParentName] = useState<string | null>(null);
   
   const { data: standardDepartments = [], isLoading: loadingStandard } = useStandardDepartments();
+  const initializedRef = useRef(false);
 
   // Watch for newly created parent department and auto-select it
   useEffect(() => {
@@ -54,12 +55,18 @@ export default function DepartmentFormComponent({
     }
   }, [departments, pendingParentName]);
 
+  // Initialize form once when standard departments have loaded
   useEffect(() => {
+    if (initializedRef.current) return;
+    if (loadingStandard) return;
+
+    initializedRef.current = true;
+
     if (department) {
       const isStandard = standardDepartments.some((sd) => sd.name === department.name);
       setDepartmentNameMode(isStandard ? 'standard' : 'custom');
       setCustomDepartmentName(isStandard ? '' : department.name || '');
-      
+
       setFormData({
         name: department.name || '',
         description: department.description || '',
@@ -77,7 +84,7 @@ export default function DepartmentFormComponent({
       setDepartmentNameMode('standard');
       setCustomDepartmentName('');
     }
-  }, [department, standardDepartments]);
+  }, [department, standardDepartments, loadingStandard]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -397,6 +397,21 @@ export function EditEmployeeModal({
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
+                  <label className={LABEL_CLS}>Status</label>
+                  <select
+                    name="status"
+                    value={formData.status || 'active'}
+                    onChange={handleChange}
+                    className={INPUT_CLS}
+                  >
+                    <option value="active">Active</option>
+                    <option value="onboarding">Onboarding</option>
+                    <option value="offboarding">Offboarding</option>
+                    <option value="inactive">Inactive (Archived)</option>
+                  </select>
+                </div>
+
+                <div>
                   <label className={LABEL_CLS}>Employee Number</label>
                   <input
                     type="text"
@@ -453,7 +468,7 @@ export function EditEmployeeModal({
                     onChange={handleChange}
                     className={INPUT_CLS}
                   >
-                    <option value="">Select site...</option>
+                    <option value="">Head Office (No Site)</option>
                     {sites.map((site) => (
                       <option key={site.id} value={site.id}>
                         {site.name}

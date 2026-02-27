@@ -466,6 +466,12 @@ export function MessageInput({
             value={content}
             onChange={(e) => handleInputChange(e.target.value)}
             onKeyDown={handleKeyPress}
+            onFocus={() => {
+              // After keyboard animation finishes, ensure input is visible
+              setTimeout(() => {
+                textareaRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+              }, 350);
+            }}
             onBlur={() => {
               // Delay closing mentions to allow click events
               setTimeout(() => {
