@@ -102,7 +102,7 @@ export default function TemplatesPage() {
     try {
       const { data, error } = await supabase
         .from('task_templates')
-        .select('*')
+        .select('*, template_fields (*)')
         .eq('company_id', companyId)
         .eq('is_template_library', false)
         .order('created_at', { ascending: false });
@@ -111,6 +111,21 @@ export default function TemplatesPage() {
         console.error('Error fetching templates:', error);
         setTemplates([]);
       } else {
+        // Pre-populate custom fields from the join
+        const fieldsMap: Record<string, any[]> = {};
+        (data || []).forEach(t => {
+          if (t.use_custom_fields && Array.isArray((t as any).template_fields) && (t as any).template_fields.length > 0) {
+            const FIELD_TYPE_NORMALIZE: Record<string, string> = { 'checkbox': 'yes_no' };
+            fieldsMap[t.id] = (t as any).template_fields.map((f: any) => ({
+              ...f,
+              field_type: FIELD_TYPE_NORMALIZE[f.field_type] || f.field_type,
+            }));
+          }
+        });
+        if (Object.keys(fieldsMap).length > 0) {
+          setPreviewFields(prev => ({ ...prev, ...fieldsMap }));
+        }
+
         // Fetch usage counts for each template
         const templateIds = (data || []).map(t => t.id);
         const usageCounts = new Map<string, number>();
@@ -145,19 +160,30 @@ export default function TemplatesPage() {
     }
   }
 
-  // Lazy-load custom fields for preview
+  // Lazy-load custom fields for preview via server API (bypasses RLS)
   const loadCustomFields = useCallback(async (templateId: string) => {
-    if (previewFields[templateId]) return;
+    if (previewFields[templateId] && previewFields[templateId].length > 0) return;
     setLoadingFields(prev => ({ ...prev, [templateId]: true }));
     try {
-      const { data: fields } = await supabase
-        .from('template_fields')
-        .select('*')
-        .eq('template_id', templateId)
-        .order('field_order');
+      // Use server API route to guarantee fields are returned (bypasses RLS)
+      const res = await fetch(`/api/tasks/template-fields?templateId=${templateId}`);
+      let fields: any[] = [];
+      if (res.ok) {
+        const json = await res.json();
+        fields = json.fields || [];
+      } else {
+        console.error('Template fields API error:', res.status);
+        // Fallback to direct client query
+        const { data } = await supabase
+          .from('template_fields')
+          .select('*')
+          .eq('template_id', templateId)
+          .order('field_order');
+        fields = data || [];
+      }
       // Normalize field types from Trail imports (e.g. 'checkbox' → 'yes_no')
       const FIELD_TYPE_NORMALIZE: Record<string, string> = { 'checkbox': 'yes_no' };
-      const normalized = (fields || []).map((f: any) => ({
+      const normalized = fields.map((f: any) => ({
         ...f,
         field_type: FIELD_TYPE_NORMALIZE[f.field_type] || f.field_type,
       }));

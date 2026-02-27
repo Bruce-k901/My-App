@@ -38,6 +38,7 @@ import {
 type ArchiveType =
   | 'assets'
   | 'tasks'
+  | 'staff'
   | 'sops'
   | 'risk_assessments'
   | 'documents'
@@ -100,6 +101,14 @@ export default function ArchiveCenterPage() {
       icon: FileText,
       color: 'text-orange-600',
       darkColor: 'dark:text-orange-400',
+      enabled: true
+    },
+    {
+      id: 'staff',
+      label: 'Staff',
+      icon: Users,
+      color: 'text-teamly-dark',
+      darkColor: 'dark:text-teamly',
       enabled: true
     },
     {
@@ -169,6 +178,10 @@ export default function ArchiveCenterPage() {
       if (['assets', 'tasks'].includes(activeTab)) {
         data = await loadTableArchives(activeTab)
       }
+      // Staff - inactive profiles
+      else if (activeTab === 'staff') {
+        data = await loadStaffArchives()
+      }
       // SOPs - query from sop_entries table with status='Archived'
       else if (activeTab === 'sops') {
         data = await loadSOPArchives()
@@ -227,17 +240,37 @@ export default function ArchiveCenterPage() {
     }))
   }
 
+  // Load archived Staff (inactive profiles)
+  const loadStaffArchives = async (): Promise<ArchiveItem[]> => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('company_id', companyId)
+      .eq('status', 'inactive')
+      .order('updated_at', { ascending: false })
+
+    if (error) throw error
+
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      name: item.full_name || 'Unnamed Staff',
+      type: 'staff' as ArchiveType,
+      archived_at: item.updated_at,
+      archived_by: 'Unknown',
+      category: item.role || item.job_title,
+      can_restore: true,
+      metadata: item
+    }))
+  }
+
   // Load archived Risk Assessments from risk_assessments table
   const loadRAArchives = async (): Promise<ArchiveItem[]> => {
     const { data, error } = await supabase
       .from('risk_assessments')
-      .select(`
-        *,
-        profiles:archived_by(full_name)
-      `)
+      .select('*')
       .eq('company_id', companyId)
       .eq('status', 'Archived')
-      .order('archived_at', { ascending: false, nullsFirst: false })
+      .order('updated_at', { ascending: false })
 
     if (error) throw error
 
@@ -247,7 +280,6 @@ export default function ArchiveCenterPage() {
       type: 'risk_assessments' as ArchiveType,
       archived_at: item.archived_at || item.updated_at,
       archived_by: item.archived_by || 'Unknown',
-      archived_by_name: item.profiles?.full_name,
       category: item.template_type === 'coshh' ? 'COSHH' : 'General',
       version: item.version_number ? `v${item.version_number}` : undefined,
       can_restore: true,
@@ -259,10 +291,7 @@ export default function ArchiveCenterPage() {
   const loadSOPArchives = async (): Promise<ArchiveItem[]> => {
     const { data, error } = await supabase
       .from('sop_entries')
-      .select(`
-        *,
-        profiles:archived_by(full_name)
-      `)
+      .select('*')
       .eq('company_id', companyId)
       .eq('status', 'Archived')
       .order('archived_at', { ascending: false, nullsFirst: false })
@@ -275,7 +304,6 @@ export default function ArchiveCenterPage() {
       type: 'sops' as ArchiveType,
       archived_at: item.archived_at || item.updated_at,
       archived_by: item.archived_by || 'Unknown',
-      archived_by_name: item.profiles?.full_name,
       category: item.category,
       version: item.version_number ? `v${item.version_number}` : undefined,
       can_restore: true,
@@ -327,10 +355,7 @@ export default function ArchiveCenterPage() {
     try {
       const { data, error } = await supabase
         .from('compliance_archive')
-        .select(`
-          *,
-          profiles:archived_by(full_name)
-        `)
+        .select('*')
         .eq('company_id', companyId)
         .eq('source_type', sourceType)
         .order('archived_at', { ascending: false })
@@ -343,7 +368,6 @@ export default function ArchiveCenterPage() {
         type,
         archived_at: item.archived_at,
         archived_by: item.archived_by,
-        archived_by_name: item.profiles?.full_name,
         category: item.document_category,
         version: item.version_label,
         changes_summary: item.changes_summary,
@@ -399,8 +423,20 @@ export default function ArchiveCenterPage() {
     }
 
     try {
-      // Handle SOPs separately
-      if (item.type === 'sops') {
+      // Handle Staff (restore inactive → active)
+      if (item.type === 'staff') {
+        const res = await fetch('/api/people/update-profile', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            employeeId: item.id,
+            updateData: { status: 'active' },
+          }),
+        })
+        if (!res.ok) throw new Error('Failed to restore staff member')
+      }
+      // Handle SOPs
+      else if (item.type === 'sops') {
         const { error } = await supabase
           .from('sop_entries')
           .update({
@@ -416,11 +452,7 @@ export default function ArchiveCenterPage() {
       else if (item.type === 'risk_assessments') {
         const { error } = await supabase
           .from('risk_assessments')
-          .update({
-            status: 'Draft',
-            archived_at: null,
-            archived_by: null
-          })
+          .update({ status: 'Draft' })
           .eq('id', item.id)
 
         if (error) throw error

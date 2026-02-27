@@ -711,9 +711,9 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
           const { data: templates, error: templatesError } = await supabase
             .from('task_templates')
             .select(`
-              id, name, slug, description, category, frequency, compliance_standard, is_critical, 
-              evidence_types, repeatable_field_name, instructions, dayparts, recurrence_pattern, 
-              asset_id, time_of_day,
+              id, name, slug, description, category, frequency, compliance_standard, is_critical,
+              evidence_types, repeatable_field_name, instructions, dayparts, recurrence_pattern,
+              asset_id, time_of_day, use_custom_fields, notes, notification_config,
               template_fields (*)
             `)
             .in('id', templateIds)
@@ -812,9 +812,9 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
         const { data: fullTemplates, error: fullTemplatesError } = await supabase
           .from('task_templates')
           .select(`
-            id, name, slug, description, category, frequency, compliance_standard, is_critical, 
-            evidence_types, repeatable_field_name, instructions, dayparts, recurrence_pattern, 
-            asset_id, time_of_day,
+            id, name, slug, description, category, frequency, compliance_standard, is_critical,
+            evidence_types, repeatable_field_name, instructions, dayparts, recurrence_pattern,
+            asset_id, time_of_day, use_custom_fields, notes, notification_config,
             template_fields (*)
           `)
           .in('id', filteredTemplateIds)

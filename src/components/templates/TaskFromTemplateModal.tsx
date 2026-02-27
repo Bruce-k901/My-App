@@ -1990,6 +1990,11 @@ export function TaskFromTemplateModal({
               seedTaskData.referenceDocuments = templateDocs;
             }
 
+            // Mark custom fields flag so completion modal knows to load template_fields
+            if (template?.use_custom_fields) {
+              seedTaskData.use_custom_fields = true;
+            }
+
             // Determine daypart/time pairs to create tasks for
             const daypartPairs = formData.dayparts && formData.dayparts.length > 0
               ? formData.dayparts.filter((dp: { daypart: string; due_time: string }) => dp.daypart)
@@ -2800,6 +2805,36 @@ export function TaskFromTemplateModal({
                   maxFiles={10}
                   maxFileSize={10 * 1024 * 1024}
                 />
+              </div>
+            )}
+
+            {/* Custom Fields Preview - Show for custom fields templates */}
+            {template?.use_custom_fields && templateFields.length > 0 && (
+              <div className="border-t border-theme pt-6">
+                <h2 className="text-lg font-semibold text-theme-primary mb-3">
+                  Custom Form Fields
+                  <span className="ml-2 text-sm font-normal text-theme-tertiary">
+                    ({templateFields.filter((f: any) => !f.parent_field_id).length} fields)
+                  </span>
+                </h2>
+                <p className="text-xs text-theme-secondary mb-3">
+                  These fields will be available when completing the task:
+                </p>
+                <div className="space-y-1.5">
+                  {templateFields
+                    .filter((f: any) => !f.parent_field_id)
+                    .sort((a: any, b: any) => a.field_order - b.field_order)
+                    .map((field: any) => (
+                      <div key={field.id} className="flex items-center gap-3 px-3 py-2 bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg">
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-theme-muted text-theme-secondary uppercase tracking-wide">
+                          {(field.field_type || 'text').replace(/_/g, ' ')}
+                        </span>
+                        <span className="text-sm text-theme-primary">{field.label}</span>
+                        {field.required && <span className="text-red-500 text-xs">*</span>}
+                      </div>
+                    ))
+                  }
+                </div>
               </div>
             )}
 

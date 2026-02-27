@@ -91,6 +91,13 @@ export function TemplateRenderer({
   disabled = false
 }: TemplateRendererProps) {
 
+  console.log('[TemplateRenderer] Render check:', {
+    customFieldsEnabled: enabledFeatures.customFields,
+    customFieldsCount: customFields?.length ?? 0,
+    hasOnCustomFieldChange: !!onCustomFieldChange,
+    willRenderCustomFields: !!(enabledFeatures.customFields && customFields && customFields.length > 0 && onCustomFieldChange),
+  });
+
   // Check if we have temperature data to render - just check assets Map
   const hasTemperatureData = assets.size > 0;
 

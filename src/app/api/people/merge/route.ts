@@ -1,24 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
+interface RepointResult {
+  table: string;
+  column: string;
+  count: number;
+  error?: string;
+}
+
 async function repoint(
   admin: ReturnType<typeof getSupabaseAdmin>,
   table: string,
   column: string,
   oldId: string,
   newId: string
-): Promise<number> {
-  const { count, error } = await admin
+): Promise<RepointResult> {
+  // First check how many rows exist to repoint
+  const { count: existing, error: countError } = await admin
+    .from(table)
+    .select('*', { count: 'exact', head: true })
+    .eq(column, oldId);
+
+  if (countError) {
+    const msg = `${countError.code} ${countError.message}`;
+    if (countError.code !== '42P01') {
+      console.log(`[merge] ${table}.${column} count check: ${msg}`);
+    }
+    return { table, column, count: 0, error: msg };
+  }
+
+  if (!existing || existing === 0) {
+    return { table, column, count: 0 };
+  }
+
+  // Now perform the actual update
+  const { data, error } = await admin
     .from(table)
     .update({ [column]: newId })
     .eq(column, oldId)
-    .select('id', { count: 'exact', head: true });
+    .select(column);
 
   if (error) {
-    console.log(`[merge] ${table}.${column}: ${error.code} ${error.message}`);
-    return 0;
+    const msg = `${error.code} ${error.message}`;
+    console.log(`[merge] ${table}.${column} update failed (${existing} rows matched): ${msg}`);
+    return { table, column, count: 0, error: msg };
   }
-  return count ?? 0;
+
+  const count = data?.length ?? 0;
+  if (count > 0) {
+    console.log(`[merge] ${table}.${column}: repointed ${count} rows`);
+  }
+  return { table, column, count };
 }
 
 export async function POST(req: NextRequest) {
@@ -30,7 +62,7 @@ export async function POST(req: NextRequest) {
     }
 
     const admin = getSupabaseAdmin();
-    let updatedRecords = 0;
+    const results: RepointResult[] = [];
 
     // 1. Validate canonical profile
     const { data: canonical, error: fetchError } = await admin
@@ -55,67 +87,67 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Merge employees not found' }, { status: 404 });
     }
 
+    console.log(`[merge] Merging ${mergeRecords.map(r => `${r.full_name} (${r.id})`).join(', ')} → ${canonical.full_name} (${canonical.id})`);
+
     // 3. Repoint all FK tables
+    const profileIdTables = [
+      'staff_attendance', 'time_entries', 'training_records', 'leave_requests',
+      'leave_balances', 'course_assignments', 'scheduled_shifts', 'performance_reviews',
+      'employee_onboarding_assignments', 'staff_availability', 'timesheets',
+    ];
+    const employeeIdTables = ['employee_review_schedules', 'reviews'];
+    const managerIdTables = ['employee_review_schedules', 'reviews'];
+
     for (const oldId of mergeProfileIds) {
-      // Tables with profile_id column
-      for (const table of [
-        'staff_attendance',
-        'time_entries',
-        'training_records',
-        'leave_requests',
-        'leave_balances',
-        'course_assignments',
-        'scheduled_shifts',
-        'performance_reviews',
-        'employee_onboarding_assignments',
-        'staff_availability',
-        'timesheets',
-      ]) {
-        updatedRecords += await repoint(admin, table, 'profile_id', oldId, canonicalProfileId);
+      for (const table of profileIdTables) {
+        results.push(await repoint(admin, table, 'profile_id', oldId, canonicalProfileId));
       }
-
-      // Tables with employee_id column
-      for (const table of [
-        'employee_review_schedules',
-        'reviews',
-      ]) {
-        updatedRecords += await repoint(admin, table, 'employee_id', oldId, canonicalProfileId);
+      for (const table of employeeIdTables) {
+        results.push(await repoint(admin, table, 'employee_id', oldId, canonicalProfileId));
       }
-
-      // Tables with manager_id referencing profiles
-      for (const table of [
-        'employee_review_schedules',
-        'reviews',
-      ]) {
-        updatedRecords += await repoint(admin, table, 'manager_id', oldId, canonicalProfileId);
+      for (const table of managerIdTables) {
+        results.push(await repoint(admin, table, 'manager_id', oldId, canonicalProfileId));
       }
-
-      // reviews.conducted_by
-      updatedRecords += await repoint(admin, 'reviews', 'conducted_by', oldId, canonicalProfileId);
-
-      // Tables with user_id column
-      updatedRecords += await repoint(admin, 'training_bookings', 'user_id', oldId, canonicalProfileId);
-
-      // notifications.recipient_user_id
-      updatedRecords += await repoint(admin, 'notifications', 'recipient_user_id', oldId, canonicalProfileId);
-
-      // user_site_access.profile_id
-      updatedRecords += await repoint(admin, 'user_site_access', 'profile_id', oldId, canonicalProfileId);
-
-      // shift_swap_requests — two FK columns
-      updatedRecords += await repoint(admin, 'shift_swap_requests', 'requesting_profile_id', oldId, canonicalProfileId);
-      updatedRecords += await repoint(admin, 'shift_swap_requests', 'target_profile_id', oldId, canonicalProfileId);
-
-      // profiles.reports_to self-reference
-      updatedRecords += await repoint(admin, 'profiles', 'reports_to', oldId, canonicalProfileId);
+      results.push(await repoint(admin, 'reviews', 'conducted_by', oldId, canonicalProfileId));
+      results.push(await repoint(admin, 'training_bookings', 'user_id', oldId, canonicalProfileId));
+      results.push(await repoint(admin, 'notifications', 'recipient_user_id', oldId, canonicalProfileId));
+      results.push(await repoint(admin, 'user_site_access', 'profile_id', oldId, canonicalProfileId));
+      results.push(await repoint(admin, 'shift_swap_requests', 'requesting_profile_id', oldId, canonicalProfileId));
+      results.push(await repoint(admin, 'shift_swap_requests', 'target_profile_id', oldId, canonicalProfileId));
+      results.push(await repoint(admin, 'profiles', 'reports_to', oldId, canonicalProfileId));
     }
 
-    // 4. Deactivate merged profiles
+    const updatedRecords = results.reduce((sum, r) => sum + r.count, 0);
+    const errors = results.filter(r => r.error);
+    const moved = results.filter(r => r.count > 0);
+
+    console.log(`[merge] Repoint summary: ${updatedRecords} records moved across ${moved.length} tables. ${errors.length} tables errored.`);
+    if (errors.length > 0) {
+      console.log(`[merge] Errors:`, errors.map(e => `${e.table}.${e.column}: ${e.error}`));
+    }
+
+    // 4. Deactivate merged profiles and release their email (unique constraint)
+    let deactivated = 0;
     for (const oldId of mergeProfileIds) {
-      const { error } = await admin
+      // Fetch current email so we can release it
+      const { data: oldProfile } = await admin
         .from('profiles')
-        .update({ status: 'inactive' })
-        .eq('id', oldId);
+        .select('email')
+        .eq('id', oldId)
+        .single();
+
+      const releasedEmail = oldProfile?.email
+        ? `merged_${oldId.slice(0, 8)}_${oldProfile.email}`
+        : null;
+
+      const { data: deactivatedData, error } = await admin
+        .from('profiles')
+        .update({
+          status: 'inactive',
+          ...(releasedEmail ? { email: releasedEmail } : {}),
+        })
+        .eq('id', oldId)
+        .select('id');
 
       if (error) {
         console.error(`[merge] deactivate ${oldId}:`, error);
@@ -125,10 +157,23 @@ export async function POST(req: NextRequest) {
           error: `Failed to deactivate ${oldId}: ${error.message}`,
         });
       }
+
+      if (oldProfile?.email) {
+        console.log(`[merge] Released email ${oldProfile.email} from ${oldId}`);
+      }
+      deactivated += deactivatedData?.length ?? 0;
     }
 
-    console.log(`[merge] Done: kept ${canonical.full_name}, deactivated ${mergeRecords.map(r => r.full_name).join(', ')}. ${updatedRecords} records repointed.`);
-    return NextResponse.json({ success: true, updatedRecords });
+    console.log(`[merge] Done: kept ${canonical.full_name}, deactivated ${deactivated} profiles. ${updatedRecords} records repointed.`);
+    return NextResponse.json({
+      success: true,
+      updatedRecords: updatedRecords + deactivated,
+      details: {
+        repointed: updatedRecords,
+        deactivated,
+        errors: errors.length,
+      },
+    });
   } catch (error) {
     console.error('[merge]', error);
     return NextResponse.json({ success: false, error: String(error) }, { status: 500 });

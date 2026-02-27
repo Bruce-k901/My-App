@@ -145,13 +145,34 @@ export default function ComplianceTemplatesPage() {
 
   // Lazy-load custom fields for preview
   const loadCustomFields = useCallback(async (templateId: string) => {
-    if (previewFields[templateId]) return;
+    if (previewFields[templateId] && previewFields[templateId].length > 0) return;
     setLoadingFields(prev => ({ ...prev, [templateId]: true }));
     try {
-      const { data: fields } = await supabase
-        .from('template_fields').select('*').eq('template_id', templateId).order('field_order');
-      setPreviewFields(prev => ({ ...prev, [templateId]: fields || [] }));
-    } catch {
+      // Use server API route to guarantee fields are returned (bypasses RLS)
+      const res = await fetch(`/api/tasks/template-fields?templateId=${templateId}`);
+      let fields: any[] = [];
+      if (res.ok) {
+        const json = await res.json();
+        fields = json.fields || [];
+      } else {
+        console.error('Template fields API error:', res.status);
+        // Fallback to direct client query
+        const { data } = await supabase
+          .from('template_fields')
+          .select('*')
+          .eq('template_id', templateId)
+          .order('field_order');
+        fields = data || [];
+      }
+      // Normalize field types from Trail imports
+      const FIELD_TYPE_NORMALIZE: Record<string, string> = { 'checkbox': 'yes_no' };
+      const normalized = fields.map((f: any) => ({
+        ...f,
+        field_type: FIELD_TYPE_NORMALIZE[f.field_type] || f.field_type,
+      }));
+      setPreviewFields(prev => ({ ...prev, [templateId]: normalized }));
+    } catch (err) {
+      console.error('Failed to load custom fields:', err);
       setPreviewFields(prev => ({ ...prev, [templateId]: [] }));
     } finally {
       setLoadingFields(prev => ({ ...prev, [templateId]: false }));

@@ -380,20 +380,21 @@ export default function EmployeeProfilePage() {
         }
       });
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .update(updateData)
-        .eq('id', editingEmployee.id)
-        .select();
+      const res = await fetch('/api/people/update-profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employeeId: editingEmployee.id, updateData }),
+      });
+      const resJson = await res.json();
 
-      if (error) {
-        console.error('Error updating employee:', error);
+      if (!res.ok || resJson.error) {
+        console.error('Error updating employee:', resJson.error);
         console.error('Failed update data:', updateData);
-        alert(`Failed to update: ${error.message}`);
+        alert(`Failed to update: ${resJson.error}`);
         return;
       }
 
-      console.log('Employee updated successfully:', data);
+      console.log('Employee updated successfully:', resJson.data);
 
       // Refresh employee data
       await fetchEmployee();

@@ -152,6 +152,14 @@ Deno.serve(async (req)=>{
           }
         }
       }
+      // ========================================================================
+      // 4. MARK CUSTOM FIELDS TEMPLATES
+      // ========================================================================
+      // If template uses custom form builder, mark task_data so the completion
+      // modal knows to load template_fields instead of legacy evidence features
+      if (params.template?.use_custom_fields) {
+        taskData.use_custom_fields = true;
+      }
       // Set taskData to null only if it's completely empty (no features at all)
       // This maintains backward compatibility
       if (Object.keys(taskData).length === 0) {

@@ -110,8 +110,28 @@ export function useTaskState(
       };
     }
 
-    // If template uses custom fields, disable all legacy features
-    if (template.use_custom_fields) {
+    // Detect custom fields via THREE methods (belt-and-suspenders):
+    // 1. template.use_custom_fields (DB column)
+    // 2. task_data.use_custom_fields (seed/cron flag)
+    // 3. template.template_fields array present from page query join
+    // 4. evidence_types includes 'custom_fields'
+    const taskDataRaw = task.task_data as Record<string, any> | null;
+    const templateAny = template as any;
+    const hasCustomFields =
+      templateAny.use_custom_fields === true ||
+      taskDataRaw?.use_custom_fields === true ||
+      (Array.isArray(templateAny.template_fields) && templateAny.template_fields.length > 0) ||
+      (Array.isArray(templateAny.evidence_types) && templateAny.evidence_types.includes('custom_fields'));
+
+    console.log('[useTaskState] enabledFeatures memo:', {
+      templateId: templateAny?.id,
+      use_custom_fields: templateAny.use_custom_fields,
+      task_data_flag: taskDataRaw?.use_custom_fields,
+      template_fields_len: Array.isArray(templateAny.template_fields) ? templateAny.template_fields.length : 'N/A',
+      hasCustomFields,
+    });
+
+    if (hasCustomFields) {
       return {
         checklist: false,
         yesNoChecklist: false,
@@ -144,7 +164,7 @@ export function useTaskState(
       signature: evidenceTypes.includes('signature'),
       customFields: false
     };
-  }, [template]);
+  }, [template, task]);
 
   // Load task data when modal opens
   useEffect(() => {
@@ -184,7 +204,7 @@ export function useTaskState(
         if (!templateData && task.template_id) {
           const { data, error: templateError } = await supabase
             .from('task_templates')
-            .select('*')
+            .select('*, template_fields (*)')
             .eq('id', task.template_id)
             .single();
 
@@ -217,14 +237,72 @@ export function useTaskState(
           }
 
           // Load custom fields if template uses custom form builder
-          if (templateData.use_custom_fields) {
-            const { data: fields, error: fieldsError } = await supabase
-              .from('template_fields')
-              .select('*')
-              .eq('template_id', templateData.id)
-              .order('field_order');
+          // Detection: use_custom_fields flag, task_data flag, pre-joined template_fields, or evidence_types
+          const tplAny = templateData as any;
+          const isCustomFieldsTemplate =
+            tplAny.use_custom_fields === true ||
+            (rawTaskData as any).use_custom_fields === true ||
+            (Array.isArray(tplAny.template_fields) && tplAny.template_fields.length > 0) ||
+            (Array.isArray(tplAny.evidence_types) && tplAny.evidence_types.includes('custom_fields'));
 
-            if (fields && !fieldsError) {
+          console.log('[useTaskState] Custom fields detection:', {
+            templateId: tplAny.id,
+            templateName: tplAny.name,
+            use_custom_fields: tplAny.use_custom_fields,
+            task_data_use_custom_fields: (rawTaskData as any).use_custom_fields,
+            template_fields_count: Array.isArray(tplAny.template_fields) ? tplAny.template_fields.length : 'not array',
+            evidence_types: tplAny.evidence_types,
+            isCustomFieldsTemplate,
+          });
+
+          if (isCustomFieldsTemplate) {
+            // Use pre-joined template_fields from page query if available (avoids extra DB call)
+            let fields = Array.isArray(tplAny.template_fields) && tplAny.template_fields.length > 0
+              ? tplAny.template_fields
+              : null;
+
+            console.log('[useTaskState] Pre-joined template_fields:', fields ? `${fields.length} fields` : 'none — will fetch');
+
+            // Fallback 1: direct client query
+            if (!fields) {
+              const { data: dbFields, error: fieldsError } = await supabase
+                .from('template_fields')
+                .select('*')
+                .eq('template_id', tplAny.id)
+                .order('field_order');
+
+              console.log('[useTaskState] Client DB query result:', {
+                fields: dbFields?.length ?? 0,
+                error: fieldsError?.message || null,
+                code: fieldsError?.code || null,
+              });
+
+              if (!fieldsError && dbFields && dbFields.length > 0) {
+                fields = dbFields;
+              }
+            }
+
+            // Fallback 2: server API route (bypasses RLS entirely)
+            if (!fields || fields.length === 0) {
+              try {
+                console.log('[useTaskState] Falling back to server API for template fields...');
+                const res = await fetch(`/api/tasks/template-fields?templateId=${tplAny.id}`);
+                if (res.ok) {
+                  const json = await res.json();
+                  if (json.fields && json.fields.length > 0) {
+                    fields = json.fields;
+                    console.log('[useTaskState] Server API returned', fields.length, 'fields');
+                  }
+                } else {
+                  console.error('[useTaskState] Server API error:', res.status);
+                }
+              } catch (apiErr) {
+                console.error('[useTaskState] Server API fetch error:', apiErr);
+              }
+            }
+
+            if (fields && fields.length > 0) {
+              console.log('[useTaskState] Setting customFields:', fields.length, 'fields');
               setCustomFields(fields);
 
               // Initialize values from task_data or defaults
@@ -249,8 +327,8 @@ export function useTaskState(
                   setCustomRecords([{}]);
                 }
               }
-            } else if (fieldsError) {
-              console.error('[useTaskState] Error loading custom fields:', fieldsError);
+            } else {
+              console.error('[useTaskState] CRITICAL: No custom fields found despite isCustomFieldsTemplate=true');
             }
           }
         }
