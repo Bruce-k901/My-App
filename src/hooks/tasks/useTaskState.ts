@@ -1,5 +1,5 @@
 // ============================================================================
-// useTaskState - WITH DETAILED DEBUG LOGGING
+// useTaskState - Task data loading and form state management
 // ============================================================================
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -96,16 +96,7 @@ export function useTaskState(
 
   // Detect enabled features from template (memoized)
   const enabledFeatures = useMemo<EnabledFeatures>(() => {
-    console.log('🎯 [FEATURES] Calculating enabled features:', {
-      hasTemplate: !!template,
-      templateId: template?.id,
-      templateName: template?.name,
-      evidenceTypes: template?.evidence_types,
-      repeatableField: template?.repeatable_field_name
-    });
-
     if (!template) {
-      // Don't warn during initial load - template will be loaded async
       return {
         checklist: false,
         yesNoChecklist: false,
@@ -136,14 +127,13 @@ export function useTaskState(
 
     const evidenceTypes = template.evidence_types || [];
 
-    // CRITICAL FIX: Match the logic in template-features.ts
-    // - Regular checklist uses 'text_note' evidence type (NOT 'checklist')
-    // - Yes/No checklist uses 'yes_no_checklist' evidence type
-    // - If yes_no_checklist is present, regular checklist should be false
+    // Regular checklist uses 'text_note' evidence type (NOT 'checklist')
+    // Yes/No checklist uses 'yes_no_checklist' evidence type
+    // If yes_no_checklist is present, regular checklist should be false
     const hasTextNote = evidenceTypes.includes('text_note') || evidenceTypes.includes('checklist');
     const hasYesNoChecklist = evidenceTypes.includes('yes_no_checklist');
 
-    const features = {
+    return {
       checklist: hasTextNote && !hasYesNoChecklist,
       yesNoChecklist: hasYesNoChecklist,
       temperature: evidenceTypes.includes('temperature'),
@@ -154,15 +144,11 @@ export function useTaskState(
       signature: evidenceTypes.includes('signature'),
       customFields: false
     };
-
-    console.log('✅ [FEATURES] Enabled features:', features);
-    return features;
   }, [template]);
 
   // Load task data when modal opens
   useEffect(() => {
     if (!isOpen) {
-      console.log('🚪 [STATE] Modal closed - resetting state');
       // Reset all state when modal closes
       setTaskData({});
       setTemplate(null);
@@ -185,40 +171,17 @@ export function useTaskState(
     }
 
     async function loadData() {
-      console.log('🚀 [STATE] Loading task data for modal...');
-      console.log('📋 [STATE] Task details:', {
-        taskId: task.id,
-        templateId: task.template_id,
-        customName: task.custom_name,
-        status: task.status,
-        hasTaskData: !!task.task_data,
-        hasEmbeddedTemplate: !!task.template
-      });
-
       setLoading(true);
       setError(null);
 
       try {
         // 1. Extract task_data (will be enriched with template fallbacks below)
         const rawTaskData = (task.task_data || {}) as TaskDataBase;
-        console.log('📦 [TASK_DATA] Extracted task_data:', {
-          hasData: Object.keys(rawTaskData).length > 0,
-          keys: Object.keys(rawTaskData),
-          source: rawTaskData.source,
-          checklistItems: rawTaskData.checklistItems,
-          default_checklist_items: rawTaskData.default_checklist_items,
-          yesNoChecklistItems: rawTaskData.yesNoChecklistItems,
-          referenceDocuments: rawTaskData.referenceDocuments,
-          source_type: rawTaskData.source_type
-        });
 
         // 2. Load template
         let templateData = task.template;
-        console.log('🔍 [TEMPLATE] Checking for embedded template:', !!templateData);
 
         if (!templateData && task.template_id) {
-          console.log('🔍 [TEMPLATE] Loading template from DB:', task.template_id);
-
           const { data, error: templateError } = await supabase
             .from('task_templates')
             .select('*')
@@ -226,30 +189,19 @@ export function useTaskState(
             .single();
 
           if (templateError) {
-            console.error('❌ [TEMPLATE] Error loading template:', templateError);
+            console.error('[useTaskState] Error loading template:', templateError);
             throw templateError;
           }
           templateData = data;
         }
 
         if (templateData) {
-          console.log('✅ [TEMPLATE] Template loaded:', {
-            id: templateData.id,
-            name: templateData.name,
-            slug: templateData.slug,
-            category: templateData.category,
-            evidenceTypes: templateData.evidence_types,
-            repeatableField: templateData.repeatable_field_name,
-            hasRecurrencePattern: !!templateData.recurrence_pattern
-          });
-
           // Parse recurrence_pattern if it's a string
           if (templateData.recurrence_pattern && typeof templateData.recurrence_pattern === 'string') {
             try {
               templateData.recurrence_pattern = JSON.parse(templateData.recurrence_pattern);
-              console.log('📝 [TEMPLATE] Parsed recurrence_pattern');
             } catch (e) {
-              console.error('❌ [TEMPLATE] Failed to parse recurrence_pattern:', e);
+              console.error('[useTaskState] Failed to parse recurrence_pattern:', e);
             }
           }
 
@@ -261,13 +213,11 @@ export function useTaskState(
             const templateDocs = templateData.recurrence_pattern?.template_documents;
             if (Array.isArray(templateDocs) && templateDocs.length > 0) {
               rawTaskData.referenceDocuments = templateDocs;
-              console.log('📎 [ENRICH] Added referenceDocuments from template:', templateDocs.length);
             }
           }
 
           // Load custom fields if template uses custom form builder
           if (templateData.use_custom_fields) {
-            console.log('📝 [CUSTOM_FIELDS] Loading template_fields for custom form...');
             const { data: fields, error: fieldsError } = await supabase
               .from('template_fields')
               .select('*')
@@ -275,7 +225,6 @@ export function useTaskState(
               .order('field_order');
 
             if (fields && !fieldsError) {
-              console.log(`✅ [CUSTOM_FIELDS] Loaded ${fields.length} fields`);
               setCustomFields(fields);
 
               // Initialize values from task_data or defaults
@@ -301,19 +250,15 @@ export function useTaskState(
                 }
               }
             } else if (fieldsError) {
-              console.error('❌ [CUSTOM_FIELDS] Error loading fields:', fieldsError);
+              console.error('[useTaskState] Error loading custom fields:', fieldsError);
             }
           }
-        } else {
-          console.warn('⚠️ [TEMPLATE] No template available');
         }
 
         // Set enriched taskData (after template fallbacks applied)
         setTaskData(rawTaskData);
 
         // 3. Build equipment list from task_data - NO DATABASE QUERY NEEDED
-        console.log('🔍 [ASSETS] Searching for assets in task_data...');
-
         let equipmentList: Array<{
           assetId: string;
           nickname: string | null;
@@ -325,11 +270,9 @@ export function useTaskState(
         // PRIORITY 1: Check dynamic repeatable field (e.g., asset_name, fridge_name)
         if (templateData?.repeatable_field_name && rawTaskData[templateData.repeatable_field_name]) {
           const repeatableData = rawTaskData[templateData.repeatable_field_name];
-          console.log(`📍 [ASSETS] Found repeatable field '${templateData.repeatable_field_name}':`, repeatableData);
 
           if (Array.isArray(repeatableData)) {
             repeatableData.forEach((item: any) => {
-              // Extract assetId from nested structure
               let assetId = null;
 
               if (item.id?.assetId) {
@@ -356,8 +299,6 @@ export function useTaskState(
                 });
               }
             });
-
-            console.log('✅ [ASSETS] Equipment list built from repeatable field:', equipmentList);
           }
         }
 
@@ -370,7 +311,6 @@ export function useTaskState(
             temp_min: config.temp_min ?? null,
             temp_max: config.temp_max ?? null
           }));
-          console.log('📍 [ASSETS] Equipment list built from equipment_config:', equipmentList);
         }
 
         // PRIORITY 3: Check temperatures array
@@ -382,7 +322,6 @@ export function useTaskState(
             temp_min: temp.temp_min ?? null,
             temp_max: temp.temp_max ?? null
           }));
-          console.log('📍 [ASSETS] Equipment list built from temperatures:', equipmentList);
         }
 
         // Convert to Maps for state management
@@ -396,11 +335,9 @@ export function useTaskState(
             let correctedMax = equipment.temp_max;
 
             if (correctedMin !== null && correctedMax !== null && correctedMin > correctedMax) {
-              console.log(`🔄 [ASSETS] Auto-correcting swapped min/max for ${equipment.nickname || equipment.equipment}: min=${correctedMin}, max=${correctedMax} → min=${correctedMax}, max=${correctedMin}`);
               [correctedMin, correctedMax] = [correctedMax, correctedMin];
             }
 
-            // Create Asset object from task_data (no DB query needed)
             assetMap.set(equipment.assetId, {
               id: equipment.assetId,
               name: equipment.equipment || 'Unknown Equipment',
@@ -420,22 +357,13 @@ export function useTaskState(
 
           setAssets(assetMap);
           setAssetTempRanges(tempRangeMap);
-
-          console.log('✅ [ASSETS] Assets loaded into state:', {
-            assetMapSize: assetMap.size,
-            tempRangeMapSize: tempRangeMap.size
-          });
-        } else {
-          console.debug('[ASSETS] No equipment in task_data (expected for non-equipment tasks)');
         }
 
         // 4. Initialize form data (pass templateData so it can fall back to template's recurrence_pattern)
         initializeFormData(rawTaskData, equipmentList, templateData);
 
-        console.log('✅ [STATE] Task data loaded successfully');
-
       } catch (err: any) {
-        console.error('❌ [STATE] Error loading task data:', err);
+        console.error('[useTaskState] Error loading task data:', err);
         setError(err.message || 'Failed to load task data');
       } finally {
         setLoading(false);
@@ -452,15 +380,12 @@ export function useTaskState(
   //   - Cron Part 1 (pattern-match): { original_task_data: { checklistItems, ... } }
   // Falls back to template.recurrence_pattern when task_data is missing items
   function initializeFormData(rawTaskData: TaskDataBase, equipmentList: any[], templateData: any) {
-    console.log('🔧 [INIT] Initializing form data from task_data');
-
     // Initialize temperatures from equipment list
     if (equipmentList.length > 0) {
       const initialTemps: Record<string, number | null> = {};
       equipmentList.forEach((equipment: any) => {
         initialTemps[equipment.assetId] = null;
       });
-      console.log('🌡️ [INIT] Initialized temperature state:', initialTemps);
       setTemperatures(initialTemps);
     }
 
@@ -498,7 +423,6 @@ export function useTaskState(
 
       if (yesNoFormatted.length > 0) {
         setYesNoItems(yesNoFormatted);
-        console.log('✅ [INIT] Initialized yes/no items from checklist data:', yesNoFormatted.length);
       }
     } else if (rawYesNoItems && rawYesNoItems.length > 0) {
       // Initialize yes/no items (preserve enhanced format if present)
@@ -508,7 +432,6 @@ export function useTaskState(
         }
         return { text: item.text || '', answer: item.answer || null };
       }));
-      console.log('✅ [INIT] Initialized yes/no items:', rawYesNoItems.length);
     }
 
     // Initialize regular checklist items (only if NOT using yes/no mode)
@@ -520,13 +443,11 @@ export function useTaskState(
         return { text: item.text || item.label || '', completed: item.completed || false };
       }).filter((item: any) => item.text);
       if (items.length > 0) {
-        console.log('✅ [INIT] Initialized checklist items:', items.length);
         setChecklistItems(items);
       }
     }
 
     setFormData({});
-    console.log('✅ [INIT] Form data initialized');
   }
 
   // Helper: return array if value is a non-empty array, else null
@@ -536,7 +457,6 @@ export function useTaskState(
 
   // Temperature setter
   const setTemperature = useCallback((assetId: string, temp: number | null) => {
-    console.log('🌡️ [TEMP] Temperature changed:', { assetId, temp });
     setTemperatures(prev => ({
       ...prev,
       [assetId]: temp
@@ -572,12 +492,10 @@ export function useTaskState(
 
   // Photo helpers
   const addPhoto = useCallback((file: File) => {
-    console.log('📸 [PHOTO] Photo added:', file.name);
     setPhotos(prev => [...prev, file]);
   }, []);
 
   const removePhoto = useCallback((index: number) => {
-    console.log('📸 [PHOTO] Photo removed:', index);
     setPhotos(prev => prev.filter((_, i) => i !== index));
   }, []);
 
@@ -618,21 +536,6 @@ export function useTaskState(
   const removeCustomRecord = useCallback((index: number) => {
     setCustomRecords(prev => prev.filter((_, i) => i !== index));
   }, []);
-
-  // Debug: Log final state (inline, not in useEffect to avoid hook order issues)
-  if (isOpen && !loading) {
-    console.log('📊 [FINAL STATE]', {
-      hasTemplate: !!template,
-      templateName: template?.name,
-      hasTaskData: Object.keys(taskData).length > 0,
-      taskDataKeys: Object.keys(taskData),
-      assetsLoaded: assets.size,
-      enabledFeatures,
-      temperaturesInitialized: Object.keys(temperatures).length,
-      checklistItemsCount: checklistItems.length,
-      yesNoItemsCount: yesNoItems.length
-    });
-  }
 
   return {
     task,
