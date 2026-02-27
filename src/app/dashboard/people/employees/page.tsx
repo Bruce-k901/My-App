@@ -302,10 +302,14 @@ export default function EmployeesPage() {
         return;
       }
 
-      // Filter by status if needed (since RPC function returns all)
+      // Filter by status (RPC returns all statuses).
+      // Default (no filter selected): hide inactive/archived employees.
+      // Only show inactive when the user explicitly picks "Inactive".
       let filteredData = data;
       if (statusFilter) {
         filteredData = data.filter((e: any) => e.status === statusFilter);
+      } else {
+        filteredData = data.filter((e: any) => e.status !== 'inactive');
       }
 
       console.log('Employees fetched:', filteredData.length, 'of', data.length, 'total');
@@ -506,74 +510,58 @@ export default function EmployeesPage() {
 
   const handleEdit = async (employee: Employee) => {
     console.log('handleEdit called for:', employee.full_name, employee.id);
-    
-    // Always load sites and managers before opening modal (like the detail page does)
+
+    // Load sites/managers in parallel with full profile fetch
+    // Do NOT open the modal until we have full data (avoids race condition
+    // where the async fetch overwrites user edits)
+    const profilePromise = companyId
+      ? supabase.from('profiles').select('*').eq('id', employee.id).single()
+      : Promise.resolve({ data: null, error: null } as any);
+
     if (companyId) {
-      console.log('Pre-loading sites and managers...', { sitesCount: sites.length, managersCount: managers.length });
-      // Always fetch to ensure fresh data
-      await Promise.all([fetchSites(), fetchManagers()]);
-      // Give state time to update
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await Promise.all([fetchSites(), fetchManagers(), profilePromise]);
     }
-    
-    // Always set the employee immediately to open the modal
-    setEditingEmployee(employee);
-    setEditFormData(employee);
-    
-    // Try to fetch full profile data using RPC function to bypass RLS
-    if (!companyId) {
-      console.warn('No company_id available, using existing employee data');
-      // Set empty emergency contacts if no data
-      setEmergencyContacts([]);
-      return;
-    }
-    
+
+    // Build complete form data before opening the modal
+    let formData: Record<string, any> = { ...employee };
+    let contacts: any[] = [{ name: '', relationship: '', phone: '', email: '' }];
+
     try {
-      // Fetch full profile data directly
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', employee.id)
-        .single();
+      const { data: profileData, error: profileError } = await profilePromise;
 
       if (!profileError && profileData) {
-        console.log('Full profile data loaded, updating form data');
-        
-        // Map profile data to form format
         const mappedData = mapProfileToFormData(profileData);
-        
-        setEditingEmployee({ ...employee, ...mappedData });
-        setEditFormData(mappedData);
-        
-        // Set emergency contacts
-        if (profileData.emergency_contacts && Array.isArray(profileData.emergency_contacts)) {
-          setEmergencyContacts(profileData.emergency_contacts);
-        } else {
-          setEmergencyContacts([{ name: '', relationship: '', phone: '', email: '' }]);
-        }
-      } else {
-        // Fallback to RPC data
-        const { data: rpcData, error: rpcError } = await supabase.rpc('get_company_profiles', {
-          p_company_id: companyId
-        });
+        formData = mappedData;
 
-        if (!rpcError && rpcData && Array.isArray(rpcData)) {
+        if (profileData.emergency_contacts && Array.isArray(profileData.emergency_contacts)) {
+          contacts = profileData.emergency_contacts;
+        }
+      } else if (companyId) {
+        // Fallback: use admin RPC (includes fewer fields but better than nothing)
+        console.warn('select(*) failed, falling back to RPC:', profileError?.message);
+        const { data: rpcData } = await supabase.rpc('get_company_profiles', {
+          p_company_id: companyId,
+        });
+        if (rpcData && Array.isArray(rpcData)) {
           const fullData = rpcData.find((e: any) => (e.profile_id || e.id) === employee.id);
           if (fullData) {
-            const mappedData = {
+            formData = {
+              ...employee,
               ...fullData,
               id: fullData.profile_id || fullData.id,
               phone_number: fullData.phone_number || fullData.phone || '',
             };
-            setEditFormData({ ...employee, ...mappedData });
-            setEmergencyContacts([]);
           }
         }
       }
     } catch (err) {
       console.error('Exception fetching employee:', err);
-      setEmergencyContacts([]);
     }
+
+    // NOW open the modal — form data is already complete, no second overwrite
+    setEditingEmployee(employee);
+    setEditFormData(formData);
+    setEmergencyContacts(contacts);
   };
 
   const handleSaveEdit = async () => {
@@ -834,7 +822,12 @@ export default function EmployeesPage() {
       const result = await res.json();
       if (result.success) {
         setEmployees(prev => prev.filter(e => !mergeIds.includes(e.id)));
-        alert(`Merged successfully. ${result.updatedRecords} records updated.`);
+        const d = result.details;
+        const parts = [];
+        if (d?.deactivated) parts.push(`${d.deactivated} profile(s) deactivated`);
+        if (d?.repointed) parts.push(`${d.repointed} record(s) transferred`);
+        if (d?.errors) parts.push(`${d.errors} table(s) skipped`);
+        alert(`Merge complete. ${parts.join(', ') || 'No child records to transfer.'}`);
         setIsMergeOpen(false);
         setMergeMode(false);
         setSelectedForMerge(new Set());
@@ -1247,8 +1240,11 @@ export default function EmployeesPage() {
                         setShowSiteAssignmentsModal(true);
                       }}
                       onUpdate={async () => {
-                        // Reload expanded employee data after inline update
-                        await loadExpandedEmployeeData(employee.id);
+                        // Reload expanded employee data + main list (for status/site changes)
+                        await Promise.all([
+                          loadExpandedEmployeeData(employee.id),
+                          fetchEmployees(),
+                        ]);
                       }}
                     />
                   ) : (
@@ -1442,6 +1438,32 @@ function ExpandedEmployeeView({
 }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'personal' | 'employment' | 'compliance' | 'banking' | 'leave' | 'pay' | 'training'>('personal');
+  const [archiving, setArchiving] = useState(false);
+
+  const handleArchiveToggle = async () => {
+    const isCurrentlyActive = employee.status !== 'inactive';
+    const action = isCurrentlyActive ? 'archive' : 'restore';
+    if (!confirm(`Are you sure you want to ${action} ${employee.full_name}?`)) return;
+
+    setArchiving(true);
+    try {
+      const res = await fetch('/api/people/update-profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          employeeId: employee.id,
+          updateData: { status: isCurrentlyActive ? 'inactive' : 'active' },
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to update status');
+      onUpdate();
+    } catch (err) {
+      console.error('Archive toggle failed:', err);
+      alert(`Failed to ${action} employee. Please try again.`);
+    } finally {
+      setArchiving(false);
+    }
+  };
 
   const getSiteName = (siteId: string | null) => {
     if (!siteId) return '\u2014';
@@ -1514,6 +1536,23 @@ function ExpandedEmployeeView({
           >
             <Pencil className="w-4 h-4 inline mr-1" />
             Edit
+          </button>
+          <button
+            onClick={handleArchiveToggle}
+            disabled={archiving}
+            className={`px-3 py-1.5 rounded-lg text-sm transition-all flex items-center gap-1 border ${
+              employee.status === 'inactive'
+                ? 'border-emerald-500 text-emerald-500 hover:bg-emerald-500/10'
+                : 'border-red-400 text-red-400 hover:bg-red-400/10'
+            } disabled:opacity-50`}
+            title={employee.status === 'inactive' ? 'Restore employee' : 'Archive employee'}
+          >
+            {archiving ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <UserX className="w-4 h-4" />
+            )}
+            {employee.status === 'inactive' ? 'Restore' : 'Archive'}
           </button>
         </div>
       </div>
