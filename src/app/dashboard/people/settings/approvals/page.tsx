@@ -33,7 +33,7 @@ interface ApprovalStep {
 }
 
 export default function ApprovalWorkflowsPage() {
-  const { profile } = useAppContext();
+  const { profile, companyId } = useAppContext();
   const [loading, setLoading] = useState(true);
   const [workflows, setWorkflows] = useState<ApprovalWorkflow[]>([]);
   const [showWorkflowModal, setShowWorkflowModal] = useState(false);
@@ -74,14 +74,14 @@ export default function ApprovalWorkflowsPage() {
   ];
 
   useEffect(() => {
-    if (profile?.company_id) {
+    if (companyId) {
       loadWorkflows();
       loadStockCountSettings();
     }
-  }, [profile]);
+  }, [companyId]);
 
   async function loadStockCountSettings() {
-    if (!profile?.company_id) return;
+    if (!companyId) return;
 
     try {
       setLoadingSettings(true);
@@ -90,7 +90,7 @@ export default function ApprovalWorkflowsPage() {
       const { data: stockCountWorkflow } = await supabase
         .from('approval_workflows')
         .select('id, steps:approval_steps(*)')
-        .eq('company_id', profile.company_id)
+        .eq('company_id', companyId)
         .eq('type', 'stock_count')
         .eq('is_active', true)
         .single();
@@ -113,7 +113,7 @@ export default function ApprovalWorkflowsPage() {
   }
 
   async function saveStockCountSettings() {
-    if (!profile?.company_id) return;
+    if (!companyId) return;
 
     try {
       setLoadingSettings(true);
@@ -122,7 +122,7 @@ export default function ApprovalWorkflowsPage() {
       const { data: existingWorkflow } = await supabase
         .from('approval_workflows')
         .select('id')
-        .eq('company_id', profile.company_id)
+        .eq('company_id', companyId)
         .eq('type', 'stock_count')
         .single();
 
@@ -148,7 +148,7 @@ export default function ApprovalWorkflowsPage() {
         const { data: newWorkflow, error: createError } = await supabase
           .from('approval_workflows')
           .insert({
-            company_id: profile.company_id,
+            company_id: companyId,
             name: 'Stock Count Approval',
             type: 'stock_count',
             description: 'Approval workflow for stock counts',
@@ -189,7 +189,7 @@ export default function ApprovalWorkflowsPage() {
     try {
       setLoading(true);
 
-      if (!profile?.company_id) {
+      if (!companyId) {
         console.error('No company_id found in profile');
         toast.error('Unable to load workflows: No company ID');
         return;
@@ -198,7 +198,7 @@ export default function ApprovalWorkflowsPage() {
       const { data: workflowsData, error: workflowsError } = await supabase
         .from('approval_workflows')
         .select('id, name, type, description, is_active')
-        .eq('company_id', profile.company_id)
+        .eq('company_id', companyId)
         .order('name', { ascending: true });
 
       if (workflowsError) {
@@ -284,7 +284,7 @@ export default function ApprovalWorkflowsPage() {
       workflowDescription,
       workflowIsActive,
       workflowSteps: workflowSteps.length,
-      profileCompanyId: profile?.company_id,
+      profileCompanyId: companyId,
     });
 
     // Validate workflow name - ensure it's not empty
@@ -322,8 +322,8 @@ export default function ApprovalWorkflowsPage() {
       }
     }
 
-    if (!profile?.company_id) {
-      console.error('❌ profile.company_id is undefined');
+    if (!companyId) {
+      console.error('❌ companyId is undefined');
       toast.error('Company ID is missing');
       return;
     }
@@ -490,7 +490,7 @@ export default function ApprovalWorkflowsPage() {
           type: finalWorkflowType,
           description: workflowDescription.trim() || null,
           is_active: workflowIsActive,
-          company_id: profile!.company_id,
+          company_id: companyId!,
         };
         
         console.log('✅ Insert data:', { name: trimmedName, type: finalWorkflowType });

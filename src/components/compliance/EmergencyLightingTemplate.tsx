@@ -27,7 +27,7 @@ interface EmergencyLightingTemplateProps {
 }
 
 export function EmergencyLightingTemplate({ editTemplateId, onSave }: EmergencyLightingTemplateProps = {}) {
-  const { profile, selectedSiteId, siteId } = useAppContext();
+  const { profile, selectedSiteId, siteId, companyId } = useAppContext();
   const [isExpanded, setIsExpanded] = useState(false);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [equipmentRows, setEquipmentRows] = useState<EquipmentRow[]>([
@@ -40,7 +40,7 @@ export function EmergencyLightingTemplate({ editTemplateId, onSave }: EmergencyL
   const [instructions, setInstructions] = useState<string>("");
 
   useEffect(() => {
-    if (profile?.company_id) {
+    if (companyId) {
       const initialize = async () => {
         await loadAssets();
         if (editTemplateId) {
@@ -49,11 +49,11 @@ export function EmergencyLightingTemplate({ editTemplateId, onSave }: EmergencyL
       };
       initialize();
     }
-  }, [profile?.company_id, selectedSiteId, siteId, profile?.site_id, editTemplateId]);
+  }, [companyId, selectedSiteId, siteId, profile?.site_id, editTemplateId]);
   
   // Reload assets when selectedSiteId changes (from header site selector)
   useEffect(() => {
-    if (profile?.company_id) {
+    if (companyId) {
       loadAssets();
     }
   }, [selectedSiteId]);
@@ -87,12 +87,12 @@ ${validEquipment.map(eq => {
   }, [equipmentRows, assets, editingTemplateId]);
 
   const loadAssets = async () => {
-    if (!profile?.company_id) return;
+    if (!companyId) return;
     let query = supabase
       .from("assets")
       .select("id, name, category, site_id, company_id, status")
       .eq("status", "active")
-      .eq("company_id", profile.company_id)
+      .eq("company_id", companyId)
       .eq("archived", false)
       .order("name");
     // Use selectedSiteId from header if available, otherwise fall back to siteId
@@ -142,7 +142,7 @@ ${validEquipment.map(eq => {
   const loadDraftData = async (templateId: string) => {
     try {
       setLoading(true);
-      if (assets.length === 0 && profile?.company_id) await loadAssets();
+      if (assets.length === 0 && companyId) await loadAssets();
       
       const { data: template, error: templateError } = await supabase
         .from("task_templates")
@@ -264,7 +264,7 @@ ${validEquipment.map(eq => {
       alert("Please select at least one emergency light");
       return;
     }
-    if (!profile?.company_id) {
+    if (!companyId) {
       alert("No company found for user");
       return;
     }
@@ -293,7 +293,7 @@ ${validEquipment.map(eq => {
         }).join('\n')}`;
       
       const templateData = {
-        company_id: profile.company_id,
+        company_id: companyId,
         name: templateName,
         slug: templateSlug,
         description: "Weekly testing of emergency lighting systems - Draft",
@@ -369,7 +369,7 @@ ${validEquipment.map(eq => {
       alert("Please select at least one emergency light");
       return;
     }
-    if (!profile?.company_id) {
+    if (!companyId) {
       alert("No company found for user");
       return;
     }
@@ -398,7 +398,7 @@ ${validEquipment.map(eq => {
         }).join('\n')}`;
       
       const templateData: any = {
-        company_id: profile.company_id,
+        company_id: companyId,
         name: templateName,
         description: "Weekly testing of emergency lighting systems",
         category: "h_and_s",

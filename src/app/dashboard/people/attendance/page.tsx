@@ -19,7 +19,7 @@ import {
 import type { DailyAttendance, WeeklyHours } from '@/types/teamly';
 
 export default function AttendancePage() {
-  const { profile, siteId } = useAppContext();
+  const { profile, siteId, companyId } = useAppContext();
   const [viewMode, setViewMode] = useState<'today' | 'week'>('today');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dailyData, setDailyData] = useState<DailyAttendance[]>([]);
@@ -31,7 +31,7 @@ export default function AttendancePage() {
 
   // Fetch profile IDs for the selected site (for client-side filtering)
   useEffect(() => {
-    if (!siteId || siteId === 'all' || !profile?.company_id) {
+    if (!siteId || siteId === 'all' || !companyId) {
       setSiteProfileIds(null);
       return;
     }
@@ -40,28 +40,28 @@ export default function AttendancePage() {
       const { data } = await supabase
         .from('profiles')
         .select('id')
-        .eq('company_id', profile?.company_id)
+        .eq('company_id', companyId)
         .eq('home_site', siteId);
       setSiteProfileIds(new Set((data || []).map((p: any) => p.id)));
     }
 
     fetchSiteProfiles();
-  }, [siteId, profile?.company_id]);
+  }, [siteId, companyId]);
 
   useEffect(() => {
-    if (profile?.company_id) {
+    if (companyId) {
       if (viewMode === 'today') {
         fetchDailyAttendance();
       } else {
         fetchWeeklyHours();
       }
     }
-  }, [profile?.company_id, viewMode, selectedDate]);
+  }, [companyId, viewMode, selectedDate]);
 
   const fetchDailyAttendance = async () => {
     setLoading(true);
     const { data } = await supabase.rpc('get_daily_attendance', {
-      p_company_id: profile?.company_id,
+      p_company_id: companyId,
       p_date: selectedDate.toISOString().split('T')[0],
     });
     setDailyData(data || []);
@@ -72,7 +72,7 @@ export default function AttendancePage() {
     setLoading(true);
     const weekStart = getWeekStart(selectedDate);
     const { data } = await supabase.rpc('get_weekly_hours', {
-      p_company_id: profile?.company_id,
+      p_company_id: companyId,
       p_week_start: weekStart.toISOString().split('T')[0],
     });
     setWeeklyData(data || []);

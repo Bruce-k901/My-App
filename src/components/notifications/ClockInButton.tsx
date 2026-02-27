@@ -5,6 +5,7 @@ import { Clock, MapPin } from '@/components/ui/icons'
 import { useAttendance } from '@/hooks/useAttendance'
 import { useAppContext } from '@/context/AppContext'
 import { formatDistanceToNow } from 'date-fns'
+import ShiftPulseModal from '@/components/teamly/ShiftPulseModal'
 
 export function ClockInButton() {
   // ALL HOOKS MUST BE CALLED AT THE TOP - BEFORE ANY CONDITIONAL RETURNS
@@ -12,7 +13,7 @@ export function ClockInButton() {
   const { siteId } = useAppContext()
   const [requestingLocation, setRequestingLocation] = useState(false)
   const [showClockInConfirm, setShowClockInConfirm] = useState(false)
-  const [showClockOutConfirm, setShowClockOutConfirm] = useState(false)
+  const [showShiftPulse, setShowShiftPulse] = useState(false)
 
   // Memoize duration calculation - MUST be before any conditional returns
   const duration = useMemo(() => {
@@ -78,7 +79,7 @@ export function ClockInButton() {
   const handleClockOutClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    setShowClockOutConfirm(true)
+    setShowShiftPulse(true)
   }, [])
 
   const handleClockOutConfirm = useCallback(async () => {
@@ -93,9 +94,10 @@ export function ClockInButton() {
     }
   }, [clockOut])
 
-  const handleCloseClockOutConfirm = useCallback(() => {
-    setShowClockOutConfirm(false)
-  }, [])
+  const handleShiftPulseClockOut = useCallback(async () => {
+    setShowShiftPulse(false)
+    await handleClockOutConfirm()
+  }, [handleClockOutConfirm])
 
   const handleCloseClockInConfirm = useCallback(() => {
     setShowClockInConfirm(false)
@@ -151,35 +153,14 @@ export function ClockInButton() {
           </button>
         </div>
 
-        {/* Clock Out Confirmation - Must be outside the early return */}
-        {showClockOutConfirm && (
-          <div className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center" style={{ minHeight: '100vh' }} onClick={handleCloseClockOutConfirm}>
-            <div className="bg-theme-surface p-6 rounded-lg border border-theme shadow-lg max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
-              <h2 className="text-lg font-semibold text-theme-primary mb-4">Clock Out</h2>
-              <p className="text-gray-600 dark:text-neutral-300 mb-6">Are you sure you want to clock out?</p>
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={handleCloseClockOutConfirm}
-                  className="px-4 py-2 border border-gray-300 dark:border-neutral-600 text-gray-600 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    console.log('Clock Out confirmed')
-                    setShowClockOutConfirm(false)
-                    await handleClockOutConfirm()
-                  }}
-                  className="px-4 py-2 bg-magenta-500 hover:bg-magenta-600 text-white rounded"
-                >
-                  Clock Out
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Shift Pulse Rating Modal */}
+        <ShiftPulseModal
+          isOpen={showShiftPulse}
+          onSubmitAndClockOut={handleShiftPulseClockOut}
+          onSkipAndClockOut={handleShiftPulseClockOut}
+          siteId={siteId}
+          shiftId={currentAttendance?.id}
+        />
       </>
     )
   }
@@ -234,35 +215,13 @@ export function ClockInButton() {
         </div>
       )}
 
-      {/* Clock Out Confirmation */}
-      {showClockOutConfirm && (
-        <div className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center" style={{ minHeight: '100vh' }} onClick={handleCloseClockOutConfirm}>
-          <div className="bg-theme-surface p-6 rounded-lg border border-theme shadow-lg max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-semibold text-theme-primary mb-4">Clock Out</h2>
-            <p className="text-theme-tertiary mb-6">Are you sure you want to clock out?</p>
-            <div className="flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={handleCloseClockOutConfirm}
-                className="px-4 py-2 border border-gray-300 dark:border-neutral-600 text-theme-tertiary hover:bg-gray-100 dark:hover:bg-neutral-800 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  console.log('Clock Out confirmed')
-                  setShowClockOutConfirm(false)
-                  await handleClockOutConfirm()
-                }}
-                className="px-4 py-2 bg-magenta-500 hover:bg-magenta-600 text-white rounded"
-              >
-                Clock Out
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Shift Pulse Rating Modal (fallback for edge cases) */}
+      <ShiftPulseModal
+        isOpen={showShiftPulse}
+        onSubmitAndClockOut={handleShiftPulseClockOut}
+        onSkipAndClockOut={handleShiftPulseClockOut}
+        siteId={siteId}
+      />
     </>
   )
 }

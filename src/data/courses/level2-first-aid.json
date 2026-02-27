@@ -1,0 +1,1960 @@
+{
+  "id": "uk-l2-first-aid",
+  "title": "First Aid Awareness Level 2 (UK)",
+  "shortDescription": "CPR, burns, bleeds, choking, and allergic reactions -- be ready to save a life.",
+  "description": "Essential first aid awareness course covering the legal framework, primary assessment (DR ABC), CPR and AED use, recovery position, burns and scalds, cuts and bleeding control, choking response, and anaphylaxis management. Content is UK-specific and aligned to the Health and Safety (First-Aid) Regulations 1981 with practical examples for hospitality environments.",
+  "version": "2.0.0",
+  "refresherYears": 1,
+  "certificateTemplateId": "cert-l2-first-aid",
+  "category": "workplace-safety",
+  "level": "Level 2",
+  "estimatedMinutes": 210,
+  "icon": "Stethoscope",
+  "tags": [
+    "first aid",
+    "CPR",
+    "AED",
+    "burns",
+    "choking",
+    "anaphylaxis",
+    "bleeding",
+    "recovery position",
+    "DR ABC",
+    "EpiPen",
+    "hospitality",
+    "First-Aid Regulations 1981"
+  ],
+  "learningOutcomes": [
+    "Explain the legal requirements for first aid provision under the Health and Safety (First-Aid) Regulations 1981",
+    "Perform the primary survey (DR ABC) and place a casualty in the recovery position",
+    "Deliver effective adult CPR at a ratio of 30:2 and understand how to use an AED",
+    "Treat burns, scalds, cuts, and severe bleeding appropriate to a kitchen environment",
+    "Respond to choking emergencies using back blows and abdominal thrusts",
+    "Recognise anaphylaxis and assist with adrenaline auto-injector administration",
+    "Identify the signs and management of shock, seizures, fainting, and heat exhaustion"
+  ],
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Introduction and Primary Assessment",
+      "description": "The legal framework for first aid at work, the role of a first aider, first aid kit contents, and the DR ABC primary survey.",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "Legal Framework and First Aid Provision",
+          "slides": [
+            {
+              "id": "m1-s1",
+              "type": "text-graphic-split",
+              "title": "Welcome to First Aid Awareness",
+              "content": "## First Aid Awareness Level 2 (UK)\n\nIn hospitality, accidents are not a matter of **if** but **when**. Burns from fryers, knife cuts, slips on wet floors, guests choking on food, and allergic reactions to hidden allergens are everyday risks. **Knowing first aid can mean the difference between life and death.**\n\nEvery year in the UK, over **30,000 people suffer cardiac arrests outside hospital**. Only around 1 in 10 survive. Early CPR and defibrillation can **double or triple** survival rates, yet many bystanders do nothing because they feel unequipped to help.\n\n### What This Course Covers\n- **Module 1** -- Legal requirements, first aid kits, and the DR ABC primary survey.\n- **Module 2** -- CPR, AED use, and the recovery position.\n- **Module 3** -- Burns, scalds, cuts, severe bleeding, embedded objects, and shock.\n- **Module 4** -- Choking response and anaphylaxis management.\n- **Module 5** -- Final assessment.\n\n### Important Note\nThis is an **awareness course**. It teaches you what to do and when, but it does not replace practical, hands-on first aid training. Your employer should arrange face-to-face training where you practise on manikins and with training AEDs.\n\nUse **Next** to move through the course.",
+              "keyTakeaway": "First aid awareness helps you respond confidently -- but always call 999 for serious incidents and seek practical training."
+            },
+            {
+              "id": "m1-s2",
+              "type": "text-graphic-split",
+              "title": "The Health and Safety (First-Aid) Regulations 1981",
+              "content": "## The Law on Workplace First Aid\n\nThe **Health and Safety (First-Aid) Regulations 1981** (amended 2013) are the primary legislation governing first aid provision in UK workplaces. They are enforced by the **Health and Safety Executive (HSE)**.\n\n### Employer Duties\nEvery employer must provide:\n- **Adequate and appropriate first aid equipment** -- at minimum, a compliant first aid kit.\n- **Appropriate first aid personnel** -- either a fully trained First Aider at Work (FAW), an Emergency First Aider at Work (EFAW), or an Appointed Person to take charge.\n- **Information for employees** -- staff must know who the first aiders are, where the first aid kit is located, and what to do in an emergency.\n\n### What Determines \"Adequate\"?\nThe HSE says employers must carry out a **needs assessment** considering:\n- The **nature of the work** (high-risk kitchens vs. low-risk offices).\n- The **number of employees** and whether they work shifts.\n- The **history of accidents** on site.\n- The **remoteness of the site** from emergency medical services.\n- Whether **members of the public or customers** are present.\n\nA busy hotel kitchen with deep fryers, sharp knives, and hot surfaces is **higher risk** than an office. It will need more first aiders and more comprehensive kits.\n\n### Self-Employed Persons\nIf you are self-employed, you are not required to provide first aid for yourself, but you **must** provide it if you employ others or if your work activities could affect other people.",
+              "keyTakeaway": "The 1981 Regulations require every employer to provide first aid equipment, trained personnel, and clear information -- the level of provision depends on a workplace needs assessment."
+            },
+            {
+              "id": "m1-s3",
+              "type": "text-graphic-split",
+              "title": "First Aid Kits and Equipment",
+              "content": "## What Should Be in a First Aid Kit?\n\nThe HSE does not prescribe a rigid list, but the **BS 8599-1:2019** standard provides a benchmark. A typical workplace first aid kit should contain:\n\n### Minimum Contents (Small Workplace Kit)\n- **1 guidance leaflet** (HSE-approved first aid guide).\n- **20 individually wrapped sterile plasters** (assorted sizes) -- in hospitality, these must be **blue detectable plasters**.\n- **2 sterile eye pads**.\n- **2 individually wrapped triangular bandages** (ideally sterile).\n- **6 safety pins**.\n- **2 large sterile unmedicated dressings** (18cm x 18cm).\n- **6 medium sterile unmedicated dressings** (12cm x 12cm).\n- **2 pairs of disposable nitrile gloves**.\n- **1 foil blanket** for treating shock.\n- **1 pair of clothing shears**.\n- **1 resuscitation face shield** (for CPR).\n- **Sterile saline pods** (for eye irrigation).\n\n### Blue Detectable Plasters\nIn **food production and hospitality**, plasters must be **blue** because blue does not occur naturally in food, making a lost plaster easy to spot. Many also contain a **metal strip** so they can be detected by metal detectors on production lines.\n\n### Checking and Restocking\nFirst aid kits must be **checked regularly** and restocked after use. An out-of-date or empty kit is worse than useless -- it creates a false sense of security. Nominate a responsible person to inspect kits **monthly**.\n\n### Additional Equipment\nMany workplaces also provide burn gel, instant cold packs, automated external defibrillators (AEDs), and eyewash stations depending on their needs assessment.",
+              "keyTakeaway": "Blue detectable plasters are mandatory in food environments, and first aid kits must be checked and restocked regularly -- an empty kit helps no one."
+            },
+            {
+              "id": "m1-s4",
+              "type": "text-graphic-split",
+              "title": "The DR ABC Primary Survey",
+              "content": "## Assessing a Casualty Quickly and Safely\n\nWhen you find someone who is injured or unwell, you need a **systematic approach**. The DR ABC primary survey gives you a repeatable framework that works in any situation.\n\n### D -- Danger\nBefore you touch the casualty, **check for danger** to yourself, bystanders, and the casualty. In a kitchen, dangers include hot surfaces, spilled oil, exposed electrical wiring, or gas leaks. **Never become a second casualty** -- you cannot help anyone if you are injured.\n\n### R -- Response\n**Tap their shoulders firmly** and ask loudly: **\"Can you hear me? Open your eyes!\"** Try both shoulders in case one side is injured. If they respond, ask them what happened and assess their injuries. If they do not respond, shout for help and move to the next step.\n\n### A -- Airway\nIf they are unresponsive, you must **open the airway**. Place one hand on the forehead and gently tilt the head back. With your other hand, lift the chin using two fingertips under the bony part of the chin. **Look inside the mouth** for obvious obstructions (food, vomit, loose dentures) and remove them carefully.\n\n### B -- Breathing\n**Look, listen, and feel** for normal breathing for **up to 10 seconds**. Look at the chest for rise and fall. Listen at the mouth for breath sounds. Feel for air on your cheek. **Occasional gasps (agonal breathing) are NOT normal breathing** -- treat as not breathing.\n\n### C -- Circulation / CPR\nIf they are **not breathing normally**, call **999** (or send someone) and begin **CPR immediately**. If they **are breathing normally**, place them in the **recovery position** and monitor until help arrives.",
+              "keyTakeaway": "DR ABC: check for Danger, check their Response, open the Airway, check Breathing, and start CPR or place in recovery position -- follow the same steps every time."
+            },
+            {
+              "id": "m1-s5",
+              "type": "text-graphic-split",
+              "title": "Calling Emergency Services and Scene Management",
+              "content": "## Calling 999 -- Getting It Right\n\nWhen you call 999 (or 112), stay calm and be ready to provide:\n- **Your location** -- full address, floor, room, and any access instructions (e.g. 'use the back entrance on Market Street').\n- **What happened** -- 'A colleague has collapsed in the kitchen and is not breathing.'\n- **Number of casualties** and their condition.\n- **What you are doing** -- 'I have started CPR.'\n- **Any hazards** at the scene (gas leak, fire, chemicals).\n\n**Do not hang up** until the operator tells you to. They may give you instructions, including talking you through CPR.\n\n### Sending Someone Else to Call\nIf you are alone with the casualty, shout for help first. If someone comes, send them to call 999 and ask them to **come back and confirm the call has been made**. If no one comes, call 999 yourself -- most modern phones allow speakerphone so you can continue first aid.\n\n### Scene Management\n- **Clear the area** of non-essential people. Assign someone to meet the ambulance and guide paramedics in.\n- **Preserve the scene** if there is a serious accident -- the HSE may need to investigate under RIDDOR (Reporting of Injuries, Diseases and Dangerous Occurrences Regulations 2013).\n- **Reassure the casualty** -- even if they appear unconscious, they may still hear you. Speak calmly and explain what you are doing.\n- **Record what happened** -- note the time, what you found, what treatment you gave, and any changes. This information is vital for paramedics.\n\n### When NOT to Move a Casualty\nDo not move a casualty if you suspect a **spinal injury** (e.g. a fall from height, a heavy blow to the head or back) unless they are in **immediate danger** (fire, flooding, structural collapse). Moving someone with a spinal injury can cause permanent paralysis.",
+              "keyTakeaway": "Give 999 your exact location, what happened, and what you are doing -- do not hang up, and never move a casualty with a suspected spinal injury unless there is immediate danger."
+            }
+          ]
+        },
+        {
+          "id": "m1-l2",
+          "title": "Scenarios: Primary Assessment",
+          "slides": [
+            {
+              "id": "m1-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Colleague Collapses in the Kitchen",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are working the lunch shift in a busy hotel kitchen. A colleague who was carrying a large stockpot suddenly drops it, staggers, and collapses face-down on the floor near the deep fryers. Hot stock has spilled across the floor. Other staff are frozen in shock. What do you do first?",
+                    "options": [
+                      {
+                        "label": "Rush straight over and roll them onto their back to check breathing.",
+                        "nextNodeId": "rush_over"
+                      },
+                      {
+                        "label": "Shout to others to turn off the fryers and clear the spilled liquid, then approach safely.",
+                        "nextNodeId": "check_danger"
+                      },
+                      {
+                        "label": "Call 999 immediately before doing anything else.",
+                        "nextNodeId": "call_first"
+                      }
+                    ]
+                  },
+                  "rush_over": {
+                    "text": "You run towards your colleague but slip on the spilled stock and burn your hand on the edge of the fryer. Now there are two casualties and you are in pain. The first step in DR ABC is always D -- Danger. You must make the scene safe before approaching.",
+                    "options": [
+                      { "label": "Go back and try a safer approach.", "nextNodeId": "start" }
+                    ]
+                  },
+                  "call_first": {
+                    "text": "Calling 999 is important, but at this stage you do not know what is wrong with your colleague. You have not checked for danger or assessed their condition. The ambulance operator will ask what has happened, and you will not be able to tell them. What should you do before calling?",
+                    "options": [
+                      {
+                        "label": "Make the scene safe, then check their response.",
+                        "nextNodeId": "check_danger"
+                      },
+                      {
+                        "label": "Just tell the operator someone collapsed -- they will figure it out.",
+                        "nextNodeId": "call_vague"
+                      }
+                    ]
+                  },
+                  "call_vague": {
+                    "text": "The operator asks: 'Is the person breathing?' You do not know because you have not checked. They tell you to go to the casualty, check breathing, and call back. You have lost valuable time. A systematic DR ABC assessment would have been faster and more effective.",
+                    "options": [
+                      { "label": "Start the DR ABC assessment properly.", "nextNodeId": "start" }
+                    ]
+                  },
+                  "check_danger": {
+                    "text": "Good -- you have addressed Danger first. A colleague turns off the fryers and another uses a mop to clear the worst of the spilled stock. The area around the casualty is now safe to approach. You kneel beside them. What is your next step?",
+                    "options": [
+                      {
+                        "label": "Tap their shoulders firmly and shout: 'Can you hear me? Open your eyes!'",
+                        "nextNodeId": "check_response"
+                      },
+                      {
+                        "label": "Open their mouth and check the airway immediately.",
+                        "nextNodeId": "skip_response"
+                      },
+                      {
+                        "label": "Start chest compressions straight away.",
+                        "nextNodeId": "skip_to_cpr"
+                      }
+                    ]
+                  },
+                  "skip_response": {
+                    "text": "You need to check for a response before opening the airway. The casualty might be conscious but dazed -- jumping to airway management on a conscious person is inappropriate and could frighten them. Follow the sequence: D, then R, then A, B, C.",
+                    "options": [
+                      { "label": "Check for response first.", "nextNodeId": "check_response" }
+                    ]
+                  },
+                  "skip_to_cpr": {
+                    "text": "Starting CPR without checking for breathing is dangerous. The casualty might be breathing normally -- in which case CPR is not needed and could cause harm. You must complete the DR ABC sequence before deciding on treatment.",
+                    "options": [
+                      {
+                        "label": "Go back and check response first.",
+                        "nextNodeId": "check_response"
+                      }
+                    ]
+                  },
+                  "check_response": {
+                    "text": "You tap both shoulders and shout loudly. There is no response -- the casualty is unresponsive. You gently roll them onto their back, tilt their head back, and lift the chin to open the airway. You look, listen, and feel for breathing for 10 seconds. There is no normal breathing -- just occasional gasps. What now?",
+                    "options": [
+                      {
+                        "label": "They are gasping so they must be breathing -- put them in recovery position.",
+                        "nextNodeId": "gasping_wrong"
+                      },
+                      {
+                        "label": "Send someone to call 999 and fetch the AED, then start CPR immediately.",
+                        "nextNodeId": "correct_end"
+                      }
+                    ]
+                  },
+                  "gasping_wrong": {
+                    "text": "Agonal gasps are NOT normal breathing. They are a reflex that occurs in the first minutes after cardiac arrest. Treating agonal gasps as normal breathing and placing the casualty in the recovery position instead of starting CPR could be fatal. You must begin CPR immediately.",
+                    "options": [{ "label": "Start CPR and call 999.", "nextNodeId": "correct_end" }]
+                  },
+                  "correct_end": {
+                    "text": "Well done! You correctly followed DR ABC: you made the scene safe (Danger), checked for a Response, opened the Airway, checked Breathing, and recognised that agonal gasps mean CPR is needed (Circulation). You sent someone to call 999 and fetch the AED while you started compressions. This is exactly the right sequence -- every second counts in cardiac arrest.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Guest Found Unresponsive in the Restaurant",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A waiter rushes into the kitchen and tells you an elderly guest has slumped forward in their chair and is not responding. The restaurant is full of diners. You grab the first aid kit and head out. When you arrive, the guest is slumped over the table, face resting on their arm. Other diners are crowding around. What do you do?",
+                    "options": [
+                      {
+                        "label": "Ask nearby diners to step back and give you space, then assess the guest.",
+                        "nextNodeId": "clear_space"
+                      },
+                      {
+                        "label": "Immediately pull the guest onto the floor and start CPR.",
+                        "nextNodeId": "immediate_cpr"
+                      },
+                      {
+                        "label": "Shake the guest vigorously and pour cold water on their face to wake them.",
+                        "nextNodeId": "cold_water"
+                      }
+                    ]
+                  },
+                  "clear_space": {
+                    "text": "Good thinking. You calmly ask diners to step back and ask a colleague to keep the area clear. You now have room to work. You gently tap the guest's shoulders and call out: 'Hello, can you hear me? Can you open your eyes?' There is no response. How do you proceed?",
+                    "options": [
+                      {
+                        "label": "Carefully lower the guest to the floor, tilt head back, lift chin, and check for breathing.",
+                        "nextNodeId": "assess_breathing"
+                      },
+                      {
+                        "label": "Leave them in the chair and check for a pulse at the wrist.",
+                        "nextNodeId": "pulse_check"
+                      },
+                      {
+                        "label": "Call 999 first, then check breathing.",
+                        "nextNodeId": "call_then_check"
+                      }
+                    ]
+                  },
+                  "immediate_cpr": {
+                    "text": "You have skipped several critical steps. You have not checked for danger, response, or breathing. The guest may be conscious but drowsy, or they may be breathing normally. Pulling them roughly from a chair without assessment could also cause injury, especially if they have a spinal problem. Always follow DR ABC.",
+                    "options": [
+                      { "label": "Go back and follow the correct sequence.", "nextNodeId": "start" }
+                    ]
+                  },
+                  "cold_water": {
+                    "text": "Pouring cold water on an unresponsive person is not a recognised first aid technique. It could cause them to inhale water if their airway is compromised, and it is distressing and undignified. The correct approach is to tap and shout to check for a response, then follow the DR ABC sequence.",
+                    "options": [{ "label": "Try the proper approach.", "nextNodeId": "start" }]
+                  },
+                  "pulse_check": {
+                    "text": "Current UK Resuscitation Council guidelines advise that non-medical first aiders should NOT rely on pulse checks -- they are unreliable and waste time. Instead, check for normal breathing. If the casualty is not breathing normally, start CPR. You also need to get them onto a firm, flat surface (the floor) for any CPR to be effective.",
+                    "options": [
+                      {
+                        "label": "Lower them to the floor and check breathing.",
+                        "nextNodeId": "assess_breathing"
+                      }
+                    ]
+                  },
+                  "call_then_check": {
+                    "text": "It is better to check breathing first so you can tell the 999 operator exactly what is happening. However, if you are alone, calling 999 on speakerphone while assessing is acceptable. The key is not to delay the assessment. Let's proceed with checking breathing.",
+                    "options": [
+                      { "label": "Continue with the assessment.", "nextNodeId": "assess_breathing" }
+                    ]
+                  },
+                  "assess_breathing": {
+                    "text": "You carefully lower the guest onto the floor with help from a colleague. You tilt the head back, lift the chin, and look, listen, and feel for breathing for 10 seconds. The guest IS breathing normally -- slow, steady breaths with visible chest movement. What should you do?",
+                    "options": [
+                      {
+                        "label": "Start CPR to be safe -- you cannot be too careful.",
+                        "nextNodeId": "unnecessary_cpr"
+                      },
+                      {
+                        "label": "Place them in the recovery position, call 999, and monitor breathing until help arrives.",
+                        "nextNodeId": "correct_end"
+                      }
+                    ]
+                  },
+                  "unnecessary_cpr": {
+                    "text": "CPR is only for casualties who are NOT breathing normally. Performing chest compressions on someone who is breathing could cause serious harm, including broken ribs and disruption to their heart rhythm. The correct action for an unconscious person who IS breathing is the recovery position.",
+                    "options": [
+                      {
+                        "label": "Place them in the recovery position instead.",
+                        "nextNodeId": "correct_end"
+                      }
+                    ]
+                  },
+                  "correct_end": {
+                    "text": "Excellent work! You managed the scene calmly, cleared space, followed DR ABC, and correctly identified that the guest was breathing normally. Placing them in the recovery position keeps their airway open and prevents choking. You called 999 and monitored their breathing until paramedics arrived. The guest had suffered a fainting episode due to low blood pressure and made a full recovery.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "CPR, AED, and Recovery Position",
+      "description": "How to perform adult CPR, use an automated external defibrillator, and place a casualty in the recovery position.",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "CPR, AED, and Recovery Position",
+          "slides": [
+            {
+              "id": "m2-s1",
+              "type": "text-graphic-split",
+              "title": "How to Perform Adult CPR",
+              "content": "## Cardiopulmonary Resuscitation (CPR)\n\nIf the casualty is **not breathing normally** after your DR ABC assessment, you must start CPR immediately. Every minute without CPR reduces the chance of survival by **7-10%**.\n\n### The CPR Sequence for Adults (Over 12 Years)\n1. **Call 999** or send someone to call. Ask them to bring an **AED** if available.\n2. Place the casualty on their back on a **firm, flat surface**.\n3. Kneel beside them. Place the **heel of one hand** on the **centre of the chest** (the lower half of the breastbone).\n4. Place your **other hand on top** and **interlock your fingers**. Keep your fingers raised off the ribs.\n5. Position yourself directly above the chest with **arms straight** and shoulders over your hands.\n6. Press down **5-6cm** (about 2 inches) -- push hard.\n7. Release fully between compressions -- allow the chest to **completely recoil**.\n8. Compress at a rate of **100-120 per minute** (the beat of 'Stayin' Alive' by the Bee Gees).\n9. After **30 compressions**, open the airway (head tilt, chin lift), pinch the nose, and give **2 rescue breaths** (each lasting about 1 second, watching for chest rise).\n10. Continue the cycle of **30 compressions to 2 breaths (30:2)** without stopping.\n\n### Key Points\n- **Do not stop** CPR until paramedics take over, an AED tells you to stop, or the casualty shows signs of life.\n- If you are **unable or unwilling** to give rescue breaths, **compression-only CPR** is still far better than doing nothing.\n- **Swap** with another rescuer every **2 minutes** to maintain effective compressions -- fatigue reduces quality quickly.",
+              "keyTakeaway": "Push hard (5-6cm), push fast (100-120/min), and do not stop -- the 30:2 ratio of compressions to breaths gives the casualty the best chance of survival."
+            },
+            {
+              "id": "m2-s2",
+              "type": "text-graphic-split",
+              "title": "Using an Automated External Defibrillator (AED)",
+              "content": "## The AED -- A Lifesaver Anyone Can Use\n\nAn automated external defibrillator (AED) analyses the heart rhythm and delivers an electric shock to restart normal heart function. AEDs are designed for use by **anyone**, regardless of training. You **cannot harm** someone by using an AED -- it will only deliver a shock if it detects a shockable rhythm.\n\n### Step-by-Step AED Use\n1. **Turn the AED on** -- open the lid or press the power button. It will begin giving voice prompts.\n2. **Expose the chest** -- remove or cut away clothing. If the chest is wet, **dry it quickly** with a towel. If the casualty has excessive chest hair, use the razor in the AED kit to shave the pad areas.\n3. **Attach the pads** -- peel the backing and stick them firmly to bare skin. **Pad 1**: upper right chest, below the collarbone. **Pad 2**: lower left side, under the armpit. Follow the diagrams on the pads.\n4. **Stand clear** -- the AED will say 'Analysing -- do not touch the patient.' Make sure **nobody is touching** the casualty.\n5. **If shock advised** -- the AED will say 'Shock advised -- press the flashing button.' Shout **'Stand clear!'**, check nobody is touching the casualty, and press the button.\n6. **If no shock advised** -- the AED will tell you to continue CPR. Resume 30:2 immediately.\n7. **Follow AED prompts** -- it will re-analyse every 2 minutes.\n\n### Where to Find AEDs\nLook for the **green heart symbol** with a white lightning bolt. AEDs are found in shopping centres, airports, train stations, leisure centres, hotels, and many restaurants. The website **defibfinder.uk** maps public AEDs across the UK.\n\n### Important Notes\n- Do **not** place pads over a pacemaker lump (move the pad at least 2.5cm away).\n- Remove **medication patches** (e.g. GTN patches) before placing pads.\n- Continue CPR while the AED is being set up -- minimise interruptions to compressions.",
+              "keyTakeaway": "An AED is safe for anyone to use -- it will only shock if needed. Turn it on, follow the voice prompts, and keep doing CPR between analyses."
+            },
+            {
+              "id": "m2-s3",
+              "type": "text-graphic-split",
+              "title": "The Recovery Position",
+              "content": "## Protecting the Airway of an Unconscious, Breathing Casualty\n\nIf a casualty is unconscious but **breathing normally**, they must be placed in the **recovery position**. This prevents the tongue from falling back and blocking the airway, and it allows fluids (blood, vomit) to drain from the mouth rather than being inhaled into the lungs.\n\n### Step-by-Step Recovery Position\n1. **Kneel beside** the casualty. Make sure their legs are straight.\n2. Place the **arm nearest to you** out at a right angle to their body, elbow bent, palm facing up.\n3. Bring the **far arm** across the chest and hold the **back of their hand** against their **nearest cheek**. Keep holding it there.\n4. With your other hand, pull the **far knee up** so the foot is flat on the floor.\n5. Keeping their hand pressed against their cheek, pull the **bent knee towards you** to roll the casualty onto their side.\n6. Adjust the **top leg** so the hip and knee are both at **right angles** (this stops them rolling onto their face).\n7. **Tilt the head back** slightly to keep the airway open. Adjust the hand under the cheek to maintain the head tilt.\n8. **Monitor breathing** continuously. Check every minute. If breathing stops, roll them onto their back and start CPR.\n\n### When to Use the Recovery Position\n- Unconscious casualty who **is** breathing normally.\n- After a seizure, once the seizure has stopped and the casualty is breathing.\n- Someone who is heavily intoxicated and vomiting (to prevent aspiration).\n\n### When NOT to Use It\n- If the casualty is **not breathing** -- they need CPR.\n- If you suspect a **spinal injury** -- keep them still and support the head unless they are in immediate danger.\n\n### In a Restaurant Setting\nA guest who faints and recovers consciousness may feel nauseous. If they become unresponsive again, the recovery position protects their airway while you wait for paramedics.",
+              "keyTakeaway": "The recovery position keeps the airway open and lets fluids drain -- use it for anyone who is unconscious but breathing normally, and monitor their breathing constantly."
+            },
+            {
+              "id": "m2-s4",
+              "type": "text-graphic-split",
+              "title": "Seizures, Fainting, and When Not to Move",
+              "content": "## Other Situations You May Encounter\n\n### Seizures (Fits)\nA seizure can look frightening, but your role is to **protect the casualty from injury**, not to stop the seizure.\n- **Clear the area** around them -- move furniture, hot objects, and sharp items away.\n- **Do NOT restrain** them or put anything in their mouth.\n- **Protect the head** -- place something soft (a folded jacket) under it if possible.\n- **Time the seizure** -- if it lasts **longer than 5 minutes**, call 999.\n- Once the seizure stops, check breathing. If they are breathing, place them in the **recovery position**.\n- Stay with them until they are fully recovered -- they will be confused and drowsy.\n\n### Fainting\nFainting is caused by a temporary drop in blood pressure reducing blood flow to the brain.\n- If someone feels faint: sit or lie them down, raise their legs above heart level, and ensure fresh air.\n- If they have fainted and are on the floor: raise their legs, loosen tight clothing, and they should recover within a minute or two.\n- If they do not recover quickly, check breathing and call 999.\n\n### Spinal Injuries -- When Not to Move\nSuspect a spinal injury if the casualty:\n- Has fallen from a height (e.g. off a ladder, down stairs).\n- Has suffered a heavy blow to the head, neck, or back.\n- Complains of **neck pain** or **tingling/numbness** in limbs.\n- Was involved in a collision.\n\n**Do NOT move them** unless there is immediate danger to life (fire, flood, structural collapse). Keep them still, support the head and neck in the position found, and wait for paramedics.\n\n### Heat Exhaustion and Dehydration\nCommon in hot kitchens. Signs: headache, dizziness, nausea, heavy sweating, pale clammy skin, fast pulse.\n- Move the casualty to a **cool area**. Lie them down and raise legs.\n- Give them **water** to sip (not gulp). Use cool, damp cloths on the skin.\n- If they deteriorate, become confused, or stop sweating (heat stroke), call **999** immediately.",
+              "keyTakeaway": "Never restrain someone having a seizure, never move a suspected spinal injury, and always treat heat exhaustion by cooling the casualty and giving water."
+            }
+          ]
+        },
+        {
+          "id": "m2-l2",
+          "title": "Scenarios: CPR and Recovery",
+          "slides": [
+            {
+              "id": "m2-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Cardiac Arrest in the Dining Room",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A middle-aged man at table 7 suddenly clutches his chest, gasps, and slumps sideways in his chair. His wife screams for help. You rush over. He is not responding to your voice or touch. You need to get him onto the floor to assess him. With help from a colleague, you carefully lower him onto his back on the floor. You tilt his head back, lift his chin, and check for breathing for 10 seconds. There is no normal breathing. What do you do?",
+                    "options": [
+                      {
+                        "label": "Send a colleague to call 999 and fetch the AED, then begin CPR immediately.",
+                        "nextNodeId": "start_cpr"
+                      },
+                      {
+                        "label": "Check for a pulse at the neck before starting CPR.",
+                        "nextNodeId": "pulse_check"
+                      },
+                      {
+                        "label": "Put him in the recovery position and wait for the ambulance.",
+                        "nextNodeId": "recovery_wrong"
+                      }
+                    ]
+                  },
+                  "pulse_check": {
+                    "text": "UK Resuscitation Council guidelines say that lay rescuers should not waste time trying to find a pulse -- it is unreliable and delays CPR. If the casualty is not breathing normally, start CPR. Every second of delay reduces their chance of survival.",
+                    "options": [
+                      { "label": "Begin CPR without further delay.", "nextNodeId": "start_cpr" }
+                    ]
+                  },
+                  "recovery_wrong": {
+                    "text": "The recovery position is only for casualties who ARE breathing normally. This man is not breathing. He needs CPR immediately. Without blood flow to the brain, irreversible brain damage begins within 3-4 minutes.",
+                    "options": [{ "label": "Start CPR instead.", "nextNodeId": "start_cpr" }]
+                  },
+                  "start_cpr": {
+                    "text": "You send a colleague to call 999 and fetch the AED from the lobby. You kneel beside the casualty, place the heel of your hand on the centre of his chest, interlock your fingers, and begin compressions. You push hard and fast. After about a minute, another colleague arrives with the AED. What should you do?",
+                    "options": [
+                      {
+                        "label": "Stop CPR completely while the AED is set up.",
+                        "nextNodeId": "stop_cpr_wrong"
+                      },
+                      {
+                        "label": "Continue CPR while your colleague opens the AED and attaches the pads.",
+                        "nextNodeId": "continue_cpr_aed"
+                      },
+                      {
+                        "label": "Take the AED but do not use it -- you have not been trained.",
+                        "nextNodeId": "refuse_aed"
+                      }
+                    ]
+                  },
+                  "stop_cpr_wrong": {
+                    "text": "You should minimise interruptions to CPR. While the AED is being prepared, continue compressions. Only stop when the AED instructs 'Do not touch the patient' for rhythm analysis. Every pause in CPR reduces the chance of successful defibrillation.",
+                    "options": [
+                      {
+                        "label": "Continue CPR while the AED is set up.",
+                        "nextNodeId": "continue_cpr_aed"
+                      }
+                    ]
+                  },
+                  "refuse_aed": {
+                    "text": "AEDs are designed for use by anyone, with or without training. The machine gives clear voice instructions and will only deliver a shock if it detects a shockable rhythm. You cannot harm the casualty by using it. Refusing to use an AED when one is available could cost a life.",
+                    "options": [{ "label": "Use the AED.", "nextNodeId": "continue_cpr_aed" }]
+                  },
+                  "continue_cpr_aed": {
+                    "text": "Your colleague turns on the AED and attaches the pads: one on the upper right chest, one on the lower left side. The AED says: 'Analysing -- do not touch the patient.' You stop CPR and make sure nobody is touching the casualty. The AED announces: 'Shock advised. Press the flashing button.' What do you do?",
+                    "options": [
+                      {
+                        "label": "Shout 'Stand clear!', visually check nobody is touching the casualty, and press the button.",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "Press the button immediately without checking.",
+                        "nextNodeId": "no_check"
+                      }
+                    ]
+                  },
+                  "no_check": {
+                    "text": "You must always shout 'Stand clear!' and visually confirm that nobody is touching the casualty before pressing the shock button. If someone is in contact with the casualty during the shock, they could receive an electric shock themselves. Safety first -- then press the button.",
+                    "options": [
+                      {
+                        "label": "Shout 'Stand clear!' and check first.",
+                        "nextNodeId": "correct_end"
+                      }
+                    ]
+                  },
+                  "correct_end": {
+                    "text": "Well done! You delivered the shock safely. The AED then instructs you to resume CPR, which you do for another 2 minutes before the AED re-analyses. After the second shock, the man gasps and begins breathing. You place him in the recovery position and monitor him until paramedics arrive. Your prompt CPR and AED use saved his life -- defibrillation within the first 3-5 minutes can achieve survival rates of 50-70%.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Kitchen Porter Found Unconscious",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "At the end of the evening shift, you find the kitchen porter lying on the floor in the dry store. The lights are on, and there are no obvious hazards. He appears to be unconscious. His chest is rising and falling slowly but regularly. There is a strong smell of alcohol. What is your first action?",
+                    "options": [
+                      {
+                        "label": "He is breathing and probably just drunk -- leave him to sleep it off and lock up.",
+                        "nextNodeId": "leave_him"
+                      },
+                      {
+                        "label": "Check for response by tapping his shoulders and shouting.",
+                        "nextNodeId": "check_response"
+                      },
+                      {
+                        "label": "Throw cold water on him to sober him up.",
+                        "nextNodeId": "cold_water"
+                      }
+                    ]
+                  },
+                  "leave_him": {
+                    "text": "This is extremely dangerous. An intoxicated, unconscious person is at high risk of choking on their own vomit. Additionally, the smell of alcohol does not mean there is no medical emergency -- he could have had a head injury, a diabetic emergency, or taken an overdose. Never assume someone is 'just drunk' and leave them unattended.",
+                    "options": [
+                      {
+                        "label": "Go back and assess him properly.",
+                        "nextNodeId": "check_response"
+                      }
+                    ]
+                  },
+                  "cold_water": {
+                    "text": "Throwing cold water on an unconscious person is not a first aid technique. If his airway is compromised, water could be inhaled into the lungs. Follow the DR ABC sequence systematically.",
+                    "options": [{ "label": "Assess him properly.", "nextNodeId": "check_response" }]
+                  },
+                  "check_response": {
+                    "text": "You tap his shoulders and shout 'Can you hear me?' No response. You confirm his airway is open and he is breathing normally -- slow, regular breaths with visible chest rise. You notice a bump and small amount of blood on the back of his head. What do you do?",
+                    "options": [
+                      {
+                        "label": "Place him in the recovery position, call 999, and monitor his breathing.",
+                        "nextNodeId": "recovery_correct"
+                      },
+                      {
+                        "label": "Sit him up against the wall to help him breathe better.",
+                        "nextNodeId": "sit_up_wrong"
+                      },
+                      {
+                        "label": "Start CPR because he might have a brain injury.",
+                        "nextNodeId": "cpr_wrong"
+                      }
+                    ]
+                  },
+                  "sit_up_wrong": {
+                    "text": "Sitting an unconscious person upright is dangerous -- they cannot maintain their own airway and could slump forward, blocking it. The head injury also means you should be cautious about moving them unnecessarily. The recovery position is the safest option for an unconscious, breathing casualty.",
+                    "options": [
+                      {
+                        "label": "Place him in the recovery position.",
+                        "nextNodeId": "recovery_correct"
+                      }
+                    ]
+                  },
+                  "cpr_wrong": {
+                    "text": "He IS breathing normally, so CPR is not appropriate. CPR is only for casualties who are not breathing. Performing chest compressions on a breathing person could cause harm. He needs the recovery position.",
+                    "options": [
+                      {
+                        "label": "Use the recovery position instead.",
+                        "nextNodeId": "recovery_correct"
+                      }
+                    ]
+                  },
+                  "recovery_correct": {
+                    "text": "You carefully place him in the recovery position, being mindful of the head injury. You call 999 and explain: unconscious male, breathing, head wound, smell of alcohol. While waiting, what should you do?",
+                    "options": [
+                      {
+                        "label": "Monitor his breathing every minute, keep him warm with a blanket, and note any changes.",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "Leave him in recovery position and go finish closing up -- the ambulance is on its way.",
+                        "nextNodeId": "leave_wrong"
+                      }
+                    ]
+                  },
+                  "leave_wrong": {
+                    "text": "Never leave an unconscious casualty unattended. Their condition can change rapidly -- they could stop breathing, vomit, or have a seizure. You must stay with them and monitor their breathing continuously until paramedics take over.",
+                    "options": [{ "label": "Stay and monitor him.", "nextNodeId": "correct_end" }]
+                  },
+                  "correct_end": {
+                    "text": "Well done! You stayed with the casualty, monitored his breathing, kept him warm, and provided clear information when the paramedics arrived. It turned out he had slipped, hit his head on a shelf, and lost consciousness. The alcohol complicated the picture but the head injury was the real danger. By placing him in the recovery position and staying with him, you kept his airway safe and ensured he received prompt medical attention.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Burns, Scalds, Cuts, and Bleeding",
+      "description": "Treating burns and scalds from kitchen hazards, managing cuts and severe bleeding, dealing with embedded objects, and recognising shock.",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "Burns, Bleeding, and Shock",
+          "slides": [
+            {
+              "id": "m3-s1",
+              "type": "text-graphic-split",
+              "title": "Burns and Scalds in the Kitchen",
+              "content": "## The Most Common Kitchen Injury\n\nBurns and scalds are the most frequent injuries in hospitality. Hot oil from deep fryers, boiling water from stockpots, steam from ovens, and contact with hot pans or grill plates can all cause serious burns.\n\n### Understanding Burns\n- A **burn** is caused by **dry heat** (flames, hot metal, friction) or **radiation** (sunburn).\n- A **scald** is caused by **wet heat** (boiling water, steam, hot oil).\n- A **chemical burn** is caused by **corrosive substances** (oven cleaners, drain unblockers, lime juice in quantity).\n- An **electrical burn** may have entry and exit wounds and can cause internal damage not visible on the surface.\n\n### Depth of Burns\n- **Superficial** (first degree): Red, painful, no blisters. Like mild sunburn. Heals in a few days.\n- **Partial thickness** (second degree): Red, very painful, **blistered**. Affects the outer and part of inner skin layer. Takes 2-3 weeks to heal.\n- **Full thickness** (third degree): White, waxy, or charred. May be **less painful** (nerve endings destroyed). Requires hospital treatment and often skin grafts.\n\n### Size Matters\nA burn larger than the casualty's **palm** (about 1% of body surface area) should be assessed at A&E. Any burn on the **face, hands, feet, genitals, or across a joint** requires hospital treatment regardless of size.\n\n### Kitchen-Specific Risks\nDeep fryer oil reaches **180-190degC**. A splash can cause an instant partial or full thickness burn. Steam from an industrial steamer is **100degC** and can scald exposed arms and faces when the door is opened carelessly.",
+              "keyTakeaway": "Burns from dry heat, scalds from wet heat, and chemical burns all need immediate cooling -- and any burn larger than the casualty's palm needs hospital assessment."
+            },
+            {
+              "id": "m3-s2",
+              "type": "text-graphic-split",
+              "title": "Treating Burns -- The 20-Minute Rule",
+              "content": "## First Aid for Burns and Scalds\n\nThe single most important treatment for any burn is **cool running water for at least 20 minutes**. This reduces pain, limits tissue damage, and can reduce scarring.\n\n### Step-by-Step Treatment\n1. **Cool the burn** under cool (not ice-cold) running water for **at least 20 minutes**. Start timing from when cooling begins, not from when the burn happened. If you are interrupted, restart the 20 minutes.\n2. While cooling, **remove jewellery, watches, and tight clothing** from the burned area before swelling starts -- but only if they are not stuck to the burn.\n3. After cooling, **cover the burn** with **cling film** (laid loosely over the burn, not wrapped tightly) or a **sterile, non-fluffy dressing**. This protects against infection and reduces pain from air exposure.\n4. Treat for **shock** if the burn is severe (see the shock slide).\n5. **Call 999** for any severe burn, or go to A&E for partial thickness burns.\n\n### What NOT to Do\n- **Do NOT apply ice** -- it can cause frostbite on damaged skin.\n- **Do NOT apply butter, oil, toothpaste, or creams** -- they trap heat in the skin and increase infection risk.\n- **Do NOT burst blisters** -- they are the body's natural sterile dressing. Bursting them exposes raw skin to infection.\n- **Do NOT use fluffy materials** (cotton wool, towels) -- fibres stick to the burn.\n- **Do NOT remove clothing stuck to the burn** -- cut around it and leave the stuck part.\n\n### Chemical Burns\nFlush with **running water for at least 20 minutes** (longer for strong alkalis). Remove contaminated clothing carefully, wearing **PPE** (gloves, eye protection) so you do not contaminate yourself. Call 999. In a kitchen, oven cleaners (sodium hydroxide) are a common cause.\n\n### Electrical Burns\nDo NOT touch the casualty until the power source is disconnected. Electrical burns may look minor on the surface but can cause deep internal tissue damage. Always call 999.",
+              "keyTakeaway": "Cool running water for at least 20 minutes is the most effective burn treatment -- never use ice, butter, or creams, and never burst blisters."
+            },
+            {
+              "id": "m3-s3",
+              "type": "text-graphic-split",
+              "title": "Cuts, Wounds, and Bleeding Control",
+              "content": "## Dealing with Knife Injuries and Other Wounds\n\nKnife injuries are the second most common kitchen injury after burns. Sharp knives, mandolines, broken glass, tin can lids, and food processor blades all pose daily risks.\n\n### Minor Cuts\n1. **Wash** the wound under clean running water to remove debris.\n2. **Dry** the area and apply a **blue detectable plaster** (food industry standard).\n3. **Change gloves** if you were wearing them.\n4. **Record** the injury in the accident book.\n5. If the bleeding does not stop within 10 minutes, or the cut is deep, go to A&E.\n\n### Severe Bleeding\nSevere bleeding can be life-threatening. A person can bleed to death in as little as **5 minutes** from a severed artery.\n\n1. **Apply direct pressure** to the wound using a sterile pad, clean cloth, or even your gloved hand if nothing else is available. Press **firmly** and **continuously**.\n2. **Call 999** (or send someone).\n3. If possible, **lie the casualty down** and **raise the injured limb above heart level** (unless you suspect a fracture).\n4. Apply a **firm bandage** over the pad to maintain pressure. If blood soaks through, **do not remove the first dressing** -- add a second one on top.\n5. Monitor for **shock** (pale, cold, clammy skin, rapid breathing, confusion).\n\n### Types of Bleeding\n- **Arterial** (bright red, spurting in time with the pulse) -- most dangerous, requires immediate pressure and 999.\n- **Venous** (dark red, steady flow) -- serious but easier to control with pressure.\n- **Capillary** (oozing) -- minor, usually stops on its own.\n\n### Blue Detectable Plasters\nUsed in all food-handling environments because:\n- **Blue** does not occur naturally in food, so a lost plaster is visible.\n- Many contain a **metal strip** detectable by metal detectors on production lines.\n- Waterproof variants are available for wet work areas.",
+              "keyTakeaway": "For severe bleeding, apply firm direct pressure and do not let go -- raising the limb and calling 999 are critical next steps."
+            },
+            {
+              "id": "m3-s4",
+              "type": "text-graphic-split",
+              "title": "Embedded Objects and Amputation",
+              "content": "## When Something Is Stuck in the Wound\n\n### Embedded Objects\nIf a piece of glass, a knife tip, or any other object is **embedded in the wound**, the rules change:\n\n1. **Do NOT remove it.** Removing an embedded object can cause catastrophic bleeding -- the object may be acting as a plug, preventing blood loss.\n2. **Apply pressure around the object**, not over it. Use your hands or pads either side.\n3. **Build up padding** around the object to support it and prevent it from moving. Use rolled bandages or sterile pads.\n4. **Bandage over the padding** to hold everything in place, without pressing on the object.\n5. **Call 999** and keep the casualty still.\n\n### Glass Injuries in Hospitality\nBroken glasses and bottles are common. Wounds may contain multiple small fragments. Do not probe the wound -- let medical professionals remove glass under controlled conditions with proper lighting and equipment.\n\n### Amputation (Severed Body Parts)\nAlthough rare, finger-tip amputations can occur with mandolines, meat slicers, and food processors.\n\n1. **Control the bleeding** at the stump with direct pressure and a firm bandage.\n2. **Call 999.**\n3. **Recover the severed part** if possible. Wrap it in **cling film or a clean plastic bag**, then place that bag inside **another bag filled with ice and water** (not directly on ice, as this causes tissue damage).\n4. **Send it with the casualty** to hospital -- reattachment may be possible if done within hours.\n5. **Record** the time of injury.\n\n### Nosebleeds\n- Sit the casualty forward (not back) and pinch the **soft part** of the nose for **10-15 minutes**.\n- If bleeding continues after 30 minutes, go to A&E.",
+              "keyTakeaway": "Never remove an embedded object -- apply pressure around it, build padding to support it, and let medical professionals handle removal."
+            },
+            {
+              "id": "m3-s5",
+              "type": "text-graphic-split",
+              "title": "Recognising and Treating Shock",
+              "content": "## Shock -- A Life-Threatening Condition\n\nShock is a medical emergency that occurs when the circulatory system fails to supply enough oxygenated blood to the body's vital organs. In a first aid context, the most common cause is **severe blood loss** (hypovolaemic shock), but it can also result from severe burns, severe infection, heart failure, or severe allergic reaction.\n\n### Signs and Symptoms of Shock\nRecognise shock by looking for:\n- **Pale, cold, clammy skin** (the body diverts blood to vital organs).\n- **Rapid, weak pulse** (the heart beats faster to compensate for blood loss).\n- **Rapid, shallow breathing.**\n- **Feeling dizzy, faint, or weak.**\n- **Nausea or vomiting.**\n- **Thirst** (the body craves fluid replacement).\n- **Confusion, agitation, or anxiety** (the brain is not getting enough oxygen).\n- **Grey-blue colour** around the lips and fingertips in later stages.\n- **Unconsciousness** if shock progresses untreated.\n\n### Treatment for Shock\n1. **Call 999** -- shock is a medical emergency.\n2. **Lie the casualty down** on their back.\n3. **Raise their legs** above the level of the heart (rest them on a chair or box). This helps blood return to the vital organs.\n4. **Keep them warm** with a blanket or coat, but do not overheat them.\n5. **Loosen tight clothing** -- belts, ties, apron strings.\n6. **Do NOT give food or drink** -- they may need surgery, and anything in the stomach is a risk under anaesthetic.\n7. **Reassure them** -- anxiety worsens shock.\n8. **Monitor breathing and consciousness** continuously. If they become unresponsive and stop breathing, start CPR.\n\n### Shock in the Kitchen\nA chef who receives a deep knife wound and loses significant blood may initially seem fine but can deteriorate rapidly into shock. Always monitor any casualty with a serious wound for signs of shock, even if the bleeding has been controlled.",
+              "keyTakeaway": "Shock kills -- if you see pale, cold, clammy skin with a rapid pulse after a serious injury, lie the casualty down, raise their legs, keep them warm, and call 999 immediately."
+            }
+          ]
+        },
+        {
+          "id": "m3-l2",
+          "title": "Scenarios: Burns and Bleeding",
+          "slides": [
+            {
+              "id": "m3-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Deep Fryer Burn",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "It is Friday evening service. A commis chef is draining the deep fryer when the basket slips and hot oil (180degC) splashes across their left forearm and hand. They scream and drop the basket. The burn is red, already blistering, and covers most of the forearm -- roughly twice the size of their palm. They are in severe pain. What do you do first?",
+                    "options": [
+                      {
+                        "label": "Grab the burn gel from the first aid kit and apply it generously to the burn.",
+                        "nextNodeId": "burn_gel_first"
+                      },
+                      {
+                        "label": "Move them to the nearest sink and run cool water over the burn immediately.",
+                        "nextNodeId": "cool_water"
+                      },
+                      {
+                        "label": "Apply ice from the ice machine directly to the burn to reduce the pain quickly.",
+                        "nextNodeId": "ice_wrong"
+                      }
+                    ]
+                  },
+                  "burn_gel_first": {
+                    "text": "Burn gel can be useful, but it is not a substitute for cool running water. The priority is to cool the burn under running water for at least 20 minutes. Gel alone does not provide sufficient or prolonged cooling. Some workplaces keep burn gel for situations where running water is not available, but in a kitchen with sinks, water is always the first choice.",
+                    "options": [
+                      { "label": "Use cool running water instead.", "nextNodeId": "cool_water" }
+                    ]
+                  },
+                  "ice_wrong": {
+                    "text": "Never apply ice directly to a burn. Ice can cause frostbite on already damaged skin and can make the injury significantly worse. The correct treatment is cool (not freezing) running water for at least 20 minutes.",
+                    "options": [
+                      { "label": "Use cool running water instead.", "nextNodeId": "cool_water" }
+                    ]
+                  },
+                  "cool_water": {
+                    "text": "Good -- you move them to the large prep sink and run cool water over the burn. While cooling, you notice they are wearing a watch on the affected wrist and two rings on the burned hand. The forearm is starting to swell. What do you do while continuing to cool?",
+                    "options": [
+                      {
+                        "label": "Leave the jewellery alone -- removing it might cause more pain.",
+                        "nextNodeId": "leave_jewellery"
+                      },
+                      {
+                        "label": "Carefully remove the watch and rings before the swelling traps them.",
+                        "nextNodeId": "remove_jewellery"
+                      },
+                      {
+                        "label": "Stop cooling and focus on getting the jewellery off.",
+                        "nextNodeId": "stop_cooling"
+                      }
+                    ]
+                  },
+                  "leave_jewellery": {
+                    "text": "Leaving the jewellery on is risky. As swelling increases, the watch and rings will constrict blood flow, potentially cutting off circulation to the fingers. This can cause serious secondary damage. The guidance is to remove jewellery and tight clothing before swelling makes it impossible -- but do so while continuing to cool.",
+                    "options": [
+                      {
+                        "label": "Remove the jewellery while continuing to cool.",
+                        "nextNodeId": "remove_jewellery"
+                      }
+                    ]
+                  },
+                  "stop_cooling": {
+                    "text": "Do not stop cooling. The 20-minute cooling period is critical for reducing tissue damage. You can remove jewellery while the water continues to run. Ask a colleague to help if needed -- one person holds the arm under the water while the other removes the watch and rings.",
+                    "options": [
+                      {
+                        "label": "Remove jewellery while continuing to cool.",
+                        "nextNodeId": "remove_jewellery"
+                      }
+                    ]
+                  },
+                  "remove_jewellery": {
+                    "text": "Well done -- you carefully slide off the watch and rings while the water continues running. You have been cooling for 20 minutes. The burn is still blistered and painful but the casualty says the pain is much more manageable. The burn covers an area twice the size of their palm. What now?",
+                    "options": [
+                      {
+                        "label": "Pop the blisters to drain the fluid, then apply a blue plaster.",
+                        "nextNodeId": "pop_blisters"
+                      },
+                      {
+                        "label": "Cover loosely with cling film, call 999 or arrange transport to A&E.",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "Apply butter to keep the skin moist, then bandage it tightly.",
+                        "nextNodeId": "butter_wrong"
+                      }
+                    ]
+                  },
+                  "pop_blisters": {
+                    "text": "Never burst blisters. They are the body's natural sterile dressing, protecting raw skin underneath from infection. A blue plaster is for minor cuts -- this burn is far too large and serious. Cover the burn loosely with cling film and get the casualty to hospital.",
+                    "options": [
+                      {
+                        "label": "Cover with cling film and seek medical attention.",
+                        "nextNodeId": "correct_end"
+                      }
+                    ]
+                  },
+                  "butter_wrong": {
+                    "text": "Never apply butter, oil, creams, or any home remedy to a burn. These substances trap heat in the skin, increase infection risk, and make it harder for medical staff to assess the wound. Cover with cling film only.",
+                    "options": [{ "label": "Use cling film instead.", "nextNodeId": "correct_end" }]
+                  },
+                  "correct_end": {
+                    "text": "Well done! You cooled the burn for 20 minutes, removed jewellery before swelling set in, left blisters intact, and covered the wound loosely with cling film. Because the burn was larger than the casualty's palm and involved the hand, you arranged for them to go to A&E. You also recorded the incident in the accident book and noted the time, cause, and treatment given. Textbook response.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m3-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Severe Knife Wound",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A chef is deboning a leg of lamb when the boning knife slips and cuts deeply into their inner forearm. Blood is spurting in rhythm with their pulse -- bright red arterial bleeding. It is covering the chopping board and dripping onto the floor. The chef looks panicked and is holding their arm out, blood running through their fingers. What is your immediate priority?",
+                    "options": [
+                      {
+                        "label": "Run to get the first aid kit -- you need sterile dressings.",
+                        "nextNodeId": "get_kit_first"
+                      },
+                      {
+                        "label": "Grab the nearest clean cloth and apply firm, direct pressure to the wound immediately.",
+                        "nextNodeId": "apply_pressure"
+                      },
+                      {
+                        "label": "Hold the arm under running water to wash the blood away and see the wound.",
+                        "nextNodeId": "wash_wrong"
+                      }
+                    ]
+                  },
+                  "get_kit_first": {
+                    "text": "With arterial bleeding, every second counts. A person can lose a fatal amount of blood in just a few minutes from a severed artery. The first priority is to stop the bleeding NOW using whatever is immediately available -- a clean cloth, tea towel, or even your gloved hand. You can send someone else for the first aid kit while you maintain pressure.",
+                    "options": [
+                      {
+                        "label": "Apply pressure immediately with what is available.",
+                        "nextNodeId": "apply_pressure"
+                      }
+                    ]
+                  },
+                  "wash_wrong": {
+                    "text": "Running water over an arterial bleed will not stop it and will waste critical time. Water is for cleaning minor wounds. Arterial bleeding requires immediate, firm, direct pressure to compress the artery against the underlying bone and slow the blood loss.",
+                    "options": [
+                      { "label": "Apply direct pressure instead.", "nextNodeId": "apply_pressure" }
+                    ]
+                  },
+                  "apply_pressure": {
+                    "text": "You grab a clean side towel and press it firmly against the wound. You shout to a colleague to call 999 and bring the first aid kit. The chef is shaking and says they feel dizzy. You are applying pressure but blood is soaking through the towel. What should you do?",
+                    "options": [
+                      {
+                        "label": "Remove the soaked towel and replace it with a fresh one.",
+                        "nextNodeId": "remove_pad_wrong"
+                      },
+                      {
+                        "label": "Keep the soaked towel in place and add another pad on top, pressing harder.",
+                        "nextNodeId": "add_pad"
+                      },
+                      {
+                        "label": "Let go of the pressure to look at the wound and assess how bad it is.",
+                        "nextNodeId": "release_pressure"
+                      }
+                    ]
+                  },
+                  "remove_pad_wrong": {
+                    "text": "Never remove the first pad. Removing it pulls away blood clots that are forming, which restarts the bleeding from scratch. Always add additional pads on top and increase pressure. The clotting cascade needs time and continuous pressure to work.",
+                    "options": [
+                      { "label": "Add a second pad on top instead.", "nextNodeId": "add_pad" }
+                    ]
+                  },
+                  "release_pressure": {
+                    "text": "Releasing pressure allows the bleeding to restart. You do not need to see the wound right now -- your priority is to stop the blood loss. Keep pressing firmly. The paramedics will assess the wound properly when they arrive.",
+                    "options": [
+                      { "label": "Maintain pressure and add another pad.", "nextNodeId": "add_pad" }
+                    ]
+                  },
+                  "add_pad": {
+                    "text": "Good -- you place a sterile dressing from the first aid kit on top of the soaked towel and continue pressing firmly. A colleague has called 999. The chef is now very pale, their skin feels cold and clammy, and they say they feel sick. They are showing signs of shock. While maintaining pressure on the wound, what else should you do?",
+                    "options": [
+                      {
+                        "label": "Help them lie down, raise their legs, and keep them warm with a blanket.",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "Give them a glass of water -- they look dehydrated.",
+                        "nextNodeId": "water_wrong"
+                      },
+                      {
+                        "label": "Tell them to sit in a chair and put their head between their knees.",
+                        "nextNodeId": "chair_wrong"
+                      }
+                    ]
+                  },
+                  "water_wrong": {
+                    "text": "Do not give food or drink to a casualty in shock. They may need surgery, and having anything in the stomach is a risk under general anaesthetic. Additionally, if their blood pressure drops further, they could vomit and inhale the fluid. The correct treatment for shock is to lie them down and raise their legs.",
+                    "options": [
+                      {
+                        "label": "Lie them down and raise their legs instead.",
+                        "nextNodeId": "correct_end"
+                      }
+                    ]
+                  },
+                  "chair_wrong": {
+                    "text": "Sitting upright is not ideal for shock. The casualty needs to be lying down with legs raised to help blood return to the vital organs. If they are in a chair and lose consciousness, they could fall and sustain further injuries. Lie them flat on the floor.",
+                    "options": [
+                      { "label": "Lie them down with legs raised.", "nextNodeId": "correct_end" }
+                    ]
+                  },
+                  "correct_end": {
+                    "text": "Excellent work! You applied immediate direct pressure, did not remove the soaked pad, added a second dressing on top, recognised the signs of shock, and treated it correctly by lying the casualty down with raised legs and keeping them warm. You maintained pressure until paramedics arrived and handed over with clear information about what happened, when, and what treatment you gave. Your quick action controlled the arterial bleeding and prevented the shock from worsening.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Choking and Anaphylaxis",
+      "description": "Responding to choking emergencies and anaphylactic reactions, including EpiPen use and allergen awareness in hospitality.",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "Choking and Anaphylaxis",
+          "slides": [
+            {
+              "id": "m4-s1",
+              "type": "text-graphic-split",
+              "title": "Recognising and Responding to Choking",
+              "content": "## Choking -- A Restaurant's Nightmare\n\nChoking occurs when the airway is partially or completely blocked by a foreign object, most commonly food. In hospitality, you are more likely to encounter choking than almost any other workplace. Steak, bread, hard sweets, and poorly chewed food are the most common culprits.\n\n### Mild (Partial) Obstruction\nThe casualty **can still cough, speak, and breathe** (though with difficulty). You may hear wheezing or gurgling.\n- **Encourage them to cough** -- coughing is the most effective way to clear a mild obstruction.\n- **Do NOT slap their back** at this stage -- it could dislodge the object further down and cause a complete obstruction.\n- **Stay with them** and be ready to act if it becomes severe.\n\n### Severe (Complete) Obstruction\nThe casualty **cannot cough, speak, or breathe**. They may clutch their throat (the universal choking sign), their face may turn red then blue, and they will become increasingly distressed.\n\n**For a conscious adult:**\n1. **Stand behind them** and lean them slightly forward.\n2. Give up to **5 sharp back blows** between the shoulder blades using the heel of your hand. Check after each blow to see if the obstruction has cleared.\n3. If back blows fail, give up to **5 abdominal thrusts** (Heimlich manoeuvre):\n   - Stand behind the casualty.\n   - Place your fist between the **navel and the bottom of the breastbone**.\n   - Grasp your fist with the other hand.\n   - Pull sharply **inward and upward**.\n4. **Alternate 5 back blows and 5 abdominal thrusts** until the obstruction clears.\n5. If the casualty becomes **unconscious**, lower them to the ground, call 999, and begin **CPR** (the compressions may dislodge the object).\n\n**Important:** After any abdominal thrusts, the casualty must be assessed at hospital -- internal injuries are possible.",
+              "keyTakeaway": "For severe choking: 5 back blows, then 5 abdominal thrusts, alternating until clear -- if they go unconscious, start CPR and call 999."
+            },
+            {
+              "id": "m4-s2",
+              "type": "text-graphic-split",
+              "title": "Anaphylaxis -- Severe Allergic Reaction",
+              "content": "## A Life-Threatening Emergency\n\nAnaphylaxis is a severe, whole-body allergic reaction that can kill within minutes if untreated. In hospitality, the most common triggers are **food allergens**: peanuts, tree nuts, shellfish, fish, milk, eggs, soya, and cereals containing gluten (the 14 UK declarable allergens).\n\n### How Anaphylaxis Develops\nAnaphylaxis typically begins within **minutes** of exposure to the allergen, though onset can be delayed up to 2 hours. The immune system overreacts, releasing massive amounts of histamine and other chemicals that cause:\n\n### Signs and Symptoms\n- **Airway**: Swelling of the tongue, throat, and lips. The voice may become hoarse or disappear.\n- **Breathing**: Difficulty breathing, wheezing, stridor (a high-pitched sound). The casualty may feel like their throat is closing.\n- **Circulation**: Feeling faint or dizzy, rapid weak pulse, low blood pressure, collapse.\n- **Skin**: Widespread red, raised, itchy rash (hives/urticaria). Flushed or pale skin.\n- **Abdomen**: Nausea, vomiting, abdominal cramps, diarrhoea.\n- **General**: Sense of impending doom, confusion, loss of consciousness.\n\n### The Key Difference\nA mild allergic reaction (itchy mouth, localised rash) is uncomfortable but not immediately dangerous. **Anaphylaxis involves the airway, breathing, or circulation** -- this is what makes it life-threatening.\n\n### Biphasic Reactions\nIn some cases, symptoms can return **6-12 hours** after the initial reaction, even after treatment. This is why all anaphylaxis cases must go to hospital for a minimum **6-hour observation period**, even if they appear to have fully recovered.",
+              "keyTakeaway": "Anaphylaxis affects the airway, breathing, or circulation and can kill within minutes -- any suspected case needs 999 and adrenaline immediately, not a 'wait and see' approach."
+            },
+            {
+              "id": "m4-s3",
+              "type": "text-graphic-split",
+              "title": "Using an Adrenaline Auto-Injector (EpiPen)",
+              "content": "## Adrenaline -- The Only Effective Treatment\n\nAdrenaline (epinephrine) is the first-line treatment for anaphylaxis. It works by narrowing blood vessels (raising blood pressure), relaxing airway muscles (easing breathing), and reducing swelling. It is given via an **auto-injector** -- the most common brands in the UK are **EpiPen**, **Jext**, and **Emerade**.\n\n### How to Use an EpiPen\n1. **Remove the blue safety cap** from the top.\n2. **Hold the orange tip** against the **outer mid-thigh** -- it can be given through clothing.\n3. **Push firmly** until you hear a click -- this fires the needle and injects the adrenaline.\n4. **Hold in place for 10 seconds** (3 seconds for Jext) to ensure the full dose is delivered.\n5. **Remove** and note the time.\n6. **Massage the injection site** for 10 seconds to help absorption.\n\n### Critical Points\n- **Inject into the OUTER THIGH only** -- never into the buttock (poor absorption), arm (risk of severe tissue damage), or intravenously.\n- If the casualty has their own auto-injector, **help them use it**. If they are too unwell, you can administer it for them. Under UK law, anyone can administer adrenaline in a life-threatening emergency.\n- If symptoms do not improve after **5 minutes**, give a **second dose** using a second auto-injector (if available) in the other thigh.\n- **Always call 999** even if symptoms improve after adrenaline -- the casualty must be monitored in hospital for a biphasic reaction.\n\n### Positioning the Casualty\n- If they have **breathing difficulty**: sit them **upright** (leaning slightly forward).\n- If they feel **faint or dizzy** (low blood pressure): lie them **flat with legs raised**.\n- If they are **unconscious and breathing**: place in the **recovery position**.\n- **Do NOT stand them up** -- a sudden change to upright position can cause cardiac arrest in anaphylaxis.\n\n### After the Emergency\nUsed auto-injectors should go to hospital with the casualty. Record the time of administration. The casualty will need a referral to an allergy clinic and replacement auto-injectors.",
+              "keyTakeaway": "EpiPen in the outer thigh, hold for 10 seconds, call 999 -- give a second dose after 5 minutes if no improvement, and never let the casualty stand up."
+            },
+            {
+              "id": "m4-s4",
+              "type": "text-graphic-split",
+              "title": "Allergen Awareness in Hospitality",
+              "content": "## Your Role in Preventing Anaphylaxis\n\nPrevention is always better than emergency response. Under **Natasha's Law (2021)** and the **Food Information Regulations 2014**, food businesses in the UK have strict legal duties around allergen information.\n\n### The 14 UK Declarable Allergens\n1. Celery  2. Cereals containing gluten  3. Crustaceans  4. Eggs  5. Fish  6. Lupin  7. Milk  8. Molluscs  9. Mustard  10. Nuts (tree nuts)  11. Peanuts  12. Sesame  13. Soya  14. Sulphur dioxide/sulphites (above 10mg/kg)\n\n### Your Responsibilities\n- **Always ask** customers about allergies when they order.\n- **Never guess** -- if you are unsure whether a dish contains an allergen, check with the chef or the allergen matrix.\n- **Communicate clearly** between front-of-house and kitchen. Use written systems, not verbal messages that can be forgotten.\n- **Prevent cross-contamination** -- separate utensils, chopping boards, cooking surfaces, and fryer oil for allergen-free orders.\n- **Know where auto-injectors are kept** -- some venues keep spare auto-injectors (since October 2017, organisations can purchase spare EpiPens without prescription for emergency use).\n\n### When It Goes Wrong\nIf a customer reports an allergic reaction after eating:\n1. **Take it seriously immediately** -- do not dismiss symptoms or delay.\n2. **Ask if they carry an auto-injector** and help them use it.\n3. **Call 999** if there are any signs of anaphylaxis.\n4. **Do not move them** unnecessarily.\n5. **Preserve the food** -- the Environmental Health team may need to investigate.\n\n### Legal Consequences\nFailure to provide accurate allergen information has resulted in criminal prosecution, with custodial sentences in cases where customers have died. This is not just a first aid issue -- it is a legal obligation that every member of staff must take seriously.",
+              "keyTakeaway": "Always ask about allergies, never guess, and communicate clearly between front-of-house and kitchen -- Natasha's Law makes accurate allergen information a strict legal duty."
+            },
+            {
+              "id": "m4-s5",
+              "type": "text-graphic-split",
+              "title": "Summary and Next Steps",
+              "content": "## Course Summary\n\nYou have now covered the essential first aid topics for a hospitality environment. Here is a quick-reference summary of the key actions:\n\n### DR ABC Primary Survey\n**D**anger -- **R**esponse -- **A**irway -- **B**reathing -- **C**PR or recovery position. Follow the same sequence every time.\n\n### CPR\n**30 compressions** (5-6cm deep, 100-120/min) to **2 rescue breaths**. Do not stop until help arrives. Use an **AED** as soon as one is available.\n\n### Recovery Position\nFor anyone **unconscious but breathing normally**. Monitor breathing constantly.\n\n### Burns\n**Cool running water for at least 20 minutes.** Cover with cling film. Never apply ice, butter, or creams. Never burst blisters.\n\n### Severe Bleeding\n**Direct pressure** with a pad. Do not remove the first pad. Raise the limb. Call 999. Monitor for shock.\n\n### Embedded Objects\n**Do NOT remove.** Pressure around, padding around, bandage over.\n\n### Choking\nMild: encourage coughing. Severe: **5 back blows** then **5 abdominal thrusts**, alternating. If unconscious, start **CPR**.\n\n### Anaphylaxis\n**Call 999. EpiPen in the outer thigh.** Second dose after 5 minutes if no improvement. Do not let them stand up.\n\n### Shock\nLie down, raise legs, keep warm, call 999. Do not give food or drink.\n\n### What Next?\n- Complete the **final assessment** in Module 5.\n- Arrange **practical first aid training** with your employer.\n- Familiarise yourself with your **workplace first aid kit** and **AED** locations.\n- Review the **allergen matrix** for your menu.",
+              "keyTakeaway": "This course gives you the knowledge -- now take the next step by practising CPR on a manikin, locating your workplace AED, and checking your first aid kit."
+            }
+          ]
+        },
+        {
+          "id": "m4-l2",
+          "title": "Scenarios: Choking and Anaphylaxis",
+          "slides": [
+            {
+              "id": "m4-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Guest Choking on Steak",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are serving tables during a busy Saturday evening. A man at table 12 suddenly stands up, clutches his throat with both hands, and his face is turning red. His dining companion says 'He was eating steak and suddenly couldn't breathe!' The man cannot speak, cough, or make any sound. Other diners are watching in alarm. What do you do?",
+                    "options": [
+                      {
+                        "label": "Encourage him to cough forcefully to clear the blockage.",
+                        "nextNodeId": "cough_wrong"
+                      },
+                      {
+                        "label": "Stand behind him, lean him forward, and give up to 5 sharp back blows between the shoulder blades.",
+                        "nextNodeId": "back_blows"
+                      },
+                      {
+                        "label": "Call 999 first and wait for instructions from the operator.",
+                        "nextNodeId": "call_first"
+                      }
+                    ]
+                  },
+                  "cough_wrong": {
+                    "text": "He cannot cough -- this is a severe (complete) obstruction. Encouraging coughing only works for mild choking where the casualty can still cough, speak, and breathe. With severe choking, you need to take immediate physical action: back blows first, then abdominal thrusts if needed.",
+                    "options": [{ "label": "Give back blows.", "nextNodeId": "back_blows" }]
+                  },
+                  "call_first": {
+                    "text": "With severe choking, brain damage can begin within 3-4 minutes without oxygen. You cannot afford to wait for 999 to answer and give instructions. You need to start back blows immediately. Ask another member of staff or a diner to call 999 while you act.",
+                    "options": [
+                      {
+                        "label": "Start back blows while someone else calls 999.",
+                        "nextNodeId": "back_blows"
+                      }
+                    ]
+                  },
+                  "back_blows": {
+                    "text": "You stand behind the man, lean him forward by supporting his chest with one hand, and deliver 5 firm back blows between the shoulder blades with the heel of your other hand. You check after each blow, but the obstruction has not cleared. He is still unable to breathe and is becoming more distressed. What is your next action?",
+                    "options": [
+                      {
+                        "label": "Give another 5 back blows -- they might work with more force.",
+                        "nextNodeId": "more_back_blows"
+                      },
+                      {
+                        "label": "Give up to 5 abdominal thrusts.",
+                        "nextNodeId": "abdominal_thrusts"
+                      },
+                      {
+                        "label": "Try to reach into his mouth and pull the food out with your fingers.",
+                        "nextNodeId": "finger_sweep"
+                      }
+                    ]
+                  },
+                  "more_back_blows": {
+                    "text": "The protocol is clear: if 5 back blows do not work, switch to 5 abdominal thrusts. Continuing with only back blows when they have failed wastes valuable time. The alternating technique (5 and 5) is the most effective approach because each method works differently to dislodge the object.",
+                    "options": [
+                      { "label": "Switch to abdominal thrusts.", "nextNodeId": "abdominal_thrusts" }
+                    ]
+                  },
+                  "finger_sweep": {
+                    "text": "Blind finger sweeps are no longer recommended for adults. You risk pushing the obstruction further down the airway or causing vomiting. Only attempt to remove a visible object that you can clearly see and reach. The correct next step after failed back blows is abdominal thrusts.",
+                    "options": [
+                      { "label": "Perform abdominal thrusts.", "nextNodeId": "abdominal_thrusts" }
+                    ]
+                  },
+                  "abdominal_thrusts": {
+                    "text": "You stand behind the man, place your fist between his navel and breastbone, grasp it with your other hand, and pull sharply inward and upward. On the third thrust, a large piece of steak flies out of his mouth and he gasps for air. He is coughing, breathing, and gradually his colour returns to normal. He is shaken but conscious. What now?",
+                    "options": [
+                      {
+                        "label": "Give him a glass of water and let him sit back down to finish his meal.",
+                        "nextNodeId": "water_wrong"
+                      },
+                      {
+                        "label": "Advise him he must go to hospital to be checked, as abdominal thrusts can cause internal injuries.",
+                        "nextNodeId": "correct_end"
+                      }
+                    ]
+                  },
+                  "water_wrong": {
+                    "text": "After abdominal thrusts, the casualty must be checked at hospital. The force of the thrusts can cause internal injuries to abdominal organs that may not be immediately apparent. Additionally, after a severe choking episode, the airway may be bruised or swollen. Medical assessment is essential.",
+                    "options": [
+                      { "label": "Advise him to go to hospital.", "nextNodeId": "correct_end" }
+                    ]
+                  },
+                  "correct_end": {
+                    "text": "Well done! You recognised severe choking (unable to cough, speak, or breathe), gave 5 back blows, correctly moved to abdominal thrusts when back blows failed, and advised the casualty to attend hospital for a check-up. You also made sure the incident was recorded in the accident book. Your calm, confident response reassured both the casualty and the other diners.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Allergic Reaction to a Dessert",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A woman who ordered the 'nut-free' chocolate brownie begins to feel unwell 10 minutes after eating. She tells you she has a tree nut allergy. She reports tingling lips, an itchy throat, and shows you a red, raised rash spreading across her arms. She says: 'This feels like when I had a reaction before -- it might get worse.' She reaches into her handbag and pulls out an EpiPen. What is your first action?",
+                    "options": [
+                      {
+                        "label": "Tell her to wait and see if the symptoms get worse before using the EpiPen -- it might just be a mild reaction.",
+                        "nextNodeId": "wait_wrong"
+                      },
+                      {
+                        "label": "Call 999 immediately and help her use the EpiPen.",
+                        "nextNodeId": "call_and_epipen"
+                      },
+                      {
+                        "label": "Give her an antihistamine tablet and a glass of water to calm the reaction.",
+                        "nextNodeId": "antihistamine_wrong"
+                      }
+                    ]
+                  },
+                  "wait_wrong": {
+                    "text": "This is dangerous. The symptoms are already progressing: swollen lips, itchy throat, and widespread rash. The casualty herself recognises the signs from a previous reaction. Anaphylaxis can escalate to life-threatening airway closure within minutes. 'Wait and see' has contributed to fatalities. Act immediately.",
+                    "options": [
+                      {
+                        "label": "Act immediately -- call 999 and use the EpiPen.",
+                        "nextNodeId": "call_and_epipen"
+                      }
+                    ]
+                  },
+                  "antihistamine_wrong": {
+                    "text": "Antihistamines are too slow to treat anaphylaxis. They take 15-30 minutes to work and cannot reverse airway swelling or dangerously low blood pressure. Adrenaline (EpiPen) is the only first-line treatment. Antihistamines can be given as a secondary measure, but they must never replace or delay adrenaline.",
+                    "options": [
+                      { "label": "Use the EpiPen and call 999.", "nextNodeId": "call_and_epipen" }
+                    ]
+                  },
+                  "call_and_epipen": {
+                    "text": "Good -- you send a colleague to call 999 and you help the woman with her EpiPen. She is becoming increasingly breathless and her voice is becoming hoarse. She hands you the EpiPen. Where should you inject it?",
+                    "options": [
+                      {
+                        "label": "Into the outer mid-thigh, through her clothing if necessary.",
+                        "nextNodeId": "inject_thigh"
+                      },
+                      { "label": "Into her upper arm.", "nextNodeId": "arm_wrong" },
+                      { "label": "Into her buttock.", "nextNodeId": "buttock_wrong" }
+                    ]
+                  },
+                  "arm_wrong": {
+                    "text": "The arm is NOT the correct injection site. Injecting into the arm risks severe tissue damage due to smaller muscle mass and proximity to nerves and blood vessels. The correct site is always the outer mid-thigh -- it has the largest muscle and best absorption.",
+                    "options": [
+                      { "label": "Inject into the outer thigh.", "nextNodeId": "inject_thigh" }
+                    ]
+                  },
+                  "buttock_wrong": {
+                    "text": "The buttock is NOT the correct injection site. Absorption from the buttock is too slow because of the fat layer. Research shows that injection into the outer thigh delivers adrenaline to the bloodstream significantly faster. Always use the outer mid-thigh.",
+                    "options": [
+                      { "label": "Inject into the outer thigh.", "nextNodeId": "inject_thigh" }
+                    ]
+                  },
+                  "inject_thigh": {
+                    "text": "You remove the blue safety cap, press the orange tip firmly against her outer thigh, and hold it for 10 seconds after hearing the click. You massage the site for 10 seconds and note the time. After 2 minutes, her breathing has eased slightly but she still has significant swelling and wheezing. Five minutes have passed. She has a second EpiPen in her bag. What should you do?",
+                    "options": [
+                      {
+                        "label": "The first dose is enough -- just wait for the ambulance.",
+                        "nextNodeId": "wait_for_ambulance"
+                      },
+                      {
+                        "label": "Administer the second EpiPen in the other thigh.",
+                        "nextNodeId": "second_dose"
+                      },
+                      {
+                        "label": "Give the second dose in the same thigh as the first.",
+                        "nextNodeId": "same_thigh"
+                      }
+                    ]
+                  },
+                  "wait_for_ambulance": {
+                    "text": "If symptoms have not significantly improved after 5 minutes, a second dose should be given. Waiting longer without treatment allows the reaction to continue progressing. The ambulance may take 8-15 minutes or longer. A second dose could save her life.",
+                    "options": [{ "label": "Give the second dose.", "nextNodeId": "second_dose" }]
+                  },
+                  "same_thigh": {
+                    "text": "While it is not absolutely wrong, best practice is to inject the second dose in the other thigh. This avoids injecting into the same tissue that may be bruised from the first injection, and it provides a fresh injection site for better absorption.",
+                    "options": [
+                      { "label": "Inject in the other thigh.", "nextNodeId": "second_dose" }
+                    ]
+                  },
+                  "second_dose": {
+                    "text": "You administer the second EpiPen in her other thigh. Her breathing begins to improve more noticeably. She is still wheezy but can speak in short sentences. She says she feels faint. How should you position her?",
+                    "options": [
+                      {
+                        "label": "Keep her sitting upright since she is still having breathing difficulty.",
+                        "nextNodeId": "upright_partial"
+                      },
+                      {
+                        "label": "Lie her flat with legs raised since she feels faint.",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "Stand her up and walk her to the door to meet the ambulance.",
+                        "nextNodeId": "stand_wrong"
+                      }
+                    ]
+                  },
+                  "upright_partial": {
+                    "text": "Keeping her upright is appropriate if breathing difficulty is the dominant symptom. However, she is now saying she feels faint, which indicates her blood pressure is dropping. The faintness is the more immediately dangerous symptom. Lying her flat with raised legs will help blood return to her vital organs. If breathing worsens significantly when lying down, compromise by raising her upper body slightly.",
+                    "options": [
+                      { "label": "Lie her flat with legs raised.", "nextNodeId": "correct_end" }
+                    ]
+                  },
+                  "stand_wrong": {
+                    "text": "NEVER stand a person up during anaphylaxis. A sudden change to an upright position can cause cardiac arrest because the low blood pressure means insufficient blood reaches the heart. Several deaths have been attributed to patients being stood up during anaphylaxis. Keep her lying down.",
+                    "options": [
+                      { "label": "Lie her flat with legs raised.", "nextNodeId": "correct_end" }
+                    ]
+                  },
+                  "correct_end": {
+                    "text": "Excellent! You recognised anaphylaxis immediately, called 999, helped administer the EpiPen into the correct site (outer thigh), gave a second dose after 5 minutes when symptoms persisted, and positioned the casualty correctly. When paramedics arrived, you gave them the used EpiPens and told them the exact times of administration. The woman was taken to hospital for observation and made a full recovery. You also preserved the dessert she ate for investigation -- it turned out the brownie contained traces of hazelnut from cross-contamination.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Final Assessment",
+      "description": "Test your first aid knowledge with a comprehensive assessment.",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "Final Assessment",
+          "slides": [
+            {
+              "id": "m5-quiz",
+              "type": "quiz",
+              "title": "Final Assessment"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "questionBanks": {
+    "final": [
+      {
+        "id": "q1",
+        "text": "What does DR ABC stand for?",
+        "options": [
+          "Doctor's Advice Before Calling",
+          "Danger, Response, Airway, Breathing, Circulation",
+          "Direct Response to Airway Blockage and Compression",
+          "Diagnosis, Recovery, Assessment, Bandage, Care"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q2",
+        "text": "Which legislation is the primary law governing first aid provision in UK workplaces?",
+        "options": [
+          "The Regulatory Reform (Fire Safety) Order 2005",
+          "The Health and Safety (First-Aid) Regulations 1981",
+          "The Management of Health and Safety at Work Regulations 1999",
+          "The Workplace (Health, Safety and Welfare) Regulations 1992"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q3",
+        "text": "The correct CPR compression-to-breath ratio for adults is:",
+        "options": [
+          "15 compressions to 2 breaths",
+          "30 compressions to 2 breaths",
+          "30 compressions to 5 breaths",
+          "20 compressions to 2 breaths"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q4",
+        "text": "How deep should adult chest compressions be during CPR?",
+        "options": ["2-3cm", "3-4cm", "5-6cm", "8-10cm"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q5",
+        "text": "At what rate should chest compressions be delivered?",
+        "options": [
+          "60-80 per minute",
+          "80-100 per minute",
+          "100-120 per minute",
+          "120-150 per minute"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q6",
+        "text": "How long should you cool a burn under running water?",
+        "options": ["5 minutes", "10 minutes", "At least 20 minutes", "Until the pain stops"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q7",
+        "text": "Which of the following should NEVER be applied to a burn?",
+        "options": [
+          "Cool running water",
+          "Cling film",
+          "Butter or cream",
+          "A sterile non-fluffy dressing"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q8",
+        "text": "Where should AED pads be placed on an adult?",
+        "options": [
+          "Both pads on the left side of the chest",
+          "Upper right chest and lower left side under the armpit",
+          "One pad on the chest and one on the back",
+          "Both pads on the stomach"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q9",
+        "text": "An AED will deliver a shock even if the heart rhythm is normal. True or false?",
+        "options": [
+          "True -- it shocks regardless",
+          "False -- it only shocks if it detects a shockable rhythm",
+          "True -- but only if you press the button twice",
+          "False -- AEDs cannot deliver shocks at all"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q10",
+        "text": "For severe bleeding, your immediate first action should be:",
+        "options": [
+          "Wash the wound under running water",
+          "Apply direct pressure to the wound using a pad or clean cloth",
+          "Apply a tourniquet above the wound",
+          "Elevate the limb and wait for bleeding to stop naturally"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q11",
+        "text": "Why are blue plasters used in the food industry?",
+        "options": [
+          "They are cheaper to manufacture in bulk",
+          "Blue does not occur naturally in food, so a lost plaster is easily detected",
+          "They contain antiseptic that standard plasters do not",
+          "They are required by EU food safety regulations only"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q12",
+        "text": "The recovery position is used for someone who is:",
+        "options": [
+          "Conscious and complaining of chest pain",
+          "Unconscious and breathing normally",
+          "Not breathing at all",
+          "Conscious but feeling faint"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q13",
+        "text": "For mild choking (the casualty can still cough and speak), you should:",
+        "options": [
+          "Give 5 back blows immediately",
+          "Perform abdominal thrusts",
+          "Encourage them to cough and stay with them",
+          "Call 999 straight away"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q14",
+        "text": "How many back blows should you give before trying abdominal thrusts in severe choking?",
+        "options": ["3", "5", "10", "As many as needed until the object clears"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q15",
+        "text": "An EpiPen (adrenaline auto-injector) should be injected into:",
+        "options": ["The upper arm muscle", "The outer mid-thigh", "The buttock", "The abdomen"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q16",
+        "text": "Which of the following is a sign of anaphylaxis?",
+        "options": [
+          "Toothache and earache",
+          "Swollen tongue and difficulty breathing",
+          "Localised bruising at the injury site",
+          "High temperature with shivering"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q17",
+        "text": "The rate of chest compressions during CPR can be matched to the beat of which song?",
+        "options": [
+          "Yesterday by The Beatles (76 bpm)",
+          "Stayin' Alive by the Bee Gees (104 bpm)",
+          "Bohemian Rhapsody by Queen (72 bpm)",
+          "Let It Be by The Beatles (68 bpm)"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q18",
+        "text": "If an object is embedded in a wound, you should:",
+        "options": [
+          "Remove it immediately to reduce infection risk",
+          "Leave it in place, apply pressure around it, and build padding to support it",
+          "Push it further in to stop the bleeding",
+          "Pull it out slowly and apply a tourniquet"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q19",
+        "text": "Signs of shock include:",
+        "options": [
+          "Red, warm, dry skin with a slow pulse",
+          "Pale, cold, clammy skin with a rapid pulse",
+          "Blue skin with no pulse",
+          "Normal colour skin with irregular breathing"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q20",
+        "text": "Chemical burns should be flushed with running water for:",
+        "options": [
+          "5 minutes",
+          "At least 20 minutes",
+          "1 minute",
+          "Until the chemical smell disappears"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q21",
+        "text": "A casualty who is choking and becomes unconscious needs:",
+        "options": [
+          "More back blows in a lying position",
+          "CPR and someone to call 999",
+          "The recovery position",
+          "A finger sweep of the mouth before anything else"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q22",
+        "text": "The first thing to check during the DR ABC primary survey is:",
+        "options": [
+          "Breathing rate",
+          "Danger to yourself and others",
+          "Circulation and pulse",
+          "Whether the airway is clear"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q23",
+        "text": "How long should you check for breathing during the primary survey?",
+        "options": ["1-2 seconds", "Up to 10 seconds", "30 seconds", "At least 1 minute"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q24",
+        "text": "If you are unable to give rescue breaths during CPR, you should:",
+        "options": [
+          "Stop CPR entirely and wait for the ambulance",
+          "Continue with chest compressions only",
+          "Attempt mouth-to-nose ventilation",
+          "Move the casualty to the recovery position"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q25",
+        "text": "Blisters on a burn should be:",
+        "options": [
+          "Popped to release fluid and reduce pressure",
+          "Left intact as they protect the wound from infection",
+          "Covered with antiseptic cream then bandaged",
+          "Pierced with a sterile needle and drained carefully"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q26",
+        "text": "If a second EpiPen dose is needed, how long should you wait after the first?",
+        "options": ["30 seconds", "2 minutes", "5 minutes", "15 minutes"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q27",
+        "text": "The Health and Safety (First-Aid) Regulations were originally introduced in which year?",
+        "options": ["1974", "1981", "1992", "2002"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q28",
+        "text": "When performing abdominal thrusts, your fist should be positioned:",
+        "options": [
+          "On the centre of the chest",
+          "Between the navel and the bottom of the breastbone",
+          "Below the navel",
+          "On the lower back between the shoulder blades"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q29",
+        "text": "After cooling a severe burn for 20 minutes, you should cover it with:",
+        "options": [
+          "A fluffy cotton towel to absorb moisture",
+          "Cling film placed loosely over the burn",
+          "Antiseptic cream and a tight bandage",
+          "Nothing -- leave it exposed to the air"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q30",
+        "text": "Someone having an anaphylactic reaction who is struggling to breathe should be positioned:",
+        "options": [
+          "Lying flat on their back",
+          "Sitting upright or slightly forward",
+          "Standing up to open the airway",
+          "In the recovery position on their side"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q31",
+        "text": "When calling 999 for a first aid emergency, you should provide:",
+        "options": [
+          "Your full medical history and next of kin",
+          "Your location, what happened, number of casualties, and their condition",
+          "Only your name and phone number",
+          "The casualty's date of birth and NHS number"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q32",
+        "text": "Brain damage from oxygen deprivation begins after approximately:",
+        "options": ["30 seconds", "1-2 minutes", "3-4 minutes", "10 minutes"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q33",
+        "text": "What does 'agonal breathing' indicate?",
+        "options": [
+          "The casualty is breathing normally and should be placed in recovery position",
+          "The casualty has a mild chest infection",
+          "The casualty is in cardiac arrest and needs CPR immediately",
+          "The casualty is having an asthma attack"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q34",
+        "text": "How often should workplace first aid kits be checked and restocked?",
+        "options": [
+          "Once a year during the annual audit",
+          "Only after they have been used",
+          "Regularly -- at least monthly and after any use",
+          "Every 5 years when certificates are renewed"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q35",
+        "text": "Which of the following burns requires immediate hospital treatment regardless of size?",
+        "options": [
+          "A burn on the outer forearm",
+          "A burn on the face, hands, feet, or genitals",
+          "A superficial burn with no blisters",
+          "A burn smaller than a 10p coin"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q36",
+        "text": "During CPR, how often should rescuers swap to maintain compression quality?",
+        "options": [
+          "Every 30 seconds",
+          "Every 2 minutes",
+          "Every 5 minutes",
+          "Only when the first rescuer is completely exhausted"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q37",
+        "text": "If blood soaks through the first dressing on a severe wound, you should:",
+        "options": [
+          "Remove the first dressing and apply a fresh one",
+          "Add a second dressing on top without removing the first",
+          "Wash the wound and reapply",
+          "Remove all dressings and apply direct hand pressure only"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q38",
+        "text": "What is the universal sign of choking?",
+        "options": [
+          "Waving both arms in the air",
+          "Clutching the throat with both hands",
+          "Pointing at the mouth",
+          "Stamping feet on the ground"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q39",
+        "text": "A person suspected of having a spinal injury should:",
+        "options": [
+          "Be moved to a comfortable position immediately",
+          "Not be moved unless in immediate life-threatening danger",
+          "Be placed in the recovery position straight away",
+          "Be sat upright to help them breathe"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q40",
+        "text": "Which legislation requires employers to report certain workplace injuries and dangerous occurrences?",
+        "options": [
+          "COSHH Regulations 2002",
+          "RIDDOR 2013",
+          "The Food Safety Act 1990",
+          "The Equality Act 2010"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q41",
+        "text": "When using an AED, before pressing the shock button you must:",
+        "options": [
+          "Remove the pads and reposition them",
+          "Ensure nobody is touching the casualty and shout 'Stand clear!'",
+          "Stop the AED and restart it",
+          "Place a towel over the casualty's chest"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q42",
+        "text": "The purpose of the recovery position is to:",
+        "options": [
+          "Restart the heart",
+          "Allow broken bones to set in the correct position",
+          "Keep the airway open and allow fluids to drain from the mouth",
+          "Reduce pain from burns"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q43",
+        "text": "An employer's first aid needs assessment should consider:",
+        "options": [
+          "Only the number of employees on site",
+          "The nature of work, number of employees, accident history, and distance from emergency services",
+          "Only whether there is a hospital within 5 miles",
+          "The cost of first aid training per employee"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q44",
+        "text": "When treating shock, you should NOT:",
+        "options": [
+          "Lie the casualty down and raise their legs",
+          "Keep the casualty warm with a blanket",
+          "Give the casualty food and drink",
+          "Call 999 and monitor breathing"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q45",
+        "text": "Deep fryer oil typically reaches temperatures of:",
+        "options": [
+          "100-120 degrees Celsius",
+          "140-160 degrees Celsius",
+          "180-190 degrees Celsius",
+          "220-250 degrees Celsius"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q46",
+        "text": "During CPR, you should let the chest fully recoil between compressions because:",
+        "options": [
+          "It prevents your arms from getting tired",
+          "It allows the heart to refill with blood between compressions",
+          "It makes the compressions louder so bystanders know you are helping",
+          "It is not actually important -- constant pressure is better"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q47",
+        "text": "Natasha's Law (2021) relates to:",
+        "options": [
+          "Fire safety in residential buildings",
+          "Allergen labelling on pre-packed food for direct sale",
+          "Minimum wage requirements for hospitality workers",
+          "Workplace first aid kit requirements"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q48",
+        "text": "How many UK declarable food allergens are there?",
+        "options": ["8", "10", "14", "20"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q49",
+        "text": "If a casualty has a medication patch on their chest (e.g. GTN patch), before using an AED you should:",
+        "options": [
+          "Leave the patch in place and put the AED pad over it",
+          "Remove the patch and wipe the skin before attaching the AED pad",
+          "Move both AED pads to the back of the chest",
+          "Do not use the AED at all"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q50",
+        "text": "After administering abdominal thrusts to a choking casualty who has recovered, you should:",
+        "options": [
+          "Let them carry on eating -- the danger has passed",
+          "Advise them to go to hospital for assessment, as internal injuries may have occurred",
+          "Give them a glass of milk to soothe the throat",
+          "Make them lie down in the recovery position for 30 minutes"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q51",
+        "text": "Arterial bleeding is characterised by:",
+        "options": [
+          "Dark red blood flowing steadily",
+          "Bright red blood spurting in time with the pulse",
+          "Slow oozing of blood from the wound surface",
+          "Clear fluid mixed with small amounts of blood"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q52",
+        "text": "You find a colleague unconscious. You tilt their head back and check breathing -- they ARE breathing normally. What should you do?",
+        "options": [
+          "Start CPR as a precaution",
+          "Place them in the recovery position, call 999, and monitor breathing",
+          "Give them rescue breaths to help them breathe better",
+          "Sit them upright against a wall and give water"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q53",
+        "text": "What should you do if the AED says 'No shock advised'?",
+        "options": [
+          "Turn off the AED and remove the pads",
+          "Continue CPR immediately",
+          "Check for a pulse before continuing",
+          "Wait 5 minutes and let the AED analyse again"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q54",
+        "text": "Which of the following is NOT a correct step in the recovery position?",
+        "options": [
+          "Place the arm nearest to you at a right angle to the body",
+          "Pull the far knee up so the foot is flat on the floor",
+          "Roll the casualty away from you onto their front (face down)",
+          "Tilt the head back to keep the airway open"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q55",
+        "text": "A person in anaphylaxis who feels faint should be positioned:",
+        "options": [
+          "Sitting upright in a chair",
+          "Standing up and walking around",
+          "Lying flat with legs raised",
+          "Lying on their front (prone)"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q56",
+        "text": "What does 'BSI' stand for in a first aid context?",
+        "options": [
+          "British Standards Institution",
+          "Body Substance Isolation (protecting yourself from blood and fluids)",
+          "Basic Safety Instructions",
+          "Breathing, Speaking, Infection"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q57",
+        "text": "A seizure lasting longer than how many minutes requires a 999 call?",
+        "options": ["1 minute", "3 minutes", "5 minutes", "10 minutes"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q58",
+        "text": "During a seizure, you should:",
+        "options": [
+          "Restrain the person to prevent injury",
+          "Put something in their mouth to stop them biting their tongue",
+          "Clear the area around them and protect their head",
+          "Pour water on their face to bring them round"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q59",
+        "text": "What is a 'biphasic reaction' in the context of anaphylaxis?",
+        "options": [
+          "A reaction that only affects two body systems",
+          "A return of symptoms 6-12 hours after the initial reaction",
+          "A reaction caused by two different allergens",
+          "A mild reaction that never becomes severe"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q60",
+        "text": "A fainting person should have their legs:",
+        "options": [
+          "Kept flat on the ground",
+          "Crossed at the ankles",
+          "Raised above the level of the heart",
+          "Bent at the knees with feet flat on the floor"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q61",
+        "text": "Signs of heat exhaustion include:",
+        "options": [
+          "Dry, hot skin with no sweating",
+          "Headache, dizziness, nausea, heavy sweating, and pale clammy skin",
+          "Shivering and blue lips",
+          "High temperature with a dry cough"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q62",
+        "text": "How long should you hold an EpiPen in place after the click?",
+        "options": ["1 second", "3 seconds", "10 seconds", "30 seconds"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q63",
+        "text": "A burn larger than the size of the casualty's palm should:",
+        "options": [
+          "Be treated at home with burn gel",
+          "Be assessed at A&E or by calling 999",
+          "Be left uncovered to heal naturally",
+          "Be bandaged tightly and reviewed in 48 hours"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q64",
+        "text": "Under UK law, who can administer an adrenaline auto-injector in a life-threatening emergency?",
+        "options": [
+          "Only qualified paramedics",
+          "Only the person it is prescribed to",
+          "Anyone -- there is no restriction in a life-threatening emergency",
+          "Only first aiders with a valid certificate"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q65",
+        "text": "What is the minimum first aid provision every employer must provide?",
+        "options": [
+          "A fully trained first aider on every shift",
+          "A first aid room with a bed",
+          "Adequate first aid equipment, appropriate personnel, and information for employees",
+          "An AED in every building"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q66",
+        "text": "If you suspect a casualty has an electrical burn, your first action should be:",
+        "options": [
+          "Pour water on the burn immediately",
+          "Ensure the power source is disconnected before touching the casualty",
+          "Apply a dry sterile dressing to the burn",
+          "Check for entry and exit wounds"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q67",
+        "text": "What is the correct fist position for abdominal thrusts?",
+        "options": [
+          "On the lower stomach below the navel",
+          "Between the navel and the bottom of the breastbone",
+          "On the centre of the chest over the breastbone",
+          "On the side of the ribcage"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q68",
+        "text": "Which of the following is an example of 'agonal breathing'?",
+        "options": [
+          "Normal, regular breathing at rest",
+          "Rapid, deep breaths during exercise",
+          "Occasional, irregular gasps that are NOT normal breathing",
+          "Slow, steady breathing while sleeping"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q69",
+        "text": "A severed fingertip should be preserved by:",
+        "options": [
+          "Placing it directly on ice",
+          "Wrapping it in cling film and placing in a bag surrounded by ice water",
+          "Putting it in a glass of warm water",
+          "Leaving it at room temperature in a clean towel"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q70",
+        "text": "What should you do if a nosebleed does not stop after 30 minutes?",
+        "options": [
+          "Pack the nostril with cotton wool and leave it",
+          "Take the casualty to A&E",
+          "Tilt the head back and swallow the blood",
+          "Apply ice to the forehead and wait longer"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q71",
+        "text": "When checking for response in the primary survey, you should:",
+        "options": [
+          "Pinch the casualty's ear hard",
+          "Shake their head side to side",
+          "Tap both shoulders firmly and ask loudly if they can hear you",
+          "Shine a torch in their eyes"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q72",
+        "text": "Compression-only CPR (no rescue breaths) is:",
+        "options": [
+          "Completely ineffective and should never be used",
+          "Only for use by trained paramedics",
+          "Far better than doing nothing if you are unable or unwilling to give breaths",
+          "Only effective for the first 30 seconds"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q73",
+        "text": "A casualty in shock should NOT be given food or drink because:",
+        "options": [
+          "It will make the shock worse",
+          "They may need surgery and anything in the stomach is a risk under anaesthetic",
+          "Food always causes vomiting in shock",
+          "Digestion uses blood that is needed elsewhere"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q74",
+        "text": "The BS 8599-1:2019 standard relates to:",
+        "options": [
+          "Fire extinguisher servicing",
+          "Workplace first aid kit contents",
+          "Food hygiene ratings",
+          "Building accessibility requirements"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q75",
+        "text": "If you are alone with an unresponsive, non-breathing casualty and have no phone, you should:",
+        "options": [
+          "Leave immediately to find help",
+          "Shout for help, and if no one comes, perform CPR for 1 minute then call 999",
+          "Wait in case someone passes by",
+          "Only perform chest compressions -- rescue breaths are not important"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q76",
+        "text": "A person who has fainted should recover within:",
+        "options": ["A few seconds", "About 1-2 minutes", "10-15 minutes", "At least 30 minutes"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q77",
+        "text": "Which of the following actions is correct when treating a burn?",
+        "options": [
+          "Apply ice directly to the burn to numb the pain",
+          "Remove clothing that is stuck to the burn",
+          "Remove jewellery from the area before swelling starts",
+          "Wrap cling film tightly around the burned limb"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q78",
+        "text": "What is the main risk of standing up a casualty during anaphylaxis?",
+        "options": [
+          "They might trip and fall",
+          "It can cause a sudden cardiac arrest due to low blood pressure",
+          "It makes it harder to inject the EpiPen",
+          "Standing makes the rash spread faster"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q79",
+        "text": "How should cling film be applied to a burn?",
+        "options": [
+          "Wrapped tightly around the limb to create pressure",
+          "Laid loosely over the burn without wrapping",
+          "Stuck directly to the burn surface to seal it",
+          "Only applied after antiseptic cream"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q80",
+        "text": "The website defibfinder.uk can be used to:",
+        "options": [
+          "Order replacement AED pads online",
+          "Locate the nearest public AED",
+          "Register your workplace AED for servicing",
+          "Book first aid training courses"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q81",
+        "text": "During CPR, you should position yourself with:",
+        "options": [
+          "Arms bent at the elbows for cushioning",
+          "Arms straight with shoulders directly above your hands",
+          "Arms crossed over the casualty's chest",
+          "One hand on the chest and one supporting the head"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q82",
+        "text": "A 'partial thickness' burn is characterised by:",
+        "options": [
+          "Redness only with no blisters",
+          "Redness, pain, and blistering affecting the outer and inner skin layers",
+          "White or charred skin with little pain",
+          "Only superficial skin reddening that fades within an hour"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q83",
+        "text": "Which of the following is NOT one of the 14 UK declarable food allergens?",
+        "options": ["Strawberries", "Peanuts", "Sesame", "Celery"],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q84",
+        "text": "What should you do if a casualty vomits while in the recovery position?",
+        "options": [
+          "Roll them onto their back immediately",
+          "Allow the vomit to drain from the mouth and clear the airway if needed",
+          "Sit them upright and give water",
+          "Place them face down (prone) to help drainage"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q85",
+        "text": "A nosebleed should be treated by:",
+        "options": [
+          "Tilting the head back and pinching the bridge of the nose",
+          "Sitting the casualty forward and pinching the soft part of the nose for 10-15 minutes",
+          "Packing the nostril with tissue and tilting the head back",
+          "Applying a cold compress to the back of the neck only"
+        ],
+        "correctAnswer": 1
+      }
+    ]
+  }
+}

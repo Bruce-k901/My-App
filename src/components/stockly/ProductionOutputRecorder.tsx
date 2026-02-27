@@ -1,10 +1,33 @@
-// @salsa - SALSA Compliance: Record finished product output for production batch
+// @salsa - SALSA Compliance: Record finished product, byproduct, or waste output for production batch
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { Package, AlertTriangle, Info } from '@/components/ui/icons';
+
+type OutputType = 'finished_product' | 'byproduct' | 'waste';
+
+const OUTPUT_TYPE_CONFIG: Record<OutputType, { label: string; description: string; itemLabel: string; submitLabel: string }> = {
+  finished_product: {
+    label: 'Finished Product',
+    description: 'The main product from this batch',
+    itemLabel: 'Finished Product',
+    submitLabel: 'Record Output',
+  },
+  byproduct: {
+    label: 'Byproduct',
+    description: 'Leftover material reused as a new product (e.g. pre-ferment)',
+    itemLabel: 'Byproduct Item',
+    submitLabel: 'Record Byproduct',
+  },
+  waste: {
+    label: 'Waste',
+    description: 'Material discarded during production',
+    itemLabel: 'Waste Item',
+    submitLabel: 'Record Waste',
+  },
+};
 
 interface RecipeOutputStockItem {
   id: string;
@@ -52,6 +75,7 @@ export default function ProductionOutputRecorder({
   onSaved,
   onCancel,
 }: ProductionOutputRecorderProps) {
+  const [outputType, setOutputType] = useState<OutputType>('finished_product');
   const [stockItems, setStockItems] = useState<StockItem[]>([]);
   const [stockItemId, setStockItemId] = useState('');
   const [quantity, setQuantity] = useState('');
@@ -70,6 +94,9 @@ export default function ProductionOutputRecorder({
   // Track whether we've auto-populated from recipe (only do once)
   const autoPopulated = useRef(false);
 
+  const isWaste = outputType === 'waste';
+  const config = OUTPUT_TYPE_CONFIG[outputType];
+
   useEffect(() => {
     async function loadStockItems() {
       const { data } = await supabase
@@ -86,9 +113,13 @@ export default function ProductionOutputRecorder({
         if (exists) {
           autoPopulated.current = true;
           setStockItemId(recipeOutputStockItem.id);
-          if (recipeOutputStockItem.stock_unit) setUnit(recipeOutputStockItem.stock_unit);
+          // Batch unit takes priority for consistency
+          if (plannedUnit) {
+            setUnit(plannedUnit);
+          } else if (recipeOutputStockItem.stock_unit) {
+            setUnit(recipeOutputStockItem.stock_unit);
+          }
           if (plannedQuantity) setQuantity(String(plannedQuantity));
-          else if (plannedUnit) setUnit(plannedUnit);
 
           // If recipe has shelf_life_days and no product spec will override, pre-calculate
           if (recipeShelfLifeDays && productionDate) {
@@ -97,6 +128,10 @@ export default function ProductionOutputRecorder({
             setCalculatedUseByDate(calculated);
           }
         }
+      }
+      // Even without recipe auto-populate, default unit to batch unit
+      if (!autoPopulated.current && plannedUnit) {
+        setUnit(plannedUnit);
       }
     }
     loadStockItems();
@@ -157,7 +192,8 @@ export default function ProductionOutputRecorder({
   const handleStockItemChange = (id: string) => {
     setStockItemId(id);
     const item = stockItems.find(i => i.id === id);
-    if (item?.stock_unit) setUnit(item.stock_unit);
+    // Only set unit from stock item if no batch unit is enforced
+    if (!plannedUnit && item?.stock_unit) setUnit(item.stock_unit);
     setError(null);
   };
 
@@ -175,9 +211,10 @@ export default function ProductionOutputRecorder({
           stock_item_id: stockItemId,
           quantity: parseFloat(quantity),
           unit: unit || null,
-          batch_code: batchCode || undefined,
-          use_by_date: useByDate || null,
-          best_before_date: bestBeforeDate || null,
+          batch_code: isWaste ? undefined : (batchCode || undefined),
+          use_by_date: isWaste ? null : (useByDate || null),
+          best_before_date: isWaste ? null : (bestBeforeDate || null),
+          output_type: outputType,
         }),
       });
 
@@ -208,8 +245,58 @@ export default function ProductionOutputRecorder({
         </div>
       )}
 
-      {/* Auto-populated info */}
-      {recipeOutputStockItem && stockItemId === recipeOutputStockItem.id && (
+      {/* Output type selector */}
+      <div className="flex gap-1 p-1 bg-theme-muted rounded-lg">
+        {(Object.keys(OUTPUT_TYPE_CONFIG) as OutputType[]).map(type => {
+          const tc = OUTPUT_TYPE_CONFIG[type];
+          const active = outputType === type;
+          return (
+            <button
+              key={type}
+              type="button"
+              onClick={() => {
+                setOutputType(type);
+                setError(null);
+                // Clear recipe auto-fill when switching to byproduct/waste
+                if (type !== 'finished_product' && autoPopulated.current && stockItemId === recipeOutputStockItem?.id) {
+                  setStockItemId('');
+                  setQuantity('');
+                  setBatchCode('');
+                  setUseByDate('');
+                  setBestBeforeDate('');
+                }
+              }}
+              className={`flex-1 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                active
+                  ? type === 'waste'
+                    ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                    : type === 'byproduct'
+                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                    : 'bg-theme-surface text-theme-primary shadow-sm'
+                  : 'text-theme-tertiary hover:text-theme-secondary'
+              }`}
+            >
+              {tc.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Type description */}
+      <p className="text-xs text-theme-tertiary">{config.description}</p>
+
+      {/* Waste info note */}
+      {isWaste && (
+        <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-lg">
+          <Info className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-amber-700 dark:text-amber-400">
+            Waste is recorded for yield tracking but won&apos;t create a stock batch.
+          </p>
+        </div>
+      )}
+
+      {/* Auto-populated info (finished product only) */}
+      {outputType === 'finished_product' && recipeOutputStockItem && stockItemId === recipeOutputStockItem.id && (
         <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-lg">
           <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
           <p className="text-xs text-blue-700 dark:text-blue-400">
@@ -219,7 +306,7 @@ export default function ProductionOutputRecorder({
       )}
 
       <div>
-        <label className="block text-sm font-medium text-theme-secondary mb-1">Finished Product</label>
+        <label className="block text-sm font-medium text-theme-secondary mb-1">{config.itemLabel}</label>
         <select
           value={stockItemId}
           onChange={(e) => handleStockItemChange(e.target.value)}
@@ -246,71 +333,86 @@ export default function ProductionOutputRecorder({
         </div>
         <div>
           <label className="block text-sm font-medium text-theme-secondary mb-1">Unit</label>
-          <input
-            type="text"
-            value={unit}
-            onChange={(e) => setUnit(e.target.value)}
-            className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
-            placeholder="kg, units, etc."
-          />
+          {plannedUnit ? (
+            <div className="w-full px-3 py-2 bg-theme-muted border border-theme rounded-lg text-sm text-theme-primary cursor-not-allowed">
+              {plannedUnit}
+            </div>
+          ) : (
+            <input
+              type="text"
+              value={unit}
+              onChange={(e) => setUnit(e.target.value)}
+              className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
+              placeholder="kg, units, etc."
+            />
+          )}
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-theme-secondary mb-1">
-          Batch Code <span className="text-theme-tertiary font-normal">(auto-generated if empty)</span>
-        </label>
-        <input
-          type="text"
-          value={batchCode}
-          onChange={(e) => setBatchCode(e.target.value)}
-          className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
-          placeholder="Leave empty to auto-generate"
-        />
-      </div>
+      {/* Batch code, dates — hidden for waste */}
+      {!isWaste && (
+        <>
+          <div>
+            <label className="block text-sm font-medium text-theme-secondary mb-1">
+              Batch Code <span className="text-theme-tertiary font-normal">(auto-generated if empty)</span>
+            </label>
+            <input
+              type="text"
+              value={batchCode}
+              onChange={(e) => setBatchCode(e.target.value)}
+              className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
+              placeholder="Leave empty to auto-generate"
+            />
+          </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-sm font-medium text-theme-secondary mb-1">
-            Use By Date
-            {shelfLifeSource && (
-              <span className="text-theme-tertiary font-normal ml-1">
-                ({shelfLifeSource} shelf life)
-              </span>
-            )}
-          </label>
-          <input
-            type="date"
-            value={useByDate}
-            onChange={(e) => setUseByDate(e.target.value)}
-            className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-theme-secondary mb-1">Best Before Date</label>
-          <input
-            type="date"
-            value={bestBeforeDate}
-            onChange={(e) => setBestBeforeDate(e.target.value)}
-            className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
-          />
-        </div>
-      </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">
+                Use By Date
+                {shelfLifeSource && (
+                  <span className="text-theme-tertiary font-normal ml-1">
+                    ({shelfLifeSource} shelf life)
+                  </span>
+                )}
+              </label>
+              <input
+                type="date"
+                value={useByDate}
+                onChange={(e) => setUseByDate(e.target.value)}
+                className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-theme-secondary mb-1">Best Before Date</label>
+              <input
+                type="date"
+                value={bestBeforeDate}
+                onChange={(e) => setBestBeforeDate(e.target.value)}
+                className="w-full px-3 py-2 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary"
+              />
+            </div>
+          </div>
 
-      {dateOverrideWarning && (
-        <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-lg">
-          <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-          <p className="text-xs text-amber-700 dark:text-amber-400">{dateOverrideWarning}</p>
-        </div>
+          {dateOverrideWarning && (
+            <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-lg">
+              <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-amber-700 dark:text-amber-400">{dateOverrideWarning}</p>
+            </div>
+          )}
+        </>
       )}
 
       <div className="flex gap-3 pt-2">
         <button
           type="submit"
           disabled={saving || !stockItemId || !quantity}
-          className="flex-1 px-4 py-2 bg-stockly-dark dark:bg-stockly text-white dark:text-gray-900 rounded-lg text-sm font-medium disabled:opacity-50"
+          className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 ${
+            isWaste
+              ? 'bg-red-600 text-white hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600'
+              : 'bg-stockly-dark dark:bg-stockly text-white dark:text-gray-900'
+          }`}
         >
-          {saving ? 'Recording...' : 'Record Output'}
+          {saving ? 'Recording...' : config.submitLabel}
         </button>
         <button
           type="button"

@@ -55,7 +55,7 @@ function isPlaceholderFilePath(filePath: unknown): boolean {
 }
 
 export default function MyOnboardingDocsPage() {
-  const { profile } = useAppContext()
+  const { profile, companyId } = useAppContext()
 
   const [loading, setLoading] = useState(true)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
@@ -164,7 +164,7 @@ export default function MyOnboardingDocsPage() {
 
   const acknowledge = async (assignment: Assignment, doc: PackDoc) => {
     const gd = doc.global_documents
-    if (!gd?.id || !profile?.id || !profile?.company_id) {
+    if (!gd?.id || !profile?.id || !companyId) {
       toast.error('Missing required information')
       return
     }
@@ -174,7 +174,7 @@ export default function MyOnboardingDocsPage() {
 
     try {
       const { error } = await supabase.from('employee_document_acknowledgements').insert({
-        company_id: profile.company_id,
+        company_id: companyId,
         assignment_id: assignment.id,
         global_document_id: gd.id,
         profile_id: profile.id,

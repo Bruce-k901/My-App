@@ -34,8 +34,7 @@ type Job = {
 
 export default function JobDetailsPage() {
   const params = useParams()
-  const { profile } = useAppContext()
-  const companyId = profile?.company_id
+  const { profile, companyId } = useAppContext()
   const jobId = params.jobId as string
 
   const [loading, setLoading] = useState(true)

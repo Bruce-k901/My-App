@@ -9,7 +9,7 @@ import { ArrowLeft, Calendar, AlertTriangle, Info, Loader2, Check } from '@/comp
 import type { LeaveType, LeaveBalanceView } from '@/types/teamly';
 
 export default function LeaveRequestPage() {
-  const { profile } = useAppContext();
+  const { profile, companyId } = useAppContext();
   const router = useRouter();
   const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]);
   const [selectedType, setSelectedType] = useState<LeaveType | null>(null);
@@ -30,10 +30,10 @@ export default function LeaveRequestPage() {
   });
 
   useEffect(() => {
-    if (profile?.company_id) {
+    if (companyId) {
       fetchLeaveTypes();
     }
-  }, [profile?.company_id]);
+  }, [companyId]);
 
   useEffect(() => {
     if (formData.leave_type_id) {
@@ -44,16 +44,16 @@ export default function LeaveRequestPage() {
   }, [formData.leave_type_id, leaveTypes]);
 
   useEffect(() => {
-    if (formData.start_date && formData.end_date && profile?.company_id) {
+    if (formData.start_date && formData.end_date && companyId) {
       calculateDays();
     }
-  }, [formData.start_date, formData.end_date, formData.start_half_day, formData.end_half_day, profile?.company_id]);
+  }, [formData.start_date, formData.end_date, formData.start_half_day, formData.end_half_day, companyId]);
 
   const fetchLeaveTypes = async () => {
     const { data } = await supabase
       .from('leave_types')
       .select('*')
-      .eq('company_id', profile?.company_id)
+      .eq('company_id', companyId)
       .eq('is_active', true)
       .order('sort_order');
     
@@ -79,12 +79,12 @@ export default function LeaveRequestPage() {
   };
 
   const calculateDays = async () => {
-    if (!formData.start_date || !formData.end_date || !profile?.company_id) return;
-    
+    if (!formData.start_date || !formData.end_date || !companyId) return;
+
     const { data, error } = await supabase.rpc('calculate_working_days', {
       p_start_date: formData.start_date,
       p_end_date: formData.end_date,
-      p_company_id: profile.company_id,
+      p_company_id: companyId,
       p_start_half_day: formData.start_half_day,
       p_end_half_day: formData.end_half_day,
     });
@@ -151,7 +151,7 @@ export default function LeaveRequestPage() {
       const { error: insertError } = await supabase
         .from('leave_requests')
         .insert({
-          company_id: profile?.company_id,
+          company_id: companyId,
           profile_id: profile?.id,
           leave_type_id: formData.leave_type_id,
           start_date: formData.start_date,

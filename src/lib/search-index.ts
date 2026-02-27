@@ -26,7 +26,7 @@ export const SEARCH_INDEX: SearchItem[] = [
   // ─── Organization ───────────────────────────────────────
   { id: "org-setup-guide", label: "Setup Guide", href: "/dashboard/organization/onboarding", section: "Organization", keywords: ["onboarding", "getting started", "wizard"] },
   { id: "org-business", label: "Business Details", href: "/dashboard/business", section: "Organization", keywords: ["company", "info", "profile"] },
-  { id: "org-users", label: "Users & Roles", href: "/dashboard/users", section: "Organization", keywords: ["team", "permissions", "access", "staff"] },
+  { id: "org-users", label: "Users & Access", href: "/dashboard/users", section: "Organization", keywords: ["team", "permissions", "access", "staff", "roles", "invite"] },
   { id: "org-sites", label: "Sites", href: "/dashboard/sites", section: "Organization", keywords: ["locations", "branches", "venues"] },
   { id: "org-emergency", label: "Emergency Contacts", href: "/dashboard/organization/emergency-contacts", section: "Organization", keywords: ["safety", "contacts", "emergency"] },
   { id: "org-documents", label: "Documents", href: "/dashboard/documents", section: "Organization", keywords: ["files", "uploads", "docs"] },

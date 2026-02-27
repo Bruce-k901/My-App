@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
 import SiteSelector from '@/components/ui/SiteSelector';
 import { toast } from 'sonner';
+import ShiftPulseModal from '@/components/teamly/ShiftPulseModal';
 
 interface ShiftStatus {
   onShift: boolean;
@@ -31,6 +32,7 @@ export default function ClockInOut() {
   const [clockingOut, setClockingOut] = useState(false);
   const [shiftNotes, setShiftNotes] = useState('');
   const [showNotesInput, setShowNotesInput] = useState(false);
+  const [showShiftPulse, setShowShiftPulse] = useState(false);
 
   // Auto-select home site (or site_id) when profile loads and user is not on shift
   // Try immediately, and also after sites are loaded (in case of timing issues)
@@ -281,7 +283,7 @@ export default function ClockInOut() {
         ) : (
           <div className="flex gap-2">
             <Button
-              onClick={() => setShowNotesInput(true)}
+              onClick={() => setShowShiftPulse(true)}
               variant="outline"
               className="flex-1"
             >
@@ -295,6 +297,20 @@ export default function ClockInOut() {
             </Button>
           </div>
         )}
+
+        {/* Shift Pulse Rating Modal — shown before notes/clock-out */}
+        <ShiftPulseModal
+          isOpen={showShiftPulse}
+          onSubmitAndClockOut={() => {
+            setShowShiftPulse(false)
+            setShowNotesInput(true)
+          }}
+          onSkipAndClockOut={() => {
+            setShowShiftPulse(false)
+            setShowNotesInput(true)
+          }}
+          siteId={shiftStatus.siteId}
+        />
       </div>
     );
   }

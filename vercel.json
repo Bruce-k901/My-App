@@ -8,6 +8,10 @@
       "memory": 1536,
       "maxDuration": 30
     },
+    "src/app/api/certificates/[recordId]/route.ts": {
+      "memory": 1024,
+      "maxDuration": 15
+    },
     "src/app/api/cron/daily-digest/route.ts": {
       "maxDuration": 60
     },
@@ -19,6 +23,9 @@
     },
     "src/app/api/webhooks/square/route.ts": {
       "maxDuration": 30
+    },
+    "src/app/api/cron/shift-pulse-weekly/route.ts": {
+      "maxDuration": 60
     }
   },
   "crons": [
@@ -53,6 +60,10 @@
     {
       "path": "/api/cron/square-sync",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/shift-pulse-weekly",
+      "schedule": "0 7 * * 1"
     }
   ],
   "buildCommand": "npm run build",

@@ -20,7 +20,7 @@ import {
 import type { EmergencyContact } from '@/types/teamly';
 
 export default function AddEmployeePage() {
-  const { profile, company } = useAppContext();
+  const { profile, company, companyId } = useAppContext();
   const router = useRouter();
   
   const [loading, setLoading] = useState(false);
@@ -49,7 +49,7 @@ export default function AddEmployeePage() {
     employee_number: '',
     position_title: '',
     department: '',
-    app_role: 'Staff' as 'Staff' | 'Manager' | 'Admin' | 'Owner' | 'General_Manager',
+    app_role: 'Staff' as 'Staff' | 'Manager' | 'Admin' | 'Owner' | 'General Manager',
     home_site: '',
     reports_to: '',
     start_date: '',
@@ -86,7 +86,7 @@ export default function AddEmployeePage() {
   ]);
 
   const generateNextEmployeeNumber = async (): Promise<string | null> => {
-    if (!profile?.company_id || !company?.name) return null;
+    if (!companyId || !company?.name) return null;
     
     try {
       // Get first 3 letters of company name (uppercase, remove spaces/special chars)
@@ -106,7 +106,7 @@ export default function AddEmployeePage() {
       const { data: existingEmployees, error } = await supabase
         .from('profiles')
         .select('employee_number')
-        .eq('company_id', profile.company_id)
+        .eq('company_id', companyId)
         .not('employee_number', 'is', null)
         .like('employee_number', `${prefix}%`);
       
@@ -139,44 +139,44 @@ export default function AddEmployeePage() {
   };
 
   useEffect(() => {
-    if (profile?.company_id) {
+    if (companyId) {
       fetchSites();
       fetchManagers();
     }
-  }, [profile?.company_id]);
+  }, [companyId]);
 
   useEffect(() => {
-    if (profile?.company_id && company?.name && !formData.employee_number) {
+    if (companyId && company?.name && !formData.employee_number) {
       generateNextEmployeeNumber().then((generated) => {
         if (generated) {
           setFormData(prev => ({ ...prev, employee_number: generated }));
         }
       });
     }
-  }, [profile?.company_id, company?.name]);
+  }, [companyId, company?.name]);
 
   useEffect(() => {
-    if (profile?.company_id) {
+    if (companyId) {
       fetchSites();
       fetchManagers();
     }
-  }, [profile?.company_id]);
+  }, [companyId]);
 
   useEffect(() => {
-    if (profile?.company_id && company?.name && !formData.employee_number) {
+    if (companyId && company?.name && !formData.employee_number) {
       generateNextEmployeeNumber().then((generated) => {
         if (generated) {
           setFormData(prev => ({ ...prev, employee_number: generated }));
         }
       });
     }
-  }, [profile?.company_id, company?.name]);
+  }, [companyId, company?.name]);
 
   const fetchSites = async () => {
     const { data } = await supabase
       .from('sites')
       .select('id, name')
-      .eq('company_id', profile?.company_id)
+      .eq('company_id', companyId)
       .order('name');
     setSites(data || []);
   };
@@ -185,7 +185,7 @@ export default function AddEmployeePage() {
     const { data } = await supabase
       .from('profiles')
       .select('id, full_name')
-      .eq('company_id', profile?.company_id)
+      .eq('company_id', companyId)
       .in('app_role', ['Manager', 'Admin', 'Owner'])
       .order('full_name');
     setManagers(data || []);
@@ -245,7 +245,7 @@ export default function AddEmployeePage() {
 
       // Prepare data for insert
       const insertData = {
-        company_id: profile?.company_id,
+        company_id: companyId,
         full_name: formData.full_name,
         email: formData.email,
         phone_number: formData.phone_number || null,

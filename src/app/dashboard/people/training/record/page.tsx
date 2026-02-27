@@ -15,7 +15,7 @@ interface Employee {
 }
 
 export default function RecordTrainingPage() {
-  const { profile } = useAppContext();
+  const { profile, companyId } = useAppContext();
   const router = useRouter();
   const searchParams = useSearchParams();
   const preSelectedEmployee = searchParams.get('employee');
@@ -42,10 +42,10 @@ export default function RecordTrainingPage() {
   const [selectedCourse, setSelectedCourse] = useState<TrainingCourse | null>(null);
 
   useEffect(() => {
-    if (profile?.company_id) {
+    if (companyId) {
       fetchData();
     }
-  }, [profile?.company_id, profile?.id]);
+  }, [companyId, profile?.id]);
 
   // Auto-select current user if not a manager (staff members can only record for themselves)
   useEffect(() => {
@@ -82,7 +82,7 @@ export default function RecordTrainingPage() {
     let query = supabase
       .from('profiles')
       .select('id, full_name, email')
-      .eq('company_id', profile?.company_id)
+      .eq('company_id', companyId)
       .eq('status', 'active');
     
     // Staff members can only see themselves
@@ -99,7 +99,7 @@ export default function RecordTrainingPage() {
     const { data } = await supabase
       .from('training_courses')
       .select('*')
-      .eq('company_id', profile?.company_id)
+      .eq('company_id', companyId)
       .eq('is_active', true)
       .order('category')
       .order('name');

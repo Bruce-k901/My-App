@@ -38,7 +38,7 @@ export const BURGER_MENU_SECTIONS: MenuSection[] = [
     items: [
       { id: 'business-setup', label: 'Getting Started', path: '/dashboard/business', icon: 'Rocket' },
       { id: 'sites', label: 'Sites', path: '/dashboard/sites', icon: 'MapPin' },
-      { id: 'users', label: 'Users & Roles', path: '/dashboard/users', icon: 'Users' },
+      { id: 'users', label: 'Users & Access', path: '/dashboard/users', icon: 'Users' },
       { id: 'companies', label: 'Companies & Brands', path: '/settings/companies', icon: 'Building2' },
       { id: 'documents', label: 'Documents', path: '/dashboard/documents', icon: 'FileText' },
     ]

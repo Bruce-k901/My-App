@@ -25,8 +25,7 @@ type Job = {
 }
 
 export default function RecruitmentJobsPage() {
-  const { profile } = useAppContext()
-  const companyId = profile?.company_id
+  const { profile, companyId } = useAppContext()
 
   const [loading, setLoading] = useState(true)
   const [jobs, setJobs] = useState<Job[]>([])

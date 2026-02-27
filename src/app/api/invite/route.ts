@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { sendEmail } from "@/lib/send-email";
 
 export async function POST(req: Request) {
   try {
@@ -67,7 +68,14 @@ export async function POST(req: Request) {
         userId: data?.user?.id,
         emailSent: !!data?.user,
       });
-      
+
+      // Send BCC notification copy to hello@opslytech.com
+      sendEmail({
+        to: 'hello@opslytech.com',
+        subject: `[BCC] Invite sent to ${emailLower}`,
+        html: `<p>An invitation email was sent to <strong>${emailLower}</strong>.</p><p>This is an automatic BCC copy for your records.</p>`,
+      }).catch((err) => console.warn('⚠️ BCC notification failed:', err));
+
       return NextResponse.json({ ok: true, data });
     }
 

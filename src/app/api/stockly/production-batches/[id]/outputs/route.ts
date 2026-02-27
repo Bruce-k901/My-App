@@ -11,7 +11,10 @@ export async function POST(
     const { id } = await params;
     const supabase = await createServerSupabaseClient();
     const body = await request.json();
-    const { stock_item_id, quantity, unit, use_by_date, best_before_date, batch_code: manualCode } = body;
+    const { stock_item_id, quantity, unit, use_by_date, best_before_date, batch_code: manualCode, output_type } = body;
+    const validOutputTypes = ['finished_product', 'byproduct', 'waste'];
+    const outputType = validOutputTypes.includes(output_type) ? output_type : 'finished_product';
+    const isWaste = outputType === 'waste';
 
     if (!stock_item_id || !quantity) {
       return NextResponse.json({ error: 'stock_item_id and quantity are required' }, { status: 400 });
@@ -20,7 +23,7 @@ export async function POST(
     // Verify production batch exists
     const { data: batch, error: batchError } = await supabase
       .from('production_batches')
-      .select('id, company_id, site_id, status, production_date')
+      .select('id, company_id, site_id, status, production_date, unit')
       .eq('id', id)
       .single();
 
@@ -30,6 +33,14 @@ export async function POST(
 
     if (batch.status === 'cancelled') {
       return NextResponse.json({ error: 'Cannot add outputs to cancelled batch' }, { status: 400 });
+    }
+
+    // Enforce unit consistency: output must match batch unit
+    if (batch.unit && unit && unit !== batch.unit) {
+      return NextResponse.json(
+        { error: `Output unit must be "${batch.unit}" to match the production batch unit` },
+        { status: 400 }
+      );
     }
 
     const { data: { user } } = await supabase.auth.getUser();
@@ -61,10 +72,15 @@ export async function POST(
       }
     }
 
-    // Generate output batch code
-    const outputBatchCode = manualCode || await generateBatchCode(supabase, batch.company_id, {
-      format: 'FP-{YYYY}-{MMDD}-{SEQ}',
-    });
+    // Generate output batch code (waste doesn't need one)
+    let outputBatchCode: string | null = null;
+    if (!isWaste) {
+      const codeFormat = outputType === 'byproduct' ? 'BP-{YYYY}-{MMDD}-{SEQ}' : 'FP-{YYYY}-{MMDD}-{SEQ}';
+      outputBatchCode = manualCode || await generateBatchCode(supabase, batch.company_id, {
+        format: codeFormat,
+        table: 'stock_batches',
+      });
+    }
 
     // Collect allergens from all input batches to inherit
     const { data: inputs } = await supabase
@@ -88,9 +104,10 @@ export async function POST(
         stock_item_id,
         batch_code: outputBatchCode,
         quantity,
-        unit: unit || null,
-        use_by_date: use_by_date || null,
-        best_before_date: best_before_date || null,
+        unit: unit || batch.unit || null,
+        use_by_date: isWaste ? null : (use_by_date || null),
+        best_before_date: isWaste ? null : (best_before_date || null),
+        output_type: outputType,
       })
       .select(`
         *,
@@ -102,48 +119,56 @@ export async function POST(
       if (outputError.code === '23505') {
         return NextResponse.json({ error: `Batch code "${outputBatchCode}" already exists` }, { status: 409 });
       }
+      console.error('production_batch_outputs insert error:', outputError.code, outputError.message, outputError.details);
       return NextResponse.json({ error: outputError.message }, { status: 500 });
     }
 
-    // Create a stock_batch for the finished product with production_batch_id set
-    const { data: stockBatch, error: stockBatchError } = await supabase
-      .from('stock_batches')
-      .insert({
-        company_id: batch.company_id,
-        site_id: batch.site_id,
-        stock_item_id,
-        production_batch_id: id,
-        batch_code: outputBatchCode,
-        quantity_received: quantity,
-        quantity_remaining: quantity,
-        unit: unit || 'units',
-        use_by_date: use_by_date || null,
-        best_before_date: best_before_date || null,
-        allergens: inheritedAllergens.size > 0 ? Array.from(inheritedAllergens) : null,
-        status: 'active',
-        created_by: user?.id || null,
-      })
-      .select()
-      .single();
+    // Waste: no stock batch or movement — just recorded for yield tracking
+    let stockBatch = null;
+    if (!isWaste) {
+      // Create a stock_batch for the finished/byproduct with production_batch_id set
+      const { data: sb, error: stockBatchError } = await supabase
+        .from('stock_batches')
+        .insert({
+          company_id: batch.company_id,
+          site_id: batch.site_id,
+          stock_item_id,
+          production_batch_id: id,
+          batch_code: outputBatchCode,
+          quantity_received: quantity,
+          quantity_remaining: quantity,
+          unit: unit || batch.unit || 'units',
+          use_by_date: use_by_date || null,
+          best_before_date: best_before_date || null,
+          allergens: inheritedAllergens.size > 0 ? Array.from(inheritedAllergens) : null,
+          status: 'active',
+          created_by: user?.id || null,
+        })
+        .select()
+        .single();
 
-    if (stockBatchError) {
-      // Log but don't fail — the output record is created
-      console.error('Failed to create stock batch for output:', stockBatchError.message);
-    }
+      if (stockBatchError) {
+        console.error('Failed to create stock batch for output:', stockBatchError.message);
+      }
+      stockBatch = sb;
 
-    // Create a batch movement for the received finished product
-    if (stockBatch) {
-      await supabase.from('batch_movements').insert({
-        company_id: batch.company_id,
-        site_id: batch.site_id,
-        batch_id: stockBatch.id,
-        movement_type: 'received',
-        quantity: quantity,
-        reference_type: 'production_batch',
-        reference_id: id,
-        notes: `Produced from production batch`,
-        created_by: user?.id || null,
-      });
+      // Create a batch movement for the received product
+      if (stockBatch) {
+        const movementNote = outputType === 'byproduct'
+          ? 'Byproduct from production batch'
+          : 'Produced from production batch';
+        await supabase.from('batch_movements').insert({
+          company_id: batch.company_id,
+          site_id: batch.site_id,
+          batch_id: stockBatch.id,
+          movement_type: 'received',
+          quantity: quantity,
+          reference_type: 'production_batch',
+          reference_id: id,
+          notes: movementNote,
+          created_by: user?.id || null,
+        });
+      }
     }
 
     return NextResponse.json({

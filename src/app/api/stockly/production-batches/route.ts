@@ -73,6 +73,7 @@ export async function POST(request: NextRequest) {
     const batchCode = manualCode || await generateBatchCode(supabase, company_id, {
       format: 'PB-{YYYY}-{MMDD}-{SEQ}',
       date: new Date(production_date),
+      table: 'production_batches',
     });
 
     // Get allergens from recipe if provided

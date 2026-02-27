@@ -4,12 +4,11 @@ import React from 'react';
 import Link from 'next/link';
 import { CheckCircle, XCircle, Download, Printer, ArrowLeft, GraduationCap, AlertTriangle } from '@/components/ui/icons';
 import { PASS_MARK_PERCENTAGE } from '@/lib/quiz-utils';
+import { COURSE_MAPPINGS } from '@/lib/certificates/courseMapping';
 
-const COURSE_TITLES: Record<string, string> = {
-  'uk-l2-food-safety': 'Food Safety Level 2 (UK)',
-  'uk-l2-health-and-safety': 'Health and Safety Level 2 (UK)',
-  'uk-l2-allergens': 'Allergen Awareness Level 2 (UK)',
-};
+const COURSE_TITLES: Record<string, string> = Object.fromEntries(
+  COURSE_MAPPINGS.map(m => [m.courseId, m.courseName])
+);
 
 interface CourseResultsClientProps {
   courseId: string;

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button, Input, Select } from "@/components/ui";
 import { useToast } from "@/components/ui/ToastProvider";
-import { Eye, EyeOff } from '@/components/ui/icons';
+// Eye, EyeOff removed — PIN field hidden for now
 import { useAppContext } from "@/context/AppContext";
 
 interface AddUserModalProps {
@@ -27,17 +27,6 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
     position_title: "",
     boh_foh: "FOH",
     site_id: null as string | null,
-    // Training certificate fields
-    food_safety_level: null as number | null,
-    food_safety_expiry_date: null as string | null,
-    h_and_s_level: null as number | null,
-    h_and_s_expiry_date: null as string | null,
-    fire_marshal_trained: false,
-    fire_marshal_expiry_date: null as string | null,
-    first_aid_trained: false,
-    first_aid_expiry_date: null as string | null,
-    cossh_trained: false,
-    cossh_expiry_date: null as string | null,
   });
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -208,17 +197,6 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
         app_role: normRole(form.app_role) || form.app_role,
         position_title: form.position_title,
         boh_foh: form.boh_foh,
-        // Training certificate fields
-        food_safety_level: form.food_safety_level,
-        food_safety_expiry_date: form.food_safety_expiry_date,
-        h_and_s_level: form.h_and_s_level,
-        h_and_s_expiry_date: form.h_and_s_expiry_date,
-        fire_marshal_trained: form.fire_marshal_trained,
-        fire_marshal_expiry_date: form.fire_marshal_expiry_date,
-        first_aid_trained: form.first_aid_trained,
-        first_aid_expiry_date: form.first_aid_expiry_date,
-        cossh_trained: form.cossh_trained,
-        cossh_expiry_date: form.cossh_expiry_date,
       };
       console.log("Submitting payload:", payload);
 
@@ -335,16 +313,6 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
         position_title: "",
         boh_foh: "FOH",
         site_id: null,
-        food_safety_level: null,
-        food_safety_expiry_date: null,
-        h_and_s_level: null,
-        h_and_s_expiry_date: null,
-        fire_marshal_trained: false,
-        fire_marshal_expiry_date: null,
-        first_aid_trained: false,
-        first_aid_expiry_date: null,
-        cossh_trained: false,
-        cossh_expiry_date: null,
       });
       setStartOnboarding(true);
       setOnboardingPackId("");
@@ -361,8 +329,6 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
   const updateForm = (updates: Partial<typeof form>) => {
     setForm(prev => ({ ...prev, ...updates }));
   };
-
-  const [showPin, setShowPin] = useState(false);
 
   const roleOptions = [
     "Staff",
@@ -559,187 +525,6 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
               )}
             </div>
 
-            {/* PIN Code */}
-            <div>
- <label className="text-xs text-gray-500 dark:text-theme-tertiary">PIN Code</label>
-              <div className="flex gap-2 mt-1 items-center">
-                <div className="relative flex-1">
-                  <Input
-                    className="pr-10"
-                    type={showPin ? "text" : "password"}
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    maxLength={4}
-                    value={form.pin_code}
-                    onChange={(e) => {
-                      const sanitized = String(e.target.value).replace(/\D/g, "").slice(0, 4);
-                      updateForm({ pin_code: sanitized });
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPin((v) => !v)}
- className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 dark:text-theme-tertiary hover:text-[#D37E91]"
-                  >
-                    {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="border-[#D37E91] text-[#D37E91] hover:bg-[#D37E91]/15"
-                  onClick={() => {
-                    const code = Math.floor(1000 + Math.random() * 9000).toString();
-                    updateForm({ pin_code: code });
-                  }}
-                >
-                  Generate
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Training Certificates Section */}
-          <div className="mt-6 pt-6 border-t border-theme">
-            <h3 className="text-sm font-semibold text-theme-primary mb-4">Training Certificates</h3>
-            
-            <div className="space-y-4">
-              {/* Food Safety */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
- <label className="text-xs text-gray-500 dark:text-theme-tertiary">Food Safety Level</label>
-                  <Select
-                    value={form.food_safety_level ? form.food_safety_level.toString() : undefined}
-                    placeholder="Select Level"
-                    options={[
-                      { label: "Level 2", value: "2" },
-                      { label: "Level 3", value: "3" },
-                      { label: "Level 4", value: "4" },
-                      { label: "Level 5", value: "5" }
-                    ]}
-                    onValueChange={(val: string) => updateForm({ 
-                      food_safety_level: val ? parseInt(val) : null
-                    })}
-                  />
-                </div>
-                <div>
- <label className="text-xs text-gray-500 dark:text-theme-tertiary">Food Safety Expiry Date</label>
-                  <Input
-                    type="date"
-                    value={form.food_safety_expiry_date || ""}
-                    onChange={(e) => updateForm({ food_safety_expiry_date: e.target.value || null })}
-                  />
-                </div>
-              </div>
-
-              {/* Health & Safety */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
- <label className="text-xs text-gray-500 dark:text-theme-tertiary">H&S Level</label>
-                  <Select
-                    value={form.h_and_s_level ? form.h_and_s_level.toString() : undefined}
-                    placeholder="Select Level"
-                    options={[
-                      { label: "Level 2", value: "2" },
-                      { label: "Level 3", value: "3" },
-                      { label: "Level 4", value: "4" }
-                    ]}
-                    onValueChange={(val: string) => updateForm({ 
-                      h_and_s_level: val ? parseInt(val) : null
-                    })}
-                  />
-                </div>
-                <div>
- <label className="text-xs text-gray-500 dark:text-theme-tertiary">H&S Expiry Date</label>
-                  <Input
-                    type="date"
-                    value={form.h_and_s_expiry_date || ""}
-                    onChange={(e) => updateForm({ h_and_s_expiry_date: e.target.value || null })}
-                  />
-                </div>
-              </div>
-
-              {/* Fire Marshal */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
- <label className="text-xs text-gray-500 dark:text-theme-tertiary">Fire Marshal Trained</label>
-                  <div className="flex items-center gap-2 mt-1">
-                    <input
-                      type="checkbox"
-                      checked={form.fire_marshal_trained || false}
-                      onChange={(e) => updateForm({ fire_marshal_trained: e.target.checked })}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 text-[#D37E91] focus:ring-[#D37E91]"
-                    />
- <span className="text-xs text-gray-500 dark:text-theme-tertiary">
-                      {form.fire_marshal_trained ? "Yes" : "No"}
-                    </span>
-                  </div>
-                </div>
-                <div>
- <label className="text-xs text-gray-500 dark:text-theme-tertiary">Fire Marshal Expiry Date</label>
-                  <Input
-                    type="date"
-                    value={form.fire_marshal_expiry_date || ""}
-                    onChange={(e) => updateForm({ fire_marshal_expiry_date: e.target.value || null })}
-                    disabled={!form.fire_marshal_trained}
-                  />
-                </div>
-              </div>
-
-              {/* First Aid */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
- <label className="text-xs text-gray-500 dark:text-theme-tertiary">First Aid Trained</label>
-                  <div className="flex items-center gap-2 mt-1">
-                    <input
-                      type="checkbox"
-                      checked={form.first_aid_trained || false}
-                      onChange={(e) => updateForm({ first_aid_trained: e.target.checked })}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 text-[#D37E91] focus:ring-[#D37E91]"
-                    />
- <span className="text-xs text-gray-500 dark:text-theme-tertiary">
-                      {form.first_aid_trained ? "Yes" : "No"}
-                    </span>
-                  </div>
-                </div>
-                <div>
- <label className="text-xs text-gray-500 dark:text-theme-tertiary">First Aid Expiry Date</label>
-                  <Input
-                    type="date"
-                    value={form.first_aid_expiry_date || ""}
-                    onChange={(e) => updateForm({ first_aid_expiry_date: e.target.value || null })}
-                    disabled={!form.first_aid_trained}
-                  />
-                </div>
-              </div>
-
-              {/* COSSH */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
- <label className="text-xs text-gray-500 dark:text-theme-tertiary">COSSH Trained</label>
-                  <div className="flex items-center gap-2 mt-1">
-                    <input
-                      type="checkbox"
-                      checked={form.cossh_trained || false}
-                      onChange={(e) => updateForm({ cossh_trained: e.target.checked })}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 text-[#D37E91] focus:ring-[#D37E91]"
-                    />
- <span className="text-xs text-gray-500 dark:text-theme-tertiary">
-                      {form.cossh_trained ? "Yes" : "No"}
-                    </span>
-                  </div>
-                </div>
-                <div>
- <label className="text-xs text-gray-500 dark:text-theme-tertiary">COSSH Expiry Date</label>
-                  <Input
-                    type="date"
-                    value={form.cossh_expiry_date || ""}
-                    onChange={(e) => updateForm({ cossh_expiry_date: e.target.value || null })}
-                    disabled={!form.cossh_trained}
-                  />
-                </div>
-              </div>
-            </div>
           </div>
 
           <div className="flex justify-end gap-2 mt-4">

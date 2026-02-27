@@ -7,6 +7,18 @@ import { useAppContext } from '@/context/AppContext';
 import { AlertTriangle, ChevronDown, Layers, Plus } from '@/components/ui/icons';
 import type { StockBatch, FifoWarning } from '@/lib/types/stockly';
 
+const STOCK_UNITS = [
+  { value: 'kg', label: 'kg' },
+  { value: 'g', label: 'g' },
+  { value: 'litres', label: 'litres' },
+  { value: 'ml', label: 'ml' },
+  { value: 'units', label: 'units' },
+  { value: 'each', label: 'each' },
+  { value: 'portions', label: 'portions' },
+  { value: 'dozen', label: 'dozen' },
+  { value: 'slices', label: 'slices' },
+];
+
 interface BatchSelectorProps {
   stockItemId: string;
   selectedBatchId: string | null;
@@ -372,13 +384,16 @@ function QuickAddForm({
         </div>
         <div>
           <label className="block text-[10px] text-theme-tertiary mb-0.5">Unit</label>
-          <input
-            type="text"
+          <select
             value={quickAddUnit}
             onChange={(e) => setQuickAddUnit(e.target.value)}
             className="w-full px-2 py-1.5 bg-theme-surface-elevated border border-theme rounded text-sm text-theme-primary"
-            placeholder="kg"
-          />
+          >
+            <option value="">Select...</option>
+            {STOCK_UNITS.map(u => (
+              <option key={u.value} value={u.value}>{u.label}</option>
+            ))}
+          </select>
         </div>
       </div>
 

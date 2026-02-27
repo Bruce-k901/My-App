@@ -6,8 +6,9 @@ import { ProductionBatchInput } from '@/lib/types/stockly';
 import { supabase } from '@/lib/supabase';
 import { useAppContext } from '@/context/AppContext';
 import BatchSelector from '@/components/stockly/BatchSelector';
-import { Trash2, Plus, AlertTriangle, RefreshCw, CheckCircle, ChefHat, Package } from '@/components/ui/icons';
+import { Trash2, Plus, AlertTriangle, RefreshCw, CheckCircle, ChefHat, Package, Info } from '@/components/ui/icons';
 import { allergenKeyToLabel } from '@/lib/stockly/allergens';
+import { convertQuantity } from '@/lib/utils/unitConversions';
 
 interface ProductionInputManagerProps {
   productionBatchId: string;
@@ -20,6 +21,7 @@ interface ProductionInputManagerProps {
   plannedQuantity?: number | null;
   recipeYieldQuantity?: number | null;
   recipeYieldUnit?: string | null;
+  batchUnit?: string | null;
 }
 
 interface ResolvedRecipeIngredient {
@@ -62,11 +64,44 @@ export default function ProductionInputManager({
   plannedQuantity,
   recipeYieldQuantity,
   recipeYieldUnit,
+  batchUnit,
 }: ProductionInputManagerProps) {
   // Scale factor: if batch planned_quantity differs from recipe yield, scale ingredients
   const scaleFactor = (plannedQuantity && recipeYieldQuantity && recipeYieldQuantity > 0)
     ? plannedQuantity / recipeYieldQuantity
     : 1;
+
+  // Convert a scaled ingredient quantity to the batch unit for display
+  const displayQty = (qty: number, ingredientUnit: string): { value: number; unit: string } => {
+    if (!batchUnit || !ingredientUnit) return { value: qty, unit: ingredientUnit };
+    const converted = convertQuantity(qty, ingredientUnit, batchUnit);
+    return { value: converted.quantity, unit: converted.unit };
+  };
+
+  // --- Multi-allocation helpers ---
+  const getIngredientAllocations = useCallback((ingredient: ResolvedRecipeIngredient): ProductionBatchInput[] => {
+    if (!ingredient.stock_item_id) return [];
+    return inputs.filter(input => input.stock_item_id === ingredient.stock_item_id);
+  }, [inputs]);
+
+  const getAllocatedTotal = useCallback((ingredient: ResolvedRecipeIngredient): number => {
+    return getIngredientAllocations(ingredient).reduce(
+      (sum, input) => sum + (input.actual_quantity || input.planned_quantity || 0), 0
+    );
+  }, [getIngredientAllocations]);
+
+  const getNeededQty = useCallback((ingredient: ResolvedRecipeIngredient): { value: number; unit: string } => {
+    const rawScaled = Math.round(ingredient.quantity * scaleFactor * 1000) / 1000;
+    return displayQty(rawScaled, ingredient.unit);
+   
+  }, [scaleFactor, batchUnit]);
+
+  const isFullyFulfilled = useCallback((ingredient: ResolvedRecipeIngredient): boolean => {
+    if (!ingredient.stock_item_id) return false;
+    const needed = getNeededQty(ingredient);
+    return getAllocatedTotal(ingredient) >= needed.value;
+  }, [getAllocatedTotal, getNeededQty]);
+
   // Manual add form state (for extras / non-recipe items)
   const [showManualAdd, setShowManualAdd] = useState(false);
   const [inputType, setInputType] = useState<'stock' | 'rework'>('stock');
@@ -85,18 +120,10 @@ export default function ProductionInputManager({
   const [addingIngredient, setAddingIngredient] = useState<string | null>(null);
   const [addingAll, setAddingAll] = useState(false);
   const [loadingIngredients, setLoadingIngredients] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Check if a recipe ingredient is already added as an input
-  const isAlreadyAdded = useCallback((ingredient: ResolvedRecipeIngredient): boolean => {
-    if (!ingredient.stock_item_id) return false;
-    return inputs.some(input => input.stock_item_id === ingredient.stock_item_id);
-  }, [inputs]);
-
-  // Get the existing input for an ingredient (if already added)
-  const getExistingInput = useCallback((ingredient: ResolvedRecipeIngredient): ProductionBatchInput | undefined => {
-    if (!ingredient.stock_item_id) return undefined;
-    return inputs.find(input => input.stock_item_id === ingredient.stock_item_id);
-  }, [inputs]);
+  // Stock on hand for items without batches
+  const [stockLevelsMap, setStockLevelsMap] = useState<Map<string, number>>(new Map());
 
   // Load stock items and resolve recipe ingredients
   useEffect(() => {
@@ -163,14 +190,19 @@ export default function ProductionInputManager({
 
             setResolvedIngredients(resolved);
 
-            // Initialise row states with scaled recipe quantities
+            // Initialise row states with remaining quantities (accounting for existing inputs)
             const initialRowStates = new Map<string, RowState>();
             resolved.forEach(ing => {
               if (!ing.is_sub_recipe && ing.stock_item_id) {
-                const scaledQty = Math.round(ing.quantity * scaleFactor * 1000) / 1000;
+                const rawScaled = Math.round(ing.quantity * scaleFactor * 1000) / 1000;
+                const display = displayQty(rawScaled, ing.unit);
+                const allocatedTotal = inputs
+                  .filter(input => input.stock_item_id === ing.stock_item_id)
+                  .reduce((sum, input) => sum + (input.actual_quantity || input.planned_quantity || 0), 0);
+                const remaining = Math.max(0, Math.round((display.value - allocatedTotal) * 1000) / 1000);
                 initialRowStates.set(ing.ingredient_id, {
                   selectedBatchId: null,
-                  quantity: String(scaledQty),
+                  quantity: remaining > 0 ? String(remaining) : '',
                 });
               }
             });
@@ -182,7 +214,78 @@ export default function ProductionInputManager({
       }
     }
     load();
+   
   }, [companyId, recipeId, scaleFactor]);
+
+  // Recalculate pending quantities when inputs change (after add/delete)
+  useEffect(() => {
+    if (!resolvedIngredients.length) return;
+
+    setRowStates(prev => {
+      const next = new Map(prev);
+      let changed = false;
+
+      resolvedIngredients.forEach(ing => {
+        if (ing.is_sub_recipe || !ing.stock_item_id) return;
+        const current = next.get(ing.ingredient_id);
+        // Only recalculate if no batch is selected (user isn't mid-edit)
+        if (!current?.selectedBatchId) {
+          const rawScaled = Math.round(ing.quantity * scaleFactor * 1000) / 1000;
+          const display = displayQty(rawScaled, ing.unit);
+          const allocatedTotal = inputs
+            .filter(input => input.stock_item_id === ing.stock_item_id)
+            .reduce((sum, input) => sum + (input.actual_quantity || input.planned_quantity || 0), 0);
+          const remaining = Math.max(0, Math.round((display.value - allocatedTotal) * 1000) / 1000);
+          const newQty = remaining > 0 ? String(remaining) : '';
+
+          if (!current || current.quantity !== newQty) {
+            next.set(ing.ingredient_id, { selectedBatchId: null, quantity: newQty });
+            changed = true;
+          }
+        }
+      });
+
+      return changed ? next : prev;
+    });
+   
+  }, [inputs]);
+
+  // Fetch stock levels for ingredients (for no-batch display)
+  useEffect(() => {
+    if (!resolvedIngredients.length || !companyId) return;
+
+    const stockItemIds = resolvedIngredients
+      .filter(ing => ing.stock_item_id && !ing.is_sub_recipe)
+      .map(ing => ing.stock_item_id!);
+
+    if (stockItemIds.length === 0) return;
+
+    async function fetchStockLevels() {
+      try {
+        let query = supabase
+          .from('stock_levels')
+          .select('stock_item_id, quantity')
+          .in('stock_item_id', stockItemIds);
+
+        if (siteId && siteId !== 'all') {
+          query = query.eq('site_id', siteId);
+        }
+
+        const { data, error } = await query;
+        if (error?.code === '42P01') return; // Table doesn't exist
+        if (data) {
+          const map = new Map<string, number>();
+          data.forEach((sl: any) => {
+            map.set(sl.stock_item_id, sl.quantity || 0);
+          });
+          setStockLevelsMap(map);
+        }
+      } catch {
+        // Silently ignore
+      }
+    }
+    fetchStockLevels();
+  }, [resolvedIngredients, companyId, siteId]);
 
   // Load rework batches when rework tab is selected
   useEffect(() => {
@@ -231,7 +334,12 @@ export default function ProductionInputManager({
     if (!row?.selectedBatchId || !row?.quantity || !ingredient.stock_item_id) return;
 
     setAddingIngredient(ingredient.ingredient_id);
+    setErrorMessage(null);
     try {
+      // Use the display unit (what the user sees in the Qty label), not the stock_unit
+      const rawScaled = Math.round(ingredient.quantity * scaleFactor * 1000) / 1000;
+      const display = displayQty(rawScaled, ingredient.unit);
+
       const res = await fetch(`/api/stockly/production-batches/${productionBatchId}/inputs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -239,10 +347,21 @@ export default function ProductionInputManager({
           stock_batch_id: row.selectedBatchId,
           stock_item_id: ingredient.stock_item_id,
           actual_quantity: parseFloat(row.quantity),
-          unit: ingredient.stock_unit || ingredient.unit || null,
+          unit: display.unit || ingredient.unit || null,
         }),
       });
-      if (res.ok) onUpdated();
+      if (res.ok) {
+        // Reset pending state — remaining recalculates via inputs effect
+        updateRowState(ingredient.ingredient_id, { selectedBatchId: null, quantity: '' });
+        onUpdated();
+      } else {
+        const errBody = await res.json().catch(() => null);
+        const msg = errBody?.error || `Failed to add input (${res.status})`;
+        setErrorMessage(msg);
+        console.error('Add input failed:', res.status, errBody);
+      }
+    } catch (err: any) {
+      setErrorMessage(err?.message || 'Network error adding input');
     } finally {
       setAddingIngredient(null);
     }
@@ -253,11 +372,14 @@ export default function ProductionInputManager({
     setAddingAll(true);
     try {
       for (const ingredient of resolvedIngredients) {
-        if (isAlreadyAdded(ingredient)) continue;
+        if (isFullyFulfilled(ingredient)) continue;
         if (!ingredient.stock_item_id || ingredient.is_sub_recipe) continue;
 
         const row = rowStates.get(ingredient.ingredient_id);
         if (!row?.selectedBatchId || !row?.quantity) continue;
+
+        const rawScaled = Math.round(ingredient.quantity * scaleFactor * 1000) / 1000;
+        const display = displayQty(rawScaled, ingredient.unit);
 
         const res = await fetch(`/api/stockly/production-batches/${productionBatchId}/inputs`, {
           method: 'POST',
@@ -266,7 +388,7 @@ export default function ProductionInputManager({
             stock_batch_id: row.selectedBatchId,
             stock_item_id: ingredient.stock_item_id,
             actual_quantity: parseFloat(row.quantity),
-            unit: ingredient.stock_unit || ingredient.unit || null,
+            unit: display.unit || ingredient.unit || null,
           }),
         });
         if (!res.ok) break; // Stop on first error
@@ -348,24 +470,31 @@ export default function ProductionInputManager({
     }
   };
 
-  // Count pending ingredients (not yet added, have stock item, not sub-recipe)
-  const pendingIngredients = resolvedIngredients.filter(
-    ing => !ing.is_sub_recipe && ing.stock_item_id && !isAlreadyAdded(ing)
+  // --- Counts ---
+  const trackableIngredients = resolvedIngredients.filter(
+    ing => !ing.is_sub_recipe && ing.stock_item_id
   );
-  const addedCount = resolvedIngredients.filter(
-    ing => !ing.is_sub_recipe && ing.stock_item_id && isAlreadyAdded(ing)
-  ).length;
-  const readyToAddCount = pendingIngredients.filter(ing => {
+  const fulfilledCount = trackableIngredients.filter(ing => isFullyFulfilled(ing)).length;
+  const unfufilledIngredients = trackableIngredients.filter(ing => !isFullyFulfilled(ing));
+  const readyToAddCount = unfufilledIngredients.filter(ing => {
     const row = rowStates.get(ing.ingredient_id);
     return row?.selectedBatchId && row?.quantity;
   }).length;
 
+  // Filter inputs: recipe ingredient allocations are shown inline, only show extras at the top
+  const recipeStockItemIds = new Set(
+    resolvedIngredients.filter(i => i.stock_item_id).map(i => i.stock_item_id!)
+  );
+  const nonRecipeInputs = recipeId && resolvedIngredients.length > 0
+    ? inputs.filter(input => !recipeStockItemIds.has(input.stock_item_id))
+    : inputs;
+
   return (
     <div className="space-y-4">
-      {/* Existing inputs list */}
-      {inputs.length > 0 && (
+      {/* Non-recipe inputs list (extras, rework) */}
+      {nonRecipeInputs.length > 0 && (
         <div className="space-y-2">
-          {inputs.map(input => (
+          {nonRecipeInputs.map(input => (
             <div
               key={input.id}
               className="flex items-center justify-between p-3 bg-theme-surface-elevated rounded-lg border border-theme"
@@ -421,15 +550,15 @@ export default function ProductionInputManager({
               <ChefHat className="w-4 h-4 text-stockly-dark dark:text-stockly" />
               <span className="text-sm font-medium text-theme-primary">Recipe Ingredients</span>
               <span className="text-xs text-theme-tertiary">
-                ({addedCount} of {addedCount + pendingIngredients.length} added)
+                ({fulfilledCount} of {trackableIngredients.length} fulfilled)
               </span>
               {scaleFactor !== 1 && (
                 <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                  {scaleFactor > 1 ? `${scaleFactor.toFixed(2)}x` : `${scaleFactor.toFixed(2)}x`} recipe
+                  {scaleFactor.toFixed(2)}x recipe
                 </span>
               )}
             </div>
-            {pendingIngredients.length > 0 && readyToAddCount > 0 && (
+            {unfufilledIngredients.length > 0 && readyToAddCount > 0 && (
               <button
                 onClick={handleAddAllRemaining}
                 disabled={addingAll || addingIngredient !== null}
@@ -440,12 +569,22 @@ export default function ProductionInputManager({
                 ) : (
                   <>
                     <Plus className="w-3.5 h-3.5" />
-                    Add Remaining ({readyToAddCount})
+                    Add Selected ({readyToAddCount})
                   </>
                 )}
               </button>
             )}
           </div>
+
+          {/* Error banner */}
+          {errorMessage && (
+            <div className="mx-4 mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-red-700 dark:text-red-400">{errorMessage}</p>
+                <button onClick={() => setErrorMessage(null)} className="text-red-400 hover:text-red-600 text-xs ml-2">dismiss</button>
+              </div>
+            </div>
+          )}
 
           {/* Loading skeleton */}
           {loadingIngredients && (
@@ -460,9 +599,15 @@ export default function ProductionInputManager({
           {!loadingIngredients && (
             <div className="divide-y divide-theme">
               {resolvedIngredients.map(ingredient => {
-                const added = isAlreadyAdded(ingredient);
-                const existingInput = getExistingInput(ingredient);
+                const allocations = getIngredientAllocations(ingredient);
+                const allocatedTotal = getAllocatedTotal(ingredient);
                 const row = rowStates.get(ingredient.ingredient_id);
+                const rawScaled = Math.round(ingredient.quantity * scaleFactor * 1000) / 1000;
+                const display = displayQty(rawScaled, ingredient.unit);
+                const needed = display.value;
+                const fulfilled = allocatedTotal >= needed;
+                const remaining = Math.max(0, Math.round((needed - allocatedTotal) * 1000) / 1000);
+                const stockOnHand = ingredient.stock_item_id ? stockLevelsMap.get(ingredient.stock_item_id) : undefined;
 
                 // Sub-recipe row
                 if (ingredient.is_sub_recipe) {
@@ -473,7 +618,7 @@ export default function ProductionInputManager({
                         <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
                           Sub-recipe
                         </span>
-                        <span className="text-xs text-theme-tertiary ml-auto">{ingredient.quantity} {ingredient.unit}</span>
+                        <span className="text-xs text-theme-tertiary ml-auto">{display.value} {display.unit}</span>
                       </div>
                       <p className="text-xs text-theme-tertiary mt-1">Track inputs separately when making this prep item</p>
                     </div>
@@ -487,7 +632,7 @@ export default function ProductionInputManager({
                       <div className="flex items-center gap-2">
                         <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />
                         <span className="text-sm text-theme-secondary">{ingredient.ingredient_name}</span>
-                        <span className="text-xs text-theme-tertiary ml-auto">{ingredient.quantity} {ingredient.unit}</span>
+                        <span className="text-xs text-theme-tertiary ml-auto">{display.value} {display.unit}</span>
                       </div>
                       <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
                         Not set up as a stock item — add it in Stock Items to track batches
@@ -496,30 +641,75 @@ export default function ProductionInputManager({
                   );
                 }
 
-                // Already added
-                if (added && existingInput) {
+                // --- Fully fulfilled ---
+                if (fulfilled && allocations.length > 0) {
                   return (
                     <div key={ingredient.ingredient_id} className="px-4 py-3 bg-emerald-50/50 dark:bg-emerald-900/5">
+                      {/* Header */}
                       <div className="flex items-center gap-2">
                         <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />
                         <span className="text-sm font-medium text-theme-primary">{ingredient.ingredient_name}</span>
-                        <span className="text-xs font-mono text-theme-tertiary">
-                          {existingInput.stock_batch?.batch_code || ''}
-                        </span>
+                        {ingredient.allergens && ingredient.allergens.length > 0 && (
+                          <div className="flex gap-1">
+                            {ingredient.allergens.map((a: string) => (
+                              <span key={a} className="px-1 py-0.5 rounded text-[10px] bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                                {allergenKeyToLabel(a)}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                         <span className="text-xs text-theme-tertiary ml-auto">
-                          {existingInput.actual_quantity || existingInput.planned_quantity} {existingInput.unit || ingredient.unit}
+                          Total: {allocatedTotal} {display.unit}
                         </span>
+                      </div>
+                      {/* Allocation sub-rows */}
+                      <div className="mt-2 ml-6 space-y-1">
+                        {allocations.map(alloc => (
+                          <div key={alloc.id} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-xs">
+                              <span className="font-mono text-theme-tertiary">{alloc.stock_batch?.batch_code || '—'}</span>
+                              <span className="text-theme-secondary">
+                                {alloc.actual_quantity || alloc.planned_quantity} {alloc.unit || display.unit}
+                              </span>
+                              {alloc.stock_batch?.allergens && alloc.stock_batch.allergens.length > 0 && (
+                                <div className="flex gap-0.5">
+                                  {alloc.stock_batch.allergens.map((a: string) => (
+                                    <span key={a} className="px-1 py-0.5 rounded text-[10px] bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                                      {allergenKeyToLabel(a)}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                            {isEditable && (
+                              <button
+                                onClick={() => handleRemoveInput(alloc.id)}
+                                disabled={deleting === alloc.id}
+                                className="p-1 text-red-400 hover:text-red-500 transition-colors"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                        {allocations.length > 1 && (
+                          <p className="text-[10px] text-theme-tertiary">{allocations.length} batches</p>
+                        )}
                       </div>
                     </div>
                   );
                 }
 
-                // Pending — interactive row
+                // --- Partially fulfilled or not started ---
                 return (
                   <div key={ingredient.ingredient_id} className="px-4 py-3 bg-theme-surface space-y-2">
                     {/* Ingredient header */}
                     <div className="flex items-center gap-2">
-                      <Package className="w-4 h-4 text-stockly-dark dark:text-stockly flex-shrink-0" />
+                      {allocations.length > 0 ? (
+                        <div className="w-4 h-4 rounded-full border-2 border-amber-400 flex-shrink-0" />
+                      ) : (
+                        <Package className="w-4 h-4 text-stockly-dark dark:text-stockly flex-shrink-0" />
+                      )}
                       <span className="text-sm font-medium text-theme-primary">{ingredient.ingredient_name}</span>
                       {ingredient.allergens && ingredient.allergens.length > 0 && (
                         <div className="flex gap-1">
@@ -531,24 +721,64 @@ export default function ProductionInputManager({
                         </div>
                       )}
                       <span className="text-xs text-theme-tertiary ml-auto">
-                        Need: {Math.round(ingredient.quantity * scaleFactor * 1000) / 1000} {ingredient.unit}
+                        Need: {needed} {display.unit}
                         {scaleFactor !== 1 && (
-                          <span className="text-theme-tertiary/60 ml-1">(recipe: {ingredient.quantity})</span>
+                          <span className="text-theme-tertiary/60 ml-1">(recipe: {ingredient.quantity} {ingredient.unit})</span>
                         )}
                       </span>
                     </div>
+
+                    {/* Existing allocations (partially fulfilled) */}
+                    {allocations.length > 0 && (
+                      <div className="ml-6 space-y-1">
+                        {allocations.map(alloc => (
+                          <div key={alloc.id} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-xs">
+                              <CheckCircle className="w-3 h-3 text-emerald-500" />
+                              <span className="font-mono text-theme-tertiary">{alloc.stock_batch?.batch_code || '—'}</span>
+                              <span className="text-theme-secondary">
+                                {alloc.actual_quantity || alloc.planned_quantity} {alloc.unit || display.unit}
+                              </span>
+                            </div>
+                            {isEditable && (
+                              <button
+                                onClick={() => handleRemoveInput(alloc.id)}
+                                disabled={deleting === alloc.id}
+                                className="p-1 text-red-400 hover:text-red-500 transition-colors"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                        <p className="text-xs text-amber-600 dark:text-amber-400">
+                          Added: {allocatedTotal} / {needed} {display.unit} · {remaining} {display.unit} remaining
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Stock on hand hint (when no batches available) */}
+                    {stockOnHand !== undefined && stockOnHand > 0 && allocations.length === 0 && (
+                      <div className="flex items-center gap-1.5 ml-6 text-xs text-theme-tertiary">
+                        <Info className="w-3.5 h-3.5" />
+                        Stock on hand: {stockOnHand} {ingredient.stock_unit || display.unit}
+                      </div>
+                    )}
 
                     {/* Batch selector + quantity + add button */}
                     <div className="flex items-end gap-2">
                       <div className="flex-1 min-w-0">
                         <BatchSelector
+                          key={`${ingredient.stock_item_id}-${allocations.length}`}
                           stockItemId={ingredient.stock_item_id}
                           selectedBatchId={row?.selectedBatchId || null}
                           onSelect={(batchId) => updateRowState(ingredient.ingredient_id, { selectedBatchId: batchId })}
                         />
                       </div>
-                      <div className="w-24 flex-shrink-0">
-                        <label className="block text-xs font-medium text-theme-secondary mb-1">Qty</label>
+                      <div className="w-28 flex-shrink-0">
+                        <label className="block text-xs font-medium text-theme-secondary mb-1">
+                          Qty <span className="font-normal text-theme-tertiary">({display.unit})</span>
+                        </label>
                         <input
                           type="number"
                           step="0.001"
@@ -563,7 +793,7 @@ export default function ProductionInputManager({
                         disabled={addingIngredient === ingredient.ingredient_id || addingAll || !row?.selectedBatchId || !row?.quantity}
                         className="flex-shrink-0 px-3 py-2 bg-stockly-dark dark:bg-stockly text-white dark:text-gray-900 rounded-lg text-xs font-medium disabled:opacity-50 transition-colors"
                       >
-                        {addingIngredient === ingredient.ingredient_id ? '...' : 'Add'}
+                        {addingIngredient === ingredient.ingredient_id ? '...' : allocations.length > 0 ? '+ Add' : 'Add'}
                       </button>
                     </div>
                   </div>

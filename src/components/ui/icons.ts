@@ -337,6 +337,8 @@ export {
   MaskHappy as Smile2,
   SmileyMeh as Meh,
   SmileySad as Frown,
+  SmileyAngry,
+  SmileyWink,
 
   // --- Health ---
   Heartbeat as HeartPulse,

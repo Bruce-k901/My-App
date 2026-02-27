@@ -57,7 +57,7 @@ interface Site {
 }
 
 export default function OrgChartPage() {
-  const { profile } = useAppContext();
+  const { profile, companyId } = useAppContext();
   const [loading, setLoading] = useState(true);
   const [regions, setRegions] = useState<Region[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
@@ -76,10 +76,10 @@ export default function OrgChartPage() {
   );
 
   useEffect(() => {
-    if (profile?.company_id) {
+    if (companyId) {
       loadOrgStructure();
     }
-  }, [profile]);
+  }, [companyId]);
 
   async function loadOrgStructure() {
     try {
@@ -89,7 +89,7 @@ export default function OrgChartPage() {
       const { data: allEmployees, error: employeesError } = await supabase
         .from('profiles')
         .select('id, full_name, email, app_role, site_id')
-        .eq('company_id', profile!.company_id)
+        .eq('company_id', companyId!)
         .order('full_name');
 
       if (employeesError) throw employeesError;
@@ -98,7 +98,7 @@ export default function OrgChartPage() {
       const { data: sitesDataForNames, error: sitesNamesError } = await supabase
         .from('sites')
         .select('id, name')
-        .eq('company_id', profile!.company_id);
+        .eq('company_id', companyId!);
 
       if (sitesNamesError) throw sitesNamesError;
 
@@ -144,7 +144,7 @@ export default function OrgChartPage() {
       const { data: regionsData, error: regionsError } = await supabase
         .from('regions')
         .select('id, name, regional_manager_id')
-        .eq('company_id', profile!.company_id)
+        .eq('company_id', companyId!)
         .order('name');
 
       if (regionsError) throw regionsError;
@@ -153,7 +153,7 @@ export default function OrgChartPage() {
       const { data: areasData, error: areasError } = await supabase
         .from('areas')
         .select('id, name, region_id, area_manager_id')
-        .eq('company_id', profile!.company_id)
+        .eq('company_id', companyId!)
         .order('name');
 
       if (areasError) throw areasError;
@@ -162,7 +162,7 @@ export default function OrgChartPage() {
       const { data: sitesData, error: sitesError } = await supabase
         .from('sites')
         .select('id, name, area_id, company_id')
-        .eq('company_id', profile!.company_id)
+        .eq('company_id', companyId!)
         .order('name');
 
       if (sitesError) throw sitesError;

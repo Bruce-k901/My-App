@@ -9,8 +9,9 @@ import {
   GitBranch, 
   Shield,
   Clock,
+  Layers,
   Bell,
-  ChevronRight 
+  ChevronRight
 } from '@/components/ui/icons';
 
 export default function PeopleSettingsPage() {
@@ -64,6 +65,13 @@ export default function PeopleSettingsPage() {
       href: '/dashboard/people/settings/shift-rules',
       icon: Clock,
       color: 'cyan',
+    },
+    {
+      title: 'Shift Patterns',
+      description: 'Define reusable shift templates like Morning, Evening, and Split shifts',
+      href: '/dashboard/people/settings/shift-patterns',
+      icon: Layers,
+      color: 'purple',
     },
     {
       title: 'Notifications',

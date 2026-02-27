@@ -15,7 +15,7 @@ export default function OrganizationUsersPage() {
  if (authLoading) return <div className="text-gray-500 dark:text-theme-tertiary">Loading users…</div>;
   if (!companyId) {
     return (
-      <OrgContentWrapper title="Users">
+      <OrgContentWrapper title="Users & Access">
         <div className="rounded-xl bg-gray-50 dark:bg-white/[0.06] border border-theme px-4 py-3 text-sm text-gray-600 dark:text-theme-secondary">
           No company context detected. Go to Business Details to complete setup.
         </div>
@@ -24,7 +24,7 @@ export default function OrganizationUsersPage() {
   }
 
   return (
-    <OrgContentWrapper title="Users">
+    <OrgContentWrapper title="Users & Access">
       <BackToSetup />
       <UsersTab />
     </OrgContentWrapper>

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -8,36 +8,38 @@ import { supabase } from '@/lib/supabase';
 import {
   Search,
   Plus,
-  Filter,
-  MoreHorizontal,
   Mail,
   Phone,
   MapPin,
   Building2,
   ChevronDown,
-  UserCheck,
   UserX,
-  Clock,
   Download,
   Pencil,
-  X,
   User,
   Briefcase,
   Shield,
-  Save,
   CreditCard,
   Calendar,
   Loader2,
-  Trash2,
   ChevronUp,
   GraduationCap,
-  Edit,
+  AlertTriangle,
+  Check,
+  Layers,
 } from '@/components/ui/icons';
-import type { EmergencyContact } from '@/types/teamly';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/Button';
+import type { EmergencyContact } from '@/types/employee';
+import type { EmployeeProfile, SiteOption, ManagerOption } from '@/types/employee';
+import { InfoRow } from '@/components/people/InfoRow';
+import { EditEmployeeModal } from '@/components/people/EditEmployeeModal';
+import { buildProfileUpdateData, mapProfileToFormData, generateNextEmployeeNumber } from '@/lib/people/employee-save';
 import EmployeeSiteAssignmentsModal from '@/components/people/EmployeeSiteAssignmentsModal';
 import AddExecutiveModal from '@/components/users/AddExecutiveModal';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { EmployeeTrainingEditor } from '@/components/people/EmployeeTrainingEditor';
+import * as XLSX from 'xlsx';
 
 interface Employee {
   id: string;
@@ -63,7 +65,7 @@ interface Employee {
 
 export default function EmployeesPage() {
   const router = useRouter();
-  const { profile, company } = useAppContext();
+  const { profile, company, companyId } = useAppContext();
   const { isMobile } = useIsMobile();
 
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -85,6 +87,13 @@ export default function EmployeesPage() {
   const [siteAssignmentsEmployee, setSiteAssignmentsEmployee] = useState<Employee | null>(null);
   const [showExecutiveModal, setShowExecutiveModal] = useState(false);
 
+  // Merge state
+  const [mergeMode, setMergeMode] = useState(false);
+  const [selectedForMerge, setSelectedForMerge] = useState<Set<string>>(new Set());
+  const [isMergeOpen, setIsMergeOpen] = useState(false);
+  const [canonicalId, setCanonicalId] = useState<string | null>(null);
+  const [merging, setMerging] = useState(false);
+
   // Check if user is staff (not admin/owner/manager)
   const userRole = profile?.app_role?.toLowerCase() || 'staff';
   const isStaff = !['admin', 'owner', 'manager', 'general_manager', 'area_manager', 'regional_manager'].includes(userRole);
@@ -96,8 +105,8 @@ export default function EmployeesPage() {
       return;
     }
 
-    if (profile?.company_id) {
-      console.log('Fetching employees for company:', profile.company_id, 'status filter:', statusFilter);
+    if (companyId) {
+      console.log('Fetching employees for company:', companyId, 'status filter:', statusFilter);
       fetchEmployees();
     } else {
       console.warn('No company_id in profile:', profile);
@@ -108,11 +117,11 @@ export default function EmployeesPage() {
           if (error) {
             console.error('Diagnostic error:', error);
           } else {
-            console.log('🔍 Profile Diagnostic:', data);
+            console.log('ðŸ” Profile Diagnostic:', data);
             if (data && data.length > 0) {
               const diagnostic = data[0];
               if (!diagnostic.company_id) {
-                console.error('❌ Profile has no company_id!', {
+                console.error('âŒ Profile has no company_id!', {
                   profile_id: diagnostic.profile_id,
                   full_name: diagnostic.full_name,
                   email: diagnostic.email,
@@ -125,10 +134,10 @@ export default function EmployeesPage() {
         });
       }
     }
-  }, [profile?.company_id, statusFilter]);
+  }, [companyId, statusFilter]);
 
   const fetchEmployees = async () => {
-    if (!profile?.company_id) {
+    if (!companyId) {
       console.warn('No company_id in profile');
       setLoading(false);
       return;
@@ -138,7 +147,7 @@ export default function EmployeesPage() {
 
     try {
       console.log('Starting employee fetch:', {
-        companyId: profile.company_id,
+        companyId: companyId,
         userId: profile.id,
         statusFilter,
         profileData: {
@@ -149,27 +158,27 @@ export default function EmployeesPage() {
       });
 
       // Check if company_id exists before calling RPC
-      if (!profile.company_id) {
-        console.warn('⚠️ Profile has no company_id - cannot fetch employees');
-        console.log('Profile data:', { id: profile.id, email: profile.email, company_id: profile.company_id });
+      if (!companyId) {
+        console.warn('âš ï¸ Profile has no company_id - cannot fetch employees');
+        console.log('Profile data:', { id: profile.id, email: profile.email, company_id: companyId });
         setEmployees([]);
         setLoading(false);
         return;
       }
 
       // Use the SECURITY DEFINER function to bypass RLS recursion
-      console.log('🔍 Calling get_company_profiles with company_id:', profile.company_id);
+      console.log('ðŸ” Calling get_company_profiles with company_id:', companyId);
       
       let rpcResult;
       try {
         rpcResult = await supabase.rpc('get_company_profiles', {
-          p_company_id: profile.company_id
+          p_company_id: companyId
         });
         
         // Log the raw response
-        console.log('🔍 Raw RPC response:', JSON.stringify(rpcResult, null, 2));
+        console.log('ðŸ” Raw RPC response:', JSON.stringify(rpcResult, null, 2));
       } catch (rpcError: any) {
-        console.error('❌ RPC call threw exception:', {
+        console.error('âŒ RPC call threw exception:', {
           message: rpcError?.message,
           stack: rpcError?.stack,
           name: rpcError?.name,
@@ -183,7 +192,7 @@ export default function EmployeesPage() {
       
       const { data, error } = rpcResult || { data: null, error: null };
       
-      console.log('📊 RPC result:', {
+      console.log('ðŸ“Š RPC result:', {
         hasResult: !!rpcResult,
         hasData: !!data,
         data: data,
@@ -198,11 +207,11 @@ export default function EmployeesPage() {
       
       // Log sample data if available
       if (Array.isArray(data) && data.length > 0) {
-        console.log('✅ Sample employee from RPC:', data[0]);
-        console.log('🔍 Sample employee home_site:', data[0].home_site);
-        console.log('🔍 Sample employee keys:', Object.keys(data[0]));
+        console.log('âœ… Sample employee from RPC:', data[0]);
+        console.log('ðŸ” Sample employee home_site:', data[0].home_site);
+        console.log('ðŸ” Sample employee keys:', Object.keys(data[0]));
       } else if (data && typeof data === 'object' && !Array.isArray(data)) {
-        console.log('⚠️ Data is object, not array:', data);
+        console.log('âš ï¸ Data is object, not array:', data);
       }
 
       if (error) {
@@ -226,10 +235,10 @@ export default function EmployeesPage() {
         }
         
         // Use console.log and window.console to bypass suppression
-        console.log('❌❌❌ ERROR FETCHING EMPLOYEES (NOT SUPPRESSED):', errorDetails);
+        console.log('âŒâŒâŒ ERROR FETCHING EMPLOYEES (NOT SUPPRESSED):', errorDetails);
         
         if (typeof window !== 'undefined') {
-          window.console.error('❌❌❌ Employee fetch error (window.console):', errorDetails);
+          window.console.error('âŒâŒâŒ Employee fetch error (window.console):', errorDetails);
           window.console.error('Raw error object:', error);
         }
         
@@ -269,21 +278,21 @@ export default function EmployeesPage() {
       }
 
       if (!data) {
-        console.warn('⚠️ RPC returned null data');
+        console.warn('âš ï¸ RPC returned null data');
         setEmployees([]);
         setLoading(false);
         return;
       }
       
       if (!Array.isArray(data)) {
-        console.error('❌ RPC returned non-array data:', typeof data, data);
+        console.error('âŒ RPC returned non-array data:', typeof data, data);
         setEmployees([]);
         setLoading(false);
         return;
       }
       
       if (data.length === 0) {
-        console.log('ℹ️ No employees found in database for company:', profile.company_id);
+        console.log('â„¹ï¸ No employees found in database for company:', companyId);
         console.log('This could mean:');
         console.log('  1. No other employees exist in your company');
         console.log('  2. All employees have different company_id');
@@ -308,19 +317,19 @@ export default function EmployeesPage() {
         .filter((id, index, self) => self.indexOf(id) === index) // Remove duplicates
         .filter(Boolean); // Remove any null/undefined values
       
-      console.log('🏢 Found site IDs from employees:', siteIds.length, siteIds);
+      console.log('ðŸ¢ Found site IDs from employees:', siteIds.length, siteIds);
       
       let sitesMap = new Map<string, string>();
       
       if (siteIds.length > 0) {
-        console.log('📡 Fetching sites from Supabase...');
+        console.log('ðŸ“¡ Fetching sites from Supabase...');
         const { data: sitesData, error: sitesError } = await supabase
           .from('sites')
           .select('id, name')
           .in('id', siteIds);
         
         if (sitesError) {
-          console.error('❌ Error fetching sites:', sitesError);
+          console.error('âŒ Error fetching sites:', sitesError);
           console.error('Error details:', {
             message: sitesError.message,
             code: sitesError.code,
@@ -328,43 +337,43 @@ export default function EmployeesPage() {
             hint: sitesError.hint
           });
         } else {
-          console.log('✅ Fetched sites:', sitesData?.length || 0, sitesData);
+          console.log('âœ… Fetched sites:', sitesData?.length || 0, sitesData);
           if (sitesData && sitesData.length > 0) {
             sitesMap = new Map(sitesData.map((s: any) => [String(s.id), s.name]));
-            console.log('🗺️ Sites map created with', sitesMap.size, 'entries:', Array.from(sitesMap.entries()));
+            console.log('ðŸ—ºï¸ Sites map created with', sitesMap.size, 'entries:', Array.from(sitesMap.entries()));
           } else {
-            console.warn('⚠️ Sites query returned empty array');
-            console.log('🔍 Site IDs we searched for:', siteIds);
+            console.warn('âš ï¸ Sites query returned empty array');
+            console.log('ðŸ” Site IDs we searched for:', siteIds);
             // Try fetching all sites to see if RLS is blocking
-            console.log('🔍 Testing RLS - fetching all sites for company:', profile.company_id);
+            console.log('ðŸ” Testing RLS - fetching all sites for company:', companyId);
             const { data: allSites, error: allSitesError } = await supabase
               .from('sites')
               .select('id, name, company_id')
-              .eq('company_id', profile.company_id);
-            console.log('🔍 All sites for company (RLS test):', allSites?.length || 0, allSitesError);
+              .eq('company_id', companyId);
+            console.log('ðŸ” All sites for company (RLS test):', allSites?.length || 0, allSitesError);
             if (allSitesError) {
-              console.error('❌ RLS test error:', allSitesError);
+              console.error('âŒ RLS test error:', allSitesError);
             } else if (allSites && allSites.length > 0) {
-              console.log('✅ Found sites via company_id filter:', allSites);
+              console.log('âœ… Found sites via company_id filter:', allSites);
               // If we found sites via company_id but not via .in('id', siteIds), there might be a UUID mismatch
               // Try to match the siteIds with the found sites
               const matchedSites = allSites.filter((s: any) => siteIds.includes(String(s.id)));
-              console.log('🔍 Matched sites:', matchedSites.length, matchedSites);
+              console.log('ðŸ” Matched sites:', matchedSites.length, matchedSites);
               if (matchedSites.length > 0) {
                 // Use the matched sites to build the map
                 sitesMap = new Map(matchedSites.map((s: any) => [String(s.id), s.name]));
-                console.log('✅ Rebuilt sites map from company filter:', sitesMap.size);
+                console.log('âœ… Rebuilt sites map from company filter:', sitesMap.size);
               }
             }
           }
         }
       } else {
-        console.log('⚠️ No site IDs found in employee data');
+        console.log('âš ï¸ No site IDs found in employee data');
         // Debug: Check if home_site exists in the data
         const sampleEmployee = filteredData[0];
         if (sampleEmployee) {
-          console.log('📋 Sample employee keys:', Object.keys(sampleEmployee));
-          console.log('📋 Sample employee home_site:', sampleEmployee.home_site, typeof sampleEmployee.home_site);
+          console.log('ðŸ“‹ Sample employee keys:', Object.keys(sampleEmployee));
+          console.log('ðŸ“‹ Sample employee home_site:', sampleEmployee.home_site, typeof sampleEmployee.home_site);
         }
       }
 
@@ -374,7 +383,7 @@ export default function EmployeesPage() {
         
         // Debug for employees with home_site but no site_name
         if (homeSiteId && !siteName) {
-          console.warn('⚠️ Employee has home_site but site_name not found:', {
+          console.warn('âš ï¸ Employee has home_site but site_name not found:', {
             employee: emp.full_name || emp.id,
             home_site: homeSiteId,
             home_site_type: typeof homeSiteId,
@@ -386,7 +395,7 @@ export default function EmployeesPage() {
         
         // Debug: Log first few employees to see their data
         if (index < 3) {
-          console.log(`🔍 Employee ${index} data:`, {
+          console.log(`ðŸ” Employee ${index} data:`, {
             name: emp.full_name,
             home_site: homeSiteId,
             site_name: siteName,
@@ -414,7 +423,7 @@ export default function EmployeesPage() {
       
       console.log('Formatted employees:', formatted.length);
       if (formatted.length > 0) {
-        console.log('📋 Sample formatted employee:', {
+        console.log('ðŸ“‹ Sample formatted employee:', {
           name: formatted[0].full_name,
           home_site: formatted[0].home_site,
           site_name: formatted[0].site_name,
@@ -442,16 +451,16 @@ export default function EmployeesPage() {
   };
 
   const fetchSites = async () => {
-    if (!profile?.company_id) {
+    if (!companyId) {
       console.warn('Cannot fetch sites: no company_id');
       return;
     }
     
-    console.log('Fetching sites for company:', profile.company_id);
+    console.log('Fetching sites for company:', companyId);
     const { data, error } = await supabase
       .from('sites')
       .select('id, name')
-      .eq('company_id', profile.company_id)
+      .eq('company_id', companyId)
       .order('name');
     
     if (error) {
@@ -465,16 +474,16 @@ export default function EmployeesPage() {
   };
 
   const fetchManagers = async () => {
-    if (!profile?.company_id) {
+    if (!companyId) {
       console.warn('Cannot fetch managers: no company_id');
       return;
     }
     
-    console.log('Fetching managers for company:', profile.company_id);
+    console.log('Fetching managers for company:', companyId);
     const { data, error } = await supabase
       .from('profiles')
       .select('id, full_name')
-      .eq('company_id', profile.company_id)
+      .eq('company_id', companyId)
       .in('app_role', ['Manager', 'Admin', 'Owner'])
       .order('full_name');
     
@@ -489,17 +498,17 @@ export default function EmployeesPage() {
   };
 
   useEffect(() => {
-    if (profile?.company_id) {
+    if (companyId) {
       fetchSites();
       fetchManagers();
     }
-  }, [profile?.company_id]);
+  }, [companyId]);
 
   const handleEdit = async (employee: Employee) => {
     console.log('handleEdit called for:', employee.full_name, employee.id);
     
     // Always load sites and managers before opening modal (like the detail page does)
-    if (profile?.company_id) {
+    if (companyId) {
       console.log('Pre-loading sites and managers...', { sitesCount: sites.length, managersCount: managers.length });
       // Always fetch to ensure fresh data
       await Promise.all([fetchSites(), fetchManagers()]);
@@ -512,7 +521,7 @@ export default function EmployeesPage() {
     setEditFormData(employee);
     
     // Try to fetch full profile data using RPC function to bypass RLS
-    if (!profile?.company_id) {
+    if (!companyId) {
       console.warn('No company_id available, using existing employee data');
       // Set empty emergency contacts if no data
       setEmergencyContacts([]);
@@ -531,49 +540,7 @@ export default function EmployeesPage() {
         console.log('Full profile data loaded, updating form data');
         
         // Map profile data to form format
-        const mappedData: any = {
-          ...profileData,
-          phone_number: profileData.phone_number || profileData.phone || '',
-          contracted_hours: profileData.contracted_hours_per_week?.toString() || '',
-          hourly_rate: profileData.hourly_rate ? (profileData.hourly_rate / 100).toString() : '', // Convert from pence
-          salary: profileData.salary?.toString() || '',
-          notice_period_weeks: profileData.notice_period_weeks?.toString() || '1',
-          annual_leave_allowance: profileData.annual_leave_allowance?.toString() || '28',
-          // Ensure all fields are properly mapped (including empty values)
-          employee_number: profileData.employee_number || '',
-          probation_end_date: profileData.probation_end_date || '',
-          national_insurance_number: profileData.national_insurance_number || '',
-          right_to_work_status: profileData.right_to_work_status || 'pending',
-          right_to_work_expiry: profileData.right_to_work_expiry || '',
-          right_to_work_document_type: profileData.right_to_work_document_type || '',
-          dbs_status: profileData.dbs_status || 'not_required',
-          dbs_certificate_number: profileData.dbs_certificate_number || '',
-          dbs_check_date: profileData.dbs_check_date || '',
-          bank_name: profileData.bank_name || '',
-          bank_account_name: profileData.bank_account_name || '',
-          bank_account_number: profileData.bank_account_number || '',
-          bank_sort_code: profileData.bank_sort_code || '',
-          // Pay & Tax fields
-          tax_code: profileData.tax_code || '',
-          student_loan: profileData.student_loan || false,
-          student_loan_plan: profileData.student_loan_plan || '',
-          pension_enrolled: profileData.pension_enrolled || false,
-          pension_contribution_percent: profileData.pension_contribution_percent?.toString() || '',
-          p45_received: profileData.p45_received || false,
-          p45_date: profileData.p45_date || '',
-          p45_reference: profileData.p45_reference || '',
-          // Training fields
-          food_safety_level: profileData.food_safety_level?.toString() || '',
-          food_safety_expiry_date: profileData.food_safety_expiry_date || '',
-          h_and_s_level: profileData.h_and_s_level?.toString() || '',
-          h_and_s_expiry_date: profileData.h_and_s_expiry_date || '',
-          fire_marshal_trained: profileData.fire_marshal_trained || false,
-          fire_marshal_expiry_date: profileData.fire_marshal_expiry_date || '',
-          first_aid_trained: profileData.first_aid_trained || false,
-          first_aid_expiry_date: profileData.first_aid_expiry_date || '',
-          cossh_trained: profileData.cossh_trained || false,
-          cossh_expiry_date: profileData.cossh_expiry_date || '',
-        };
+        const mappedData = mapProfileToFormData(profileData);
         
         setEditingEmployee({ ...employee, ...mappedData });
         setEditFormData(mappedData);
@@ -587,7 +554,7 @@ export default function EmployeesPage() {
       } else {
         // Fallback to RPC data
         const { data: rpcData, error: rpcError } = await supabase.rpc('get_company_profiles', {
-          p_company_id: profile.company_id
+          p_company_id: companyId
         });
 
         if (!rpcError && rpcData && Array.isArray(rpcData)) {
@@ -606,57 +573,6 @@ export default function EmployeesPage() {
     } catch (err) {
       console.error('Exception fetching employee:', err);
       setEmergencyContacts([]);
-    }
-  };
-
-  const generateNextEmployeeNumber = async (): Promise<string | null> => {
-    if (!profile?.company_id || !company?.name) return null;
-    
-    try {
-      // Get first 3 letters of company name (uppercase, remove spaces/special chars)
-      const companyPrefix = company.name
-        .replace(/[^a-zA-Z]/g, '')
-        .substring(0, 3)
-        .toUpperCase();
-      
-      if (!companyPrefix || companyPrefix.length < 3) {
-        console.warn('Company name too short for prefix');
-        return null;
-      }
-      
-      const prefix = `${companyPrefix}EMP`;
-      
-      // Get all existing employee numbers with this prefix
-      const { data: existingEmployees, error } = await supabase
-        .from('profiles')
-        .select('employee_number')
-        .eq('company_id', profile.company_id)
-        .not('employee_number', 'is', null)
-        .like('employee_number', `${prefix}%`);
-      
-      if (error) {
-        console.error('Error fetching existing employee numbers:', error);
-        return null;
-      }
-      
-      // Extract numbers and find the highest
-      let maxNumber = 0;
-      if (existingEmployees && existingEmployees.length > 0) {
-        existingEmployees.forEach((emp: any) => {
-          const match = emp.employee_number?.match(/\d+$/);
-          if (match) {
-            const num = parseInt(match[0], 10);
-            if (num > maxNumber) maxNumber = num;
-          }
-        });
-      }
-      
-      // Generate next number (padded to 3 digits)
-      const nextNumber = maxNumber + 1;
-      return `${prefix}${nextNumber.toString().padStart(3, '0')}`;
-    } catch (err) {
-      console.error('Error generating employee number:', err);
-      return null;
     }
   };
 
@@ -679,112 +595,15 @@ export default function EmployeesPage() {
       // Auto-generate employee number if empty
       let employeeNumber = editFormData.employee_number;
       if (!employeeNumber || employeeNumber.trim() === '') {
-        const generated = await generateNextEmployeeNumber();
+        const generated = await generateNextEmployeeNumber(supabase, companyId!, company?.name || '');
         if (generated) {
           employeeNumber = generated;
           setEditFormData({ ...editFormData, employee_number: generated });
         }
       }
       
-      // Helper function to convert empty strings to null
-      const toNullIfEmpty = (value: any) => {
-        if (value === '' || value === undefined) return null;
-        return value;
-      };
-
-      // Prepare update data with proper conversions
-      const updateData: any = {
-        full_name: editFormData.full_name,
-        email: editFormData.email,
-        phone_number: toNullIfEmpty(editFormData.phone_number),
-        date_of_birth: toNullIfEmpty(editFormData.date_of_birth),
-        gender: toNullIfEmpty(editFormData.gender),
-        nationality: toNullIfEmpty(editFormData.nationality),
-        address_line_1: toNullIfEmpty(editFormData.address_line_1),
-        address_line_2: toNullIfEmpty(editFormData.address_line_2),
-        city: toNullIfEmpty(editFormData.city),
-        county: toNullIfEmpty(editFormData.county),
-        postcode: toNullIfEmpty(editFormData.postcode),
-        country: editFormData.country || 'United Kingdom',
-        emergency_contacts: validEmergencyContacts.length > 0 ? validEmergencyContacts : null,
-        
-        // Employee number - use provided or generated, but allow null if explicitly cleared
-        employee_number: toNullIfEmpty(employeeNumber),
-        position_title: toNullIfEmpty(editFormData.position_title),
-        department: toNullIfEmpty(editFormData.department),
-        app_role: editFormData.app_role || 'Staff',
-        home_site: toNullIfEmpty(editFormData.home_site),
-        reports_to: toNullIfEmpty(editFormData.reports_to),
-        start_date: toNullIfEmpty(editFormData.start_date),
-        probation_end_date: toNullIfEmpty(editFormData.probation_end_date),
-        contract_type: editFormData.contract_type || 'permanent',
-        // Contracted hours - handle both field names and empty strings
-        contracted_hours_per_week: editFormData.contracted_hours && editFormData.contracted_hours !== '' 
-          ? parseFloat(editFormData.contracted_hours) 
-          : (editFormData.contracted_hours_per_week && editFormData.contracted_hours_per_week !== '' 
-            ? parseFloat(editFormData.contracted_hours_per_week.toString()) 
-            : null),
-        hourly_rate: editFormData.hourly_rate && editFormData.hourly_rate !== '' 
-          ? Math.round(parseFloat(editFormData.hourly_rate) * 100) 
-          : null, // Convert to pence
-        salary: editFormData.salary && editFormData.salary !== '' 
-          ? parseFloat(editFormData.salary) 
-          : null,
-        pay_frequency: editFormData.pay_frequency || 'monthly',
-        notice_period_weeks: editFormData.notice_period_weeks && editFormData.notice_period_weeks !== '' 
-          ? parseInt(editFormData.notice_period_weeks.toString()) 
-          : 1,
-        boh_foh: editFormData.boh_foh || 'FOH',
-        
-        // Compliance fields
-        national_insurance_number: toNullIfEmpty(editFormData.national_insurance_number),
-        right_to_work_status: editFormData.right_to_work_status || 'pending',
-        right_to_work_expiry: toNullIfEmpty(editFormData.right_to_work_expiry),
-        right_to_work_document_type: toNullIfEmpty(editFormData.right_to_work_document_type),
-        dbs_status: editFormData.dbs_status || 'not_required',
-        dbs_certificate_number: toNullIfEmpty(editFormData.dbs_certificate_number),
-        dbs_check_date: toNullIfEmpty(editFormData.dbs_check_date),
-        
-        // Banking fields
-        bank_name: toNullIfEmpty(editFormData.bank_name),
-        bank_account_name: toNullIfEmpty(editFormData.bank_account_name),
-        bank_account_number: toNullIfEmpty(editFormData.bank_account_number),
-        bank_sort_code: toNullIfEmpty(editFormData.bank_sort_code),
-        
-        annual_leave_allowance: editFormData.annual_leave_allowance && editFormData.annual_leave_allowance !== '' 
-          ? parseFloat(editFormData.annual_leave_allowance.toString()) 
-          : 28,
-        
-        // Pay & Tax fields
-        tax_code: toNullIfEmpty(editFormData.tax_code),
-        student_loan: editFormData.student_loan || false,
-        student_loan_plan: toNullIfEmpty(editFormData.student_loan_plan),
-        pension_enrolled: editFormData.pension_enrolled || false,
-        pension_contribution_percent: editFormData.pension_contribution_percent && editFormData.pension_contribution_percent !== '' 
-          ? parseFloat(editFormData.pension_contribution_percent.toString()) 
-          : null,
-        p45_received: editFormData.p45_received || false,
-        p45_date: toNullIfEmpty(editFormData.p45_date),
-        p45_reference: toNullIfEmpty(editFormData.p45_reference),
-        
-        // Training fields
-        food_safety_level: editFormData.food_safety_level && editFormData.food_safety_level !== '' 
-          ? parseInt(editFormData.food_safety_level.toString()) 
-          : null,
-        food_safety_expiry_date: toNullIfEmpty(editFormData.food_safety_expiry_date),
-        h_and_s_level: editFormData.h_and_s_level && editFormData.h_and_s_level !== '' 
-          ? parseInt(editFormData.h_and_s_level.toString()) 
-          : null,
-        h_and_s_expiry_date: toNullIfEmpty(editFormData.h_and_s_expiry_date),
-        fire_marshal_trained: editFormData.fire_marshal_trained || false,
-        fire_marshal_expiry_date: toNullIfEmpty(editFormData.fire_marshal_expiry_date),
-        first_aid_trained: editFormData.first_aid_trained || false,
-        first_aid_expiry_date: toNullIfEmpty(editFormData.first_aid_expiry_date),
-        cossh_trained: editFormData.cossh_trained || false,
-        cossh_expiry_date: toNullIfEmpty(editFormData.cossh_expiry_date),
-        
-        status: editFormData.status || 'active',
-      };
+      // Build update payload using shared utility
+      const updateData = buildProfileUpdateData(editFormData, validEmergencyContacts, employeeNumber);
 
       // Log what we're about to save for debugging
       console.log('Saving employee data:', {
@@ -795,19 +614,21 @@ export default function EmployeesPage() {
         }
       });
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .update(updateData)
-        .eq('id', editingEmployee.id)
-        .select();
+      const res = await fetch('/api/people/update-profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employeeId: editingEmployee.id, updateData }),
+      });
+      const resJson = await res.json();
 
-      if (error) {
-        console.error('Error updating employee:', error);
+      if (!res.ok || resJson.error) {
+        console.error('Error updating employee:', resJson.error);
         console.error('Update data that failed:', updateData);
-        alert(`Failed to update: ${error.message}`);
+        alert(`Failed to update: ${resJson.error}`);
         return;
       }
 
+      const data = resJson.data;
       console.log('Employee updated successfully:', data);
 
       // Optimistically update local list so the UI reflects changes immediately
@@ -842,7 +663,7 @@ export default function EmployeesPage() {
       
       // Trigger a custom event to notify other pages of the update
       if (typeof window !== 'undefined') {
-        console.log('📢 Dispatching employeeUpdated event for:', editingEmployee.id);
+        console.log('ðŸ“¢ Dispatching employeeUpdated event for:', editingEmployee.id);
         window.dispatchEvent(new CustomEvent('employeeUpdated', { 
           detail: { employeeId: editingEmployee.id } 
         }));
@@ -928,6 +749,43 @@ export default function EmployeesPage() {
   const departments = [...new Set(employees.map(e => e.department).filter(Boolean))];
   const siteNames = [...new Set(employees.map(e => e.site_name).filter(Boolean))];
 
+  const handleExport = () => {
+    try {
+      const fields = [
+        'full_name', 'email', 'phone', 'position_title', 'department',
+        'site_name', 'status', 'app_role', 'start_date', 'employee_number',
+        'contracted_hours_per_week',
+      ];
+
+      const rows = filteredEmployees.map((emp) => {
+        const row: Record<string, any> = {};
+        for (const f of fields) {
+          row[f] = (emp as any)[f] ?? '';
+        }
+        return row;
+      });
+
+      const ws = XLSX.utils.json_to_sheet(rows, { header: fields });
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Employees');
+      const xlsxArray = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([xlsxArray], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'employees_export.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e: any) {
+      console.error('Export failed:', e?.message || 'Unable to export');
+      alert(`Export failed: ${e?.message || 'Unable to export'}`);
+    }
+  };
+
   const filteredEmployees = employees.filter(emp => {
     const matchesSearch = !search ||
       emp.full_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -940,7 +798,59 @@ export default function EmployeesPage() {
     return matchesSearch && matchesDept && matchesSite;
   });
 
-  const getInitials = (name: string) => 
+  // Merge helpers
+  const canMerge = ['admin', 'owner', 'manager', 'general_manager', 'area_manager', 'regional_manager'].includes(userRole);
+
+  const selectedEmployees = employees.filter(e => selectedForMerge.has(e.id));
+
+  function toggleMergeSelection(id: string) {
+    setSelectedForMerge(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function openMergeDialog() {
+    if (selectedForMerge.size < 2) return;
+    const firstSelected = Array.from(selectedForMerge)[0];
+    setCanonicalId(firstSelected);
+    setIsMergeOpen(true);
+  }
+
+  async function handleMerge() {
+    if (!canonicalId || !companyId) return;
+    const mergeIds = Array.from(selectedForMerge).filter(id => id !== canonicalId);
+    if (mergeIds.length === 0) return;
+
+    setMerging(true);
+    try {
+      const res = await fetch('/api/people/merge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ canonicalProfileId: canonicalId, mergeProfileIds: mergeIds, companyId }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        setEmployees(prev => prev.filter(e => !mergeIds.includes(e.id)));
+        alert(`Merged successfully. ${result.updatedRecords} records updated.`);
+        setIsMergeOpen(false);
+        setMergeMode(false);
+        setSelectedForMerge(new Set());
+        setCanonicalId(null);
+        fetchEmployees();
+      } else {
+        alert(result.error || 'Merge failed');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Merge failed');
+    } finally {
+      setMerging(false);
+    }
+  }
+
+  const getInitials = (name: string) =>
     name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
 
   const getStatusBadge = (status: string) => {
@@ -987,30 +897,63 @@ export default function EmployeesPage() {
         {/* Hide action buttons on mobile */}
         {!isMobile && (
           <div className="flex gap-3">
-            <button className="flex items-center gap-2 px-4 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated text-theme-primary rounded-lg hover:bg-theme-button-hover transition-colors">
-              <Download className="w-4 h-4" />
-              Export
-            </button>
+            {canMerge && mergeMode ? (
+              <>
+                <button
+                  onClick={openMergeDialog}
+                  disabled={selectedForMerge.size < 2}
+                  className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Layers className="w-4 h-4" />
+                  <span>Merge ({selectedForMerge.size})</span>
+                </button>
+                <button
+                  onClick={() => { setMergeMode(false); setSelectedForMerge(new Set()); }}
+                  className="flex items-center gap-2 px-4 py-2 border border-theme text-theme-secondary hover:text-theme-primary rounded-lg transition-colors text-sm"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                {canMerge && (
+                  <button
+                    onClick={() => setMergeMode(true)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-theme-secondary hover:text-theme-primary border border-theme rounded-lg hover:bg-theme-surface transition-colors"
+                  >
+                    <Layers className="w-4 h-4" />
+                    Merge Employees
+                  </button>
+                )}
+                <button
+                  onClick={handleExport}
+                  className="flex items-center gap-2 px-4 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated text-theme-primary rounded-lg hover:bg-theme-button-hover transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  Export
+                </button>
 
-            {/* Add Head Office / Executive Button */}
-            <button
-              onClick={() => setShowExecutiveModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow dark:hover:shadow-module-glow rounded-lg font-medium transition-all duration-200 ease-in-out"
-            >
-              <Briefcase className="w-5 h-5" />
-              <span className="hidden sm:inline">Add Head Office</span>
-              <span className="sm:hidden">Head Office</span>
-            </button>
+                {/* Add Head Office / Executive Button */}
+                <button
+                  onClick={() => setShowExecutiveModal(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow dark:hover:shadow-module-glow rounded-lg font-medium transition-all duration-200 ease-in-out"
+                >
+                  <Briefcase className="w-5 h-5" />
+                  <span className="hidden sm:inline">Add Head Office</span>
+                  <span className="sm:hidden">Head Office</span>
+                </button>
 
-            {/* Add Site Employee Button */}
-            <Link
-              href="/dashboard/people/directory/new"
-              className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow dark:hover:shadow-module-glow rounded-lg font-medium transition-all duration-200 ease-in-out"
-            >
-              <Plus className="w-5 h-5" />
-              <span className="hidden sm:inline">Add Site Employee</span>
-              <span className="sm:hidden">Site Employee</span>
-            </Link>
+                {/* Add Site Employee Button */}
+                <Link
+                  href="/dashboard/people/directory/new"
+                  className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow dark:hover:shadow-module-glow rounded-lg font-medium transition-all duration-200 ease-in-out"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span className="hidden sm:inline">Add Site Employee</span>
+                  <span className="sm:hidden">Site Employee</span>
+                </Link>
+              </>
+            )}
           </div>
         )}
       </div>
@@ -1083,14 +1026,29 @@ export default function EmployeesPage() {
           const isExpanded = expandedEmployees.has(employee.id);
           const fullData = expandedEmployeeData.get(employee.id);
           const isLoadingData = loadingExpandedData.has(employee.id);
-          
+          const isMergeSelected = selectedForMerge.has(employee.id);
+
           return (
             <div
               key={employee.id}
- className={`bg-theme-button border border-theme rounded-xl p-4 hover:border-module-fg/50 transition-colors group relative ${isExpanded && !isMobile ? 'md:col-span-2 lg:col-span-3' : ''}`}
+              onClick={mergeMode ? () => toggleMergeSelection(employee.id) : undefined}
+              className={`bg-theme-button border rounded-xl p-4 transition-colors group relative ${
+                mergeMode
+                  ? `cursor-pointer ${isMergeSelected ? 'border-amber-500 ring-1 ring-amber-500/30' : 'border-theme hover:bg-theme-hover'}`
+                  : `border-theme hover:border-module-fg/50 ${isExpanded && !isMobile ? 'md:col-span-2 lg:col-span-3' : ''}`
+              }`}
             >
+              {/* Merge checkbox */}
+              {mergeMode && (
+                <div className={`absolute top-4 left-4 w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors z-10 ${
+                  isMergeSelected ? 'bg-amber-500 border-amber-500' : 'border-theme'
+                }`}>
+                  {isMergeSelected && <Check className="w-3 h-3 text-white" />}
+                </div>
+              )}
+
               {/* Edit Button and Expand Button - Positioned absolutely */}
-              {!editingEmployee && (
+              {!editingEmployee && !mergeMode && (
                 <div
                   className="absolute top-2 right-2 z-10 flex items-center gap-2"
                   onClick={(e) => e.stopPropagation()}
@@ -1129,21 +1087,18 @@ export default function EmployeesPage() {
               
               {/* Card Header - Clickable to navigate or toggle expand */}
               <div
-                onClick={(e) => {
+                onClick={mergeMode ? undefined : (e) => {
                   const target = e.target as HTMLElement;
-                  // If clicking on button or its wrapper, don't navigate
                   if (target.closest('button') || target.closest('.absolute.top-2.right-2')) {
                     return;
                   }
-                  // If expanded, clicking header collapses it
                   if (isExpanded) {
                     handleToggleExpand(employee.id);
                   } else {
-                    // Otherwise navigate to detail page
                     router.push(`/dashboard/people/${employee.id}`);
                   }
                 }}
-                className={`cursor-pointer ${isExpanded ? 'pr-20' : 'pr-20'}`}
+                className={`${mergeMode ? 'pl-8' : 'cursor-pointer'} ${isExpanded ? 'pr-20' : 'pr-20'}`}
               >
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-full bg-module-fg flex items-center justify-center text-white font-medium flex-shrink-0">
@@ -1188,7 +1143,7 @@ export default function EmployeesPage() {
                   </div>
                 </div>
 
-                {!isExpanded && (
+                {!isExpanded && !mergeMode && (
                   <div className="flex items-center gap-2 mt-4 pt-4 border-t border-theme">
                     <button
                       onClick={(e) => {
@@ -1233,12 +1188,43 @@ export default function EmployeesPage() {
                         Call
                       </a>
                     )}
+                    <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        if (!employee.email) {
+                          alert('No email address for this employee.');
+                          return;
+                        }
+                        if (!confirm(`Send login invite to ${employee.email}?`)) return;
+                        try {
+                          const res = await fetch('/api/users/resend-invite', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email: employee.email, userId: employee.id }),
+                          });
+                          const json = await res.json();
+                          if (!res.ok) {
+                            alert(`Failed to send invite: ${json.error || 'Unknown error'}`);
+                            return;
+                          }
+                          alert(`Invitation sent to ${employee.email}`);
+                        } catch (err: any) {
+                          console.error('Error sending invite:', err);
+                          alert(`Failed to send invite: ${err?.message || 'Unknown error'}`);
+                        }
+                      }}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated text-[#D37E91] rounded-lg hover:bg-[#D37E91]/10 text-sm transition-all"
+                      title="Send Login Invite"
+                    >
+                      <Mail className="w-4 h-4" />
+                      Invite
+                    </button>
                   </div>
                 )}
               </div>
 
               {/* Expanded View */}
-              {isExpanded && (
+              {isExpanded && !mergeMode && (
                 <div className="mt-4 pt-4 border-t border-theme" onClick={(e) => e.stopPropagation()}>
                   {isLoadingData ? (
                     <div className="flex items-center justify-center py-8">
@@ -1282,7 +1268,7 @@ export default function EmployeesPage() {
           <UserX className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
           <p className="text-theme-secondary mb-2">No employees found</p>
           <p className="text-theme-tertiary text-sm">
-            {profile?.company_id 
+            {companyId 
               ? 'Try adjusting your filters or add employees to your company.'
               : 'Unable to load company information.'}
           </p>
@@ -1310,7 +1296,7 @@ export default function EmployeesPage() {
       {/* Edit Modal */}
       {editingEmployee && (
         <EditEmployeeModal
-          employee={editingEmployee}
+          employee={editingEmployee as unknown as EmployeeProfile}
           formData={editFormData}
           setFormData={setEditFormData}
           emergencyContacts={emergencyContacts}
@@ -1325,7 +1311,7 @@ export default function EmployeesPage() {
           onSave={handleSaveEdit}
           saving={saving}
           onOpenSiteAssignments={(emp) => {
-            setSiteAssignmentsEmployee(emp);
+            setSiteAssignmentsEmployee(emp as unknown as Employee);
             setShowSiteAssignmentsModal(true);
           }}
         />
@@ -1342,19 +1328,98 @@ export default function EmployeesPage() {
           employeeId={siteAssignmentsEmployee.id}
           employeeName={siteAssignmentsEmployee.full_name}
           homeSiteId={siteAssignmentsEmployee.home_site}
-          companyId={company.id}
+          companyId={companyId!}
         />
       )}
 
       {/* Add Executive / Head Office Modal */}
-      {profile?.company_id && (
+      {companyId && (
         <AddExecutiveModal
           open={showExecutiveModal}
           onClose={() => setShowExecutiveModal(false)}
-          companyId={profile.company_id}
+          companyId={companyId}
           onRefresh={fetchEmployees}
         />
       )}
+
+      {/* Merge Employees Modal */}
+      <Dialog open={isMergeOpen} onOpenChange={setIsMergeOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold text-theme-primary flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
+              Merge Employees
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-3">
+            <p className="text-sm text-theme-secondary">
+              Select the employee to keep. All other selected employees will be merged into them and deactivated.
+            </p>
+
+            <div className="space-y-2 max-h-[300px] overflow-y-auto">
+              {selectedEmployees.map(emp => (
+                <button
+                  key={emp.id}
+                  type="button"
+                  onClick={() => setCanonicalId(emp.id)}
+                  className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+                    canonicalId === emp.id
+                      ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-600/10'
+                      : 'border-theme hover:bg-theme-hover'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-theme-primary font-medium">{emp.full_name}</span>
+                      {emp.position_title && (
+                        <span className="text-theme-tertiary text-xs ml-2">({emp.position_title})</span>
+                      )}
+                    </div>
+                    {canonicalId === emp.id && (
+                      <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-600/20 px-2 py-0.5 rounded">
+                        Keep
+                      </span>
+                    )}
+                  </div>
+                  {emp.site_name && (
+                    <p className="text-xs text-theme-tertiary mt-0.5">{emp.site_name}</p>
+                  )}
+                  {canonicalId !== emp.id && (
+                    <p className="text-xs text-red-500 dark:text-red-400 mt-1">Will be merged &amp; deactivated</p>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            <div className="bg-amber-50 dark:bg-amber-600/10 border border-amber-200 dark:border-amber-600/30 rounded-lg p-3">
+              <p className="text-xs text-amber-700 dark:text-amber-400">
+                All attendance, training, leave, shifts, and other records will be transferred to the kept employee. This cannot be undone.
+              </p>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <Button
+                onClick={handleMerge}
+                disabled={merging || !canonicalId}
+                variant="secondary"
+                className="flex-1"
+              >
+                {merging ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Merging...
+                  </>
+                ) : (
+                  'Confirm Merge'
+                )}
+              </Button>
+              <Button onClick={() => setIsMergeOpen(false)} variant="outline" className="flex-1">
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -1379,17 +1444,17 @@ function ExpandedEmployeeView({
   const [activeTab, setActiveTab] = useState<'personal' | 'employment' | 'compliance' | 'banking' | 'leave' | 'pay' | 'training'>('personal');
 
   const getSiteName = (siteId: string | null) => {
-    if (!siteId) return '—';
+    if (!siteId) return 'â€”';
     return sites.find(s => s.id === siteId)?.name || siteId;
   };
 
   const getManagerName = (managerId: string | null) => {
-    if (!managerId) return '—';
+    if (!managerId) return 'â€”';
     return managers.find(m => m.id === managerId)?.full_name || managerId;
   };
 
   const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return '—';
+    if (!dateStr) return 'â€”';
     try {
       return new Date(dateStr).toLocaleDateString('en-GB');
     } catch {
@@ -1398,9 +1463,9 @@ function ExpandedEmployeeView({
   };
 
   const formatCurrency = (value: number | string | null, isPence: boolean = false) => {
-    if (!value && value !== 0) return '—';
+    if (!value && value !== 0) return 'â€”';
     const num = typeof value === 'string' ? parseFloat(value) : value;
-    if (isNaN(num)) return '—';
+    if (isNaN(num)) return 'â€”';
     // If isPence is true (like hourly_rate), convert to pounds
     // Otherwise assume the value is already in pounds
     const displayValue = isPence ? num / 100 : num;
@@ -1491,18 +1556,18 @@ function ExpandedEmployeeView({
               Personal Information
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InfoRow label="Full Name" value={employee.full_name || '—'} fieldName="full_name" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Email" value={employee.email || '—'} fieldName="email" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Phone Number" value={employee.phone_number || employee.phone || '—'} fieldName="phone_number" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Date of Birth" value={formatDate(employee.date_of_birth) || '—'} fieldName="date_of_birth" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-              <InfoRow label="Gender" value={employee.gender || '—'} fieldName="gender" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+              <InfoRow label="Full Name" value={employee.full_name || 'â€”'} fieldName="full_name" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Email" value={employee.email || 'â€”'} fieldName="email" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Phone Number" value={employee.phone_number || employee.phone || 'â€”'} fieldName="phone_number" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Date of Birth" value={formatDate(employee.date_of_birth) || 'â€”'} fieldName="date_of_birth" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="Gender" value={employee.gender || 'â€”'} fieldName="gender" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                 { value: 'male', label: 'Male' },
                 { value: 'female', label: 'Female' },
                 { value: 'non_binary', label: 'Non-binary' },
                 { value: 'prefer_not_to_say', label: 'Prefer not to say' },
                 { value: 'other', label: 'Other' }
               ]} />
-              <InfoRow label="Nationality" value={employee.nationality || '—'} fieldName="nationality" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Nationality" value={employee.nationality || 'â€”'} fieldName="nationality" employeeId={employee.id} onUpdate={onUpdate} />
             </div>
             
             {/* Address */}
@@ -1510,14 +1575,14 @@ function ExpandedEmployeeView({
               <h5 className="text-sm font-medium text-theme-primary mb-3">Address</h5>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div className="md:col-span-2">
-                  <InfoRow label="Address Line 1" value={employee.address_line_1 || '—'} fieldName="address_line_1" employeeId={employee.id} onUpdate={onUpdate} />
+                  <InfoRow label="Address Line 1" value={employee.address_line_1 || 'â€”'} fieldName="address_line_1" employeeId={employee.id} onUpdate={onUpdate} />
                 </div>
                 <div className="md:col-span-2">
-                  <InfoRow label="Address Line 2" value={employee.address_line_2 || '—'} fieldName="address_line_2" employeeId={employee.id} onUpdate={onUpdate} />
+                  <InfoRow label="Address Line 2" value={employee.address_line_2 || 'â€”'} fieldName="address_line_2" employeeId={employee.id} onUpdate={onUpdate} />
                 </div>
-                <InfoRow label="City" value={employee.city || '—'} fieldName="city" employeeId={employee.id} onUpdate={onUpdate} />
-                <InfoRow label="County" value={employee.county || '—'} fieldName="county" employeeId={employee.id} onUpdate={onUpdate} />
-                <InfoRow label="Postcode" value={employee.postcode || '—'} fieldName="postcode" employeeId={employee.id} onUpdate={onUpdate} />
+                <InfoRow label="City" value={employee.city || 'â€”'} fieldName="city" employeeId={employee.id} onUpdate={onUpdate} />
+                <InfoRow label="County" value={employee.county || 'â€”'} fieldName="county" employeeId={employee.id} onUpdate={onUpdate} />
+                <InfoRow label="Postcode" value={employee.postcode || 'â€”'} fieldName="postcode" employeeId={employee.id} onUpdate={onUpdate} />
                 <InfoRow label="Country" value={employee.country || 'United Kingdom'} fieldName="country" employeeId={employee.id} onUpdate={onUpdate} />
               </div>
             </div>
@@ -1530,10 +1595,10 @@ function ExpandedEmployeeView({
                   {emergencyContacts.map((contact: any, idx: number) => (
                     <div key={idx} className="p-3 bg-white/[0.03] rounded">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        <InfoRow label="Name" value={contact.name || '—'} />
-                        <InfoRow label="Relationship" value={contact.relationship || '—'} />
-                        <InfoRow label="Phone" value={contact.phone || '—'} />
-                        <InfoRow label="Email" value={contact.email || '—'} />
+                        <InfoRow label="Name" value={contact.name || 'â€”'} />
+                        <InfoRow label="Relationship" value={contact.relationship || 'â€”'} />
+                        <InfoRow label="Phone" value={contact.phone || 'â€”'} />
+                        <InfoRow label="Email" value={contact.email || 'â€”'} />
                       </div>
                     </div>
                   ))}
@@ -1550,9 +1615,9 @@ function ExpandedEmployeeView({
               Employment Details
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InfoRow label="Employee Number" value={employee.employee_number || '—'} fieldName="employee_number" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Position / Job Title" value={employee.position_title || '—'} fieldName="position_title" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Department" value={employee.department || '—'} fieldName="department" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Employee Number" value={employee.employee_number || 'â€”'} fieldName="employee_number" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Position / Job Title" value={employee.position_title || 'â€”'} fieldName="position_title" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Department" value={employee.department || 'â€”'} fieldName="department" employeeId={employee.id} onUpdate={onUpdate} />
               <InfoRow label="App Role" value={employee.app_role || 'Staff'} fieldName="app_role" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                 { value: 'staff', label: 'Staff' },
                 { value: 'manager', label: 'Manager' },
@@ -1610,8 +1675,8 @@ function ExpandedEmployeeView({
                 { value: 'BOH', label: 'BOH' },
                 { value: 'BOTH', label: 'Both' }
               ]} />
-              <InfoRow label="Start Date" value={formatDate(employee.start_date) || '—'} fieldName="start_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-              <InfoRow label="Probation End Date" value={formatDate(employee.probation_end_date) || '—'} fieldName="probation_end_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="Start Date" value={formatDate(employee.start_date) || 'â€”'} fieldName="start_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="Probation End Date" value={formatDate(employee.probation_end_date) || 'â€”'} fieldName="probation_end_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
               <InfoRow label="Contract Type" value={employee.contract_type || 'permanent'} fieldName="contract_type" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                 { value: 'permanent', label: 'Permanent' },
                 { value: 'fixed_term', label: 'Fixed Term' },
@@ -1621,9 +1686,9 @@ function ExpandedEmployeeView({
                 { value: 'contractor', label: 'Contractor' },
                 { value: 'apprentice', label: 'Apprentice' }
               ]} />
-              <InfoRow label="Contracted Hours (per week)" value={employee.contracted_hours?.toString() || employee.contracted_hours_per_week?.toString() || '—'} fieldName="contracted_hours_per_week" employeeId={employee.id} onUpdate={onUpdate} type="number" />
-              <InfoRow label="Hourly Rate" value={employee.hourly_rate ? formatCurrency(typeof employee.hourly_rate === 'string' ? parseFloat(employee.hourly_rate) : employee.hourly_rate, true) : '—'} fieldName="hourly_rate" employeeId={employee.id} onUpdate={onUpdate} type="number" />
-              <InfoRow label="Annual Salary" value={formatCurrency(employee.salary) || '—'} fieldName="salary" employeeId={employee.id} onUpdate={onUpdate} type="number" />
+              <InfoRow label="Contracted Hours (per week)" value={employee.contracted_hours?.toString() || employee.contracted_hours_per_week?.toString() || 'â€”'} fieldName="contracted_hours_per_week" employeeId={employee.id} onUpdate={onUpdate} type="number" />
+              <InfoRow label="Hourly Rate" value={employee.hourly_rate ? formatCurrency(typeof employee.hourly_rate === 'string' ? parseFloat(employee.hourly_rate) : employee.hourly_rate, true) : 'â€”'} fieldName="hourly_rate" employeeId={employee.id} onUpdate={onUpdate} type="number" />
+              <InfoRow label="Annual Salary" value={formatCurrency(employee.salary) || 'â€”'} fieldName="salary" employeeId={employee.id} onUpdate={onUpdate} type="number" />
               <InfoRow label="Pay Frequency" value={employee.pay_frequency || 'monthly'} fieldName="pay_frequency" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                 { value: 'weekly', label: 'Weekly' },
                 { value: 'fortnightly', label: 'Fortnightly' },
@@ -1642,22 +1707,22 @@ function ExpandedEmployeeView({
               Compliance & Right to Work
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InfoRow label="National Insurance Number" value={employee.national_insurance_number || '—'} fieldName="national_insurance_number" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="National Insurance Number" value={employee.national_insurance_number || 'â€”'} fieldName="national_insurance_number" employeeId={employee.id} onUpdate={onUpdate} />
               <InfoRow label="Right to Work Status" value={employee.right_to_work_status || 'pending'} fieldName="right_to_work_status" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                 { value: 'pending', label: 'Pending' },
                 { value: 'verified', label: 'Verified' },
                 { value: 'expired', label: 'Expired' },
                 { value: 'not_required', label: 'Not Required' }
               ]} />
-              <InfoRow label="RTW Document Type" value={employee.right_to_work_document_type || '—'} fieldName="right_to_work_document_type" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+              <InfoRow label="RTW Document Type" value={employee.right_to_work_document_type || 'â€”'} fieldName="right_to_work_document_type" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                 { value: 'passport', label: 'Passport' },
                 { value: 'biometric_residence_permit', label: 'Biometric Residence Permit' },
                 { value: 'share_code', label: 'Share Code' },
                 { value: 'visa', label: 'Visa' },
                 { value: 'other', label: 'Other' }
               ]} />
-              <InfoRow label="RTW Document Number" value={employee.right_to_work_document_number || '—'} fieldName="right_to_work_document_number" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="RTW Expiry Date" value={formatDate(employee.right_to_work_expiry) || '—'} fieldName="right_to_work_expiry" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="RTW Document Number" value={employee.right_to_work_document_number || 'â€”'} fieldName="right_to_work_document_number" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="RTW Expiry Date" value={formatDate(employee.right_to_work_expiry) || 'â€”'} fieldName="right_to_work_expiry" employeeId={employee.id} onUpdate={onUpdate} type="date" />
             </div>
             
             {/* DBS Section */}
@@ -1670,8 +1735,8 @@ function ExpandedEmployeeView({
                   { value: 'clear', label: 'Clear' },
                   { value: 'issues_found', label: 'Issues Found' }
                 ]} />
-                <InfoRow label="DBS Certificate Number" value={employee.dbs_certificate_number || '—'} fieldName="dbs_certificate_number" employeeId={employee.id} onUpdate={onUpdate} />
-                <InfoRow label="DBS Check Date" value={formatDate(employee.dbs_check_date) || '—'} fieldName="dbs_check_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+                <InfoRow label="DBS Certificate Number" value={employee.dbs_certificate_number || 'â€”'} fieldName="dbs_certificate_number" employeeId={employee.id} onUpdate={onUpdate} />
+                <InfoRow label="DBS Check Date" value={formatDate(employee.dbs_check_date) || 'â€”'} fieldName="dbs_check_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
               </div>
             </div>
           </div>
@@ -1687,10 +1752,10 @@ function ExpandedEmployeeView({
               Bank details are used for payroll export only and are stored securely.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InfoRow label="Bank Name" value={employee.bank_name || '—'} fieldName="bank_name" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Account Holder Name" value={employee.bank_account_name || '—'} fieldName="bank_account_name" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Sort Code" value={employee.bank_sort_code || '—'} fieldName="bank_sort_code" employeeId={employee.id} onUpdate={onUpdate} />
-              <InfoRow label="Account Number" value={employee.bank_account_number ? '••••' : '—'} fieldName="bank_account_number" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Bank Name" value={employee.bank_name || 'â€”'} fieldName="bank_name" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Account Holder Name" value={employee.bank_account_name || 'â€”'} fieldName="bank_account_name" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Sort Code" value={employee.bank_sort_code || 'â€”'} fieldName="bank_sort_code" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Account Number" value={employee.bank_account_number ? 'â€¢â€¢â€¢â€¢' : 'â€”'} fieldName="bank_account_number" employeeId={employee.id} onUpdate={onUpdate} />
             </div>
           </div>
         )}
@@ -1715,23 +1780,23 @@ function ExpandedEmployeeView({
               Pay & Tax Details
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InfoRow label="Tax Code" value={employee.tax_code || '—'} fieldName="tax_code" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="Tax Code" value={employee.tax_code || 'â€”'} fieldName="tax_code" employeeId={employee.id} onUpdate={onUpdate} />
               <InfoRow label="Student Loan" value={employee.student_loan === true ? 'Yes' : (employee.student_loan === false ? 'No' : 'Not set')} fieldName="student_loan" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
               {employee.student_loan && (
-                <InfoRow label="Student Loan Plan" value={employee.student_loan_plan || '—'} fieldName="student_loan_plan" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
+                <InfoRow label="Student Loan Plan" value={employee.student_loan_plan || 'â€”'} fieldName="student_loan_plan" employeeId={employee.id} onUpdate={onUpdate} type="select" options={[
                   { value: 'plan_1', label: 'Plan 1' },
                   { value: 'plan_2', label: 'Plan 2' },
                   { value: 'plan_4', label: 'Plan 4' },
                   { value: 'plan_5', label: 'Plan 5' }
                 ]} />
               )}
-              <InfoRow label="Pension Enrolled" value={employee.pension_enrolled === true ? 'Yes' : (employee.pension_enrolled === false ? 'No' : '—')} fieldName="pension_enrolled" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
+              <InfoRow label="Pension Enrolled" value={employee.pension_enrolled === true ? 'Yes' : (employee.pension_enrolled === false ? 'No' : 'â€”')} fieldName="pension_enrolled" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
               {employee.pension_enrolled && (
-                <InfoRow label="Pension Contribution (%)" value={employee.pension_contribution_percent ? `${employee.pension_contribution_percent}%` : '—'} fieldName="pension_contribution_percent" employeeId={employee.id} onUpdate={onUpdate} type="number" />
+                <InfoRow label="Pension Contribution (%)" value={employee.pension_contribution_percent ? `${employee.pension_contribution_percent}%` : 'â€”'} fieldName="pension_contribution_percent" employeeId={employee.id} onUpdate={onUpdate} type="number" />
               )}
               <InfoRow label="P45 Received" value={employee.p45_received === true ? 'Yes' : (employee.p45_received === false ? 'No' : 'Not set')} fieldName="p45_received" employeeId={employee.id} onUpdate={onUpdate} type="boolean" />
-              <InfoRow label="P45 Date" value={formatDate(employee.p45_date) || '—'} fieldName="p45_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
-              <InfoRow label="P45 Reference" value={employee.p45_reference || '—'} fieldName="p45_reference" employeeId={employee.id} onUpdate={onUpdate} />
+              <InfoRow label="P45 Date" value={formatDate(employee.p45_date) || 'â€”'} fieldName="p45_date" employeeId={employee.id} onUpdate={onUpdate} type="date" />
+              <InfoRow label="P45 Reference" value={employee.p45_reference || 'â€”'} fieldName="p45_reference" employeeId={employee.id} onUpdate={onUpdate} />
             </div>
           </div>
         )}
@@ -1747,1527 +1812,6 @@ function ExpandedEmployeeView({
           />
         )}
       </div>
-    </div>
-  );
-}
-
-// InfoRow component with inline editing
-function InfoRow({ 
-  label, 
-  value, 
-  status,
-  fieldName,
-  employeeId,
-  onUpdate,
-  type = 'text',
-  options,
-  actualValue
-}: { 
-  label: string; 
-  value: string; 
-  status?: 'success' | 'warning' | 'error';
-  fieldName?: string;
-  employeeId?: string;
-  onUpdate?: () => void;
-  type?: 'text' | 'date' | 'number' | 'select' | 'boolean' | 'textarea';
-  options?: { value: string; label: string }[];
-  actualValue?: string | null; // For select fields, the actual stored value (UUID, etc.)
-}) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(() => {
-    // For select fields with actualValue prop, use the actual value (UUID, etc.)
-    if (type === 'select' && actualValue !== undefined && actualValue !== null) {
-      return actualValue || '';
-    }
-    // For select fields with actualValue prop, use the actual value (UUID, etc.)
-    if (type === 'select' && actualValue !== undefined && actualValue !== null) {
-      return actualValue || '';
-    }
-    // Convert date display value back to ISO format for editing
-    if (type === 'date' && value && value !== 'Not set' && value !== 'N/A' && value !== '—' && value !== 'No expiry') {
-      try {
-        const date = new Date(value);
-        if (!isNaN(date.getTime())) {
-          return date.toISOString().split('T')[0];
-        }
-      } catch (e) {
-        // Invalid date, return as is
-      }
-    }
-    // For boolean type, convert "Yes"/"No" to true/false string
-    if (type === 'boolean') {
-      if (value === 'Yes') return 'true';
-      if (value === 'No') return 'false';
-      return '';
-    }
-    // For number type, extract number from display values like "Level 2" or "£10.50"
-    if (type === 'number' && value && value !== '—' && value !== 'Not set') {
-      // Extract number from strings like "Level 2", "£10.50", "10.50%"
-      const match = value.match(/[\d.]+/);
-      if (match) {
-        return match[0];
-      }
-    }
-    // For select type without actualValue, try to find matching option by label
-    if (type === 'select' && options && value !== '—' && value !== 'Not set' && value !== '') {
-      const matchingOption = options.find(opt => opt.label === value);
-      if (matchingOption) {
-        return matchingOption.value;
-      }
-    }
-    return value === '—' ? '' : value;
-  });
-  const [saving, setSaving] = useState(false);
-
-  const handleSave = async () => {
-    if (!fieldName || !employeeId) {
-      setIsEditing(false);
-      return;
-    }
-    
-    // For select fields, compare with actualValue if provided
-    const currentValue = type === 'select' && actualValue !== undefined ? actualValue : value;
-    if (editValue === currentValue || (type === 'select' && editValue === '' && (!actualValue || actualValue === ''))) {
-      setIsEditing(false);
-      return;
-    }
-
-    setSaving(true);
-    try {
-      const updateData: any = {};
-      
-      // Convert value based on type
-      if (type === 'number') {
-        // For hourly_rate, convert from pounds to pence (multiply by 100)
-        // For other numbers, parse as float
-        const numValue = editValue ? parseFloat(editValue) : null;
-        if (fieldName === 'hourly_rate' && numValue !== null) {
-          updateData[fieldName] = Math.round(numValue * 100); // Convert to pence
-        } else {
-          updateData[fieldName] = numValue;
-        }
-      } else if (type === 'boolean') {
-        updateData[fieldName] = editValue === 'true' || editValue === 'Yes';
-      } else if (type === 'date') {
-        updateData[fieldName] = editValue || null;
-      } else if (type === 'select') {
-        // For select fields, empty string means null/not set
-        updateData[fieldName] = editValue === '' || editValue === 'Not set' ? null : editValue;
-      } else {
-        updateData[fieldName] = editValue === '' ? null : editValue;
-      }
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(updateData)
-        .eq('id', employeeId);
-
-      if (error) throw error;
-
-      setIsEditing(false);
-      if (onUpdate) onUpdate();
-    } catch (err: any) {
-      console.error('Error updating field:', err);
-      alert(`Failed to update ${label}: ${err.message}`);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleCancel = () => {
-    // Reset to original value format
-    if (type === 'date' && value && value !== 'Not set' && value !== 'N/A' && value !== '—' && value !== 'No expiry') {
-      try {
-        const date = new Date(value);
-        if (!isNaN(date.getTime())) {
-          setEditValue(date.toISOString().split('T')[0]);
-        } else {
-          setEditValue(value === '—' ? '' : value);
-        }
-      } catch (e) {
-        setEditValue(value === '—' ? '' : value);
-      }
-    } else {
-      setEditValue(value === '—' ? '' : value);
-    }
-    setIsEditing(false);
-  };
-
-  if (!fieldName || !employeeId) {
-    // Non-editable row
-    return (
-      <div className="flex justify-between py-2 border-b border-theme">
-        <span className="text-theme-secondary text-sm">{label}</span>
-        <span className={`text-right text-sm ${
-          status === 'success' ? 'text-green-400' :
-          status === 'warning' ? 'text-amber-400' :
-          status === 'error' ? 'text-red-400' :
-          'text-theme-primary'
-        }`}>
-          {value}
-        </span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex justify-between items-center py-2 border-b border-theme group">
-      <span className="text-theme-tertiary text-sm">{label}</span>
-      <div className="flex items-center gap-2 flex-1 justify-end">
-        {isEditing ? (
-          <>
-            {type === 'select' && options ? (
-              <select
-                value={editValue || ''}
-                onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                autoFocus
-              >
-                <option value="">Not set</option>
-                {options.map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-            ) : type === 'boolean' ? (
-              <select
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                autoFocus
-              >
-                <option value="">Not set</option>
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-              </select>
-            ) : type === 'date' ? (
-              <input
-                type="date"
-                value={editValue || ''}
-                onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                autoFocus
-              />
-            ) : type === 'number' ? (
-              <input
-                type="number"
-                value={editValue || ''}
-                onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                autoFocus
-              />
-            ) : type === 'textarea' ? (
-              <textarea
-                value={editValue || ''}
-                onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                rows={2}
-                autoFocus
-              />
-            ) : (
-              <input
-                type="text"
-                value={editValue || ''}
-                onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 max-w-xs px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded text-theme-primary text-sm focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSave();
-                  if (e.key === 'Escape') handleCancel();
-                }}
-              />
-            )}
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="px-2 py-1 bg-module-fg hover:bg-module-fg/90 text-white text-xs rounded disabled:opacity-50"
-            >
-              {saving ? '...' : '✓'}
-            </button>
-            <button
-              onClick={handleCancel}
-              disabled={saving}
-              className="px-2 py-1 bg-theme-surface-elevated dark:bg-theme-surface-elevated hover:bg-theme-button-hover text-theme-primary text-xs rounded disabled:opacity-50"
-            >
-              ✕
-            </button>
-          </>
-        ) : (
-          <>
-            <span className={`text-right text-sm ${
-              status === 'success' ? 'text-green-400' :
-              status === 'warning' ? 'text-amber-400' :
-              status === 'error' ? 'text-red-400' :
-              'text-theme-primary'
-            }`}>
-              {value}
-            </span>
-            <button
-              onClick={() => setIsEditing(true)}
-              className="opacity-0 group-hover:opacity-100 px-2 py-1 text-module-fg hover:text-module-fg text-xs transition-opacity"
-              title="Edit"
-            >
-              <Edit className="w-3 h-3" />
-            </button>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// Edit Employee Modal Component
-function EditEmployeeModal({
-  employee,
-  formData,
-  setFormData,
-  emergencyContacts,
-  setEmergencyContacts,
-  sites,
-  managers,
-  onClose,
-  onSave,
-  saving,
-  onOpenSiteAssignments,
-}: {
-  employee: Employee;
-  formData: any;
-  setFormData: (data: any) => void;
-  emergencyContacts: EmergencyContact[];
-  setEmergencyContacts: (contacts: EmergencyContact[]) => void;
-  sites: { id: string; name: string }[];
-  managers: { id: string; full_name: string }[];
-  onClose: () => void;
-  onSave: () => void;
-  saving: boolean;
-  onOpenSiteAssignments: (employee: Employee) => void;
-}) {
-  const [activeTab, setActiveTab] = useState<'personal' | 'employment' | 'compliance' | 'banking' | 'leave' | 'pay' | 'training'>('personal');
-
-  // Debug: Log sites and managers when modal opens or they change
-  React.useEffect(() => {
-    console.log('EditEmployeeModal - sites:', sites?.length || 0, sites);
-    console.log('EditEmployeeModal - managers:', managers?.length || 0, managers);
-    console.log('EditEmployeeModal - formData.home_site:', formData.home_site);
-    console.log('EditEmployeeModal - formData.reports_to:', formData.reports_to);
-    console.log('EditEmployeeModal - formData keys:', Object.keys(formData || {}));
-  }, [sites, managers, formData]);
-
-
-  const updateField = (field: string, value: any) => {
-    setFormData({ ...formData, [field]: value });
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked;
-      updateField(name, checked);
-    } else {
-      updateField(name, value);
-    }
-  };
-
-  const handleEmergencyContactChange = (index: number, field: keyof EmergencyContact, value: string) => {
-    const updated = [...emergencyContacts];
-    updated[index] = { ...updated[index], [field]: value };
-    setEmergencyContacts(updated);
-  };
-
-  const addEmergencyContact = () => {
-    setEmergencyContacts([...emergencyContacts, { name: '', relationship: '', phone: '', email: '' }]);
-  };
-
-  const removeEmergencyContact = (index: number) => {
-    setEmergencyContacts(emergencyContacts.filter((_, i) => i !== index));
-  };
-
-  // Force re-render when sites/managers change
-  const sitesKey = `sites-${sites?.length || 0}-${sites?.map(s => s.id).join(',') || ''}`;
-  const managersKey = `managers-${managers?.length || 0}-${managers?.map(m => m.id).join(',') || ''}`;
-
-  return (
-    <div className="fixed inset-0 bg-black/50 dark:bg-black/50 backdrop-blur-sm z-[10000] flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-theme-surface rounded-xl border border-theme w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col pointer-events-auto" onClick={(e) => e.stopPropagation()} key={`modal-${sitesKey}-${managersKey}`}>
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-theme">
-          <div>
-            <h2 className="text-2xl font-bold text-theme-primary">Edit Employee</h2>
-            <p className="text-theme-secondary mt-1">{employee.full_name}</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-theme-button-hover rounded-lg text-theme-secondary hover:text-theme-primary transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex gap-1 px-4 pt-3 border-b border-theme">
-          {[
-            { id: 'personal', label: 'Personal', icon: User },
-            { id: 'employment', label: 'Employment', icon: Briefcase },
-            { id: 'compliance', label: 'Compliance', icon: Shield },
-            { id: 'banking', label: 'Banking', icon: CreditCard },
-            { id: 'leave', label: 'Leave', icon: Calendar },
-            { id: 'pay', label: 'Pay & Tax', icon: CreditCard },
-            { id: 'training', label: 'Training', icon: GraduationCap },
-          ].map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeTab === tab.id
-                    ? 'bg-theme-surface-elevated dark:bg-theme-surface-elevated text-theme-primary border-b-2 border-module-fg'
-                    : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-button-hover'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          {activeTab === 'personal' && (
-            <div className="space-y-8">
-              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
-                <User className="w-5 h-5 text-module-fg" />
-                Personal Information
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Full Name <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="full_name"
-                    value={formData.full_name || ''}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Email <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email || ''}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone_number"
-                    value={formData.phone_number || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Date of Birth
-                  </label>
-                  <input
-                    type="date"
-                    name="date_of_birth"
-                    value={formData.date_of_birth || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Gender
-                  </label>
-                  <select
-                    name="gender"
-                    value={formData.gender || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  >
-                    <option value="">Select...</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="non_binary">Non-binary</option>
-                    <option value="prefer_not_to_say">Prefer not to say</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Nationality
-                  </label>
-                  <input
-                    type="text"
-                    name="nationality"
-                    value={formData.nationality || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-              </div>
-              
-              {/* Address */}
-              <div className="border-t border-theme pt-6 mt-6">
-                <h3 className="text-md font-medium text-theme-primary mb-4">Address</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                  <div className="md:col-span-3">
-                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                      Address Line 1
-                    </label>
-                    <input
-                      type="text"
-                      name="address_line_1"
-                      value={formData.address_line_1 || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                    />
-                  </div>
-                  
-                  <div className="md:col-span-3">
-                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                      Address Line 2
-                    </label>
-                    <input
-                      type="text"
-                      name="address_line_2"
-                      value={formData.address_line_2 || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                      City
-                    </label>
-                    <input
-                      type="text"
-                      name="city"
-                      value={formData.city || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                      County
-                    </label>
-                    <input
-                      type="text"
-                      name="county"
-                      value={formData.county || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                      Postcode
-                    </label>
-                    <input
-                      type="text"
-                      name="postcode"
-                      value={formData.postcode || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                      Country
-                    </label>
-                    <input
-                      type="text"
-                      name="country"
-                      value={formData.country || 'United Kingdom'}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              {/* Emergency Contacts */}
-              <div className="border-t border-theme pt-6 mt-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-md font-medium text-theme-primary">Emergency Contacts</h3>
-                  <button
-                    type="button"
-                    onClick={addEmergencyContact}
-                    className="flex items-center gap-1 text-sm text-module-fg hover:text-module-fg"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add Contact
-                  </button>
-                </div>
-                
-                {emergencyContacts.map((contact, index) => (
-                  <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-5 p-5 bg-theme-button rounded-lg">
-                    <div>
-                      <label className="block text-sm font-medium text-theme-secondary mb-1.5">Name</label>
-                      <input
-                        type="text"
-                        value={contact.name}
-                        onChange={(e) => handleEmergencyContactChange(index, 'name', e.target.value)}
-                        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-theme-secondary mb-1.5">Relationship</label>
-                      <input
-                        type="text"
-                        value={contact.relationship}
-                        onChange={(e) => handleEmergencyContactChange(index, 'relationship', e.target.value)}
-                        placeholder="e.g., Spouse, Parent"
-                        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-theme-secondary mb-1.5">Phone</label>
-                      <input
-                        type="tel"
-                        value={contact.phone}
-                        onChange={(e) => handleEmergencyContactChange(index, 'phone', e.target.value)}
-                        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                      />
-                    </div>
-                    <div className="flex items-end gap-2">
-                      <div className="flex-1">
-                        <label className="block text-sm font-medium text-theme-secondary mb-1.5">Email</label>
-                        <input
-                          type="email"
-                          value={contact.email || ''}
-                          onChange={(e) => handleEmergencyContactChange(index, 'email', e.target.value)}
-                          className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                        />
-                      </div>
-                      {emergencyContacts.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeEmergencyContact(index)}
-                          className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'employment' && (
-            <div className="space-y-8">
-              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
-                <Briefcase className="w-5 h-5 text-module-fg" />
-                Employment Details
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Employee Number
-                  </label>
-                  <input
-                    type="text"
-                    name="employee_number"
-                    value={formData.employee_number || ''}
-                    onChange={handleChange}
-                    placeholder="e.g., EMP001"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Position / Job Title
-                  </label>
-                  <input
-                    type="text"
-                    name="position_title"
-                    value={formData.position_title || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Department
-                  </label>
-                  <input
-                    type="text"
-                    name="department"
-                    value={formData.department || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    App Role
-                  </label>
-                  <select
-                    name="app_role"
-                    value={formData.app_role || 'Staff'}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  >
-                    <option value="Staff">Staff</option>
-                    <option value="Manager">Manager</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Owner">Owner</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Home Site
-                  </label>
-                  <select
-                    name="home_site"
-                    value={formData.home_site || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  >
-                    <option value="">Select site...</option>
-                    {sites.map(site => (
-                      <option key={site.id} value={site.id}>{site.name}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div className="md:col-span-2 pt-4 border-t border-theme">
-                  <button
-                    onClick={() => onOpenSiteAssignments(employee)}
-                    type="button"
-                    className="flex items-center gap-2 px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow rounded-lg transition-all"
-                  >
-                    <MapPin className="w-4 h-4" />
-                    Manage Site Assignments
-                  </button>
-                  <p className="text-xs text-theme-tertiary mt-2">
-                    Allow this employee to work at other sites during specified date ranges
-                  </p>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Reports To
-                  </label>
-                  <select
-                    name="reports_to"
-                    value={formData.reports_to || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  >
-                    <option value="">Select manager...</option>
-                    {managers.map(manager => (
-                      <option key={manager.id} value={manager.id}>{manager.full_name}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    BOH / FOH
-                  </label>
-                  <select
-                    name="boh_foh"
-                    value={formData.boh_foh || 'FOH'}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  >
-                    <option value="FOH">Front of House</option>
-                    <option value="BOH">Back of House</option>
-                    <option value="Both">Both</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Start Date
-                  </label>
-                  <input
-                    type="date"
-                    name="start_date"
-                    value={formData.start_date || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Probation End Date
-                  </label>
-                  <input
-                    type="date"
-                    name="probation_end_date"
-                    value={formData.probation_end_date || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Contract Type
-                  </label>
-                  <select
-                    name="contract_type"
-                    value={formData.contract_type || 'permanent'}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  >
-                    <option value="permanent">Permanent</option>
-                    <option value="fixed_term">Fixed Term</option>
-                    <option value="zero_hours">Zero Hours</option>
-                    <option value="casual">Casual</option>
-                    <option value="agency">Agency</option>
-                    <option value="contractor">Contractor</option>
-                    <option value="apprentice">Apprentice</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Contracted Hours (per week)
-                  </label>
-                  <input
-                    type="number"
-                    name="contracted_hours"
-                    value={formData.contracted_hours || ''}
-                    onChange={handleChange}
-                    step="0.5"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Hourly Rate (£)
-                  </label>
-                  <input
-                    type="number"
-                    name="hourly_rate"
-                    value={formData.hourly_rate || ''}
-                    onChange={handleChange}
-                    step="0.01"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Annual Salary (£)
-                  </label>
-                  <input
-                    type="number"
-                    name="salary"
-                    value={formData.salary || ''}
-                    onChange={handleChange}
-                    step="100"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Pay Frequency
-                  </label>
-                  <select
-                    name="pay_frequency"
-                    value={formData.pay_frequency || 'monthly'}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  >
-                    <option value="weekly">Weekly</option>
-                    <option value="fortnightly">Fortnightly</option>
-                    <option value="four_weekly">Four Weekly</option>
-                    <option value="monthly">Monthly</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Notice Period (weeks)
-                  </label>
-                  <input
-                    type="number"
-                    name="notice_period_weeks"
-                    value={formData.notice_period_weeks || '1'}
-                    onChange={handleChange}
-                    min="1"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'compliance' && (
-            <div className="space-y-8">
-              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
-                <Shield className="w-5 h-5 text-module-fg" />
-                Compliance & Right to Work
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    National Insurance Number
-                  </label>
-                  <input
-                    type="text"
-                    name="national_insurance_number"
-                    value={formData.national_insurance_number || ''}
-                    onChange={handleChange}
-                    placeholder="e.g., AB123456C"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-theme-hover dark:border-theme-hover rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors uppercase"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Right to Work Status
-                  </label>
-                  <select
-                    name="right_to_work_status"
-                    value={formData.right_to_work_status || 'pending'}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  >
-                    <option value="pending">Pending Verification</option>
-                    <option value="verified">Verified</option>
-                    <option value="expired">Expired</option>
-                    <option value="not_required">Not Required</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    RTW Document Type
-                  </label>
-                  <select
-                    name="right_to_work_document_type"
-                    value={formData.right_to_work_document_type || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  >
-                    <option value="">Select...</option>
-                    <option value="passport">UK/EU Passport</option>
-                    <option value="biometric_residence_permit">Biometric Residence Permit</option>
-                    <option value="share_code">Share Code</option>
-                    <option value="visa">Visa</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    RTW Document Number
-                  </label>
-                  <input
-                    type="text"
-                    name="right_to_work_document_number"
-                    value={formData.right_to_work_document_number || ''}
-                    onChange={handleChange}
-                    placeholder="e.g., passport number, share code"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    RTW Expiry Date
-                  </label>
-                  <input
-                    type="date"
-                    name="right_to_work_expiry"
-                    value={formData.right_to_work_expiry || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                  <p className="text-xs text-theme-secondary mt-1">Leave blank if no expiry (e.g., British citizen)</p>
-                </div>
-              </div>
-              
-              {/* DBS Section */}
-              <div className="border-t border-theme pt-6 mt-6">
-                <h3 className="text-md font-medium text-theme-primary mb-5">DBS Check</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                      DBS Status
-                    </label>
-                    <select
-                      name="dbs_status"
-                      value={formData.dbs_status || 'not_required'}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                    >
-                      <option value="not_required">Not Required</option>
-                      <option value="pending">Pending</option>
-                      <option value="clear">Clear</option>
-                      <option value="issues_found">Issues Found</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                      DBS Certificate Number
-                    </label>
-                    <input
-                      type="text"
-                      name="dbs_certificate_number"
-                      value={formData.dbs_certificate_number || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                      DBS Check Date
-                    </label>
-                    <input
-                      type="date"
-                      name="dbs_check_date"
-                      value={formData.dbs_check_date || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'banking' && (
-            <div className="space-y-8">
-              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
-                <CreditCard className="w-5 h-5 text-module-fg" />
-                Bank Details
-              </h2>
-              <p className="text-sm text-theme-secondary">
-                Bank details are used for payroll export only and are stored securely.
-              </p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Bank Name
-                  </label>
-                  <input
-                    type="text"
-                    name="bank_name"
-                    value={formData.bank_name || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Account Holder Name
-                  </label>
-                  <input
-                    type="text"
-                    name="bank_account_name"
-                    value={formData.bank_account_name || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Sort Code
-                  </label>
-                  <input
-                    type="text"
-                    name="bank_sort_code"
-                    value={formData.bank_sort_code || ''}
-                    onChange={handleChange}
-                    placeholder="XX-XX-XX"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Account Number
-                  </label>
-                  <input
-                    type="text"
-                    name="bank_account_number"
-                    value={formData.bank_account_number || ''}
-                    onChange={handleChange}
-                    placeholder="8 digits"
-                    maxLength={8}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'leave' && (
-            <div className="space-y-8">
-              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
-                <Calendar className="w-5 h-5 text-module-fg" />
-                Leave Allowance
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Annual Leave Allowance (days)
-                  </label>
-                  <input
-                    type="number"
-                    name="annual_leave_allowance"
-                    value={formData.annual_leave_allowance || '28'}
-                    onChange={handleChange}
-                    step="0.5"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                  <p className="text-xs text-theme-tertiary mt-1">UK statutory minimum is 28 days (including bank holidays)</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'pay' && (
-            <div className="space-y-8">
-              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
-                <CreditCard className="w-5 h-5 text-module-fg" />
-                Pay & Tax Details
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Tax Code
-                  </label>
-                  <input
-                    type="text"
-                    name="tax_code"
-                    value={formData.tax_code || ''}
-                    onChange={handleChange}
-                    placeholder="e.g., 1257L"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-theme-hover dark:border-theme-hover rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors uppercase"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Student Loan
-                  </label>
-                  <div className="flex items-center gap-2 mt-2">
-                    <input
-                      type="checkbox"
-                      name="student_loan"
-                      checked={formData.student_loan || false}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        updateField('student_loan', checked);
-                      }}
-                      className="w-4 h-4 text-module-fg bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-module-fg"
-                    />
-                    <span className="text-sm text-theme-secondary">Has student loan</span>
-                  </div>
-                </div>
-                
-                {formData.student_loan && (
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                      Student Loan Plan
-                    </label>
-                    <select
-                      name="student_loan_plan"
-                      value={formData.student_loan_plan || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                    >
-                      <option value="">Select plan...</option>
-                      <option value="plan_1">Plan 1</option>
-                      <option value="plan_2">Plan 2</option>
-                      <option value="plan_4">Plan 4</option>
-                      <option value="plan_5">Plan 5</option>
-                    </select>
-                  </div>
-                )}
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Pension Enrolled
-                  </label>
-                  <div className="flex items-center gap-2 mt-2">
-                    <input
-                      type="checkbox"
-                      name="pension_enrolled"
-                      checked={formData.pension_enrolled || false}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        updateField('pension_enrolled', checked);
-                      }}
-                      className="w-4 h-4 text-module-fg bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-module-fg"
-                    />
-                    <span className="text-sm text-theme-tertiary">Enrolled in pension</span>
-                  </div>
-                </div>
-                
-                {formData.pension_enrolled && (
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                      Pension Contribution (%)
-                    </label>
-                    <input
-                      type="number"
-                      name="pension_contribution_percent"
-                      value={formData.pension_contribution_percent || ''}
-                      onChange={handleChange}
-                      step="0.1"
-                      min="0"
-                      max="100"
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                    />
-                  </div>
-                )}
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    P45 Received
-                  </label>
-                  <div className="flex items-center gap-2 mt-2">
-                    <input
-                      type="checkbox"
-                      name="p45_received"
-                      checked={formData.p45_received || false}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        updateField('p45_received', checked);
-                      }}
-                      className="w-4 h-4 text-module-fg bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-module-fg"
-                    />
-                    <span className="text-sm text-theme-tertiary">P45 received</span>
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    P45 Date
-                  </label>
-                  <input
-                    type="date"
-                    name="p45_date"
-                    value={formData.p45_date || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    P45 Reference
-                  </label>
-                  <input
-                    type="text"
-                    name="p45_reference"
-                    value={formData.p45_reference || ''}
-                    onChange={handleChange}
-                    placeholder="P45 reference number"
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'training' && (
-            <div className="space-y-8">
-              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2 mb-5">
-                <GraduationCap className="w-5 h-5 text-module-fg" />
-                Training & Certifications
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Food Safety Level
-                  </label>
-                  <select
-                    name="food_safety_level"
-                    value={formData.food_safety_level || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  >
-                    <option value="">Select level...</option>
-                    <option value="2">Level 2</option>
-                    <option value="3">Level 3</option>
-                    <option value="4">Level 4</option>
-                    <option value="5">Level 5</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Food Safety Expiry Date
-                  </label>
-                  <input
-                    type="date"
-                    name="food_safety_expiry_date"
-                    value={formData.food_safety_expiry_date || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    H&S Level
-                  </label>
-                  <select
-                    name="h_and_s_level"
-                    value={formData.h_and_s_level || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  >
-                    <option value="">Select level...</option>
-                    <option value="2">Level 2</option>
-                    <option value="3">Level 3</option>
-                    <option value="4">Level 4</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    H&S Expiry Date
-                  </label>
-                  <input
-                    type="date"
-                    name="h_and_s_expiry_date"
-                    value={formData.h_and_s_expiry_date || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    Fire Marshal Trained
-                  </label>
-                  <div className="flex items-center gap-2 mt-2">
-                    <input
-                      type="checkbox"
-                      name="fire_marshal_trained"
-                      checked={formData.fire_marshal_trained || false}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        updateField('fire_marshal_trained', checked);
-                      }}
-                      className="w-4 h-4 text-module-fg bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-module-fg"
-                    />
-                    <span className="text-sm text-theme-tertiary">Fire marshal trained</span>
-                  </div>
-                </div>
-                
-                {formData.fire_marshal_trained && (
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                      Fire Marshal Expiry Date
-                    </label>
-                    <input
-                      type="date"
-                      name="fire_marshal_expiry_date"
-                      value={formData.fire_marshal_expiry_date || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                    />
-                  </div>
-                )}
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    First Aid Trained
-                  </label>
-                  <div className="flex items-center gap-2 mt-2">
-                    <input
-                      type="checkbox"
-                      name="first_aid_trained"
-                      checked={formData.first_aid_trained || false}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        updateField('first_aid_trained', checked);
-                      }}
-                      className="w-4 h-4 text-module-fg bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-module-fg"
-                    />
-                    <span className="text-sm text-theme-tertiary">First aid trained</span>
-                  </div>
-                </div>
-                
-                {formData.first_aid_trained && (
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                      First Aid Expiry Date
-                    </label>
-                    <input
-                      type="date"
-                      name="first_aid_expiry_date"
-                      value={formData.first_aid_expiry_date || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                    />
-                  </div>
-                )}
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                    COSSH Trained
-                  </label>
-                  <div className="flex items-center gap-2 mt-2">
-                    <input
-                      type="checkbox"
-                      name="cossh_trained"
-                      checked={formData.cossh_trained || false}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        updateField('cossh_trained', checked);
-                      }}
-                      className="w-4 h-4 text-module-fg bg-theme-surface-elevated dark:bg-theme-surface-elevated border-theme rounded focus:ring-module-fg"
-                    />
-                    <span className="text-sm text-theme-tertiary">COSSH trained</span>
-                  </div>
-                </div>
-                
-                {formData.cossh_trained && (
-                  <div>
-                    <label className="block text-sm font-medium text-theme-secondary mb-1.5">
-                      COSSH Expiry Date
-                    </label>
-                    <input
-                      type="date"
-                      name="cossh_expiry_date"
-                      value={formData.cossh_expiry_date || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-module-fg transition-colors"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-theme">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated hover:bg-theme-button-hover text-theme-primary rounded-lg transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onSave}
-            disabled={saving}
-            className="px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-module-glow dark:hover:shadow-module-glow rounded-lg font-medium transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            {saving ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4" />
-                Save Changes
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Simple Form Field Component
-function SimpleFormField({
-  label,
-  value,
-  onChange,
-  type = 'text',
-}: {
-  label: string;
-  value: string | number;
-  onChange: (value: string) => void;
-  type?: string;
-}) {
-  return (
-    <div>
-      <label className="block text-sm font-medium text-theme-tertiary mb-1.5">{label}</label>
-      <input
-        type={type}
-        value={value || ''}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary text-sm focus:outline-none focus:border-module-fg focus:ring-2 focus:ring-module-fg/20 transition-colors"
-      />
-    </div>
-  );
-}
-
-// Simple Form Select Component
-function SimpleFormSelect({
-  label,
-  value,
-  onChange,
-  options
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: { value: string; label: string }[];
-}) {
-  return (
-    <div>
-      <label className="block text-sm font-medium text-theme-tertiary mb-1.5">{label}</label>
-      <select
-        value={value || ''}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2 bg-theme-surface-elevated dark:bg-theme-surface-elevated border border-module-fg/50 rounded-lg text-theme-primary text-sm focus:outline-none focus:border-module-fg focus:ring-2 focus:ring-module-fg/20 transition-colors"
-      >
-        {options.map(opt => (
-          <option key={opt.value} value={opt.value}>{opt.label}</option>
-        ))}
-      </select>
     </div>
   );
 }

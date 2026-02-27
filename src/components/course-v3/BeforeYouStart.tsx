@@ -7,10 +7,19 @@ import { supabase } from '@/lib/supabase';
 import { GraduationCap, User, MapPin, Clock, AlertCircle, BookOpen, Save } from '@/components/ui/icons';
 import Link from 'next/link';
 
+interface SavedProgressInfo {
+  moduleIndex: number;
+  lessonIndex: number;
+  slideIndex: number;
+  visitedLessons: string[];
+  savedAt: number;
+}
+
 interface BeforeYouStartProps {
   course: Course;
   assignmentId?: string | null;
-  onBegin: () => void;
+  savedProgress?: SavedProgressInfo | null;
+  onBegin: (resume: boolean) => void;
 }
 
 interface AssignmentInfo {
@@ -20,7 +29,7 @@ interface AssignmentInfo {
   site_name: string | null;
 }
 
-export function BeforeYouStart({ course, assignmentId, onBegin }: BeforeYouStartProps) {
+export function BeforeYouStart({ course, assignmentId, savedProgress, onBegin }: BeforeYouStartProps) {
   const { profile, siteId } = useAppContext();
   const [assignment, setAssignment] = useState<AssignmentInfo | null>(null);
   const [siteName, setSiteName] = useState<string | null>(null);
@@ -68,6 +77,12 @@ export function BeforeYouStart({ course, assignmentId, onBegin }: BeforeYouStart
 
   const userName = assignment?.confirmation_name || profile?.full_name || 'Learner';
   const displaySite = assignment?.site_name || siteName || null;
+
+  // Resume info
+  const resumeModule = savedProgress ? course.modules[savedProgress.moduleIndex] : null;
+  const resumeLesson = resumeModule ? resumeModule.lessons[savedProgress.lessonIndex] : null;
+  const totalLessons = course.modules.reduce((acc, m) => acc + m.lessons.length, 0);
+  const completedLessons = savedProgress ? savedProgress.visitedLessons.length : 0;
 
   return (
     <div className="min-h-screen bg-[rgb(var(--background))] dark:bg-slate-900 flex items-center justify-center p-4">
@@ -136,11 +151,11 @@ export function BeforeYouStart({ course, assignmentId, onBegin }: BeforeYouStart
         </div>
 
         {/* Charge Notice */}
-        <div className="flex items-start gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
-          <AlertCircle size={20} className="text-amber-400 shrink-0 mt-0.5" />
-          <div className="text-sm text-amber-200">
-            <p className="font-medium mb-1">Course Charge</p>
-            <p className="text-amber-200/80">
+        <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-xl">
+          <AlertCircle size={20} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div className="text-sm">
+            <p className="font-medium mb-1 text-amber-800 dark:text-amber-200">Course Charge</p>
+            <p className="text-amber-700 dark:text-amber-200/80">
               A <strong>£5 charge</strong> will be applied to{' '}
               {displaySite || 'your site'} upon successful completion of this course.
             </p>
@@ -148,26 +163,59 @@ export function BeforeYouStart({ course, assignmentId, onBegin }: BeforeYouStart
         </div>
 
         {/* Save Progress Info */}
-        <div className="flex items-start gap-3 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
-          <Save size={20} className="text-blue-400 shrink-0 mt-0.5" />
-          <div className="text-sm text-blue-200">
-            <p className="font-medium mb-1">Save & Resume</p>
-            <p className="text-blue-200/80">
-              Your progress can be saved and you can return to complete the course at a later time if needed.
-            </p>
+        {savedProgress && resumeModule && resumeLesson ? (
+          <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 rounded-xl">
+            <Save size={20} className="text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <p className="font-medium mb-1 text-green-800 dark:text-green-200">Saved Progress Found</p>
+              <p className="text-green-700 dark:text-green-200/80">
+                You were on <strong>{resumeModule.title}</strong> &mdash; {resumeLesson.title} ({completedLessons}/{totalLessons} lessons visited).
+                Saved {new Date(savedProgress.savedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}.
+              </p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-xl">
+            <Save size={20} className="text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <p className="font-medium mb-1 text-blue-800 dark:text-blue-200">Save & Resume</p>
+              <p className="text-blue-700 dark:text-blue-200/80">
+                Your progress is saved automatically. You can return to complete the course at any time.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Actions */}
         <div className="flex flex-col gap-3">
-          <button
-            onClick={onBegin}
-            disabled={loading}
-            className="w-full py-3 bg-[#D37E91] hover:bg-[#c06b7e] disabled:opacity-50 text-white rounded-xl font-bold transition-colors text-lg flex items-center justify-center gap-2"
-          >
-            <BookOpen size={20} />
-            Begin Course
-          </button>
+          {savedProgress ? (
+            <>
+              <button
+                onClick={() => onBegin(true)}
+                disabled={loading}
+                className="w-full py-3 bg-[#D37E91] hover:bg-[#c06b7e] disabled:opacity-50 text-white rounded-xl font-bold transition-colors text-lg flex items-center justify-center gap-2"
+              >
+                <BookOpen size={20} />
+                Resume Course
+              </button>
+              <button
+                onClick={() => onBegin(false)}
+                disabled={loading}
+                className="w-full py-3 border border-[rgb(var(--border))] dark:border-white/10 hover:bg-[rgb(var(--surface))] dark:hover:bg-white/5 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary rounded-xl font-medium transition-colors text-sm"
+              >
+                Start Fresh
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => onBegin(false)}
+              disabled={loading}
+              className="w-full py-3 bg-[#D37E91] hover:bg-[#c06b7e] disabled:opacity-50 text-white rounded-xl font-bold transition-colors text-lg flex items-center justify-center gap-2"
+            >
+              <BookOpen size={20} />
+              Begin Course
+            </button>
+          )}
           <Link
             href="/dashboard/courses"
             className="w-full py-3 text-center border border-[rgb(var(--border))] dark:border-white/10 hover:bg-[rgb(var(--surface))] dark:hover:bg-white/5 text-[rgb(var(--text-secondary))] dark:text-theme-tertiary rounded-xl font-medium transition-colors text-sm"

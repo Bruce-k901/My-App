@@ -114,7 +114,7 @@ export function SidebarContent() {
         />
         <NavItem
           icon={<Shield />}
-          label="Users & Roles"
+          label="Users & Access"
           href="/dashboard/users"
           active={pathname?.startsWith("/dashboard/users")}
         />

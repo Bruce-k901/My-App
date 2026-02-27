@@ -68,7 +68,7 @@ const CERT_CATEGORIES: {
 ];
 
 export default function TrainingPage() {
-  const { profile } = useAppContext();
+  const { profile, companyId } = useAppContext();
   const [stats, setStats] = useState<TrainingStats[]>([]);
   const [expiring, setExpiring] = useState<ExpiringTraining[]>([]);
   const [overview, setOverview] = useState<CompanyTrainingOverview | null>(null);
@@ -85,10 +85,10 @@ export default function TrainingPage() {
   } | null>(null);
 
   useEffect(() => {
-    if (profile?.company_id) {
+    if (companyId) {
       fetchData();
     }
-  }, [profile?.company_id]);
+  }, [companyId]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -100,7 +100,7 @@ export default function TrainingPage() {
     const { data } = await supabase
       .from('training_stats_view')
       .select('*')
-      .eq('company_id', profile?.company_id)
+      .eq('company_id', companyId)
       .order('is_mandatory', { ascending: false })
       .order('category')
       .order('course_name');
@@ -109,7 +109,7 @@ export default function TrainingPage() {
   };
 
   const fetchExpiring = async () => {
-    if (!profile?.company_id) {
+    if (!companyId) {
       setExpiring([]);
       return;
     }
@@ -119,7 +119,7 @@ export default function TrainingPage() {
       const { data, error } = await supabase
         .from('compliance_matrix_view')
         .select('profile_id, full_name, course_id, course_name, course_code, expiry_date, compliance_status')
-        .eq('company_id', profile.company_id)
+        .eq('company_id', companyId)
         .not('expiry_date', 'is', null);
 
       if (error) {
@@ -174,20 +174,20 @@ export default function TrainingPage() {
     const { data, error } = await supabase
       .from('company_training_overview')
       .select('*')
-      .eq('company_id', profile?.company_id)
+      .eq('company_id', companyId)
       .single();
 
     if (!error) setOverview(data);
   };
 
   const fetchCertStats = async () => {
-    if (!profile?.company_id) return;
+    if (!companyId) return;
 
     // Read from compliance_matrix_view — same source as Training Matrix
     const { data: matrixData, error } = await supabase
       .from('compliance_matrix_view')
       .select('profile_id, course_code, compliance_status, expiry_date')
-      .eq('company_id', profile.company_id);
+      .eq('company_id', companyId);
 
     if (error || !matrixData) {
       if (error?.code !== '42P01') {
@@ -282,7 +282,7 @@ export default function TrainingPage() {
     const expiredCount = computed.reduce((sum, c) => sum + c.expired, 0);
 
     setProfileOverview({
-      company_id: profile.company_id,
+      company_id: companyId,
       total_employees: totalEmployees,
       fully_compliant: fullyCompliant,
       expiring_30_days: expiring30,

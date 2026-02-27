@@ -24,8 +24,7 @@ type Candidate = {
 }
 
 export default function CandidatesPage() {
-  const { profile } = useAppContext()
-  const companyId = profile?.company_id
+  const { profile, companyId } = useAppContext()
 
   const [loading, setLoading] = useState(true)
   const [candidates, setCandidates] = useState<Candidate[]>([])

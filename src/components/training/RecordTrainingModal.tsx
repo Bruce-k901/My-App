@@ -58,7 +58,7 @@ export default function RecordTrainingModal({
   courseName,
   existingRecord,
 }: RecordTrainingModalProps) {
-  const { profile } = useAppContext();
+  const { profile, companyId } = useAppContext();
   const isEditMode = !!existingRecord;
 
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -97,10 +97,10 @@ export default function RecordTrainingModal({
 
   // Fetch employees and courses
   useEffect(() => {
-    if (isOpen && profile?.company_id) {
+    if (isOpen && companyId) {
       fetchData();
     }
-  }, [isOpen, profile?.company_id]);
+  }, [isOpen, companyId]);
 
   // Auto-select course when courses load
   useEffect(() => {
@@ -134,7 +134,7 @@ export default function RecordTrainingModal({
     let query = supabase
       .from('profiles')
       .select('id, full_name, email')
-      .eq('company_id', profile?.company_id)
+      .eq('company_id', companyId)
       .eq('status', 'active');
 
     if (!isManager && profile?.id) {
@@ -149,7 +149,7 @@ export default function RecordTrainingModal({
     const { data } = await supabase
       .from('training_courses')
       .select('*')
-      .eq('company_id', profile?.company_id)
+      .eq('company_id', companyId)
       .eq('is_active', true)
       .order('category')
       .order('name');

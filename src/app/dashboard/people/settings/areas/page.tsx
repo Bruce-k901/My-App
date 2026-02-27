@@ -39,7 +39,7 @@ interface Profile {
 }
 
 export default function AreasAndRegionsPage() {
-  const { profile } = useAppContext();
+  const { profile, companyId } = useAppContext();
   const [loading, setLoading] = useState(true);
   const [regions, setRegions] = useState<Region[]>([]);
   const [managers, setManagers] = useState<Profile[]>([]);
@@ -63,10 +63,10 @@ export default function AreasAndRegionsPage() {
   const [areaManagerId, setAreaManagerId] = useState('');
 
   useEffect(() => {
-    if (profile?.company_id) {
+    if (companyId) {
       loadData();
     }
-  }, [profile]);
+  }, [companyId]);
 
   async function loadData() {
     try {
@@ -76,7 +76,7 @@ export default function AreasAndRegionsPage() {
       const { data: managersData, error: managersError } = await supabase
         .from('profiles')
         .select('id, full_name, app_role')
-        .eq('company_id', profile!.company_id)
+        .eq('company_id', companyId!)
         .in('app_role', ['Manager', 'Area Manager', 'Regional Manager', 'Admin', 'Owner']);
 
       if (managersError) throw managersError;
@@ -87,7 +87,7 @@ export default function AreasAndRegionsPage() {
       const { data: regionsData, error: regionsError } = await supabase
         .from('regions')
         .select('id, name, regional_manager_id')
-        .eq('company_id', profile!.company_id)
+        .eq('company_id', companyId!)
         .order('name');
 
       if (regionsError) throw regionsError;
@@ -96,7 +96,7 @@ export default function AreasAndRegionsPage() {
       const { data: areasData, error: areasError } = await supabase
         .from('areas')
         .select('id, name, region_id, area_manager_id')
-        .eq('company_id', profile!.company_id)
+        .eq('company_id', companyId!)
         .order('name');
 
       if (areasError) throw areasError;
@@ -105,7 +105,7 @@ export default function AreasAndRegionsPage() {
       const { data: sitesData, error: sitesError } = await supabase
         .from('sites')
         .select('id, name, area_id')
-        .eq('company_id', profile!.company_id)
+        .eq('company_id', companyId!)
         .order('name');
 
       if (sitesError) throw sitesError;
@@ -209,7 +209,7 @@ export default function AreasAndRegionsPage() {
           .insert({
             name: regionName,
             regional_manager_id: regionManagerId || null,
-            company_id: profile!.company_id,
+            company_id: companyId!,
           });
 
         if (error) throw error;
@@ -279,7 +279,7 @@ export default function AreasAndRegionsPage() {
             name: areaName,
             region_id: selectedRegionId,
             area_manager_id: areaManagerId || null,
-            company_id: profile!.company_id,
+            company_id: companyId!,
           });
 
         if (error) throw error;

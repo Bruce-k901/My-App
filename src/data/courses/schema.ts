@@ -1,3 +1,9 @@
+export type CourseCategory =
+    | "food-hygiene"
+    | "workplace-safety"
+    | "compliance"
+    | "people";
+
 export interface Question {
     id: string;
     text: string;
@@ -11,6 +17,7 @@ export interface Slide {
     title: string;
     content?: string; // Markdown content
     mediaUrl?: string;
+    keyTakeaway?: string; // Bold callout shown at bottom of slide
     scenarioData?: {
         initialState: string;
         nodes: Record<string, {
@@ -37,9 +44,18 @@ export interface Course {
     id: string;
     title: string;
     description: string;
+    shortDescription?: string;
     version: string;
     refresherYears?: number;
     certificateTemplateId?: string;
+    category?: CourseCategory;
+    level?: string;
+    estimatedMinutes?: number;
+    icon?: string;
+    heroImage?: string;
+    tags?: string[];
+    learningOutcomes?: string[];
+    prerequisite?: string;
     modules: Module[];
     questionBanks?: Record<string, Question[]>;
 }

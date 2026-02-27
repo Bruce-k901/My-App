@@ -14,12 +14,14 @@ import {
   Wallet,
   Briefcase,
   UserPlus,
+  HeartPulse,
   Settings,
   ChevronDown,
   ChevronRight,
   Calendar,
   UserCircle,
   Building2,
+  ShieldCheck,
 } from '@/components/ui/icons';
 import { useState, useEffect, useMemo } from 'react';
 import { COURSES } from '@/lib/navigation-constants';
@@ -50,6 +52,7 @@ const navItems: NavItem[] = [
     children: [
       { label: 'All Employees', href: '/dashboard/people/employees' },
       { label: 'Add Employee', href: '/dashboard/people/directory/new' },
+      { label: 'Bulk Upload', href: '/dashboard/people/upload' },
       { label: 'Org Chart', href: '/dashboard/people/employees/org-chart' },
     ],
   },
@@ -100,6 +103,12 @@ const navItems: NavItem[] = [
       { label: 'Compliance Matrix', href: '/dashboard/people/training/matrix' },
       { label: 'Record Training', href: '/dashboard/people/training/record' },
     ],
+  },
+  {
+    label: 'Compliance',
+    href: '/dashboard/people/compliance',
+    icon: ShieldCheck,
+    roles: ['admin', 'owner', 'manager'],
   },
   {
     label: 'Courses',
@@ -160,6 +169,15 @@ const navItems: NavItem[] = [
     ],
   },
   {
+    label: 'Engagement',
+    href: '/dashboard/people/shift-pulse',
+    icon: HeartPulse,
+    roles: ['admin', 'owner', 'manager'],
+    children: [
+      { label: 'Shift Pulse', href: '/dashboard/people/shift-pulse' },
+    ],
+  },
+  {
     label: 'Settings',
     href: '/dashboard/people/settings',
     icon: Settings,
@@ -172,6 +190,7 @@ const navItems: NavItem[] = [
       { label: 'Approval Workflows', href: '/dashboard/people/settings/approvals' },
       { label: 'Roles & Permissions', href: '/dashboard/people/settings/roles' },
       { label: 'Shift Rules', href: '/dashboard/people/settings/shift-rules' },
+      { label: 'Shift Patterns', href: '/dashboard/people/settings/shift-patterns' },
       { label: 'Notifications', href: '/dashboard/people/settings/notifications' },
     ],
   },

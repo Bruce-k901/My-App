@@ -8,10 +8,12 @@ export async function sendEmail({
   to,
   subject,
   html,
+  bcc,
 }: {
   to: string
   subject: string
   html: string
+  bcc?: string | string[]
 }): Promise<{ success: boolean; skipped?: boolean; error?: string }> {
   const apiKey = process.env.RESEND_API_KEY
 
@@ -28,6 +30,7 @@ export async function sendEmail({
       to,
       subject,
       html,
+      ...(bcc ? { bcc } : {}),
     })
 
     if (error) {

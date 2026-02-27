@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Course, Module, Lesson, Slide, Question } from '@/data/courses/schema';
 import Link from 'next/link';
-import { ArrowLeft, ChevronRight, ChevronLeft, CheckCircle, AlertCircle, XCircle, Loader2 } from '@/components/ui/icons';
+import { ArrowLeft, ChevronRight, ChevronLeft, CheckCircle, AlertCircle, XCircle, Loader2, Lightbulb } from '@/components/ui/icons';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import { selectRandomQuestions, calculateScore, QUIZ_QUESTION_COUNT, PASS_MARK_PERCENTAGE } from '@/lib/quiz-utils';
@@ -12,6 +12,14 @@ import { BeforeYouStart } from './BeforeYouStart';
 interface CourseLayoutProps {
   course: Course;
   assignmentId?: string | null;
+}
+
+interface SavedProgress {
+  moduleIndex: number;
+  lessonIndex: number;
+  slideIndex: number;
+  visitedLessons: string[];
+  savedAt: number;
 }
 
 export function CourseLayout({ course, assignmentId }: CourseLayoutProps) {
@@ -26,10 +34,72 @@ export function CourseLayout({ course, assignmentId }: CourseLayoutProps) {
   const [quizScore, setQuizScore] = useState<{ correct: number; total: number; percentage: number; passed: boolean } | null>(null);
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
   const [completing, setCompleting] = useState(false);
+  // Scenario state
+  const [scenarioNodeId, setScenarioNodeId] = useState<string>('start');
+  const [scenarioCompleted, setScenarioCompleted] = useState(false);
+  // Visited tracking: stores "mIdx-lIdx" keys for lessons that have been viewed
+  const [visitedLessons, setVisitedLessons] = useState<Set<string>>(new Set(['0-0']));
+
+  const progressKey = `course-progress-${course.id}`;
+  const [savedProgress, setSavedProgress] = useState<SavedProgress | null>(null);
+
+  // Load saved progress from localStorage on mount
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(progressKey);
+      if (raw) {
+        const parsed = JSON.parse(raw) as SavedProgress;
+        if (
+          parsed.moduleIndex < course.modules.length &&
+          parsed.lessonIndex < course.modules[parsed.moduleIndex]?.lessons.length
+        ) {
+          setSavedProgress(parsed);
+        } else {
+          localStorage.removeItem(progressKey);
+        }
+      }
+    } catch {
+      localStorage.removeItem(progressKey);
+    }
+  }, [progressKey, course.modules]);
 
   const currentModule = course.modules[currentModuleIndex];
   const currentLesson = currentModule?.lessons[currentLessonIndex];
   const currentSlide = currentLesson?.slides[currentSlideIndex];
+
+  // Reset scenario state when moving to a new slide
+  useEffect(() => {
+    if (currentSlide?.type === 'scenario-decision') {
+      setScenarioNodeId('start');
+      setScenarioCompleted(false);
+    }
+  }, [currentSlideIndex, currentLessonIndex, currentModuleIndex, currentSlide?.type]);
+
+  // Track visited lessons
+  useEffect(() => {
+    const key = `${currentModuleIndex}-${currentLessonIndex}`;
+    setVisitedLessons(prev => {
+      if (prev.has(key)) return prev;
+      const next = new Set(prev);
+      next.add(key);
+      return next;
+    });
+  }, [currentModuleIndex, currentLessonIndex]);
+
+  // Auto-save progress to localStorage
+  useEffect(() => {
+    if (!courseStarted) return;
+    const progress: SavedProgress = {
+      moduleIndex: currentModuleIndex,
+      lessonIndex: currentLessonIndex,
+      slideIndex: currentSlideIndex,
+      visitedLessons: Array.from(visitedLessons),
+      savedAt: Date.now(),
+    };
+    try {
+      localStorage.setItem(progressKey, JSON.stringify(progress));
+    } catch { /* localStorage full or unavailable */ }
+  }, [courseStarted, currentModuleIndex, currentLessonIndex, currentSlideIndex, visitedLessons, progressKey]);
 
   // Select random quiz questions when entering a quiz slide
   useEffect(() => {
@@ -43,6 +113,9 @@ export function CourseLayout({ course, assignmentId }: CourseLayoutProps) {
   }, [currentSlideIndex, currentLessonIndex, currentModuleIndex, currentSlide?.type, course.questionBanks]);
 
   const handleCourseComplete = useCallback(async (scorePercentage: number, passed: boolean) => {
+    // Clear saved progress on course completion (pass or fail)
+    try { localStorage.removeItem(progressKey); } catch {}
+
     if (!passed) {
       // Failed - redirect to results page
       router.push(`/learn/${course.id}/results?scorePercentage=${scorePercentage}&passed=false&courseId=${course.id}`);
@@ -63,8 +136,12 @@ export function CourseLayout({ course, assignmentId }: CourseLayoutProps) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to complete course');
+        let errorMsg = 'Failed to complete course';
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.error || errorMsg;
+        } catch { /* empty body */ }
+        throw new Error(errorMsg);
       }
 
       const result = await response.json();
@@ -85,7 +162,7 @@ export function CourseLayout({ course, assignmentId }: CourseLayoutProps) {
     } finally {
       setCompleting(false);
     }
-  }, [course.id, assignmentId, siteId, router]);
+  }, [course.id, assignmentId, siteId, router, progressKey]);
 
   // Show "Before You Start" page until user begins the course
   if (!courseStarted) {
@@ -93,7 +170,18 @@ export function CourseLayout({ course, assignmentId }: CourseLayoutProps) {
       <BeforeYouStart
         course={course}
         assignmentId={assignmentId}
-        onBegin={() => setCourseStarted(true)}
+        savedProgress={savedProgress}
+        onBegin={(resume) => {
+          if (resume && savedProgress) {
+            setCurrentModuleIndex(savedProgress.moduleIndex);
+            setCurrentLessonIndex(savedProgress.lessonIndex);
+            setCurrentSlideIndex(savedProgress.slideIndex);
+            setVisitedLessons(new Set(savedProgress.visitedLessons));
+          } else {
+            try { localStorage.removeItem(progressKey); } catch {}
+          }
+          setCourseStarted(true);
+        }}
       />
     );
   }
@@ -158,6 +246,18 @@ export function CourseLayout({ course, assignmentId }: CourseLayoutProps) {
 
   const answeredCount = Object.keys(quizAnswers).length;
 
+  // Calculate overall progress
+  const totalSlides = course.modules.reduce((acc, m) => acc + m.lessons.reduce((a2, l) => a2 + l.slides.length, 0), 0);
+  let currentSlideNumber = 0;
+  for (let mi = 0; mi < currentModuleIndex; mi++) {
+    currentSlideNumber += course.modules[mi].lessons.reduce((a, l) => a + l.slides.length, 0);
+  }
+  for (let li = 0; li < currentLessonIndex; li++) {
+    currentSlideNumber += currentModule.lessons[li].slides.length;
+  }
+  currentSlideNumber += currentSlideIndex + 1;
+  const progressPercent = Math.round((currentSlideNumber / totalSlides) * 100);
+
   return (
     <div className="flex h-screen bg-[rgb(var(--background))] dark:bg-slate-900 text-[rgb(var(--text-primary))] dark:text-white font-sans">
       {/* Sidebar */}
@@ -171,39 +271,73 @@ export function CourseLayout({ course, assignmentId }: CourseLayoutProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
-          {course.modules.map((module, mIdx) => (
+          {course.modules.map((module, mIdx) => {
+            // Count visited lessons in this module
+            const visitedInModule = module.lessons.filter((_, lIdx) => visitedLessons.has(`${mIdx}-${lIdx}`)).length;
+            const totalInModule = module.lessons.length;
+            const moduleComplete = visitedInModule === totalInModule;
+            const isCurrent = mIdx === currentModuleIndex;
+
+            return (
             <div key={module.id}>
- <h3 className={`text-xs font-bold uppercase tracking-wider mb-3 ${mIdx === currentModuleIndex ?'text-[#D37E91] dark:text-[#D37E91]':'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'}`}>
-                Module {mIdx + 1}: {module.title}
-              </h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={`text-xs font-bold uppercase tracking-wider ${isCurrent ? 'text-[#D37E91]' : moduleComplete ? 'text-green-500 dark:text-green-400' : 'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'}`}>
+                  {moduleComplete && !isCurrent && <CheckCircle className="inline w-3.5 h-3.5 mr-1 -mt-0.5" />}
+                  Module {mIdx + 1}: {module.title}
+                </h3>
+                <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${moduleComplete ? 'bg-green-500/10 text-green-500 dark:text-green-400' : 'bg-[rgb(var(--surface))] dark:bg-white/5 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'}`}>
+                  {visitedInModule}/{totalInModule}
+                </span>
+              </div>
               <div className="space-y-1">
                 {module.lessons.map((lesson, lIdx) => {
                     const isActive = mIdx === currentModuleIndex && lIdx === currentLessonIndex;
+                    const isVisited = visitedLessons.has(`${mIdx}-${lIdx}`);
                     return (
                         <div
                             key={lesson.id}
- className={`px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${isActive ?'bg-[rgb(var(--surface))] dark:bg-white/10 text-[#D37E91] dark:text-[#D37E91] font-medium':'text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] dark:hover:text-theme-secondary hover:bg-[rgb(var(--surface))] dark:hover:bg-white/5'}`}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${isActive ?'bg-[rgb(var(--surface))] dark:bg-white/10 text-[#D37E91] dark:text-[#D37E91] font-medium':'text-[rgb(var(--text-secondary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))] dark:hover:text-theme-secondary hover:bg-[rgb(var(--surface))] dark:hover:bg-white/5'}`}
                         >
+                            {isVisited && !isActive ? (
+                              <CheckCircle className="w-3.5 h-3.5 text-green-500 dark:text-green-400 flex-shrink-0" />
+                            ) : isActive ? (
+                              <span className="w-2 h-2 rounded-full bg-[#D37E91] flex-shrink-0" />
+                            ) : (
+                              <span className="w-3.5 h-3.5 rounded-full border border-[rgb(var(--border))] dark:border-white/10 flex-shrink-0" />
+                            )}
                             {lesson.title}
                         </div>
                     );
                 })}
               </div>
             </div>
-          ))}
+          );
+          })}
         </div>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 border-b border-[rgb(var(--border))] dark:border-white/10 flex items-center justify-between px-8 bg-[rgb(var(--surface-elevated))] dark:bg-[#0B0D13]">
- <div className="flex items-center gap-2 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
-            <span className="font-medium text-[rgb(var(--text-primary))] dark:text-white">{currentModule.title}</span>
-            <span className="text-[rgb(var(--text-tertiary))] dark:text-slate-600">/</span>
- <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">{currentLesson.title}</span>
+        <header className="border-b border-[rgb(var(--border))] dark:border-white/10 bg-[rgb(var(--surface-elevated))] dark:bg-[#0B0D13]">
+          <div className="h-16 flex items-center justify-between px-8">
+            <div className="flex items-center gap-2 text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">
+              <span className="font-medium text-[rgb(var(--text-primary))] dark:text-white">{currentModule.title}</span>
+              <span className="text-[rgb(var(--text-tertiary))] dark:text-slate-600">/</span>
+              <span className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">{currentLesson.title}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">{progressPercent}%</span>
+              <div className="text-sm font-medium bg-[rgb(var(--surface))] dark:bg-white/5 px-3 py-1.5 rounded-full border border-[rgb(var(--border))] dark:border-white/10 text-[rgb(var(--text-secondary))] dark:text-theme-secondary">
+                {currentSlideNumber} / {totalSlides}
+              </div>
+            </div>
           </div>
-          <div className="text-sm font-medium bg-[rgb(var(--surface))] dark:bg-white/5 px-3 py-1.5 rounded-full border border-[rgb(var(--border))] dark:border-white/10 text-[rgb(var(--text-secondary))] dark:text-theme-secondary">
-            Slide {currentSlideIndex + 1} of {currentLesson.slides.length}
+          {/* Overall progress bar */}
+          <div className="h-1 w-full bg-[rgb(var(--surface))] dark:bg-white/5">
+            <div
+              className="h-full bg-[#D37E91] transition-all duration-500 ease-out"
+              style={{ width: `${progressPercent}%` }}
+            />
           </div>
         </header>
 
@@ -254,6 +388,16 @@ export function CourseLayout({ course, assignmentId }: CourseLayoutProps) {
                             return elements;
                         })()}
                     </div>
+                    {/* Key Takeaway */}
+                    {currentSlide.keyTakeaway && (
+                      <div className="mt-6 flex items-start gap-3 p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
+                        <Lightbulb className="w-5 h-5 mt-0.5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                        <div>
+                          <p className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1">Key Takeaway</p>
+                          <p className="text-sm text-amber-900 dark:text-amber-200 leading-relaxed">{currentSlide.keyTakeaway}</p>
+                        </div>
+                      </div>
+                    )}
                 </div>
                 {currentSlide.mediaUrl && (
                   <div className="bg-[rgb(var(--surface-elevated))] dark:bg-slate-800 rounded-2xl overflow-hidden border border-[rgb(var(--border))] dark:border-white/10 shadow-2xl sticky top-8">
@@ -273,34 +417,59 @@ export function CourseLayout({ course, assignmentId }: CourseLayoutProps) {
               </div>
             )}
 
-            {currentSlide.type === 'scenario-decision' && (
+            {currentSlide.type === 'scenario-decision' && (() => {
+              const nodes = currentSlide.scenarioData?.nodes || {};
+              const currentNode = nodes[scenarioNodeId];
+              if (!currentNode) return null;
+              const isTerminal = !currentNode.options || currentNode.options.length === 0;
+
+              return (
                <div className="max-w-2xl mx-auto">
                  <div className="bg-gradient-to-br from-[rgb(var(--surface-elevated))] to-[rgb(var(--surface))] dark:from-slate-800 dark:to-slate-900 p-8 rounded-2xl border border-[rgb(var(--border))] dark:border-white/10 shadow-xl">
-                    <div className="w-12 h-12 bg-[#D37E91]/25 rounded-xl flex items-center justify-center mb-6 text-[#D37E91] dark:text-[#D37E91]">
-                        <AlertCircle size={24} />
+                    <div className={`w-12 h-12 ${scenarioCompleted ? 'bg-green-500/20' : 'bg-[#D37E91]/25'} rounded-xl flex items-center justify-center mb-6`}>
+                        {scenarioCompleted
+                          ? <CheckCircle size={24} className="text-green-500" />
+                          : <AlertCircle size={24} className="text-[#D37E91]" />
+                        }
                     </div>
                     <h2 className="text-2xl font-bold mb-2 text-[rgb(var(--text-primary))] dark:text-white">{currentSlide.title}</h2>
-                    <div className="mb-8 max-w-none">
-                        <p className="text-[rgb(var(--text-secondary))] dark:text-theme-secondary leading-relaxed">
-                            {currentSlide.scenarioData?.nodes['start']?.text}
-                        </p>
+                    <div className="mb-6 max-w-none">
+                        <p className="text-[rgb(var(--text-secondary))] dark:text-theme-secondary leading-relaxed whitespace-pre-line"
+                           dangerouslySetInnerHTML={{ __html: currentNode.text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-[rgb(var(--text-primary))] dark:text-white font-semibold">$1</strong>') }}
+                        />
                     </div>
 
-                    <div className="space-y-3">
-                        {currentSlide.scenarioData?.nodes['start']?.options.map((opt: any, idx: number) => (
-                        <button
+                    {isTerminal && scenarioCompleted ? (
+                      <div className="text-center pt-2">
+                        <p className="text-sm text-green-600 dark:text-green-400 font-medium mb-3">Scenario completed</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {currentNode.options.map((opt: any, idx: number) => (
+                          <button
                             key={idx}
-                            onClick={() => alert(`You chose: ${opt.label}\n\n(Full interactive scenario logic would go here)`)}
+                            onClick={() => {
+                              if (opt.nextNodeId) {
+                                setScenarioNodeId(opt.nextNodeId);
+                                // Check if next node is terminal (correct answer)
+                                const nextNode = nodes[opt.nextNodeId];
+                                if (nextNode && (!nextNode.options || nextNode.options.length === 0)) {
+                                  setScenarioCompleted(true);
+                                }
+                              }
+                            }}
                             className="w-full p-4 bg-[rgb(var(--surface))] dark:bg-white/5 hover:bg-[rgb(var(--surface-elevated))] dark:hover:bg-white/10 border border-[rgb(var(--border))] dark:border-white/10 hover:border-[#D37E91]/50 rounded-xl text-left transition-all duration-200 flex items-center justify-between group"
-                        >
+                          >
                             <span className="font-medium text-[rgb(var(--text-secondary))] dark:text-theme-primary group-hover:text-[rgb(var(--text-primary))] dark:group-hover:text-white">{opt.label}</span>
- <ChevronRight className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary group-hover:text-[#D37E91] dark:group-hover:text-[#D37E91]"/>
-                        </button>
+                            <ChevronRight className="w-5 h-5 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary group-hover:text-[#D37E91] dark:group-hover:text-[#D37E91]"/>
+                          </button>
                         ))}
-                    </div>
+                      </div>
+                    )}
                  </div>
                </div>
-            )}
+              );
+            })()}
 
              {currentSlide.type === 'quiz' && (
                <div className="max-w-2xl mx-auto">

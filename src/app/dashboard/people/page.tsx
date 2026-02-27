@@ -48,7 +48,7 @@ interface Alert {
 }
 
 export default function TeamlyDashboard() {
-  const { profile } = useAppContext();
+  const { profile, companyId } = useAppContext();
   
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -60,9 +60,9 @@ export default function TeamlyDashboard() {
   const isManager = profile?.app_role && ['admin', 'owner', 'manager'].includes(profile.app_role.toLowerCase());
 
   useEffect(() => {
-    if (profile?.company_id) {
+    if (companyId) {
       fetchDashboardData();
-    } else if (profile && !profile.company_id) {
+    } else if (profile && !companyId) {
       // Profile loaded but no company_id - stop loading
       setLoading(false);
       console.warn('Profile loaded but no company_id:', profile);
@@ -70,10 +70,10 @@ export default function TeamlyDashboard() {
       // Still loading profile
       setLoading(true);
     }
-  }, [profile?.company_id, profile]);
+  }, [companyId, profile]);
 
   const fetchDashboardData = async () => {
-    if (!profile?.company_id) {
+    if (!companyId) {
       console.warn('Cannot fetch dashboard data: no company_id');
       setLoading(false);
       return;
@@ -84,13 +84,13 @@ export default function TeamlyDashboard() {
     try {
       // Fetch stats - use RPC function for employees, direct queries for others
       // Wrap promises to handle errors properly
-      const employeesPromise = supabase.rpc('get_company_profiles', { p_company_id: profile.company_id })
+      const employeesPromise = supabase.rpc('get_company_profiles', { p_company_id: companyId })
         .then(result => ({ data: result.data || [], error: result.error }))
         .catch(() => ({ data: [], error: null }));
       
       const leavePromise = supabase.from('leave_requests')
         .select('id, status')
-        .eq('company_id', profile?.company_id)
+        .eq('company_id', companyId)
         .eq('status', 'pending')
         .then(r => r)
         .catch(() => ({ data: [], error: null }));
@@ -105,7 +105,7 @@ export default function TeamlyDashboard() {
       const trainingPromise = isFunctionBroken 
         ? Promise.resolve({ data: [], error: null })
         : supabase.rpc('get_expiring_training', {
-            p_company_id: profile.company_id,
+            p_company_id: companyId,
             p_days_ahead: 30
           })
         .then(r => {
@@ -198,7 +198,7 @@ export default function TeamlyDashboard() {
       // Jobs table may not exist - handle gracefully
       const jobsPromise = supabase.from('jobs')
         .select('id')
-        .eq('company_id', profile?.company_id)
+        .eq('company_id', companyId)
         .eq('status', 'open')
         .then(r => r)
         .catch(() => ({ data: [], error: null }));
@@ -210,7 +210,7 @@ export default function TeamlyDashboard() {
       const todayEndISO = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).toISOString();
       const timeEntriesPromise = supabase.from('time_entries')
         .select('id')
-        .eq('company_id', profile?.company_id)
+        .eq('company_id', companyId)
         .gte('clock_in', todayStartISO)
         .lte('clock_in', todayEndISO)
         .not('clock_out', 'is', null)
@@ -251,7 +251,7 @@ export default function TeamlyDashboard() {
       const leaveTodayResult = await supabase
         .from('leave_requests')
         .select('id')
-        .eq('company_id', profile?.company_id)
+        .eq('company_id', companyId)
         .eq('status', 'approved')
         .lte('start_date', todayStr)
         .gte('end_date', todayStr)
@@ -430,7 +430,7 @@ export default function TeamlyDashboard() {
     );
   }
 
-  if (!profile?.company_id) {
+  if (!companyId) {
     return (
       <div className="space-y-6">
         <div>
@@ -450,7 +450,7 @@ export default function TeamlyDashboard() {
               <div className="text-sm text-theme-secondary">
                 <p><strong>Profile ID:</strong> {profile?.id || 'Not loaded'}</p>
                 <p><strong>Email:</strong> {profile?.email || 'Not loaded'}</p>
-                <p><strong>Company ID:</strong> {profile?.company_id || 'Not set'}</p>
+                <p><strong>Company ID:</strong> {companyId || 'Not set'}</p>
               </div>
             </div>
           </div>

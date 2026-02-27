@@ -11,8 +11,7 @@ import Select from '@/components/ui/Select'
 
 export default function PostJobPage() {
   const router = useRouter()
-  const { profile } = useAppContext()
-  const companyId = profile?.company_id
+  const { profile, companyId } = useAppContext()
 
   const [saving, setSaving] = useState(false)
   const [publishing, setPublishing] = useState(false)

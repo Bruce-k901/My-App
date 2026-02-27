@@ -28,17 +28,17 @@ const statusConfig = {
 
 export default function CourseDetailPage() {
   const { courseId } = useParams<{ courseId: string }>();
-  const { profile } = useAppContext();
+  const { profile, companyId } = useAppContext();
   const [course, setCourse] = useState<TrainingCourse | null>(null);
   const [entries, setEntries] = useState<ComplianceMatrixEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (profile?.company_id && courseId) {
+    if (companyId && courseId) {
       fetchData();
     }
-  }, [profile?.company_id, courseId]);
+  }, [companyId, courseId]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -58,7 +58,7 @@ export default function CourseDetailPage() {
       const { data: matrixData, error: matrixError } = await supabase
         .from('compliance_matrix_view')
         .select('*')
-        .eq('company_id', profile?.company_id)
+        .eq('company_id', companyId)
         .eq('course_id', courseId)
         .order('full_name');
 

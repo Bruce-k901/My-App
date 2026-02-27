@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { updateGM } from "@/lib/updateGM";
+
 import { ChevronUp } from '@/components/ui/icons';
 import { getLocationFromPostcode, isValidPostcodeForLookup } from "@/lib/locationLookup";
 import CheckboxCustom from "@/components/ui/CheckboxCustom";
@@ -79,7 +79,6 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
   const [isOpen, setIsOpen] = useState(false);
   const [selectedGM, setSelectedGM] = useState("");
   const [gmEditMode, setGmEditMode] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
 
   // Debug logging for gmList prop
   console.log("🔥 Received gmList prop:", gmList);
@@ -233,28 +232,20 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
   }, [initialData]);
 
   // Set GM data from initialData when form initializes
+  const gmProfile = initialData?.gm_profile ?? null;
   useEffect(() => {
-    if (initialData?.gm_profile) {
-      console.log("Setting GM data from initialData:", initialData.gm_profile);
+    if (gmProfile) {
       setFormData(prev => ({
         ...prev,
-        gm_user_id: initialData.gm_profile.id,
-        gm_name: initialData.gm_profile.full_name || "",
-        gm_email: initialData.gm_profile.email || "",
-        gm_phone: initialData.gm_profile.phone || ""
-      }));
-    } else if (initialData?.gm_user_id) {
-      // Fallback: if we have gm_user_id but no gm_profile, clear the GM fields
-      console.log("No gm_profile found, clearing GM fields");
-      setFormData(prev => ({
-        ...prev,
-        gm_user_id: "",
-        gm_name: "",
-        gm_email: "",
-        gm_phone: ""
+        gm_user_id: gmProfile.id,
+        gm_name: gmProfile.full_name || "",
+        gm_email: gmProfile.email || "",
+        gm_phone: gmProfile.phone || ""
       }));
     }
-  }, [initialData?.gm_profile, initialData?.gm_user_id]);
+    // Do NOT clear gm_user_id when gm_profile is missing — the enrichment
+    // may have failed (RLS, etc.) but the assignment is still valid in the DB.
+  }, [gmProfile]);
 
   // Data loading effect for edit mode
   useEffect(() => {
@@ -425,6 +416,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
       setFormData(prev => ({
         ...prev,
         gm_user_id: selectedGM.id,
+        gm_name: selectedGM.full_name ?? "",
         gm_phone: selectedGM.phone ?? "",
         gm_email: selectedGM.email ?? ""
       }));
@@ -432,6 +424,7 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
       setFormData(prev => ({
         ...prev,
         gm_user_id: "",
+        gm_name: "",
         gm_phone: "",
         gm_email: ""
       }));
@@ -439,26 +432,8 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
   };
 
   const handleSaveAndSync = async () => {
-    try {
-      setIsSaving(true);
-
-      console.log("Save button clicked", formData.id, formData.gm_user_id);
-      console.log("Saving GM", formData.id, formData.gm_user_id);
-
-      if (formData.gm_user_id && formData.id) {
-        await updateGM(formData.id, formData.gm_user_id);
-      }
-
-      console.log("GM saved and synced");
-      setGmEditMode(false);
-      onSaved?.();
-    } catch (err) {
-      console.error("Error updating GM:", err);
-      const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
-      console.error(`Failed to save GM: ${errorMessage}`);
-    } finally {
-      setIsSaving(false);
-    }
+    // Use the same admin API path as the main Save button to bypass RLS
+    await handleSave();
   };
 
   const handleInputChange = (field: keyof FormData, value: any) => {
@@ -625,110 +600,27 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
 
       console.log("Saving site data:", formData.city, formData.region);
 
-      // Upsert site data
-      console.log("Attempting to save site with data:", {
-        company_id: siteData.company_id,
-        name: siteData.name,
-        has_id: !!siteData.id,
+      // Filter only active closures with valid dates
+      const activeClosures = (formData.planned_closures || []).filter(c => c.start && c.end);
+      // Remove duplicate closures
+      const uniqueClosures = activeClosures.reduce((acc: any[], c) => {
+        const exists = acc.some(existing => existing.start === c.start && existing.end === c.end);
+        if (!exists) acc.push({ start: c.start, end: c.end, notes: c.notes || "" });
+        return acc;
+      }, []);
+
+      // Save via API route (uses admin client, bypasses RLS)
+      const res = await fetch("/api/sites", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ siteData, closures: uniqueClosures }),
       });
 
-      const { data: siteResult, error: siteError } = await supabase
-        .from("sites")
-        .upsert(siteData, { onConflict: "id" })
-        .select()
-        .single();
+      const result = await res.json();
 
-      if (siteError) {
-        console.error(`Save failed: ${siteError.message}`, {
-          error_code: siteError.code,
-          error_details: siteError.details,
-          error_hint: siteError.hint,
-          siteData: siteData,
-        });
-
-        // Try to get more info about the user's profile
-        const { data: profileData, error: profileError } = await supabase
-          .from("profiles")
-          .select("id, company_id, app_role")
-          .eq("id", (await supabase.auth.getUser()).data.user?.id)
-          .single();
-
-        console.error("User profile info:", {
-          profileData,
-          profileError,
-        });
-
+      if (!res.ok) {
+        console.error(`Save failed: ${result.error}`, { status: res.status, code: result.code });
         return;
-      }
-
-      // 1. After site upsert succeeds and returns the site ID
-      const siteId = siteResult.id;
-
-      // Update subscription site count
-      if (companyId) {
-        try {
-          const { updateSubscriptionSiteCount } = await import("@/lib/subscriptions");
-          await updateSubscriptionSiteCount(companyId);
-        } catch (err) {
-          console.error("Failed to update subscription site count:", err);
-          // Don't fail the site save if this fails
-        }
-      }
-
-      // 2. Handle closures: Delete existing and insert new ones
-      // Always delete existing closures for this site (both new and edit modes)
-      // This prevents duplicate key violations from the unique constraint
-      if (siteId) {
-        const { error: deleteError } = await supabase
-          .from("site_closures")
-          .delete()
-          .eq("site_id", siteId);
-
-        if (deleteError) {
-          console.error("Error deleting existing closures:", deleteError);
-          // Continue anyway - might be a new site or no existing closures
-        }
-      }
-
-      // 3. Filter only active closures with valid dates
-      const activeClosures = (formData.planned_closures || []).filter(c => c.start && c.end);
-
-      // 4. If any closures exist, insert them (after deletion to avoid duplicates)
-      if (activeClosures.length > 0 && siteId) {
-        // Remove duplicates based on start/end dates to prevent unique constraint violations
-        const uniqueClosures = activeClosures.reduce((acc: any[], c) => {
-          const exists = acc.some(existing =>
-            existing.closure_start === c.start && existing.closure_end === c.end
-          );
-          if (!exists) {
-            acc.push({
-              site_id: siteId,
-              closure_start: c.start,
-              closure_end: c.end,
-              notes: c.notes || "",
-              is_active: true,
-            });
-          }
-          return acc;
-        }, []);
-
-        if (uniqueClosures.length > 0) {
-          const { error: closureError } = await supabase
-            .from("site_closures")
-            .insert(uniqueClosures);
-
-          if (closureError) {
-            console.error("Error inserting planned closures:", closureError);
-            console.error("Error details:", JSON.stringify(closureError, null, 2));
-            console.error("Closures to insert:", uniqueClosures);
-            // Don't fail the entire save if closures fail - log and continue
-          } else {
-            console.log(`Inserted ${uniqueClosures.length} closures for site ${siteId}`);
-          }
-        }
-      } else if (mode === "edit" && siteId) {
-        // If no closures in form, ensure all are deleted (already done above)
-        console.log(`No closures to insert for site ${siteId}`);
       }
 
       console.log(`Site ${mode === "edit" ? "updated" : "created"} successfully`);
@@ -999,10 +891,10 @@ export default function SiteFormBase({ mode, initialData, onClose, onSaved, comp
                   <button
                     type="button"
                     onClick={handleSaveAndSync}
-                    disabled={!gmEditMode || !formData.gm_user_id || isSaving}
+                    disabled={!gmEditMode || !formData.gm_user_id || loading}
                     className="ml-auto px-4 py-2 border border-[#D37E91] text-[#D37E91] rounded-lg hover:shadow-lg hover:shadow-[#D37E91]/50 hover:border-[#D37E91] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isSaving ? "Saving..." : "Save & Sync"}
+                    {loading ? "Saving..." : "Save & Sync"}
                   </button>
                 </div>
               </div>

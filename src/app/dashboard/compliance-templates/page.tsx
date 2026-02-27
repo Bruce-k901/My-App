@@ -86,13 +86,6 @@ export default function ComplianceTemplatesPage() {
 
   async function fetchTemplates() {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setTemplates([]); setLoading(false); return; }
-
-      const { data: profile } = await supabase
-        .from('profiles').select('company_id').eq('id', user.id).single();
-      if (!profile?.company_id) { setTemplates([]); setLoading(false); return; }
-
       const { data, error } = await supabase
         .from('task_templates')
         .select('*')
@@ -140,7 +133,7 @@ export default function ComplianceTemplatesPage() {
           .from('checklist_tasks')
           .select('template_id')
           .in('template_id', templateIds)
-          .eq('company_id', profile.company_id);
+          .eq('company_id', companyId);
         setInUseTemplateIds(new Set(tasks?.map(t => t.template_id) || []));
       }
     } catch (error) {

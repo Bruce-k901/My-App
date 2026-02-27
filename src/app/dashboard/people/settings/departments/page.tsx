@@ -15,13 +15,11 @@ import * as XLSX from 'xlsx';
 import BackToSetup from '@/components/dashboard/BackToSetup';
 
 export default function SettingsDepartmentsPage() {
-  const { loading: ctxLoading, profile } = useAppContext();
+  const { loading: ctxLoading, profile, companyId } = useAppContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<Department | null>(null);
-
-  const companyId = profile?.company_id;
   const { data: departments = [], isLoading } = useDepartments(companyId);
   const createMutation = useCreateDepartment(companyId);
   const updateMutation = useUpdateDepartment(companyId);

@@ -1,0 +1,2013 @@
+{
+  "id": "uk-l3-haccp",
+  "title": "HACCP Level 3 (UK)",
+  "shortDescription": "Advanced food safety management – the 7 HACCP principles, CCPs, and documentation.",
+  "description": "In-depth course on Hazard Analysis and Critical Control Points (HACCP) covering all 7 principles, prerequisite programmes, critical control point identification, monitoring, corrective actions, and verification procedures.",
+  "version": "2.0.0",
+  "refresherYears": 2,
+  "certificateTemplateId": "cert-l3-haccp",
+  "category": "food-hygiene",
+  "level": "Level 3",
+  "estimatedMinutes": 360,
+  "icon": "ClipboardCheck",
+  "tags": [
+    "HACCP",
+    "food safety management",
+    "CCP",
+    "hazard analysis",
+    "Codex Alimentarius",
+    "level 3"
+  ],
+  "learningOutcomes": [
+    "Explain the 7 HACCP principles and their application in food businesses",
+    "Identify and assess biological, chemical, and physical hazards in food production",
+    "Establish Critical Control Points with appropriate limits and monitoring procedures",
+    "Implement corrective actions and maintain HACCP documentation for audits"
+  ],
+  "prerequisite": "uk-l2-food-safety",
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Introduction to HACCP",
+      "description": "What HACCP is, where it came from, and why it matters.",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "Origins and Legal Framework",
+          "slides": [
+            {
+              "id": "m1-s1",
+              "type": "text-graphic-split",
+              "title": "What is HACCP?",
+              "content": "## Hazard Analysis and Critical Control Points\n\nHACCP is a **systematic, science-based approach** to food safety management. Rather than relying on end-product testing – which only checks a small sample and catches problems after they occur – HACCP identifies hazards throughout the entire production process and puts controls in place to **prevent** them.\n\n### The Core Idea\nTraditional food safety relied on inspecting finished products. The problem? By the time you find contamination, thousands of portions may already be affected. HACCP shifts the focus upstream: identify where things can go wrong, put controls in place, and monitor them continuously.\n\n### Key Characteristics of HACCP\n- **Proactive** – It prevents hazards before they cause harm, rather than reacting after an incident.\n- **Systematic** – It follows a structured, step-by-step methodology (the 7 principles).\n- **Science-based** – Decisions are supported by scientific data on hazard behaviour, not guesswork.\n- **Documented** – It creates a clear audit trail that satisfies regulators.\n- **Universal** – It applies to every food business, from a sandwich shop to a factory.\n\n### Who Needs HACCP?\nEvery UK food business is **legally required** to have food safety procedures based on HACCP principles. This is not optional – it is your duty under retained EU law.",
+              "keyTakeaway": "HACCP prevents food safety hazards proactively – it doesn't just react to them after the damage is done."
+            },
+            {
+              "id": "m1-s2",
+              "type": "text-graphic-split",
+              "title": "Origins and International Standards",
+              "content": "## From Space Food to UK Law\n\nHACCP was not invented for restaurants – it was developed to keep astronauts alive.\n\n### The NASA Connection (1960s)\nIn the early 1960s, **NASA** and the **Pillsbury Company** needed to guarantee 100% safe food for the space programme. Traditional end-product testing would have required destroying most of the food supply just to test it. Pillsbury developed a preventive system that controlled hazards at every step – the birth of HACCP.\n\n### Codex Alimentarius\nThe **Codex Alimentarius Commission** (a joint body of the WHO and FAO) adopted HACCP as the **international gold standard** for food safety management. The Codex guidelines define the 7 principles and 12 implementation steps that form the basis of HACCP worldwide.\n\n### UK Legal Framework\n- **EC Regulation 852/2004** (retained in UK law post-Brexit) requires all food business operators to implement food safety procedures based on HACCP principles.\n- **The Food Safety Act 1990** provides the overarching legal framework for food safety in England, Wales, and Scotland.\n- **The Food Hygiene (England) Regulations 2006** set out specific hygiene requirements.\n- **Environmental Health Officers (EHOs)** enforce these regulations through inspections, improvement notices, and prosecution.\n\nFailure to have adequate HACCP procedures can result in enforcement action, closure, or criminal prosecution.",
+              "keyTakeaway": "HACCP originated from NASA's need for guaranteed safe food and is now a legal requirement for every UK food business under EC Regulation 852/2004."
+            },
+            {
+              "id": "m1-s3",
+              "type": "text-graphic-split",
+              "title": "Prerequisite Programmes (PRPs)",
+              "content": "## The Foundation Before HACCP\n\nHACCP does not operate in isolation. It sits on top of **prerequisite programmes (PRPs)** – the basic hygiene and operational conditions that must be in place before HACCP can work.\n\n### Think of It Like a Building\n- **PRPs = the foundation** – basic hygiene, training, maintenance.\n- **HACCP = the building** – the systematic hazard control on top.\n- If the foundation is weak, the building collapses.\n\n### Essential PRPs for Hospitality\n| PRP | What It Covers |\n|---|---|\n| **Personal hygiene** | Handwashing, clean uniforms, illness reporting, fitness to work |\n| **Cleaning & sanitisation** | Documented schedules, correct chemicals, two-stage process |\n| **Pest control** | Contracted service, monitoring stations, proofing, kill traps |\n| **Supplier approval** | Approved supplier list, specifications, delivery checks |\n| **Training** | All staff trained to a level appropriate to their role |\n| **Maintenance** | Equipment in good repair, calibrated thermometers, no exposed wiring |\n| **Waste management** | Proper disposal, separation, collection frequency |\n| **Water quality** | Potable water supply confirmed and tested |\n| **Temperature control** | Fridge/freezer monitoring, thermometer availability |\n\n### Why PRPs Matter\nAn EHO will assess your PRPs alongside your HACCP plan. If basic hygiene is poor, your HACCP plan is meaningless – you cannot control CCPs if the foundation is failing.",
+              "keyTakeaway": "PRPs are the foundation HACCP is built on – without solid basic hygiene, cleaning, and training, your HACCP plan cannot work."
+            },
+            {
+              "id": "m1-s4",
+              "type": "text-graphic-split",
+              "title": "The HACCP Team and Food Safety Culture",
+              "content": "## Building Your HACCP Team\n\nHACCP is not a one-person job. Codex Alimentarius recommends assembling a **multidisciplinary team** to develop and maintain the HACCP plan.\n\n### Who Should Be on the Team?\n- **Team leader** – Usually the head chef or food safety manager. Responsible for coordinating the HACCP plan.\n- **Production/kitchen staff** – They know the day-to-day reality of how food is handled.\n- **Purchasing/receiving** – They understand supplier relationships and delivery processes.\n- **Maintenance** – They know equipment capabilities and limitations.\n- **External expertise** – A food safety consultant may be needed for specialist knowledge (e.g., microbiology).\n\n### The 12 Implementation Steps\nCodex defines 12 steps for implementing HACCP. The first 5 are preparatory:\n1. **Assemble the HACCP team**\n2. **Describe the product** – Ingredients, processing, packaging, storage, distribution.\n3. **Identify intended use** – Who is the consumer? Vulnerable groups?\n4. **Construct a flow diagram** – Every step from receiving to service.\n5. **On-site verification** – Walk the process to confirm the flow diagram is accurate.\n\nSteps 6-12 correspond to the **7 HACCP principles** (covered in Module 2).\n\n### Food Safety Culture\nHACCP documentation means nothing if staff don't believe in it. A strong food safety culture means:\n- Management leads by example.\n- Staff feel empowered to raise concerns.\n- Near-misses are reported without blame.\n- Training is ongoing, not a one-off tick-box.",
+              "keyTakeaway": "HACCP requires a multidisciplinary team and a genuine food safety culture – paperwork alone does not keep food safe."
+            }
+          ]
+        },
+        {
+          "id": "m1-l2",
+          "title": "Scenarios: HACCP Foundations",
+          "slides": [
+            {
+              "id": "m1-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The New Restaurant Opening",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You're the head chef at a new restaurant opening next month. The owner says: 'We need a HACCP plan for the EHO inspection. Can you just download a template from the internet and fill it in?' What do you do?",
+                    "options": [
+                      {
+                        "label": "Download a generic template and adapt it",
+                        "nextNodeId": "template"
+                      },
+                      {
+                        "label": "Explain you need to build a bespoke HACCP plan based on your actual processes",
+                        "nextNodeId": "bespoke"
+                      },
+                      {
+                        "label": "Tell the owner HACCP isn't needed for a small restaurant",
+                        "nextNodeId": "no_haccp"
+                      }
+                    ]
+                  },
+                  "template": {
+                    "text": "⚠️ You download a template, but it's designed for a large food factory. The processes don't match your kitchen at all. The EHO arrives for a pre-opening inspection and asks you to walk them through your flow diagram. What do you say?",
+                    "options": [
+                      {
+                        "label": "Admit the template doesn't reflect your actual processes and commit to rewriting it",
+                        "nextNodeId": "admit_fix"
+                      },
+                      { "label": "Try to bluff your way through it", "nextNodeId": "bluff_end" }
+                    ]
+                  },
+                  "bespoke": {
+                    "text": "Good thinking. The owner asks what that involves. What's your first step?",
+                    "options": [
+                      {
+                        "label": "Start by listing all the hazards you can think of",
+                        "nextNodeId": "skip_team"
+                      },
+                      {
+                        "label": "Assemble a HACCP team and map out the process flow diagram first",
+                        "nextNodeId": "correct_start"
+                      }
+                    ]
+                  },
+                  "no_haccp": {
+                    "text": "❌ **Incorrect.** EC Regulation 852/2004 requires ALL food businesses – regardless of size – to have HACCP-based food safety procedures. The EHO could issue an improvement notice or even delay your opening.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "admit_fix": {
+                    "text": "The EHO appreciates your honesty and gives you guidance on what a bespoke plan should look like. They schedule a follow-up visit. You now know you need to build the plan properly from scratch. What's the foundation?",
+                    "options": [
+                      {
+                        "label": "Get your prerequisite programmes (PRPs) in place first, then build HACCP on top",
+                        "nextNodeId": "correct_end"
+                      },
+                      { "label": "Jump straight to identifying CCPs", "nextNodeId": "skip_prps" }
+                    ]
+                  },
+                  "bluff_end": {
+                    "text": "❌ **Poor outcome.** The EHO quickly identifies that the flow diagram doesn't match your kitchen layout or menu. They issue an improvement notice requiring a compliant HACCP plan before opening. This delays your launch and damages the owner's confidence in you.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "skip_team": {
+                    "text": "⚠️ Listing hazards is important, but without first mapping your actual process (flow diagram) and assembling a team, you'll miss steps. Codex says: assemble the team, describe the product, map the flow, THEN analyse hazards.",
+                    "options": [
+                      {
+                        "label": "Go back and start with the team and flow diagram",
+                        "nextNodeId": "correct_start"
+                      }
+                    ]
+                  },
+                  "correct_start": {
+                    "text": "✅ Excellent. You assemble a team (yourself, sous chef, front-of-house manager), describe your products, and map every step from delivery to service. Now what?",
+                    "options": [
+                      {
+                        "label": "Verify the flow diagram by walking it on-site, then begin hazard analysis",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "Start writing monitoring procedures immediately",
+                        "nextNodeId": "skip_verify"
+                      }
+                    ]
+                  },
+                  "skip_prps": {
+                    "text": "⚠️ You can't control CCPs if your basic hygiene and cleaning aren't solid. PRPs are the foundation – HACCP sits on top. Get cleaning schedules, training, pest control, and supplier checks in place first.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "skip_verify": {
+                    "text": "⚠️ Monitoring procedures come later (Principle 4). First you need to verify the flow diagram on-site (Step 5), then conduct your hazard analysis (Principle 1). Follow the Codex sequence.",
+                    "options": [
+                      {
+                        "label": "Go back and verify the flow diagram first",
+                        "nextNodeId": "correct_end"
+                      }
+                    ]
+                  },
+                  "correct_end": {
+                    "text": "✅ **Well done!** You've followed the correct Codex sequence: assemble the team, describe products, map the process, verify on-site, then begin hazard analysis. This bespoke approach ensures your HACCP plan reflects your actual kitchen operations.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The PRP Breakdown",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "During a routine walk-through, you notice several issues: the pest control contract expired last month, the cleaning schedule hasn't been signed for 3 days, and a new kitchen porter hasn't received food safety training. Your HACCP plan is otherwise up to date. How serious is this?",
+                    "options": [
+                      {
+                        "label": "Not serious – HACCP plan is fine, these are minor admin issues",
+                        "nextNodeId": "dismiss"
+                      },
+                      {
+                        "label": "Very serious – PRPs are the foundation and these failures undermine the whole HACCP system",
+                        "nextNodeId": "serious"
+                      },
+                      {
+                        "label": "Only the training issue matters – the rest can wait",
+                        "nextNodeId": "partial"
+                      }
+                    ]
+                  },
+                  "dismiss": {
+                    "text": "❌ **Incorrect.** These are not minor admin issues. PRPs are the foundation of HACCP. Without pest control, cleaning verification, and trained staff, your CCPs cannot function reliably. An EHO would view this as a systemic failure.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "serious": {
+                    "text": "Correct – these are critical PRP failures. What do you do first?",
+                    "options": [
+                      {
+                        "label": "Fix everything yourself today to avoid escalation",
+                        "nextNodeId": "solo_fix"
+                      },
+                      {
+                        "label": "Prioritise by risk, delegate actions, and set deadlines",
+                        "nextNodeId": "prioritise"
+                      }
+                    ]
+                  },
+                  "partial": {
+                    "text": "⚠️ All three issues are serious. An expired pest control contract means no monitoring – you could have an undetected infestation. Unsigned cleaning schedules mean you can't prove due diligence. And an untrained porter is a contamination risk.",
+                    "options": [{ "label": "Address all three issues", "nextNodeId": "serious" }]
+                  },
+                  "solo_fix": {
+                    "text": "⚠️ While urgency is good, trying to do everything yourself isn't sustainable and may mean shortcuts. As HACCP team leader, you should delegate appropriately and ensure accountability.",
+                    "options": [
+                      { "label": "Delegate and set deadlines instead", "nextNodeId": "prioritise" }
+                    ]
+                  },
+                  "prioritise": {
+                    "text": "Good. You prioritise: (1) Remove the untrained porter from food handling immediately and schedule training. (2) Contact pest control company to renew the contract today. (3) Investigate the cleaning schedule gap. Now, should you document what happened?",
+                    "options": [
+                      {
+                        "label": "Yes – document the failures, corrective actions, and review the HACCP plan",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "No – just fix it and move on, no need to create a paper trail",
+                        "nextNodeId": "no_doc"
+                      }
+                    ]
+                  },
+                  "no_doc": {
+                    "text": "❌ **Incorrect.** Documentation is essential. You need to record what went wrong, what corrective actions were taken, and whether the HACCP plan needs updating. This is due diligence evidence and protects you if the EHO asks questions.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "correct_end": {
+                    "text": "✅ **Well done!** You correctly identified PRP failures as a serious threat to the entire HACCP system, prioritised by risk, delegated corrective actions, and documented everything. This is exactly how a Level 3 food safety manager should respond.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "The 7 HACCP Principles",
+      "description": "The core framework for managing food safety systematically.",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "The Seven Principles",
+          "slides": [
+            {
+              "id": "m2-s1",
+              "type": "text-graphic-split",
+              "title": "Principle 1: Conduct a Hazard Analysis",
+              "content": "## Identifying What Can Go Wrong\n\nThe first principle is the most important – everything else depends on getting this right. A hazard analysis identifies **all potential hazards** at each step of your food production process.\n\n### The Three Types of Hazard\n- **Biological** – Bacteria (Salmonella, E. coli O157, Listeria monocytogenes, Campylobacter, Clostridium perfringens, Bacillus cereus), viruses (Norovirus, Hepatitis A), parasites (Cryptosporidium, Anisakis in fish), and moulds (aflatoxins).\n- **Chemical** – Allergens (the 14 declarable allergens), cleaning chemicals, pesticide residues, heavy metals, veterinary drug residues, naturally occurring toxins (histamine in fish, solanine in potatoes).\n- **Physical** – Glass, metal fragments, bone, stones, plastic, wood splinters, hair, plasters, jewellery, pests or pest parts.\n\n### For Each Hazard, Assess:\n1. **Likelihood** – How probable is it that this hazard will occur at this step?\n2. **Severity** – If it does occur, how serious would the consequences be?\n3. **Significance** – Likelihood × Severity = the overall risk rating.\n\n### Practical Example\nAt the 'receiving deliveries' step: biological hazard = chicken delivered above 8°C (likelihood: medium, severity: high = significant). This step may be a CCP.",
+              "keyTakeaway": "Hazard analysis must cover biological, chemical, and physical hazards at every process step, assessing both likelihood and severity."
+            },
+            {
+              "id": "m2-s2",
+              "type": "text-graphic-split",
+              "title": "Principle 2: Determine the Critical Control Points",
+              "content": "## Where Control Is Essential\n\nA **Critical Control Point (CCP)** is a step in the process where control can be applied and is **essential** to prevent, eliminate, or reduce a food safety hazard to an acceptable level.\n\n### CCP vs Control Point\nNot every control is a CCP. The distinction matters:\n- **Control Point (CP)** – A step where control is applied but is not the last opportunity to prevent the hazard. Example: washing salad leaves (reduces but doesn't eliminate bacteria).\n- **Critical Control Point (CCP)** – A step where failure means the hazard reaches the consumer. Example: cooking chicken to 75°C core temperature (this is the step that eliminates Salmonella).\n\n### Common CCPs in Hospitality\n| CCP | Hazard Controlled | Why It's Critical |\n|---|---|---|\n| **Cooking** | Bacterial survival | Core temp ≥75°C kills pathogens – no later step fixes this |\n| **Chilling/cooling** | Bacterial growth | Rapid cooling prevents spore germination |\n| **Hot holding** | Bacterial growth | ≥63°C keeps food out of the danger zone |\n| **Reheating** | Bacterial survival | ≥75°C core temp (Scotland: 82°C) |\n| **Delivery checks** | All biological | Rejecting warm deliveries prevents contaminated stock entering |\n\n### Keeping It Focused\nA common mistake is identifying too many CCPs. If everything is critical, nothing is critical. Focus on the steps where **failure has no safety net downstream**.",
+              "keyTakeaway": "A CCP is a step where control is essential and no subsequent step can fix the problem – keep the number focused and meaningful."
+            },
+            {
+              "id": "m2-s3",
+              "type": "text-graphic-split",
+              "title": "Principle 3: Establish Critical Limits",
+              "content": "## Drawing the Line Between Safe and Unsafe\n\nEvery CCP must have a **critical limit** – a measurable value that separates acceptable from unacceptable. If the critical limit is breached, the food is potentially unsafe.\n\n### Characteristics of Good Critical Limits\n- **Measurable** – Must be something you can objectively verify (temperature, time, pH, water activity).\n- **Science-based** – Derived from scientific data, legislation, or industry codes of practice.\n- **Practical** – Staff must be able to check them with available equipment.\n- **Unambiguous** – No room for interpretation. '75°C core temperature' is clear; 'hot enough' is not.\n\n### Critical Limits in UK Hospitality\n| CCP | Critical Limit | Source |\n|---|---|---|\n| Cooking | Core temperature ≥ **75°C** | FSA guidance |\n| Chilling | Cool from 63°C to **≤8°C within 90 minutes** | Industry best practice |\n| Fridge storage | ≤ **8°C** (legal max); target **0–5°C** | Food Hygiene Regs |\n| Hot holding | ≥ **63°C** | Food Hygiene Regs |\n| Reheating | Core ≥ **75°C** (England/Wales); **82°C** (Scotland) | FSA / Food Scotland |\n| Delivery | Chilled food ≤ **8°C**; frozen food ≤ **-15°C** | Industry codes |\n\n### Target Limits vs Critical Limits\nMany businesses set **target limits** (also called operational limits) that are stricter than the critical limit. For example, target fridge temp of 3°C with a critical limit of 8°C. This gives a buffer before a breach occurs.",
+              "keyTakeaway": "Critical limits must be measurable, science-based, and unambiguous – they are the line between safe food and a potential food safety incident."
+            },
+            {
+              "id": "m2-s4",
+              "type": "text-graphic-split",
+              "title": "Principle 4: Establish Monitoring Procedures",
+              "content": "## Proving Your CCPs Are Under Control\n\nMonitoring is the **planned measurement or observation** of a CCP to check that it is within its critical limits. Without monitoring, you have no evidence that your controls are working.\n\n### The Four Questions of Monitoring\nFor every CCP, define:\n1. **WHAT** is being monitored? – Temperature, time, pH, visual check.\n2. **HOW** is it being monitored? – Probe thermometer, timer, pH strips, visual inspection.\n3. **WHEN** / how often? – Every batch, every 2 hours, on delivery, at start of service.\n4. **WHO** is responsible? – Named person or specific role (e.g., 'duty chef').\n\n### Types of Monitoring\n- **Continuous** – Automatic data loggers on fridges/freezers recording 24/7. Best for critical storage CCPs.\n- **Periodic** – Manual checks at set intervals. Example: probe-checking hot-held food every 2 hours.\n- **Per-batch** – Checking every individual batch. Example: probing every batch of cooked chicken.\n\n### Recording Monitoring Results\nEvery check must be **recorded** with:\n- Date and time of the check.\n- The reading or observation.\n- The name/initials of the person who checked.\n- Any corrective action taken if out of spec.\n\nDigital systems (like Teamly) make this easier and more auditable than paper records.\n\n### Calibration\nMonitoring equipment must be **calibrated** regularly. A thermometer reading 3°C low means your 75°C reading is actually only 72°C – potentially unsafe.",
+              "keyTakeaway": "Monitoring must answer WHAT, HOW, WHEN, and WHO for every CCP – and every check must be recorded with date, time, reading, and name."
+            },
+            {
+              "id": "m2-s5",
+              "type": "text-graphic-split",
+              "title": "Principles 5, 6, and 7: Corrective Actions, Verification, and Documentation",
+              "content": "## Completing the HACCP Framework\n\n### Principle 5: Corrective Actions\nWhen a critical limit is breached, you need a **pre-planned response** – not a panicked improvisation. Every corrective action must:\n1. **Fix the immediate problem** – Dispose of unsafe food, re-cook, re-chill, reject delivery.\n2. **Identify the root cause** – Why did the deviation happen? Equipment failure? Staff error? Process gap?\n3. **Prevent recurrence** – Fix the underlying issue so it doesn't happen again.\n4. **Document everything** – Date, time, deviation, action taken, who was responsible.\n\n### Principle 6: Verification\nVerification confirms the **entire HACCP system is working** – it's the big-picture check.\n- **Internal audits** – Walk-through inspections of the kitchen against the HACCP plan.\n- **Thermometer calibration** – Are your probes reading accurately? Check against ice slurry (0°C) and boiling water (100°C).\n- **Microbiological testing** – Swab tests of surfaces, equipment, and hands.\n- **Complaint analysis** – Patterns in customer complaints may reveal system weaknesses.\n- **Supplier audits** – Are your suppliers maintaining their food safety standards?\n\n### Principle 7: Documentation and Record Keeping\nYour HACCP plan must include:\n- The hazard analysis and CCP identification.\n- Critical limits, monitoring procedures, and corrective action plans.\n- All monitoring records, corrective action records, and verification records.\n- Records should be kept for **at least 12 months** (longer for some products).\n\n**Records must be available for EHO inspection at any time.**",
+              "keyTakeaway": "Corrective actions must be pre-planned and documented; verification checks the whole system works; documentation provides the audit trail for everything."
+            }
+          ]
+        },
+        {
+          "id": "m2-l2",
+          "title": "Scenarios: Applying the Principles",
+          "slides": [
+            {
+              "id": "m2-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Temperature Breach",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "During hot-holding monitoring at 1:30 PM, you find a batch of chilli con carne at 58°C – below the 63°C critical limit. It was placed on the hot counter at 12:00 PM and last checked at 12:30 PM (reading 67°C). What should you do?",
+                    "options": [
+                      {
+                        "label": "Serve it anyway – it's only 5 degrees off and customers are waiting",
+                        "nextNodeId": "serve_anyway"
+                      },
+                      {
+                        "label": "Reheat it to 75°C core temperature before returning to hot-holding",
+                        "nextNodeId": "reheat"
+                      },
+                      {
+                        "label": "Dispose of it immediately – it's been in the danger zone",
+                        "nextNodeId": "dispose_early"
+                      }
+                    ]
+                  },
+                  "serve_anyway": {
+                    "text": "❌ **Dangerous.** Food at 58°C has been in the bacterial growth zone. Pathogenic bacteria like Clostridium perfringens can multiply rapidly between 8-63°C. Serving this could cause food poisoning affecting multiple customers.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "reheat": {
+                    "text": "Good – reheating to 75°C can make the food safe again. But there's a condition: how long has the food been below 63°C? It was 67°C at 12:30 and 58°C at 1:30. That's potentially up to 1 hour in the danger zone. Is reheating still appropriate?",
+                    "options": [
+                      {
+                        "label": "Yes – under 2 hours in the danger zone, reheating to 75°C is acceptable",
+                        "nextNodeId": "reheat_ok"
+                      },
+                      {
+                        "label": "No – any time in the danger zone means disposal",
+                        "nextNodeId": "too_strict"
+                      }
+                    ]
+                  },
+                  "dispose_early": {
+                    "text": "⚠️ Disposal is the safest option if in doubt, but it may be wasteful if the food hasn't been in the danger zone for long. UK guidance generally allows reheating if the food has been below 63°C for less than 2 hours. What matters is the total time in the danger zone.",
+                    "options": [
+                      {
+                        "label": "Check the timeline and consider reheating if under 2 hours",
+                        "nextNodeId": "reheat"
+                      },
+                      { "label": "Dispose anyway to be safe", "nextNodeId": "dispose_doc" }
+                    ]
+                  },
+                  "reheat_ok": {
+                    "text": "Correct – the food has been below 63°C for approximately 1 hour, which is within acceptable limits for reheating. You reheat to 75°C core temp. Now what?",
+                    "options": [
+                      {
+                        "label": "Return to hot-holding and document the deviation and corrective action",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "Return to hot-holding – no need to write anything down",
+                        "nextNodeId": "no_doc"
+                      }
+                    ]
+                  },
+                  "too_strict": {
+                    "text": "⚠️ That's overly cautious. UK food safety guidance recognises that brief periods below 63°C don't automatically make food unsafe. The total time in the danger zone matters. Under 2 hours with reheating to 75°C is generally acceptable.",
+                    "options": [{ "label": "Proceed with reheating", "nextNodeId": "reheat_ok" }]
+                  },
+                  "dispose_doc": {
+                    "text": "Disposal is acceptable when in doubt. But you MUST document the deviation, the decision to dispose, and investigate why the hot counter dropped below 63°C.",
+                    "options": [
+                      {
+                        "label": "Document everything and investigate the root cause",
+                        "nextNodeId": "correct_end"
+                      }
+                    ]
+                  },
+                  "no_doc": {
+                    "text": "❌ **Incorrect.** Every CCP deviation MUST be documented, regardless of the corrective action taken. You need to record: the deviation (58°C at 1:30 PM), the corrective action (reheated to 75°C), and who handled it. Without documentation, you have no due diligence evidence.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "correct_end": {
+                    "text": "✅ **Well done!** You assessed the timeline, took appropriate corrective action, and documented everything. You should also investigate why the temperature dropped – was the hot counter malfunctioning? Was it overloaded? This root cause analysis prevents recurrence.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Identifying CCPs on a New Menu",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Your restaurant is launching a new menu item: sous vide duck breast served with a salad garnish. You need to update your HACCP plan. You've mapped the process: receive duck → store (fridge) → vacuum pack → sous vide cook (58°C for 2 hours) → sear → plate with salad → serve. Where are the CCPs?",
+                    "options": [
+                      {
+                        "label": "Every step is a CCP – you need to control everything",
+                        "nextNodeId": "every_step"
+                      },
+                      {
+                        "label": "Cooking (sous vide) and delivery/receiving are the only CCPs",
+                        "nextNodeId": "partial_ccps"
+                      },
+                      {
+                        "label": "Use the CCP decision tree to assess each step systematically",
+                        "nextNodeId": "decision_tree"
+                      }
+                    ]
+                  },
+                  "every_step": {
+                    "text": "❌ **Incorrect.** If every step is a CCP, you'll overwhelm your monitoring system and lose focus on the truly critical points. Most steps are control points (CPs) managed by PRPs. Use the Codex decision tree to identify which steps are genuinely critical.",
+                    "options": [
+                      { "label": "Use the decision tree instead", "nextNodeId": "decision_tree" }
+                    ]
+                  },
+                  "partial_ccps": {
+                    "text": "⚠️ You've identified some, but sous vide cooking at 58°C is unusual – it's below the normal 75°C critical limit. This needs careful analysis. Also, what about the chilling step if duck isn't served immediately? Let's use the decision tree properly.",
+                    "options": [
+                      {
+                        "label": "Apply the decision tree systematically",
+                        "nextNodeId": "decision_tree"
+                      }
+                    ]
+                  },
+                  "decision_tree": {
+                    "text": "Good approach. Let's focus on the sous vide step. The duck is cooked at 58°C for 2 hours – below the usual 75°C critical limit. Applying Decision Tree Q2: 'Is this step specifically designed to eliminate or reduce the hazard to an acceptable level?' What's your answer?",
+                    "options": [
+                      {
+                        "label": "No – 58°C doesn't kill bacteria, so it can't be a CCP",
+                        "nextNodeId": "wrong_temp"
+                      },
+                      {
+                        "label": "Yes – the time-temperature combination (58°C for 2 hours) achieves pasteurisation equivalent to 75°C instantaneous",
+                        "nextNodeId": "correct_sous_vide"
+                      }
+                    ]
+                  },
+                  "wrong_temp": {
+                    "text": "⚠️ Actually, sous vide relies on **time-temperature equivalence**. While 75°C kills pathogens almost instantly, holding food at lower temperatures for longer periods achieves the same result. At 58°C for 2 hours, the cumulative thermal effect pasteurises the duck. However, this means BOTH temperature AND time are critical limits.",
+                    "options": [
+                      {
+                        "label": "Set both time and temperature as critical limits",
+                        "nextNodeId": "correct_sous_vide"
+                      }
+                    ]
+                  },
+                  "correct_sous_vide": {
+                    "text": "✅ Correct. For sous vide, you must monitor BOTH temperature (≥58°C) AND time (≥2 hours). The critical limits are: water bath ≥58°C throughout AND cook time ≥120 minutes. Now, is the searing step also a CCP?",
+                    "options": [
+                      {
+                        "label": "Yes – searing adds an extra kill step",
+                        "nextNodeId": "sear_ccp"
+                      },
+                      {
+                        "label": "No – the sous vide step already achieved pasteurisation; searing is for flavour and texture",
+                        "nextNodeId": "correct_end"
+                      }
+                    ]
+                  },
+                  "sear_ccp": {
+                    "text": "⚠️ While searing does add surface heat, its primary purpose is flavour and texture (Maillard reaction), not food safety. Since the sous vide step has already achieved pasteurisation, searing is a control point (CP) not a CCP. Applying Decision Tree Q4: 'Will a subsequent step eliminate the hazard?' – the hazard was already eliminated at sous vide.",
+                    "options": [
+                      {
+                        "label": "Understood – sous vide is the CCP, searing is a CP",
+                        "nextNodeId": "correct_end"
+                      }
+                    ]
+                  },
+                  "correct_end": {
+                    "text": "✅ **Well done!** You correctly applied the CCP decision tree. For sous vide duck: the sous vide cook is a CCP with dual critical limits (temperature ≥58°C AND time ≥120 minutes). The searing step is a CP. You'd also identify delivery temperature and chilled storage as CCPs. This is exactly the systematic approach required at Level 3.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Hazard Analysis in Practice",
+      "description": "How to conduct a hazard analysis for your food business.",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "Process Mapping and Risk Assessment",
+          "slides": [
+            {
+              "id": "m3-s1",
+              "type": "text-graphic-split",
+              "title": "Process Flow Diagrams",
+              "content": "## Mapping Every Step\n\nBefore you can identify hazards, you need a clear picture of every step in your food production process. A **process flow diagram** is a visual map showing the journey of food from receiving to service.\n\n### How to Create a Flow Diagram\n1. **List every step** – Receiving, storage, preparation, cooking, cooling, reheating, hot-holding, service, disposal.\n2. **Show the flow** – Use arrows to show the sequence. Include any loops (e.g., food returned for reheating).\n3. **Mark decision points** – Where food takes different paths (e.g., 'cook and serve' vs 'cook, cool, store, reheat').\n4. **Include all inputs** – Ingredients, water, packaging materials.\n5. **Note rework/recycle** – Any food that re-enters the process (e.g., day-old bread for bread pudding).\n\n### Key Steps in Hospitality\n| Step | What Happens | Typical Hazards |\n|---|---|---|\n| Receiving | Deliveries checked | Temperature abuse, physical contamination |\n| Storage (dry) | Ambient storage | Pest contamination, cross-contact |\n| Storage (chilled) | Fridge/cold room | Temperature failure, cross-contamination |\n| Preparation | Washing, cutting, mixing | Cross-contamination, allergen cross-contact |\n| Cooking | Heat treatment | Insufficient temperature/time |\n| Cooling | Rapid cool-down | Slow cooling allowing bacterial growth |\n| Reheating | Re-heat to serve | Insufficient temperature |\n| Hot holding | Maintain ≥63°C | Temperature drop into danger zone |\n| Service | Plating, serving | Time at room temperature, allergens |\n\n### On-Site Verification (Step 5)\nOnce drawn, **walk the process on the kitchen floor** to verify accuracy. Flow diagrams drawn in an office often miss reality.",
+              "keyTakeaway": "A process flow diagram must cover every step from receiving to service – and must be verified by walking it on-site in the actual kitchen."
+            },
+            {
+              "id": "m3-s2",
+              "type": "text-graphic-split",
+              "title": "The CCP Decision Tree",
+              "content": "## Codex Alimentarius Decision Tree\n\nThe Codex decision tree is a systematic tool for determining whether a process step is a CCP. It asks four sequential questions:\n\n### Question 1: Do control measures exist at this step?\n- **Yes** → Proceed to Q2.\n- **No** → Is control necessary for safety at this step?\n  - **Yes** → Modify the step, process, or product to introduce a control measure. Then proceed to Q2.\n  - **No** → Not a CCP. This step doesn't affect food safety.\n\n### Question 2: Is this step specifically designed to eliminate or reduce the hazard to an acceptable level?\n- **Yes** → **This is a CCP.** Stop here.\n- **No** → Proceed to Q3.\n\n### Question 3: Could contamination occur at or increase to unacceptable levels at this step?\n- **Yes** → Proceed to Q4.\n- **No** → Not a CCP.\n\n### Question 4: Will a subsequent step eliminate or reduce the hazard to an acceptable level?\n- **Yes** → Not a CCP (the later step is the CCP).\n- **No** → **This is a CCP.** There is no downstream safety net.\n\n### Common Mistakes\n- **Too many CCPs** – If you identify 15+ CCPs, you've likely confused CPs with CCPs.\n- **Skipping the tree** – Gut feeling is not acceptable. The decision tree provides auditable evidence for CCP selection.\n- **Forgetting Q4** – Many steps have hazards but a later cooking step eliminates them.",
+              "keyTakeaway": "The Codex decision tree has four questions – apply them systematically at every process step to determine which are CCPs and which are control points."
+            },
+            {
+              "id": "m3-s3",
+              "type": "text-graphic-split",
+              "title": "Risk Assessment Matrix",
+              "content": "## Scoring Hazard Significance\n\nNot all hazards are equal. A risk assessment matrix helps you **prioritise** which hazards need the most attention by scoring likelihood against severity.\n\n### Likelihood Scale\n| Score | Likelihood | Description |\n|---|---|---|\n| 1 | Rare | Almost never happens; no history of this hazard |\n| 2 | Unlikely | Could happen but very unusual |\n| 3 | Possible | Has happened before; could happen again |\n| 4 | Likely | Happens regularly without controls |\n| 5 | Almost certain | Will happen if not controlled |\n\n### Severity Scale\n| Score | Severity | Description |\n|---|---|---|\n| 1 | Negligible | No illness; minor quality issue |\n| 2 | Minor | Mild, self-limiting illness |\n| 3 | Moderate | Illness requiring medical attention |\n| 4 | Serious | Hospitalisation; long-term health effects |\n| 5 | Critical | Life-threatening; death possible |\n\n### Significance = Likelihood × Severity\n- **1-5** = Low risk – Manage through PRPs.\n- **6-12** = Medium risk – May need a specific control point or enhanced PRP.\n- **13-25** = High risk – Likely needs a CCP with critical limits and monitoring.\n\n### Example\nSalmonella in raw chicken at the cooking step: Likelihood = 4 (likely without cooking), Severity = 4 (serious illness). Score = 16 → High risk → CCP required (cooking to 75°C).",
+              "keyTakeaway": "Use a risk matrix (likelihood × severity) to score each hazard – high-scoring hazards typically need CCPs, while low scores can be managed by PRPs."
+            },
+            {
+              "id": "m3-s4",
+              "type": "text-graphic-split",
+              "title": "Detailed Hazard Categories",
+              "content": "## Deep Dive Into Hazard Types\n\n### Biological Hazards – The Biggest Risk\nBiological hazards cause the vast majority of foodborne illness in the UK:\n- **Campylobacter** – UK's most common cause of food poisoning. Found in raw poultry, unpasteurised milk. Infectious dose is very low (as few as 500 organisms).\n- **Salmonella** – Raw poultry, eggs, raw milk. Over 2,500 serotypes. Incubation 6-72 hours.\n- **E. coli O157** – Raw/undercooked beef, contaminated salad. Can cause life-threatening HUS (haemolytic uraemic syndrome) in children.\n- **Listeria monocytogenes** – Chilled ready-to-eat foods, soft cheese, pâté. Grows at fridge temperatures (unlike most bacteria). Particularly dangerous for pregnant women, elderly, immunocompromised.\n- **Norovirus** – Spread person-to-person or via contaminated food/surfaces. Extremely contagious. Staff must not return to work until 48 hours after symptoms cease.\n\n### Chemical Hazards\n- **Allergens** – The 14 declarable allergens under UK law (Natasha's Law for PPDS foods).\n- **Cleaning chemicals** – Residues from sanitisers, degreasers if not rinsed properly.\n- **Histamine** – Forms in scombroid fish (tuna, mackerel) if temperature-abused. Not destroyed by cooking.\n\n### Physical Hazards\n- **Glass** – From broken light covers, jars, bottles. Use shatterproof covers.\n- **Metal** – Broken equipment parts, wire from scourers, staples.\n- **Personal items** – Hair, jewellery, plasters (always use blue detectable plasters).",
+              "keyTakeaway": "Biological hazards cause most foodborne illness – know the key pathogens, their sources, and their behaviour to build an effective hazard analysis."
+            }
+          ]
+        },
+        {
+          "id": "m3-l2",
+          "title": "Scenarios: Hazard Analysis",
+          "slides": [
+            {
+              "id": "m3-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The New Dessert Menu",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Your kitchen is adding tiramisu to the menu. The recipe uses raw egg yolks, mascarpone, and coffee-soaked sponge fingers. You're conducting a hazard analysis. What's the most significant biological hazard?",
+                    "options": [
+                      { "label": "Norovirus from the sponge fingers", "nextNodeId": "wrong_noro" },
+                      {
+                        "label": "Salmonella from the raw egg yolks",
+                        "nextNodeId": "correct_salm"
+                      },
+                      { "label": "Listeria from the mascarpone only", "nextNodeId": "partial_list" }
+                    ]
+                  },
+                  "wrong_noro": {
+                    "text": "❌ Norovirus is primarily spread person-to-person or via contaminated hands, not through sponge fingers. The main biological hazard in this recipe is Salmonella from raw egg yolks, which are not cooked in tiramisu.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "correct_salm": {
+                    "text": "Correct – raw egg yolks carry a significant Salmonella risk, and tiramisu is not cooked. How do you control this hazard?",
+                    "options": [
+                      {
+                        "label": "Use pasteurised egg yolks instead of raw shell eggs",
+                        "nextNodeId": "pasteurised"
+                      },
+                      {
+                        "label": "Just buy eggs from a reputable supplier – that's enough",
+                        "nextNodeId": "supplier_only"
+                      }
+                    ]
+                  },
+                  "partial_list": {
+                    "text": "⚠️ Listeria in mascarpone is a valid concern (it's a soft cheese), but it's typically made from pasteurised milk. The PRIMARY hazard is Salmonella from the raw egg yolks, which receive no heat treatment in tiramisu.",
+                    "options": [
+                      { "label": "Focus on the raw egg hazard", "nextNodeId": "correct_salm" }
+                    ]
+                  },
+                  "pasteurised": {
+                    "text": "✅ Excellent – substituting pasteurised eggs **eliminates** the Salmonella hazard (applying the hierarchy: elimination is best). Now, tiramisu is served chilled. What's your CCP for this product?",
+                    "options": [
+                      {
+                        "label": "Chilled storage temperature – it must be kept below 5°C at all times",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "There's no CCP needed since you eliminated the egg hazard",
+                        "nextNodeId": "forgot_listeria"
+                      }
+                    ]
+                  },
+                  "supplier_only": {
+                    "text": "⚠️ Supplier approval is a PRP, not a CCP. Even reputable suppliers cannot guarantee zero Salmonella in raw shell eggs. The most effective control is to **eliminate the hazard** by using pasteurised egg products.",
+                    "options": [
+                      { "label": "Switch to pasteurised eggs", "nextNodeId": "pasteurised" }
+                    ]
+                  },
+                  "forgot_listeria": {
+                    "text": "⚠️ You eliminated the Salmonella hazard, but tiramisu is a chilled ready-to-eat product. Listeria monocytogenes can grow at fridge temperatures and is a risk in dairy-based desserts. Chilled storage (≤5°C) and shelf life control are still CCPs.",
+                    "options": [
+                      { "label": "Set chilled storage as a CCP", "nextNodeId": "correct_end" }
+                    ]
+                  },
+                  "correct_end": {
+                    "text": "✅ **Well done!** You identified the primary hazard (Salmonella from raw eggs), applied the best control (elimination via pasteurised eggs), and recognised that chilled storage remains a CCP for Listeria control. This is thorough, Level 3 hazard analysis.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m3-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Applying the Decision Tree",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You're applying the Codex decision tree to the 'washing salad leaves' step. Raw salad leaves can carry E. coli and Listeria. Washing reduces but does not eliminate these bacteria. There is no subsequent cooking step. Question 1: Do control measures exist?",
+                    "options": [
+                      { "label": "Yes – washing is the control measure", "nextNodeId": "q2" },
+                      {
+                        "label": "No – washing doesn't completely eliminate bacteria",
+                        "nextNodeId": "wrong_q1"
+                      }
+                    ]
+                  },
+                  "wrong_q1": {
+                    "text": "⚠️ The question asks whether control measures EXIST, not whether they eliminate the hazard completely. Washing IS a control measure – it reduces bacterial load significantly. Answer is Yes. Proceed to Q2.",
+                    "options": [{ "label": "Continue to Q2", "nextNodeId": "q2" }]
+                  },
+                  "q2": {
+                    "text": "Question 2: Is this step SPECIFICALLY DESIGNED to eliminate or reduce the hazard to an acceptable level?",
+                    "options": [
+                      {
+                        "label": "Yes – washing is designed to reduce bacteria",
+                        "nextNodeId": "wrong_q2"
+                      },
+                      {
+                        "label": "No – washing reduces but cannot guarantee acceptable levels",
+                        "nextNodeId": "q3"
+                      }
+                    ]
+                  },
+                  "wrong_q2": {
+                    "text": "⚠️ Be careful. Q2 asks if the step is SPECIFICALLY DESIGNED to reduce the hazard to an ACCEPTABLE level. Washing salad reduces bacteria but does not achieve a defined reduction (unlike cooking to 75°C). The answer is No. Proceed to Q3.",
+                    "options": [{ "label": "Continue to Q3", "nextNodeId": "q3" }]
+                  },
+                  "q3": {
+                    "text": "Question 3: Could contamination occur at or increase to unacceptable levels at this step?",
+                    "options": [
+                      {
+                        "label": "Yes – the salad still carries residual bacteria after washing",
+                        "nextNodeId": "q4"
+                      },
+                      { "label": "No – washing makes it safe enough", "nextNodeId": "wrong_q3" }
+                    ]
+                  },
+                  "wrong_q3": {
+                    "text": "❌ Washing reduces but does not eliminate bacteria. Residual contamination exists and, without a cooking step, could reach the consumer. The answer is Yes. Proceed to Q4.",
+                    "options": [{ "label": "Continue to Q4", "nextNodeId": "q4" }]
+                  },
+                  "q4": {
+                    "text": "Question 4: Will a SUBSEQUENT step eliminate or reduce the hazard to an acceptable level?",
+                    "options": [
+                      {
+                        "label": "No – salad is served raw, there's no subsequent kill step",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "Yes – proper chilled storage will control it",
+                        "nextNodeId": "wrong_q4"
+                      }
+                    ]
+                  },
+                  "wrong_q4": {
+                    "text": "⚠️ Chilled storage slows bacterial growth but does not eliminate or reduce existing contamination to acceptable levels. There is no subsequent step that achieves a kill. Answer is No – this IS a CCP.",
+                    "options": [
+                      { "label": "Understand – this is a CCP", "nextNodeId": "correct_end" }
+                    ]
+                  },
+                  "correct_end": {
+                    "text": "✅ **Well done!** By answering Q4 'No', washing salad becomes a **CCP**. Since there's no cooking step to eliminate bacteria, this washing step is the last line of defence. You'd set critical limits for wash method (e.g., approved sanitising solution, contact time), monitor compliance, and document results. This is a classic example of why the decision tree is so important – it identifies CCPs that might be missed by intuition alone.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Monitoring, Corrective Actions, and Documentation",
+      "description": "Keeping your HACCP plan alive and auditable.",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "Effective Monitoring and Documentation",
+          "slides": [
+            {
+              "id": "m4-s1",
+              "type": "text-graphic-split",
+              "title": "Building Effective Monitoring Systems",
+              "content": "## Making Monitoring Work in Practice\n\nMonitoring is only useful if it is **consistent, honest, and acted upon**. A monitoring system that exists on paper but isn't followed is worse than useless – it creates a false sense of security.\n\n### What Makes Good Monitoring?\n- **Consistent** – Same method, same frequency, every single time. No shortcuts during busy service.\n- **Timely** – Results must be available quickly enough to take corrective action. A temperature check is useless if you get the result 3 hours later.\n- **Documented** – Written or digital records, dated, timed, and signed. 'I checked it' means nothing without evidence.\n- **Acted upon** – Deviations must trigger corrective actions immediately, not be noted and ignored.\n- **Calibrated** – Equipment must be checked for accuracy regularly.\n\n### Monitoring Methods by CCP\n| CCP | Method | Frequency | Equipment |\n|---|---|---|---|\n| Cooking | Probe core temp | Every batch | Calibrated probe thermometer |\n| Chilling | Probe temp + time | Start + end of cooling | Probe + timer/clock |\n| Hot holding | Probe or visual | Every 2 hours | Probe thermometer |\n| Fridge storage | Data logger or manual | Continuous or 2× daily | Data logger or thermometer |\n| Delivery | Probe surface/between packs | Every delivery | Probe thermometer |\n\n### Digital vs Paper Records\nDigital systems offer advantages: automatic timestamps, harder to falsify, easier to search, instant alerts. Paper is acceptable but must be legible, complete, and securely stored.",
+              "keyTakeaway": "Monitoring must be consistent, timely, documented, and acted upon – a record nobody reads is just paperwork, not food safety."
+            },
+            {
+              "id": "m4-s2",
+              "type": "text-graphic-split",
+              "title": "Thermometer Calibration",
+              "content": "## Can You Trust Your Readings?\n\nA thermometer that reads 3°C too high means your '75°C' cooking check was actually only 72°C – potentially unsafe. **Calibration** ensures your monitoring equipment is accurate.\n\n### Two-Point Calibration Method\n1. **Ice point (0°C)** – Fill a container with crushed ice and a small amount of water. Stir well. Insert the probe. It should read **0°C ± 1°C**.\n2. **Boiling point (100°C)** – Bring water to a rolling boil. Insert the probe (not touching the container). It should read **100°C ± 1°C** (adjust for altitude if necessary).\n\n### Calibration Frequency\n- **Daily** for probes used at CCPs (best practice).\n- **Weekly** minimum for all food thermometers.\n- **After any drop or impact** – physical shock can affect accuracy.\n- **After battery replacement** – some digital probes need recalibration.\n\n### What If It's Out of Spec?\n1. **Remove the thermometer from use** immediately.\n2. **Check recent readings** – Were they within the calibration error? You may need to investigate whether food safety was compromised.\n3. **Adjust or replace** the thermometer.\n4. **Document** the calibration failure and any corrective action.\n5. **Re-check any CCPs** that were monitored with the faulty thermometer.\n\n### Calibration Records\nKeep records of: date, thermometer ID, ice point reading, boiling point reading, pass/fail, action taken, who calibrated. These records form part of your verification evidence (Principle 6).",
+              "keyTakeaway": "Calibrate probes at 0°C (ice) and 100°C (boiling) regularly – an inaccurate thermometer makes all your CCP monitoring worthless."
+            },
+            {
+              "id": "m4-s3",
+              "type": "text-graphic-split",
+              "title": "Corrective Action Procedures",
+              "content": "## Pre-Planned Responses to Deviations\n\nA corrective action is NOT a reaction made up on the spot. It is a **pre-planned procedure** documented in your HACCP plan that staff can follow immediately when a critical limit is breached.\n\n### Every Corrective Action Must:\n1. **Identify and isolate** the affected food – Segregate it immediately. Do not serve, sell, or mix with other food.\n2. **Determine the cause** – Was it equipment failure, human error, process breakdown, or something else?\n3. **Fix the immediate problem** – Dispose of unsafe food, re-cook, re-chill, repair equipment.\n4. **Assess the impact** – Has any potentially unsafe food already been served? Do you need to notify anyone?\n5. **Prevent recurrence** – Implement a permanent fix, not just a quick patch.\n6. **Document everything** – Date, time, deviation details, action taken, root cause, who was responsible.\n\n### Corrective Action Examples\n| CCP | Deviation | Corrective Action |\n|---|---|---|\n| Cooking | Core temp only 68°C | Continue cooking to 75°C; investigate why initial check was premature |\n| Chilling | Food still 15°C after 90 mins | Divide into smaller portions, use blast chiller; if >2hrs dispose |\n| Fridge | Reading 12°C | Move all food to working fridge; call engineer; check and dispose of any compromised items |\n| Delivery | Chicken at 14°C | Reject delivery; contact supplier; document rejection |\n| Hot holding | Soup at 52°C | Reheat to 75°C if <2hrs below 63°C; dispose if longer |\n\n### Root Cause Analysis\nDon't just fix the symptom. Ask **'Why?' five times** to find the root cause:\n- Why was the fridge at 12°C? → Door was left open.\n- Why was the door left open? → The closer mechanism is broken.\n- Why wasn't it reported? → Staff didn't know how to report maintenance issues.\n- **Root cause**: No maintenance reporting procedure. **Fix**: Create and train on a reporting system.",
+              "keyTakeaway": "Corrective actions must be pre-planned, documented, and include root cause analysis – fixing the symptom without finding the cause guarantees it will happen again."
+            },
+            {
+              "id": "m4-s4",
+              "type": "text-graphic-split",
+              "title": "Documentation and Record Keeping",
+              "content": "## The Paper Trail That Proves Your System Works\n\nHACCP Principle 7 requires comprehensive documentation. This serves two purposes: it **proves your system is working** for regulators, and it provides **data for continuous improvement**.\n\n### What Must Be Documented?\n\n**The HACCP Plan itself:**\n- Hazard analysis for each process step.\n- CCP identification (with decision tree evidence).\n- Critical limits and their scientific basis.\n- Monitoring procedures (what, how, when, who).\n- Corrective action procedures.\n- Verification schedule.\n- Team members and their qualifications.\n\n**Operational Records (ongoing):**\n- Daily/per-batch monitoring results (temperatures, times, visual checks).\n- Corrective action records (every deviation and response).\n- Calibration records for all monitoring equipment.\n- Training records for all staff.\n- Cleaning and sanitisation records.\n- Supplier approval documents and delivery records.\n- Internal audit reports.\n- Verification activities (micro testing, complaint analysis).\n\n### Record Retention\n- **Minimum 12 months** for most records.\n- **Longer for certain products** – e.g., canned goods may require records for the shelf life plus 1 year.\n- **Indefinitely for the HACCP plan** itself (keep all versions with revision dates).\n\n### Access and Availability\nRecords must be **available for EHO inspection at any time** – not locked in a filing cabinet at the manager's house. Digital cloud-based systems (like Teamly) ensure records are always accessible.",
+              "keyTakeaway": "Document everything – the HACCP plan, all monitoring results, corrective actions, calibrations, and training. Records must be accessible for EHO inspection at all times."
+            }
+          ]
+        },
+        {
+          "id": "m4-l2",
+          "title": "Scenarios: Monitoring and Corrective Actions",
+          "slides": [
+            {
+              "id": "m4-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Calibration Discovery",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "During your weekly calibration check, you discover the main kitchen probe thermometer reads 4°C too high (i.e., when it says 75°C, the actual temperature is only 71°C). This probe has been used for all cooking CCP checks for the past 5 days. What do you do first?",
+                    "options": [
+                      {
+                        "label": "Replace the probe and carry on – it's only 4 degrees",
+                        "nextNodeId": "dismiss"
+                      },
+                      {
+                        "label": "Remove the probe from use immediately and assess the impact on the past 5 days of monitoring",
+                        "nextNodeId": "assess"
+                      },
+                      {
+                        "label": "Recalibrate the probe and put it back into use",
+                        "nextNodeId": "recalibrate_only"
+                      }
+                    ]
+                  },
+                  "dismiss": {
+                    "text": "❌ **Incorrect.** 4°C is significant. Every '75°C' reading was actually 71°C – below the critical limit. Food may have been served undercooked. You must assess the impact on all food cooked in the past 5 days and document this as a serious corrective action.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "assess": {
+                    "text": "Correct. You've removed the probe. Now you need to assess the risk. Looking at the past 5 days of monitoring records, all cooking checks show readings between 75-80°C (displayed). With a 4°C error, actual temperatures were 71-76°C. Some readings were at 75°C displayed = 71°C actual. What's the risk?",
+                    "options": [
+                      {
+                        "label": "High risk – 71°C may not kill all pathogens; we need to investigate further",
+                        "nextNodeId": "investigate"
+                      },
+                      {
+                        "label": "Low risk – 71°C is close enough to 75°C",
+                        "nextNodeId": "low_risk"
+                      }
+                    ]
+                  },
+                  "recalibrate_only": {
+                    "text": "⚠️ Recalibrating fixes the probe going forward, but what about the past 5 days? Every temperature reading was 4°C too high. Food that appeared to reach 75°C was actually only at 71°C. You need to assess the retrospective impact before putting any probe back into use.",
+                    "options": [{ "label": "Assess the impact first", "nextNodeId": "assess" }]
+                  },
+                  "investigate": {
+                    "text": "Good. While 71°C will kill most vegetative bacteria given sufficient time, it provides less safety margin. Fortunately, no illness reports have been received. What corrective actions do you take?",
+                    "options": [
+                      {
+                        "label": "Document the failure, replace the probe, increase calibration frequency, notify the HACCP team",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "Just replace the probe and note it in the log",
+                        "nextNodeId": "minimal"
+                      }
+                    ]
+                  },
+                  "low_risk": {
+                    "text": "⚠️ While 71°C may kill most pathogens with adequate hold time, you cannot be certain without knowing the exact cook times. At Level 3, you must investigate thoroughly. The critical limit is 75°C for a reason – it provides a safety margin.",
+                    "options": [{ "label": "Investigate further", "nextNodeId": "investigate" }]
+                  },
+                  "minimal": {
+                    "text": "⚠️ That's insufficient. A calibration failure affecting 5 days of CCP monitoring requires full documentation: the failure, the risk assessment, corrective actions, and preventive measures. The HACCP team should review whether calibration frequency needs increasing.",
+                    "options": [
+                      {
+                        "label": "Take comprehensive corrective action",
+                        "nextNodeId": "correct_end"
+                      }
+                    ]
+                  },
+                  "correct_end": {
+                    "text": "✅ **Well done!** Full corrective action for a calibration failure includes: (1) Remove faulty probe, (2) Retrospective risk assessment of all affected monitoring, (3) Replace with calibrated probe, (4) Increase calibration frequency (e.g., daily instead of weekly), (5) Document everything including root cause, (6) HACCP team review. This demonstrates the thorough approach expected at Level 3.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Unsigned Records",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "An EHO visits for a routine inspection and asks to see your HACCP monitoring records. You open the folder and notice that temperature checks for the past 2 weeks have temperature readings recorded but NO signatures – the 'checked by' column is blank. The readings themselves all appear normal. What do you do?",
+                    "options": [
+                      {
+                        "label": "Quickly sign them yourself before the EHO sees",
+                        "nextNodeId": "forge"
+                      },
+                      {
+                        "label": "Show the records honestly and acknowledge the gap",
+                        "nextNodeId": "honest"
+                      },
+                      {
+                        "label": "Say the records are at another location and you'll email them later",
+                        "nextNodeId": "stall"
+                      }
+                    ]
+                  },
+                  "forge": {
+                    "text": "❌ **Serious mistake.** Signing records you didn't complete is **falsification** – potentially a criminal offence. The EHO may notice that all 2 weeks of signatures are in the same ink, at the same angle, clearly done at once. This would severely damage trust and could lead to prosecution.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "honest": {
+                    "text": "Good. The EHO notes the unsigned records. They ask: 'Can you explain why these aren't signed? How do you know the checks were actually done?' How do you respond?",
+                    "options": [
+                      {
+                        "label": "Explain that staff did the checks but forgot to sign, and you'll implement a daily sign-off review",
+                        "nextNodeId": "explain_fix"
+                      },
+                      {
+                        "label": "Admit you don't know if the checks were actually done – the readings might have been fabricated",
+                        "nextNodeId": "uncertainty"
+                      }
+                    ]
+                  },
+                  "stall": {
+                    "text": "❌ **Poor approach.** EHOs expect to see records on-site during an inspection. Claiming they're elsewhere looks suspicious and may prompt a more thorough investigation. Always be transparent.",
+                    "options": [{ "label": "Show the records honestly", "nextNodeId": "honest" }]
+                  },
+                  "explain_fix": {
+                    "text": "The EHO accepts this explanation but requires improvement. They ask what you'll do to prevent this happening again. What's your plan?",
+                    "options": [
+                      {
+                        "label": "Implement a daily management review of all monitoring records, move to a digital system, and retrain staff on the importance of signing",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "Tell staff to remember to sign next time",
+                        "nextNodeId": "weak_fix"
+                      }
+                    ]
+                  },
+                  "uncertainty": {
+                    "text": "⚠️ That level of honesty is admirable but concerning. If you genuinely can't verify the checks were done, the EHO may question the reliability of your entire monitoring system. However, the readings do exist – investigate whether staff recall doing them.",
+                    "options": [
+                      {
+                        "label": "Investigate and implement better controls",
+                        "nextNodeId": "explain_fix"
+                      }
+                    ]
+                  },
+                  "weak_fix": {
+                    "text": "⚠️ 'Remind staff' is not a robust corrective action. It didn't work for the past 2 weeks, so why would it work now? The EHO will want to see a systemic fix – a process change, not just a verbal reminder.",
+                    "options": [
+                      {
+                        "label": "Implement a proper management review system",
+                        "nextNodeId": "correct_end"
+                      }
+                    ]
+                  },
+                  "correct_end": {
+                    "text": "✅ **Well done!** Honesty with the EHO, combined with a robust improvement plan (daily management review, digital systems, retraining), demonstrates food safety maturity. The EHO is likely to record this as a minor non-compliance requiring improvement rather than formal enforcement – precisely because you were transparent and proactive.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Verification and Review",
+      "description": "Ensuring your HACCP plan remains effective.",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "Verification, Validation, and Continuous Improvement",
+          "slides": [
+            {
+              "id": "m5-s1",
+              "type": "text-graphic-split",
+              "title": "Verification vs Monitoring vs Validation",
+              "content": "## Three Different Activities – Don't Confuse Them\n\nThese three terms are often confused but mean very different things in HACCP:\n\n### Monitoring (Day-to-Day)\n- **What**: Checking that individual CCPs are within critical limits.\n- **When**: Continuously or at set frequencies (per batch, hourly, per delivery).\n- **Who**: Operational staff (chefs, kitchen porters, receiving staff).\n- **Example**: Probing a chicken breast to confirm 75°C core temperature.\n\n### Verification (Periodic Review)\n- **What**: Confirming that the HACCP SYSTEM AS A WHOLE is working correctly.\n- **When**: Periodically – monthly, quarterly, or annually depending on the activity.\n- **Who**: HACCP team leader, quality manager, or external auditor.\n- **Example**: Internal audit comparing actual practices against the documented HACCP plan.\n\n### Validation (One-Off Confirmation)\n- **What**: Proving that the control measures you've chosen WILL effectively control the hazard.\n- **When**: When the HACCP plan is first developed or when a significant change is made.\n- **Who**: Someone with scientific/technical expertise.\n- **Example**: Confirming that your oven consistently achieves 75°C core temperature in chicken breasts by testing multiple batches with calibrated equipment.\n\n### Think of It This Way\n- **Validation** = 'Will this work?' (before implementation)\n- **Monitoring** = 'Is it working right now?' (daily)\n- **Verification** = 'Has it been working over time?' (periodic review)",
+              "keyTakeaway": "Monitoring checks CCPs daily, verification confirms the whole system works over time, and validation proves your controls are effective before implementation."
+            },
+            {
+              "id": "m5-s2",
+              "type": "text-graphic-split",
+              "title": "Internal Audits",
+              "content": "## Checking Your Own Work\n\nAn internal audit is a **systematic examination** of your HACCP system to verify it is being implemented correctly and effectively.\n\n### What to Audit\n- **Documentation** – Is the HACCP plan up to date? Does it reflect current menu items and processes?\n- **Monitoring records** – Are they complete, signed, and accurate? Any gaps or patterns?\n- **Corrective actions** – Were deviations handled correctly? Were root causes identified?\n- **Staff knowledge** – Do staff understand their CCP monitoring responsibilities? Can they explain the corrective action for a deviation?\n- **Equipment** – Are probes calibrated? Are fridges at correct temperatures? Are cleaning chemicals stored correctly?\n- **Practices vs procedures** – Does what actually happens in the kitchen match what the HACCP plan says should happen?\n\n### How to Conduct an Internal Audit\n1. **Plan** – Decide scope, frequency, and who will audit (ideally someone independent of the area being audited).\n2. **Observe** – Watch actual practices during service and preparation.\n3. **Review records** – Check monitoring logs, corrective action records, calibration records.\n4. **Interview staff** – Ask them about their responsibilities and what they'd do if a deviation occurred.\n5. **Report findings** – Document conformities and non-conformities.\n6. **Follow up** – Ensure corrective actions for any non-conformities are implemented and effective.\n\n### Frequency\n- **Monthly** is best practice for high-risk operations.\n- **Quarterly** minimum for most hospitality businesses.\n- **Ad hoc** after any incident, complaint, or significant change.",
+              "keyTakeaway": "Internal audits compare what actually happens in the kitchen against what the HACCP plan says should happen – audit at least quarterly and always after incidents."
+            },
+            {
+              "id": "m5-s3",
+              "type": "text-graphic-split",
+              "title": "Microbiological Testing and Supplier Audits",
+              "content": "## Scientific Verification\n\n### Microbiological Testing\nSwab tests and food sampling provide scientific evidence that your controls are working:\n\n**Surface swabs** – Test food-contact surfaces (chopping boards, counters, equipment) for total viable counts (TVC) and indicator organisms (coliforms, E. coli). Results show whether cleaning is effective.\n\n**Food sampling** – Send finished products to a laboratory for testing. Useful for validating cooking procedures and detecting problems not visible to the eye.\n\n**Hand swabs** – Test staff hands to verify handwashing effectiveness. Can be an eye-opening training tool.\n\n**Environmental monitoring** – Test for Listeria in the production environment (drains, cold rooms). Especially important for ready-to-eat food production.\n\n### Interpreting Results\n- Results are usually given as **colony forming units (CFU)** per cm² or per gram.\n- Compare against published guidelines (e.g., HPA/PHE criteria) for satisfactory, borderline, and unsatisfactory levels.\n- Unsatisfactory results require investigation and corrective action.\n\n### Supplier Audits\nYour HACCP system is only as strong as your supply chain:\n- Maintain an **approved supplier list** with food safety criteria.\n- Request suppliers' HACCP plans, audit reports, and certificates.\n- Conduct **periodic on-site audits** of key suppliers (especially high-risk ingredients).\n- **Delivery checks** verify that suppliers are maintaining their standards.\n- Review supplier performance data annually.",
+              "keyTakeaway": "Microbiological testing provides scientific proof your controls work – combine surface swabs, food sampling, and supplier audits for comprehensive verification."
+            },
+            {
+              "id": "m5-s4",
+              "type": "text-graphic-split",
+              "title": "When to Review Your HACCP Plan",
+              "content": "## A Living Document, Not a Dusty Folder\n\nA HACCP plan is only effective if it reflects current reality. It must be reviewed and updated whenever circumstances change.\n\n### Scheduled Reviews\n- **Annually** as an absolute minimum – even if nothing has changed, a full review ensures the plan remains current.\n- **Six-monthly** is best practice for dynamic businesses with frequently changing menus.\n\n### Triggered Reviews (Review When...)\n| Trigger | Why |\n|---|---|\n| **New menu items** | New ingredients, processes, or allergens may introduce new hazards |\n| **New equipment** | Different capabilities, temperatures, or failure modes |\n| **Change of supplier** | Different supply chain risks, different specifications |\n| **Building works/layout changes** | Altered workflows, potential contamination during construction |\n| **Food safety incident** | The plan clearly failed to prevent the incident |\n| **Customer complaint pattern** | May indicate an uncontrolled hazard |\n| **New legislation or guidance** | Legal requirements may change critical limits or procedures |\n| **Staff changes** | New team members may need different monitoring arrangements |\n| **Audit findings** | Non-conformities from internal or external audits |\n| **Seasonal changes** | Summer temperatures may affect chilled storage; seasonal menus change hazards |\n\n### The Review Process\n1. Reassemble the HACCP team.\n2. Walk the updated process on-site.\n3. Re-run the hazard analysis for any changed steps.\n4. Update CCPs, critical limits, and monitoring if needed.\n5. Communicate changes to all affected staff.\n6. Document the review with date, participants, and changes made.\n7. Keep the previous version for your records (version control).",
+              "keyTakeaway": "Review your HACCP plan annually at minimum, and immediately after any menu change, incident, supplier change, or building work – it must always reflect current reality."
+            }
+          ]
+        },
+        {
+          "id": "m5-l2",
+          "title": "Scenarios: Verification and Review",
+          "slides": [
+            {
+              "id": "m5-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Annual Review",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "It's time for your annual HACCP review. Since last year: you've added 8 new menu items, replaced the main oven, changed your chicken supplier, and hired 5 new kitchen staff. Your existing HACCP plan was written 14 months ago. How do you approach the review?",
+                    "options": [
+                      {
+                        "label": "Just update the date on the front page – the principles haven't changed",
+                        "nextNodeId": "date_only"
+                      },
+                      {
+                        "label": "Review the entire plan systematically, focusing on the four changes",
+                        "nextNodeId": "systematic"
+                      },
+                      {
+                        "label": "Ask the new staff if they've noticed any food safety issues",
+                        "nextNodeId": "staff_only"
+                      }
+                    ]
+                  },
+                  "date_only": {
+                    "text": "❌ **Incorrect.** With a new oven, new supplier, 8 new dishes, and new staff, your HACCP plan is significantly out of date. Changing the date without reviewing the content is misleading and would not satisfy an EHO. Each change could introduce new hazards or affect existing CCPs.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "systematic": {
+                    "text": "Good approach. You reassemble the HACCP team. Where do you start?",
+                    "options": [
+                      {
+                        "label": "Update the process flow diagram first, then re-run the hazard analysis for changed steps",
+                        "nextNodeId": "flow_first"
+                      },
+                      {
+                        "label": "Jump straight to checking the critical limits are still correct",
+                        "nextNodeId": "skip_flow"
+                      }
+                    ]
+                  },
+                  "staff_only": {
+                    "text": "⚠️ Staff feedback is valuable but it's not a structured HACCP review. New staff may not know what the plan says, so they can't tell you if reality matches documentation. You need a systematic approach covering all the changes.",
+                    "options": [
+                      { "label": "Take a systematic approach", "nextNodeId": "systematic" }
+                    ]
+                  },
+                  "flow_first": {
+                    "text": "✅ Correct – start with the flow diagram because it's the foundation. You update it to include the new menu items and verify the new oven capabilities. The new chicken supplier uses a different chilling method. What do you check?",
+                    "options": [
+                      {
+                        "label": "Request the new supplier's HACCP plan and food safety certifications, and verify delivery temperatures meet your critical limits",
+                        "nextNodeId": "supplier_check"
+                      },
+                      { "label": "Check their website for reviews", "nextNodeId": "weak_supplier" }
+                    ]
+                  },
+                  "skip_flow": {
+                    "text": "⚠️ You can't verify critical limits without first updating the process flow. The new oven may have different temperature profiles, the new menu items may have different cooking requirements, and the new supplier may deliver differently. Update the flow diagram first.",
+                    "options": [
+                      { "label": "Start with the flow diagram", "nextNodeId": "flow_first" }
+                    ]
+                  },
+                  "supplier_check": {
+                    "text": "Excellent. The new supplier's documentation is satisfactory. You've updated the flow diagram and re-run the hazard analysis. Two new menu items include raw fish (sushi-grade tuna). Does this require a new CCP?",
+                    "options": [
+                      {
+                        "label": "Yes – parasites in raw fish need a specific control (freezing to -20°C for 24 hours)",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "No – the supplier handles all the safety aspects",
+                        "nextNodeId": "wrong_supplier_trust"
+                      }
+                    ]
+                  },
+                  "weak_supplier": {
+                    "text": "❌ Website reviews tell you nothing about food safety standards. You need their HACCP plan, food safety certifications, delivery specifications, and ideally an on-site audit for high-risk ingredients like raw chicken.",
+                    "options": [
+                      { "label": "Request proper documentation", "nextNodeId": "supplier_check" }
+                    ]
+                  },
+                  "wrong_supplier_trust": {
+                    "text": "❌ You cannot rely solely on the supplier for parasite control in raw fish. EU/UK regulations require raw fish intended for raw consumption to be frozen to -20°C for at least 24 hours (or -35°C for 15 hours) to kill parasites. This is YOUR CCP – you must either freeze in-house or verify your supplier does it and has documentation.",
+                    "options": [
+                      { "label": "Add parasite control as a new CCP", "nextNodeId": "correct_end" }
+                    ]
+                  },
+                  "correct_end": {
+                    "text": "✅ **Well done!** You conducted a thorough annual review: updated the flow diagram, verified the new supplier, re-ran the hazard analysis, identified a new CCP for raw fish parasite control, and ensured the plan reflects all changes. This is exactly the systematic approach required at Level 3. Don't forget to document the review, communicate changes to staff, and train the 5 new team members.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m5-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Customer Complaint Pattern",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Over the past month, you've received 3 customer complaints about stomach illness after eating at your restaurant. All three ate different dishes on different days. Your monitoring records show all CCPs were within limits. What do you do?",
+                    "options": [
+                      {
+                        "label": "Dismiss it – your records prove everything was safe",
+                        "nextNodeId": "dismiss"
+                      },
+                      {
+                        "label": "Investigate thoroughly – three complaints in a month is a pattern that needs explanation",
+                        "nextNodeId": "investigate"
+                      },
+                      {
+                        "label": "Close the kitchen immediately until you find the cause",
+                        "nextNodeId": "overreact"
+                      }
+                    ]
+                  },
+                  "dismiss": {
+                    "text": "❌ **Dangerous complacency.** Three illness complaints in a month is significant. 'Records show CCPs were within limits' only proves monitoring was done – it doesn't prove the food was safe. The records could be inaccurate, there could be a hazard not covered by your CCPs, or a PRP may be failing.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "investigate": {
+                    "text": "Correct. Where do you start your investigation?",
+                    "options": [
+                      {
+                        "label": "Review ALL monitoring records, cleaning schedules, staff illness records, and supplier delivery logs for the relevant dates",
+                        "nextNodeId": "records_review"
+                      },
+                      {
+                        "label": "Ask the head chef if they noticed anything unusual",
+                        "nextNodeId": "ask_chef"
+                      }
+                    ]
+                  },
+                  "overreact": {
+                    "text": "⚠️ Closing the kitchen may be premature without evidence of an imminent risk. A proportionate response is to investigate urgently while maintaining enhanced monitoring. However, if you find evidence of a serious hazard, closure may become necessary.",
+                    "options": [
+                      {
+                        "label": "Investigate first with enhanced monitoring",
+                        "nextNodeId": "investigate"
+                      }
+                    ]
+                  },
+                  "records_review": {
+                    "text": "Good. Your review reveals: monitoring records are complete and within limits, but you notice the probe thermometer was last calibrated 6 weeks ago (should be weekly). Also, one staff member had a stomach bug 3 weeks ago but only took 24 hours off (policy requires 48 hours symptom-free). What's your priority?",
+                    "options": [
+                      {
+                        "label": "Focus on the staff illness – Norovirus from an infected staff member is the most likely cause",
+                        "nextNodeId": "staff_focus"
+                      },
+                      {
+                        "label": "Calibrate the thermometer first – if readings are wrong, all your CCP data is unreliable",
+                        "nextNodeId": "calibrate_focus"
+                      }
+                    ]
+                  },
+                  "ask_chef": {
+                    "text": "⚠️ Verbal accounts are useful but not sufficient. You need to review documented records systematically. Memories can be unreliable, and the chef may not have noticed issues that records reveal.",
+                    "options": [
+                      { "label": "Review the documented records", "nextNodeId": "records_review" }
+                    ]
+                  },
+                  "staff_focus": {
+                    "text": "The staff member returned after only 24 hours, violating the 48-hour rule. However, the calibration issue is also critical. What action do you take?",
+                    "options": [
+                      {
+                        "label": "Address BOTH: retrain staff on illness reporting policy AND calibrate the thermometer immediately, then report findings to the HACCP team",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "Just deal with the illness policy – the thermometer is probably fine",
+                        "nextNodeId": "partial_fix"
+                      }
+                    ]
+                  },
+                  "calibrate_focus": {
+                    "text": "You calibrate the thermometer and find it's reading 2°C high – a concern but not catastrophic. However, the staff illness issue is equally important. Norovirus is extremely contagious and a leading cause of foodborne illness outbreaks in hospitality.",
+                    "options": [
+                      {
+                        "label": "Address both the calibration and the staff illness policy",
+                        "nextNodeId": "correct_end"
+                      }
+                    ]
+                  },
+                  "partial_fix": {
+                    "text": "⚠️ You found two issues – both need addressing. An uncalibrated thermometer means your CCP monitoring may have been inaccurate. You must calibrate it, assess the impact, AND address the illness policy. Both could have contributed to the complaints.",
+                    "options": [{ "label": "Address both issues", "nextNodeId": "correct_end" }]
+                  },
+                  "correct_end": {
+                    "text": "✅ **Well done!** You investigated the complaint pattern systematically, identified two contributing factors (staff illness policy violation and thermometer calibration overdue), and addressed both. You should also: notify the EHO if you believe there's a food safety risk, enhance monitoring temporarily, consider microbiological testing, and update your HACCP plan to include more frequent calibration checks and stricter illness reporting enforcement. This is verification (Principle 6) in action – customer complaints revealed system weaknesses that monitoring alone didn't catch.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m6",
+      "title": "Final Assessment",
+      "description": "Test your HACCP knowledge.",
+      "lessons": [
+        {
+          "id": "m6-l1",
+          "title": "Final Assessment",
+          "slides": [
+            {
+              "id": "m6-quiz",
+              "type": "quiz",
+              "title": "Final Assessment"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "questionBanks": {
+    "final": [
+      {
+        "id": "q1",
+        "text": "What does HACCP stand for?",
+        "options": [
+          "Hazard Assessment and Cooking Control Procedures",
+          "Hazard Analysis and Critical Control Points",
+          "Health and Catering Compliance Programme",
+          "Hygiene Analysis and Contamination Control Plan"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q2",
+        "text": "How many HACCP principles are there?",
+        "options": ["5", "7", "10", "12"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q3",
+        "text": "Who originally developed the HACCP concept?",
+        "options": [
+          "The World Health Organisation",
+          "NASA and the Pillsbury Company",
+          "The UK Food Standards Agency",
+          "The European Commission"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q4",
+        "text": "Which regulation makes HACCP a legal requirement in the UK?",
+        "options": [
+          "Food Safety Act 1990",
+          "EC Regulation 852/2004",
+          "Health and Safety at Work Act 1974",
+          "COSHH Regulations 2002"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q5",
+        "text": "What is a Critical Control Point (CCP)?",
+        "options": [
+          "Any step where food is handled",
+          "A step where control is essential to prevent, eliminate, or reduce a hazard",
+          "The point where food is served to customers",
+          "A cleaning checkpoint"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q6",
+        "text": "Prerequisite programmes (PRPs) include all of the following EXCEPT:",
+        "options": [
+          "Staff training and personal hygiene",
+          "Cleaning and sanitisation schedules",
+          "Stock market performance analysis",
+          "Pest control and maintenance"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q7",
+        "text": "What is the relationship between PRPs and HACCP?",
+        "options": [
+          "They are the same thing",
+          "PRPs replace the need for HACCP",
+          "PRPs are the foundation that HACCP is built upon",
+          "HACCP must be completed before PRPs"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q8",
+        "text": "Principle 1 of HACCP is:",
+        "options": [
+          "Establish critical limits",
+          "Conduct a hazard analysis",
+          "Determine CCPs",
+          "Establish monitoring procedures"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q9",
+        "text": "The three types of food hazard are:",
+        "options": [
+          "Biological, chemical, and physical",
+          "Temperature, time, and contamination",
+          "Bacterial, viral, and parasitic",
+          "Raw, cooked, and chilled"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q10",
+        "text": "A critical limit must be:",
+        "options": [
+          "Estimated based on experience",
+          "Measurable and science-based",
+          "Set by the head chef",
+          "Different for every shift"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q11",
+        "text": "The critical limit for cooking core temperature in England is generally:",
+        "options": ["63°C", "70°C", "75°C", "82°C"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q12",
+        "text": "What is the legal maximum fridge temperature in the UK?",
+        "options": ["3°C", "5°C", "8°C", "10°C"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q13",
+        "text": "Hot-held food must be maintained at or above:",
+        "options": ["55°C", "63°C", "70°C", "75°C"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q14",
+        "text": "Food should be cooled from 63°C to below 8°C within:",
+        "options": ["30 minutes", "90 minutes", "4 hours", "6 hours"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q15",
+        "text": "Which of the following is NOT a common CCP in hospitality?",
+        "options": [
+          "Cooking temperature",
+          "Staff rota scheduling",
+          "Delivery temperature checks",
+          "Hot-holding temperature"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q16",
+        "text": "The Codex Alimentarius Commission is:",
+        "options": [
+          "A UK government department",
+          "The international food standards body (WHO/FAO)",
+          "A food testing laboratory",
+          "A European food retailer"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q17",
+        "text": "How many implementation steps does Codex define for HACCP?",
+        "options": ["5", "7", "10", "12"],
+        "correctAnswer": 3
+      },
+      {
+        "id": "q18",
+        "text": "The first preparatory step in HACCP implementation is:",
+        "options": [
+          "Conduct the hazard analysis",
+          "Assemble the HACCP team",
+          "Identify CCPs",
+          "Set critical limits"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q19",
+        "text": "A process flow diagram should be verified by:",
+        "options": [
+          "Sending it to the EHO for approval",
+          "Walking the process on-site in the actual kitchen",
+          "Comparing it to a template from the internet",
+          "Asking the supplier to confirm it"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q20",
+        "text": "In the CCP decision tree, Question 2 asks:",
+        "options": [
+          "Do control measures exist?",
+          "Is this step specifically designed to eliminate or reduce the hazard?",
+          "Could contamination increase to unacceptable levels?",
+          "Will a subsequent step eliminate the hazard?"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q21",
+        "text": "If the answer to Decision Tree Q4 is 'No', the step is:",
+        "options": ["Not a CCP", "A prerequisite programme", "A CCP", "A control point only"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q22",
+        "text": "A target limit (operational limit) is:",
+        "options": [
+          "The same as a critical limit",
+          "Stricter than the critical limit, providing a safety buffer",
+          "Less strict than the critical limit",
+          "Only used in factories, not restaurants"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q23",
+        "text": "Monitoring procedures must answer which four questions?",
+        "options": [
+          "Why, Where, When, How Much",
+          "What, How, When, Who",
+          "Who, What, Where, Why",
+          "Cost, Time, Method, Frequency"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q24",
+        "text": "Continuous monitoring using data loggers is most appropriate for:",
+        "options": [
+          "Cooking temperatures",
+          "Fridge and freezer temperatures",
+          "Delivery checks",
+          "Visual inspections"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q25",
+        "text": "A corrective action must include all EXCEPT:",
+        "options": [
+          "Fixing the immediate problem",
+          "Identifying the root cause",
+          "Disciplining the responsible staff member",
+          "Documenting the deviation and action taken"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q26",
+        "text": "Root cause analysis helps to:",
+        "options": [
+          "Assign blame to individual staff",
+          "Prevent the same deviation from happening again",
+          "Speed up food production",
+          "Reduce the number of CCPs"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q27",
+        "text": "HACCP monitoring records should be kept for at least:",
+        "options": ["1 week", "1 month", "12 months", "10 years"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q28",
+        "text": "The difference between verification and monitoring is:",
+        "options": [
+          "There is no difference",
+          "Monitoring checks individual CCPs; verification checks the whole system",
+          "Verification is done daily; monitoring is annual",
+          "Monitoring is optional; verification is mandatory"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q29",
+        "text": "Validation in HACCP means:",
+        "options": [
+          "Checking monitoring records are complete",
+          "Proving that control measures will effectively control the hazard",
+          "Getting the HACCP plan signed by the EHO",
+          "Training staff on the HACCP plan"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q30",
+        "text": "An internal audit should compare:",
+        "options": [
+          "Your prices against competitors",
+          "Actual kitchen practices against the documented HACCP plan",
+          "Staff salaries against industry averages",
+          "Your menu against food trends"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q31",
+        "text": "Thermometer calibration should be done using:",
+        "options": [
+          "Hot water from the tap and cold water from the fridge",
+          "Ice point (0°C) and boiling point (100°C)",
+          "Room temperature only",
+          "A known food item at a specific temperature"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q32",
+        "text": "If a probe thermometer reads 4°C too high during calibration, what is the impact?",
+        "options": [
+          "No impact – 4°C is within acceptable error",
+          "All recent temperature readings may have been 4°C lower than recorded",
+          "The thermometer needs new batteries",
+          "Only freezer readings are affected"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q33",
+        "text": "Microbiological testing is a form of:",
+        "options": ["Monitoring", "Verification", "Corrective action", "Prerequisite programme"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q34",
+        "text": "Surface swab results are measured in:",
+        "options": [
+          "Degrees Celsius",
+          "Colony forming units (CFU)",
+          "Parts per million (ppm)",
+          "Percentage contamination"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q35",
+        "text": "A HACCP plan should be reviewed at minimum:",
+        "options": ["Every 5 years", "Every 2 years", "Annually", "Only when the EHO requests it"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q36",
+        "text": "Which of these triggers an immediate HACCP plan review?",
+        "options": [
+          "A staff birthday celebration",
+          "Introduction of new menu items",
+          "A change in opening hours",
+          "A new uniform design"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q37",
+        "text": "An allergen is classified as which type of hazard?",
+        "options": ["Biological", "Physical", "Chemical", "Environmental"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q38",
+        "text": "Listeria monocytogenes is particularly dangerous because it:",
+        "options": [
+          "Only affects children",
+          "Can grow at refrigeration temperatures",
+          "Is destroyed by freezing",
+          "Only survives in raw meat"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q39",
+        "text": "Campylobacter is the UK's most common cause of food poisoning and is mainly found in:",
+        "options": ["Cooked rice", "Raw poultry", "Bread and cereals", "Tinned vegetables"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q40",
+        "text": "E. coli O157 can cause which life-threatening condition in children?",
+        "options": [
+          "Guillain-Barré syndrome",
+          "Haemolytic uraemic syndrome (HUS)",
+          "Meningitis",
+          "Toxic shock syndrome"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q41",
+        "text": "Histamine in scombroid fish is a chemical hazard that:",
+        "options": [
+          "Is destroyed by thorough cooking",
+          "Is prevented by proper temperature control throughout the supply chain",
+          "Only occurs in freshwater fish",
+          "Is caused by cleaning chemical residues"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q42",
+        "text": "The risk assessment significance score is calculated as:",
+        "options": [
+          "Likelihood + Severity",
+          "Likelihood × Severity",
+          "Severity ÷ Likelihood",
+          "Likelihood × Frequency"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q43",
+        "text": "A significance score of 20 (out of 25) indicates:",
+        "options": [
+          "Low risk – manage with PRPs",
+          "Medium risk – enhanced monitoring",
+          "High risk – likely needs a CCP",
+          "No risk – no action needed"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q44",
+        "text": "Too many CCPs in a HACCP plan usually means:",
+        "options": [
+          "The plan is very thorough",
+          "Control points have been confused with critical control points",
+          "The food business is very large",
+          "The plan needs more monitoring"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q45",
+        "text": "Which bacteria produces heat-stable toxins that survive cooking?",
+        "options": ["Salmonella", "Campylobacter", "Staphylococcus aureus", "Listeria"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q46",
+        "text": "Bacillus cereus food poisoning is commonly associated with:",
+        "options": [
+          "Raw salad leaves",
+          "Improperly cooled cooked rice",
+          "Fresh fruit",
+          "Pasteurised milk"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q47",
+        "text": "Clostridium perfringens multiplies rapidly in:",
+        "options": [
+          "Chilled salads",
+          "Slowly cooled cooked meats and gravies",
+          "Raw vegetables",
+          "Frozen foods"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q48",
+        "text": "Norovirus in food premises is best controlled by:",
+        "options": [
+          "Cooking food to high temperatures",
+          "Strict personal hygiene and 48-hour exclusion after symptoms",
+          "Using antibacterial cleaning products",
+          "Freezing all ingredients before use"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q49",
+        "text": "The reheating critical limit in Scotland differs from England because:",
+        "options": [
+          "Scotland requires 82°C; England requires 75°C",
+          "Scotland requires 75°C; England requires 82°C",
+          "Scotland has no specific requirement",
+          "They are the same"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q50",
+        "text": "FIFO stands for:",
+        "options": [
+          "Food Inspection and Formation Order",
+          "First In, First Out",
+          "Final Inspection For Output",
+          "Fridge Inventory and Freezer Organisation"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q51",
+        "text": "A food safety culture means:",
+        "options": [
+          "Having a nice-looking kitchen",
+          "Management and staff genuinely believe in and practice food safety",
+          "Displaying food safety posters on the wall",
+          "Passing all EHO inspections"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q52",
+        "text": "The HACCP team should include:",
+        "options": [
+          "Only the head chef",
+          "Only the food safety officer",
+          "A multidisciplinary team with relevant expertise",
+          "Only external consultants"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q53",
+        "text": "Step 4 of the 12 Codex implementation steps is:",
+        "options": [
+          "Conduct hazard analysis",
+          "Construct a flow diagram",
+          "Assemble the HACCP team",
+          "Describe the product"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q54",
+        "text": "Sous vide cooking at 58°C for 2 hours achieves safety through:",
+        "options": [
+          "The vacuum seal killing bacteria",
+          "Time-temperature equivalence (pasteurisation over time)",
+          "The water bath creating a sterile environment",
+          "The searing step that follows"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q55",
+        "text": "For sous vide cooking, the critical limits are:",
+        "options": [
+          "Temperature only",
+          "Time only",
+          "Both temperature AND time",
+          "Neither – sous vide is inherently safe"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q56",
+        "text": "Raw fish for raw consumption must be frozen to:",
+        "options": [
+          "-10°C for 12 hours",
+          "-15°C for 24 hours",
+          "-20°C for at least 24 hours",
+          "-30°C for 6 hours"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q57",
+        "text": "Natasha's Law relates to:",
+        "options": [
+          "Staff working hours",
+          "Allergen labelling on pre-packed for direct sale (PPDS) foods",
+          "Fire safety in kitchens",
+          "Temperature monitoring requirements"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q58",
+        "text": "A corrective action for chicken delivered at 14°C should be:",
+        "options": [
+          "Accept it and refrigerate quickly",
+          "Reject the delivery and document the rejection",
+          "Cook it immediately to kill any bacteria",
+          "Accept it but use it within 2 hours"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q59",
+        "text": "The '5 Whys' technique is used for:",
+        "options": [
+          "Counting CCPs",
+          "Root cause analysis",
+          "Training new staff",
+          "Checking temperatures"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q60",
+        "text": "Digital monitoring systems are preferred because:",
+        "options": [
+          "They are cheaper than paper",
+          "They provide automatic timestamps and are harder to falsify",
+          "They eliminate the need for staff training",
+          "They are required by law"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q61",
+        "text": "An EHO can take which enforcement action?",
+        "options": [
+          "Issue improvement notices, prohibition notices, or prosecute",
+          "Only give verbal advice",
+          "Only inspect large restaurants",
+          "Only issue fines"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q62",
+        "text": "Records must be available for EHO inspection:",
+        "options": [
+          "Within 7 days of a request",
+          "Within 24 hours",
+          "At any time during an inspection",
+          "Only during scheduled appointments"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q63",
+        "text": "An approved supplier list should include:",
+        "options": [
+          "Suppliers' phone numbers only",
+          "Food safety criteria, certifications, and specification agreements",
+          "The cheapest suppliers in the area",
+          "Only suppliers recommended by the EHO"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q64",
+        "text": "A control point (CP) differs from a CCP because:",
+        "options": [
+          "CPs are more important than CCPs",
+          "A CP has no subsequent step to fix problems",
+          "A CP controls a hazard but is not the last line of defence",
+          "CPs only apply to cleaning"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q65",
+        "text": "Which pathogen has the lowest infectious dose?",
+        "options": [
+          "Staphylococcus aureus",
+          "Campylobacter",
+          "Clostridium perfringens",
+          "Bacillus cereus"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q66",
+        "text": "Aflatoxins are produced by:",
+        "options": [
+          "Bacteria on raw meat",
+          "Moulds on grains and nuts",
+          "Viruses in shellfish",
+          "Parasites in fish"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q67",
+        "text": "The 'danger zone' for bacterial growth is:",
+        "options": ["0°C to 5°C", "5°C to 60°C", "8°C to 63°C", "20°C to 45°C"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q68",
+        "text": "Version control of HACCP documentation means:",
+        "options": [
+          "Keeping only the latest version",
+          "Keeping all versions with dates and revision numbers",
+          "Numbering pages in the current document",
+          "Using digital files instead of paper"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q69",
+        "text": "Microbiological results given as 'satisfactory' mean:",
+        "options": [
+          "The food is sterile",
+          "Levels are within acceptable published guidelines",
+          "No bacteria were found at all",
+          "The food will never cause illness"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q70",
+        "text": "Internal audits should ideally be conducted by:",
+        "options": [
+          "The person responsible for the area being audited",
+          "Someone independent of the area being audited",
+          "Only external consultants",
+          "The newest team member"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q71",
+        "text": "A supplier audit is an example of:",
+        "options": ["Monitoring", "Corrective action", "Verification", "A prerequisite programme"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q72",
+        "text": "Falsifying HACCP monitoring records is:",
+        "options": [
+          "Acceptable if the food was safe",
+          "A minor administrative issue",
+          "Potentially a criminal offence",
+          "Only a problem if the EHO notices"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q73",
+        "text": "Customer complaint analysis helps HACCP by:",
+        "options": [
+          "Improving menu design",
+          "Revealing patterns that may indicate uncontrolled hazards",
+          "Reducing food costs",
+          "Increasing staff morale"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q74",
+        "text": "Building works in a kitchen trigger a HACCP review because:",
+        "options": [
+          "The builders might eat the food",
+          "Construction can alter workflows and introduce contamination risks",
+          "Building permits require it",
+          "It's a good excuse to update paperwork"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q75",
+        "text": "A hand swab test is useful for:",
+        "options": [
+          "Checking if staff have washed their hands correctly",
+          "Measuring hand temperature",
+          "Identifying allergens on hands",
+          "Checking for cuts and wounds"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q76",
+        "text": "Environmental monitoring for Listeria is especially important in:",
+        "options": [
+          "Dry goods storage areas",
+          "Production areas for chilled ready-to-eat foods",
+          "Office areas",
+          "Customer dining areas"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q77",
+        "text": "The Codex decision tree has how many questions?",
+        "options": ["2", "4", "7", "12"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q78",
+        "text": "If all monitoring records show CCPs within limits but customers report illness, this suggests:",
+        "options": [
+          "The complaints are false",
+          "A hazard may exist that isn't covered by the current HACCP plan",
+          "No investigation is needed",
+          "The critical limits should be relaxed"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q79",
+        "text": "How often should thermometer calibration be done for probes used at CCPs?",
+        "options": [
+          "Monthly",
+          "Weekly or more frequently",
+          "Annually",
+          "Only when readings seem wrong"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q80",
+        "text": "A 'near miss' in food safety should be:",
+        "options": [
+          "Ignored since no harm was done",
+          "Reported and investigated to prevent a real incident",
+          "Mentioned verbally but not documented",
+          "Only reported if the manager asks"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q81",
+        "text": "The purpose of describing the product (Step 2) is to understand:",
+        "options": [
+          "How much it costs",
+          "Ingredients, processing, storage, distribution, and intended consumer",
+          "How to market it",
+          "Where to buy the ingredients"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q82",
+        "text": "Identifying intended use (Step 3) is important because:",
+        "options": [
+          "It affects the price",
+          "Vulnerable consumers (elderly, pregnant, children) may need stricter controls",
+          "It determines the menu layout",
+          "It's required for tax purposes"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q83",
+        "text": "If a process step has a hazard but a later cooking step eliminates it, the process step is:",
+        "options": [
+          "A CCP",
+          "Not a CCP (the cooking step is)",
+          "Both a CCP and a CP",
+          "Exempt from the HACCP plan"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q84",
+        "text": "The minimum frequency for HACCP plan review is:",
+        "options": ["Monthly", "Quarterly", "Annually", "Every 5 years"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q85",
+        "text": "A food business that fails to have HACCP procedures can face:",
+        "options": [
+          "Only a verbal warning",
+          "Improvement notices, prohibition notices, or prosecution",
+          "A reduced food hygiene rating only",
+          "No consequences if no one gets ill"
+        ],
+        "correctAnswer": 1
+      }
+    ]
+  }
+}

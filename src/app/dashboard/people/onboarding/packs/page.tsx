@@ -57,8 +57,7 @@ function getIsManagerLike(profile: any | null): boolean {
 }
 
 export default function OnboardingPacksPage() {
-  const { profile } = useAppContext()
-  const companyId = profile?.company_id as string | undefined
+  const { profile, companyId } = useAppContext()
   const isManagerLike = getIsManagerLike(profile)
 
   const [loading, setLoading] = useState(true)

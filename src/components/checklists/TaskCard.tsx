@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Clock, CheckCircle2, AlertCircle, Calendar, Camera, Thermometer, FileText, Lightbulb, ExternalLink, ArrowRight } from '@/components/ui/icons'
+import { Clock, CheckCircle2, AlertCircle, Calendar, Camera, Thermometer, FileText, Lightbulb, ExternalLink, ArrowRight, X } from '@/components/ui/icons'
 import { ChecklistTaskWithTemplate, TaskStatus } from '@/types/checklist-types'
 import { supabase } from '@/lib/supabase'
 import { calculateTaskTiming, TaskTimingStatus } from '@/utils/taskTiming'
@@ -11,6 +11,7 @@ interface TaskCardProps {
   task: ChecklistTaskWithTemplate
   onClick: () => void
   showDetailLink?: boolean
+  onDismiss?: (taskId: string) => void
 }
 
 interface TempWarning {
@@ -20,7 +21,7 @@ interface TempWarning {
   asset_name?: string
 }
 
-export default function TaskCard({ task, onClick, showDetailLink = true }: TaskCardProps) {
+export default function TaskCard({ task, onClick, showDetailLink = true, onDismiss }: TaskCardProps) {
   const isCompleted = task.status === 'completed'
   const isOverdue = task.status === 'overdue' // Check for overdue status set by Edge Function
   const isCritical = task.template?.is_critical
@@ -192,8 +193,8 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
   }
 
   const handleCardClick = (e: React.MouseEvent) => {
-    // If clicking the detail link, don't trigger onClick
-    if ((e.target as HTMLElement).closest('a')) {
+    // If clicking the detail link or dismiss button, don't trigger onClick
+    if ((e.target as HTMLElement).closest('a') || (e.target as HTMLElement).closest('[data-dismiss]')) {
       return;
     }
     onClick();
@@ -204,17 +205,32 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
       onClick={handleCardClick}
       className={`bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 backdrop-blur-sm border border-[rgb(var(--border))] dark:border-theme rounded-lg p-4 cursor-pointer transition-all hover:shadow-lg relative ${getStatusColor()}`}
     >
-      {showDetailLink && (
-        <Link
-          href={`/dashboard/tasks/view/${task.id}`}
-          onClick={(e) => e.stopPropagation()}
-          className="absolute top-3 right-3 p-1.5 hover:bg-black/[0.05] dark:hover:bg-white/10 rounded-lg transition-colors z-10"
-          title="View task details"
-        >
-          <ExternalLink className="w-4 h-4 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))]" />
-        </Link>
-      )}
-      <div className="flex items-start justify-between mb-3 pr-8">
+      <div className="absolute top-3 right-3 flex items-center gap-1 z-10">
+        {showDetailLink && (
+          <Link
+            href={`/dashboard/tasks/view/${task.id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="p-1.5 hover:bg-black/[0.05] dark:hover:bg-white/10 rounded-lg transition-colors"
+            title="View task details"
+          >
+            <ExternalLink className="w-4 h-4 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary hover:text-[rgb(var(--text-primary))]" />
+          </Link>
+        )}
+        {onDismiss && (
+          <button
+            data-dismiss
+            onClick={(e) => {
+              e.stopPropagation()
+              onDismiss(task.id)
+            }}
+            className="p-1.5 hover:bg-red-500/10 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+            title="Dismiss task"
+          >
+            <X className="w-4 h-4 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary hover:text-red-500 dark:hover:text-red-400" />
+          </button>
+        )}
+      </div>
+      <div className="flex items-start mb-3 pr-16">
         <div className="flex items-center gap-2">
           {getStatusIcon()}
           <span className={`text-sm font-medium ${isOverdue ? 'text-red-700 dark:text-red-300 font-semibold' : 'text-[rgb(var(--text-primary))] dark:text-white'}`}>
@@ -227,15 +243,14 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
             )}
           </span>
         </div>
-        <div className="flex items-center gap-1">
-          {getEvidenceIcons()}
-        </div>
       </div>
 
       <div className="space-y-2">
+        {(task.custom_instructions || task.template?.description) && (
  <p className="text-sm text-[rgb(var(--text-secondary))] dark:text-theme-tertiary line-clamp-2">
-          {task.custom_instructions || task.template?.description || 'No description available'}
-        </p>
+            {task.custom_instructions || task.template?.description}
+          </p>
+        )}
 
         {/* Generic Task Navigation Link */}
         {genericTaskLink && (
@@ -266,6 +281,9 @@ export default function TaskCard({ task, onClick, showDetailLink = true }: TaskC
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
             <span>{task.due_time || 'Anytime'}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            {getEvidenceIcons()}
           </div>
         </div>
 

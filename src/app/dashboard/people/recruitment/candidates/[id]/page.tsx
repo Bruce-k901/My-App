@@ -86,8 +86,7 @@ type OfferLetter = {
 export default function CandidateProfilePage() {
   const params = useParams()
   const router = useRouter()
-  const { profile } = useAppContext()
-  const companyId = profile?.company_id
+  const { profile, companyId } = useAppContext()
   const candidateId = params.id as string
 
   const [loading, setLoading] = useState(true)

@@ -8,7 +8,7 @@ import AddExecutiveModal from '@/components/users/AddExecutiveModal';
 
 export default function AddEmployeeChoicePage() {
   const router = useRouter();
-  const { profile } = useAppContext();
+  const { profile, companyId } = useAppContext();
   const [showExecutiveModal, setShowExecutiveModal] = useState(false);
   
   return (
@@ -167,11 +167,11 @@ export default function AddEmployeeChoicePage() {
       </div>
 
       {/* Executive Modal */}
-      {profile?.company_id && (
+      {companyId && (
         <AddExecutiveModal
           open={showExecutiveModal}
           onClose={() => setShowExecutiveModal(false)}
-          companyId={profile.company_id}
+          companyId={companyId}
           onRefresh={() => {
             // After adding, go back to employees list
             router.push('/dashboard/people/employees');

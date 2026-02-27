@@ -1,6 +1,7 @@
 // src/app/api/users/create/route.ts
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { sendEmail } from "@/lib/send-email";
 import crypto from "crypto";
 
 export async function POST(req: Request) {
@@ -193,6 +194,13 @@ export async function POST(req: Request) {
                 console.log(`✅ [CREATE-USER] Password reset email sent to existing user ${emailLower}`);
                 console.log(`💡 [CREATE-USER] Check Inbucket at http://localhost:54324 for local dev emails`);
                 console.log(`💡 [CREATE-USER] Email should arrive shortly. If not, check rate limits and SMTP config.`);
+
+                // Send BCC notification copy to hello@opslytech.com
+                sendEmail({
+                  to: 'hello@opslytech.com',
+                  subject: `[BCC] Password reset sent to ${emailLower}`,
+                  html: `<p>A password reset / re-invite email was sent to <strong>${emailLower}</strong> (${full_name || 'No name'}).</p><p>Role: ${roleValue}</p><p>This is an automatic BCC copy for your records.</p>`,
+                }).catch((err) => console.warn('⚠️ BCC notification failed:', err));
               }
             } catch (recoveryErr: any) {
               console.error(`❌ [CREATE-USER] Password reset email exception for ${emailLower}:`, {
@@ -212,6 +220,13 @@ export async function POST(req: Request) {
         authUserId = inviteData.user.id;
         invitationSent = true;
         console.log(`✅ [CREATE-USER] Invitation email sent to ${emailLower}, auth user ID: ${authUserId}`);
+
+        // Send BCC notification copy to hello@opslytech.com
+        sendEmail({
+          to: 'hello@opslytech.com',
+          subject: `[BCC] Invite sent to ${emailLower}`,
+          html: `<p>An invitation email was sent to <strong>${emailLower}</strong> (${full_name || 'No name'}).</p><p>Role: ${roleValue}</p><p>This is an automatic BCC copy for your records.</p>`,
+        }).catch((err) => console.warn('⚠️ BCC notification failed:', err));
       }
     } catch (inviteErr: any) {
       console.error("❌ Invite exception:", inviteErr);

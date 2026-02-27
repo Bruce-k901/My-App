@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Search, Plus, Settings, Info, ArrowRight, AlertCircle, Trash2 } from '@/components/ui/icons'
 import { supabase } from '@/lib/supabase'
+import { useAppContext } from '@/context/AppContext'
 import { TaskTemplate, TaskCategory, LABELS } from '@/types/checklist-types'
 import { toast } from 'sonner'
 
@@ -50,6 +51,7 @@ type TemplateWithUsage = TaskTemplate & {
 }
 
 export default function TemplatesPage() {
+  const { companyId } = useAppContext()
   const [templates, setTemplates] = useState<TemplateWithUsage[]>([])
   const [filteredTemplates, setFilteredTemplates] = useState<TemplateWithUsage[]>([])
   const [loading, setLoading] = useState(true)
@@ -60,10 +62,10 @@ export default function TemplatesPage() {
   const [showClone, setShowClone] = useState(false)
   const [deletingTemplateId, setDeletingTemplateId] = useState<string | null>(null)
 
-  // Fetch templates on mount
+  // Fetch templates when companyId is available
   useEffect(() => {
-    fetchTemplates()
-  }, [])
+    if (companyId) fetchTemplates()
+  }, [companyId])
 
   // Filter templates when search or category changes
   useEffect(() => {
@@ -84,34 +86,18 @@ export default function TemplatesPage() {
   }, [templates, searchTerm, selectedCategory])
 
   async function fetchTemplates() {
+    if (!companyId) {
+      setTemplates([]);
+      setLoading(false);
+      return;
+    }
+
     try {
-      // Get current user's profile to get company_id
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.error('No user logged in');
-        setTemplates([]);
-        setLoading(false);
-        return;
-      }
-
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('company_id')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError || !profile?.company_id) {
-        console.error('Error fetching profile or no company_id:', profileError);
-        setTemplates([]);
-        setLoading(false);
-        return;
-      }
-
       // Fetch user-created templates (not library templates) for this company
       const { data: templatesData, error: templatesError } = await supabase
         .from('task_templates')
         .select('*')
-        .eq('company_id', profile.company_id)
+        .eq('company_id', companyId)
         .eq('is_template_library', false) // User-created templates, not library templates
         .eq('is_active', true)
         .order('name')

@@ -246,15 +246,17 @@ export function StocklyNavItem({ item }: { item: NavItem }) {
 
   // Regular link items
   if (item.type === 'link') {
+    if (!item.href) return null;
+
     // Dashboard should only be active on the exact dashboard route, not child routes
     const isActive = item.href === '/dashboard/stockly'
       ? pathname === item.href
       : pathname === item.href || pathname.startsWith(item.href + '/');
-    
+
     const IconComponent = item.icon;
     return (
       <Link
-        href={item.href!}
+        href={item.href}
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
           isActive
             ? 'bg-stockly-dark/[0.08] dark:bg-stockly/10 text-stockly-dark dark:text-stockly font-medium'
@@ -335,10 +337,10 @@ export function StocklyNavItem({ item }: { item: NavItem }) {
 
         {shouldExpand && (
           <div className="ml-8 mt-1 space-y-1">
-            {item.children!.map((child) => {
-              const isChildActive = pathname === child.href || (child.href && pathname.startsWith(child.href + '/'));
+            {item.children!.filter(child => child.href).map((child) => {
+              const isChildActive = pathname === child.href || pathname.startsWith(child.href + '/');
               const ChildIcon = child.icon || BarChart3;
-              
+
               return (
                 <Link
                   key={child.href}

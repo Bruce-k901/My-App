@@ -123,10 +123,7 @@ interface EmployeeRow {
 }
 
 export default function AttendanceSignOffPage() {
-  const { profile } = useAppContext();
-  
-  // Memoize profile values - use stable string values, not object references
-  const companyId = useMemo(() => profile?.company_id || null, [profile?.company_id]);
+  const { profile, companyId } = useAppContext();
   const userId = useMemo(() => profile?.id || null, [profile?.id]);
   
   // Loading guard

@@ -55,7 +55,7 @@ export default function OrganizationSitesPage() {
         .from("profiles")
         .select("id, full_name, email, phone_number")
         .eq("company_id", effectiveCompanyId)
-        .eq("app_role", "Manager")
+        .in("app_role", ["Manager", "Admin", "Owner", "General Manager"])
         .order("full_name");
 
       if (gmsError) {
@@ -154,21 +154,19 @@ export default function OrganizationSitesPage() {
         console.log("🔍 Test query (no filter):", testSites?.length || 0, testError);
       }
 
-      // Then fetch GM data separately from gm_index
+      // Then fetch GM data separately from profiles
       const gmIds = sitesData?.map(s => s.gm_user_id).filter(Boolean) || [];
       let gmMap = new Map();
 
       if (gmIds.length > 0) {
         const { data: gmsData, error: gmsError } = await supabase
-          .from("gm_index")
-          .select("id, full_name, email, phone")
+          .from("profiles")
+          .select("id, full_name, email, phone_number")
+          .eq("company_id", effectiveCompanyId)
           .in("id", gmIds);
 
         if (!gmsError && gmsData) {
-          console.log("GM data fetched from gm_index:", gmsData);
-          gmMap = new Map(gmsData.map(g => [g.id, g]));
-        } else {
-          console.log("No GM data found or error:", gmsError);
+          gmMap = new Map(gmsData.map(g => [g.id, { id: g.id, full_name: g.full_name, email: g.email, phone: g.phone_number }]));
         }
       }
 
@@ -199,11 +197,11 @@ export default function OrganizationSitesPage() {
   }, [fetchSites, fetchGMList]);
 
   useEffect(() => {
-    if (!ctxLoading && !profile?.company_id) {
+    if (!ctxLoading && !companyId) {
       setLoading(false);
       setError("No company context detected. Please sign in or complete setup.");
     }
-  }, [ctxLoading, profile?.company_id]);
+  }, [ctxLoading, companyId]);
 
   // Early returns ONLY AFTER all hooks
   if (ctxLoading) {
@@ -244,7 +242,7 @@ export default function OrganizationSitesPage() {
         <SiteToolbar 
           inline 
           sites={sites} 
-          companyId={profile?.company_id || ""} 
+          companyId={effectiveCompanyId || ""} 
           onRefresh={fetchSites} 
           showBack={false}
           onAddSite={() => setFormOpen(true)}
@@ -283,7 +281,7 @@ export default function OrganizationSitesPage() {
           onClose={() => setFormOpen(false)}
           onSaved={handleSaved}
           initial={editing || null}
-          companyId={profile?.company_id || ""}
+          companyId={effectiveCompanyId || ""}
           gmList={gmList}
         />
       )}
@@ -298,7 +296,7 @@ export default function OrganizationSitesPage() {
             fetchSites();
             fetchGMList();
           }}
-          companyId={profile?.company_id || ""}
+          companyId={effectiveCompanyId || ""}
           gmList={gmList}
         />
       )}

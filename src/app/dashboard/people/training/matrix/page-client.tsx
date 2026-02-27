@@ -25,7 +25,7 @@ interface Course {
 }
 
 export function ComplianceMatrixPageClient() {
-  const { profile, selectedSiteId } = useAppContext();
+  const { profile, selectedSiteId, companyId } = useAppContext();
   const [data, setData] = useState<ComplianceMatrixEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMandatoryOnly, setShowMandatoryOnly] = useState(true);
@@ -57,13 +57,13 @@ export function ComplianceMatrixPageClient() {
   } | null>(null);
 
   useEffect(() => {
-    if (profile?.company_id && profile?.id) {
+    if (companyId && profile?.id) {
       fetchData();
     }
-  }, [profile?.company_id, profile?.id, profile?.app_role, selectedSiteId]);
+  }, [companyId, profile?.id, profile?.app_role, selectedSiteId]);
 
   const fetchData = async () => {
-    if (!profile?.company_id || !profile?.id) return;
+    if (!companyId || !profile?.id) return;
 
     setLoading(true);
 
@@ -74,7 +74,7 @@ export function ComplianceMatrixPageClient() {
       let query = supabase
         .from('compliance_matrix_view')
         .select('*')
-        .eq('company_id', profile.company_id)
+        .eq('company_id', companyId)
         .order('full_name', { ascending: true })
         .order('course_name', { ascending: true });
 

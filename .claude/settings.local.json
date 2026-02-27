@@ -155,7 +155,11 @@
       "Bash(timeout:*)",
       "Bash(forfiles:*)",
       "Bash(python3:*)",
-      "Bash(psql:*)"
+      "Bash(psql:*)",
+      "Bash(tasklist:*)",
+      "WebFetch(domain:phosphoricons.com)",
+      "Bash(curl.exe:*)",
+      "Bash(do grep -q \"CREATE TABLE.*global_documents\" \"$file\")"
     ]
   }
 }

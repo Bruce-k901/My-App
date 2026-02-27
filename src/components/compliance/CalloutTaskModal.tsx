@@ -88,9 +88,10 @@ export default function CalloutTaskModal({
           .from('callouts')
           .select('*')
           .eq('id', calloutId)
-          .single()
+          .maybeSingle()
 
         if (calloutError) throw calloutError
+        if (!calloutData) throw new Error('Callout not found — it may have been deleted')
 
         setCallout(calloutData)
 
@@ -100,7 +101,7 @@ export default function CalloutTaskModal({
             .from('assets')
             .select('id, name, serial_number, location, category')
             .eq('id', calloutData.asset_id)
-            .single()
+            .maybeSingle()
 
           setAsset(assetData)
         }
@@ -111,7 +112,7 @@ export default function CalloutTaskModal({
             .from('contractors')
             .select('id, name, contact_name, phone, email')
             .eq('id', calloutData.contractor_id)
-            .single()
+            .maybeSingle()
 
           setContractor(contractorData)
         }
@@ -122,7 +123,7 @@ export default function CalloutTaskModal({
         }
 
       } catch (err) {
-        console.error('Error loading callout:', err)
+        console.warn('Callout not found for task:', calloutId, err)
         setError(err instanceof Error ? err.message : 'Failed to load callout')
       } finally {
         setLoading(false)
@@ -131,6 +132,36 @@ export default function CalloutTaskModal({
 
     loadCallout()
   }, [isOpen, calloutId, supabase])
+
+  // Dismiss orphaned task (callout was deleted)
+  const handleDismissOrphanedTask = async () => {
+    try {
+      setSubmitting(true)
+      const user = (await supabase.auth.getUser()).data.user
+      if (!user) throw new Error('Not authenticated')
+
+      const { error: taskError } = await supabase
+        .from('checklist_tasks')
+        .update({
+          status: 'completed',
+          completed_at: new Date().toISOString(),
+          completed_by: user.id,
+          completion_data: {
+            callout_status: 'dismissed',
+            reason: 'Callout no longer exists',
+          }
+        })
+        .eq('id', task.id)
+
+      if (taskError) throw taskError
+      onComplete()
+      onClose()
+    } catch (err) {
+      console.error('Error dismissing task:', err)
+      setError(err instanceof Error ? err.message : 'Failed to dismiss task')
+      setSubmitting(false)
+    }
+  }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -257,7 +288,7 @@ export default function CalloutTaskModal({
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-xl shadow-2xl p-8 border border-white/[0.08]">
+        <div className="bg-theme-surface-elevated rounded-xl shadow-2xl p-8 border border-theme">
           <div className="flex flex-col items-center gap-4">
             <div className="w-8 h-8 border-2 border-rose-500 border-t-transparent rounded-full animate-spin" />
             <div className="text-theme-tertiary text-sm">Loading callout details...</div>
@@ -267,19 +298,49 @@ export default function CalloutTaskModal({
     )
   }
 
-  // Error state (no callout found)
+  // Error state (no callout found — allow dismissing orphaned task)
   if (error && !callout) {
     return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-xl shadow-2xl max-w-md w-full p-6 border border-white/[0.08]">
-          <h3 className="text-lg font-semibold text-theme-primary mb-4">Error Loading Callout</h3>
-          <p className="text-theme-tertiary mb-6">{error}</p>
-          <button
-            onClick={onClose}
-            className="w-full px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg transition-colors"
-          >
-            Close
-          </button>
+        <div className="bg-theme-surface-elevated rounded-xl shadow-2xl max-w-md w-full p-6 border border-theme">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-amber-500/20">
+              <AlertTriangle className="w-5 h-5 text-amber-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-theme-primary">Callout Not Found</h3>
+          </div>
+          <p className="text-theme-tertiary mb-2">
+            The callout linked to this task no longer exists. It may have been closed or the related asset was removed.
+          </p>
+          <p className="text-theme-tertiary text-sm mb-6">
+            You can dismiss this task to remove it from your list.
+          </p>
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={handleDismissOrphanedTask}
+              disabled={submitting}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 disabled:bg-rose-600/50 text-white rounded-lg transition-colors"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Dismissing...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="w-4 h-4" />
+                  Dismiss Task
+                </>
+              )}
+            </button>
+            <button
+              onClick={onClose}
+              disabled={submitting}
+              className="w-full px-4 py-2 text-sm text-theme-tertiary hover:text-theme-primary hover:bg-theme-hover rounded-lg transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -300,10 +361,10 @@ export default function CalloutTaskModal({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-white/[0.08]">
+      <div className="bg-theme-surface-elevated rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-theme">
 
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/[0.08]">
+        <div className="flex items-center justify-between p-6 border-b border-theme">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-rose-500/20">
               <Wrench className="w-5 h-5 text-rose-400" />
@@ -323,7 +384,7 @@ export default function CalloutTaskModal({
           <button
             onClick={onClose}
             disabled={submitting}
-            className="p-2 hover:bg-white/[0.06] rounded-lg transition-colors disabled:opacity-50"
+            className="p-2 hover:bg-theme-hover rounded-lg transition-colors disabled:opacity-50"
           >
             <X className="w-5 h-5 text-theme-tertiary" />
           </button>
@@ -339,7 +400,7 @@ export default function CalloutTaskModal({
           )}
 
           {/* Callout Info */}
-          <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06]">
+          <div className="bg-theme-surface rounded-lg p-4 border border-theme">
             <div className="grid grid-cols-2 gap-4">
               {/* Asset */}
               {asset && (
@@ -362,7 +423,7 @@ export default function CalloutTaskModal({
 
               {/* Contractor */}
               {contractor && (
-                <div className="col-span-2 pt-3 border-t border-white/[0.06]">
+                <div className="col-span-2 pt-3 border-t border-theme">
                   <div className="text-xs text-theme-tertiary mb-2">Contractor</div>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500 to-[#D37E91]/80 flex items-center justify-center text-white font-semibold">
@@ -377,7 +438,7 @@ export default function CalloutTaskModal({
                     {contractor.phone && (
                       <a
                         href={`tel:${contractor.phone}`}
-                        className="ml-auto flex items-center gap-2 px-3 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg text-sm text-theme-primary transition-colors"
+                        className="ml-auto flex items-center gap-2 px-3 py-1.5 bg-theme-muted hover:bg-theme-hover rounded-lg text-sm text-theme-primary transition-colors"
                       >
                         <Phone className="w-4 h-4" />
                         Call
@@ -406,7 +467,7 @@ export default function CalloutTaskModal({
           </div>
 
           {/* Status Update */}
-          <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06]">
+          <div className="bg-theme-surface rounded-lg p-4 border border-theme">
             <h3 className="text-theme-primary font-semibold mb-4 flex items-center gap-2">
               <Clock className="w-4 h-4 text-rose-400" />
               Update Status
@@ -418,8 +479,8 @@ export default function CalloutTaskModal({
                   key={option.value}
                   className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
                     selectedStatus === option.value
-                      ? 'bg-white/[0.08] border border-rose-500/50'
-                      : 'bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06]'
+                      ? 'bg-theme-hover border border-rose-500/50'
+                      : 'bg-theme-surface border border-theme hover:bg-theme-hover'
                   }`}
                 >
                   <input
@@ -429,7 +490,7 @@ export default function CalloutTaskModal({
                     checked={selectedStatus === option.value}
                     onChange={(e) => setSelectedStatus(e.target.value as CalloutStatus)}
                     disabled={submitting}
-                    className="mt-1 w-4 h-4 text-rose-500 focus:ring-rose-500 focus:ring-offset-0 bg-neutral-700 border-neutral-600"
+                    className="mt-1 w-4 h-4 text-rose-500 focus:ring-rose-500 focus:ring-offset-0 bg-theme-muted border-theme"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
@@ -446,7 +507,7 @@ export default function CalloutTaskModal({
 
           {/* Repair Summary (for completed status) */}
           {selectedStatus === 'completed' && (
-            <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06]">
+            <div className="bg-theme-surface rounded-lg p-4 border border-theme">
               <h3 className="text-theme-primary font-semibold mb-3 flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-green-400" />
                 Repair Summary
@@ -457,13 +518,13 @@ export default function CalloutTaskModal({
                 placeholder="Describe the work completed..."
                 rows={3}
                 disabled={submitting}
-                className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
+                className="w-full px-3 py-2 bg-theme-muted border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
               />
             </div>
           )}
 
           {/* Notes & Document Upload */}
-          <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06]">
+          <div className="bg-theme-surface rounded-lg p-4 border border-theme">
             <h3 className="text-theme-primary font-semibold mb-3 flex items-center gap-2">
               <FileText className="w-4 h-4 text-theme-tertiary" />
               Notes & Documents
@@ -478,7 +539,7 @@ export default function CalloutTaskModal({
                   placeholder="Add any notes about this update..."
                   rows={2}
                   disabled={submitting}
-                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 resize-none"
+                  className="w-full px-3 py-2 bg-theme-muted border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 resize-none"
                 />
               </div>
 
@@ -489,7 +550,7 @@ export default function CalloutTaskModal({
                   onChange={handleFileSelect}
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                   disabled={submitting}
-                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  className="w-full px-3 py-2 bg-theme-muted border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
                 {selectedFile && (
                   <div className="mt-2 text-sm text-green-400">
@@ -532,11 +593,11 @@ export default function CalloutTaskModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-white/[0.08]">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-theme">
           <button
             onClick={onClose}
             disabled={submitting}
-            className="px-4 py-2 text-sm font-medium text-theme-tertiary hover:text-white hover:bg-white/[0.06] rounded-lg transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-theme-tertiary hover:text-theme-primary hover:bg-theme-hover rounded-lg transition-colors disabled:opacity-50"
           >
             Cancel
           </button>

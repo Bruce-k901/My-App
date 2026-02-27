@@ -25,7 +25,7 @@ interface ReviewItem {
 }
 
 export default function TeamReviewsPage() {
-  const { profile } = useAppContext();
+  const { profile, companyId } = useAppContext();
   const [items, setItems] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,7 +38,7 @@ export default function TeamReviewsPage() {
   }, [profile?.id, isManager]);
 
   const fetchTeamReviews = async () => {
-    if (!profile?.id || !profile?.company_id) return;
+    if (!profile?.id || !companyId) return;
 
     setLoading(true);
     try {
@@ -46,7 +46,7 @@ export default function TeamReviewsPage() {
       let reportsQuery = supabase
         .from('profiles')
         .select('id')
-        .eq('company_id', profile.company_id);
+        .eq('company_id', companyId);
       
       // If not admin/owner, only get direct reports
       if (profile.app_role?.toLowerCase() !== 'admin' && profile.app_role?.toLowerCase() !== 'owner') {

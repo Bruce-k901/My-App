@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
@@ -11,8 +11,7 @@ import {
   FileText, 
   Calendar, 
   GraduationCap, 
-  Target, 
-  MessageSquare, 
+  MessageSquare,
   Clock, 
   Shield, 
   CreditCard, 
@@ -24,101 +23,23 @@ import {
   Briefcase,
   X,
   Save,
-  CreditCard as CreditCardIcon,
   Loader2,
   Trash2,
   Plus,
   CheckCircle2,
   CalendarCheck
 } from '@/components/ui/icons';
-import type { EmergencyContact } from '@/types/teamly';
+import type { EmergencyContact, EmployeeProfile, SiteOption, ManagerOption } from '@/types/employee';
+import { InfoRow } from '@/components/people/InfoRow';
+import { EditEmployeeModal } from '@/components/people/EditEmployeeModal';
+import { buildProfileUpdateData, mapProfileToFormData, generateNextEmployeeNumber } from '@/lib/people/employee-save';
 import EmployeeSiteAssignmentsModal from '@/components/people/EmployeeSiteAssignmentsModal';
 import { EmployeeTrainingTab } from '@/components/training/EmployeeTrainingTab';
-import { EmployeeTrainingEditor } from '@/components/people/EmployeeTrainingEditor';
+import { toast } from 'sonner';
 
 type TabType = 'overview' | 'documents' | 'leave' | 'training' | 'attendance' | 'notes' | 'pay';
 
-interface Employee {
-  id: string;
-  full_name: string;
-  email: string;
-  phone_number: string | null;
-  avatar_url: string | null;
-  position_title: string | null;
-  department: string | null;
-  app_role: string;
-  status: string;
-  boh_foh: string | null;
-  
-  // Personal
-  date_of_birth: string | null;
-  gender: string | null;
-  nationality: string | null;
-  address_line_1: string | null;
-  address_line_2: string | null;
-  city: string | null;
-  county: string | null;
-  postcode: string | null;
-  country: string | null;
-  emergency_contacts: any[] | null;
-  
-  // Employment
-  employee_number: string | null;
-  start_date: string | null;
-  probation_end_date: string | null;
-  contract_type: string | null;
-  contracted_hours: number | null;
-  hourly_rate: number | null;
-  salary: number | null;
-  pay_frequency: string | null;
-  notice_period_weeks: number | null;
-  reports_to: string | null;
-  home_site: string | null;
-  sites?: { name: string } | null;
-  manager?: { full_name: string } | null;
-  
-  // Compliance
-  national_insurance_number: string | null;
-  right_to_work_status: string | null;
-  right_to_work_expiry: string | null;
-  dbs_status: string | null;
-  dbs_certificate_number: string | null;
-  dbs_check_date: string | null;
-  
-  // Banking
-  bank_name: string | null;
-  bank_account_name: string | null;
-  bank_account_number: string | null;
-  bank_sort_code: string | null;
-  
-  // Leave
-  annual_leave_allowance: number | null;
-  
-  // Pay & Tax
-  tax_code: string | null;
-  student_loan: boolean | null;
-  student_loan_plan: string | null;
-  pension_enrolled: boolean | null;
-  pension_contribution_percent: number | null;
-  p45_received: boolean | null;
-  
-  // Training
-  food_safety_level: number | null;
-  food_safety_expiry_date: string | null;
-  h_and_s_level: number | null;
-  h_and_s_expiry_date: string | null;
-  fire_marshal_trained: boolean | null;
-  fire_marshal_expiry_date: string | null;
-  first_aid_trained: boolean | null;
-  first_aid_expiry_date: string | null;
-  cossh_trained: boolean | null;
-  cossh_expiry_date: string | null;
-  
-  // Relations
-  home_site?: string | null;
-  sites?: { name: string } | null;
-  manager?: { full_name: string } | null;
-}
+type Employee = EmployeeProfile;
 
 export default function EmployeeProfilePage() {
   const params = useParams();
@@ -160,9 +81,12 @@ export default function EmployeeProfilePage() {
   }, [currentUser?.company_id]);
 
   // Refresh employee data when window regains focus or when employee is updated
+  // Skip refresh when a modal/dialog is open (file picker causes blur/focus cycle)
+  const modalOpenRef = useRef(false);
+
   useEffect(() => {
     const handleFocus = () => {
-      if (employeeId) {
+      if (employeeId && !modalOpenRef.current) {
         console.log('🔄 Window focus - refreshing employee data');
         setLoading(true);
         fetchEmployee();
@@ -383,63 +307,6 @@ export default function EmployeeProfilePage() {
     setManagers(data || []);
   };
 
-  const generateNextEmployeeNumber = async (): Promise<string | null> => {
-    if (!currentUser?.company_id) return null;
-    
-    try {
-      // Get company name - try from context first, then fetch from DB
-      let companyName: string | null = company?.name || null;
-      
-      if (!companyName) {
-        const { data: companyData } = await supabase
-          .from('companies')
-          .select('name')
-          .eq('id', currentUser.company_id)
-          .single();
-        
-        companyName = companyData?.name || null;
-      }
-      
-      if (!companyName) {
-        console.warn('Could not get company name for employee number generation');
-        return null;
-      }
-      
-      const companyPrefix = companyName
-        .replace(/[^a-zA-Z]/g, '')
-        .substring(0, 3)
-        .toUpperCase();
-      
-      if (!companyPrefix || companyPrefix.length < 3) return null;
-      
-      const prefix = `${companyPrefix}EMP`;
-      const { data: existingEmployees, error } = await supabase
-        .from('profiles')
-        .select('employee_number')
-        .eq('company_id', currentUser.company_id)
-        .not('employee_number', 'is', null)
-        .like('employee_number', `${prefix}%`);
-      
-      if (error) return null;
-      
-      let maxNumber = 0;
-      if (existingEmployees && existingEmployees.length > 0) {
-        existingEmployees.forEach((emp: any) => {
-          const match = emp.employee_number?.match(/\d+$/);
-          if (match) {
-            const num = parseInt(match[0], 10);
-            if (num > maxNumber) maxNumber = num;
-          }
-        });
-      }
-      
-      const nextNumber = maxNumber + 1;
-      return `${prefix}${nextNumber.toString().padStart(3, '0')}`;
-    } catch (err) {
-      return null;
-    }
-  };
-
   const handleEdit = async () => {
     if (!employee) return;
     
@@ -465,34 +332,8 @@ export default function EmployeeProfilePage() {
         .single();
 
       if (!profileError && profileData) {
-        const mappedData: any = {
-          ...profileData,
-          phone_number: profileData.phone_number || profileData.phone || '',
-          contracted_hours: profileData.contracted_hours_per_week?.toString() || '',
-          hourly_rate: profileData.hourly_rate ? (profileData.hourly_rate / 100).toString() : '',
-          salary: profileData.salary?.toString() || '',
-          notice_period_weeks: profileData.notice_period_weeks?.toString() || '1',
-          annual_leave_allowance: profileData.annual_leave_allowance?.toString() || '28',
-          // Pay & Tax fields
-          tax_code: profileData.tax_code || '',
-          student_loan: profileData.student_loan || false,
-          student_loan_plan: profileData.student_loan_plan || '',
-          pension_enrolled: profileData.pension_enrolled || false,
-          pension_contribution_percent: profileData.pension_contribution_percent?.toString() || '',
-          p45_received: profileData.p45_received || false,
-          // Training fields
-          food_safety_level: profileData.food_safety_level?.toString() || '',
-          food_safety_expiry_date: profileData.food_safety_expiry_date || '',
-          h_and_s_level: profileData.h_and_s_level?.toString() || '',
-          h_and_s_expiry_date: profileData.h_and_s_expiry_date || '',
-          fire_marshal_trained: profileData.fire_marshal_trained || false,
-          fire_marshal_expiry_date: profileData.fire_marshal_expiry_date || '',
-          first_aid_trained: profileData.first_aid_trained || false,
-          first_aid_expiry_date: profileData.first_aid_expiry_date || '',
-          cossh_trained: profileData.cossh_trained || false,
-          cossh_expiry_date: profileData.cossh_expiry_date || '',
-        };
-        
+        const mappedData = mapProfileToFormData(profileData);
+
         setEditingEmployee({ ...employee, ...mappedData });
         setEditFormData(mappedData);
         
@@ -510,115 +351,24 @@ export default function EmployeeProfilePage() {
 
   const handleSaveEdit = async () => {
     if (!editingEmployee) return;
-    
+
     setSaving(true);
     try {
-      // Helper function to convert empty strings to null
-      const toNullIfEmpty = (value: any) => {
-        if (value === '' || value === undefined) return null;
-        return value;
-      };
-
-      const validEmergencyContacts = emergencyContacts.filter(c => c.name && c.phone);
-      
+      // Auto-generate employee number if blank
       let employeeNumber = editFormData.employee_number;
       if (!employeeNumber || employeeNumber.trim() === '') {
-        const generated = await generateNextEmployeeNumber();
+        const generated = await generateNextEmployeeNumber(
+          supabase,
+          currentUser?.company_id || '',
+          company?.name || '',
+        );
         if (generated) {
           employeeNumber = generated;
           setEditFormData({ ...editFormData, employee_number: generated });
         }
       }
-      
-      const updateData: any = {
-        full_name: editFormData.full_name,
-        email: editFormData.email,
-        phone_number: toNullIfEmpty(editFormData.phone_number),
-        date_of_birth: toNullIfEmpty(editFormData.date_of_birth),
-        gender: toNullIfEmpty(editFormData.gender),
-        nationality: toNullIfEmpty(editFormData.nationality),
-        address_line_1: toNullIfEmpty(editFormData.address_line_1),
-        address_line_2: toNullIfEmpty(editFormData.address_line_2),
-        city: toNullIfEmpty(editFormData.city),
-        county: toNullIfEmpty(editFormData.county),
-        postcode: toNullIfEmpty(editFormData.postcode),
-        country: editFormData.country || 'United Kingdom',
-        emergency_contacts: validEmergencyContacts.length > 0 ? validEmergencyContacts : null,
-        
-        employee_number: toNullIfEmpty(employeeNumber),
-        position_title: toNullIfEmpty(editFormData.position_title),
-        department: toNullIfEmpty(editFormData.department),
-        app_role: editFormData.app_role || 'Staff',
-        home_site: toNullIfEmpty(editFormData.home_site),
-        reports_to: toNullIfEmpty(editFormData.reports_to),
-        start_date: toNullIfEmpty(editFormData.start_date),
-        probation_end_date: toNullIfEmpty(editFormData.probation_end_date),
-        contract_type: editFormData.contract_type || 'permanent',
-        // Handle both field name variations
-        contracted_hours_per_week: editFormData.contracted_hours && editFormData.contracted_hours !== '' 
-          ? parseFloat(editFormData.contracted_hours) 
-          : (editFormData.contracted_hours_per_week && editFormData.contracted_hours_per_week !== '' 
-            ? parseFloat(editFormData.contracted_hours_per_week.toString()) 
-            : null),
-        hourly_rate: editFormData.hourly_rate && editFormData.hourly_rate !== '' 
-          ? Math.round(parseFloat(editFormData.hourly_rate) * 100) 
-          : null,
-        salary: editFormData.salary && editFormData.salary !== '' 
-          ? parseFloat(editFormData.salary) 
-          : null,
-        pay_frequency: editFormData.pay_frequency || 'monthly',
-        notice_period_weeks: editFormData.notice_period_weeks && editFormData.notice_period_weeks !== '' 
-          ? parseInt(editFormData.notice_period_weeks.toString()) 
-          : 1,
-        boh_foh: editFormData.boh_foh || 'FOH',
-        
-        national_insurance_number: toNullIfEmpty(editFormData.national_insurance_number),
-        right_to_work_status: editFormData.right_to_work_status || 'pending',
-        right_to_work_expiry: toNullIfEmpty(editFormData.right_to_work_expiry),
-        right_to_work_document_type: toNullIfEmpty(editFormData.right_to_work_document_type),
-        dbs_status: editFormData.dbs_status || 'not_required',
-        dbs_certificate_number: toNullIfEmpty(editFormData.dbs_certificate_number),
-        dbs_check_date: toNullIfEmpty(editFormData.dbs_check_date),
-        
-        bank_name: toNullIfEmpty(editFormData.bank_name),
-        bank_account_name: toNullIfEmpty(editFormData.bank_account_name),
-        bank_account_number: toNullIfEmpty(editFormData.bank_account_number),
-        bank_sort_code: toNullIfEmpty(editFormData.bank_sort_code),
-        
-        annual_leave_allowance: editFormData.annual_leave_allowance && editFormData.annual_leave_allowance !== '' 
-          ? parseFloat(editFormData.annual_leave_allowance.toString()) 
-          : 28,
-        
-        // Pay & Tax fields
-        tax_code: toNullIfEmpty(editFormData.tax_code),
-        student_loan: editFormData.student_loan || false,
-        student_loan_plan: toNullIfEmpty(editFormData.student_loan_plan),
-        pension_enrolled: editFormData.pension_enrolled || false,
-        pension_contribution_percent: editFormData.pension_contribution_percent && editFormData.pension_contribution_percent !== '' 
-          ? parseFloat(editFormData.pension_contribution_percent.toString()) 
-          : null,
-        p45_received: editFormData.p45_received || false,
-        p45_date: toNullIfEmpty(editFormData.p45_date),
-        p45_reference: toNullIfEmpty(editFormData.p45_reference),
-        
-        // Training fields
-        food_safety_level: editFormData.food_safety_level && editFormData.food_safety_level !== '' 
-          ? parseInt(editFormData.food_safety_level.toString()) 
-          : null,
-        food_safety_expiry_date: toNullIfEmpty(editFormData.food_safety_expiry_date),
-        h_and_s_level: editFormData.h_and_s_level && editFormData.h_and_s_level !== '' 
-          ? parseInt(editFormData.h_and_s_level.toString()) 
-          : null,
-        h_and_s_expiry_date: toNullIfEmpty(editFormData.h_and_s_expiry_date),
-        fire_marshal_trained: editFormData.fire_marshal_trained || false,
-        fire_marshal_expiry_date: toNullIfEmpty(editFormData.fire_marshal_expiry_date),
-        first_aid_trained: editFormData.first_aid_trained || false,
-        first_aid_expiry_date: toNullIfEmpty(editFormData.first_aid_expiry_date),
-        cossh_trained: editFormData.cossh_trained || false,
-        cossh_expiry_date: toNullIfEmpty(editFormData.cossh_expiry_date),
-        
-        status: editFormData.status || 'active',
-      };
+
+      const updateData = buildProfileUpdateData(editFormData, emergencyContacts, employeeNumber);
 
       // Log what we're saving (without sensitive data)
       console.log('Saving employee update:', {
@@ -629,7 +379,7 @@ export default function EmployeeProfilePage() {
           bank_account_number: updateData.bank_account_number ? '***' : null,
         }
       });
-      
+
       const { data, error } = await supabase
         .from('profiles')
         .update(updateData)
@@ -901,7 +651,7 @@ export default function EmployeeProfilePage() {
           />
         )}
         {activeTab === 'documents' && (
-          <DocumentsTab employeeId={employee.id} />
+          <DocumentsTab employeeId={employee.id} onModalChange={(open: boolean) => { modalOpenRef.current = open; }} />
         )}
         {activeTab === 'leave' && (
           <div className="text-theme-tertiary text-center py-8">
@@ -1488,330 +1238,23 @@ function ProbationReviewsSection({ employeeId, startDate }: { employeeId: string
   );
 }
 
-function InfoRow({ 
-  label, 
-  value, 
-  actualValue,
-  status,
-  fieldName,
-  employeeId,
-  onUpdate,
-  type = 'text',
-  options
-}: { 
-  label: string; 
-  value: string; 
-  actualValue?: unknown;
-  status?: 'success' | 'warning' | 'error';
-  fieldName?: string;
-  employeeId?: string;
-  onUpdate?: () => void;
-  type?: 'text' | 'date' | 'number' | 'select' | 'boolean' | 'textarea';
-  options?: { value: string; label: string }[];
-}) {
-  const [isEditing, setIsEditing] = useState(false);
-
-  const originalEditValue = useMemo(() => {
-    const isPlaceholder = (v: unknown) =>
-      v === null ||
-      v === undefined ||
-      v === '' ||
-      v === 'Not set' ||
-      v === 'N/A' ||
-      v === 'No expiry';
-
-    const toIsoDate = (v: unknown): string | null => {
-      if (v === null || v === undefined) return null;
-      const s = String(v).trim();
-      if (!s) return null;
-
-      // Already ISO date or datetime
-      const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
-      if (isoMatch) return isoMatch[1];
-
-      // en-GB formatted date: DD/MM/YYYY (browser parsing is unreliable)
-      const gbMatch = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-      if (gbMatch) {
-        const dd = gbMatch[1].padStart(2, '0');
-        const mm = gbMatch[2].padStart(2, '0');
-        const yyyy = gbMatch[3];
-        return `${yyyy}-${mm}-${dd}`;
-      }
-
-      // Best-effort fallback for other formats
-      const d = new Date(s);
-      if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
-      return null;
-    };
-
-    const toNumberString = (v: unknown): string => {
-      if (v === null || v === undefined) return '';
-      if (typeof v === 'number' && Number.isFinite(v)) return String(v);
-      const s = String(v);
-      const cleaned = s.replace(/[^0-9.-]/g, '');
-      const n = cleaned ? Number.parseFloat(cleaned) : NaN;
-      return Number.isFinite(n) ? String(n) : '';
-    };
-
-    if (type === 'date') {
-      if (!isPlaceholder(actualValue)) {
-        const iso = toIsoDate(actualValue);
-        return iso || '';
-      }
-      if (isPlaceholder(value)) return '';
-      const iso = toIsoDate(value);
-      return iso || '';
-    }
-
-    if (type === 'number') {
-      if (!isPlaceholder(actualValue)) return toNumberString(actualValue);
-      if (isPlaceholder(value)) return '';
-      return toNumberString(value);
-    }
-
-    if (type === 'boolean') {
-      if (typeof actualValue === 'boolean') return actualValue ? 'true' : 'false';
-      if (value === 'Yes') return 'true';
-      if (value === 'No') return 'false';
-      if (value === 'true' || value === 'false') return value;
-      return '';
-    }
-
-    if (type === 'select' && options) {
-      const actual = actualValue === null || actualValue === undefined ? '' : String(actualValue);
-      if (actual && options.some((o) => o.value === actual)) return actual;
-
-      const labelStr = value === null || value === undefined ? '' : String(value).trim().toLowerCase();
-      const matched = options.find(
-        (o) => o.value === value || o.label.trim().toLowerCase() === labelStr
-      );
-      return matched?.value || '';
-    }
-
-    return isPlaceholder(value) ? '' : value;
-  }, [type, value, actualValue, options]);
-
-  const [editValue, setEditValue] = useState(originalEditValue);
-
-  // Keep edit state in sync when the backing value changes (e.g. after refresh)
-  useEffect(() => {
-    if (!isEditing) setEditValue(originalEditValue);
-  }, [originalEditValue, isEditing]);
-  const [saving, setSaving] = useState(false);
-
-  const handleSave = async () => {
-    if (!fieldName || !employeeId || editValue === originalEditValue) {
-      setIsEditing(false);
-      return;
-    }
-
-    setSaving(true);
-    try {
-      const updateData: any = {};
-      
-      // Convert value based on type
-      if (type === 'number') {
-        // For hourly_rate, convert from pounds to pence (multiply by 100)
-        // For other numbers, parse as float
-        const numValue = editValue ? parseFloat(editValue) : null;
-        if (fieldName === 'hourly_rate' && numValue !== null) {
-          updateData[fieldName] = Math.round(numValue * 100); // Convert to pence
-        } else {
-          updateData[fieldName] = numValue;
-        }
-      } else if (type === 'boolean') {
-        updateData[fieldName] = editValue === 'true' || editValue === 'Yes';
-      } else if (type === 'date') {
-        updateData[fieldName] = editValue || null;
-      } else if (type === 'select') {
-        // For select fields, preserve empty string as null, but don't clear if value is actually selected
-        // If editValue is empty string and field is home_site or reports_to (UUID fields), set to null
-        if (editValue === '' && (fieldName === 'home_site' || fieldName === 'reports_to')) {
-          updateData[fieldName] = null;
-        } else if (editValue === '') {
-          updateData[fieldName] = null;
-        } else {
-          updateData[fieldName] = editValue;
-        }
-      } else {
-        updateData[fieldName] = editValue || null;
-      }
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(updateData)
-        .eq('id', employeeId);
-
-      if (error) throw error;
-
-      setIsEditing(false);
-      if (onUpdate) onUpdate();
-    } catch (err: any) {
-      console.error('Error updating field:', err);
-      alert(`Failed to update ${label}: ${err.message}`);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleCancel = () => {
-    setEditValue(originalEditValue);
-    setIsEditing(false);
-  };
-
-  if (!fieldName || !employeeId) {
-    // Non-editable row - but maintain alignment with editable rows
-    return (
-      <div className="flex justify-between items-center py-2 border-b border-theme group">
-        <span className="text-theme-tertiary">{label}</span>
-        <div className="flex items-center gap-2 flex-1 justify-end">
-          <span className={`text-right ${
-            status === 'success' ? 'text-green-400' :
-            status === 'warning' ? 'text-amber-400' :
-            status === 'error' ? 'text-red-400' :
-            'text-theme-primary'
-          }`}>
-            {value}
-          </span>
-          {/* Placeholder for edit button to maintain alignment - matches exact button structure */}
-          <button
-            disabled
-            className="opacity-0 px-2 py-1 pointer-events-none"
-            aria-hidden="true"
-            tabIndex={-1}
-            style={{ visibility: 'hidden' }}
-          >
-            <Edit className="w-3 h-3" />
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex justify-between items-center py-2 border-b border-theme group">
-      <span className="text-theme-tertiary">{label}</span>
-      <div className="flex items-center gap-2 flex-1 justify-end">
-        {isEditing ? (
-          <>
-            {type === 'select' && options ? (
-              <select
-                value={editValue || ''}
-                onChange={(e) => setEditValue(e.target.value)}
- className="flex-1 max-w-xs px-2 py-1 bg-theme-surface ] border border-theme rounded text-theme-primary text-sm"
-                autoFocus
-                disabled={options.length === 0}
-              >
-                <option value="">Not set</option>
-                {options.length > 0 ? (
-                  options.map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))
-                ) : (
-                  <option value="" disabled>Loading options...</option>
-                )}
-              </select>
-            ) : type === 'boolean' ? (
-              <select
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
- className="flex-1 max-w-xs px-2 py-1 bg-theme-surface ] border border-theme rounded text-theme-primary text-sm"
-                autoFocus
-              >
-                <option value="">Not set</option>
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-              </select>
-            ) : type === 'date' ? (
-              <input
-                type="date"
-                value={editValue || ''}
-                onChange={(e) => setEditValue(e.target.value)}
- className="flex-1 max-w-xs px-2 py-1 bg-theme-surface ] border border-theme rounded text-theme-primary text-sm"
-                autoFocus
-              />
-            ) : type === 'number' ? (
-              <input
-                type="number"
-                value={editValue || ''}
-                onChange={(e) => setEditValue(e.target.value)}
- className="flex-1 max-w-xs px-2 py-1 bg-theme-surface ] border border-theme rounded text-theme-primary text-sm"
-                autoFocus
-              />
-            ) : type === 'textarea' ? (
-              <textarea
-                value={editValue || ''}
-                onChange={(e) => setEditValue(e.target.value)}
- className="flex-1 max-w-xs px-2 py-1 bg-theme-surface ] border border-theme rounded text-theme-primary text-sm"
-                rows={2}
-                autoFocus
-              />
-            ) : (
-              <input
-                type="text"
-                value={editValue || ''}
-                onChange={(e) => setEditValue(e.target.value)}
- className="flex-1 max-w-xs px-2 py-1 bg-theme-surface ] border border-theme rounded text-theme-primary text-sm"
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSave();
-                  if (e.key === 'Escape') handleCancel();
-                }}
-              />
-            )}
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="px-2 py-1 bg-green-600 hover:bg-green-700 text-theme-primary text-xs rounded disabled:opacity-50"
-            >
-              {saving ? '...' : '✓'}
-            </button>
-            <button
-              onClick={handleCancel}
-              disabled={saving}
-              className="px-2 py-1 bg-neutral-700 hover:bg-neutral-600 text-theme-primary text-xs rounded disabled:opacity-50"
-            >
-              ✕
-            </button>
-          </>
-        ) : (
-          <>
-            <span className={`text-right ${
-              status === 'success' ? 'text-green-400' :
-              status === 'warning' ? 'text-amber-400' :
-              status === 'error' ? 'text-red-400' :
-              'text-theme-primary'
-            }`}>
-              {value}
-            </span>
-            <button
-              onClick={() => setIsEditing(true)}
-              className="opacity-0 group-hover:opacity-100 px-2 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-xs transition-opacity"
-              title="Edit"
-            >
-              <Edit className="w-3 h-3" />
-            </button>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// Training Tab - Now using dynamic EmployeeTrainingTab component
-
 // Documents Tab (Placeholder - will be expanded)
-function DocumentsTab({ employeeId }: { employeeId: string }) {
+function DocumentsTab({ employeeId, onModalChange }: { employeeId: string; onModalChange?: (open: boolean) => void }) {
   const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [uploadOpen, setUploadOpen] = useState(false);
+  const [uploadOpen, _setUploadOpen] = useState(false);
+  const setUploadOpen = (open: boolean) => { _setUploadOpen(open); onModalChange?.(open); };
   const [uploading, setUploading] = useState(false);
-  const [docType, setDocType] = useState<string>('proof_of_id');
-  const [title, setTitle] = useState<string>('');
-  const [expiresAt, setExpiresAt] = useState<string>('');
-  const [notes, setNotes] = useState<string>('');
-  const [file, setFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<{ done: number; total: number } | null>(null);
+
+  // Queue-based multi-file upload
+  type PendingDoc = { id: string; file: File; docType: string; title: string; expiresAt: string; notes: string };
+  const [pendingDocs, setPendingDocs] = useState<PendingDoc[]>([]);
+  const [addDocType, setAddDocType] = useState<string>('proof_of_id');
+  const [addTitle, setAddTitle] = useState<string>('');
+  const [addExpiresAt, setAddExpiresAt] = useState<string>('');
+  const [addNotes, setAddNotes] = useState<string>('');
 
   const { profile: currentUser, companyId } = useAppContext();
 
@@ -1869,33 +1312,18 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
 
   const fetchDocuments = async () => {
     setErrorMsg(null);
-    const { data, error } = await supabase
-      .from('employee_documents')
-      .select('*')
-      .eq('profile_id', employeeId)
-      .is('deleted_at', null)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error loading employee documents:', error);
-      // Helpful hint when table/bucket hasn't been migrated yet
-      if (
-        String(error.message || '').toLowerCase().includes('employee_documents') ||
-        String((error as any).code || '').toLowerCase().includes('42p01')
-      ) {
-        setErrorMsg(
-          "Employee documents aren't set up in the database yet. Apply the migration `20251215081025_create_employee_documents.sql` (and storage policies) then refresh."
-        );
-      } else {
-        setErrorMsg(error.message || 'Failed to load documents');
-      }
+    try {
+      const resp = await fetch(`/api/people/documents?employeeId=${encodeURIComponent(employeeId)}`);
+      const json = await resp.json();
+      if (!resp.ok) throw new Error(json?.error || 'Failed to load documents');
+      setDocuments(json.data || []);
+    } catch (e: any) {
+      console.error('Error loading employee documents:', e);
+      setErrorMsg(e?.message || 'Failed to load documents');
       setDocuments([]);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setDocuments(data || []);
-    setLoading(false);
   };
 
   const fetchGlobalDocs = async () => {
@@ -2127,70 +1555,92 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
       .replace(/_+/g, '_')
       .replace(/^_+|_+$/g, '');
 
-  const handleUpload = async () => {
-    if (!companyId) {
-      alert('Missing company context');
+  const addToQueue = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const newDocs: PendingDoc[] = Array.from(files).map((f) => ({
+      id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      file: f,
+      docType: addDocType,
+      title: addTitle || f.name.replace(/\.[^.]+$/, ''),
+      expiresAt: addExpiresAt,
+      notes: addNotes,
+    }));
+    setPendingDocs((prev) => [...prev, ...newDocs]);
+    setAddTitle('');
+    setAddNotes('');
+  };
+
+  const removeFromQueue = (id: string) => {
+    setPendingDocs((prev) => prev.filter((d) => d.id !== id));
+  };
+
+  const handleUploadAll = async () => {
+    if (!companyId || !currentUser?.id) {
+      toast.error('Missing company or user context');
       return;
     }
-    if (!currentUser?.id) {
-      alert('Missing user context');
-      return;
-    }
-    if (!file) {
-      alert('Please choose a file');
+    if (pendingDocs.length === 0) {
+      toast.error('Add at least one file to upload');
       return;
     }
 
     setUploading(true);
-    try {
-      const finalTitle = (title || file.name).trim();
-      const uuid =
-        (globalThis.crypto as any)?.randomUUID?.() ||
-        `${Date.now()}_${Math.random().toString(16).slice(2)}`;
-      const objectName = `${companyId}/${employeeId}/${docType}/${uuid}_${safeName(file.name)}`;
+    setUploadProgress({ done: 0, total: pendingDocs.length });
+    let successCount = 0;
+    let failCount = 0;
 
-      const { error: uploadError } = await supabase.storage
-        .from('employee-documents')
-        .upload(objectName, file, { contentType: file.type, upsert: false });
+    for (let i = 0; i < pendingDocs.length; i++) {
+      const doc = pendingDocs[i];
+      setUploadProgress({ done: i, total: pendingDocs.length });
+      try {
+        const fd = new FormData();
+        fd.append('file', doc.file);
+        fd.append('companyId', companyId);
+        fd.append('employeeId', employeeId);
+        fd.append('docType', doc.docType);
+        fd.append('title', doc.title);
+        if (doc.expiresAt) fd.append('expiresAt', doc.expiresAt);
+        if (doc.notes) fd.append('notes', doc.notes);
+        fd.append('uploadedBy', currentUser.id);
 
-      if (uploadError) throw uploadError;
-
-      const { error: insertError } = await supabase.from('employee_documents').insert({
-        company_id: companyId,
-        profile_id: employeeId,
-        document_type: docType,
-        title: finalTitle,
-        bucket_id: 'employee-documents',
-        file_path: objectName,
-        mime_type: file.type || null,
-        file_size: file.size || null,
-        expires_at: expiresAt || null,
-        notes: notes || null,
-        uploaded_by: currentUser.id,
-      });
-
-      if (insertError) throw insertError;
-
-      setUploadOpen(false);
-      setTitle('');
-      setExpiresAt('');
-      setNotes('');
-      setFile(null);
-      await fetchDocuments();
-    } catch (e: any) {
-      console.error('Upload failed:', e);
-      alert(`Upload failed: ${e?.message || 'Unknown error'}`);
-    } finally {
-      setUploading(false);
+        const resp = await fetch('/api/people/documents', { method: 'POST', body: fd });
+        let json: any;
+        try { json = await resp.json(); } catch { json = {}; }
+        if (!resp.ok) throw new Error(json?.error || `Upload failed (${resp.status})`);
+        successCount++;
+      } catch (e: any) {
+        console.error(`[DOC UPLOAD] failed for ${doc.title}:`, e);
+        failCount++;
+      }
     }
+
+    setUploadProgress({ done: pendingDocs.length, total: pendingDocs.length });
+
+    if (successCount > 0 && failCount === 0) {
+      toast.success(`${successCount} document${successCount > 1 ? 's' : ''} uploaded successfully`);
+    } else if (successCount > 0 && failCount > 0) {
+      toast.warning(`${successCount} uploaded, ${failCount} failed`);
+    } else {
+      toast.error('All uploads failed');
+    }
+
+    setPendingDocs([]);
+    setUploadProgress(null);
+    setUploading(false);
+    setUploadOpen(false);
+    await fetchDocuments();
   };
 
   const handleDownload = async (doc: any) => {
     try {
-      const bucket = doc.bucket_id || 'employee-documents';
-      const { data, error } = await supabase.storage.from(bucket).createSignedUrl(doc.file_path, 60);
-      if (error) throw error;
-      if (data?.signedUrl) window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
+      const resp = await fetch('/api/people/documents', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filePath: doc.file_path, bucketId: doc.bucket_id }),
+      });
+      const json = await resp.json();
+      if (!resp.ok) throw new Error(json?.error || 'Download failed');
+      if (json?.signedUrl) window.open(json.signedUrl, '_blank', 'noopener,noreferrer');
     } catch (e: any) {
       console.error('Download failed:', e);
       alert(`Download failed: ${e?.message || 'Unknown error'}`);
@@ -2203,20 +1653,24 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
     if (!ok) return;
 
     try {
-      // Soft delete record
-      const { error: delErr } = await supabase
-        .from('employee_documents')
-        .update({ deleted_at: new Date().toISOString(), deleted_by: currentUser.id })
-        .eq('id', doc.id);
-      if (delErr) throw delErr;
+      const resp = await fetch('/api/people/documents', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          docId: doc.id,
+          deletedBy: currentUser.id,
+          filePath: doc.file_path,
+          bucketId: doc.bucket_id,
+        }),
+      });
+      const json = await resp.json();
+      if (!resp.ok) throw new Error(json?.error || 'Delete failed');
 
-      // Best-effort storage cleanup
-      await supabase.storage.from(doc.bucket_id || 'employee-documents').remove([doc.file_path]);
-
+      toast.success('Document deleted');
       await fetchDocuments();
     } catch (e: any) {
       console.error('Delete failed:', e);
-      alert(`Delete failed: ${e?.message || 'Unknown error'}`);
+      toast.error(`Delete failed: ${e?.message || 'Unknown error'}`);
     }
   };
 
@@ -2240,7 +1694,7 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold text-theme-primary">Documents</h3>
         <button
-          onClick={() => setUploadOpen(true)}
+          onClick={() => { console.log('[DOC] + Upload clicked, opening modal'); setUploadOpen(true); }}
           className="px-4 py-2 bg-transparent border border-module-fg text-module-fg rounded-lg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] transition-all duration-200 ease-in-out flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
@@ -2288,7 +1742,7 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
           <FileText className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
           <p className="text-theme-tertiary mb-4">No documents uploaded yet</p>
           <button
-            onClick={() => setUploadOpen(true)}
+            onClick={() => { console.log('[DOC] Upload Document clicked, opening modal'); setUploadOpen(true); }}
             className="px-4 py-2 bg-transparent border border-module-fg text-module-fg rounded-lg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] transition-all duration-200 ease-in-out"
           >
             Upload Document
@@ -2328,92 +1782,160 @@ function DocumentsTab({ employeeId }: { employeeId: string }) {
         </div>
       )}
 
-      {/* Upload modal */}
+      {/* Upload modal — queue-based multi-file */}
       {uploadOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="w-full max-w-lg bg-neutral-900 border border-theme rounded-xl p-5">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="w-full max-w-xl bg-theme-surface-elevated border border-theme rounded-xl p-5 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h4 className="text-theme-primary font-semibold">Upload document</h4>
+              <h4 className="text-theme-primary font-semibold">Upload documents</h4>
               <button
-                onClick={() => setUploadOpen(false)}
-                className="p-2 hover:bg-neutral-800 rounded-lg text-theme-tertiary hover:text-theme-primary"
+                onClick={() => { setPendingDocs([]); setUploadOpen(false); }}
+                className="p-2 hover:bg-theme-hover rounded-lg text-theme-tertiary hover:text-theme-primary"
+                disabled={uploading}
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm text-theme-primary/70 mb-1">Document type</label>
-                <select
-                  value={docType}
-                  onChange={(e) => setDocType(e.target.value)}
-                  className="w-full px-3 py-2 bg-neutral-800 border border-theme rounded-lg text-theme-primary"
-                >
-                  {REQUIRED_DOCS.map((d) => (
-                    <option key={d.key} value={d.key}>
-                      {d.label}
-                    </option>
-                  ))}
-                </select>
+            {/* Add file form */}
+            <div className="bg-theme-surface border border-theme rounded-lg p-3 space-y-2 mb-4">
+              <p className="text-xs font-medium text-theme-primary/60 uppercase tracking-wide">Add file to queue</p>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs text-theme-primary/60 mb-0.5">Type</label>
+                  <select
+                    value={addDocType}
+                    onChange={(e) => setAddDocType(e.target.value)}
+                    className="w-full px-2 py-1.5 text-sm bg-theme-surface-elevated border border-theme rounded-lg text-theme-primary"
+                    disabled={uploading}
+                  >
+                    {REQUIRED_DOCS.map((d) => (
+                      <option key={d.key} value={d.key}>{d.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-theme-primary/60 mb-0.5">Title (optional)</label>
+                  <input
+                    value={addTitle}
+                    onChange={(e) => setAddTitle(e.target.value)}
+                    placeholder="Auto-fills from filename"
+                    className="w-full px-2 py-1.5 text-sm bg-theme-surface-elevated border border-theme rounded-lg text-theme-primary"
+                    disabled={uploading}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs text-theme-primary/60 mb-0.5">Expiry (optional)</label>
+                  <input
+                    type="date"
+                    value={addExpiresAt}
+                    onChange={(e) => setAddExpiresAt(e.target.value)}
+                    className="w-full px-2 py-1.5 text-sm bg-theme-surface-elevated border border-theme rounded-lg text-theme-primary"
+                    disabled={uploading}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-theme-primary/60 mb-0.5">Notes (optional)</label>
+                  <input
+                    value={addNotes}
+                    onChange={(e) => setAddNotes(e.target.value)}
+                    className="w-full px-2 py-1.5 text-sm bg-theme-surface-elevated border border-theme rounded-lg text-theme-primary"
+                    disabled={uploading}
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="block text-sm text-theme-primary/70 mb-1">Title</label>
-                <input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Passport, Contract v1"
-                  className="w-full px-3 py-2 bg-neutral-800 border border-theme rounded-lg text-theme-primary"
-                />
+                <label className="inline-flex items-center gap-2 px-3 py-1.5 bg-theme-surface-elevated border border-theme rounded-lg text-sm text-theme-primary cursor-pointer hover:border-module-fg transition-colors">
+                  <Plus className="w-4 h-4" />
+                  <span>Choose file(s)</span>
+                  <input
+                    type="file"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => { addToQueue(e.target.files); e.target.value = ''; }}
+                    disabled={uploading}
+                  />
+                </label>
+                <span className="text-xs text-theme-primary/40 ml-2">PDF, images, Word. Max 20MB each.</span>
               </div>
+            </div>
 
-              <div>
-                <label className="block text-sm text-theme-primary/70 mb-1">Expiry date (optional)</label>
-                <input
-                  type="date"
-                  value={expiresAt}
-                  onChange={(e) => setExpiresAt(e.target.value)}
-                  className="w-full px-3 py-2 bg-neutral-800 border border-theme rounded-lg text-theme-primary"
-                />
+            {/* Pending queue */}
+            {pendingDocs.length > 0 && (
+              <div className="mb-4 space-y-1.5">
+                <p className="text-xs font-medium text-theme-primary/60 uppercase tracking-wide">
+                  Ready to upload ({pendingDocs.length} file{pendingDocs.length > 1 ? 's' : ''})
+                </p>
+                {pendingDocs.map((doc) => {
+                  const docLabel = REQUIRED_DOCS.find((d) => d.key === doc.docType)?.label || doc.docType;
+                  return (
+                    <div key={doc.id} className="flex items-center gap-2 px-3 py-2 bg-theme-surface border border-theme rounded-lg text-sm">
+                      <FileText className="w-4 h-4 text-theme-tertiary shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-theme-primary truncate">{doc.title}</p>
+                        <p className="text-xs text-theme-primary/50">{docLabel}{doc.expiresAt ? ` · exp ${doc.expiresAt}` : ''}</p>
+                      </div>
+                      <span className="text-xs text-theme-primary/40">{(doc.file.size / 1024).toFixed(0)} KB</span>
+                      {!uploading && (
+                        <button
+                          onClick={() => removeFromQueue(doc.id)}
+                          className="p-1 hover:bg-white/5 rounded text-theme-tertiary hover:text-red-400"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
+            )}
 
-              <div>
-                <label className="block text-sm text-theme-primary/70 mb-1">Notes (optional)</label>
-                <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  rows={2}
-                  className="w-full px-3 py-2 bg-neutral-800 border border-theme rounded-lg text-theme-primary"
-                />
+            {/* Upload progress */}
+            {uploadProgress && (
+              <div className="mb-4">
+                <div className="flex justify-between text-xs text-theme-primary/60 mb-1">
+                  <span>Uploading…</span>
+                  <span>{uploadProgress.done} / {uploadProgress.total}</span>
+                </div>
+                <div className="w-full h-2 bg-theme-surface rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-module-fg rounded-full transition-all duration-300"
+                    style={{ width: `${(uploadProgress.done / uploadProgress.total) * 100}%` }}
+                  />
+                </div>
               </div>
+            )}
 
-              <div>
-                <label className="block text-sm text-theme-primary/70 mb-1">File</label>
-                <input
-                  type="file"
-                  onChange={(e) => setFile(e.target.files?.[0] || null)}
-                  className="w-full text-theme-primary"
-                />
-                <p className="text-xs text-theme-primary/40 mt-1">PDF, images, Word. Stored privately.</p>
+            {/* Empty state */}
+            {pendingDocs.length === 0 && !uploading && (
+              <div className="text-center py-4 text-sm text-theme-primary/40">
+                Select a document type, then click &quot;Choose file(s)&quot; to add files
               </div>
+            )}
 
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  onClick={() => setUploadOpen(false)}
-                  className="px-4 py-2 bg-neutral-800 border border-theme text-theme-primary rounded-lg"
-                  disabled={uploading}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleUpload}
-                  className="px-4 py-2 bg-module-fg text-theme-primary rounded-lg disabled:opacity-50"
-                  disabled={uploading}
-                >
-                  {uploading ? 'Uploading…' : 'Upload'}
-                </button>
-              </div>
+            {/* Actions */}
+            <div className="flex justify-end gap-2 pt-2 border-t border-theme mt-2">
+              <button
+                onClick={() => { setPendingDocs([]); setUploadOpen(false); }}
+                className="px-4 py-2 bg-theme-surface border border-theme text-theme-primary rounded-lg text-sm"
+                disabled={uploading}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUploadAll}
+                className="px-4 py-2 bg-module-fg text-white font-medium rounded-lg disabled:opacity-50 text-sm"
+                disabled={uploading || pendingDocs.length === 0}
+              >
+                {uploading
+                  ? `Uploading ${uploadProgress?.done ?? 0}/${uploadProgress?.total ?? 0}…`
+                  : `Upload ${pendingDocs.length || ''} document${pendingDocs.length !== 1 ? 's' : ''}`}
+              </button>
             </div>
           </div>
         </div>
@@ -2760,992 +2282,6 @@ function AttendanceTab({ employeeId }: { employeeId: string }) {
             </div>
           </div>
         ))}
-      </div>
-    </div>
-  );
-}
-
-// Edit Employee Modal Component
-function EditEmployeeModal({
-  employee,
-  formData,
-  setFormData,
-  emergencyContacts,
-  setEmergencyContacts,
-  sites,
-  managers,
-  onClose,
-  onSave,
-  saving,
-  onOpenSiteAssignments,
-}: {
-  employee: Employee;
-  formData: any;
-  setFormData: (data: any) => void;
-  emergencyContacts: EmergencyContact[];
-  setEmergencyContacts: (contacts: EmergencyContact[]) => void;
-  sites: { id: string; name: string }[];
-  managers: { id: string; full_name: string }[];
-  onClose: () => void;
-  onSave: () => void;
-  saving: boolean;
-  onOpenSiteAssignments?: (employee: Employee) => void;
-}) {
-  const [activeTab, setActiveTab] = useState<'personal' | 'employment' | 'compliance' | 'banking' | 'leave' | 'pay' | 'training'>('personal');
-
-  const updateField = (field: string, value: any) => {
-    setFormData({ ...formData, [field]: value });
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked;
-      updateField(name, checked);
-    } else {
-      updateField(name, value);
-    }
-  };
-
-  const handleEmergencyContactChange = (index: number, field: keyof EmergencyContact, value: string) => {
-    const updated = [...emergencyContacts];
-    updated[index] = { ...updated[index], [field]: value };
-    setEmergencyContacts(updated);
-  };
-
-  const addEmergencyContact = () => {
-    setEmergencyContacts([...emergencyContacts, { name: '', relationship: '', phone: '', email: '' }]);
-  };
-
-  const removeEmergencyContact = (index: number) => {
-    setEmergencyContacts(emergencyContacts.filter((_, i) => i !== index));
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[10000] flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-neutral-900 rounded-xl border border-neutral-800 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-neutral-800">
-          <div>
-            <h2 className="text-2xl font-bold text-theme-primary">Edit Employee</h2>
-            <p className="text-theme-tertiary mt-1">{employee.full_name}</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-neutral-800 rounded-lg text-theme-tertiary hover:text-theme-primary transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex gap-2 px-6 pt-4 border-b border-neutral-800 overflow-x-auto">
-          {[
-            { id: 'personal', label: 'Personal', icon: User },
-            { id: 'employment', label: 'Employment', icon: Briefcase },
-            { id: 'compliance', label: 'Compliance', icon: Shield },
-            { id: 'banking', label: 'Banking', icon: CreditCard },
-            { id: 'leave', label: 'Leave', icon: Calendar },
-            { id: 'pay', label: 'Pay & Tax', icon: CreditCardIcon },
-            { id: 'training', label: 'Training', icon: GraduationCap },
-          ].map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-t-lg text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeTab === tab.id
-                    ? 'bg-neutral-800 text-theme-primary border-b-2 border-module-fg'
-                    : 'text-theme-tertiary hover:text-theme-primary hover:bg-neutral-800'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          {activeTab === 'personal' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
-                <User className="w-5 h-5 text-module-fg" />
-                Personal Information
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Full Name <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="full_name"
-                    value={formData.full_name || ''}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Email <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email || ''}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone_number"
-                    value={formData.phone_number || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Date of Birth
-                  </label>
-                  <input
-                    type="date"
-                    name="date_of_birth"
-                    value={formData.date_of_birth || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Gender
-                  </label>
-                  <select
-                    name="gender"
-                    value={formData.gender || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  >
-                    <option value="">Select...</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="non_binary">Non-binary</option>
-                    <option value="prefer_not_to_say">Prefer not to say</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Nationality
-                  </label>
-                  <input
-                    type="text"
-                    name="nationality"
-                    value={formData.nationality || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-              </div>
-              
-              {/* Address */}
-              <div className="border-t border-theme pt-4">
-                <h3 className="text-md font-medium text-theme-primary mb-4">Address</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                      Address Line 1
-                    </label>
-                    <input
-                      type="text"
-                      name="address_line_1"
-                      value={formData.address_line_1 || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                    />
-                  </div>
-                  
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                      Address Line 2
-                    </label>
-                    <input
-                      type="text"
-                      name="address_line_2"
-                      value={formData.address_line_2 || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                      City
-                    </label>
-                    <input
-                      type="text"
-                      name="city"
-                      value={formData.city || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                      County
-                    </label>
-                    <input
-                      type="text"
-                      name="county"
-                      value={formData.county || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                      Postcode
-                    </label>
-                    <input
-                      type="text"
-                      name="postcode"
-                      value={formData.postcode || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                      Country
-                    </label>
-                    <input
-                      type="text"
-                      name="country"
-                      value={formData.country || 'United Kingdom'}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              {/* Emergency Contacts */}
-              <div className="border-t border-theme pt-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-md font-medium text-theme-primary">Emergency Contacts</h3>
-                  <button
-                    type="button"
-                    onClick={addEmergencyContact}
-                    className="flex items-center gap-1 text-sm text-module-fg hover:text-module-fg/80"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add Contact
-                  </button>
-                </div>
-                
-                {emergencyContacts.map((contact, index) => (
-                  <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 p-4 bg-neutral-700/30 rounded-lg">
-                    <div>
-                      <label className="block text-sm font-medium text-theme-tertiary mb-1">Name</label>
-                      <input
-                        type="text"
-                        value={contact.name}
-                        onChange={(e) => handleEmergencyContactChange(index, 'name', e.target.value)}
-                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-theme-tertiary mb-1">Relationship</label>
-                      <input
-                        type="text"
-                        value={contact.relationship}
-                        onChange={(e) => handleEmergencyContactChange(index, 'relationship', e.target.value)}
-                        placeholder="e.g., Spouse, Parent"
-                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-theme-tertiary mb-1">Phone</label>
-                      <input
-                        type="tel"
-                        value={contact.phone}
-                        onChange={(e) => handleEmergencyContactChange(index, 'phone', e.target.value)}
-                        className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                      />
-                    </div>
-                    <div className="flex items-end gap-2">
-                      <div className="flex-1">
-                        <label className="block text-sm font-medium text-theme-tertiary mb-1">Email</label>
-                        <input
-                          type="email"
-                          value={contact.email || ''}
-                          onChange={(e) => handleEmergencyContactChange(index, 'email', e.target.value)}
-                          className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                        />
-                      </div>
-                      {emergencyContacts.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeEmergencyContact(index)}
-                          className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'employment' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-module-fg" />
-                Employment Details
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Employee Number
-                  </label>
-                  <input
-                    type="text"
-                    name="employee_number"
-                    value={formData.employee_number || ''}
-                    onChange={handleChange}
-                    placeholder="e.g., EMP001"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Position / Job Title
-                  </label>
-                  <input
-                    type="text"
-                    name="position_title"
-                    value={formData.position_title || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Department
-                  </label>
-                  <input
-                    type="text"
-                    name="department"
-                    value={formData.department || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    App Role
-                  </label>
-                  <select
-                    name="app_role"
-                    value={formData.app_role || 'Staff'}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  >
-                    <option value="Staff">Staff</option>
-                    <option value="Manager">Manager</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Owner">Owner</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Home Site
-                  </label>
-                  <select
-                    name="home_site"
-                    value={formData.home_site || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  >
-                    <option value="">Select site...</option>
-                    {sites && sites.length > 0 ? (
-                      sites.map(site => (
-                        <option key={site.id} value={site.id}>{site.name}</option>
-                      ))
-                    ) : (
-                      <option value="" disabled>Loading sites...</option>
-                    )}
-                  </select>
-                </div>
-
-                {onOpenSiteAssignments && (
-                  <div className="md:col-span-2 pt-4 border-t border-theme">
-                    <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mb-3">
-                      <p className="text-xs text-blue-300">
-                        <strong>Multi-Site Assignment:</strong> Allow this employee to work at other sites
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => onOpenSiteAssignments(employee)}
-                      type="button"
-                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-transparent border-2 border-blue-500 text-blue-400 hover:bg-module-fg/10 hover:shadow-module-glow rounded-lg transition-all font-medium"
-                    >
-                      <MapPin className="w-5 h-5" />
-                      Manage Site Assignments
-                    </button>
-                    <p className="text-xs text-theme-tertiary mt-2 text-center">
-                      Allow this employee to work at other sites during specified date ranges
-                    </p>
-                  </div>
-                )}
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Reports To
-                  </label>
-                  <select
-                    name="reports_to"
-                    value={formData.reports_to || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  >
-                    <option value="">Select manager...</option>
-                    {managers.map(manager => (
-                      <option key={manager.id} value={manager.id}>{manager.full_name}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    BOH / FOH
-                  </label>
-                  <select
-                    name="boh_foh"
-                    value={formData.boh_foh || 'FOH'}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  >
-                    <option value="FOH">Front of House</option>
-                    <option value="BOH">Back of House</option>
-                    <option value="Both">Both</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Start Date
-                  </label>
-                  <input
-                    type="date"
-                    name="start_date"
-                    value={formData.start_date || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Probation End Date
-                  </label>
-                  <input
-                    type="date"
-                    name="probation_end_date"
-                    value={formData.probation_end_date || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Contract Type
-                  </label>
-                  <select
-                    name="contract_type"
-                    value={formData.contract_type || 'permanent'}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  >
-                    <option value="permanent">Permanent</option>
-                    <option value="fixed_term">Fixed Term</option>
-                    <option value="zero_hours">Zero Hours</option>
-                    <option value="casual">Casual</option>
-                    <option value="agency">Agency</option>
-                    <option value="contractor">Contractor</option>
-                    <option value="apprentice">Apprentice</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Contracted Hours (per week)
-                  </label>
-                  <input
-                    type="number"
-                    name="contracted_hours"
-                    value={formData.contracted_hours || ''}
-                    onChange={handleChange}
-                    step="0.5"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Hourly Rate (£)
-                  </label>
-                  <input
-                    type="number"
-                    name="hourly_rate"
-                    value={formData.hourly_rate || ''}
-                    onChange={handleChange}
-                    step="0.01"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Annual Salary (£)
-                  </label>
-                  <input
-                    type="number"
-                    name="salary"
-                    value={formData.salary || ''}
-                    onChange={handleChange}
-                    step="100"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Pay Frequency
-                  </label>
-                  <select
-                    name="pay_frequency"
-                    value={formData.pay_frequency || 'monthly'}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  >
-                    <option value="weekly">Weekly</option>
-                    <option value="fortnightly">Fortnightly</option>
-                    <option value="four_weekly">Four Weekly</option>
-                    <option value="monthly">Monthly</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Notice Period (weeks)
-                  </label>
-                  <input
-                    type="number"
-                    name="notice_period_weeks"
-                    value={formData.notice_period_weeks || '1'}
-                    onChange={handleChange}
-                    min="1"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'compliance' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
-                <Shield className="w-5 h-5 text-module-fg" />
-                Compliance & Right to Work
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    National Insurance Number
-                  </label>
-                  <input
-                    type="text"
-                    name="national_insurance_number"
-                    value={formData.national_insurance_number || ''}
-                    onChange={handleChange}
-                    placeholder="e.g., AB123456C"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent uppercase"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Right to Work Status
-                  </label>
-                  <select
-                    name="right_to_work_status"
-                    value={formData.right_to_work_status || 'pending'}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  >
-                    <option value="pending">Pending Verification</option>
-                    <option value="verified">Verified</option>
-                    <option value="expired">Expired</option>
-                    <option value="not_required">Not Required</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    RTW Document Type
-                  </label>
-                  <select
-                    name="right_to_work_document_type"
-                    value={formData.right_to_work_document_type || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  >
-                    <option value="">Select...</option>
-                    <option value="passport">UK/EU Passport</option>
-                    <option value="biometric_residence_permit">Biometric Residence Permit</option>
-                    <option value="share_code">Share Code</option>
-                    <option value="visa">Visa</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    RTW Expiry Date
-                  </label>
-                  <input
-                    type="date"
-                    name="right_to_work_expiry"
-                    value={formData.right_to_work_expiry || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                  <p className="text-xs text-theme-tertiary mt-1">Leave blank if no expiry (e.g., British citizen)</p>
-                </div>
-              </div>
-              
-              {/* DBS Section */}
-              <div className="border-t border-theme pt-4">
-                <h3 className="text-md font-medium text-theme-primary mb-4">DBS Check</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                      DBS Status
-                    </label>
-                    <select
-                      name="dbs_status"
-                      value={formData.dbs_status || 'not_required'}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                    >
-                      <option value="not_required">Not Required</option>
-                      <option value="pending">Pending</option>
-                      <option value="clear">Clear</option>
-                      <option value="issues_found">Issues Found</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                      DBS Certificate Number
-                    </label>
-                    <input
-                      type="text"
-                      name="dbs_certificate_number"
-                      value={formData.dbs_certificate_number || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                      DBS Check Date
-                    </label>
-                    <input
-                      type="date"
-                      name="dbs_check_date"
-                      value={formData.dbs_check_date || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'banking' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-module-fg" />
-                Bank Details
-              </h2>
-              <p className="text-sm text-theme-tertiary">
-                Bank details are used for payroll export only and are stored securely.
-              </p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Bank Name
-                  </label>
-                  <input
-                    type="text"
-                    name="bank_name"
-                    value={formData.bank_name || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Account Holder Name
-                  </label>
-                  <input
-                    type="text"
-                    name="bank_account_name"
-                    value={formData.bank_account_name || ''}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Sort Code
-                  </label>
-                  <input
-                    type="text"
-                    name="bank_sort_code"
-                    value={formData.bank_sort_code || ''}
-                    onChange={handleChange}
-                    placeholder="XX-XX-XX"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Account Number
-                  </label>
-                  <input
-                    type="text"
-                    name="bank_account_number"
-                    value={formData.bank_account_number || ''}
-                    onChange={handleChange}
-                    placeholder="8 digits"
-                    maxLength={8}
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'leave' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-module-fg" />
-                Leave Allowance
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Annual Leave Allowance (days)
-                  </label>
-                  <input
-                    type="number"
-                    name="annual_leave_allowance"
-                    value={formData.annual_leave_allowance || '28'}
-                    onChange={handleChange}
-                    step="0.5"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                  />
-                  <p className="text-xs text-theme-tertiary mt-1">UK statutory minimum is 28 days (including bank holidays)</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'pay' && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-theme-primary flex items-center gap-2">
-                <CreditCardIcon className="w-5 h-5 text-module-fg" />
-                Pay & Tax Details
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Tax Code
-                  </label>
-                  <input
-                    type="text"
-                    name="tax_code"
-                    value={formData.tax_code || ''}
-                    onChange={handleChange}
-                    placeholder="e.g., 1257L"
-                    className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent uppercase"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Student Loan
-                  </label>
-                  <div className="flex items-center gap-2 mt-2">
-                    <input
-                      type="checkbox"
-                      name="student_loan"
-                      checked={formData.student_loan || false}
-                      onChange={handleChange}
-                      className="w-4 h-4 text-module-fg bg-neutral-700 border-neutral-600 rounded focus:ring-module-fg"
-                    />
-                    <span className="text-sm text-theme-tertiary">Has student loan</span>
-                  </div>
-                </div>
-                
-                {formData.student_loan && (
-                  <div>
-                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                      Student Loan Plan
-                    </label>
-                    <select
-                      name="student_loan_plan"
-                      value={formData.student_loan_plan || ''}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                    >
-                      <option value="">Select plan...</option>
-                      <option value="plan_1">Plan 1</option>
-                      <option value="plan_2">Plan 2</option>
-                      <option value="plan_4">Plan 4</option>
-                      <option value="plan_5">Plan 5</option>
-                    </select>
-                  </div>
-                )}
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    Pension Enrolled
-                  </label>
-                  <div className="flex items-center gap-2 mt-2">
-                    <input
-                      type="checkbox"
-                      name="pension_enrolled"
-                      checked={formData.pension_enrolled || false}
-                      onChange={handleChange}
-                      className="w-4 h-4 text-module-fg bg-neutral-700 border-neutral-600 rounded focus:ring-module-fg"
-                    />
-                    <span className="text-sm text-theme-tertiary">Enrolled in pension</span>
-                  </div>
-                </div>
-                
-                {formData.pension_enrolled && (
-                  <div>
-                    <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                      Pension Contribution (%)
-                    </label>
-                    <input
-                      type="number"
-                      name="pension_contribution_percent"
-                      value={formData.pension_contribution_percent || ''}
-                      onChange={handleChange}
-                      step="0.1"
-                      min="0"
-                      max="100"
-                      className="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary focus:ring-2 focus:ring-module-fg focus:border-transparent"
-                    />
-                  </div>
-                )}
-                
-                <div>
-                  <label className="block text-sm font-medium text-theme-tertiary mb-1">
-                    P45 Received
-                  </label>
-                  <div className="flex items-center gap-2 mt-2">
-                    <input
-                      type="checkbox"
-                      name="p45_received"
-                      checked={formData.p45_received || false}
-                      onChange={handleChange}
-                      className="w-4 h-4 text-module-fg bg-neutral-700 border-neutral-600 rounded focus:ring-module-fg"
-                    />
-                    <span className="text-sm text-theme-tertiary">P45 received</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'training' && (
-            <EmployeeTrainingEditor 
-              data={formData} 
-              onChange={handleChange} 
-              updateField={updateField}
-              mode="form"
-            />
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-neutral-800">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-theme-primary rounded-lg transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onSave}
-            disabled={saving}
-            className="px-4 py-2 bg-transparent border border-module-fg text-module-fg hover:shadow-[0_0_12px_rgba(var(--module-fg-rgb),0.7)] rounded-lg font-medium transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            {saving ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4" />
-                Save Changes
-              </>
-            )}
-          </button>
-        </div>
       </div>
     </div>
   );

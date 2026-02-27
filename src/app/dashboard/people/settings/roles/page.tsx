@@ -74,7 +74,7 @@ const SCOPE_OPTIONS: { value: PermissionScope; label: string }[] = [
 ];
 
 export default function RolesAndPermissionsPage() {
-  const { profile } = useAppContext();
+  const { profile, companyId } = useAppContext();
   const queryClient = useQueryClient();
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -105,7 +105,7 @@ export default function RolesAndPermissionsPage() {
       console.log('⚠️ No roles found. Company ID:', profile?.company_id);
       console.log('🔍 Profile:', profile);
     }
-  }, [rolesError, rolesLoading, roles.length, profile?.company_id]);
+  }, [rolesError, rolesLoading, roles.length, companyId]);
   const { data: role, isLoading: roleLoading } = useRole(selectedRoleId);
   const { data: permissions = [], isLoading: permissionsLoading } = usePermissions();
   
@@ -197,15 +197,15 @@ export default function RolesAndPermissionsPage() {
   };
 
   const handleSeedDefaultRoles = async () => {
-    if (!profile?.company_id) {
+    if (!companyId) {
       toast.error('Company ID not found');
       return;
     }
 
     try {
-      console.log('🌱 Seeding default roles for company:', profile.company_id);
+      console.log('🌱 Seeding default roles for company:', companyId);
       const { error, data } = await supabase.rpc('seed_default_roles', {
-        p_company_id: profile.company_id,
+        p_company_id: companyId,
       });
 
       if (error) {
@@ -218,8 +218,8 @@ export default function RolesAndPermissionsPage() {
       
       // Wait a moment then refetch roles
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['roles', profile.company_id] });
-        queryClient.refetchQueries({ queryKey: ['roles', profile.company_id] });
+        queryClient.invalidateQueries({ queryKey: ['roles', companyId] });
+        queryClient.refetchQueries({ queryKey: ['roles', companyId] });
       }, 500);
     } catch (error: any) {
       console.error('❌ Error seeding default roles:', error);

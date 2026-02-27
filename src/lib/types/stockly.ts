@@ -478,16 +478,19 @@ export interface ProductionBatchInput {
   rework_source_batch?: { id: string; batch_code: string; production_date: string } | null;
 }
 
+export type ProductionOutputType = 'finished_product' | 'byproduct' | 'waste';
+
 export interface ProductionBatchOutput {
   id: string;
   company_id: string;
   production_batch_id: string;
   stock_item_id: string;
-  batch_code: string;
+  batch_code: string | null;
   quantity: number | null;
   unit: string | null;
   use_by_date: string | null;
   best_before_date: string | null;
+  output_type: ProductionOutputType;
   created_at: string;
   // Joined data
   stock_item?: { id: string; name: string } | null;

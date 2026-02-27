@@ -1,0 +1,1875 @@
+{
+  "id": "uk-l2-coshh",
+  "title": "COSHH Awareness Level 2 (UK)",
+  "shortDescription": "Safe use, storage, and disposal of hazardous substances in the workplace.",
+  "description": "Control of Substances Hazardous to Health – covering risk assessment, safety data sheets, PPE, storage requirements, emergency procedures, and cleaning chemical safety for hospitality.",
+  "version": "2.0.0",
+  "refresherYears": 1,
+  "certificateTemplateId": "cert-l2-coshh",
+  "category": "workplace-safety",
+  "level": "Level 2",
+  "estimatedMinutes": 150,
+  "icon": "FlaskConical",
+  "tags": [
+    "COSHH",
+    "hazardous substances",
+    "chemicals",
+    "PPE",
+    "safety data sheets",
+    "cleaning",
+    "GHS",
+    "risk assessment",
+    "RIDDOR"
+  ],
+  "learningOutcomes": [
+    "Explain the COSHH Regulations 2002 and employer/employee duties",
+    "Identify GHS hazard symbols and interpret Safety Data Sheets",
+    "Conduct a COSHH risk assessment and apply the hierarchy of control",
+    "Handle, store, and dispose of hazardous substances safely",
+    "Select and use appropriate PPE for chemical handling tasks",
+    "Respond correctly to chemical spills and exposure incidents",
+    "Understand RIDDOR reporting requirements for chemical incidents"
+  ],
+  "modules": [
+    {
+      "id": "m1",
+      "title": "What is COSHH?",
+      "description": "Understanding hazardous substances and the legal framework.",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "Introduction to COSHH",
+          "slides": [
+            {
+              "id": "m1-s1",
+              "type": "text-graphic-split",
+              "title": "Welcome to COSHH Awareness",
+              "content": "## COSHH Awareness Level 2 (UK)\n\nCOSHH stands for the **Control of Substances Hazardous to Health**. It is one of the most important sets of health and safety regulations in the UK workplace, and it affects almost every industry - but particularly hospitality, catering, and food production.\n\n### Why does COSHH matter to you?\n\nEvery year in the UK, thousands of workers develop serious illnesses from exposure to hazardous substances at work. These include:\n\n- **Occupational asthma** from inhaling flour dust, cleaning chemical fumes, or spray mists.\n- **Dermatitis** from repeated skin contact with detergents, sanitisers, or wet work.\n- **Chemical burns** from concentrated acids, alkalis, or oven cleaners.\n- **Poisoning** from accidentally mixing incompatible cleaning products.\n\n### What you will learn in this course\n\n- What counts as a hazardous substance and how to recognise them.\n- The legal duties placed on employers and employees by the COSHH Regulations 2002.\n- How to read GHS hazard symbols and Safety Data Sheets (SDS).\n- How to carry out a COSHH risk assessment using the hierarchy of control.\n- Safe handling, storage, dilution, and disposal of chemicals.\n- Correct PPE selection and maintenance.\n- Emergency procedures for spills, splashes, and exposure incidents.\n\nThis course is aligned to UK legislation and uses examples from hospitality and catering environments throughout.",
+              "keyTakeaway": "COSHH protects workers from illness caused by hazardous substances - and it applies to every workplace that uses chemicals, creates dust, or generates fumes."
+            },
+            {
+              "id": "m1-s2",
+              "type": "text-graphic-split",
+              "title": "What Is a Hazardous Substance?",
+              "content": "## Defining Hazardous Substances\n\nA hazardous substance is **any material that can harm your health** if it enters your body or comes into contact with your skin or eyes. Under COSHH, this includes a much wider range of substances than most people expect.\n\n### Categories of hazardous substances\n\n- **Cleaning chemicals** - Bleach (sodium hypochlorite), degreasers, oven cleaners, sanitisers, descalers, glass cleaners, and floor polish. These are the most common COSHH substances in hospitality.\n- **Fumes and vapours** - Cooking oil fumes from deep fryers, solvent vapours from paint or adhesives, carbon monoxide from gas appliances, and chlorine gas released when bleach is mixed with acids.\n- **Dusts** - Flour dust (a major cause of occupational asthma in bakeries), icing sugar, spice powders, and wood dust from maintenance work.\n- **Biological agents** - Bacteria such as Legionella in water systems, mould spores in damp areas, and blood-borne pathogens.\n- **Gases** - Carbon dioxide from beer cellar and fizzy drink dispenser systems, which can displace oxygen in poorly ventilated spaces.\n\n### What COSHH does NOT cover\n\nCOSHH does not apply to lead (covered by the Control of Lead at Work Regulations 2002), asbestos (covered by the Control of Asbestos Regulations 2012), or radioactive substances. These have their own specific regulations.\n\n### The key test\n\nIf a substance has a **Workplace Exposure Limit (WEL)**, carries a **GHS hazard symbol**, or is listed on the **Safety Data Sheet** as hazardous, it falls under COSHH.",
+              "keyTakeaway": "A hazardous substance is anything that can harm health through contact, inhalation, or ingestion - including everyday items like bleach, flour dust, and CO2 cylinders."
+            },
+            {
+              "id": "m1-s3",
+              "type": "text-graphic-split",
+              "title": "GHS Hazard Symbols",
+              "content": "## The Globally Harmonized System (GHS)\n\nSince 2009, the UK has used the **Globally Harmonized System of Classification and Labelling of Chemicals (GHS)**, implemented through the CLP Regulation (Classification, Labelling and Packaging). GHS replaced the old orange square symbols with standardised **red-bordered diamond pictograms**.\n\n### The nine GHS pictograms\n\n- **Skull and Crossbones** - Acute toxicity. Can cause death or serious harm even from small doses. Example: methanol, certain pesticides.\n- **Exclamation Mark** - Harmful or irritant. Can cause skin irritation, eye irritation, or minor health effects. Example: many household cleaners.\n- **Corrosion** - Corrosive to metals, skin, or eyes. Causes severe chemical burns on contact. Example: concentrated oven cleaner, drain unblocker, battery acid.\n- **Health Hazard (person silhouette)** - Serious long-term health effects such as cancer (carcinogen), respiratory sensitisation, or organ damage. Example: some industrial solvents.\n- **Flame** - Flammable liquid, solid, gas, or aerosol. Will ignite easily. Example: methylated spirits, aerosol sprays, cooking oil.\n- **Flame Over Circle** - Oxidiser. Can intensify fire by providing oxygen. Example: hydrogen peroxide, some bleach concentrates.\n- **Gas Cylinder** - Gas under pressure. May explode if heated. Example: CO2 cylinders for drink dispensers.\n- **Exploding Bomb** - Explosive. Can mass-explode or project fragments. Rare in hospitality.\n- **Environment (dead fish/tree)** - Hazardous to aquatic life. Must not be poured down drains. Example: some degreasers.\n\n### Signal words on labels\n\n- **DANGER** - Used for more severe hazard categories.\n- **WARNING** - Used for less severe hazard categories.\n\nAlways check both the **pictogram** and the **signal word** before handling any chemical product.",
+              "keyTakeaway": "GHS uses nine red-bordered diamond pictograms with DANGER or WARNING signal words - always check the label before handling any chemical."
+            },
+            {
+              "id": "m1-s4",
+              "type": "text-graphic-split",
+              "title": "The COSHH Regulations 2002",
+              "content": "## Legal Framework\n\nThe **COSHH Regulations 2002** (as amended) are made under the Health and Safety at Work etc. Act 1974. They place specific duties on employers to protect workers and others who may be exposed to hazardous substances.\n\n### Key employer duties under COSHH\n\n- **Assess the risks** - Carry out a suitable and sufficient assessment of the health risks from hazardous substances used or produced at work (Regulation 6).\n- **Prevent or control exposure** - Prevent exposure entirely where reasonably practicable, or control it adequately if prevention is not possible (Regulation 7).\n- **Maintain controls** - Keep all control measures (ventilation, enclosures, PPE) in good working order and repair (Regulation 9).\n- **Monitor exposure** - Where required, monitor the concentration of hazardous substances in the workplace air (Regulation 10).\n- **Health surveillance** - Provide health surveillance for employees exposed to certain substances, such as regular skin checks for dermatitis (Regulation 11).\n- **Provide information and training** - Ensure employees understand the risks and know how to use control measures properly (Regulation 12).\n\n### Key employee duties\n\n- Use control measures and PPE as instructed.\n- Report any defects in control equipment or PPE immediately.\n- Follow safe working procedures and attend training.\n- Do not intentionally misuse or interfere with anything provided for health and safety.\n\n### Enforcement\n\nThe **Health and Safety Executive (HSE)** enforces COSHH in most workplaces. Local authority Environmental Health Officers (EHOs) may enforce it in retail, hospitality, and leisure premises. Failure to comply can result in **improvement notices**, **prohibition notices**, or **criminal prosecution** with unlimited fines.",
+              "keyTakeaway": "The COSHH Regulations 2002 require employers to assess, prevent or control, monitor, and provide training on hazardous substance exposure - enforced by the HSE with unlimited fines for non-compliance."
+            },
+            {
+              "id": "m1-s5",
+              "type": "text-graphic-split",
+              "title": "Routes of Exposure",
+              "content": "## How Hazardous Substances Enter the Body\n\nUnderstanding how hazardous substances can enter your body is essential for choosing the right control measures. There are **four main routes of exposure**:\n\n### 1. Inhalation (breathing in)\n\nThis is the **most common route** of occupational exposure. Substances can be inhaled as gases, vapours, fumes, mists, or dusts. In hospitality:\n- Flour dust during baking or bread preparation.\n- Chlorine fumes from bleach-based products.\n- Cooking oil mist from deep fryers and chargrills.\n- Carbon dioxide in beer cellars and drink dispenser rooms.\n\n### 2. Skin absorption and contact\n\nMany chemicals can penetrate the skin or cause localised damage:\n- **Dermatitis** from repeated exposure to detergents, sanitisers, or wet work (the most common occupational skin disease in the UK).\n- **Chemical burns** from concentrated acids or alkalis splashing onto unprotected skin.\n- **Sensitisation** - once sensitised to a substance, even tiny future exposures can trigger severe reactions.\n\n### 3. Ingestion (swallowing)\n\nAccidental ingestion can occur through:\n- Eating or drinking near chemicals.\n- Hand-to-mouth contact after handling substances without washing hands.\n- Chemicals decanted into food or drink containers (a surprisingly common and dangerous mistake).\n\n### 4. Injection / absorption through wounds\n\nCuts, abrasions, or puncture wounds allow chemicals to bypass the skin barrier and enter the bloodstream directly. Always cover open wounds before handling chemicals.\n\n### Why this matters for control\n\nEach route of exposure requires a different control approach: inhalation needs ventilation or respiratory PPE, skin contact needs gloves and aprons, ingestion needs hygiene controls, and wounds need waterproof dressings.",
+              "keyTakeaway": "Hazardous substances can enter the body through inhalation, skin contact, ingestion, or wounds - each route requires different control measures."
+            }
+          ]
+        },
+        {
+          "id": "m1-l2",
+          "title": "Scenarios: Recognising COSHH Hazards",
+          "slides": [
+            {
+              "id": "m1-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Unlabelled Bottle",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You arrive for your morning shift in a hotel kitchen and find a clear plastic bottle under the sink with no label. It contains a blue liquid that smells like cleaning product. A colleague says 'Oh, I decanted some degreaser last night because the original bottle was nearly empty.' What do you do?",
+                    "options": [
+                      {
+                        "label": "Use it - your colleague said it's degreaser, so it should be fine.",
+                        "nextNodeId": "use_it"
+                      },
+                      {
+                        "label": "Smell it more closely to try to identify the product.",
+                        "nextNodeId": "smell_it"
+                      },
+                      {
+                        "label": "Do not use it. Set it aside and report it to your supervisor.",
+                        "nextNodeId": "report_step"
+                      }
+                    ]
+                  },
+                  "use_it": {
+                    "text": "You spray the blue liquid onto a work surface. It starts foaming aggressively and gives off a sharp chemical smell. You feel a burning sensation on your hands where some splashed.\n\n❌ **Unsafe.** Using an unlabelled chemical is a serious COSHH breach. Without knowing the product name, concentration, or required PPE, you have no way to use it safely. You also cannot look up first aid measures if something goes wrong.",
+                    "options": [
+                      {
+                        "label": "Immediately wash your hands under running water and report the incident.",
+                        "nextNodeId": "wash_and_report"
+                      },
+                      {
+                        "label": "Wipe your hands on a cloth and carry on working.",
+                        "nextNodeId": "ignore_burn"
+                      }
+                    ]
+                  },
+                  "smell_it": {
+                    "text": "You lean in and inhale deeply over the open bottle.\n\n❌ **Dangerous.** Never sniff an unknown chemical. Some substances (concentrated ammonia, chlorine, solvent vapours) can cause immediate respiratory damage or trigger asthma. The correct way to identify an unknown substance is through its label and SDS - never by smell or taste.",
+                    "options": [
+                      {
+                        "label": "Put the bottle down, move away, and report it to your supervisor.",
+                        "nextNodeId": "report_step"
+                      },
+                      {
+                        "label": "It smells like degreaser, so use it anyway.",
+                        "nextNodeId": "use_it"
+                      }
+                    ]
+                  },
+                  "report_step": {
+                    "text": "Good decision. You set the bottle aside where no one else can use it and inform your supervisor. They need to decide what to do with this unlabelled container. What should happen next?",
+                    "options": [
+                      {
+                        "label": "The supervisor should try to identify it and relabel the bottle.",
+                        "nextNodeId": "relabel_attempt"
+                      },
+                      {
+                        "label": "The unlabelled product should be disposed of safely, and staff reminded never to decant chemicals into unlabelled containers.",
+                        "nextNodeId": "correct_disposal"
+                      }
+                    ]
+                  },
+                  "wash_and_report": {
+                    "text": "You wash your hands under running water for several minutes and inform your supervisor about the splash.\n\n⚠️ **Partially correct.** Washing was the right first response, but ideally you should never have used an unlabelled product in the first place. Without knowing the chemical, you cannot be sure water alone is the correct first aid measure - some chemicals react with water.",
+                    "options": [
+                      {
+                        "label": "Understand - I should never use unlabelled chemicals.",
+                        "nextNodeId": "correct_disposal"
+                      }
+                    ]
+                  },
+                  "ignore_burn": {
+                    "text": "❌ **Dangerous.** A burning sensation means the chemical is causing damage to your skin. Ignoring it could result in a chemical burn that worsens over time. You must wash the area immediately with plenty of running water and seek first aid. This incident must also be reported and recorded in the accident book.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "relabel_attempt": {
+                    "text": "⚠️ **Risky approach.** If the supervisor cannot be 100% certain of the product identity, concentration, and batch, they should not relabel it. An incorrectly labelled container is arguably more dangerous than an unlabelled one because people will trust the wrong information. If there is any doubt, the safest course is proper disposal.",
+                    "options": [
+                      {
+                        "label": "Agree - dispose of it safely instead.",
+                        "nextNodeId": "correct_disposal"
+                      }
+                    ]
+                  },
+                  "correct_disposal": {
+                    "text": "✅ **Correct.** The unlabelled product should be disposed of according to your site's chemical waste procedures. The team should be reminded that COSHH requires all chemicals to be kept in their original, labelled containers - or clearly labelled secondary containers that include the product name, hazard information, and dilution ratio. This prevents accidental misuse, incorrect first aid, and potential poisoning.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Beer Cellar",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You're a bar supervisor and need to change a CO2 cylinder in the beer cellar. The cellar is a small, windowless room below street level. As you open the door, you notice the CO2 alarm panel in the corridor is showing an amber warning light. What do you do?",
+                    "options": [
+                      {
+                        "label": "The amber light is probably just a minor issue - go in quickly and change the cylinder.",
+                        "nextNodeId": "enter_anyway"
+                      },
+                      {
+                        "label": "Do not enter. Check the alarm panel reading and follow the cellar gas safety procedure.",
+                        "nextNodeId": "check_panel"
+                      },
+                      {
+                        "label": "Prop the door open to let air in, then go inside.",
+                        "nextNodeId": "prop_door"
+                      }
+                    ]
+                  },
+                  "enter_anyway": {
+                    "text": "❌ **Extremely dangerous.** An amber warning means CO2 levels are elevated above the first alarm threshold (typically 0.5% or 5,000 ppm). Carbon dioxide is heavier than air and accumulates at floor level in enclosed spaces. At higher concentrations it causes headaches, dizziness, unconsciousness, and death. Workers have died in beer cellars from CO2 displacement of oxygen.",
+                    "options": [
+                      {
+                        "label": "Leave immediately and follow the gas safety procedure.",
+                        "nextNodeId": "check_panel"
+                      },
+                      {
+                        "label": "Hold my breath and rush in to change the cylinder.",
+                        "nextNodeId": "bad_end"
+                      }
+                    ]
+                  },
+                  "prop_door": {
+                    "text": "⚠️ **Insufficient.** While ventilation is important, simply propping open a door may not adequately clear dangerous CO2 levels - especially since CO2 is 1.5 times heavier than air and pools at floor level. The amber alarm indicates a potential leak that needs investigation before anyone enters. You need to follow the formal cellar gas safety procedure.",
+                    "options": [
+                      {
+                        "label": "Check the alarm panel and follow the proper procedure instead.",
+                        "nextNodeId": "check_panel"
+                      },
+                      {
+                        "label": "Wait 5 minutes with the door open and then enter.",
+                        "nextNodeId": "enter_anyway"
+                      }
+                    ]
+                  },
+                  "check_panel": {
+                    "text": "Good. The alarm panel shows CO2 at 0.8% (amber zone). The cellar gas safety procedure says: do not enter until levels return to green (below 0.5%), ventilate the area, and investigate the source of the leak. What do you do next?",
+                    "options": [
+                      {
+                        "label": "Activate the cellar ventilation system and wait for levels to drop to green before entering.",
+                        "nextNodeId": "ventilate_wait"
+                      },
+                      {
+                        "label": "Call 999 immediately - any CO2 reading above normal is a life-threatening emergency.",
+                        "nextNodeId": "overreact"
+                      }
+                    ]
+                  },
+                  "ventilate_wait": {
+                    "text": "You activate the mechanical ventilation and monitor the panel. After 15 minutes, the reading drops to 0.3% (green zone). You enter the cellar and find that a CO2 cylinder valve was not fully closed after the last keg change. You close the valve, change the cylinder, and report the incident.\n\n✅ **Well done!** You followed the correct procedure: did not enter a potentially hazardous atmosphere, used the monitoring equipment, ventilated the space, waited for safe levels, identified the source, and reported it. CO2 incidents in beer cellars are a recognised COSHH hazard and must always be taken seriously.",
+                    "options": []
+                  },
+                  "overreact": {
+                    "text": "⚠️ **Disproportionate response for an amber reading.** While CO2 is genuinely dangerous, the amber alarm indicates elevated but not immediately life-threatening levels. The correct response is to follow your site's cellar gas procedure: do not enter, ventilate, monitor, and investigate. You would call 999 if someone had collapsed inside, if levels were in the red zone, or if ventilation failed to bring levels down. Report the leak to your manager and follow up with a cylinder check.",
+                    "options": [
+                      {
+                        "label": "Follow the ventilation procedure instead.",
+                        "nextNodeId": "ventilate_wait"
+                      }
+                    ]
+                  },
+                  "bad_end": {
+                    "text": "❌ **Fatal risk.** Holding your breath does not protect you. At high CO2 concentrations, the gas is absorbed through your lungs almost instantly when you eventually inhale. People who have entered CO2-enriched spaces 'just for a moment' have lost consciousness within seconds and died. Never enter a space with an active gas alarm.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "COSHH Risk Assessment",
+      "description": "How to assess and control chemical risks in the workplace.",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "The Assessment Process",
+          "slides": [
+            {
+              "id": "m2-s1",
+              "type": "text-graphic-split",
+              "title": "The 8-Step COSHH Assessment",
+              "content": "## COSHH Risk Assessment\n\nRegulation 6 of the COSHH Regulations 2002 requires employers to carry out a **suitable and sufficient assessment** of the risks to health from hazardous substances. This is not a one-off exercise - it must be a living document that is reviewed regularly.\n\n### The 8 steps\n\n1. **Identify hazardous substances** - List every chemical, dust, fume, gas, and biological agent used or produced in your workplace. In a kitchen this includes cleaning chemicals, sanitisers, pest control products, flour dust, and cooking fumes.\n\n2. **Obtain Safety Data Sheets (SDS)** - Your supplier must provide a 16-section SDS for every hazardous product. These contain the critical safety information you need.\n\n3. **Identify who is at risk** - Consider everyone who may be exposed: staff who use the product, nearby workers, visitors, contractors, and vulnerable groups (pregnant workers, young workers, those with asthma).\n\n4. **Identify how exposure occurs** - Through which routes? Inhalation, skin contact, ingestion, or eye contact? How often? For how long?\n\n5. **Evaluate the level of risk** - Consider the severity of potential harm combined with the likelihood of exposure occurring.\n\n6. **Decide on control measures** - Apply the hierarchy of control (eliminate, substitute, enclose, ventilate, PPE).\n\n7. **Record your findings** - Document the assessment including what substances, what risks, what controls, and who is responsible.\n\n8. **Review regularly** - Revisit the assessment at least annually, after any incident, when new substances are introduced, or when work practices change.",
+              "keyTakeaway": "A COSHH assessment must identify every hazardous substance, who is at risk, how exposure occurs, and what controls are in place - and it must be reviewed regularly."
+            },
+            {
+              "id": "m2-s2",
+              "type": "text-graphic-split",
+              "title": "Safety Data Sheets (SDS)",
+              "content": "## Reading and Using Safety Data Sheets\n\nA Safety Data Sheet is the **single most important document** for understanding the hazards and safe handling requirements of a chemical product. Under the UK REACH Regulation, suppliers must provide an SDS for any hazardous substance.\n\n### The 16 sections of an SDS\n\n- **Section 1** - Product identification: name, supplier details, emergency phone number.\n- **Section 2** - Hazard identification: GHS classification, pictograms, signal word, hazard and precautionary statements.\n- **Section 3** - Composition: what the product contains and in what proportions.\n- **Section 4** - First aid measures: specific instructions for each route of exposure (skin, eyes, inhalation, ingestion).\n- **Section 5** - Firefighting measures: suitable extinguishing media, special hazards.\n- **Section 6** - Accidental release: what to do if spilled (containment, clean-up, environmental precautions).\n- **Section 7** - Handling and storage: safe use conditions, temperature range, incompatible materials.\n- **Section 8** - Exposure controls and PPE: workplace exposure limits, recommended glove type, eye protection, respiratory protection.\n- **Section 9** - Physical and chemical properties: pH, boiling point, flash point, appearance.\n- **Sections 10-16** - Stability, toxicology, ecology, disposal, transport, regulatory, and other information.\n\n### Practical tips for hospitality\n\n- Keep a **COSHH folder** with printed SDS for every product used on site.\n- Store SDS **where all staff can access them** at any time - never locked away.\n- **Check Section 8 first** when selecting PPE for a task.\n- **Check Section 4 first** if someone is exposed to a chemical.",
+              "keyTakeaway": "Every hazardous product must have a 16-section Safety Data Sheet that is accessible to all staff at all times - check Section 8 for PPE and Section 4 for first aid."
+            },
+            {
+              "id": "m2-s3",
+              "type": "text-graphic-split",
+              "title": "The Hierarchy of Control",
+              "content": "## Controlling COSHH Risks\n\nThe hierarchy of control is the **cornerstone of COSHH compliance**. It sets out the order in which you should consider control measures, starting with the most effective and ending with the least effective.\n\n### Level 1: Elimination\n\nCan you **remove the hazardous substance entirely**? For example, switching from chemical pest control to physical traps, or stopping a process that generates hazardous dust.\n\n### Level 2: Substitution\n\nCan you **replace it with something less hazardous**? For example, using a pH-neutral cleaner instead of a caustic degreaser, or switching from a powdered product (dust risk) to a liquid or tablet form.\n\n### Level 3: Engineering controls - Enclosure\n\nCan you **contain the substance** so workers are not exposed? For example, using auto-dosing systems that dispense chemicals at the correct dilution without staff handling concentrates, or closed transfer systems for hazardous liquids.\n\n### Level 4: Engineering controls - Ventilation\n\nCan you **extract or dilute** airborne contaminants? For example, extraction hoods over deep fryers, local exhaust ventilation in chemical mixing areas, or mechanical ventilation in beer cellars.\n\n### Level 5: Administrative controls\n\nCan you **change how work is done** to reduce exposure? For example, rotating staff through high-exposure tasks, scheduling chemical cleaning when fewer people are present, or providing clear standard operating procedures.\n\n### Level 6: Personal Protective Equipment (PPE)\n\nPPE is the **last resort**, not the first response. It only protects the individual wearing it, and only if it is correctly selected, fitted, worn, and maintained. PPE should be used **in addition to** higher-level controls, not instead of them.",
+              "keyTakeaway": "Always work down the hierarchy: eliminate, substitute, enclose, ventilate, administrative controls, then PPE as the last resort - never start with PPE."
+            },
+            {
+              "id": "m2-s4",
+              "type": "text-graphic-split",
+              "title": "Workplace Exposure Limits (WELs)",
+              "content": "## Understanding Workplace Exposure Limits\n\nA **Workplace Exposure Limit (WEL)** is the maximum concentration of a hazardous substance in workplace air that a worker can be exposed to, averaged over a reference period. WELs are listed in the HSE publication **EH40** (Workplace Exposure Limits).\n\n### Two types of WEL\n\n- **8-hour TWA (Time-Weighted Average)** - The average concentration over an 8-hour working day. This protects against the cumulative effects of long-term exposure. For example, flour dust has an 8-hour TWA of 10 mg/m3 (inhalable dust).\n\n- **15-minute STEL (Short-Term Exposure Limit)** - The maximum average concentration over any 15-minute period. This protects against acute (short-term) effects. For example, chlorine has a STEL of 1.5 mg/m3.\n\n### What WELs mean in practice\n\n- Employers must ensure that exposure does **not exceed** the WEL.\n- Where a WEL exists, employers should aim to reduce exposure **as far below the WEL as reasonably practicable** - the WEL is a ceiling, not a target.\n- If monitoring shows exposure above a WEL, **immediate action** is required to bring it back down.\n- Some substances have no WEL but are still hazardous - the absence of a WEL does not mean a substance is safe.\n\n### Common hospitality WELs\n\n- **Carbon dioxide (CO2)**: 8-hour TWA = 5,000 ppm, STEL = 15,000 ppm.\n- **Chlorine**: 8-hour TWA = 0.5 ppm, STEL = 1 ppm.\n- **Flour dust (inhalable)**: 8-hour TWA = 10 mg/m3.\n\nSection 8 of the SDS will tell you the WEL for the product you are using.",
+              "keyTakeaway": "Workplace Exposure Limits set the maximum airborne concentration of a substance - employers must keep exposure as far below the WEL as reasonably practicable."
+            },
+            {
+              "id": "m2-s5",
+              "type": "text-graphic-split",
+              "title": "Health Surveillance and Monitoring",
+              "content": "## Monitoring Exposure and Worker Health\n\nCOSHH Regulations 10 and 11 require employers to **monitor workplace exposure** and provide **health surveillance** in certain circumstances.\n\n### Exposure monitoring (Regulation 10)\n\nEmployers must carry out workplace air monitoring when:\n- There is a risk that the WEL might be exceeded.\n- It is necessary to check that control measures are working effectively.\n- The assessment identifies a need for monitoring.\n\nMonitoring can involve **personal sampling** (a worker wears a pump and filter badge during their shift) or **static sampling** (a monitor placed in the work area). Results must be recorded and kept for at least 5 years (40 years for substances that cause cancer or asthma).\n\n### Health surveillance (Regulation 11)\n\nHealth surveillance is required when:\n- Workers are exposed to substances known to cause specific diseases (e.g., occupational asthma from flour dust, dermatitis from wet work).\n- There are valid techniques to detect the early signs of the disease.\n- Surveillance is likely to benefit the worker.\n\n### Common health surveillance in hospitality\n\n- **Skin checks** for kitchen staff who do frequent wet work or handle cleaning chemicals - looking for early signs of dermatitis (redness, cracking, itching).\n- **Lung function tests** for bakery workers exposed to flour dust.\n- **Health questionnaires** at regular intervals asking about symptoms.\n\n### Records\n\nHealth surveillance records must be kept for at least **40 years** from the date of the last entry. If a business closes, records should be offered to the HSE.",
+              "keyTakeaway": "Employers must monitor workplace air quality and provide health surveillance such as skin checks and lung function tests for workers exposed to substances that cause occupational disease."
+            }
+          ]
+        },
+        {
+          "id": "m2-l2",
+          "title": "Scenarios: Risk Assessment Decisions",
+          "slides": [
+            {
+              "id": "m2-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: New Cleaning Product",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "Your hotel has switched to a new concentrated kitchen degreaser. The supplier delivered the product yesterday with a box of Safety Data Sheets. The head chef wants kitchen porters to start using it immediately because they have run out of the old product. What should happen first?",
+                    "options": [
+                      {
+                        "label": "Start using it - we have the SDS if anyone needs to check anything.",
+                        "nextNodeId": "use_immediately"
+                      },
+                      {
+                        "label": "Update the COSHH risk assessment before the product is used, and brief staff on the new product.",
+                        "nextNodeId": "update_assessment"
+                      },
+                      {
+                        "label": "Just use the old dilution ratio from the previous product - degreasers are all the same.",
+                        "nextNodeId": "wrong_dilution"
+                      }
+                    ]
+                  },
+                  "use_immediately": {
+                    "text": "⚠️ **Not quite right.** Having the SDS is essential, but simply having the paperwork is not enough. The COSHH Regulations require the risk assessment to be updated whenever a new substance is introduced. Staff must be trained on the specific hazards, dilution ratios, PPE requirements, and first aid measures for this new product before they use it.",
+                    "options": [
+                      {
+                        "label": "Pause and update the risk assessment first.",
+                        "nextNodeId": "update_assessment"
+                      },
+                      {
+                        "label": "Brief staff quickly by reading the label aloud, then start using it.",
+                        "nextNodeId": "label_only"
+                      }
+                    ]
+                  },
+                  "wrong_dilution": {
+                    "text": "❌ **Dangerous.** Different products have different concentrations, active ingredients, and dilution ratios. Using the wrong dilution could mean the product is ineffective (too weak), or dangerously concentrated (too strong), causing chemical burns, toxic fumes, or damage to surfaces and equipment. Always follow the manufacturer's dilution instructions exactly.",
+                    "options": [
+                      {
+                        "label": "Check the SDS and manufacturer instructions for the correct dilution.",
+                        "nextNodeId": "update_assessment"
+                      }
+                    ]
+                  },
+                  "update_assessment": {
+                    "text": "Correct first step. You review the SDS for the new degreaser. It shows the product is more concentrated than the old one, requires nitrile gloves and eye protection, and has a different dilution ratio. Now you need to decide how to communicate this to the team. What do you do?",
+                    "options": [
+                      {
+                        "label": "Pin the SDS to the noticeboard and assume staff will read it.",
+                        "nextNodeId": "noticeboard_only"
+                      },
+                      {
+                        "label": "Conduct a brief toolbox talk, demonstrate the correct dilution, check staff have the right PPE, and update the COSHH folder.",
+                        "nextNodeId": "full_briefing"
+                      }
+                    ]
+                  },
+                  "label_only": {
+                    "text": "⚠️ **Insufficient.** Reading the label is better than nothing, but COSHH training must cover: the specific hazards, correct dilution, required PPE, storage requirements, spill procedure, and first aid measures. A verbal label reading does not constitute adequate training and would not satisfy an HSE inspector.",
+                    "options": [
+                      {
+                        "label": "Conduct a proper briefing and update the risk assessment.",
+                        "nextNodeId": "full_briefing"
+                      }
+                    ]
+                  },
+                  "noticeboard_only": {
+                    "text": "⚠️ **Insufficient.** Pinning information to a noticeboard does not constitute COSHH training. Many staff may not read it, may not understand the technical language, or may miss critical details about the new dilution ratio. Regulation 12 requires employers to provide information, instruction, and training that is suitable and sufficient.",
+                    "options": [
+                      {
+                        "label": "Conduct a proper toolbox talk with the team instead.",
+                        "nextNodeId": "full_briefing"
+                      }
+                    ]
+                  },
+                  "full_briefing": {
+                    "text": "✅ **Well done!** The correct process is: review the SDS, update the COSHH risk assessment, check that the right PPE is available, conduct a toolbox talk so all affected staff understand the new product's hazards and safe use, demonstrate the correct dilution, and update the COSHH folder. Only then should the product be put into use. This satisfies Regulations 6 and 12 of the COSHH Regulations.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Choosing Controls",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You manage a busy restaurant kitchen. Several staff have reported skin irritation on their hands after using the concentrated sanitiser spray for wiping down prep surfaces. The current procedure is to spray neat sanitiser onto surfaces and wipe with a cloth. What control measure do you consider first?",
+                    "options": [
+                      {
+                        "label": "Give everyone thicker rubber gloves to wear while cleaning.",
+                        "nextNodeId": "ppe_first"
+                      },
+                      {
+                        "label": "Investigate whether you can eliminate or substitute the product.",
+                        "nextNodeId": "investigate_sub"
+                      },
+                      {
+                        "label": "Tell staff to wash their hands more often to remove the chemical.",
+                        "nextNodeId": "wash_more"
+                      }
+                    ]
+                  },
+                  "ppe_first": {
+                    "text": "⚠️ **Wrong order.** PPE is the last resort in the hierarchy of control, not the first response. While gloves may be needed as part of the solution, you should first consider whether you can eliminate the exposure entirely (e.g., auto-dosing system), substitute with a less irritant product, or enclose the dispensing process. Jumping straight to PPE is a common mistake.",
+                    "options": [
+                      {
+                        "label": "Go back and consider elimination or substitution first.",
+                        "nextNodeId": "investigate_sub"
+                      },
+                      {
+                        "label": "PPE is good enough - just order better gloves.",
+                        "nextNodeId": "ppe_only_end"
+                      }
+                    ]
+                  },
+                  "wash_more": {
+                    "text": "⚠️ **Counterproductive.** Frequent hand washing can actually make occupational dermatitis worse by stripping the skin's natural oils. While hand hygiene is important, telling staff to wash more is not a control for chemical irritation. You need to address the source of the exposure using the hierarchy of control.",
+                    "options": [
+                      {
+                        "label": "Look into eliminating or substituting the product instead.",
+                        "nextNodeId": "investigate_sub"
+                      }
+                    ]
+                  },
+                  "investigate_sub": {
+                    "text": "Good thinking. You check with your chemical supplier and find two options: (A) a pre-diluted, pH-neutral sanitiser that is less irritant to skin, or (B) an auto-dosing wall unit that dispenses the correct dilution from a concentrate so staff never handle neat product. Which do you choose?",
+                    "options": [
+                      {
+                        "label": "Option A - the pre-diluted, less irritant sanitiser (substitution).",
+                        "nextNodeId": "substitute_only"
+                      },
+                      {
+                        "label": "Option B - the auto-dosing unit (engineering control + substitution).",
+                        "nextNodeId": "auto_dose"
+                      },
+                      {
+                        "label": "Both - install the auto-dosing unit AND switch to the less irritant product.",
+                        "nextNodeId": "best_solution"
+                      }
+                    ]
+                  },
+                  "substitute_only": {
+                    "text": "⚠️ **Good but not the best.** Substituting to a less irritant product is a valid Level 2 control. However, staff are still handling the chemical directly when spraying and wiping. If you also added the auto-dosing system, you would be combining substitution with an engineering control, providing much stronger protection. Should you also provide gloves as an additional measure?",
+                    "options": [
+                      {
+                        "label": "Yes - also provide appropriate gloves as a backup control.",
+                        "nextNodeId": "best_solution"
+                      },
+                      {
+                        "label": "No - the substituted product is mild enough.",
+                        "nextNodeId": "substitute_end"
+                      }
+                    ]
+                  },
+                  "auto_dose": {
+                    "text": "Good choice. The auto-dosing unit means staff never handle concentrated product. But the workers still have direct skin contact when wiping surfaces with the diluted solution. What else should you provide?",
+                    "options": [
+                      {
+                        "label": "Provide suitable nitrile gloves for the wiping task.",
+                        "nextNodeId": "best_solution"
+                      },
+                      {
+                        "label": "Nothing else needed - it's already diluted.",
+                        "nextNodeId": "substitute_end"
+                      }
+                    ]
+                  },
+                  "ppe_only_end": {
+                    "text": "❌ **Non-compliant approach.** Relying solely on PPE without considering higher-level controls does not satisfy the COSHH hierarchy. An HSE inspector would expect to see evidence that you considered elimination, substitution, and engineering controls before resorting to PPE. Review and update your COSHH risk assessment.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "substitute_end": {
+                    "text": "⚠️ **Acceptable but could be better.** Substitution alone reduces risk but does not eliminate skin contact. Best practice would be to combine substitution or engineering controls with PPE as an additional layer. Update the COSHH assessment, train staff, and monitor for any further skin complaints.",
+                    "options": [{ "label": "Try Again", "nextNodeId": "start" }]
+                  },
+                  "best_solution": {
+                    "text": "✅ **Excellent!** The strongest approach combines multiple levels of the hierarchy: substitute to a less irritant product, install an auto-dosing system to prevent staff handling concentrates (engineering control), and provide nitrile gloves as a backup layer (PPE). Update the COSHH risk assessment, train staff on the new system, and monitor for any further skin issues. This is exactly what the COSHH Regulations intend.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Safe Handling, Storage, and PPE",
+      "description": "Practical controls for working with hazardous substances.",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "Safe Handling and Storage",
+          "slides": [
+            {
+              "id": "m3-s1",
+              "type": "text-graphic-split",
+              "title": "Safe Handling of Chemicals",
+              "content": "## Before, During, and After Chemical Use\n\nEvery time you handle a hazardous substance, there is a sequence of checks and precautions that must become second nature.\n\n### Before use\n\n- **Read the label and SDS.** Even if you have used the product before, check for any changes. Manufacturers can reformulate products without changing the brand name.\n- **Check you have the correct PPE.** Section 8 of the SDS specifies the required protection. Do not assume that the same gloves work for every chemical.\n- **Check the product is in date.** Expired chemicals may become more concentrated, less effective, or chemically unstable.\n- **Ensure adequate ventilation.** Open windows, turn on extraction fans, or use the product outdoors if recommended.\n- **Prepare the correct dilution.** Always add chemical concentrate to water (not water to concentrate) to reduce splashing and heat generation.\n\n### During use\n\n- Follow the manufacturer's dilution ratios **exactly**. More concentrated does not mean more effective - it means more hazardous.\n- Never decant chemicals into unmarked containers - this is one of the most common causes of chemical accidents in hospitality.\n- Never mix chemicals. Even seemingly harmless combinations (bleach + vinegar-based descaler) can release toxic gases.\n- Do not eat, drink, or smoke while handling chemicals.\n- Keep chemicals away from food, food contact surfaces, and food storage areas.\n\n### After use\n\n- Wash hands thoroughly with soap and water.\n- Return products to the correct storage location.\n- Dispose of empty containers and contaminated materials according to the SDS.\n- Report any spills, splashes, or near-misses to your supervisor.",
+              "keyTakeaway": "Always read the label, check PPE, follow exact dilution ratios, never mix chemicals, and wash hands thoroughly after every use."
+            },
+            {
+              "id": "m3-s2",
+              "type": "text-graphic-split",
+              "title": "Dilution and Dosing",
+              "content": "## Getting the Concentration Right\n\nIncorrect dilution is one of the most common and preventable chemical safety failures in hospitality. It creates two problems: under-dilution means the product is dangerously strong, and over-dilution means it is ineffective.\n\n### Why dilution ratios matter\n\n- A kitchen sanitiser designed for use at 1:100 (1 part chemical to 100 parts water) will typically be effective at killing bacteria at that ratio. Using it at 1:10 creates a product 10 times more concentrated than intended, which could cause skin burns, corrode surfaces, and generate harmful fumes.\n- Conversely, using it at 1:1000 may not kill bacteria at all, creating a food safety risk.\n\n### Best practice for dilution\n\n- **Auto-dosing systems** are the gold standard. Wall-mounted units draw product from a container and mix it with water at the preset ratio. Staff never handle concentrate.\n- **Measured dosing caps** are the next best option. Many commercial cleaning products come with caps that measure the correct dose.\n- **Graduated jugs** can be used for manual dilution, but rely on staff measuring accurately every time.\n- **Trigger sprays** should be filled from auto-dosing units where possible, and clearly labelled with the product name, dilution, date, and hazard information.\n\n### Common mistakes\n\n- Adding 'a bit extra' because the surfaces look dirty. This is dangerous.\n- Using hot water for dilution when the SDS specifies cold water (heat can decompose some chemicals or release fumes).\n- Reusing spray bottles for different products without thorough rinsing.\n- Allowing untrained staff to make up solutions from concentrates.",
+              "keyTakeaway": "Always follow the manufacturer's exact dilution ratio - stronger is not better, and auto-dosing systems are the safest way to ensure correct concentration."
+            },
+            {
+              "id": "m3-s3",
+              "type": "text-graphic-split",
+              "title": "Chemical Storage Requirements",
+              "content": "## Storing Hazardous Substances Safely\n\nProper storage of chemicals is a fundamental COSHH requirement. Poor storage is one of the most frequently cited failures during HSE inspections of hospitality premises.\n\n### Core storage rules\n\n- **Dedicated chemical storage area.** Chemicals must be stored in a **locked, ventilated cupboard or room** that is separate from food, food equipment, and food storage areas. The Food Hygiene Regulations also require this separation.\n- **Original containers.** Keep chemicals in their **original, labelled containers**. If you must use a secondary container, it must be clearly labelled with the product name, hazard symbols, dilution ratio, and date.\n- **Below waist height.** Store chemicals on low shelves (below waist height) to prevent splashes to the face and eyes if a container is dropped or knocked over.\n- **Temperature control.** Some chemicals must be stored within a specific temperature range. Check Section 7 of the SDS. Extreme heat can cause pressure build-up in containers; extreme cold can cause some products to crystallise or separate.\n- **Incompatible chemicals separated.** Acids (descalers, vinegar-based products) must be stored away from alkalis (bleach, oven cleaners). Flammable substances must be stored away from oxidisers. Use separate shelves or compartments.\n- **COSHH data point.** The SDS for every product on site must be accessible from or near the storage area.\n\n### Additional requirements\n\n- Containers must be **closed when not in use** to prevent evaporation and contamination.\n- **Spill containment** - ideally, chemicals are stored in a bunded area or on drip trays.\n- **Stock rotation** - use oldest products first and dispose of expired stock.\n- **Access control** - only trained staff should access the chemical store.",
+              "keyTakeaway": "Store chemicals in a locked, ventilated area away from food, in original containers, below waist height, with incompatible products separated."
+            },
+            {
+              "id": "m3-s4",
+              "type": "text-graphic-split",
+              "title": "PPE Selection and Types",
+              "content": "## Choosing the Right Personal Protective Equipment\n\nPPE is the **last line of defence** in the hierarchy of control. When higher-level controls cannot fully eliminate exposure, PPE provides a vital barrier between the worker and the hazardous substance.\n\n### Hand protection\n\n- **Nitrile gloves** are the standard for chemical handling in hospitality. They provide good resistance to a wide range of chemicals, have no latex allergy risk, and are widely available.\n- **Rubber (PVC) gauntlets** are used for heavier tasks such as cleaning drains, handling concentrates, or using oven cleaners. They provide longer cuff protection.\n- **Latex gloves** should be avoided for chemical handling - they offer poor chemical resistance and carry an allergy risk.\n- Always check the SDS for the recommended glove material and **breakthrough time** (how long the glove resists the chemical before it permeates through).\n\n### Eye and face protection\n\n- **Safety goggles** (sealed to the face) are required when handling corrosive or irritant chemicals where splashes are possible.\n- **Face shields** provide additional protection to the whole face and are used for higher-risk tasks such as mixing concentrates or cleaning large equipment.\n\n### Body protection\n\n- **Chemical-resistant aprons** protect clothing and skin from splashes during tasks such as cleaning ovens, mixing solutions, or handling waste.\n\n### Respiratory protection\n\n- **FFP2/FFP3 disposable masks** protect against dust (flour, cleaning powders).\n- **Half-face respirators with chemical filters** protect against vapours and fumes when ventilation is insufficient.\n- Respiratory protection requires **face-fit testing** to ensure an adequate seal.\n\n### The employer's duty\n\nUnder COSHH Regulation 7 and the Personal Protective Equipment at Work Regulations 2022, employers must provide PPE **free of charge**, ensure it is suitable for the hazard, and provide training on its correct use.",
+              "keyTakeaway": "Select PPE based on the SDS recommendation - nitrile gloves for most chemical tasks, sealed goggles for splash risks, and respirators must be face-fit tested."
+            },
+            {
+              "id": "m3-s5",
+              "type": "text-graphic-split",
+              "title": "PPE Maintenance and Compliance",
+              "content": "## Keeping PPE Effective\n\nPPE only works if it is properly maintained, stored, and replaced. Damaged or poorly maintained PPE can give a false sense of security.\n\n### Inspection and maintenance\n\n- **Before every use**, visually inspect PPE for damage: holes, tears, cracks, or discolouration in gloves; scratches or cracks in goggles; damaged straps on respirators.\n- **Reusable gloves and goggles** must be cleaned after each use according to the manufacturer's instructions, and stored in a clean, dry location away from chemicals and sunlight.\n- **Respirator filters** have a limited lifespan and must be replaced according to the manufacturer's schedule, or immediately if the wearer can smell or taste the substance through the mask.\n- **Single-use gloves** must be disposed of after each task and never reused.\n\n### Common PPE failures in hospitality\n\n- Using the same pair of nitrile gloves for hours without changing them (chemicals permeate through over time).\n- Wearing chemical-splash goggles pushed up on the forehead while handling chemicals.\n- Using standard food-prep latex gloves for chemical cleaning (wrong type, wrong purpose).\n- Failing to replace respirator filters on schedule.\n- Not providing face-fit testing for respiratory protection.\n\n### Record keeping\n\n- Maintain a **PPE register** showing what PPE is provided for each task, what type and specification, when it was last issued, and when replacement is due.\n- Record **face-fit test results** for respiratory protection.\n- Document **PPE training** provided to each staff member.\n\n### Staff responsibilities\n\n- Use PPE as instructed.\n- Report any damage, wear, or defects immediately.\n- Do not modify or alter PPE.\n- Store PPE correctly after use.",
+              "keyTakeaway": "Inspect PPE before every use, replace single-use items after each task, change reusable gloves before the breakthrough time, and ensure respirator filters are current."
+            }
+          ]
+        },
+        {
+          "id": "m3-l2",
+          "title": "Scenarios: Handling and PPE Decisions",
+          "slides": [
+            {
+              "id": "m3-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Oven Clean",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "It's the end of Friday service and you need to deep-clean the commercial oven using a caustic oven cleaner (sodium hydroxide-based, labelled with the Corrosion GHS symbol). The kitchen is hot and humid. You open the chemical cupboard and find the oven cleaner, a pair of thin latex gloves, and a cloth. What do you do?",
+                    "options": [
+                      {
+                        "label": "Put on the latex gloves and start spraying the oven cleaner.",
+                        "nextNodeId": "latex_gloves"
+                      },
+                      {
+                        "label": "Check the SDS for the recommended PPE before starting.",
+                        "nextNodeId": "check_sds"
+                      },
+                      {
+                        "label": "The oven is still hot - spray the cleaner in while it's warm for better results.",
+                        "nextNodeId": "hot_oven"
+                      }
+                    ]
+                  },
+                  "latex_gloves": {
+                    "text": "⚠️ **Wrong glove type.** Latex gloves provide minimal chemical resistance, especially against caustic (alkaline) products like sodium hydroxide. The chemical can permeate through latex within minutes, causing severe alkali burns to your hands. Caustic burns are particularly dangerous because they may not cause immediate pain but destroy tissue progressively. You need the PPE specified on the SDS.",
+                    "options": [
+                      {
+                        "label": "Stop and check the SDS for the correct PPE.",
+                        "nextNodeId": "check_sds"
+                      },
+                      {
+                        "label": "Double up the latex gloves for extra protection.",
+                        "nextNodeId": "double_latex"
+                      }
+                    ]
+                  },
+                  "hot_oven": {
+                    "text": "❌ **Dangerous.** Spraying a caustic chemical into a hot oven creates hazardous fumes and steam. The heat accelerates the chemical reaction and can release sodium hydroxide vapour, which causes severe respiratory and eye irritation. The SDS for most oven cleaners specifies that the oven must be cooled to below 40°C before application.",
+                    "options": [
+                      {
+                        "label": "Wait for the oven to cool and check the SDS.",
+                        "nextNodeId": "check_sds"
+                      }
+                    ]
+                  },
+                  "double_latex": {
+                    "text": "❌ **Still inadequate.** Two layers of latex do not significantly increase chemical resistance. The caustic solution will permeate through both layers. You need chemical-resistant nitrile or rubber gauntlets as specified on the SDS. Never improvise PPE - always use what the manufacturer recommends.",
+                    "options": [
+                      { "label": "Check the SDS for the correct PPE.", "nextNodeId": "check_sds" }
+                    ]
+                  },
+                  "check_sds": {
+                    "text": "Good. You find the SDS in the COSHH folder. Section 8 specifies: chemical-resistant gauntlets (nitrile or PVC), splash-proof goggles, chemical-resistant apron, and adequate ventilation. You gather the correct PPE. The oven has cooled to room temperature. You're about to spray - but you notice the extraction fan above the oven is switched off. What do you do?",
+                    "options": [
+                      {
+                        "label": "It's fine - the kitchen door is open, that's enough ventilation.",
+                        "nextNodeId": "poor_ventilation"
+                      },
+                      {
+                        "label": "Switch on the extraction fan before spraying.",
+                        "nextNodeId": "correct_process"
+                      },
+                      {
+                        "label": "Put on a dust mask for extra respiratory protection.",
+                        "nextNodeId": "wrong_mask"
+                      }
+                    ]
+                  },
+                  "poor_ventilation": {
+                    "text": "⚠️ **Insufficient.** An open door may not provide adequate ventilation, especially in an enclosed kitchen. Caustic oven cleaners produce irritant vapours that can accumulate in poorly ventilated spaces. The SDS states 'ensure adequate ventilation' - use mechanical extraction wherever available.",
+                    "options": [
+                      { "label": "Switch on the extraction fan.", "nextNodeId": "correct_process" }
+                    ]
+                  },
+                  "wrong_mask": {
+                    "text": "⚠️ **Wrong type.** A standard dust mask (FFP2/FFP3) filters particles but does NOT protect against chemical vapours or gases. For vapour protection you would need a half-face respirator with appropriate chemical filters. However, the better control is to ensure adequate mechanical ventilation is running. Use the extraction fan.",
+                    "options": [
+                      {
+                        "label": "Switch on the extraction fan instead.",
+                        "nextNodeId": "correct_process"
+                      }
+                    ]
+                  },
+                  "correct_process": {
+                    "text": "✅ **Well done!** You have followed the correct procedure: checked the SDS, selected the right PPE (chemical-resistant gauntlets, goggles, apron), ensured the oven was cool, and activated mechanical ventilation before spraying. After cleaning, you should rinse the oven thoroughly, dispose of contaminated cloths properly, clean and store your PPE, and wash your hands. Record the oven clean in your cleaning schedule.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m3-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Chemical Delivery",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A chemical supplier delivers 12 boxes of cleaning products to your restaurant. The delivery driver stacks them in the corridor outside the kitchen because the chemical store is locked and the keyholder is on break. The boxes contain concentrated sanitiser, degreaser, and oven cleaner. What do you do?",
+                    "options": [
+                      {
+                        "label": "Leave them in the corridor until the keyholder returns - they're in sealed boxes.",
+                        "nextNodeId": "leave_corridor"
+                      },
+                      {
+                        "label": "Carry them into the kitchen and put them on the worktop so they don't block the corridor.",
+                        "nextNodeId": "kitchen_worktop"
+                      },
+                      {
+                        "label": "Contact the keyholder to open the store, and keep the boxes in the corridor supervised until they can be stored properly.",
+                        "nextNodeId": "contact_keyholder"
+                      }
+                    ]
+                  },
+                  "leave_corridor": {
+                    "text": "⚠️ **Several problems.** Leaving chemicals unattended in a corridor creates trip hazards, exposes them to unauthorised access (including customers and children), and means they are stored outside a controlled environment. If a box is damaged and a container leaks, the spill occurs in an uncontained area. However, at least they are not in a food preparation area.",
+                    "options": [
+                      {
+                        "label": "Move them to a temporary secure location and call the keyholder.",
+                        "nextNodeId": "contact_keyholder"
+                      },
+                      {
+                        "label": "They'll be fine for an hour - the boxes are sealed.",
+                        "nextNodeId": "corridor_incident"
+                      }
+                    ]
+                  },
+                  "kitchen_worktop": {
+                    "text": "❌ **Serious breach.** Placing chemicals on a kitchen worktop violates both COSHH and Food Hygiene Regulations. Chemicals must never be stored in food preparation areas. If a container leaked, it could contaminate food contact surfaces, utensils, or food itself. This is a critical non-compliance that could result in enforcement action.",
+                    "options": [
+                      {
+                        "label": "Remove them from the kitchen immediately and find a proper temporary location.",
+                        "nextNodeId": "contact_keyholder"
+                      }
+                    ]
+                  },
+                  "contact_keyholder": {
+                    "text": "Good decision. You call the keyholder and they will be back in 20 minutes. In the meantime, you need to manage the chemicals safely. You find a small utility room with a lock near the back entrance. What do you check before using it as temporary storage?",
+                    "options": [
+                      {
+                        "label": "Just check it's empty and push the boxes in.",
+                        "nextNodeId": "no_checks"
+                      },
+                      {
+                        "label": "Check it's away from food areas, has no heat sources, is lockable, and that the boxes are intact with no leaks.",
+                        "nextNodeId": "proper_checks"
+                      }
+                    ]
+                  },
+                  "corridor_incident": {
+                    "text": "❌ **A customer's child opens one of the boxes and picks up a bottle of concentrated oven cleaner.** Fortunately, the cap is secured, but this near-miss demonstrates exactly why chemicals must never be left unattended in public areas. Under COSHH, access to hazardous substances must be controlled. This incident must be reported and recorded.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "no_checks": {
+                    "text": "⚠️ **Incomplete.** While getting the chemicals off the corridor is good, you should check that the temporary storage location is suitable: away from food, no incompatible materials already stored there, no heat sources (radiators, boilers), the room can be locked, and all containers are intact. A quick visual inspection takes seconds and prevents problems.",
+                    "options": [
+                      { "label": "Do the proper checks first.", "nextNodeId": "proper_checks" }
+                    ]
+                  },
+                  "proper_checks": {
+                    "text": "✅ **Correct approach!** You checked that the utility room is separate from food areas, has no heat sources, can be locked, and the boxes are undamaged. You store the chemicals temporarily, lock the door, and wait for the keyholder to transfer them to the main chemical store. You also check the delivery against the order and ensure all products have SDS documentation. Good practice would also be to check if any of the products are new and need adding to the COSHH assessment.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Emergency Procedures",
+      "description": "What to do in a chemical emergency.",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "Spill Response and First Aid",
+          "slides": [
+            {
+              "id": "m4-s1",
+              "type": "text-graphic-split",
+              "title": "Chemical Spill Response",
+              "content": "## Responding to Chemical Spills\n\nChemical spills in hospitality premises can range from a small splash of sanitiser on the floor to a major leak of concentrated product from a damaged container. Your response must be proportionate to the scale and hazard.\n\n### Small spills (less than 1 litre of a known product)\n\n1. **Assess the hazard** - Check the label or SDS. Is the product corrosive, flammable, or toxic? This determines your response.\n2. **Put on appropriate PPE** before approaching the spill - at minimum, chemical-resistant gloves and eye protection.\n3. **Ventilate the area** - Open windows and doors. If the product is producing visible fumes, activate mechanical ventilation.\n4. **Contain the spill** - Use absorbent granules, pads, or a spill kit to stop the liquid spreading. Work from the edges inward.\n5. **Clean up** - Collect contaminated absorbent material and dispose of it as chemical waste (not in the general bin).\n6. **Decontaminate the area** - Wash the affected floor or surface with water (unless the SDS says otherwise).\n7. **Report** - Inform your supervisor and record the incident in the accident book.\n\n### Large spills (more than 1 litre, unknown product, or hazardous fumes)\n\n1. **Do NOT attempt to clean it up** unless you have specific training and equipment.\n2. **Evacuate** the immediate area and prevent others from entering.\n3. **Call emergency services (999)** if there are toxic fumes, fire risk, or anyone has been exposed.\n4. **Inform** your manager and site safety officer immediately.\n5. **Provide the SDS** to emergency responders so they know what they are dealing with.\n\n### Spill kits\n\nEvery area where chemicals are used or stored should have an accessible **spill kit** containing absorbent granules or pads, a dustpan and brush, disposal bags, and PPE (gloves and goggles).",
+              "keyTakeaway": "For small spills, don PPE and contain with absorbent material; for large spills or unknown products, evacuate the area and call for specialist help."
+            },
+            {
+              "id": "m4-s2",
+              "type": "text-graphic-split",
+              "title": "First Aid for Chemical Exposure",
+              "content": "## Immediate First Aid Responses\n\nThe first few minutes after chemical exposure are critical. The correct response depends on the route of exposure and the specific substance involved. Always check **Section 4 of the SDS** for product-specific first aid instructions.\n\n### Skin contact\n\n- **Remove contaminated clothing** immediately - do not pull clothing over the face if it is contaminated (cut it off if necessary).\n- **Flush the affected skin** with lukewarm running water for at least **20 minutes**. Use a drench shower if available.\n- Do NOT use hot water (opens pores and increases absorption) or chemical neutralisers (can cause additional reactions).\n- If a **chemical burn** is visible, cover loosely with a sterile dressing after flushing.\n- Seek medical attention and provide the SDS.\n\n### Eye contact\n\n- **Flush the eye immediately** with clean running water or an eye wash solution for at least **15-20 minutes**.\n- Hold the eyelid open and tilt the head so water runs from the inner corner outward (away from the unaffected eye).\n- **Remove contact lenses** if present and you can do so easily - do not delay flushing to remove them.\n- Do NOT rub the eye.\n- Seek **urgent medical attention** - chemical eye injuries are medical emergencies.\n\n### Inhalation\n\n- **Move the casualty to fresh air** immediately. Do NOT enter a contaminated atmosphere to rescue someone unless you have appropriate respiratory protection and training.\n- If the person is not breathing, call **999** and begin CPR if trained.\n- If breathing but unwell, place in a comfortable position and monitor until help arrives.\n\n### Ingestion\n\n- **Do NOT induce vomiting** - the chemical will cause further damage on the way back up.\n- **Do NOT give anything to drink** unless specifically instructed by the SDS or poison centre.\n- Call **999** immediately and provide the product name and SDS.\n- If the person is unconscious, place in the **recovery position**.",
+              "keyTakeaway": "For skin contact flush for 20 minutes, for eye contact flush for 15-20 minutes, for inhalation move to fresh air, for ingestion do NOT induce vomiting and call 999."
+            },
+            {
+              "id": "m4-s3",
+              "type": "text-graphic-split",
+              "title": "Incident Reporting and RIDDOR",
+              "content": "## Reporting Chemical Incidents\n\nAll chemical incidents - whether spills, splashes, exposure events, or near-misses - must be properly reported and recorded. This is both a legal requirement and essential for preventing future incidents.\n\n### Internal reporting\n\n- **Accident book** - Every workplace must have an accident book (or digital equivalent). Record all chemical incidents including: date, time, location, people involved, substance, what happened, injuries, first aid given, and corrective actions taken.\n- **Near-miss reporting** - Near-misses (events that could have caused harm but didn't) are just as important to report. They reveal weaknesses in your controls before someone gets hurt.\n- **Manager notification** - Inform your line manager and health and safety lead immediately after any chemical incident.\n\n### RIDDOR reporting\n\nThe **Reporting of Injuries, Diseases and Dangerous Occurrences Regulations 2013 (RIDDOR)** require certain incidents to be reported to the HSE. For chemical incidents, this includes:\n\n- **Deaths** resulting from chemical exposure.\n- **Specified injuries** - Burns covering more than 10% of the body, loss of sight, or chemical injury requiring immediate hospital treatment.\n- **Over-7-day incapacity** - If a worker cannot perform their normal duties for more than 7 consecutive days due to a chemical exposure.\n- **Occupational diseases** - Diagnosed occupational asthma or dermatitis caused by workplace substance exposure (reported by the employer when they receive a written diagnosis).\n- **Dangerous occurrences** - Uncontrolled release of a hazardous substance, accidental release of a biological agent, or collapse of a storage container.\n\n### RIDDOR reporting process\n\n- Report online at **www.hse.gov.uk/riddor** or by phone (for fatalities or major incidents).\n- Reports must be made **without delay** for deaths and specified injuries, or **within 15 days** for over-7-day incapacity.\n- Keep a record of all RIDDOR reports for at least **3 years**.",
+              "keyTakeaway": "All chemical incidents must be recorded in the accident book, and certain serious events such as chemical burns requiring hospital treatment must be reported to the HSE under RIDDOR."
+            },
+            {
+              "id": "m4-s4",
+              "type": "text-graphic-split",
+              "title": "Preventing Chemical Emergencies",
+              "content": "## Proactive Measures to Avoid Incidents\n\nThe best chemical emergency is one that never happens. Most chemical incidents in hospitality are preventable through proper systems, training, and vigilance.\n\n### Common causes of chemical incidents in hospitality\n\n- **Mixing incompatible chemicals** - The most dangerous example is bleach (sodium hypochlorite) mixed with acid-based products (descalers, vinegar-based cleaners), which releases toxic **chlorine gas**. Bleach mixed with ammonia-based products releases toxic **chloramine vapour**.\n- **Using chemicals at wrong concentration** - Over-concentrated solutions cause burns; under-concentrated solutions fail to clean or sanitise effectively.\n- **Decanting into unlabelled containers** - Staff cannot identify the product, check PPE requirements, or look up first aid measures.\n- **Inadequate training** - New or agency staff using chemicals without proper induction.\n- **PPE not available or not worn** - Correct PPE stored too far away, or staff taking shortcuts.\n\n### Prevention checklist\n\n- **COSHH assessment** is up to date and reviewed regularly.\n- **All chemicals labelled** - no unlabelled containers anywhere on site.\n- **SDS folder** is complete, accessible, and staff know where to find it.\n- **Auto-dosing systems** installed where possible to eliminate manual dilution.\n- **Spill kits** available and stocked in every area where chemicals are used.\n- **Eye wash stations** accessible within 10 seconds of travel from areas where corrosive or irritant chemicals are used.\n- **Training records** show all staff have received COSHH induction and refresher training.\n- **Incompatible chemicals** stored separately with clear signage.\n- **Emergency procedures** displayed and practised.\n\n### The supervisor's role\n\nSupervisors should conduct **regular walkthrough checks**: Are chemicals stored correctly? Is PPE being worn? Are labels intact? Are spill kits stocked? These quick checks catch problems before they become incidents.",
+              "keyTakeaway": "Most chemical emergencies are preventable - regular checks of labelling, storage, PPE availability, spill kit stocks, and staff training are the best defence."
+            },
+            {
+              "id": "m4-s5",
+              "type": "text-graphic-split",
+              "title": "Chemical Waste and Disposal",
+              "content": "## Safe Disposal of Hazardous Waste\n\nImproper disposal of chemicals and chemical waste is both a COSHH risk and an environmental offence under the **Environmental Protection Act 1990** and **Hazardous Waste Regulations 2005**.\n\n### What counts as chemical waste?\n\n- Empty chemical containers (if they contained hazardous products, the container is also hazardous waste).\n- Leftover or expired chemicals.\n- Contaminated materials from spill clean-ups (absorbent pads, cloths, granules).\n- Used PPE that has been contaminated with hazardous substances.\n- Rinse water from cleaning chemical equipment (if the product is classified as hazardous to the aquatic environment).\n\n### Disposal rules\n\n- **Check Section 13 of the SDS** for specific disposal instructions for each product.\n- **Never pour chemicals down drains** unless the SDS explicitly states this is safe at the diluted concentration. Many cleaning chemicals are toxic to aquatic life (indicated by the Environment GHS symbol).\n- **Never mix chemical wastes** - combining different chemicals for disposal can cause dangerous reactions.\n- **Segregate waste** into appropriate streams: hazardous liquid waste, contaminated solid waste (absorbent materials), and empty containers.\n- **Use a licensed waste carrier** for collection of hazardous waste. Your waste carrier should provide a **waste transfer note** or **consignment note** for hazardous waste, which you must keep for at least **3 years** (hazardous waste consignment notes: 3 years).\n\n### Triple-rinse procedure for empty containers\n\nSome chemical containers can be recycled if properly decontaminated using the triple-rinse method: fill the container one-quarter full with water, replace the cap, shake thoroughly, and pour the rinse water into the dilution system. Repeat three times. This is only suitable for certain products - check with your supplier.\n\n### Duty of care\n\nAs a waste producer, your business has a **duty of care** to ensure chemical waste is stored, transported, and disposed of properly. This duty continues until the waste reaches its final destination.",
+              "keyTakeaway": "Chemical waste must be segregated, never poured down drains unless the SDS permits it, and collected by a licensed waste carrier with proper documentation kept for 3 years."
+            }
+          ]
+        },
+        {
+          "id": "m4-l2",
+          "title": "Scenarios: Emergency Response",
+          "slides": [
+            {
+              "id": "m4-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Mixing Chemicals Gone Wrong",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You walk into the kitchen wash-up area and find a strong, acrid smell. A new team member is coughing and says they poured bleach into the sink to clean it, then added descaler to remove limescale at the same time. You can see a yellowish-green gas rising from the sink. What do you do first?",
+                    "options": [
+                      {
+                        "label": "Turn on the tap to dilute the mixture and wash it away.",
+                        "nextNodeId": "dilute_attempt"
+                      },
+                      {
+                        "label": "Get both of you out of the area immediately and into fresh air.",
+                        "nextNodeId": "evacuate"
+                      },
+                      {
+                        "label": "Open a window to clear the fumes and then assess the situation.",
+                        "nextNodeId": "open_window"
+                      }
+                    ]
+                  },
+                  "dilute_attempt": {
+                    "text": "❌ **Dangerous.** Adding water to a bleach-acid reaction can intensify the release of chlorine gas. You are also staying in a contaminated atmosphere to do it, increasing your own exposure. The priority is to remove yourself and the casualty from the toxic atmosphere.",
+                    "options": [
+                      { "label": "Leave the area immediately.", "nextNodeId": "evacuate" }
+                    ]
+                  },
+                  "open_window": {
+                    "text": "⚠️ **Partially correct but too slow.** Ventilation will help eventually, but your immediate priority is to get yourself and the coughing colleague out of the contaminated area. Every second in a chlorine gas environment increases the risk of serious respiratory damage. Evacuate first, ventilate from outside the area.",
+                    "options": [
+                      {
+                        "label": "Get out first, then ventilate remotely.",
+                        "nextNodeId": "evacuate"
+                      }
+                    ]
+                  },
+                  "evacuate": {
+                    "text": "Good - you guide your colleague out of the wash-up area into fresh air. They are still coughing and their eyes are watering. What do you do next?",
+                    "options": [
+                      {
+                        "label": "Sit them down and wait for the coughing to stop - they'll be fine.",
+                        "nextNodeId": "wait_it_out"
+                      },
+                      {
+                        "label": "Call 999, keep them in fresh air, prevent anyone else entering the area, and inform your manager.",
+                        "nextNodeId": "call_999"
+                      },
+                      {
+                        "label": "Send them back in with a wet cloth over their face to drain the sink.",
+                        "nextNodeId": "send_back"
+                      }
+                    ]
+                  },
+                  "wait_it_out": {
+                    "text": "⚠️ **Risky.** Chlorine gas exposure can cause delayed respiratory effects - symptoms may worsen over the following hours even after leaving the contaminated area. The casualty needs medical assessment. You should also prevent others from entering the area and call for appropriate help.",
+                    "options": [
+                      { "label": "Call 999 and get proper medical help.", "nextNodeId": "call_999" }
+                    ]
+                  },
+                  "send_back": {
+                    "text": "❌ **Extremely dangerous.** A wet cloth provides virtually no protection against chlorine gas. Sending an already-exposed person back into a toxic atmosphere could cause severe respiratory damage or worse. The area should not be re-entered until the gas has fully dispersed through ventilation.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "call_999": {
+                    "text": "You call 999, explain the chemical mixing incident, and describe the symptoms. The ambulance service is on its way. While waiting, what else should you do?",
+                    "options": [
+                      {
+                        "label": "Seal off the affected area, activate ventilation remotely if possible, and prepare the SDS documents for both products for the paramedics.",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "Nothing else - just wait for the ambulance.",
+                        "nextNodeId": "incomplete_response"
+                      }
+                    ]
+                  },
+                  "incomplete_response": {
+                    "text": "⚠️ **More action needed.** While waiting for emergency services, you should: prevent anyone entering the contaminated area (cordon it off or post someone at the entrance), activate ventilation from outside if possible, locate the SDS for both products (paramedics and hospital staff need this information), and keep monitoring the casualty. This incident will also need to be recorded in the accident book and may require RIDDOR reporting.",
+                    "options": [
+                      { "label": "Take those additional steps.", "nextNodeId": "correct_end" }
+                    ]
+                  },
+                  "correct_end": {
+                    "text": "✅ **Well done!** You followed the correct emergency sequence: evacuated the area, called 999, prevented further access, provided ventilation, and prepared the SDS information. The casualty receives medical treatment. Post-incident, you will need to: record this in the accident book, consider RIDDOR reporting, investigate the root cause (lack of training for the new team member), review the COSHH assessment, and ensure all staff receive refresher training on never mixing chemicals.",
+                    "options": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Chemical Splash to the Eye",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You are working in a hotel housekeeping area when a colleague calls out in pain. They were decanting concentrated bathroom cleaner (marked with the Corrosion and Exclamation Mark GHS symbols) into a spray bottle without wearing eye protection, and it splashed into their right eye. The eye wash station is 15 metres away down the corridor. What is your first action?",
+                    "options": [
+                      {
+                        "label": "Walk them to the eye wash station and begin flushing the eye.",
+                        "nextNodeId": "eyewash_station"
+                      },
+                      {
+                        "label": "Use the nearest tap or water bottle to begin flushing the eye immediately, then move to the eye wash station.",
+                        "nextNodeId": "immediate_flush"
+                      },
+                      {
+                        "label": "Tell them to blink rapidly to flush the chemical out naturally.",
+                        "nextNodeId": "blink_it"
+                      }
+                    ]
+                  },
+                  "blink_it": {
+                    "text": "❌ **Inadequate.** Blinking will not remove a corrosive chemical from the eye. Every second of delay allows the chemical to cause more damage to the cornea and conjunctiva. A corrosive substance can cause permanent blindness if not flushed immediately. You need a large volume of running water, not just blinking.",
+                    "options": [
+                      {
+                        "label": "Start flushing with the nearest available water immediately.",
+                        "nextNodeId": "immediate_flush"
+                      }
+                    ]
+                  },
+                  "eyewash_station": {
+                    "text": "⚠️ **Close, but the delay could worsen the injury.** Walking 15 metres takes precious seconds during which the corrosive chemical is actively damaging eye tissue. If there is any closer water source (tap, water bottle, even a drinking water cooler), use it to start flushing immediately while moving toward the eye wash station for sustained irrigation.",
+                    "options": [
+                      {
+                        "label": "Start with the nearest water source, then use the eye wash station.",
+                        "nextNodeId": "immediate_flush"
+                      }
+                    ]
+                  },
+                  "immediate_flush": {
+                    "text": "Good thinking. You grab a water bottle from the nearby desk and begin flushing the eye while guiding your colleague to the eye wash station. At the station, you position them so water flows across the eye from the inner corner outward. How long should you continue flushing?",
+                    "options": [
+                      { "label": "About 2-3 minutes should be enough.", "nextNodeId": "too_short" },
+                      {
+                        "label": "At least 15-20 minutes continuously.",
+                        "nextNodeId": "correct_duration"
+                      },
+                      {
+                        "label": "Until the pain stops, then they can go back to work.",
+                        "nextNodeId": "pain_based"
+                      }
+                    ]
+                  },
+                  "too_short": {
+                    "text": "❌ **Far too short.** For corrosive chemicals, the recommended flushing time is at least **15-20 minutes** of continuous water flow. A 2-3 minute flush will not adequately remove the chemical. Even if the person says the pain has reduced, you must continue flushing for the full duration - corrosive substances can continue causing damage even when diluted.",
+                    "options": [
+                      {
+                        "label": "Continue flushing for the full 15-20 minutes.",
+                        "nextNodeId": "correct_duration"
+                      }
+                    ]
+                  },
+                  "pain_based": {
+                    "text": "⚠️ **Unreliable measure.** Pain is not a good indicator of the severity of a chemical eye injury. Some corrosive chemicals can damage nerve endings, reducing pain while the injury worsens. The standard protocol is to flush for at least 15-20 minutes regardless of how the person feels, then seek medical attention.",
+                    "options": [
+                      {
+                        "label": "Continue flushing for the full 15-20 minutes.",
+                        "nextNodeId": "correct_duration"
+                      }
+                    ]
+                  },
+                  "correct_duration": {
+                    "text": "Correct - you flush for a full 20 minutes. During this time, you ask another colleague to call 999 and locate the SDS for the bathroom cleaner. After flushing, what are the next steps?",
+                    "options": [
+                      {
+                        "label": "Apply a clean, loose dressing to the eye, arrange urgent hospital transfer with the SDS, and record the incident.",
+                        "nextNodeId": "correct_end"
+                      },
+                      {
+                        "label": "The flushing was thorough - they can rest for a bit and see how it feels.",
+                        "nextNodeId": "no_hospital"
+                      }
+                    ]
+                  },
+                  "no_hospital": {
+                    "text": "❌ **A corrosive chemical splash to the eye is always a medical emergency.** Even after thorough flushing, the chemical may have caused damage to the cornea that worsens without treatment. The casualty must be seen at A&E or an eye hospital as soon as possible. Bring the SDS so medical staff know exactly which chemical is involved.",
+                    "options": [
+                      { "label": "Arrange urgent hospital transfer.", "nextNodeId": "correct_end" }
+                    ]
+                  },
+                  "correct_end": {
+                    "text": "✅ **Well done!** You responded correctly: flushed immediately with the nearest water, continued for 20 minutes at the eye wash station, called for medical help, and arranged hospital transfer with the SDS. Post-incident actions include: recording in the accident book, assessing whether RIDDOR applies (specified injury if sight is affected), investigating root cause (no eye protection worn during decanting), reviewing the COSHH assessment, and considering whether an auto-dosing system could eliminate the manual decanting step entirely.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Final Assessment",
+      "description": "Test your COSHH knowledge.",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "Final Assessment",
+          "slides": [
+            {
+              "id": "m5-quiz",
+              "type": "quiz",
+              "title": "Final Assessment"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "questionBanks": {
+    "final": [
+      {
+        "id": "q1",
+        "text": "What does COSHH stand for?",
+        "options": [
+          "Control of Sales and Health Hazards",
+          "Control of Substances Hazardous to Health",
+          "Conditions of Safety and Hazard Handling",
+          "Control of Standards for Hygiene and Health"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q2",
+        "text": "Which regulation specifically governs COSHH in the UK?",
+        "options": [
+          "The Health and Safety at Work etc. Act 1974",
+          "The Food Safety Act 1990",
+          "The COSHH Regulations 2002",
+          "The Environmental Protection Act 1990"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q3",
+        "text": "Which of the following is NOT classified as a hazardous substance under COSHH?",
+        "options": ["Flour dust", "Bleach", "Asbestos", "Carbon dioxide from drink dispensers"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q4",
+        "text": "How many sections does a Safety Data Sheet (SDS) contain?",
+        "options": ["8 sections", "12 sections", "16 sections", "20 sections"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q5",
+        "text": "The skull and crossbones GHS pictogram indicates that a substance is:",
+        "options": [
+          "An irritant that may cause skin redness",
+          "Acutely toxic and can cause death or serious harm",
+          "Corrosive to skin and eyes",
+          "Flammable and should be kept away from heat"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q6",
+        "text": "What is the correct order of the hierarchy of control, from most effective to least effective?",
+        "options": [
+          "PPE, ventilation, enclosure, substitution, elimination",
+          "Elimination, substitution, enclosure, ventilation, PPE",
+          "Substitution, elimination, PPE, ventilation, enclosure",
+          "Ventilation, enclosure, elimination, substitution, PPE"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q7",
+        "text": "PPE should be used as:",
+        "options": [
+          "The first line of defence against chemical hazards",
+          "A temporary measure until staff get used to the chemicals",
+          "The last resort after higher-level controls have been considered",
+          "A voluntary choice for employees who feel uncomfortable"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q8",
+        "text": "What toxic gas is produced when bleach is mixed with an acid-based product?",
+        "options": ["Carbon monoxide", "Chlorine gas", "Hydrogen sulphide", "Nitrogen dioxide"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q9",
+        "text": "Where should Safety Data Sheets be kept in the workplace?",
+        "options": [
+          "Locked in the manager's office for safekeeping",
+          "Accessible to all staff at all times",
+          "Stored with the supplier until needed",
+          "Only available digitally on the company intranet"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q10",
+        "text": "Which section of the SDS provides first aid measures?",
+        "options": [
+          "Section 2 - Hazard Identification",
+          "Section 4 - First Aid Measures",
+          "Section 7 - Handling and Storage",
+          "Section 8 - Exposure Controls"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q11",
+        "text": "Which section of the SDS should you check first when selecting PPE?",
+        "options": [
+          "Section 1 - Product Identification",
+          "Section 5 - Firefighting Measures",
+          "Section 8 - Exposure Controls and PPE",
+          "Section 13 - Disposal Considerations"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q12",
+        "text": "What are the two signal words used on GHS labels?",
+        "options": [
+          "CAUTION and ALERT",
+          "DANGER and WARNING",
+          "HAZARD and RISK",
+          "TOXIC and HARMFUL"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q13",
+        "text": "Who enforces COSHH regulations in hospitality and leisure premises?",
+        "options": [
+          "The Fire Service",
+          "Local authority Environmental Health Officers",
+          "Trading Standards",
+          "Ofsted"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q14",
+        "text": "What is a Workplace Exposure Limit (WEL)?",
+        "options": [
+          "The maximum number of chemicals allowed in a workplace",
+          "The maximum airborne concentration of a substance a worker can be exposed to",
+          "The maximum amount of time a worker can handle chemicals per day",
+          "The maximum fine for a COSHH breach"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q15",
+        "text": "What does an 8-hour TWA (Time-Weighted Average) measure?",
+        "options": [
+          "The average temperature in a chemical store over 8 hours",
+          "The average airborne concentration of a substance over an 8-hour working day",
+          "The time it takes for a chemical to become hazardous after opening",
+          "The average number of chemical incidents per 8-hour shift"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q16",
+        "text": "What does a 15-minute STEL (Short-Term Exposure Limit) protect against?",
+        "options": [
+          "Long-term cumulative effects of low-level exposure",
+          "Acute effects from short bursts of high concentration exposure",
+          "Skin contact lasting more than 15 minutes",
+          "Exposure while eating lunch breaks"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q17",
+        "text": "Chemicals should be stored in the workplace:",
+        "options": [
+          "On any available shelf for easy access",
+          "In a locked, ventilated cupboard away from food areas",
+          "In the kitchen so they are close to where they are needed",
+          "In the staff changing room for convenience"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q18",
+        "text": "Why should chemical containers be stored below waist height?",
+        "options": [
+          "To make them easier to reach for shorter staff",
+          "To prevent splashes to the face and eyes if a container is dropped",
+          "To keep them out of sight of customers",
+          "To ensure they stay at the correct temperature"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q19",
+        "text": "Incompatible chemicals such as acids and bleach should be:",
+        "options": [
+          "Stored together but on different shelves for efficiency",
+          "Stored separately with clear segregation to prevent reactions",
+          "Mixed before storage to neutralise them",
+          "Stored in the same locked cupboard but in different containers"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q20",
+        "text": "Who must provide PPE to employees?",
+        "options": [
+          "The employee must buy their own PPE",
+          "The employer must provide PPE free of charge",
+          "The chemical supplier must provide PPE with each delivery",
+          "The HSE distributes PPE to all workplaces annually"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q21",
+        "text": "Why are nitrile gloves preferred over latex for chemical handling?",
+        "options": [
+          "They are less expensive than latex gloves",
+          "They provide better chemical resistance and avoid latex allergy risks",
+          "They are thinner and allow better dexterity",
+          "They are available in more colour options for colour-coding"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q22",
+        "text": "What is the 'breakthrough time' for chemical gloves?",
+        "options": [
+          "How long the gloves take to put on",
+          "How long the glove resists a chemical before it permeates through",
+          "How long the gloves last before they need replacing due to wear",
+          "How long it takes for a chemical to wash off the glove surface"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q23",
+        "text": "Respiratory PPE such as half-face respirators require:",
+        "options": [
+          "No special fitting - one size fits all",
+          "Face-fit testing to ensure an adequate seal",
+          "Only a visual check that the mask covers the nose and mouth",
+          "Approval from the chemical supplier before use"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q24",
+        "text": "A standard FFP2 dust mask protects against:",
+        "options": [
+          "Chemical vapours and gases",
+          "All types of airborne hazard",
+          "Airborne particles and dust only",
+          "Oxygen-deficient atmospheres"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q25",
+        "text": "What is the most common route of occupational exposure to hazardous substances?",
+        "options": ["Ingestion", "Skin absorption", "Inhalation", "Injection through wounds"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q26",
+        "text": "Which of these is a recognised cause of occupational asthma in bakeries and kitchens?",
+        "options": [
+          "Carbon dioxide from fridges",
+          "Flour dust",
+          "Cooking oil at room temperature",
+          "Washing-up liquid"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q27",
+        "text": "What is the correct procedure when diluting a concentrated chemical?",
+        "options": [
+          "Add water to the chemical concentrate",
+          "Add chemical concentrate to water",
+          "Mix equal parts in any order",
+          "Use hot water for faster mixing"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q28",
+        "text": "Manufacturer's dilution ratios should be:",
+        "options": [
+          "Doubled for more effective cleaning results",
+          "Followed exactly as specified on the label and SDS",
+          "Adjusted based on personal experience with the product",
+          "Halved to make the product last longer and save costs"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q29",
+        "text": "Chemicals must NEVER be decanted into:",
+        "options": [
+          "Clearly labelled secondary containers",
+          "Auto-dosing dispensing systems",
+          "Unmarked or unlabelled containers",
+          "Containers approved by the manufacturer"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q30",
+        "text": "What should you do BEFORE approaching a small chemical spill?",
+        "options": [
+          "Mop it up quickly with the nearest cloth",
+          "Put on appropriate PPE as indicated by the product label or SDS",
+          "Taste it to identify what it is",
+          "Cover it with newspaper to absorb it"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q31",
+        "text": "For a large chemical spill with hazardous fumes, the first action should be:",
+        "options": [
+          "Attempt to clean it up using the spill kit",
+          "Evacuate the area and prevent others from entering",
+          "Open windows and continue working",
+          "Take a photograph for the incident report"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q32",
+        "text": "A spill kit should contain:",
+        "options": [
+          "A mop, bucket, and standard household cleaner",
+          "Absorbent granules or pads, disposal bags, and PPE",
+          "A fire extinguisher and first aid kit",
+          "Neutralising chemicals and pH testing strips"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q33",
+        "text": "If a corrosive chemical splashes onto your skin, you should:",
+        "options": [
+          "Apply a neutralising cream immediately",
+          "Flush with lukewarm running water for at least 20 minutes",
+          "Rub the area vigorously with a dry cloth",
+          "Apply ice to the affected area"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q34",
+        "text": "When flushing a chemical from the eye, water should flow:",
+        "options": [
+          "Directly into the centre of the eyeball from close range",
+          "From the inner corner of the eye outward, away from the unaffected eye",
+          "From the outer corner inward toward the nose",
+          "In any direction as long as water covers the eye"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q35",
+        "text": "For how long should you flush the eye after a chemical splash from a corrosive product?",
+        "options": ["2-3 minutes", "5-10 minutes", "At least 15-20 minutes", "60 minutes minimum"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q36",
+        "text": "If someone swallows a chemical, you should:",
+        "options": [
+          "Induce vomiting immediately to remove the chemical",
+          "Give them milk to dilute the substance",
+          "Call 999, do NOT induce vomiting, and provide the SDS",
+          "Give them plenty of water and wait for symptoms to appear"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q37",
+        "text": "If a colleague is overcome by fumes and collapses in a chemical area, you should:",
+        "options": [
+          "Rush in to pull them out immediately",
+          "Only enter with appropriate respiratory protection and training, or call 999",
+          "Throw water into the area to dilute the fumes",
+          "Shout instructions to them from outside the area"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q38",
+        "text": "What does RIDDOR stand for?",
+        "options": [
+          "Regulation of Industrial Disease, Damage, and Occupational Risks",
+          "Reporting of Injuries, Diseases and Dangerous Occurrences Regulations",
+          "Record of Incidents and Dangerous Discharge of Regulated Substances",
+          "Requirements for Industrial and Domestic Operations and Reporting"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q39",
+        "text": "Under RIDDOR, which chemical incident must be reported to the HSE?",
+        "options": [
+          "A small sanitiser spill that was cleaned up in 5 minutes",
+          "A worker absent for 2 days with a headache after chemical exposure",
+          "Chemical burns requiring immediate hospital treatment",
+          "A near-miss where chemicals were stored in the wrong cupboard"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q40",
+        "text": "How long must RIDDOR reports be kept on record?",
+        "options": ["6 months", "1 year", "3 years", "10 years"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q41",
+        "text": "Who has the primary duty to carry out a COSHH risk assessment?",
+        "options": [
+          "The employee who uses the chemicals",
+          "The employer",
+          "The chemical supplier",
+          "The Health and Safety Executive"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q42",
+        "text": "A COSHH risk assessment should be reviewed:",
+        "options": [
+          "Only when the HSE requests an inspection",
+          "Every 10 years as a legal minimum",
+          "Regularly, and after any incident, process change, or new substance introduction",
+          "Only when a new employee joins the company"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q43",
+        "text": "What is 'substitution' in the hierarchy of control?",
+        "options": [
+          "Replacing a trained worker with an untrained one for chemical tasks",
+          "Using additional PPE when the primary PPE is unavailable",
+          "Replacing a hazardous substance with a less hazardous alternative",
+          "Swapping shifts so different staff are exposed on different days"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q44",
+        "text": "An auto-dosing system for cleaning chemicals is an example of which control measure?",
+        "options": [
+          "Elimination",
+          "Administrative control",
+          "Engineering control (enclosure)",
+          "Personal protective equipment"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q45",
+        "text": "A closed dispensing system for chemicals reduces risk by:",
+        "options": [
+          "Making chemicals smell less noticeable",
+          "Preventing staff from handling concentrated product",
+          "Extending the shelf life of chemicals",
+          "Reducing the cost of chemical products"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q46",
+        "text": "Ventilation as a COSHH control works by:",
+        "options": [
+          "Cooling the workplace to make chemical work more comfortable",
+          "Removing or diluting airborne hazardous substances",
+          "Making hazardous fumes invisible so they are less alarming",
+          "Increasing air pressure to prevent chemicals from evaporating"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q47",
+        "text": "Which of these is an employee duty under the COSHH Regulations?",
+        "options": [
+          "Carry out the COSHH risk assessment",
+          "Purchase their own PPE",
+          "Use control measures and PPE as instructed and report defects",
+          "Write the company COSHH policy"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q48",
+        "text": "What penalty can be imposed for serious COSHH non-compliance?",
+        "options": [
+          "A verbal warning only",
+          "A fixed penalty notice of up to £200",
+          "Criminal prosecution with unlimited fines",
+          "A 12-month suspension of the business licence"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q49",
+        "text": "The GHS corrosion pictogram indicates a substance that can:",
+        "options": [
+          "Catch fire easily when exposed to heat or sparks",
+          "Cause severe burns to skin, eyes, or corrode metals",
+          "Cause long-term health effects such as cancer",
+          "Harm aquatic life if released into the environment"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q50",
+        "text": "The GHS health hazard pictogram (silhouette of a person) indicates:",
+        "options": [
+          "The substance is an irritant",
+          "The substance can cause acute toxicity and death",
+          "The substance may cause serious long-term effects such as cancer or organ damage",
+          "The substance is explosive under pressure"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q51",
+        "text": "The GHS gas cylinder pictogram warns that a substance:",
+        "options": [
+          "Is flammable and must be kept away from ignition sources",
+          "Is a gas under pressure that may explode if heated",
+          "Is corrosive and will damage containers over time",
+          "Contains a biological hazard"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q52",
+        "text": "What is the 8-hour TWA Workplace Exposure Limit for carbon dioxide?",
+        "options": ["500 ppm", "1,000 ppm", "5,000 ppm", "15,000 ppm"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q53",
+        "text": "Carbon dioxide in beer cellars is a COSHH hazard because it can:",
+        "options": [
+          "Make drinks taste flat and reduce product quality",
+          "Displace oxygen in enclosed spaces, leading to asphyxiation",
+          "Corrode metal pipes and fittings over time",
+          "Cause allergic reactions in sensitive individuals"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q54",
+        "text": "Which of these is a biological agent covered by COSHH?",
+        "options": [
+          "Oven cleaner concentrate",
+          "Flour dust",
+          "Legionella bacteria in water systems",
+          "Carbon dioxide gas"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q55",
+        "text": "Dermatitis caused by workplace chemical exposure is classified as:",
+        "options": [
+          "A minor inconvenience that does not require reporting",
+          "An occupational disease that may require RIDDOR reporting",
+          "A personal hygiene issue that is the worker's responsibility",
+          "A temporary condition that always resolves without treatment"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q56",
+        "text": "Health surveillance for workers exposed to COSHH substances may include:",
+        "options": [
+          "Annual fitness tests and BMI checks",
+          "Skin checks for dermatitis and lung function tests",
+          "Blood pressure monitoring and cholesterol screening",
+          "Vision tests and hearing assessments"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q57",
+        "text": "How long must health surveillance records be kept?",
+        "options": [
+          "5 years from the date of the last entry",
+          "10 years from the date of the last entry",
+          "40 years from the date of the last entry",
+          "Indefinitely - they must never be destroyed"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q58",
+        "text": "Which of these is NOT a route of entry for hazardous substances into the body?",
+        "options": [
+          "Inhalation through the respiratory system",
+          "Absorption through intact skin",
+          "Radiation from nearby electronic devices",
+          "Ingestion through the mouth"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q59",
+        "text": "Occupational asthma from flour dust exposure is caused by which route of entry?",
+        "options": ["Skin absorption", "Inhalation", "Ingestion", "Eye contact"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q60",
+        "text": "Why should you cover open wounds before handling chemicals?",
+        "options": [
+          "To prevent chemicals from staining the wound",
+          "Because chemicals can enter the bloodstream directly through broken skin",
+          "To keep the wound clean for cosmetic reasons",
+          "Because it is more comfortable than leaving the wound exposed"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q61",
+        "text": "After handling chemicals, you should:",
+        "options": [
+          "Continue working and wash your hands at your next scheduled break",
+          "Immediately wash your hands thoroughly with soap and water",
+          "Wipe your hands on your apron to remove any residue",
+          "Use hand sanitiser gel as an adequate substitute for hand washing"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q62",
+        "text": "What should you do if you discover a chemical product that has passed its expiry date?",
+        "options": [
+          "Continue using it - expiry dates are only guidelines",
+          "Double the concentration to compensate for reduced effectiveness",
+          "Remove it from use, dispose of it properly, and order a replacement",
+          "Decant it into a new container and relabel with a future date"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q63",
+        "text": "What is the purpose of a near-miss report for a chemical incident?",
+        "options": [
+          "To assign blame to the person responsible for the near-miss",
+          "To identify weaknesses in controls before someone is actually harmed",
+          "To satisfy insurance requirements for premium calculations",
+          "To track how many times staff make mistakes each month"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q64",
+        "text": "When mixing bleach with ammonia-based products, the toxic gas released is:",
+        "options": ["Carbon monoxide", "Chlorine gas", "Chloramine vapour", "Hydrogen cyanide"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q65",
+        "text": "An eye wash station should be accessible within what distance from areas where corrosive chemicals are used?",
+        "options": [
+          "Within 30 seconds of travel",
+          "Within 10 seconds of travel",
+          "Within 5 minutes of travel",
+          "In the same building but any location is acceptable"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q66",
+        "text": "What should be done with chemical waste such as contaminated absorbent pads from a spill?",
+        "options": [
+          "Place them in the general waste bin",
+          "Wash them and reuse them for the next spill",
+          "Dispose of them as hazardous chemical waste in designated containers",
+          "Leave them to dry in the sun, then dispose of as general waste"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q67",
+        "text": "Under the Environmental Protection Act 1990, businesses have a duty of care regarding chemical waste to:",
+        "options": [
+          "Keep waste on site indefinitely to avoid transport costs",
+          "Ensure it is stored, transported, and disposed of properly by licensed carriers",
+          "Dispose of it in the most convenient and cost-effective manner",
+          "Pass all responsibility to the waste carrier once it leaves the premises"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q68",
+        "text": "How long must hazardous waste consignment notes be kept?",
+        "options": ["6 months", "1 year", "3 years", "5 years"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q69",
+        "text": "Chemicals should never be poured down drains because:",
+        "options": [
+          "It may damage the plumbing and require expensive repairs",
+          "Many chemicals are hazardous to aquatic life and the environment",
+          "Drain water is recycled for drinking and chemicals would contaminate it",
+          "It is always illegal to put any liquid down a drain"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q70",
+        "text": "The GHS environment pictogram (dead fish and tree) indicates:",
+        "options": [
+          "The product is made from natural, organic ingredients",
+          "The substance is hazardous to aquatic life",
+          "The product is biodegradable and safe for the environment",
+          "The substance is only harmful to marine life, not freshwater"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q71",
+        "text": "When should a COSHH risk assessment be updated for a new product?",
+        "options": [
+          "Within 6 months of introducing the new product",
+          "Before the product is used for the first time",
+          "At the next annual review date",
+          "Only if a worker reports an adverse reaction to the product"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q72",
+        "text": "What training must be provided to staff before they use a new hazardous product?",
+        "options": [
+          "Reading the product label aloud to the team is sufficient",
+          "A full day of off-site classroom training",
+          "Information on hazards, safe use, dilution, PPE, storage, spill procedure, and first aid",
+          "No training is needed if staff have general COSHH awareness"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q73",
+        "text": "Which is the best example of 'elimination' as a COSHH control?",
+        "options": [
+          "Providing better gloves for handling the chemical",
+          "Installing an extraction fan above the chemical mixing area",
+          "Switching from chemical pest control to physical traps",
+          "Training staff to use the chemical more carefully"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q74",
+        "text": "Switching from a powdered cleaning product to a liquid form is an example of:",
+        "options": [
+          "Elimination - removing the substance entirely",
+          "Substitution - replacing with a less hazardous form",
+          "Enclosure - containing the substance",
+          "PPE - providing respiratory protection"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q75",
+        "text": "Administrative controls for COSHH include:",
+        "options": [
+          "Installing auto-dosing dispensing systems",
+          "Rotating staff through high-exposure tasks and scheduling chemical cleaning when fewer people are present",
+          "Providing nitrile gloves and safety goggles",
+          "Replacing a caustic cleaner with a pH-neutral alternative"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q76",
+        "text": "What type of glove should be used for cleaning drains with concentrated caustic product?",
+        "options": [
+          "Standard latex food-preparation gloves",
+          "Thin nitrile examination gloves",
+          "Rubber or PVC chemical-resistant gauntlets with long cuffs",
+          "Cotton gardening gloves with a waterproof lining"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q77",
+        "text": "Single-use nitrile gloves should be:",
+        "options": [
+          "Washed and reused for the entire shift to reduce waste",
+          "Changed after each chemical handling task and disposed of",
+          "Shared between team members working on the same task",
+          "Turned inside out and reused once before disposal"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q78",
+        "text": "What should you do if you notice a tear in your chemical-resistant apron?",
+        "options": [
+          "Tape over the tear and continue using it",
+          "Report the damage immediately and request a replacement",
+          "Turn the apron around so the tear is at the back",
+          "Carry on - the apron still provides partial protection"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q79",
+        "text": "Exposure monitoring records for substances that cause cancer or asthma must be kept for:",
+        "options": ["5 years", "10 years", "30 years", "40 years"],
+        "correctAnswer": 3
+      },
+      {
+        "id": "q80",
+        "text": "A worker develops a persistent cough and wheezing that worsens during work shifts in the bakery. This may indicate:",
+        "options": [
+          "A common cold that will pass in a few days",
+          "Possible occupational asthma from flour dust exposure requiring health surveillance",
+          "Stress-related symptoms unrelated to the workplace",
+          "Normal adjustment to a dusty environment that does not require action"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q81",
+        "text": "What is the HSE publication that lists all UK Workplace Exposure Limits?",
+        "options": [
+          "EH40 - Workplace Exposure Limits",
+          "L8 - Legionella and Legionnaires' Disease",
+          "INDG136 - COSHH: A Brief Guide",
+          "ACOP L5 - Control of Substances"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q82",
+        "text": "If workplace air monitoring shows a substance exceeds its WEL, the employer must:",
+        "options": [
+          "Gradually reduce exposure over the next 12 months",
+          "Take immediate action to bring exposure below the WEL",
+          "Inform staff and let them decide whether to continue working",
+          "Only take action if the WEL is exceeded for more than 3 consecutive days"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q83",
+        "text": "The CLP Regulation in the UK implements:",
+        "options": [
+          "The COSHH Regulations for workplace chemical use",
+          "The Globally Harmonized System of Classification and Labelling of Chemicals",
+          "The RIDDOR requirements for chemical incident reporting",
+          "The Environmental Protection Act provisions for waste disposal"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q84",
+        "text": "Which of the following is an employer duty under COSHH Regulation 9?",
+        "options": [
+          "Providing COSHH training to all new employees within 30 days",
+          "Maintaining all control measures in good working order and repair",
+          "Carrying out annual RIDDOR inspections of chemical storage",
+          "Publishing WEL monitoring results on the company noticeboard"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q85",
+        "text": "A hotel housekeeping team uses bathroom descaler daily. Which of the following vulnerable groups should be specifically considered in the COSHH assessment?",
+        "options": [
+          "Staff who commute by public transport",
+          "Staff who work night shifts",
+          "Pregnant workers and those with asthma or skin conditions",
+          "Staff approaching retirement age"
+        ],
+        "correctAnswer": 2
+      }
+    ]
+  }
+}

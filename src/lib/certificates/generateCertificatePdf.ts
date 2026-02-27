@@ -1,43 +1,13 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 export interface CertificateData {
   candidate_name: string;
   course_title: string;
-  site_name: string;
-  company_name: string;
   completion_date: string;
   expiry_date: string;
+  organisation: string;
   certificate_number: string;
-  score_percentage: number;
 }
-
-// A4 Landscape coordinates (points, origin bottom-left)
-const COORDS = {
-  // Page center X for A4 landscape
-  centerX: 420.94,
-  
-  // Main content
-  candidateNameY: 330,
-  courseTitleY: 265,
-  siteNameY: 230,
-  
-  // Footer row (3 columns)
-  completionX: 170,
-  expiryX: 420.94,
-  certIdX: 672,
-  footerY: 145,
-  
-  // Score badge (optional position)
-  scoreX: 720,
-  scoreY: 330,
-  
-  // Max widths for shrink-to-fit
-  nameMaxWidth: 680,
-  courseMaxWidth: 650,
-  siteMaxWidth: 500,
-};
 
 /**
  * Shrink font size until text fits within maxWidth
@@ -73,73 +43,72 @@ function drawCentered(
 }
 
 /**
- * Generate certificate PDF bytes
+ * Generate certificate PDF bytes by stamping dynamic data onto a template.
+ *
+ * @param data   – the dynamic certificate fields
+ * @param templateBytes – raw bytes of the base PDF template
  */
-export async function generateCertificatePdf(data: CertificateData): Promise<Uint8Array> {
-  // Load template from private directory (not publicly accessible)
-  const templatePath = path.join(
-    process.cwd(),
-    "private",
-    "certificates",
-    "teamly_certificate_template.pdf"
-  );
-  const templateBytes = await readFile(templatePath);
-
+export async function generateCertificatePdf(
+  data: CertificateData,
+  templateBytes: Uint8Array | Buffer
+): Promise<Uint8Array> {
   const pdfDoc = await PDFDocument.load(templateBytes);
   const page = pdfDoc.getPage(0);
+  const { width, height } = page.getSize();
+
+  // Centre X of the page
+  const centerX = width / 2;
 
   // Embed fonts
-  const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-  const fontSerif = await pdfDoc.embedFont(StandardFonts.TimesRoman);
-  const fontSerifBold = await pdfDoc.embedFont(StandardFonts.TimesBold);
+  const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
-  // Colors
-  const primaryInk = rgb(0.06, 0.09, 0.16);    // Dark text
-  const secondaryInk = rgb(0.35, 0.42, 0.49);  // Muted text
-  const accentColor = rgb(0.91, 0.29, 0.51);   // Opsly pink for score
+  // Colours
+  const primaryInk = rgb(0.15, 0.15, 0.15);   // Near-black for main text
+  const secondaryInk = rgb(0.35, 0.35, 0.40);  // Muted for lighter values
+
+  // ── Max widths for shrink-to-fit (relative to page width) ──
+  const nameMaxWidth = width * 0.65;
+  const courseMaxWidth = width * 0.60;
+  const footerMaxWidth = width * 0.20;
+
+  // ── Coordinates (proportional to page size) ──
+  // These are tuned against the clean teamly template (≈940 x 660 or A4-ish landscape).
+  // Y values are from the bottom (PDF origin).
+
+  const candidateNameY = height * 0.555;   // Between "This is to certify that" and "has successfully completed"
+  const courseTitleY = height * 0.435;     // Between "has successfully completed" and "Completed on"
+  const completionDateY = height * 0.315;  // Below "Completed on"
+
+  // Footer: 3 columns – values sit just above the label text / lines
+  const footerY = height * 0.175;
+  const footerLeftX = width * 0.215;       // ISSUED BY column
+  const footerCenterX = width * 0.50;      // ORGANISATION column
+  const footerRightX = width * 0.80;       // CERTIFICATE ID column
 
   // === CANDIDATE NAME ===
-  const nameSize = shrinkToFit(fontSerifBold, data.candidate_name, COORDS.nameMaxWidth, 42, 24);
-  drawCentered(page, fontSerifBold, data.candidate_name, COORDS.centerX, COORDS.candidateNameY, nameSize, primaryInk);
+  const nameSize = shrinkToFit(fontBold, data.candidate_name, nameMaxWidth, 32, 18);
+  drawCentered(page, fontBold, data.candidate_name, centerX, candidateNameY, nameSize, primaryInk);
 
   // === COURSE TITLE ===
-  const courseSize = shrinkToFit(fontBold, data.course_title, COORDS.courseMaxWidth, 22, 14);
-  drawCentered(page, fontBold, data.course_title, COORDS.centerX, COORDS.courseTitleY, courseSize, primaryInk);
+  const courseSize = shrinkToFit(fontBold, data.course_title, courseMaxWidth, 20, 12);
+  drawCentered(page, fontBold, data.course_title, centerX, courseTitleY, courseSize, primaryInk);
 
-  // === SITE & COMPANY ===
-  const siteText = `${data.site_name} • ${data.company_name}`;
-  const siteSize = shrinkToFit(fontRegular, siteText, COORDS.siteMaxWidth, 14, 10);
-  drawCentered(page, fontRegular, siteText, COORDS.centerX, COORDS.siteNameY, siteSize, secondaryInk);
+  // === COMPLETION DATE ===
+  const dateSize = 14;
+  drawCentered(page, fontBold, data.completion_date, centerX, completionDateY, dateSize, primaryInk);
 
-  // === FOOTER ROW: Completion Date | Expiry Date | Certificate ID ===
-  
-  // Labels (smaller, above values)
-  const labelSize = 9;
-  const labelY = COORDS.footerY + 18;
-  drawCentered(page, fontRegular, "COMPLETED", COORDS.completionX, labelY, labelSize, secondaryInk);
-  drawCentered(page, fontRegular, "VALID UNTIL", COORDS.expiryX, labelY, labelSize, secondaryInk);
-  drawCentered(page, fontRegular, "CERTIFICATE ID", COORDS.certIdX, labelY, labelSize, secondaryInk);
-  
-  // Values
-  const valueSize = 12;
-  drawCentered(page, fontBold, data.completion_date, COORDS.completionX, COORDS.footerY, valueSize, primaryInk);
-  drawCentered(page, fontBold, data.expiry_date, COORDS.expiryX, COORDS.footerY, valueSize, primaryInk);
-  drawCentered(page, fontBold, data.certificate_number, COORDS.certIdX, COORDS.footerY, valueSize, primaryInk);
+  // === FOOTER: Issuer Name | Organisation | Certificate ID ===
+  const footerSize = 11;
 
-  // === SCORE BADGE (top right) ===
-  const scoreText = `${data.score_percentage}%`;
-  const scoreSize = 28;
-  const scoreWidth = fontBold.widthOfTextAtSize(scoreText, scoreSize);
-  page.drawText(scoreText, {
-    x: COORDS.scoreX - scoreWidth / 2,
-    y: COORDS.scoreY,
-    size: scoreSize,
-    font: fontBold,
-    color: accentColor,
-  });
-  // "SCORE" label below
-  drawCentered(page, fontRegular, "SCORE", COORDS.scoreX, COORDS.scoreY - 18, 10, secondaryInk);
+  const expirySize = shrinkToFit(fontRegular, data.expiry_date, footerMaxWidth, footerSize, 8);
+  drawCentered(page, fontRegular, data.expiry_date, footerLeftX, footerY, expirySize, secondaryInk);
+
+  const orgSize = shrinkToFit(fontRegular, data.organisation, footerMaxWidth, footerSize, 8);
+  drawCentered(page, fontRegular, data.organisation, footerCenterX, footerY, orgSize, secondaryInk);
+
+  const certIdSize = shrinkToFit(fontRegular, data.certificate_number, footerMaxWidth, footerSize, 8);
+  drawCentered(page, fontRegular, data.certificate_number, footerRightX, footerY, certIdSize, secondaryInk);
 
   return await pdfDoc.save();
 }

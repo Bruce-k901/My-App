@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 // Email sending (Resend) with safe fallback-to-log if keys aren't configured.
 export async function POST(req: Request) {
   try {
-    const { to, subject, body, html } = await req.json()
+    const { to, subject, body, html, bcc } = await req.json()
 
     if (!to || !subject) {
       return NextResponse.json({ error: 'Missing to or subject' }, { status: 400 })
@@ -40,7 +40,8 @@ export async function POST(req: Request) {
             to: [recipient],
             subject,
             text: body || (typeof html === 'string' ? html.replace(/<[^>]*>/g, '') : ''),
-            html: html || body
+            html: html || body,
+            ...(bcc ? { bcc: Array.isArray(bcc) ? bcc : [bcc] } : {}),
           })
         })
         if (!resp.ok) {

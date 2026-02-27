@@ -1,0 +1,1540 @@
+{
+  "id": "uk-l2-manual-handling",
+  "title": "Manual Handling Level 2 (UK)",
+  "shortDescription": "Safe lifting techniques, TILE assessments, and injury prevention in the workplace.",
+  "description": "Comprehensive manual handling course covering legal requirements, the TILE risk assessment framework, safe lifting techniques, team handling, and use of mechanical aids.",
+  "version": "2.0.0",
+  "refresherYears": 1,
+  "certificateTemplateId": "cert-l2-manual-handling",
+  "category": "workplace-safety",
+  "level": "Level 2",
+  "estimatedMinutes": 180,
+  "icon": "Package",
+  "tags": [
+    "manual handling",
+    "lifting",
+    "TILE",
+    "back injury",
+    "risk assessment",
+    "ergonomics",
+    "MSDs",
+    "MHOR"
+  ],
+  "learningOutcomes": [
+    "Understand the legal requirements for manual handling under the Manual Handling Operations Regulations 1992",
+    "Apply the TILE assessment framework to evaluate manual handling risks",
+    "Demonstrate safe lifting, carrying, pushing, and pulling techniques",
+    "Recognise when to use mechanical aids or team lifting",
+    "Identify musculoskeletal disorders and repetitive strain injuries caused by poor manual handling",
+    "Report injuries and near misses through the correct channels"
+  ],
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Introduction and Legal Framework",
+      "description": "Why manual handling injuries are so common and the law that protects you.",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "title": "Introduction",
+          "slides": [
+            {
+              "id": "m1-s1",
+              "type": "text-graphic-split",
+              "title": "Welcome",
+              "content": "## Manual Handling Level 2 (UK)\n\nManual handling injuries account for over **30% of all workplace injuries** reported to the HSE each year. In hospitality alone, thousands of workers suffer back injuries, muscle strains, and repetitive strain injuries that can be debilitating and career-ending.\n\n### What you'll learn\n- **The law** -- Manual Handling Operations Regulations 1992 and employer/employee duties.\n- **TILE framework** -- Task, Individual, Load, Environment -- the industry-standard risk assessment tool.\n- **Safe technique** -- Kinetic lifting, stable base, smooth movements, and correct posture.\n- **Team handling** -- Coordination, communication, and shared lifts.\n- **Mechanical aids** -- Trolleys, hoists, pallet trucks, and kitchen-specific equipment.\n- **MSDs and RSI** -- Recognising musculoskeletal disorders and repetitive strain injuries.\n- **Reporting** -- RIDDOR, accident books, and near-miss reporting.\n\nThis course will give you the knowledge and confidence to protect yourself and your colleagues every shift.",
+              "keyTakeaway": "Over 30% of all workplace injuries are caused by manual handling -- most are entirely preventable with the right knowledge."
+            },
+            {
+              "id": "m1-s2",
+              "type": "text-graphic-split",
+              "title": "The Scale of the Problem",
+              "content": "## Why Manual Handling Training Matters\n\nThe Health and Safety Executive (HSE) publishes statistics every year that highlight the scale of the problem:\n\n### Key UK Statistics\n- **470,000+** workers suffer from work-related musculoskeletal disorders (MSDs) annually.\n- **6.6 million** working days are lost each year due to MSDs.\n- **Manual handling** is the single largest cause of over-3-day injuries reported under RIDDOR.\n- Back injuries alone cost UK businesses an estimated **GBP 1 billion** per year.\n\n### In Hospitality and Catering\n- Chefs and kitchen porters regularly handle loads of 20-30kg (flour sacks, stock pots, delivery crates).\n- Repetitive tasks like plating, chopping, and carrying trays cause cumulative strain.\n- Wet floors, cramped spaces, and time pressure increase the risk of accidents.\n- Bar staff lift kegs (up to 50kg), cases of bottles, and move furniture for events.\n\n### The Human Cost\nBeyond statistics, a serious back injury can end a career, affect your ability to play with your children, and cause chronic pain for life. Prevention is always better than treatment.",
+              "keyTakeaway": "470,000 UK workers suffer musculoskeletal disorders every year -- hospitality workers are at especially high risk."
+            }
+          ]
+        },
+        {
+          "id": "m1-l2",
+          "title": "The Law",
+          "slides": [
+            {
+              "id": "m1-s3",
+              "type": "text-graphic-split",
+              "title": "Manual Handling Operations Regulations 1992",
+              "content": "## MHOR 1992 (as amended 2002)\n\nThe **Manual Handling Operations Regulations 1992** are the primary UK legislation covering manual handling at work. They sit under the umbrella of the **Health and Safety at Work etc. Act 1974** and the **Management of Health and Safety at Work Regulations 1999**.\n\n### The MHOR Hierarchy\nEmployers must follow a strict three-step hierarchy:\n\n1. **AVOID** -- Eliminate hazardous manual handling operations wherever reasonably practicable. Can the task be redesigned so no one needs to lift?\n2. **ASSESS** -- Where manual handling cannot be avoided, carry out a suitable and sufficient risk assessment.\n3. **REDUCE** -- Reduce the risk of injury to the lowest level reasonably practicable through controls, equipment, and training.\n\n### Key Legal Points\n- The regulations apply to **all** manual handling -- not just heavy lifting. Pushing, pulling, carrying, and holding are all covered.\n- A risk assessment must be **recorded** if you employ 5 or more people.\n- Assessments must be **reviewed** if there is a significant change or if an injury occurs.\n- There are **no legal maximum weight limits** in UK law -- only HSE guidelines.",
+              "keyTakeaway": "The law requires employers to AVOID, then ASSESS, then REDUCE manual handling risks -- in that order."
+            },
+            {
+              "id": "m1-s4",
+              "type": "text-graphic-split",
+              "title": "Employer and Employee Duties",
+              "content": "## Who Is Responsible?\n\n### Employer Duties (MHOR Reg 4)\n- Carry out manual handling **risk assessments** for all tasks that cannot be avoided.\n- Provide appropriate **training** and refresher training.\n- Supply **mechanical aids** (trolleys, hoists, pallet trucks) where reasonably practicable.\n- **Monitor and review** controls regularly and after any incident.\n- Ensure the workplace layout minimises unnecessary manual handling (e.g., store heavy items at waist height).\n- Provide **information** to employees about the weight and centre of gravity of loads.\n\n### Employee Duties (MHOR Reg 5 + HSWA s.7)\n- **Follow** the training and safe systems of work provided.\n- **Use** equipment provided (trolleys, gloves, lifting aids).\n- **Report** any injury, near miss, or concern to your manager.\n- **Do not** take unnecessary risks -- if it feels too heavy, stop and get help.\n- **Co-operate** with your employer on health and safety matters.\n- Do not **misuse** anything provided for safety.\n\n### Enforcement\nThe HSE and local authorities enforce the regulations. Breaches can result in **improvement notices**, **prohibition notices**, and prosecution with **unlimited fines** and up to **2 years imprisonment**.",
+              "keyTakeaway": "Employers must assess and control risks; employees must follow training, use equipment, and report problems."
+            },
+            {
+              "id": "m1-s5",
+              "type": "text-graphic-split",
+              "title": "RIDDOR and Reporting",
+              "content": "## Reporting Injuries\n\n### RIDDOR (Reporting of Injuries, Diseases and Dangerous Occurrences Regulations 2013)\nCertain manual handling injuries **must** be reported to the HSE under RIDDOR:\n\n- **Deaths** -- Must be reported immediately.\n- **Specified injuries** -- Fractures (except fingers/toes), dislocations, amputations, crush injuries, loss of consciousness.\n- **Over-7-day incapacitation** -- If a worker is unable to work for more than 7 consecutive days (not counting the day of injury).\n- **Occupational diseases** -- Including carpal tunnel syndrome and severe cramp of the hand/forearm from repetitive work.\n\n### Internal Reporting\n- **Accident book** -- All injuries, however minor, must be recorded in the workplace accident book.\n- **Near misses** -- Report situations where injury was narrowly avoided (e.g., a heavy box nearly fell on someone).\n- **Verbal report** -- Tell your supervisor or manager immediately.\n\n### Why Reporting Matters\n- Identifies patterns and recurring problems.\n- Triggers risk assessment reviews.\n- Provides legal evidence if needed.\n- Helps prevent the same injury happening to someone else.",
+              "keyTakeaway": "All injuries must go in the accident book. Serious injuries must also be reported to the HSE under RIDDOR."
+            },
+            {
+              "id": "m1-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Rushed Delivery",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "It's 7am and a delivery driver has left 20 heavy crates outside the kitchen back door. Your shift starts in 10 minutes and the head chef wants everything put away before service prep begins. The crates weigh roughly 25kg each. What do you do?",
+                    "options": [
+                      {
+                        "label": "Start carrying them in by yourself as fast as possible to impress the chef.",
+                        "nextNodeId": "rush_alone"
+                      },
+                      {
+                        "label": "Ask a colleague to help and use the kitchen trolley to move the crates inside.",
+                        "nextNodeId": "team_trolley"
+                      },
+                      {
+                        "label": "Leave them outside until someone with more experience deals with them.",
+                        "nextNodeId": "leave_them"
+                      }
+                    ]
+                  },
+                  "rush_alone": {
+                    "text": "You grab the first crate and feel your back strain immediately. 25kg is near the HSE guideline limit for an ideal lift -- and this is far from ideal. The crates are awkward, the floor is wet from overnight rain, and you are rushing.\n\nWhat do you do now?",
+                    "options": [
+                      {
+                        "label": "Keep going -- you've started now and don't want to look weak.",
+                        "nextNodeId": "injury"
+                      },
+                      {
+                        "label": "Stop, put the crate down, and reassess. Get help and equipment.",
+                        "nextNodeId": "recover"
+                      }
+                    ]
+                  },
+                  "injury": {
+                    "text": "On the fifth crate, you twist awkwardly to avoid a puddle and feel a sharp pain in your lower back. You've strained your lumbar muscles. This injury could keep you off work for weeks.\n\n**Key lesson**: Time pressure is never an excuse to skip safe handling. The MHOR hierarchy (avoid, assess, reduce) applies even when you're busy. Your employer has a legal duty to provide equipment and training -- and you have a duty to use them.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "recover": {
+                    "text": "Good decision. You recognised the risk and stopped before getting injured. You fetch the trolley and ask a colleague to help. Together, you move all 20 crates safely in half the time it would have taken alone.\n\n**Key lesson**: It takes courage to stop and reassess, but it's always the right call. Regulation 5 of MHOR requires employees to use equipment provided and not take unnecessary risks.",
+                    "options": []
+                  },
+                  "team_trolley": {
+                    "text": "Excellent. You and your colleague use the trolley to wheel crates inside, then stack them at waist height. The wet area near the door is dried before you start.\n\n**You applied the TILE framework without even realising it:**\n- **Task**: Repetitive heavy lifting -- use a trolley to reduce it.\n- **Individual**: You got help rather than working alone.\n- **Load**: 25kg crates -- near the limit, so equipment is essential.\n- **Environment**: Wet floor -- you dried it first.\n\nThis is exactly what the law requires.",
+                    "options": []
+                  },
+                  "leave_them": {
+                    "text": "Leaving deliveries unattended outside creates new hazards -- they could block fire exits, get stolen, or become a trip hazard. While you should never rush into unsafe manual handling, ignoring the task entirely is not the answer.\n\nWhat should you do instead?",
+                    "options": [
+                      {
+                        "label": "Tell your manager and work together with equipment to bring them in safely.",
+                        "nextNodeId": "team_trolley"
+                      },
+                      {
+                        "label": "Just carry a few in to show willing, then leave the rest.",
+                        "nextNodeId": "rush_alone"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m1-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Unreported Injury",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You strained your shoulder two days ago while lifting a heavy stockpot. It still hurts but you can work through it. A colleague tells you not to bother reporting it because 'everyone gets aches and pains in this job'. What do you do?",
+                    "options": [
+                      {
+                        "label": "Agree with your colleague and carry on -- it's just a minor ache.",
+                        "nextNodeId": "ignore"
+                      },
+                      {
+                        "label": "Report it to your manager and record it in the accident book.",
+                        "nextNodeId": "report"
+                      },
+                      {
+                        "label": "Take some painkillers and see if it gets better by next week.",
+                        "nextNodeId": "delay"
+                      }
+                    ]
+                  },
+                  "ignore": {
+                    "text": "Over the next few weeks, the pain gets worse. You start compensating by using your other arm, which causes a new strain. Eventually you need three weeks off work.\n\nBecause the original injury was never recorded, your employer has no documentation. The risk assessment for stockpot handling was never reviewed, and another colleague suffers the same injury the following month.\n\nWhat should you have done?",
+                    "options": [
+                      {
+                        "label": "Reported it immediately and got it in the accident book.",
+                        "nextNodeId": "report"
+                      }
+                    ]
+                  },
+                  "report": {
+                    "text": "Your manager records the injury in the accident book and reviews the risk assessment for stockpot handling. They discover that the stockpot is routinely filled beyond a safe weight. A ladle-and-decant procedure is introduced, and a smaller pot is purchased for lighter batches.\n\n**Key lesson**: Every injury -- even a 'minor' one -- must be reported. Under RIDDOR, if you are incapacitated for more than 7 days, your employer must report it to the HSE. Early reporting triggers early action and prevents repeat injuries.",
+                    "options": []
+                  },
+                  "delay": {
+                    "text": "A week later, the pain is worse. You finally tell your manager, but now the details are fuzzy -- when exactly did it happen? What were you lifting? How full was the pot?\n\nLate reporting makes it harder to:\n- Complete an accurate accident book entry.\n- Review the specific risk assessment.\n- Meet RIDDOR deadlines if the injury worsens.\n\nWhat should you do now?",
+                    "options": [
+                      {
+                        "label": "Report it immediately, even though it's late -- better late than never.",
+                        "nextNodeId": "late_report"
+                      }
+                    ]
+                  },
+                  "late_report": {
+                    "text": "Your manager appreciates the honesty and records what they can. The risk assessment is reviewed and improvements are made. However, the delay meant the initial details were less accurate.\n\n**Key lesson**: Always report injuries as soon as possible. Prompt reporting leads to accurate records and faster corrective action. Never let a culture of 'just get on with it' override your legal right to a safe workplace.",
+                    "options": []
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "The TILE Framework",
+      "description": "Assessing manual handling risks systematically using the TILE acronym.",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "title": "TILE Overview",
+          "slides": [
+            {
+              "id": "m2-s1",
+              "type": "text-graphic-split",
+              "title": "The TILE Acronym",
+              "content": "## Task, Individual, Load, Environment\n\nThe **TILE** framework is the standard tool for assessing manual handling risks. Before any manual handling task, work through all four elements systematically.\n\nThe HSE guidance document **L23 (Manual Handling: Guidance on Regulations)** recommends TILE as the basis for all manual handling risk assessments.\n\n### How to use TILE\n1. **Stop** before you lift, push, pull, or carry.\n2. **Assess** each of the four TILE elements.\n3. **Decide** whether you can do the task safely or whether you need to change something.\n4. **Act** -- modify the task, get help, use equipment, or refuse if it's unsafe.\n\nThe following slides break down each element in detail with hospitality-specific examples.",
+              "keyTakeaway": "TILE: Task, Individual, Load, Environment -- assess all four before every manual handling operation."
+            },
+            {
+              "id": "m2-s2",
+              "type": "text-graphic-split",
+              "title": "T -- Task",
+              "content": "## What Does the Task Involve?\n\nConsider the physical demands of the activity itself:\n\n### Questions to Ask\n- Does the task involve **twisting**, **stooping**, **bending**, or **reaching**?\n- How far must the load be **moved**? (Long carry distances increase fatigue.)\n- Is there **pushing**, **pulling**, **carrying**, or **holding for long periods**?\n- Does the task require **sudden movements** or **precise positioning**?\n- Is it **repetitive**? (Doing the same lift 50 times is more dangerous than doing it once.)\n- Does it involve lifting from **floor level** or placing above **shoulder height**?\n\n### Hospitality Examples\n- **Twisting**: Turning from a prep counter to put pans in the oven behind you.\n- **Stooping**: Picking up crates from a low delivery pallet.\n- **Repetitive**: Plating 200 covers, each requiring a lift-and-carry of a heavy plate.\n- **Long carry**: Moving supplies from a distant storeroom to the kitchen.\n\n### Red Flags\nIf the task requires you to twist, bend, and lift simultaneously, the risk is **significantly higher**. Redesign the task or use equipment.",
+              "keyTakeaway": "Assess the physical demands: twisting, stooping, distance, repetition, and duration all increase risk."
+            },
+            {
+              "id": "m2-s3",
+              "type": "text-graphic-split",
+              "title": "I -- Individual",
+              "content": "## Who Is Doing the Handling?\n\nNot everyone has the same physical capability. The assessment must consider the individual.\n\n### Questions to Ask\n- Are you **fit and well** enough for this task today?\n- Do you have any **existing injuries**, conditions, or disabilities?\n- Are you **pregnant**? (Regulation 16 of the Management Regulations gives specific protection to new and expectant mothers.)\n- Have you been **trained** in safe manual handling techniques?\n- Are you wearing appropriate **clothing and footwear**? (Non-slip shoes, no loose clothing.)\n- What is your **age** and **physical fitness** level?\n- Are you **fatigued** from a long shift?\n\n### Hospitality Examples\n- A chef with a pre-existing back condition should not lift heavy stockpots alone.\n- A new starter who hasn't received manual handling training must not be asked to unload deliveries unsupervised.\n- A pregnant member of staff must have their risk assessment updated to reflect manual handling restrictions.\n- A team member at the end of a 12-hour double shift is at higher risk of injury due to fatigue.\n\n### Key Point\nThe law does not set different weight limits for men and women, but the HSE guidelines acknowledge that **physical capability varies** between individuals. Never feel pressured to lift beyond your ability.",
+              "keyTakeaway": "Consider your fitness, existing injuries, training, fatigue, and whether you are physically capable of the task."
+            },
+            {
+              "id": "m2-s4",
+              "type": "text-graphic-split",
+              "title": "L -- Load",
+              "content": "## What Are You Handling?\n\nThe characteristics of the load itself affect how risky the task is.\n\n### Questions to Ask\n- How **heavy** is it? (If you don't know, check the label or ask.)\n- Is it **bulky**, **awkward**, or an **unusual shape**?\n- Can you get a **good grip** on it? (Smooth, wet, or greasy surfaces reduce grip.)\n- Is the **weight evenly distributed**? (Liquids in half-full containers slosh and shift.)\n- Is the load **hot**, **cold**, or **sharp**?\n- Does it have **handles** or handholds?\n- Is it **fragile** or does it contain **hazardous contents**?\n\n### Hospitality Examples\n- **Awkward shape**: A full gastronorm tray of roasted vegetables -- wide and hot.\n- **Shifting weight**: A half-full stockpot of soup -- liquid sloshes when you move.\n- **Poor grip**: A wet, greasy baking tray straight from the dishwasher.\n- **Hot load**: A large pot of boiling stock -- scalding risk compounds the manual handling risk.\n- **No handles**: A 25kg sack of flour with no grip points.\n\n### HSE Weight Guidelines (Not Legal Limits)\nThe HSE provides guideline weights based on the position of the load relative to the body:\n- **Close to body, waist height**: 25kg (men), 16kg (women).\n- **At arm's length**: Roughly 50% lower.\n- **Above shoulder or below knee**: Significantly lower.\n\nThese are **guidelines for ideal conditions** -- if any TILE factor is unfavourable, reduce the weight further.",
+              "keyTakeaway": "Check the weight, shape, grip, stability, and temperature of the load before handling it."
+            },
+            {
+              "id": "m2-s5",
+              "type": "text-graphic-split",
+              "title": "E -- Environment",
+              "content": "## Where Is the Task Taking Place?\n\nThe physical environment can turn a manageable lift into a dangerous one.\n\n### Questions to Ask\n- Is the floor **wet**, **greasy**, **uneven**, or **cluttered**?\n- Are there **stairs**, **slopes**, **ramps**, or **steps** on the route?\n- Are **doorways** and **corridors** wide enough for the load?\n- Is there adequate **lighting**? (Can you see where you're going?)\n- Is the **temperature extreme**? (Hot kitchens cause sweaty hands; walk-in freezers make you stiffer.)\n- Is there enough **space** to adopt a good lifting posture?\n- Are there **obstructions**, trip hazards, or other people in the way?\n- Is there a **significant height difference** between pick-up and put-down points?\n\n### Hospitality Examples\n- **Wet floors**: Kitchen floors near sinks, dishwashers, and pot-wash areas.\n- **Cramped spaces**: Narrow storerooms where you can't bend your knees properly.\n- **Temperature extremes**: Carrying boxes in and out of a walk-in freezer at -18 degrees C.\n- **Poor lighting**: Dimly lit cellar stairs when moving kegs.\n- **Obstructions**: Busy service with waiters crossing your path as you carry a heavy tray.\n\n### Control the Environment First\nMany injuries happen because of the environment, not the load. Before lifting, clear the route, dry wet floors, ensure lighting is adequate, and remove obstructions.",
+              "keyTakeaway": "Wet floors, poor lighting, cramped spaces, and temperature extremes can make any manual handling task dangerous."
+            },
+            {
+              "id": "m2-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: The Heavy Delivery in the Rain",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A 30kg delivery crate has arrived during heavy rain. The floor near the back door is soaking wet, the crate has no handles, and you've just come off a double shift. A colleague offers to help. What do you do?",
+                    "options": [
+                      {
+                        "label": "Lift it quickly by yourself before anyone notices the mess -- you've done heavier lifts before.",
+                        "nextNodeId": "solo_wet"
+                      },
+                      {
+                        "label": "Dry the floor, get the trolley, and work with your colleague to wheel it inside.",
+                        "nextNodeId": "correct_approach"
+                      },
+                      {
+                        "label": "Drag the crate along the wet floor to avoid lifting it at all.",
+                        "nextNodeId": "drag"
+                      }
+                    ]
+                  },
+                  "solo_wet": {
+                    "text": "You attempt to lift the 30kg crate alone. The lack of handles forces you into an awkward grip. As you step onto the wet floor, your foot slips slightly and you compensate by twisting your torso.\n\nLet's assess using TILE:\n- **Task**: Lifting 30kg with no handles requires twisting.\n- **Individual**: You're fatigued from a double shift.\n- **Load**: 30kg, no handles, awkward grip.\n- **Environment**: Wet floor, rain.\n\nEvery TILE factor is against you. What now?",
+                    "options": [
+                      {
+                        "label": "Put it down immediately and reassess.",
+                        "nextNodeId": "correct_approach"
+                      },
+                      {
+                        "label": "Power through -- you're nearly there.",
+                        "nextNodeId": "slip_injury"
+                      }
+                    ]
+                  },
+                  "slip_injury": {
+                    "text": "Your foot slips on the wet floor. To stop yourself falling, you jerk the crate to one side, causing a sharp pain in your lower back. You drop the crate and it lands on your foot.\n\n**Result**: Strained back and bruised foot. Two weeks off work. Your employer must report this under RIDDOR because you are incapacitated for more than 7 days.\n\n**Key lesson**: Every TILE factor was unfavourable. The law required your employer to provide equipment and a safe working environment. Your duty was to refuse the unsafe task and use what was available.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "correct_approach": {
+                    "text": "You mop and dry the wet area near the back door. Your colleague brings the kitchen trolley. Together, you slide the crate onto the trolley (keeping it at waist height) and wheel it to the storeroom.\n\n**TILE assessment:**\n- **Task**: Pushing a trolley instead of lifting 30kg -- much lower risk.\n- **Individual**: Two people sharing the task; fatigue mitigated.\n- **Load**: Crate is on the trolley, no need to grip it.\n- **Environment**: Floor is now dry, route is clear.\n\nYou turned a high-risk operation into a low-risk one. This is exactly what the MHOR hierarchy requires: reduce risk to the lowest level reasonably practicable.",
+                    "options": []
+                  },
+                  "drag": {
+                    "text": "Dragging the crate across a wet floor creates several new hazards:\n- The pushing/pulling force on a wet surface is unpredictable.\n- You could slip and fall.\n- The crate could damage the floor or its contents.\n- Dragging puts significant strain on your back and shoulders.\n\nDragging is not a safe alternative to lifting. What should you do instead?",
+                    "options": [
+                      {
+                        "label": "Use the trolley and get help from your colleague.",
+                        "nextNodeId": "correct_approach"
+                      },
+                      {
+                        "label": "Just lift it -- dragging clearly isn't working.",
+                        "nextNodeId": "solo_wet"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m2-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: Stocking the Walk-In Freezer",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You need to move 15 boxes of frozen goods from a delivery pallet into the walk-in freezer. Each box weighs about 12kg. The freezer is at -18 degrees C, the shelves inside range from floor level to above head height, and you're the only person available right now. How do you approach this?",
+                    "options": [
+                      {
+                        "label": "Carry two boxes at once to get it done faster -- 12kg each isn't that heavy.",
+                        "nextNodeId": "two_boxes"
+                      },
+                      {
+                        "label": "Take one box at a time, assess the freezer layout, and use a step stool for high shelves.",
+                        "nextNodeId": "methodical"
+                      },
+                      {
+                        "label": "Stack all 15 boxes on the floor of the freezer and sort them out later.",
+                        "nextNodeId": "floor_dump"
+                      }
+                    ]
+                  },
+                  "two_boxes": {
+                    "text": "Carrying two 12kg boxes simultaneously means 24kg with a significantly reduced grip and obscured forward vision. Inside the freezer at -18 degrees C, the floor may be icy and your hands will quickly lose dexterity.\n\nBy the eighth trip, your fingers are numb and you fumble a box. It falls, scattering frozen goods across the freezer floor -- now a trip hazard.\n\nWhat should you do?",
+                    "options": [
+                      {
+                        "label": "Clean up, take one box at a time, and limit your time in the freezer.",
+                        "nextNodeId": "methodical"
+                      },
+                      {
+                        "label": "Kick the fallen items aside and keep going.",
+                        "nextNodeId": "freezer_slip"
+                      }
+                    ]
+                  },
+                  "freezer_slip": {
+                    "text": "You step on a frozen packet on the icy floor and slip, landing hard on your hip. In a -18 degrees C freezer, you're alone, injured, and the cold is making things worse.\n\n**Key lesson**: Multiple TILE factors were against you -- the extreme cold (environment), carrying double loads (task), loss of grip (individual), and no handles on stacked boxes (load). Working alone in a freezer without telling anyone is an additional safety risk. Always tell someone before entering a confined cold space.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "methodical": {
+                    "text": "You take one box at a time, keeping each close to your body. You use the step stool for shelves above shoulder height. You limit your time in the freezer to avoid numbness, taking breaks to warm your hands. Heavy items go on the middle shelves at waist height; lighter items go higher and lower.\n\n**Excellent TILE assessment:**\n- **Task**: One box per trip reduces strain; step stool avoids overhead reaching.\n- **Individual**: Regular warm-up breaks maintain dexterity and alertness.\n- **Load**: 12kg per box is manageable with good technique.\n- **Environment**: You acknowledged the freezer hazards (cold, potential ice) and worked carefully.\n\nYou also stored heavy items at waist height -- reducing future manual handling risk for everyone who uses the freezer.",
+                    "options": []
+                  },
+                  "floor_dump": {
+                    "text": "Dumping all boxes on the freezer floor creates several problems:\n- The floor becomes an obstacle course -- serious slip and trip hazard.\n- You (or a colleague) will still need to lift each box onto shelves later.\n- Items on the floor are harder to lift (below knee height increases spinal load by 50% compared to waist height).\n- Food stored on the floor can be contaminated and fails food safety regulations.\n\nThis approach just delays and worsens the manual handling task. What should you do instead?",
+                    "options": [
+                      {
+                        "label": "Take one box at a time and put each directly on the correct shelf.",
+                        "nextNodeId": "methodical"
+                      },
+                      {
+                        "label": "Carry two at a time to get it over with quickly.",
+                        "nextNodeId": "two_boxes"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Safe Lifting, Carrying, and Moving Techniques",
+      "description": "How to lift, carry, push, pull, and work as a team safely.",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "title": "The Kinetic Lift",
+          "slides": [
+            {
+              "id": "m3-s1",
+              "type": "text-graphic-split",
+              "title": "Step-by-Step Safe Lifting",
+              "content": "## The Kinetic Lifting Technique\n\nThe kinetic lifting technique uses the body's natural mechanics to minimise strain on the spine. Follow these steps for every lift:\n\n### Before the Lift\n1. **Plan the lift** -- Where are you going? Is the route clear? Do you need help or equipment?\n2. **Position yourself** -- Stand close to the load with a **stable base** (feet shoulder-width apart, one foot slightly forward for balance).\n\n### The Lift\n3. **Bend your knees**, not your back. Lower yourself by bending at the hips and knees while keeping your back straight and naturally curved.\n4. **Get a firm grip** -- Use your whole hand (palm grip), not just fingertips. If the load is smooth or wet, use gloves.\n5. **Brace your core** -- Tighten your abdominal muscles before lifting to support your spine.\n6. **Lift smoothly** using your **leg muscles**. Straighten your knees and hips together. Keep the load **close to your body** throughout.\n7. **Keep your head up** and look ahead, not down at the load.\n\n### While Moving\n8. **Move your feet** to turn -- **never twist your body** while carrying.\n9. Take small, steady steps. Avoid sudden movements.\n\n### Setting Down\n10. **Reverse the process** -- Bend your knees, position the load, then release your grip.",
+              "keyTakeaway": "Lift with your legs, keep the load close to your body, brace your core, and never twist -- protect your spine."
+            },
+            {
+              "id": "m3-s2",
+              "type": "text-graphic-split",
+              "title": "HSE Weight Guidelines",
+              "content": "## Understanding the Weight-Zone Chart\n\nThe HSE publishes guideline weights based on **where the load is held relative to the body**. These are for an **ideal lift** (load close to body, good grip, no twisting, good environment).\n\n### Men (Guideline Figures)\n| Zone | Close to Body | At Arm's Length |\n|------|--------------|----------------|\n| Shoulder height | 10kg | 5kg |\n| Elbow height | 20kg | 10kg |\n| Knuckle height | 25kg | 15kg |\n| Mid-lower leg | 10kg | 5kg |\n\n### Women (Guideline Figures)\n| Zone | Close to Body | At Arm's Length |\n|------|--------------|----------------|\n| Shoulder height | 7kg | 3kg |\n| Elbow height | 13kg | 7kg |\n| Knuckle height | 16kg | 10kg |\n| Mid-lower leg | 7kg | 3kg |\n\n### Critical Points\n- These are **guidelines**, not legal limits. The actual safe weight depends on all TILE factors.\n- If the task involves **twisting**, reduce the weight by **10-20%**.\n- If the task is **repetitive** (more than once per minute), reduce further.\n- The figures assume a **one-off lift by a fit, healthy person**.\n- When in doubt, **use equipment or get help**.",
+              "keyTakeaway": "The HSE guideline for men at waist height is 25kg close to body -- but any unfavourable TILE factor reduces this."
+            },
+            {
+              "id": "m3-s3",
+              "type": "text-graphic-split",
+              "title": "Carrying Safely",
+              "content": "## Moving a Load Over Distance\n\nCarrying adds fatigue to the equation. The longer the carry distance, the greater the risk.\n\n### Safe Carrying Principles\n- Keep the load **close to your body** at waist height where possible.\n- Maintain an **upright posture** -- do not lean back to counterbalance.\n- Ensure you can **see over** the load (or around it). If you can't, the load is too bulky to carry alone.\n- Take the **shortest safe route** -- plan before you pick up.\n- Use **two hands** wherever possible for balance.\n- If carrying on stairs, ensure one hand is free for the **handrail** -- or use a trolley and the lift.\n\n### Hospitality-Specific Carrying Tasks\n- **Plate carrying**: Use trays rather than stacking plates on your arm for heavy items.\n- **Tray service**: Balance the tray on your palm at shoulder height; keep your elbow close to your body.\n- **Hot liquids**: Use a trolley for large soup pots. If carrying, ensure the lid is secure and the route is clear.\n- **Keg moving**: Never carry a full keg (50kg). Use a keg trolley or barrel roller.\n\n### The 10-Metre Rule\nIf the carry distance exceeds 10 metres, the HSE recommends using a trolley or other wheeled equipment.",
+              "keyTakeaway": "Keep the load close, maintain an upright posture, see where you are going, and use a trolley for distances over 10 metres."
+            },
+            {
+              "id": "m3-s4",
+              "type": "text-graphic-split",
+              "title": "Pushing and Pulling",
+              "content": "## Push, Don't Pull\n\nWhenever possible, **push** rather than **pull**. Pushing allows you to use your body weight, see where you are going, and maintain a better posture.\n\n### Safe Pushing and Pulling Technique\n- Keep your feet **shoulder-width apart** with one foot forward.\n- **Lean into the load** slightly when pushing (use your body weight).\n- Use your **legs and body weight**, not just your arms.\n- Apply the force at **waist to chest height** -- not too high, not too low.\n- Use equipment **handles** where available.\n- Keep the load **in front of you** so you can see the route.\n- Start slowly and build momentum -- the initial push is the hardest.\n\n### When Pulling is Necessary\n- Sometimes you must pull (e.g., pulling a loaded trolley through a doorway).\n- Face the direction of travel if possible.\n- Keep your back straight and pull with your legs.\n- Avoid pulling loads up slopes where possible -- push instead.\n\n### HSE Push/Pull Guidelines\n- For **starting a load on a flat surface**: men approximately 20kg force; women approximately 15kg force.\n- For **keeping it moving**: men approximately 10kg sustained force; women approximately 7kg sustained force.\n- Equipment with **good wheels and bearings** significantly reduces the force needed.",
+              "keyTakeaway": "Push rather than pull wherever possible -- use your body weight, keep the force at waist height, and maintain good posture."
+            },
+            {
+              "id": "m3-s5",
+              "type": "text-graphic-split",
+              "title": "Team Lifting and Coordination",
+              "content": "## When One Person Is Not Enough\n\nTeam handling is required when a load is too heavy, too bulky, or too awkward for one person. However, team lifts introduce coordination risks that must be managed.\n\n### Team Lifting Rules\n1. **Designate a leader** -- One person gives all commands. Everyone follows the same instructions.\n2. **Communicate clearly** -- Use agreed commands: 'Ready? Lift. Walk. Stop. Set down.'\n3. **Lift and lower at the same time** -- The leader counts: 'One, two, three, lift.'\n4. **Match heights where possible** -- If heights differ, the taller person takes the heavier end.\n5. **Plan the route together** -- Everyone must know where the load is going before you start.\n6. **Walk in step** -- Move at the same pace to keep the load stable.\n\n### How Many People?\n- Team handling does **not** double the safe weight for two people. Two people can safely handle approximately **two-thirds** of their combined individual capacities (due to coordination losses).\n- For example, two people who can each safely lift 25kg individually should not exceed approximately 33kg together (not 50kg).\n\n### Hospitality Examples\n- **Banqueting tables**: Minimum two people, folding legs secured before carrying.\n- **Large stock pots**: Two people with a pole or handles.\n- **Commercial oven trays**: Two people wearing heat-resistant gloves.\n- **Barrel/keg moving**: Two people with a keg trolley, never free-carrying.",
+              "keyTakeaway": "Designate a leader, use clear commands, lift together, and remember: two people does NOT mean double the safe weight."
+            },
+            {
+              "id": "m3-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Moving the Banqueting Tables",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "The restaurant has a private event tonight. You need to rearrange 12 heavy banqueting tables from the storeroom to the function room. The tables weigh about 35kg each and are bulky. The route involves a narrow corridor and a set of double doors. How do you approach this?",
+                    "options": [
+                      {
+                        "label": "Carry each table by yourself -- it's only a short walk and you're strong enough.",
+                        "nextNodeId": "solo_carry"
+                      },
+                      {
+                        "label": "Get a colleague, plan the route, and use a flatbed trolley for transport.",
+                        "nextNodeId": "planned"
+                      },
+                      {
+                        "label": "Drag the tables along the floor -- sliding is easier than lifting.",
+                        "nextNodeId": "drag_tables"
+                      }
+                    ]
+                  },
+                  "solo_carry": {
+                    "text": "35kg is well above the HSE guideline for most lifting scenarios, and banqueting tables are bulky with no easy grip points. On the first carry, the table catches on the narrow corridor wall and you have to twist sideways to get through.\n\nYour back is already aching after three tables. You still have nine to go. What do you do?",
+                    "options": [
+                      {
+                        "label": "Stop and get help. Use the flatbed trolley.",
+                        "nextNodeId": "planned"
+                      },
+                      {
+                        "label": "Take painkillers and push through -- the event is tonight.",
+                        "nextNodeId": "back_injury"
+                      }
+                    ]
+                  },
+                  "back_injury": {
+                    "text": "On the seventh table, you feel a sharp, shooting pain from your lower back down your leg. You've compressed a disc. This type of injury can take months to heal and may require surgery.\n\n**Key lesson**: 35kg exceeds safe individual lifting guidelines. The bulky shape, narrow corridor, and repetition (12 tables) made this a high-risk task from the start. Equipment and teamwork were essential. Painkillers mask the warning signs your body sends -- they do not reduce the risk of injury.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "planned": {
+                    "text": "You and your colleague survey the route: the corridor is clear, and you prop open the double doors with approved door-holding devices. You load two tables at a time onto the flatbed trolley and wheel them to the function room.\n\nFor placement, you work together: one person leads with 'Ready, walk, stop, set down' commands. The taller colleague takes the heavier end.\n\n**Result**: All 12 tables moved safely in 25 minutes. No injuries, no rushing. The event is set up on time.\n\n**Key lesson**: Planning, teamwork, and equipment turned a high-risk, 35kg solo-lift task into a low-risk, wheeled-transport operation. This is exactly what MHOR requires.",
+                    "options": []
+                  },
+                  "drag_tables": {
+                    "text": "Dragging a 35kg table along the floor causes several problems:\n- The legs catch on floor surfaces and doorframes, requiring sudden jerking movements.\n- Dragging forces are unpredictable and strain your back and shoulders.\n- You're damaging the floor, the table, and potentially the door frames.\n- The pushing/pulling forces on the corridor carpet are very high.\n\nYour manager notices and asks you to stop. What do you do?",
+                    "options": [
+                      {
+                        "label": "Get the trolley and a colleague, then do it properly.",
+                        "nextNodeId": "planned"
+                      },
+                      {
+                        "label": "Try carrying them instead since dragging isn't allowed.",
+                        "nextNodeId": "solo_carry"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m3-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: The Hot Stockpot",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "A chef asks you to move a large stockpot from the stove to the cold prep area. The pot is nearly full of hot liquid (about 80 degrees C), weighs approximately 20kg, and the handles are hot. The distance is about 8 metres across a busy kitchen during lunch service. What do you do?",
+                    "options": [
+                      {
+                        "label": "Grab the handles with a dry cloth and carry it across the kitchen.",
+                        "nextNodeId": "cloth_carry"
+                      },
+                      {
+                        "label": "Use heat-resistant gloves, get a colleague to clear the route, and carry it together.",
+                        "nextNodeId": "team_careful"
+                      },
+                      {
+                        "label": "Ladle the contents into smaller containers and carry those instead.",
+                        "nextNodeId": "decant"
+                      }
+                    ]
+                  },
+                  "cloth_carry": {
+                    "text": "A dry cloth provides poor insulation and can slip off the handles. As you carry the 20kg pot of near-boiling liquid across a busy kitchen, a waiter steps into your path. You swerve, the cloth slips, and hot liquid splashes onto your arm.\n\nThis is now both a manual handling injury and a burn injury. What should you have done?",
+                    "options": [
+                      {
+                        "label": "Used proper heat-resistant gloves and cleared the route first.",
+                        "nextNodeId": "team_careful"
+                      },
+                      {
+                        "label": "Decanted into smaller containers before moving.",
+                        "nextNodeId": "decant"
+                      }
+                    ]
+                  },
+                  "team_careful": {
+                    "text": "You put on heat-resistant gloves and ask a colleague to walk ahead, clearing the route and warning other staff. Together, you carry the pot at waist height with steady steps.\n\nThis is a reasonable approach, but consider: could the risk be reduced further?\n\n**Better practice**: If your kitchen has a pot trolley, use it. If not, decanting into smaller containers eliminates the risk of carrying a heavy, hot load. The MHOR hierarchy says avoid first, then reduce.",
+                    "options": []
+                  },
+                  "decant": {
+                    "text": "Excellent decision. By ladling the hot liquid into smaller, lighter containers (e.g., 4-5 litre jugs with lids), you have:\n\n- **Reduced the weight** from 20kg to manageable 4-5kg portions.\n- **Reduced the burn risk** -- smaller volumes are easier to control and less dangerous if spilled.\n- **Eliminated** the need for a heavy two-person carry across a busy kitchen.\n\n**This applies the MHOR hierarchy perfectly**: you couldn't avoid moving the liquid, so you reduced the risk by changing the method. HSE guidance (L23) specifically recommends breaking large loads into smaller ones where possible.",
+                    "options": []
+                  },
+                  "splash_injury": {
+                    "text": "Hot liquid burns cause serious injuries. Under RIDDOR, burns requiring hospital treatment or causing over-7-day incapacitation must be reported to the HSE. Prevention through proper equipment and technique is always the priority.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Mechanical Aids, Ergonomics, and Good Practice",
+      "description": "Using equipment, preventing repetitive strain, and building safe habits for the long term.",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "title": "Mechanical Aids",
+          "slides": [
+            {
+              "id": "m4-s1",
+              "type": "text-graphic-split",
+              "title": "Use the Right Equipment",
+              "content": "## Reducing Manual Handling with Mechanical Aids\n\nThe **best way** to prevent a manual handling injury is to **avoid manual handling** entirely. The MHOR hierarchy puts this first for good reason.\n\n### Common Mechanical Aids\n- **Sack trucks / hand trucks** -- For moving boxes, crates, and sacks vertically and over short distances.\n- **Flatbed trolleys** -- For moving multiple items or heavy/bulky loads horizontally.\n- **Pallet trucks** -- For heavy palletised deliveries (can handle up to 2,500kg).\n- **Hoists and lifts** -- For very heavy or repetitive lifting tasks (e.g., goods lifts between floors).\n- **Conveyor belts / roller tracks** -- In production and warehouse environments.\n- **Step stools / kick steps** -- To avoid overhead reaching and lifting above shoulder height.\n- **Keg trolleys / barrel rollers** -- Specifically designed for moving kegs (40-50kg) safely.\n\n### Your Duty\nIf your employer provides mechanical aids, you **must** use them. Under MHOR Regulation 5, employees have a duty to make full and proper use of equipment provided. Choosing not to use a trolley when one is available is a breach of your legal duty.",
+              "keyTakeaway": "If there is a trolley available, there is no excuse for carrying. Using equipment is a legal duty, not a suggestion."
+            },
+            {
+              "id": "m4-s2",
+              "type": "text-graphic-split",
+              "title": "Kitchen and Hospitality-Specific Aids",
+              "content": "## Equipment for Your Workplace\n\n### Kitchen\n- **Pot stands at floor level** -- Raise heavy pots to avoid lifting from the ground.\n- **Pot trolleys** -- Wheeled frames to move heavy stockpots without carrying.\n- **Dispensers** -- For heavy sauces, oils, and liquids (pump or tap dispensers reduce lifting).\n- **Decanting** -- Break large containers into smaller, manageable portions.\n- **Height-adjustable prep tables** -- Reduce stooping and reaching.\n- **Tilt kettles** -- Large kettles with a tilting mechanism to pour without lifting.\n\n### Storage and Shelving\n- Store **heavy items at waist height** (knuckle to elbow level).\n- Store **lighter items** on higher and lower shelves.\n- Use **step stools** for items above shoulder height -- never stretch on tiptoes.\n- Use **pull-out shelving** or sliding drawers for items stored at low levels.\n\n### Bar and Front of House\n- **Keg lifters and trolleys** for beer cellar work.\n- **Crate dollies** for moving cases of bottles.\n- **Glass-carrying trays** with non-slip surfaces.\n- **Linen trolleys** for housekeeping rather than carrying armfuls of sheets.\n\n### Maintenance\n- Check wheels, handles, and mechanisms regularly.\n- Report damaged equipment immediately.\n- Keep trolleys clean and stored in accessible locations.",
+              "keyTakeaway": "Heavy items at waist height, decant large containers, use dispensers, and always choose the right trolley for the job."
+            },
+            {
+              "id": "m4-s3",
+              "type": "text-graphic-split",
+              "title": "Repetitive Strain and Musculoskeletal Disorders",
+              "content": "## The Cumulative Danger\n\nNot all manual handling injuries happen from a single heavy lift. Many of the most debilitating conditions develop gradually over weeks, months, or years of **repetitive** activity.\n\n### Musculoskeletal Disorders (MSDs)\nMSDs affect muscles, joints, tendons, ligaments, nerves, and the spine. Common work-related MSDs include:\n\n- **Lower back pain** -- The most common MSD; caused by repeated bending, twisting, and lifting.\n- **Upper limb disorders (ULDs)** -- Pain in the shoulders, arms, wrists, and hands from repetitive tasks.\n- **Carpal tunnel syndrome** -- Compression of the wrist nerve from repetitive hand/wrist movements.\n- **Tendonitis** -- Inflammation of tendons from repeated motion (e.g., repetitive chopping, plating).\n- **Rotator cuff injuries** -- Shoulder damage from repeated overhead reaching.\n- **Herniated (slipped) disc** -- Disc damage from repeated spinal loading.\n\n### Warning Signs\n- Persistent aching, pain, or stiffness in your back, neck, shoulders, or hands.\n- Numbness, tingling, or 'pins and needles' in your arms or hands.\n- Weakness in your grip.\n- Swelling or stiffness in joints.\n\n### Key Point\nIf you experience any of these symptoms, **report them immediately**. Early intervention prevents permanent damage.",
+              "keyTakeaway": "Repetitive tasks cause cumulative damage over time. Report persistent aches, tingling, or weakness early -- do not wait."
+            },
+            {
+              "id": "m4-s4",
+              "type": "text-graphic-split",
+              "title": "Workstation Ergonomics",
+              "content": "## Setting Up Your Work Area\n\nErgonomics is the science of designing work to fit the worker. Poor workstation setup is a major contributor to MSDs.\n\n### Standing Workstation (Kitchen, Bar, Reception)\n- Work surface should be at **elbow height** (approximately 90-degree bend at the elbow).\n- If the surface is too low, you stoop; too high, and your shoulders hunch.\n- Use **anti-fatigue mats** to reduce strain from prolonged standing.\n- Keep frequently used items **within arm's reach** to avoid overreaching.\n- Change your posture regularly -- shift weight between feet, take micro-breaks.\n\n### Seated Workstation (Office, Reception, Back Office)\n- Chair height: feet flat on the floor, thighs horizontal.\n- Screen at **arm's length**, top of screen at **eye level**.\n- Keyboard and mouse close to the body; elbows at 90 degrees.\n- Take regular breaks -- stand and stretch every 30-60 minutes.\n\n### Reducing Repetitive Strain in Hospitality\n- **Rotate tasks** -- Alternate between chopping, carrying, and plating.\n- **Take micro-breaks** -- Even 30 seconds of stretching between tasks helps.\n- **Use sharp knives** -- Blunt knives require more force, increasing hand and wrist strain.\n- **Adjust work heights** -- Use risers, chopping boards, or adjustable tables to get the right height.\n- **Stretch before shifts** -- Simple stretches for back, shoulders, wrists, and legs reduce injury risk.",
+              "keyTakeaway": "Work at elbow height, keep items within reach, rotate tasks, and take micro-breaks to prevent repetitive strain."
+            },
+            {
+              "id": "m4-s5",
+              "type": "text-graphic-split",
+              "title": "Building Good Habits",
+              "content": "## Daily Practices for Long-Term Health\n\n### Before Every Shift\n- **Warm up** -- Gentle stretches for your back, shoulders, legs, and wrists (2-3 minutes).\n- **Check your PPE** -- Non-slip shoes, appropriate clothing, gloves if needed.\n- **Know the layout** -- Where are the trolleys? Is the route to the storeroom clear?\n\n### During Your Shift\n- **Think TILE** before every manual handling task -- make it automatic.\n- **Ask for help** -- It is not a sign of weakness; it is a legal expectation.\n- **Use equipment** -- Trolleys, step stools, dispensers, hoists.\n- **Rotate tasks** where possible to avoid prolonged repetitive movements.\n- **Stay hydrated** -- Dehydrated muscles are more prone to injury.\n- **Report hazards** -- Wet floors, broken equipment, blocked routes.\n\n### After Your Shift\n- **Cool down** -- Gentle stretches, especially for your lower back.\n- **Report any aches or pains** -- The accident book exists for a reason.\n- **Rest** -- Allow your body to recover between shifts.\n\n### The Culture of Safety\nA good safety culture means:\n- No one is ridiculed for using equipment or asking for help.\n- Near misses are reported without blame.\n- Training is refreshed annually.\n- Equipment is maintained and available.",
+              "keyTakeaway": "Make TILE assessment automatic, warm up before shifts, report hazards, and never be afraid to ask for help."
+            },
+            {
+              "id": "m4-sc1",
+              "type": "scenario-decision",
+              "title": "Scenario: Stacking High Shelves",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You need to put 10 heavy catering-size tins (each about 3kg) onto a shelf that is above your shoulder height. There is a step stool nearby but using it would take longer. A colleague suggests standing on an upturned crate instead because it's taller. What do you do?",
+                    "options": [
+                      {
+                        "label": "Stretch up on tiptoes to reach the shelf -- it's only 3kg per tin.",
+                        "nextNodeId": "tiptoe"
+                      },
+                      {
+                        "label": "Use the step stool to bring yourself to the right height.",
+                        "nextNodeId": "step_stool"
+                      },
+                      {
+                        "label": "Stand on the upturned crate as your colleague suggested -- it's taller and faster.",
+                        "nextNodeId": "crate"
+                      }
+                    ]
+                  },
+                  "tiptoe": {
+                    "text": "Lifting above shoulder height significantly reduces your safe lifting capacity. The HSE guideline drops to just 7kg for men and 3kg for women at shoulder height at arm's length. Stretching on tiptoes also:\n\n- Reduces your grip strength.\n- Puts strain on your shoulders and rotator cuffs.\n- Makes you unstable -- one wobble and you could drop a tin on yourself or fall.\n\nAfter placing four tins, your shoulders are burning and you nearly drop the fifth. What now?",
+                    "options": [
+                      {
+                        "label": "Use the step stool for the remaining tins.",
+                        "nextNodeId": "step_stool"
+                      },
+                      {
+                        "label": "Power through the last six -- you're halfway done.",
+                        "nextNodeId": "shoulder_injury"
+                      }
+                    ]
+                  },
+                  "shoulder_injury": {
+                    "text": "On the eighth tin, you feel a sharp pain in your right shoulder. You've strained your rotator cuff -- a common injury from repeated overhead lifting. This type of injury can take 6-12 weeks to heal and may recur.\n\n**Key lesson**: The HSE weight guidelines exist for a reason. At shoulder height and arm's length, the safe weight is dramatically lower. A step stool takes 30 seconds to set up but prevents weeks of pain.",
+                    "options": [{ "label": "Start Over", "nextNodeId": "start" }]
+                  },
+                  "step_stool": {
+                    "text": "You position the step stool in front of the shelf and step up. Now the shelf is at waist height -- the safest lifting zone. You place all 10 tins comfortably with good posture, keeping each tin close to your body.\n\n**TILE assessment:**\n- **Task**: Lifting to waist height (from the step stool) instead of above shoulder height.\n- **Individual**: Stable platform, good posture, within your capability.\n- **Load**: 3kg per tin -- well within guidelines at waist height.\n- **Environment**: Step stool provides a stable, non-slip platform.\n\nUsing the step stool took an extra 30 seconds but eliminated the injury risk entirely.",
+                    "options": []
+                  },
+                  "crate": {
+                    "text": "Standing on an upturned crate is extremely dangerous:\n- Crates are not designed to bear a person's weight -- they can collapse.\n- The surface is uneven and provides no grip.\n- There is no handrail or support if you lose balance.\n- Falling from a crate while holding a 3kg tin could cause head injuries, broken bones, or worse.\n\nThis would also violate the **Working at Height Regulations 2005** -- you must use appropriate equipment (step stools, ladders) for work above ground level.\n\nWhat should you use instead?",
+                    "options": [
+                      {
+                        "label": "The step stool -- it's designed for this purpose.",
+                        "nextNodeId": "step_stool"
+                      },
+                      {
+                        "label": "Just stretch up from the floor -- at least that's safer than the crate.",
+                        "nextNodeId": "tiptoe"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "m4-sc2",
+              "type": "scenario-decision",
+              "title": "Scenario: End-of-Shift Aches",
+              "scenarioData": {
+                "initialState": "start",
+                "nodes": {
+                  "start": {
+                    "text": "You've been working as a kitchen porter for three weeks. Every evening after your shift, you notice increasing stiffness and aching in your lower back and numbness in your right wrist. A more experienced colleague says 'Everyone gets that -- you'll get used to it.' What do you do?",
+                    "options": [
+                      {
+                        "label": "Accept it as normal -- your colleague has been here for years and they seem fine.",
+                        "nextNodeId": "ignore_symptoms"
+                      },
+                      {
+                        "label": "Report the symptoms to your manager and ask for a workstation assessment.",
+                        "nextNodeId": "report_early"
+                      },
+                      {
+                        "label": "Buy a back support belt from the chemist and wear it during shifts.",
+                        "nextNodeId": "belt_only"
+                      }
+                    ]
+                  },
+                  "ignore_symptoms": {
+                    "text": "Over the next two months, the back pain becomes chronic and the wrist numbness worsens. You start dropping things and can't grip properly. Your GP diagnoses early-stage carpal tunnel syndrome and a lumbar strain.\n\nYou're signed off work for six weeks. Because you never reported the symptoms, your employer had no opportunity to adjust your tasks or workstation. The same problems continue for new starters after you.\n\nWhat should you have done?",
+                    "options": [
+                      {
+                        "label": "Reported the symptoms immediately and requested an assessment.",
+                        "nextNodeId": "report_early"
+                      }
+                    ]
+                  },
+                  "report_early": {
+                    "text": "Your manager takes your report seriously and arranges a workstation assessment. The assessment reveals:\n\n- Your pot-wash sink is too low, causing you to stoop for hours.\n- The repetitive scrubbing motion is straining your wrist.\n- You've been lifting heavy pots from floor level without using the pot stand.\n\n**Actions taken:**\n- A raised platform is added to the pot-wash area.\n- Task rotation is introduced so you alternate between washing, carrying, and prep.\n- You're shown proper stretching exercises for before and after shifts.\n- The pot stand is moved to a more accessible position.\n\n**Key lesson**: Early reporting of MSD symptoms triggers early intervention. Under the Management of Health and Safety at Work Regulations 1999, your employer must assess and control risks to health -- but they can only do this if they know about the problem.",
+                    "options": []
+                  },
+                  "belt_only": {
+                    "text": "Back support belts are NOT a substitute for proper manual handling technique. The HSE does not recommend back belts as a control measure because:\n\n- They give a **false sense of security**, leading people to lift more than they should.\n- They **do not prevent** back injuries.\n- They can **restrict breathing** and increase blood pressure.\n- They **do not address the root cause** of the problem.\n\nThe belt makes you feel better temporarily, but the underlying issues (poor workstation height, repetitive strain, improper lifting) remain unchanged.\n\nWhat should you do instead?",
+                    "options": [
+                      {
+                        "label": "Report the symptoms and ask for a proper workstation assessment.",
+                        "nextNodeId": "report_early"
+                      },
+                      {
+                        "label": "Keep wearing the belt and hope it improves over time.",
+                        "nextNodeId": "ignore_symptoms"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "title": "Final Assessment",
+      "description": "Test your manual handling knowledge.",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "title": "Final Assessment",
+          "slides": [
+            {
+              "id": "m5-quiz",
+              "type": "quiz",
+              "title": "Final Assessment"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "questionBanks": {
+    "final": [
+      {
+        "id": "q1",
+        "text": "What percentage of all workplace injuries reported to the HSE are caused by manual handling?",
+        "options": ["Around 10%", "Around 20%", "Over 30%", "Over 50%"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q2",
+        "text": "What does TILE stand for?",
+        "options": [
+          "Time, Individual, Lifting, Equipment",
+          "Task, Individual, Load, Environment",
+          "Training, Inspection, Limits, Ergonomics",
+          "Task, Injury, Load, Evaluation"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q3",
+        "text": "The first priority in the MHOR hierarchy is to:",
+        "options": [
+          "Reduce the risk of injury",
+          "Assess the manual handling task",
+          "Avoid hazardous manual handling wherever possible",
+          "Provide personal protective equipment"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q4",
+        "text": "When lifting a load, you should primarily use which muscles?",
+        "options": [
+          "Your back muscles",
+          "Your leg muscles",
+          "Your arm muscles",
+          "Your shoulder muscles"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q5",
+        "text": "The HSE guideline weight for men lifting close to the body at waist height is:",
+        "options": ["10kg", "16kg", "25kg", "50kg"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q6",
+        "text": "When turning while carrying a load, you should:",
+        "options": [
+          "Twist your upper body to change direction",
+          "Move your feet to turn your whole body",
+          "Lean to one side to pivot",
+          "Swing the load to build momentum"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q7",
+        "text": "Is it generally safer to push or pull a load?",
+        "options": [
+          "Pull, because you can see where you're going",
+          "Push, because you can use your body weight and maintain better posture",
+          "It makes no difference to safety",
+          "Neither -- you should always carry instead"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q8",
+        "text": "Under the MHOR 1992, who must carry out manual handling risk assessments?",
+        "options": [
+          "Individual employees for their own tasks",
+          "The Health and Safety Executive",
+          "The employer",
+          "The trade union safety representative"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q9",
+        "text": "What should you check before lifting any load?",
+        "options": [
+          "The time remaining on your shift",
+          "That the route is clear and the lift has been planned",
+          "Your phone for any messages",
+          "That no one is watching you"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q10",
+        "text": "During team handling, who should give the commands to lift?",
+        "options": [
+          "Everyone calls out together",
+          "The designated team leader",
+          "Nobody -- just lift when you feel ready",
+          "The person at the lightest end"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q11",
+        "text": "How should you grip a load when lifting?",
+        "options": [
+          "Using your fingertips only for precision",
+          "With your whole hand in a firm palm grip",
+          "With one hand to keep the other free",
+          "As loosely as possible to reduce hand strain"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q12",
+        "text": "Which mechanical aid is most suitable for moving boxed deliveries short distances?",
+        "options": [
+          "A forklift truck",
+          "A sack truck or hand trolley",
+          "A conveyor belt",
+          "A crane"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q13",
+        "text": "Where should heavy items be stored on shelving?",
+        "options": [
+          "On the top shelf to keep them out of the way",
+          "At waist height (between knuckle and elbow level)",
+          "On the floor to lower the centre of gravity",
+          "Anywhere there is space available"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q14",
+        "text": "What body part should power the lifting movement?",
+        "options": ["Your arms", "Your back", "Your legs", "Your shoulders"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q15",
+        "text": "If a load feels too heavy for you to lift safely, you should:",
+        "options": [
+          "Try anyway and see what happens",
+          "Ask for help or use mechanical equipment",
+          "Leave it where it is permanently",
+          "Drag it along the floor instead"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q16",
+        "text": "Under the MHOR, an employee's duty includes:",
+        "options": [
+          "Carrying out formal risk assessments",
+          "Following training and using equipment provided",
+          "Setting weight limits for the workplace",
+          "Writing safety policies"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q17",
+        "text": "Why is twisting while lifting particularly dangerous?",
+        "options": [
+          "It makes the load feel heavier",
+          "It puts uneven rotational stress on the spinal discs",
+          "It is against company rules only",
+          "It slows down the lifting process"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q18",
+        "text": "Which TILE element includes consideration of wet floors and poor lighting?",
+        "options": ["Task", "Individual", "Load", "Environment"],
+        "correctAnswer": 3
+      },
+      {
+        "id": "q19",
+        "text": "Repetitive manual handling can cause:",
+        "options": [
+          "Improved muscle strength over time",
+          "Musculoskeletal disorders and repetitive strain injuries",
+          "Better posture through adaptation",
+          "Increased bone density only"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q20",
+        "text": "What is the main benefit of keeping a load close to your body during a lift?",
+        "options": [
+          "It looks more professional",
+          "It reduces the strain and leverage forces on your spine",
+          "It makes the load lighter",
+          "It prevents the load from getting damaged"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q21",
+        "text": "Before starting any manual handling task, you should:",
+        "options": [
+          "Start immediately to save time",
+          "Plan the lift and assess the TILE factors",
+          "Wait for a written permit to work",
+          "Check social media for tips"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q22",
+        "text": "A stable base when lifting means:",
+        "options": [
+          "Feet together with knees locked",
+          "Feet shoulder-width apart with one foot slightly forward",
+          "Standing on one leg for balance",
+          "Feet as wide apart as possible"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q23",
+        "text": "When lowering a load to the ground, you should:",
+        "options": [
+          "Drop it from waist height to avoid bending",
+          "Bend your knees and lower it smoothly using your legs",
+          "Throw it down and step back",
+          "Bend at the waist to reach the floor"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q24",
+        "text": "The 'I' in TILE considers:",
+        "options": [
+          "Insurance and liability",
+          "The individual doing the manual handling",
+          "The industry regulations",
+          "Inspection requirements"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q25",
+        "text": "Which regulation specifically covers manual handling at work in the UK?",
+        "options": [
+          "COSHH Regulations 2002",
+          "Manual Handling Operations Regulations 1992",
+          "Working at Height Regulations 2005",
+          "Provision and Use of Work Equipment Regulations 1998"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q26",
+        "text": "Step stools help to reduce manual handling risk by:",
+        "options": [
+          "Making you look taller",
+          "Reducing the need to reach and lift above shoulder height",
+          "Providing extra storage space",
+          "Giving you something to lean on while lifting"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q27",
+        "text": "What should you report to your employer regarding manual handling?",
+        "options": [
+          "Only serious injuries requiring hospital treatment",
+          "Any injury, near miss, or concern about manual handling",
+          "Nothing unless asked by the HSE",
+          "Only injuries witnessed by a colleague"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q28",
+        "text": "How should heavy cooking pots be moved across a kitchen?",
+        "options": [
+          "Carried overhead for visibility",
+          "Using a pot trolley, decanting, or team lift with proper gloves",
+          "Dragged across the floor to avoid lifting",
+          "Kicked along the floor with your feet"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q29",
+        "text": "When two people lift together, they should:",
+        "options": [
+          "Lift at different times for balance",
+          "Lift and lower at the same time on the leader's command",
+          "Both try to lift the heavier end",
+          "Each use a different technique"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q30",
+        "text": "The best way to prevent manual handling injuries is to:",
+        "options": [
+          "Work faster to get tasks done quickly",
+          "Avoid manual handling where possible or use mechanical aids",
+          "Always wear gloves when lifting",
+          "Only lift during quiet periods"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q31",
+        "text": "What does MHOR stand for?",
+        "options": [
+          "Manual Handling Operations Regulations",
+          "Managing Health Outcomes and Risks",
+          "Manual Handling Operative Requirements",
+          "Musculoskeletal Hazard Operations Review"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "id": "q32",
+        "text": "The MHOR 1992 sits under which primary UK legislation?",
+        "options": [
+          "Food Safety Act 1990",
+          "Health and Safety at Work etc. Act 1974",
+          "Regulatory Reform (Fire Safety) Order 2005",
+          "Equality Act 2010"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q33",
+        "text": "Under RIDDOR, an over-7-day injury must be reported to the HSE. What does this mean?",
+        "options": [
+          "The injury took more than 7 days to occur",
+          "The worker is incapacitated for more than 7 consecutive days after the day of injury",
+          "The injury was reported more than 7 days late",
+          "Seven or more people witnessed the injury"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q34",
+        "text": "Which of the following is a specified injury under RIDDOR?",
+        "options": [
+          "A minor bruise",
+          "A paper cut",
+          "A fracture (except to fingers, thumbs, or toes)",
+          "A mild headache"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q35",
+        "text": "All workplace injuries, however minor, should be recorded in:",
+        "options": [
+          "Your personal diary",
+          "The workplace accident book",
+          "A text message to your manager",
+          "A social media post"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q36",
+        "text": "Approximately how many working days are lost to musculoskeletal disorders in the UK each year?",
+        "options": ["100,000 days", "1 million days", "6.6 million days", "20 million days"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q37",
+        "text": "When assessing the 'Task' element of TILE, which factor should you consider?",
+        "options": [
+          "Whether the floor is wet",
+          "Whether the task involves twisting, stooping, or repetitive movements",
+          "Whether the load has handles",
+          "Whether you have existing injuries"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q38",
+        "text": "A new or expectant mother must have which document updated under the Management Regulations?",
+        "options": [
+          "Her employment contract",
+          "Her individual risk assessment for manual handling",
+          "Her pay grade",
+          "Her holiday entitlement"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q39",
+        "text": "The HSE guideline weight for women lifting close to the body at waist height is:",
+        "options": ["5kg", "10kg", "16kg", "25kg"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q40",
+        "text": "If a manual handling task involves twisting, the HSE recommends reducing the guideline weight by:",
+        "options": ["5%", "10-20%", "50%", "No reduction is needed"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q41",
+        "text": "What is the term for the safe lifting technique that uses the body's natural mechanics?",
+        "options": [
+          "The power lift",
+          "The kinetic lifting technique",
+          "The deadlift method",
+          "The snatch technique"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q42",
+        "text": "Before lifting, you should tighten which muscles to support your spine?",
+        "options": ["Neck muscles", "Facial muscles", "Abdominal (core) muscles", "Calf muscles"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q43",
+        "text": "Where should you look while lifting and carrying a load?",
+        "options": [
+          "Down at the load to check your grip",
+          "At your feet to avoid tripping",
+          "Ahead in the direction you are walking",
+          "Up at the ceiling for posture"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q44",
+        "text": "The HSE recommends using a trolley for carry distances exceeding:",
+        "options": ["2 metres", "5 metres", "10 metres", "25 metres"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q45",
+        "text": "When carrying a load on stairs, what safety measure should you take?",
+        "options": [
+          "Carry the load overhead so you can see the steps",
+          "Ensure one hand is free for the handrail, or use the goods lift",
+          "Jump down the stairs to get it over quickly",
+          "Throw the load down the stairs and collect it at the bottom"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q46",
+        "text": "When pushing a load, the force should be applied at approximately:",
+        "options": ["Ankle height", "Knee height", "Waist to chest height", "Above head height"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q47",
+        "text": "Two people working together can safely lift approximately what proportion of their combined individual capacities?",
+        "options": [
+          "100% (double the individual limit)",
+          "About two-thirds",
+          "About one-half",
+          "About one-quarter"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q48",
+        "text": "During a team lift, the taller person should generally:",
+        "options": [
+          "Take the lighter end",
+          "Take the heavier end",
+          "Stand in the middle",
+          "Supervise without lifting"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q49",
+        "text": "A full beer keg weighs approximately 50kg. How should it be moved?",
+        "options": [
+          "Carried by one strong person",
+          "Rolled along the floor by kicking it",
+          "Using a keg trolley or barrel roller with two people",
+          "Left where the delivery driver placed it"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q50",
+        "text": "What is the best way to move a heavy stockpot of hot liquid across a busy kitchen?",
+        "options": [
+          "Carry it carefully with dry cloths on the handles",
+          "Decant into smaller containers, or use a pot trolley",
+          "Slide it along the counter surfaces",
+          "Ask a customer to help"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q51",
+        "text": "A pallet truck is designed for:",
+        "options": [
+          "Lifting people to high shelves",
+          "Moving heavy palletised loads",
+          "Climbing stairs with loads",
+          "Storing chemicals safely"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q52",
+        "text": "Under MHOR Regulation 5, employees have a duty to:",
+        "options": [
+          "Write their own risk assessments",
+          "Make full and proper use of equipment provided for manual handling",
+          "Set weight limits for the workplace",
+          "Train other employees in lifting"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q53",
+        "text": "Which of the following is NOT one of the HSE's recommended mechanical aids?",
+        "options": ["Sack trucks", "Back support belts", "Pallet trucks", "Step stools"],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q54",
+        "text": "The HSE does NOT recommend back support belts because:",
+        "options": [
+          "They are too expensive",
+          "They give a false sense of security and do not prevent injuries",
+          "They are difficult to put on",
+          "They look unprofessional"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q55",
+        "text": "What is a musculoskeletal disorder (MSD)?",
+        "options": [
+          "A disease caused by food contamination",
+          "A condition affecting muscles, joints, tendons, ligaments, nerves, or the spine",
+          "An injury caused only by a single heavy lift",
+          "A mental health condition caused by workplace stress"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q56",
+        "text": "Carpal tunnel syndrome is caused by:",
+        "options": [
+          "Eating the wrong foods",
+          "Compression of the wrist nerve from repetitive hand and wrist movements",
+          "Lifting very heavy loads once",
+          "Exposure to loud noise"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q57",
+        "text": "Which of the following is an early warning sign of a musculoskeletal disorder?",
+        "options": [
+          "Feeling energetic after work",
+          "Persistent aching, numbness, or tingling in your back, shoulders, or hands",
+          "Having a good appetite",
+          "Sleeping well every night"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q58",
+        "text": "Tendonitis is:",
+        "options": [
+          "A type of food allergy",
+          "Inflammation of tendons from repeated motion",
+          "A skin condition caused by chemicals",
+          "A viral infection"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q59",
+        "text": "To reduce the risk of repetitive strain in the kitchen, you should:",
+        "options": [
+          "Work faster to get tasks done sooner",
+          "Rotate between different tasks during your shift",
+          "Always perform the same task to build muscle memory",
+          "Avoid taking any breaks during service"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q60",
+        "text": "The ideal working height for a standing workstation is:",
+        "options": [
+          "Knee height",
+          "Waist height only",
+          "Elbow height (approximately 90-degree bend at the elbow)",
+          "Shoulder height"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q61",
+        "text": "Anti-fatigue mats are used in kitchens to:",
+        "options": [
+          "Make the floor look nicer",
+          "Reduce strain from prolonged standing on hard surfaces",
+          "Prevent chemical spills",
+          "Stop food falling on the floor"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q62",
+        "text": "When seated at a desk, your computer screen should be:",
+        "options": [
+          "On your lap",
+          "At arm's length with the top at eye level",
+          "As far away as possible",
+          "Below the desk"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q63",
+        "text": "How often should you take a break from a repetitive task to stretch?",
+        "options": [
+          "Once per shift is sufficient",
+          "Every 30-60 minutes",
+          "Only when you feel pain",
+          "Never -- breaks reduce productivity"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q64",
+        "text": "Using blunt knives increases the risk of repetitive strain because:",
+        "options": [
+          "Blunt knives are heavier",
+          "More force is needed for each cut, increasing hand and wrist strain",
+          "Blunt knives are longer",
+          "Blunt knives make more noise"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q65",
+        "text": "What should you do before each shift to reduce injury risk?",
+        "options": [
+          "Nothing -- just start working immediately",
+          "Perform gentle warm-up stretches for your back, shoulders, and wrists",
+          "Drink as much coffee as possible for energy",
+          "Lift the heaviest item first to test your strength"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q66",
+        "text": "The 'L' in TILE asks you to consider:",
+        "options": [
+          "The legal requirements only",
+          "The characteristics of the load -- weight, shape, grip, stability, temperature",
+          "The lighting in the building",
+          "Your lunch break schedule"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q67",
+        "text": "A load with shifting contents (such as a half-full liquid container) is more dangerous because:",
+        "options": [
+          "It makes a splashing sound",
+          "The weight shifts unpredictably, destabilising the handler",
+          "It weighs more than a full container",
+          "It is always hotter than a full container"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q68",
+        "text": "Which factor does the 'E' in TILE NOT typically cover?",
+        "options": [
+          "Floor conditions",
+          "Temperature extremes",
+          "Lighting quality",
+          "The individual's fitness level"
+        ],
+        "correctAnswer": 3
+      },
+      {
+        "id": "q69",
+        "text": "In a walk-in freezer at -18 degrees C, manual handling risk is increased because:",
+        "options": [
+          "The food is lighter when frozen",
+          "Cold reduces muscle flexibility and hand dexterity, and floors may be icy",
+          "The door is always open",
+          "Frozen food has no allergens"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q70",
+        "text": "If your employer fails to comply with MHOR, they could face:",
+        "options": [
+          "A polite letter only",
+          "Improvement notices, prohibition notices, unlimited fines, and up to 2 years imprisonment",
+          "A small fixed penalty notice",
+          "No consequences -- MHOR is advisory only"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q71",
+        "text": "Which document provides detailed HSE guidance on the Manual Handling Operations Regulations?",
+        "options": [
+          "L8 -- Legionella",
+          "L23 -- Manual Handling: Guidance on Regulations",
+          "L21 -- Workplace Health and Safety",
+          "L74 -- First Aid"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q72",
+        "text": "A risk assessment for manual handling must be recorded in writing if the employer has:",
+        "options": [
+          "1 or more employees",
+          "3 or more employees",
+          "5 or more employees",
+          "10 or more employees"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q73",
+        "text": "When should a manual handling risk assessment be reviewed?",
+        "options": [
+          "Only once, when it is first written",
+          "Every 10 years",
+          "When there is a significant change in the task, equipment, people, or after an injury",
+          "Only when the HSE visits"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q74",
+        "text": "Are there legal maximum weight limits for manual handling in the UK?",
+        "options": [
+          "Yes -- 25kg for men and 16kg for women",
+          "Yes -- 50kg for everyone",
+          "No -- there are only HSE guidelines, not legal limits",
+          "Yes -- 30kg for all workers"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q75",
+        "text": "What is the main reason for reporting near misses?",
+        "options": [
+          "To get colleagues in trouble",
+          "To identify hazards and prevent actual injuries from occurring",
+          "To fill in paperwork for the manager",
+          "Near misses do not need to be reported"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q76",
+        "text": "Which of the following best describes a 'near miss'?",
+        "options": [
+          "An injury that required first aid",
+          "A situation where injury was narrowly avoided but no harm occurred",
+          "An injury reported more than 7 days late",
+          "A risk assessment that was not completed"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q77",
+        "text": "When lifting from floor level compared to waist height, the load on the spine is approximately:",
+        "options": ["The same", "25% higher", "50% higher", "10% lower"],
+        "correctAnswer": 2
+      },
+      {
+        "id": "q78",
+        "text": "What is the recommended approach if you need to move a load over a long distance and there is no trolley available?",
+        "options": [
+          "Carry it as fast as possible",
+          "Break the journey into stages, resting the load at interim points",
+          "Throw the load to a colleague at the destination",
+          "Refuse to do the task entirely without offering alternatives"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q79",
+        "text": "Dehydration during a shift increases injury risk because:",
+        "options": [
+          "It makes you hungry",
+          "Dehydrated muscles are more prone to strains and cramps",
+          "It makes you walk slower",
+          "It only affects your concentration, not your muscles"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "id": "q80",
+        "text": "What is the correct sequence for the MHOR hierarchy?",
+        "options": [
+          "Assess, Avoid, Reduce",
+          "Reduce, Assess, Avoid",
+          "Avoid, Assess, Reduce",
+          "Assess, Reduce, Avoid"
+        ],
+        "correctAnswer": 2
+      }
+    ]
+  }
+}

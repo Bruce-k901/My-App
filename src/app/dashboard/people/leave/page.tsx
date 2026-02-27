@@ -17,7 +17,7 @@ import {
 import type { LeaveBalanceView, LeaveRequestView, LeaveCalendarEvent } from '@/types/teamly';
 
 export default function LeaveManagementPage() {
-  const { profile } = useAppContext();
+  const { profile, companyId } = useAppContext();
   const { showToast } = useToast();
   const [myBalances, setMyBalances] = useState<LeaveBalanceView[]>([]);
   const [pendingRequests, setPendingRequests] = useState<LeaveRequestView[]>([]);
@@ -38,7 +38,7 @@ export default function LeaveManagementPage() {
         app_role: profile.app_role,
         isManager,
         profile_id: profile.id,
-        company_id: profile.company_id
+        company_id: companyId
       });
     }
   }, [profile, isManager]);
@@ -59,10 +59,10 @@ export default function LeaveManagementPage() {
   }, [pendingRequests, profile?.id, isManager]);
 
   useEffect(() => {
-    if (profile?.company_id) {
+    if (companyId) {
       fetchData();
     }
-  }, [profile?.company_id, currentMonth]);
+  }, [companyId, currentMonth]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -87,12 +87,12 @@ export default function LeaveManagementPage() {
   };
 
   const fetchPendingRequests = async () => {
-    if (!profile?.company_id) return;
+    if (!companyId) return;
     
     let query = supabase
       .from('leave_requests_view')
       .select('*')
-      .eq('company_id', profile.company_id)
+      .eq('company_id', companyId)
       .eq('status', 'pending')
       .order('requested_at', { ascending: true });
     
@@ -105,7 +105,7 @@ export default function LeaveManagementPage() {
   };
 
   const fetchCalendarEvents = async () => {
-    if (!profile?.company_id) return;
+    if (!companyId) return;
     
     const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
     const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
@@ -115,7 +115,7 @@ export default function LeaveManagementPage() {
     const { data, error } = await supabase
       .from('leave_calendar_view')
       .select('*')
-      .eq('company_id', profile.company_id)
+      .eq('company_id', companyId)
       .lte('start_date', endOfMonth.toISOString().split('T')[0])
       .gte('end_date', startOfMonth.toISOString().split('T')[0]);
     

@@ -10,20 +10,38 @@ export const DEFAULT_BATCH_CODE_FORMAT = '{YYYY}-{MMDD}-{SEQ}';
 /**
  * Get the next sequence number for a given company on a given date.
  * Queries stock_batches for the highest sequence used today and increments.
+ * Builds the LIKE prefix from the actual format template so it matches
+ * the generated codes regardless of format (e.g. "2026-0225-%" for "{YYYY}-{MMDD}-{SEQ}").
  */
 export async function getNextSequence(
   supabase: SupabaseClient,
   companyId: string,
-  date: Date
+  date: Date,
+  options: { format?: string; siteName?: string; table?: string } = {}
 ): Promise<number> {
-  const dateStr = formatDateForCode(date);
-  const pattern = `%-${dateStr}-%`; // Match any code containing today's date
+  const format = options.format || DEFAULT_BATCH_CODE_FORMAT;
+  const table = options.table || 'stock_batches';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const siteAbbr = (options.siteName || '').substring(0, 4).toUpperCase().replace(/\s/g, '');
+
+  // Build the prefix by replacing date tokens and turning {SEQ}/{SEQ4} into a wildcard
+  const prefix = format
+    .replace('{SITE}', siteAbbr)
+    .replace('{YYYY}', String(year))
+    .replace('{YY}', String(year).slice(-2))
+    .replace('{MMDD}', `${month}${day}`)
+    .replace('{MM}', month)
+    .replace('{DD}', day)
+    .replace('{SEQ4}', '%')
+    .replace('{SEQ}', '%');
 
   const { data, error } = await supabase
-    .from('stock_batches')
+    .from(table)
     .select('batch_code')
     .eq('company_id', companyId)
-    .like('batch_code', pattern)
+    .like('batch_code', prefix)
     .order('batch_code', { ascending: false })
     .limit(1);
 
@@ -59,13 +77,14 @@ export async function generateBatchCode(
     format?: string;
     siteName?: string;
     date?: Date;
+    table?: string;
   } = {}
 ): Promise<string> {
   const date = options.date || new Date();
   const format = options.format || DEFAULT_BATCH_CODE_FORMAT;
   const siteName = options.siteName || '';
 
-  const seq = await getNextSequence(supabase, companyId, date);
+  const seq = await getNextSequence(supabase, companyId, date, { format, siteName, table: options.table });
 
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');

@@ -8,9 +8,10 @@ import { allergenKeyToLabel } from '@/lib/stockly/allergens';
 import ProductionInputManager from '@/components/stockly/ProductionInputManager';
 import ProductionOutputRecorder from '@/components/stockly/ProductionOutputRecorder';
 import CCPRecordForm from '@/components/stockly/CCPRecordForm';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import {
   ArrowLeft, Layers, ChefHat, Calendar, Clock, CheckCircle, XCircle,
-  Play, Square, Thermometer, Package, AlertTriangle, Plus, Info,
+  Play, Square, Thermometer, Package, AlertTriangle, Plus, Info, Trash2,
 } from '@/components/ui/icons';
 
 const STATUS_CONFIG: Record<ProductionBatchStatus, { label: string; color: string; icon: React.ElementType }> = {
@@ -31,6 +32,8 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
   const [showOutputForm, setShowOutputForm] = useState(false);
   const [showCCPForm, setShowCCPForm] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     loadBatch();
@@ -66,6 +69,20 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
       }
     } finally {
       setActionLoading(false);
+    }
+  }
+
+  async function handleDelete() {
+    setDeleteLoading(true);
+    try {
+      const res = await fetch(`/api/stockly/production-batches/${id}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        router.push('/dashboard/stockly/production-batches');
+      }
+    } finally {
+      setDeleteLoading(false);
     }
   }
 
@@ -156,6 +173,16 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
             >
               <XCircle className="w-4 h-4" />
               Cancel
+            </button>
+          )}
+          {(batch.status === 'planned' || batch.status === 'cancelled') && (
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              disabled={actionLoading || deleteLoading}
+              className="flex items-center gap-1.5 px-3 py-2 border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 rounded-lg text-sm hover:bg-red-50 dark:hover:bg-red-900/10 disabled:opacity-50"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete
             </button>
           )}
         </div>
@@ -329,6 +356,7 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
           plannedQuantity={batch.planned_quantity}
           recipeYieldQuantity={batch.recipe?.yield_quantity}
           recipeYieldUnit={batch.recipe?.yield_unit}
+          batchUnit={batch.unit}
         />
       )}
 
@@ -337,22 +365,43 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
           {/* Existing outputs */}
           {batch.outputs && batch.outputs.length > 0 ? (
             <div className="space-y-2">
-              {batch.outputs.map(output => (
-                <div key={output.id} className="flex items-center justify-between p-3 bg-theme-surface-elevated border border-theme rounded-lg">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <Package className="w-4 h-4 text-stockly-dark dark:text-stockly" />
-                      <span className="text-sm font-medium text-theme-primary">{output.stock_item?.name || 'Unknown'}</span>
-                      <span className="text-xs font-mono text-theme-tertiary">{output.batch_code}</span>
+              {[...batch.outputs]
+                .sort((a, b) => {
+                  const order: Record<string, number> = { finished_product: 0, byproduct: 1, waste: 2 };
+                  return (order[a.output_type || 'finished_product'] || 0) - (order[b.output_type || 'finished_product'] || 0);
+                })
+                .map(output => {
+                  const outputType = output.output_type || 'finished_product';
+                  const typeBadge = outputType === 'waste'
+                    ? { label: 'Waste', cls: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' }
+                    : outputType === 'byproduct'
+                    ? { label: 'Byproduct', cls: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' }
+                    : null; // Finished product doesn't need a badge — it's the default
+
+                  return (
+                    <div key={output.id} className="flex items-center justify-between p-3 bg-theme-surface-elevated border border-theme rounded-lg">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Package className={`w-4 h-4 ${outputType === 'waste' ? 'text-red-400' : 'text-stockly-dark dark:text-stockly'}`} />
+                          <span className="text-sm font-medium text-theme-primary">{output.stock_item?.name || 'Unknown'}</span>
+                          {typeBadge && (
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${typeBadge.cls}`}>
+                              {typeBadge.label}
+                            </span>
+                          )}
+                          {output.batch_code && (
+                            <span className="text-xs font-mono text-theme-tertiary">{output.batch_code}</span>
+                          )}
+                        </div>
+                        <div className="flex gap-3 mt-1 text-xs text-theme-tertiary">
+                          <span>Qty: {output.quantity} {output.unit || ''}</span>
+                          {output.use_by_date && <span>Use by: {new Date(output.use_by_date).toLocaleDateString('en-GB')}</span>}
+                          {output.best_before_date && <span>BB: {new Date(output.best_before_date).toLocaleDateString('en-GB')}</span>}
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex gap-3 mt-1 text-xs text-theme-tertiary">
-                      <span>Qty: {output.quantity} {output.unit || ''}</span>
-                      {output.use_by_date && <span>Use by: {new Date(output.use_by_date).toLocaleDateString('en-GB')}</span>}
-                      {output.best_before_date && <span>BB: {new Date(output.best_before_date).toLocaleDateString('en-GB')}</span>}
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  );
+                })}
             </div>
           ) : (
             <p className="text-sm text-theme-tertiary text-center py-4">No outputs recorded yet.</p>
@@ -456,6 +505,20 @@ export default function ProductionBatchDetailPage({ params }: { params: Promise<
           )}
         </div>
       )}
+
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        title="Delete Production Batch"
+        description={
+          batch.inputs && batch.inputs.length > 0
+            ? `This will permanently delete batch ${batch.batch_code} and reverse all ${batch.inputs.length} input consumption(s) back to stock. This action cannot be undone.`
+            : `This will permanently delete batch ${batch.batch_code}. This action cannot be undone.`
+        }
+        confirmText={deleteLoading ? 'Deleting...' : 'Delete Batch'}
+        variant="destructive"
+      />
     </div>
   );
 }

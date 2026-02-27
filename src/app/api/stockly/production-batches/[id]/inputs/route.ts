@@ -1,6 +1,7 @@
 // @salsa - SALSA Compliance: Production batch input (raw material consumption) API
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { NextRequest, NextResponse } from 'next/server';
+import { convertQuantity } from '@/lib/utils/unitConversions';
 
 export async function POST(
   request: NextRequest,
@@ -39,7 +40,7 @@ export async function POST(
     // Verify stock batch exists and has enough quantity
     const { data: stockBatch, error: stockError } = await supabase
       .from('stock_batches')
-      .select('id, quantity_remaining, status, company_id')
+      .select('id, quantity_remaining, unit, status, company_id')
       .eq('id', stock_batch_id)
       .single();
 
@@ -51,64 +52,85 @@ export async function POST(
       return NextResponse.json({ error: `Cannot consume from ${stockBatch.status} batch` }, { status: 400 });
     }
 
-    if (quantity > stockBatch.quantity_remaining) {
+    // Convert input quantity to the stock batch's unit for comparison/deduction
+    const batchUnit = stockBatch.unit || unit || '';
+    const inputUnit = unit || batchUnit;
+    const converted = convertQuantity(quantity, inputUnit, batchUnit);
+    const deductQty = converted.quantity; // quantity in stock batch's unit
+
+    if (deductQty > stockBatch.quantity_remaining) {
       return NextResponse.json(
-        { error: `Only ${stockBatch.quantity_remaining} remaining in stock batch` },
+        { error: `Only ${stockBatch.quantity_remaining} ${batchUnit} remaining in stock batch` },
         { status: 400 }
       );
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: userData } = await supabase.auth.getUser();
+    const userId = userData?.user?.id || null;
+
+    // Build insert payload — only include rework fields when actually reworking
+    const insertPayload: Record<string, unknown> = {
+      company_id: batch.company_id,
+      production_batch_id: id,
+      stock_batch_id,
+      stock_item_id,
+      planned_quantity: planned_quantity || null,
+      actual_quantity: actual_quantity || null,
+      unit: unit || null,
+      added_by: userId,
+    };
+    if (is_rework) {
+      insertPayload.is_rework = true;
+      insertPayload.rework_source_batch_id = rework_source_batch_id || null;
+    }
 
     // Create the input record
-    const { data: input, error: inputError } = await supabase
+    const { error: inputError } = await supabase
       .from('production_batch_inputs')
-      .insert({
-        company_id: batch.company_id,
-        production_batch_id: id,
-        stock_batch_id,
-        stock_item_id,
-        planned_quantity: planned_quantity || null,
-        actual_quantity: actual_quantity || null,
-        unit: unit || null,
-        added_by: user?.id || null,
-        is_rework: is_rework || false,
-        rework_source_batch_id: rework_source_batch_id || null,
-      })
-      .select(`
-        *,
-        stock_batch:stock_batches(id, batch_code, quantity_remaining, unit, use_by_date, allergens, status),
-        stock_item:stock_items(id, name, stock_unit)
-      `)
-      .single();
+      .insert(insertPayload);
 
     if (inputError) {
+      console.error('production_batch_inputs insert error:', inputError.code, inputError.message, inputError.details);
       return NextResponse.json({ error: inputError.message }, { status: 500 });
     }
 
-    // Create batch movement record (consumed_production)
-    await supabase.from('batch_movements').insert({
+    // Create batch movement record (consumed_production) — use converted qty in batch unit
+    const { error: movementError } = await supabase.from('batch_movements').insert({
       company_id: batch.company_id,
       site_id: batch.site_id,
       batch_id: stock_batch_id,
       movement_type: is_rework ? 'rework' : 'consumed_production',
-      quantity: -quantity,
+      quantity: -deductQty,
       reference_type: 'production_batch',
       reference_id: id,
       notes: is_rework ? `Rework material used in production batch` : `Consumed for production batch`,
-      created_by: user?.id || null,
+      created_by: userId,
     });
 
-    // Update stock batch quantity_remaining
-    const newRemaining = stockBatch.quantity_remaining - quantity;
-    await supabase
+    if (movementError) {
+      console.error('batch_movements insert error:', movementError.code, movementError.message);
+      return NextResponse.json({ error: `Stock movement failed: ${movementError.message}` }, { status: 500 });
+    }
+
+    // Update stock batch quantity_remaining (set depleted if zero)
+    const newRemaining = Math.round((stockBatch.quantity_remaining - deductQty) * 1000) / 1000;
+    const { error: updateError } = await supabase
       .from('stock_batches')
-      .update({ quantity_remaining: newRemaining })
+      .update({
+        quantity_remaining: newRemaining,
+        ...(newRemaining <= 0 ? { status: 'depleted' } : {}),
+      })
       .eq('id', stock_batch_id);
 
-    return NextResponse.json({ success: true, data: input });
-  } catch (err) {
-    return NextResponse.json({ error: 'Failed to add production input' }, { status: 500 });
+    if (updateError) {
+      console.error('stock_batches update error:', updateError.code, updateError.message);
+      return NextResponse.json({ error: `Stock update failed: ${updateError.message}` }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err: any) {
+    console.error('Failed to add production input:', err?.message || err);
+    return NextResponse.json({ error: err?.message || 'Failed to add production input' }, { status: 500 });
   }
 }
 
@@ -153,7 +175,7 @@ export async function DELETE(
         .single();
 
       if (stockBatch) {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: userData } = await supabase.auth.getUser();
 
         // Create reversal movement
         await supabase.from('batch_movements').insert({
@@ -164,7 +186,7 @@ export async function DELETE(
           reference_type: 'production_batch',
           reference_id: id,
           notes: 'Reversed production consumption',
-          created_by: user?.id || null,
+          created_by: userData?.user?.id || null,
         });
 
         // Restore quantity

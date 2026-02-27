@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { completeCourseWithCertificate } from "@/lib/certificates/courseCompletion";
 
 /**
  * API endpoint to complete a course and create training record
- * 
+ *
  * POST /api/courses/complete
  * Body: {
  *   courseId: string,        // Course ID from JSON file (e.g., "uk-l2-food-safety")
@@ -15,7 +14,7 @@ import { completeCourseWithCertificate } from "@/lib/certificates/courseCompleti
  * }
  */
 export async function POST(request: NextRequest) {
-  const supabase = createRouteHandlerClient({ cookies });
+  const supabase = await createServerSupabaseClient();
 
   // 1. Verify user is authenticated
   const { data: { user }, error: authError } = await supabase.auth.getUser();
