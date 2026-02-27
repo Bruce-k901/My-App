@@ -1921,21 +1921,13 @@ export default function RotaBuilderPage() {
     if (selectedSite && companyId && !siteContext.loading) {
       loadData();
     }
-     
-  }, [selectedSite, weekStarting, companyId, siteContext.loading, siteContext.accessibleSites]);
+
+  }, [selectedSite, weekStarting, companyId, siteContext.loading]);
 
   const loadData = useCallback(async () => {
     if (!selectedSite || !companyId) return;
     if (!mountedRef.current) return;
-    
-    // Validate user can access this site
-    const canAccess = siteContext.accessibleSites.some(site => site.id === selectedSite);
-    if (!canAccess && siteContext.selectedSiteId !== 'all') {
-      setError('You do not have access to this site. Please select a site you have access to.');
-      setLoading(false);
-      return;
-    }
-    
+
     setLoading(true);
     setError(null);
 
