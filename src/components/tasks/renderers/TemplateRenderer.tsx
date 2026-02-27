@@ -95,8 +95,11 @@ export function TemplateRenderer({
   const hasTemperatureData = assets.size > 0;
 
   // Reference documents attached to the template (SOPs, RAs, guides)
+  // Check task_data first, then fall back to template's recurrence_pattern
   const referenceDocuments: Array<{ url: string; fileName: string; fileType: string; fileSize: number }> =
-    taskData?.referenceDocuments || [];
+    taskData?.referenceDocuments ||
+    template?.recurrence_pattern?.template_documents ||
+    [];
 
   const formatFileSize = (bytes: number): string => {
     if (bytes < 1024) return bytes + ' B';

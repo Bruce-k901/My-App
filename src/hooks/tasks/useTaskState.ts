@@ -199,20 +199,18 @@ export function useTaskState(
       setError(null);
 
       try {
-        // 1. Extract task_data
+        // 1. Extract task_data (will be enriched with template fallbacks below)
         const rawTaskData = (task.task_data || {}) as TaskDataBase;
         console.log('📦 [TASK_DATA] Extracted task_data:', {
           hasData: Object.keys(rawTaskData).length > 0,
           keys: Object.keys(rawTaskData),
-          FULL_DATA: rawTaskData,  // <-- See EVERYTHING
-          selectedAssets: rawTaskData.selectedAssets,
-          equipment_config: rawTaskData.equipment_config,
-          temperatures: rawTaskData.temperatures,
+          source: rawTaskData.source,
           checklistItems: rawTaskData.checklistItems,
+          default_checklist_items: rawTaskData.default_checklist_items,
           yesNoChecklistItems: rawTaskData.yesNoChecklistItems,
+          referenceDocuments: rawTaskData.referenceDocuments,
           source_type: rawTaskData.source_type
         });
-        setTaskData(rawTaskData);
 
         // 2. Load template
         let templateData = task.template;
@@ -257,6 +255,16 @@ export function useTaskState(
 
           setTemplate(templateData);
 
+          // Enrich taskData with template fallbacks for cron-generated tasks
+          // Cron tasks don't carry referenceDocuments — pull from template
+          if (!rawTaskData.referenceDocuments) {
+            const templateDocs = templateData.recurrence_pattern?.template_documents;
+            if (Array.isArray(templateDocs) && templateDocs.length > 0) {
+              rawTaskData.referenceDocuments = templateDocs;
+              console.log('📎 [ENRICH] Added referenceDocuments from template:', templateDocs.length);
+            }
+          }
+
           // Load custom fields if template uses custom form builder
           if (templateData.use_custom_fields) {
             console.log('📝 [CUSTOM_FIELDS] Loading template_fields for custom form...');
@@ -299,6 +307,9 @@ export function useTaskState(
         } else {
           console.warn('⚠️ [TEMPLATE] No template available');
         }
+
+        // Set enriched taskData (after template fallbacks applied)
+        setTaskData(rawTaskData);
 
         // 3. Build equipment list from task_data - NO DATABASE QUERY NEEDED
         console.log('🔍 [ASSETS] Searching for assets in task_data...');
@@ -418,8 +429,8 @@ export function useTaskState(
           console.debug('[ASSETS] No equipment in task_data (expected for non-equipment tasks)');
         }
 
-        // 4. Initialize form data
-        initializeFormData(rawTaskData, equipmentList);
+        // 4. Initialize form data (pass templateData so it can fall back to template's recurrence_pattern)
+        initializeFormData(rawTaskData, equipmentList, templateData);
 
         console.log('✅ [STATE] Task data loaded successfully');
 
@@ -435,7 +446,12 @@ export function useTaskState(
   }, [isOpen, task.id, task.template_id]);
 
   // Initialize form data from task_data and equipment list
-  function initializeFormData(rawTaskData: TaskDataBase, equipmentList: any[]) {
+  // Handles multiple task_data formats:
+  //   - Manual tasks: { checklistItems, yesNoChecklistItems, referenceDocuments }
+  //   - Cron Part 1b (from site_checklists): { default_checklist_items, equipment_config }
+  //   - Cron Part 1 (pattern-match): { original_task_data: { checklistItems, ... } }
+  // Falls back to template.recurrence_pattern when task_data is missing items
+  function initializeFormData(rawTaskData: TaskDataBase, equipmentList: any[], templateData: any) {
     console.log('🔧 [INIT] Initializing form data from task_data');
 
     // Initialize temperatures from equipment list
@@ -448,32 +464,74 @@ export function useTaskState(
       setTemperatures(initialTemps);
     }
 
-    // Initialize checklist items
-    if (rawTaskData.checklistItems && Array.isArray(rawTaskData.checklistItems)) {
-      const items = rawTaskData.checklistItems.map((item: any) => {
-        if (typeof item === 'string') {
-          return { text: item, completed: false };
-        }
-        return { text: item.text || '', completed: item.completed || false };
-      });
-      console.log('✅ [INIT] Initialized checklist items:', items.length);
-      setChecklistItems(items);
-    }
+    // Unwrap cron Part 1 nesting if present
+    const unwrapped = rawTaskData.original_task_data && typeof rawTaskData.original_task_data === 'object'
+      ? rawTaskData.original_task_data as Record<string, any>
+      : null;
 
-    // Initialize yes/no items (preserve enhanced format if present)
-    if (rawTaskData.yesNoChecklistItems && Array.isArray(rawTaskData.yesNoChecklistItems)) {
-      setYesNoItems(rawTaskData.yesNoChecklistItems.map((item: any) => {
+    // Resolve checklist items from multiple possible sources (priority order)
+    const rawChecklistItems: any[] | null =
+      getArray(rawTaskData.checklistItems) ||
+      getArray(unwrapped?.checklistItems) ||
+      getArray(rawTaskData.default_checklist_items) ||
+      getArray(unwrapped?.default_checklist_items) ||
+      getArray(templateData?.recurrence_pattern?.default_checklist_items);
+
+    // Resolve yes/no checklist items from multiple possible sources
+    const rawYesNoItems: any[] | null =
+      getArray(rawTaskData.yesNoChecklistItems) ||
+      getArray(unwrapped?.yesNoChecklistItems);
+
+    // Determine if template uses yes/no checklist
+    const hasYesNoEvidence = templateData?.evidence_types?.includes('yes_no_checklist');
+
+    // If we have checklist items but no explicit yes/no items, check if they should be yes/no
+    if (!rawYesNoItems && rawChecklistItems && hasYesNoEvidence) {
+      // Items from recurrence_pattern may be in yes/no format (have options property)
+      const yesNoFormatted = rawChecklistItems.map((item: any) => {
+        if (item && typeof item === 'object' && item.options && Array.isArray(item.options)) {
+          return { ...item, answer: item.answer || null };
+        }
+        const text = typeof item === 'string' ? item : (item?.text || item?.label || '');
+        return text ? { text, answer: null } : null;
+      }).filter(Boolean);
+
+      if (yesNoFormatted.length > 0) {
+        setYesNoItems(yesNoFormatted);
+        console.log('✅ [INIT] Initialized yes/no items from checklist data:', yesNoFormatted.length);
+      }
+    } else if (rawYesNoItems && rawYesNoItems.length > 0) {
+      // Initialize yes/no items (preserve enhanced format if present)
+      setYesNoItems(rawYesNoItems.map((item: any) => {
         if (item.options && Array.isArray(item.options)) {
-          // Enhanced format — preserve options, reset runtime fields
           return { ...item, answer: item.answer || null, actionResponse: undefined, exceptionLogged: undefined };
         }
         return { text: item.text || '', answer: item.answer || null };
       }));
-      console.log('✅ [INIT] Initialized yes/no items:', rawTaskData.yesNoChecklistItems.length);
+      console.log('✅ [INIT] Initialized yes/no items:', rawYesNoItems.length);
+    }
+
+    // Initialize regular checklist items (only if NOT using yes/no mode)
+    if (!hasYesNoEvidence && rawChecklistItems && rawChecklistItems.length > 0) {
+      const items = rawChecklistItems.map((item: any) => {
+        if (typeof item === 'string') {
+          return { text: item, completed: false };
+        }
+        return { text: item.text || item.label || '', completed: item.completed || false };
+      }).filter((item: any) => item.text);
+      if (items.length > 0) {
+        console.log('✅ [INIT] Initialized checklist items:', items.length);
+        setChecklistItems(items);
+      }
     }
 
     setFormData({});
     console.log('✅ [INIT] Form data initialized');
+  }
+
+  // Helper: return array if value is a non-empty array, else null
+  function getArray(value: any): any[] | null {
+    return Array.isArray(value) && value.length > 0 ? value : null;
   }
 
   // Temperature setter
