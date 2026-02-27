@@ -23,6 +23,8 @@ const SEVERITY_COLORS: Record<string, { bg: string; text: string; border: string
   critical: { bg: '#FEF2F2', text: '#991B1B', border: '#FECACA' },
 }
 
+const OPSLY_LOGO = `<img src="https://opslytech.com/logos/opsly-logo-email.png" alt="Opsly" width="120" style="display: block; margin: 0 auto 24px;" />`
+
 export function generatePestSightingEmailHTML({
   siteName,
   companyName,
@@ -61,81 +63,82 @@ export function generatePestSightingEmailHTML({
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
+<body style="background-color: #f4f4f5; margin: 0; padding: 40px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <table width="100%" cellspacing="0" cellpadding="0" style="max-width: 480px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; border: 1px solid #e4e4e7;">
+    <tr>
+      <td style="padding: 40px 30px; text-align: center;">
+        ${OPSLY_LOGO}
+        <h2 style="color: ${isUrgent ? '#DC2626' : '#1a1a2e'}; font-size: 22px; font-weight: bold; margin: 0 0 4px;">${isUrgent ? 'URGENT: ' : ''}Pest Sighting Reported</h2>
+        <p style="color: #52525b; font-size: 14px; margin: 0 0 20px;">${escapeHtml(siteName)} &mdash; ${escapeHtml(companyName)}</p>
 
-  <!-- Header -->
-  <div style="background: ${isUrgent ? '#DC2626' : '#D37E91'}; padding: 20px 24px; border-radius: 8px 8px 0 0;">
-    <h1 style="color: white; margin: 0; font-size: 18px; font-weight: 600;">
-      ${isUrgent ? 'URGENT: ' : ''}Pest Sighting Reported
-    </h1>
-    <p style="color: rgba(255,255,255,0.85); margin: 4px 0 0; font-size: 13px;">
-      ${escapeHtml(siteName)} &mdash; ${escapeHtml(companyName)}
-    </p>
-  </div>
+        <p style="color: #52525b; font-size: 15px; line-height: 1.6; margin: 0 0 20px; text-align: left;">A pest sighting has been logged at <strong>${escapeHtml(siteName)}</strong> and your attention is requested. Please review the details below and arrange a visit if required.</p>
 
-  <!-- Intro -->
-  <div style="background: white; padding: 20px 24px; border-left: 1px solid #eee; border-right: 1px solid #eee;">
-    <p style="margin: 0; font-size: 14px; color: #333; line-height: 1.6;">
-      A pest sighting has been logged at <strong>${escapeHtml(siteName)}</strong> and your attention is requested.
-      Please review the details below and arrange a visit if required.
-    </p>
-  </div>
+        <!-- Severity Banner -->
+        <table cellspacing="0" cellpadding="0" style="width: 100%; background-color: ${sev.bg}; border: 1px solid ${sev.border}; border-radius: 8px; text-align: left; margin-bottom: 16px;">
+          <tr>
+            <td style="padding: 10px 20px;">
+              <p style="margin: 0; font-size: 13px; color: ${sev.text}; font-weight: 600;">Severity: ${formatLabel(severity)}${quantityEstimate ? ` &mdash; Quantity: ${formatLabel(quantityEstimate)}` : ''}</p>
+            </td>
+          </tr>
+        </table>
 
-  <!-- Severity Banner -->
-  <div style="background: ${sev.bg}; padding: 12px 24px; border-left: 4px solid ${sev.border}; border-right: 1px solid #eee;">
-    <p style="margin: 0; font-size: 13px; color: ${sev.text}; font-weight: 600;">
-      Severity: ${formatLabel(severity)}${quantityEstimate ? ` &mdash; Quantity: ${formatLabel(quantityEstimate)}` : ''}
-    </p>
-  </div>
+        <!-- Sighting Details -->
+        <table cellspacing="0" cellpadding="0" style="width: 100%; background-color: #f4f4f5; border-radius: 8px; text-align: left; margin-bottom: 16px;">
+          <tr>
+            <td style="padding: 16px 20px;">
+              <p style="margin: 0 0 10px; font-size: 12px; font-weight: 600; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.5px;">Sighting Details</p>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 5px 0; color: #a1a1aa; font-size: 13px; width: 110px; vertical-align: top;">Date</td>
+                  <td style="padding: 5px 0; color: #1a1a2e; font-size: 13px; font-weight: 500;">${escapeHtml(sightingDate)}${sightingTime ? ` at ${escapeHtml(sightingTime)}` : ''}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #a1a1aa; font-size: 13px; vertical-align: top;">Pest Type</td>
+                  <td style="padding: 5px 0; color: #1a1a2e; font-size: 13px; font-weight: 500;">${formatLabel(pestType)}</td>
+                </tr>
+                ${evidenceType ? `<tr>
+                  <td style="padding: 5px 0; color: #a1a1aa; font-size: 13px; vertical-align: top;">Evidence</td>
+                  <td style="padding: 5px 0; color: #1a1a2e; font-size: 13px; font-weight: 500;">${formatLabel(evidenceType)}</td>
+                </tr>` : ''}
+                <tr>
+                  <td style="padding: 5px 0; color: #a1a1aa; font-size: 13px; vertical-align: top;">Location</td>
+                  <td style="padding: 5px 0; color: #1a1a2e; font-size: 13px; font-weight: 500;">${escapeHtml(locationArea)}${locationDetails ? `<br><span style="font-weight: 400; color: #a1a1aa;">${escapeHtml(locationDetails)}</span>` : ''}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 5px 0; color: #a1a1aa; font-size: 13px; vertical-align: top;">Reported By</td>
+                  <td style="padding: 5px 0; color: #1a1a2e; font-size: 13px; font-weight: 500;">${escapeHtml(reportedBy)}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
 
-  <!-- Sighting Details Card -->
-  <div style="background: white; padding: 20px 24px; border: 1px solid #eee; border-top: none;">
-    <h3 style="color: #78716C; margin: 0 0 12px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Sighting Details</h3>
-    <table style="width: 100%; border-collapse: collapse;">
-      <tr>
-        <td style="padding: 6px 0; color: #78716C; font-size: 13px; width: 130px; vertical-align: top;">Date</td>
-        <td style="padding: 6px 0; color: #1C1917; font-size: 13px; font-weight: 500;">${escapeHtml(sightingDate)}${sightingTime ? ` at ${escapeHtml(sightingTime)}` : ''}</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 0; color: #78716C; font-size: 13px; vertical-align: top;">Pest Type</td>
-        <td style="padding: 6px 0; color: #1C1917; font-size: 13px; font-weight: 500;">${formatLabel(pestType)}</td>
-      </tr>
-      ${evidenceType ? `<tr>
-        <td style="padding: 6px 0; color: #78716C; font-size: 13px; vertical-align: top;">Evidence</td>
-        <td style="padding: 6px 0; color: #1C1917; font-size: 13px; font-weight: 500;">${formatLabel(evidenceType)}</td>
-      </tr>` : ''}
-      <tr>
-        <td style="padding: 6px 0; color: #78716C; font-size: 13px; vertical-align: top;">Location</td>
-        <td style="padding: 6px 0; color: #1C1917; font-size: 13px; font-weight: 500;">${escapeHtml(locationArea)}${locationDetails ? `<br><span style="font-weight: 400; color: #78716C;">${escapeHtml(locationDetails)}</span>` : ''}</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 0; color: #78716C; font-size: 13px; vertical-align: top;">Reported By</td>
-        <td style="padding: 6px 0; color: #1C1917; font-size: 13px; font-weight: 500;">${escapeHtml(reportedBy)}</td>
-      </tr>
-    </table>
-  </div>
+        ${immediateActionTaken ? `
+        <!-- Immediate Action -->
+        <table cellspacing="0" cellpadding="0" style="width: 100%; background-color: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 8px; text-align: left; margin-bottom: 16px;">
+          <tr>
+            <td style="padding: 12px 20px;">
+              <p style="margin: 0 0 4px; font-size: 12px; font-weight: 600; color: #065F46; text-transform: uppercase; letter-spacing: 0.5px;">Immediate Action Taken</p>
+              <p style="margin: 0; font-size: 13px; color: #15803D; line-height: 1.5;">${escapeHtml(immediateActionTaken)}</p>
+            </td>
+          </tr>
+        </table>` : ''}
 
-  ${immediateActionTaken ? `
-  <!-- Immediate Action -->
-  <div style="background: #F0FDF4; padding: 16px 24px; border: 1px solid #BBF7D0; border-top: none;">
-    <h3 style="color: #166534; margin: 0 0 6px 0; font-size: 13px; font-weight: 600;">Immediate Action Taken</h3>
-    <p style="margin: 0; font-size: 13px; color: #15803D; line-height: 1.5;">${escapeHtml(immediateActionTaken)}</p>
-  </div>` : ''}
+        ${notes ? `
+        <!-- Notes -->
+        <table cellspacing="0" cellpadding="0" style="width: 100%; background-color: #f4f4f5; border-radius: 8px; text-align: left; margin-bottom: 16px;">
+          <tr>
+            <td style="padding: 12px 20px;">
+              <p style="margin: 0 0 4px; font-size: 12px; font-weight: 600; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.5px;">Additional Notes</p>
+              <p style="margin: 0; font-size: 13px; color: #52525b; line-height: 1.5;">${escapeHtml(notes)}</p>
+            </td>
+          </tr>
+        </table>` : ''}
 
-  ${notes ? `
-  <!-- Notes -->
-  <div style="background: white; padding: 16px 24px; border: 1px solid #eee; border-top: none;">
-    <h3 style="color: #78716C; margin: 0 0 6px 0; font-size: 13px; font-weight: 600;">Additional Notes</h3>
-    <p style="margin: 0; font-size: 13px; color: #333; line-height: 1.5;">${escapeHtml(notes)}</p>
-  </div>` : ''}
-
-  <!-- Footer -->
-  <div style="background: #FAFAF9; padding: 16px 24px; border-radius: 0 0 8px 8px; border: 1px solid #eee; border-top: none;">
-    <p style="margin: 0; font-size: 12px; color: #999; text-align: center;">
-      This is an automated notification from <strong>Opsly</strong> on behalf of ${escapeHtml(companyName)}.
-    </p>
-  </div>
-
+        <p style="color: #a1a1aa; font-size: 12px; margin: 0;">Automated notification from Opsly on behalf of ${escapeHtml(companyName)}.</p>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>`
 }

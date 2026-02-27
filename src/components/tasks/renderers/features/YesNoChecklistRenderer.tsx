@@ -2,13 +2,22 @@
 
 import { CheckCircle2, XCircle } from '@/components/ui/icons';
 import { isEnhancedYesNoItem } from '@/types/task-completion.types';
-import type { YesNoChecklistItem, YesNoChecklistItemEnhanced } from '@/types/task-completion.types';
+import type { YesNoChecklistItem } from '@/types/task-completion.types';
+
+interface Manager {
+  id: string;
+  full_name: string;
+  email: string;
+}
 
 interface YesNoChecklistRendererProps {
   items: YesNoChecklistItem[];
   onChange: (index: number, answer: string | null) => void;
   actionResponses?: Record<number, string>;
   onActionResponse?: (index: number, response: string) => void;
+  managers?: Manager[];
+  managerSelections?: Record<number, string[]>;
+  onManagerSelect?: (index: number, managerIds: string[]) => void;
   disabled?: boolean;
 }
 
@@ -17,6 +26,9 @@ export function YesNoChecklistRenderer({
   onChange,
   actionResponses = {},
   onActionResponse,
+  managers,
+  managerSelections = {},
+  onManagerSelect,
   disabled = false
 }: YesNoChecklistRendererProps) {
   if (!items || items.length === 0) return null;
@@ -44,6 +56,16 @@ export function YesNoChecklistRenderer({
     return null;
   };
 
+  const toggleManager = (itemIndex: number, managerId: string) => {
+    if (!onManagerSelect) return;
+    const current = managerSelections[itemIndex] || [];
+    if (current.includes(managerId)) {
+      onManagerSelect(itemIndex, current.filter(id => id !== managerId));
+    } else {
+      onManagerSelect(itemIndex, [...current, managerId]);
+    }
+  };
+
   return (
     <div>
       <h3 className="text-sm font-medium text-theme-primary mb-3">Yes/No Checklist</h3>
@@ -60,6 +82,8 @@ export function YesNoChecklistRenderer({
             const showRequireAction = selectedOption?.actions?.requireAction;
             const showLogException = selectedOption?.actions?.logException;
             const showRequestAction = selectedOption?.actions?.requestAction;
+            const hasActions = !!(showMessage || showRequireAction || showLogException || showRequestAction);
+            const selectedManagers = managerSelections[index] || [];
 
             return (
               <div
@@ -87,7 +111,7 @@ export function YesNoChecklistRenderer({
                 </div>
 
                 {/* Action indicators + message */}
-                {selectedOption && (showMessage || showLogException || showRequestAction || showRequireAction) && (
+                {selectedOption && hasActions && (
                   <div className="mt-3 space-y-2">
                     {/* Badges */}
                     {(showLogException || showRequestAction) && (
@@ -130,13 +154,52 @@ export function YesNoChecklistRenderer({
                         />
                       </div>
                     )}
+
+                    {/* Manager picker — select who to notify */}
+                    {showRequestAction && managers && managers.length > 0 && (
+                      <div>
+                        <label className="block text-xs font-medium text-theme-secondary mb-1.5">
+                          Select manager(s) to notify <span className="text-red-500">*</span>
+                        </label>
+                        <div className="space-y-1.5 max-h-36 overflow-y-auto rounded-lg border border-theme bg-theme-surface p-2">
+                          {managers.map((manager) => {
+                            const isSelected = selectedManagers.includes(manager.id);
+                            return (
+                              <label
+                                key={manager.id}
+                                className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md cursor-pointer transition-colors ${
+                                  isSelected
+                                    ? 'bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20'
+                                    : 'hover:bg-theme-hover border border-transparent'
+                                } ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => toggleManager(index, manager.id)}
+                                  disabled={disabled}
+                                  className="w-3.5 h-3.5 rounded border-gray-300 accent-[#D37E91]"
+                                />
+                                <span className="text-sm text-theme-primary">{manager.full_name}</span>
+                                <span className="text-xs text-theme-tertiary ml-auto">{manager.email}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                        {selectedManagers.length > 0 && (
+                          <p className="text-xs text-theme-tertiary mt-1">
+                            {selectedManagers.length} manager{selectedManagers.length !== 1 ? 's' : ''} selected
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             );
           }
 
-          // Legacy item — render as before
+          // Legacy item fallback (should rarely hit since items are now normalized)
           return (
             <div
               key={index}

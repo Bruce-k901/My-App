@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { sendEmail } from "@/lib/send-email";
+import { generateTeamInviteEmailHTML } from "@/lib/emails/teamInvite";
 
 /**
- * Resend invitation email to an existing user
- * This allows admins to resend invitation emails to users who may not have received them
- * or need a new invitation link.
+ * Resend invitation email to an existing user via Resend.
+ * Generates a Supabase auth link and sends a branded email.
  */
 export async function POST(req: Request) {
   try {
-    const { email, userId } = await req.json();
+    const { email, userId, companyId } = await req.json();
 
     if (!email) {
       return NextResponse.json(
@@ -22,104 +23,85 @@ export async function POST(req: Request) {
 
     const admin = getSupabaseAdmin();
 
-    // Check if user exists in auth
-    console.log(`📧 [RESEND-INVITE] Checking if user exists in auth...`);
-    const { data: existingUsers } = await admin.auth.admin.listUsers();
-    const existingUser = existingUsers.users.find(
-      (u) => u.email?.toLowerCase() === emailLower
-    );
-    
-    console.log(`📧 [RESEND-INVITE] User exists in auth: ${!!existingUser}`);
-
     const appUrl =
       process.env.NEXT_PUBLIC_APP_URL ||
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
-    if (existingUser) {
-      // User exists in auth - send password reset email instead
-      // This allows them to set/reset their password
-      const emailLower = String(email).toLowerCase();
-      console.log(`📧 [RESEND-INVITE] Generating recovery link for existing user: ${emailLower}`);
-      
-      const { data, error } = await admin.auth.admin.generateLink({
-        type: "recovery",
-        email: emailLower,
-        options: {
-          redirectTo: `${appUrl}/setup-account`,
-        },
-      });
+    // Fetch company name for the email (look up from profile if companyId not passed)
+    let companyName = "Your team";
+    let resolvedCompanyId = companyId;
 
-      if (error) {
-        console.error(`❌ [RESEND-INVITE] Password reset link generation failed for ${emailLower}:`, {
-          message: error.message,
-          status: error.status,
-          name: error.name,
-        });
-        
-        // Check for email configuration errors
-        const isEmailConfigError = /smtp|email.*config|mail.*server|unable.*send/i.test(error.message || "");
-        if (isEmailConfigError) {
-          console.error(`🚨 [RESEND-INVITE] Email configuration issue detected: ${error.message}`);
-          return NextResponse.json({ 
-            error: "Email service is not configured. Please check Supabase SMTP settings.", 
-            code: "email_config_error",
-            details: error.message 
-          }, { status: 500 });
-        }
-        
-        return NextResponse.json({ error: error.message }, { status: 400 });
-      }
-      
-      console.log(`✅ [RESEND-INVITE] Successfully generated recovery link for ${emailLower}`);
-
-      return NextResponse.json({
-        ok: true,
-        message: "Password reset email sent",
-        link: data.properties?.action_link,
-      });
-    } else {
-      // User doesn't exist in auth - send invitation
-      const emailLower = String(email).toLowerCase();
-      console.log(`📧 [RESEND-INVITE] Calling inviteUserByEmail for ${emailLower}`);
-      
-      const { data, error } = await admin.auth.admin.inviteUserByEmail(
-        emailLower,
-        {
-          redirectTo: `${appUrl}/setup-account`,
-        }
-      );
-
-      if (error) {
-        console.error(`❌ [RESEND-INVITE] inviteUserByEmail failed for ${emailLower}:`, {
-          message: error.message,
-          status: error.status,
-          name: error.name,
-        });
-        
-        // Check for email configuration errors
-        const isEmailConfigError = /smtp|email.*config|mail.*server|unable.*send/i.test(error.message || "");
-        if (isEmailConfigError) {
-          console.error(`🚨 [RESEND-INVITE] Email configuration issue detected: ${error.message}`);
-          return NextResponse.json({ 
-            error: "Email service is not configured. Please check Supabase SMTP settings.", 
-            code: "email_config_error",
-            details: error.message 
-          }, { status: 500 });
-        }
-        
-        return NextResponse.json({ error: error.message }, { status: 400 });
-      }
-      
-      console.log(`✅ [RESEND-INVITE] Successfully sent invite to ${emailLower}`, {
-        userId: data?.user?.id,
-      });
-
-      return NextResponse.json({
-        ok: true,
-        message: "Invitation email sent",
-        data,
-      });
+    if (!resolvedCompanyId && userId) {
+      const { data: profile } = await admin
+        .from("profiles")
+        .select("company_id")
+        .eq("id", userId)
+        .single();
+      resolvedCompanyId = profile?.company_id;
     }
+
+    if (resolvedCompanyId) {
+      const { data: company } = await admin
+        .from("companies")
+        .select("name")
+        .eq("id", resolvedCompanyId)
+        .single();
+      companyName = company?.name || "Your team";
+    }
+
+    // Check if user exists in auth
+    const { data: existingUsers } = await admin.auth.admin.listUsers();
+    const existingUser = existingUsers.users.find(
+      (u) => u.email?.toLowerCase() === emailLower
+    );
+
+    console.log(`📧 [RESEND-INVITE] User exists in auth: ${!!existingUser}`);
+
+    // Generate the appropriate link type
+    const linkType = existingUser ? "recovery" : "invite";
+    console.log(`📧 [RESEND-INVITE] Generating ${linkType} link for ${emailLower}`);
+
+    const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+      type: linkType as "recovery" | "invite",
+      email: emailLower,
+      options: {
+        redirectTo: `${appUrl}/setup-account`,
+      },
+    });
+
+    if (linkError) {
+      console.error(`❌ [RESEND-INVITE] Link generation failed for ${emailLower}:`, linkError.message);
+      return NextResponse.json({ error: linkError.message }, { status: 400 });
+    }
+
+    const inviteUrl = linkData.properties.action_link;
+
+    // Send branded email via Resend
+    const html = generateTeamInviteEmailHTML({
+      companyName,
+      inviteUrl,
+    });
+
+    const emailResult = await sendEmail({
+      to: emailLower,
+      subject: `${companyName} has invited you to join Opsly`,
+      html,
+      bcc: "hello@opslytech.com",
+    });
+
+    if (!emailResult.success) {
+      console.error(`❌ [RESEND-INVITE] Email send failed for ${emailLower}:`, emailResult.error);
+      return NextResponse.json({
+        error: emailResult.error || "Failed to send email",
+      }, { status: 500 });
+    }
+
+    console.log(`✅ [RESEND-INVITE] Branded invite email sent to ${emailLower}`);
+
+    return NextResponse.json({
+      ok: true,
+      message: "Invitation email sent",
+    });
   } catch (e: any) {
     console.error(`🔥 [RESEND-INVITE] Unhandled exception:`, {
       message: e?.message,
@@ -132,7 +114,3 @@ export async function POST(req: Request) {
     );
   }
 }
-
-
-
-

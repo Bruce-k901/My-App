@@ -43,6 +43,8 @@ export function TaskCompletionModalNew({
     setYesNoAnswer,
     actionResponses,
     setActionResponse,
+    yesNoManagerSelections,
+    setYesNoManagerSelection,
     photos,
     addPhoto,
     removePhoto,
@@ -57,6 +59,7 @@ export function TaskCompletionModalNew({
     addCustomRecord,
     updateCustomRecord,
     removeCustomRecord,
+    availableManagers,
     loading,
     error
   } = useTaskState(task, isOpen, companyId, siteId);
@@ -135,6 +138,22 @@ export function TaskCompletionModalNew({
         const val = customFieldValues[field.field_name];
         if (val === null || val === undefined || val === '') return false;
       }
+
+      // Validate yes/no action requirements (requireAction text + manager selection)
+      for (const field of customFields.filter(f => f.field_type === 'yes_no' && !f.parent_field_id)) {
+        const answer = customFieldValues[field.field_name];
+        const yesNoOptions = field.options?.yes_no_options;
+        if (answer && yesNoOptions) {
+          const selected = yesNoOptions.find((o: any) => o.value === answer);
+          if (selected?.actions?.requireAction && !customFieldValues[field.field_name + '__action']?.trim()) {
+            return false;
+          }
+          if (selected?.actions?.requestAction) {
+            const managers = customFieldValues[field.field_name + '__notify_managers'];
+            if (!managers || managers.length === 0) return false;
+          }
+        }
+      }
     }
 
     return true;
@@ -211,7 +230,7 @@ export function TaskCompletionModalNew({
       };
     });
 
-    // Build form data — enrich yes/no items with action responses
+    // Build form data — enrich yes/no items with action responses and manager selections
     const enrichedYesNoItems = yesNoItems.map((item: any, index: number) => {
       if (!isEnhancedYesNoItem(item) || !item.answer) return item;
       const selectedOption = item.options.find((o: any) => o.value === item.answer);
@@ -219,6 +238,7 @@ export function TaskCompletionModalNew({
         ...item,
         actionResponse: actionResponses[index] || undefined,
         exceptionLogged: selectedOption?.actions?.logException || false,
+        notifyManagerIds: selectedOption?.actions?.requestAction ? (yesNoManagerSelections[index] || []) : undefined,
       };
     });
 
@@ -257,8 +277,8 @@ export function TaskCompletionModalNew({
     await submitTask(payload);
   }, [
     task, profile, companyId, assetIds, temperatures, assetTempRanges,
-    assets, localOutOfRangeActions, checklistItems, yesNoItems, actionResponses, notes, photos, submitTask,
-    enabledFeatures, customFields, customFieldValues, customRecords
+    assets, localOutOfRangeActions, checklistItems, yesNoItems, actionResponses, yesNoManagerSelections,
+    notes, photos, submitTask, enabledFeatures, customFields, customFieldValues, customRecords
   ]);
 
   // Handle placing an out-of-range action
@@ -299,16 +319,21 @@ export function TaskCompletionModalNew({
       }
     }
 
-    // Validate required action responses for yes/no items
+    // Validate required action responses and manager selections for yes/no items
     if (enabledFeatures.yesNoChecklist && yesNoItems.length > 0) {
       const missingActions = yesNoItems.some((item: any, index: number) => {
         if (!isEnhancedYesNoItem(item) || !item.answer) return false;
         const selectedOption = item.options.find((o: any) => o.value === item.answer);
-        if (!selectedOption?.actions?.requireAction) return false;
-        return !(actionResponses[index] || '').trim();
+        if (!selectedOption?.actions) return false;
+        if (selectedOption.actions.requireAction && !(actionResponses[index] || '').trim()) return true;
+        if (selectedOption.actions.requestAction) {
+          const managers = yesNoManagerSelections[index];
+          if (!managers || managers.length === 0) return true;
+        }
+        return false;
       });
       if (missingActions) {
-        alert('Please document all required actions for flagged checklist items.');
+        alert('Please complete all required fields — document actions and select managers to notify for flagged items.');
         return;
       }
     }
@@ -327,7 +352,7 @@ export function TaskCompletionModalNew({
 
     // Submit (awaited to ensure submitting state is set before returning)
     await handleSubmit();
-  }, [enabledFeatures, assetIds, temperatures, outOfRangeAssets, localOutOfRangeActions, yesNoItems, actionResponses, handleSubmit]);
+  }, [enabledFeatures, assetIds, temperatures, outOfRangeAssets, localOutOfRangeActions, yesNoItems, actionResponses, yesNoManagerSelections, handleSubmit]);
 
   if (!isOpen) return null;
 
@@ -384,6 +409,8 @@ export function TaskCompletionModalNew({
               onYesNoItemChange={setYesNoAnswer}
               actionResponses={actionResponses}
               onActionResponse={setActionResponse}
+              yesNoManagerSelections={yesNoManagerSelections}
+              onYesNoManagerSelect={setYesNoManagerSelection}
               photos={photos}
               onPhotoAdd={addPhoto}
               onPhotoRemove={removePhoto}
@@ -399,6 +426,7 @@ export function TaskCompletionModalNew({
               onAddRecord={addCustomRecord}
               onUpdateRecord={updateCustomRecord}
               onRemoveRecord={removeCustomRecord}
+              availableManagers={availableManagers}
               disabled={submitting}
             />
           )}

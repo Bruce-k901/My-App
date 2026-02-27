@@ -1193,7 +1193,7 @@ export default function EmployeesPage() {
                           const res = await fetch('/api/users/resend-invite', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ email: employee.email, userId: employee.id }),
+                            body: JSON.stringify({ email: employee.email, userId: employee.id, companyId }),
                           });
                           const json = await res.json();
                           if (!res.ok) {

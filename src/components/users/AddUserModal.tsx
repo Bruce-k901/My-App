@@ -197,6 +197,7 @@ export default function AddUserModal({ open, onClose, companyId, siteId, selecte
         app_role: normRole(form.app_role) || form.app_role,
         position_title: form.position_title,
         boh_foh: form.boh_foh,
+        inviter_profile_id: profile?.id,
       };
       console.log("Submitting payload:", payload);
 

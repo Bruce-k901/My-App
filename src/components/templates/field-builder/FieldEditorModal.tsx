@@ -1,9 +1,27 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Plus, Trash } from '@/components/ui/icons';
+import { X, Plus, Trash, AlertTriangle, Bell, FileText } from '@/components/ui/icons';
 import { FieldType, type TemplateField } from '@/types/checklist';
 import { FIELD_TYPE_CONFIG, BUILDER_FIELD_TYPES, RECORD_SUB_FIELD_TYPES, COMMON_UNITS } from './field-type-config';
+
+interface YesNoOptionActions {
+  logException?: boolean;
+  requestAction?: boolean;
+  requireAction?: boolean;
+  message?: string;
+}
+
+interface YesNoOption {
+  label: string;
+  value: string;
+  actions: YesNoOptionActions;
+}
+
+const DEFAULT_YES_NO_OPTIONS: YesNoOption[] = [
+  { label: 'Yes', value: 'yes', actions: {} },
+  { label: 'No', value: 'no', actions: {} },
+];
 
 interface FieldEditorModalProps {
   isOpen: boolean;
@@ -42,6 +60,7 @@ export function FieldEditorModal({
   const [failThreshold, setFailThreshold] = useState<string>('');
   const [sectionLabel, setSectionLabel] = useState('');
   const [options, setOptions] = useState<string[]>(['']);
+  const [yesNoOptions, setYesNoOptions] = useState<YesNoOption[]>(DEFAULT_YES_NO_OPTIONS);
   const [subFields, setSubFields] = useState<Array<{ label: string; fieldType: FieldType; unit: string; required: boolean }>>([]);
 
   const config = FIELD_TYPE_CONFIG[fieldType];
@@ -63,6 +82,11 @@ export function FieldEditorModal({
       setSectionLabel(editingField.section_label || '');
       if (editingField.options?.choices) {
         setOptions(editingField.options.choices);
+      }
+      if (editingField.options?.yes_no_options) {
+        setYesNoOptions(editingField.options.yes_no_options);
+      } else {
+        setYesNoOptions(DEFAULT_YES_NO_OPTIONS);
       }
       if (editingSubFields && editingSubFields.length > 0) {
         setSubFields(editingSubFields.map(sf => ({
@@ -86,6 +110,7 @@ export function FieldEditorModal({
       setFailThreshold('');
       setSectionLabel('');
       setOptions(['']);
+      setYesNoOptions(DEFAULT_YES_NO_OPTIONS);
       setSubFields([]);
     }
   }, [editingField, editingSubFields, isOpen]);
@@ -117,6 +142,8 @@ export function FieldEditorModal({
       section_label: sectionLabel || null,
       options: config?.hasOptions && options.filter(o => o.trim()).length > 0
         ? { choices: options.filter(o => o.trim()) }
+        : fieldType === FieldType.YES_NO && yesNoOptions.some(o => o.actions.logException || o.actions.requestAction || o.actions.requireAction || o.actions.message)
+        ? { yes_no_options: yesNoOptions }
         : null,
     };
 
@@ -348,6 +375,114 @@ export function FieldEditorModal({
                   <Plus className="w-3.5 h-3.5" />
                   Add option
                 </button>
+              </div>
+            </div>
+          )}
+
+          {/* Yes/No answer actions */}
+          {fieldType === FieldType.YES_NO && (
+            <div>
+              <label className="block text-sm font-medium text-theme-primary mb-1">Answer Actions</label>
+              <p className="text-xs text-theme-tertiary mb-3">Configure what happens when staff select each answer</p>
+              <div className="space-y-3">
+                {yesNoOptions.map((option, optIdx) => {
+                  const hasActions = option.actions.logException || option.actions.requestAction || option.actions.requireAction;
+                  const hasMessage = !!option.actions.message;
+
+                  return (
+                    <div
+                      key={option.value}
+                      className={`rounded-lg border p-3 ${
+                        hasActions || hasMessage
+                          ? 'border-amber-300/50 dark:border-amber-500/30 bg-amber-50/50 dark:bg-amber-500/[0.04]'
+                          : 'border-theme bg-theme-surface'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                          option.value === 'yes'
+                            ? 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400'
+                            : 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400'
+                        }`}>
+                          If {option.label}
+                        </span>
+                        {hasActions && (
+                          <span className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3" />
+                            Flagged
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="mb-2">
+                        <label className="block text-xs text-theme-secondary mb-1">
+                          Message shown to staff when they select &quot;{option.label}&quot;
+                        </label>
+                        <input
+                          type="text"
+                          value={option.actions.message || ''}
+                          onChange={(e) => {
+                            const updated = [...yesNoOptions];
+                            updated[optIdx] = { ...updated[optIdx], actions: { ...updated[optIdx].actions, message: e.target.value } };
+                            setYesNoOptions(updated);
+                          }}
+                          placeholder={option.value === 'no'
+                            ? 'e.g. Follow the corrective action procedure'
+                            : 'Leave blank if no message needed'
+                          }
+                          className="w-full px-3 py-1.5 rounded border border-theme bg-theme-surface text-theme-primary text-sm focus:outline-none focus:ring-1 focus:ring-[#D37E91] placeholder:text-theme-tertiary/60"
+                        />
+                      </div>
+
+                      <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                        <label className="flex items-center gap-1.5 cursor-pointer group" title="Flag this answer as an exception in compliance reports">
+                          <input
+                            type="checkbox"
+                            checked={!!option.actions.logException}
+                            onChange={() => {
+                              const updated = [...yesNoOptions];
+                              updated[optIdx] = { ...updated[optIdx], actions: { ...updated[optIdx].actions, logException: !option.actions.logException } };
+                              setYesNoOptions(updated);
+                            }}
+                            className="w-3.5 h-3.5 rounded border-gray-300 accent-[#D37E91]"
+                          />
+                          <AlertTriangle className="w-3 h-3 text-theme-tertiary group-hover:text-amber-500" />
+                          <span className="text-xs text-theme-secondary">Flag as exception</span>
+                        </label>
+
+                        <label className="flex items-center gap-1.5 cursor-pointer group" title="Send a notification to managers when this answer is selected">
+                          <input
+                            type="checkbox"
+                            checked={!!option.actions.requestAction}
+                            onChange={() => {
+                              const updated = [...yesNoOptions];
+                              updated[optIdx] = { ...updated[optIdx], actions: { ...updated[optIdx].actions, requestAction: !option.actions.requestAction } };
+                              setYesNoOptions(updated);
+                            }}
+                            className="w-3.5 h-3.5 rounded border-gray-300 accent-[#D37E91]"
+                          />
+                          <Bell className="w-3 h-3 text-theme-tertiary group-hover:text-blue-500" />
+                          <span className="text-xs text-theme-secondary">Notify manager</span>
+                        </label>
+
+                        <label className="flex items-center gap-1.5 cursor-pointer group" title="Staff must write what action they took before completing">
+                          <input
+                            type="checkbox"
+                            checked={!!option.actions.requireAction}
+                            onChange={() => {
+                              const updated = [...yesNoOptions];
+                              updated[optIdx] = { ...updated[optIdx], actions: { ...updated[optIdx].actions, requireAction: !option.actions.requireAction } };
+                              setYesNoOptions(updated);
+                            }}
+                            className="w-3.5 h-3.5 rounded border-gray-300 accent-[#D37E91]"
+                          />
+                          <FileText className="w-3 h-3 text-theme-tertiary group-hover:text-purple-500" />
+                          <span className="text-xs text-theme-secondary">Staff must document action</span>
+                        </label>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

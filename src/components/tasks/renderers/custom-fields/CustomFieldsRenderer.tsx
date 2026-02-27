@@ -21,6 +21,7 @@ interface CustomFieldsRendererProps {
   onAddRecord: () => void;
   onUpdateRecord: (index: number, fieldName: string, value: any) => void;
   onRemoveRecord: (index: number) => void;
+  managers?: Array<{ id: string; full_name: string; email: string }>;
   disabled?: boolean;
 }
 
@@ -33,6 +34,7 @@ export function CustomFieldsRenderer({
   onAddRecord,
   onUpdateRecord,
   onRemoveRecord,
+  managers,
   disabled,
 }: CustomFieldsRendererProps) {
   const sortedFields = [...fields].sort((a, b) => a.field_order - b.field_order);
@@ -60,6 +62,21 @@ export function CustomFieldsRenderer({
               onAddRecord={onAddRecord}
               onUpdateRecord={onUpdateRecord}
               onRemoveRecord={onRemoveRecord}
+              disabled={disabled}
+            />
+          );
+        } else if (field.field_type === FieldType.YES_NO) {
+          // YES_NO fields need access to action value, manager selection for the action layer
+          fieldElement = (
+            <YesNoFieldRenderer
+              field={field}
+              value={values[field.field_name] ?? null}
+              onChange={(v) => onChange(field.field_name, v)}
+              actionValue={values[field.field_name + '__action'] || ''}
+              onActionChange={(v) => onChange(field.field_name + '__action', v)}
+              managers={managers}
+              selectedManagerIds={values[field.field_name + '__notify_managers'] || []}
+              onManagerSelect={(ids) => onChange(field.field_name + '__notify_managers', ids)}
               disabled={disabled}
             />
           );
@@ -92,6 +109,7 @@ function renderField(
     case FieldType.TEMPERATURE:
       return <TemperatureFieldRenderer field={field} value={value ?? null} onChange={onChange} disabled={disabled} />;
     case FieldType.YES_NO:
+      // Handled in main render loop (needs action props) — fallback for safety
       return <YesNoFieldRenderer field={field} value={value ?? null} onChange={onChange} disabled={disabled} />;
     case FieldType.SELECT:
       return <SelectFieldRenderer field={field} value={value ?? null} onChange={onChange} disabled={disabled} />;

@@ -30,6 +30,8 @@ interface TemplateRendererProps {
   onYesNoItemChange: (index: number, answer: string | null) => void;
   actionResponses?: Record<number, string>;
   onActionResponse?: (index: number, response: string) => void;
+  yesNoManagerSelections?: Record<number, string[]>;
+  onYesNoManagerSelect?: (index: number, managerIds: string[]) => void;
 
   // Photos
   photos: File[];
@@ -54,6 +56,9 @@ interface TemplateRendererProps {
   onUpdateRecord?: (index: number, fieldName: string, value: any) => void;
   onRemoveRecord?: (index: number) => void;
 
+  // Available managers for yes/no action notifications
+  availableManagers?: Array<{ id: string; full_name: string; email: string }>;
+
   // State
   disabled?: boolean;
 }
@@ -73,6 +78,8 @@ export function TemplateRenderer({
   onYesNoItemChange,
   actionResponses,
   onActionResponse,
+  yesNoManagerSelections,
+  onYesNoManagerSelect,
   photos,
   onPhotoAdd,
   onPhotoRemove,
@@ -88,16 +95,9 @@ export function TemplateRenderer({
   onAddRecord,
   onUpdateRecord,
   onRemoveRecord,
+  availableManagers,
   disabled = false
 }: TemplateRendererProps) {
-
-  console.log('[TemplateRenderer] Render check:', {
-    customFieldsEnabled: enabledFeatures.customFields,
-    customFieldsCount: customFields?.length ?? 0,
-    hasOnCustomFieldChange: !!onCustomFieldChange,
-    willRenderCustomFields: !!(enabledFeatures.customFields && customFields && customFields.length > 0 && onCustomFieldChange),
-  });
-
   // Check if we have temperature data to render - just check assets Map
   const hasTemperatureData = assets.size > 0;
 
@@ -180,6 +180,7 @@ export function TemplateRenderer({
           onAddRecord={onAddRecord || (() => {})}
           onUpdateRecord={onUpdateRecord || (() => {})}
           onRemoveRecord={onRemoveRecord || (() => {})}
+          managers={availableManagers}
           disabled={disabled}
         />
 
@@ -233,6 +234,9 @@ export function TemplateRenderer({
           onChange={onYesNoItemChange}
           actionResponses={actionResponses}
           onActionResponse={onActionResponse}
+          managers={availableManagers}
+          managerSelections={yesNoManagerSelections}
+          onManagerSelect={onYesNoManagerSelect}
           disabled={disabled}
         />
       )}

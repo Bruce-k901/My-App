@@ -218,30 +218,166 @@ export function useTaskSubmission(
         }
 
         if (selectedOption.actions.requestAction) {
-          try {
-            await supabase.from('notifications').insert({
-              company_id: companyId,
-              site_id: effectiveSiteId,
-              type: 'task',
-              title: `Action requested: ${item.text.substring(0, 60)}`,
-              message: selectedOption.actions.message ||
-                `"${item.text}" was answered "${selectedOption.label}" — action requested.`,
-              severity: 'warning',
-              priority: 'high',
-              status: 'active',
-              recipient_role: 'manager',
-              task_id: task.id,
-              created_by: profile?.id,
-              metadata: {
-                source: 'yes_no_checklist',
-                question: item.text,
-                answer: selectedOption.label,
-                action_response: item.actionResponse || null,
+          const selectedManagerIds: string[] = item.notifyManagerIds || [];
+
+          if (selectedManagerIds.length > 0) {
+            // Create per-manager in-app notifications
+            for (const managerId of selectedManagerIds) {
+              try {
+                await supabase.from('notifications').insert({
+                  company_id: companyId,
+                  site_id: effectiveSiteId,
+                  type: 'task',
+                  title: `Action requested: ${item.text.substring(0, 60)}`,
+                  message: selectedOption.actions.message ||
+                    `"${item.text}" was answered "${selectedOption.label}" — action requested.`,
+                  severity: 'warning',
+                  priority: 'high',
+                  status: 'active',
+                  recipient_user_id: managerId,
+                  task_id: task.id,
+                  created_by: profile?.id,
+                  metadata: {
+                    source: 'yes_no_checklist',
+                    question: item.text,
+                    answer: selectedOption.label,
+                    action_response: item.actionResponse || null,
+                  }
+                });
+              } catch (notifErr) {
+                console.error('Failed to create yes/no notification:', notifErr);
               }
-            });
-            console.log(`✅ Created notification for: ${item.text}`);
-          } catch (notifErr) {
-            console.error('Failed to create yes/no notification:', notifErr);
+            }
+
+            // Send email notifications to selected managers
+            try {
+              await fetch('/api/notifications/yes-no-action-request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  managerIds: selectedManagerIds,
+                  question: item.text,
+                  answer: selectedOption.label,
+                  actionMessage: selectedOption.actions.message || null,
+                  actionResponse: item.actionResponse || null,
+                  taskId: task.id,
+                  companyId,
+                  siteId: effectiveSiteId,
+                  completedBy: profile?.full_name || profile?.email || 'Staff',
+                }),
+              });
+            } catch (emailErr) {
+              console.error('Failed to send yes/no email notification:', emailErr);
+            }
+          } else {
+            // Fallback: no managers selected, create a role-based notification
+            try {
+              await supabase.from('notifications').insert({
+                company_id: companyId,
+                site_id: effectiveSiteId,
+                type: 'task',
+                title: `Action requested: ${item.text.substring(0, 60)}`,
+                message: selectedOption.actions.message ||
+                  `"${item.text}" was answered "${selectedOption.label}" — action requested.`,
+                severity: 'warning',
+                priority: 'high',
+                status: 'active',
+                recipient_role: 'manager',
+                task_id: task.id,
+                created_by: profile?.id,
+                metadata: {
+                  source: 'yes_no_checklist',
+                  question: item.text,
+                  answer: selectedOption.label,
+                  action_response: item.actionResponse || null,
+                }
+              });
+            } catch (notifErr) {
+              console.error('Failed to create yes/no notification:', notifErr);
+            }
+          }
+        }
+      }
+
+      // 3.6 Handle custom fields yes/no actions (requestAction, logException)
+      const customFieldValues = payload.formData.custom_field_values;
+      if (customFieldValues && typeof customFieldValues === 'object') {
+        // Load template fields to check for yes_no options
+        let templateFields: any[] = [];
+        if (task.template_id) {
+          try {
+            const res = await fetch(`/api/tasks/template-fields?templateId=${task.template_id}`);
+            if (res.ok) {
+              const json = await res.json();
+              templateFields = json.fields || [];
+            }
+          } catch { /* non-blocking */ }
+        }
+
+        for (const field of templateFields) {
+          if (field.field_type !== 'yes_no') continue;
+          const answer = customFieldValues[field.field_name];
+          if (!answer) continue;
+          const yesNoOptions = field.options?.yes_no_options;
+          if (!yesNoOptions) continue;
+          const selectedOption = yesNoOptions.find((o: any) => o.value === answer);
+          if (!selectedOption?.actions) continue;
+
+          if (selectedOption.actions.logException) {
+            hasExceptions = true;
+          }
+
+          if (selectedOption.actions.requestAction) {
+            const selectedManagerIds: string[] = customFieldValues[field.field_name + '__notify_managers'] || [];
+            const actionResponse = customFieldValues[field.field_name + '__action'] || null;
+
+            for (const managerId of selectedManagerIds) {
+              try {
+                await supabase.from('notifications').insert({
+                  company_id: companyId,
+                  site_id: effectiveSiteId,
+                  type: 'task',
+                  title: `Action requested: ${field.label?.substring(0, 60) || field.field_name}`,
+                  message: selectedOption.actions.message ||
+                    `"${field.label}" was answered "${selectedOption.label}" — action requested.`,
+                  severity: 'warning',
+                  priority: 'high',
+                  status: 'active',
+                  recipient_user_id: managerId,
+                  task_id: task.id,
+                  created_by: profile?.id,
+                  metadata: {
+                    source: 'custom_fields_yes_no',
+                    question: field.label,
+                    answer: selectedOption.label,
+                    action_response: actionResponse,
+                  }
+                });
+              } catch (notifErr) {
+                console.error('Failed to create custom field yes/no notification:', notifErr);
+              }
+            }
+
+            // Send email notifications
+            if (selectedManagerIds.length > 0) {
+              try {
+                await fetch('/api/notifications/yes-no-action-request', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    managerIds: selectedManagerIds,
+                    question: field.label,
+                    answer: selectedOption.label,
+                    actionMessage: selectedOption.actions.message || null,
+                    actionResponse,
+                    taskId: task.id,
+                    companyId,
+                    siteId: effectiveSiteId,
+                    completedBy: profile?.full_name || profile?.email || 'Staff member',
+                  }),
+                });
+              } catch { /* email is non-blocking */ }
+            }
           }
         }
       }

@@ -561,7 +561,7 @@ export default function UsersTab() {
                     const res = await fetch("/api/users/resend-invite", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ email, userId }),
+                      body: JSON.stringify({ email, userId, companyId: effectiveCompanyId }),
                     });
 
                     const json = await res.json();

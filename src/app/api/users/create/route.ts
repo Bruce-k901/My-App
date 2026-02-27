@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { sendEmail } from "@/lib/send-email";
+import { generateTeamInviteEmailHTML } from "@/lib/emails/teamInvite";
 import crypto from "crypto";
 
 export async function POST(req: Request) {
@@ -27,6 +28,7 @@ export async function POST(req: Request) {
       first_aid_expiry_date,
       cossh_trained,
       cossh_expiry_date,
+      inviter_profile_id,
     } = await req.json();
 
     if (!email || !company_id) {
@@ -94,139 +96,114 @@ export async function POST(req: Request) {
 
     const roleValue = String(app_role || "Staff");
 
-    // Step 1: Try to create auth user via invite first, then use auth user ID for profile
+    // Step 1: Create auth user and send branded invite email via Resend
     let authUserId: string | null = null;
     let invitationSent = false;
-    
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000');
+
+    // Fetch company name for the invite email
+    const { data: companyData } = await admin
+      .from("companies")
+      .select("name")
+      .eq("id", company_id)
+      .single();
+    const companyName = companyData?.name || "Your team";
+
+    // Optionally fetch inviter name
+    let inviterName: string | undefined;
+    if (inviter_profile_id) {
+      const { data: inviterProfile } = await admin
+        .from("profiles")
+        .select("full_name")
+        .eq("id", inviter_profile_id)
+        .single();
+      inviterName = inviterProfile?.full_name || undefined;
+    }
+
     try {
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL 
-        ? `https://${process.env.VERCEL_URL}` 
-        : 'http://localhost:3000');
-      
-      const emailLower = String(email).toLowerCase();
-      console.log(`📧 [CREATE-USER] Calling inviteUserByEmail for ${emailLower}`);
-      
-      const { data: inviteData, error: inviteError } = await admin.auth.admin.inviteUserByEmail(
-        emailLower,
-        {
-          data: {
-            full_name,
-            company_id,
-          },
-          redirectTo: `${appUrl}/setup-account`,
-        }
-      );
+      // Check if user already exists in auth
+      const { data: existingUsers } = await admin.auth.admin.listUsers();
+      const existingAuthUser = existingUsers.users.find(u => u.email?.toLowerCase() === emailLower);
 
-      if (inviteError) {
-        console.error(`❌ [CREATE-USER] inviteUserByEmail failed for ${emailLower}:`, {
-          message: inviteError.message,
-          status: inviteError.status,
-          name: inviteError.name,
+      if (existingAuthUser) {
+        // User already exists in auth — generate a recovery link and send branded email
+        authUserId = existingAuthUser.id;
+        console.log(`✅ [CREATE-USER] Found existing auth user: ${authUserId}`);
+
+        const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+          type: "recovery",
+          email: emailLower,
+          options: { redirectTo: `${appUrl}/setup-account` },
         });
-        
-        // Check for email configuration errors
-        const isEmailConfigError = /smtp|email.*config|mail.*server|unable.*send|rate.*limit/i.test(inviteError.message || "");
-        if (isEmailConfigError) {
-          console.error(`🚨 [CREATE-USER] Email configuration/rate limit issue detected: ${inviteError.message}`);
-          console.error(`💡 [CREATE-USER] Check Supabase Dashboard → Authentication → Email Templates → SMTP Settings`);
-          console.error(`💡 [CREATE-USER] For local dev, check Inbucket at http://localhost:54324`);
-          console.error(`💡 [CREATE-USER] Rate limit: Only 2 emails/hour allowed (check config.toml auth.rate_limit.email_sent)`);
-          // Continue to create profile anyway, but log the issue
-        }
-        
-        // Check if user already exists in auth
-        if (inviteError.message?.includes("already registered") || inviteError.message?.includes("already exists")) {
-          // User exists in auth - find their ID and send recovery email instead
-          const { data: existingUsers } = await admin.auth.admin.listUsers();
-          const existingUser = existingUsers.users.find(u => u.email?.toLowerCase() === emailLower);
-          
-          if (existingUser) {
-            authUserId = existingUser.id;
-            console.log(`✅ [CREATE-USER] Found existing auth user: ${authUserId}`);
-            
-            // Send recovery/password reset email for existing users
-            // Use resetPasswordForEmail which actually SENDS the email (not just generates a link)
-            try {
-              console.log(`📧 [CREATE-USER] Sending password reset email to existing user: ${emailLower}`);
-              
-              // Use the regular client's resetPasswordForEmail which actually sends emails
-              // We need to create a client instance for this
-              const { createClient } = await import('@supabase/supabase-js');
-              const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-              const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-              
-              if (!supabaseUrl || !serviceRoleKey) {
-                throw new Error('Missing Supabase URL or Service Role Key');
-              }
-              
-              const supabaseClient = createClient(supabaseUrl, serviceRoleKey, {
-                auth: {
-                  autoRefreshToken: false,
-                  persistSession: false,
-                },
-              });
-              
-              // resetPasswordForEmail actually SENDS the email
-              const { data: resetData, error: resetError } = await supabaseClient.auth.resetPasswordForEmail(
-                emailLower,
-                {
-                  redirectTo: `${appUrl}/setup-account`,
-                }
-              );
-              
-              if (resetError) {
-                console.error(`❌ [CREATE-USER] Password reset email failed for ${emailLower}:`, {
-                  message: resetError.message,
-                  status: resetError.status,
-                  name: resetError.name,
-                });
-                
-                // Check for email configuration errors
-                const isResetEmailConfigError = /smtp|email.*config|mail.*server|unable.*send|rate.*limit/i.test(resetError.message || "");
-                if (isResetEmailConfigError) {
-                  console.error(`🚨 [CREATE-USER] Email configuration/rate limit issue detected: ${resetError.message}`);
-                  console.error(`💡 [CREATE-USER] Check Supabase Dashboard → Authentication → Email Templates → SMTP Settings`);
-                  console.error(`💡 [CREATE-USER] For local dev, check Inbucket at http://localhost:54324`);
-                  console.error(`💡 [CREATE-USER] Rate limit: Only 2 emails/hour allowed (check config.toml auth.rate_limit.email_sent)`);
-                }
-              } else {
-                invitationSent = true;
-                console.log(`✅ [CREATE-USER] Password reset email sent to existing user ${emailLower}`);
-                console.log(`💡 [CREATE-USER] Check Inbucket at http://localhost:54324 for local dev emails`);
-                console.log(`💡 [CREATE-USER] Email should arrive shortly. If not, check rate limits and SMTP config.`);
 
-                // Send BCC notification copy to hello@opslytech.com
-                sendEmail({
-                  to: 'hello@opslytech.com',
-                  subject: `[BCC] Password reset sent to ${emailLower}`,
-                  html: `<p>A password reset / re-invite email was sent to <strong>${emailLower}</strong> (${full_name || 'No name'}).</p><p>Role: ${roleValue}</p><p>This is an automatic BCC copy for your records.</p>`,
-                }).catch((err) => console.warn('⚠️ BCC notification failed:', err));
-              }
-            } catch (recoveryErr: any) {
-              console.error(`❌ [CREATE-USER] Password reset email exception for ${emailLower}:`, {
-                message: recoveryErr?.message,
-                stack: recoveryErr?.stack,
-                name: recoveryErr?.name,
-              });
-            }
-          } else {
-            console.warn(`⚠️ [CREATE-USER] User exists in auth but could not be found for ${emailLower}`);
-          }
+        if (linkError) {
+          console.error(`❌ [CREATE-USER] Recovery link generation failed for ${emailLower}:`, linkError.message);
         } else {
-          // Other error - we'll create profile with generated ID
-          console.warn(`⚠️ [CREATE-USER] Invitation failed for ${emailLower}. Profile will be created without auth user link.`);
-        }
-      } else if (inviteData?.user?.id) {
-        authUserId = inviteData.user.id;
-        invitationSent = true;
-        console.log(`✅ [CREATE-USER] Invitation email sent to ${emailLower}, auth user ID: ${authUserId}`);
+          const inviteUrl = linkData.properties.action_link;
+          const html = generateTeamInviteEmailHTML({ companyName, inviteUrl, inviterName, roleName: roleValue });
 
-        // Send BCC notification copy to hello@opslytech.com
-        sendEmail({
-          to: 'hello@opslytech.com',
-          subject: `[BCC] Invite sent to ${emailLower}`,
-          html: `<p>An invitation email was sent to <strong>${emailLower}</strong> (${full_name || 'No name'}).</p><p>Role: ${roleValue}</p><p>This is an automatic BCC copy for your records.</p>`,
-        }).catch((err) => console.warn('⚠️ BCC notification failed:', err));
+          const emailResult = await sendEmail({
+            to: emailLower,
+            subject: `${companyName} has invited you to join Opsly`,
+            html,
+            bcc: "hello@opslytech.com",
+          });
+
+          invitationSent = emailResult.success;
+          if (invitationSent) {
+            console.log(`✅ [CREATE-USER] Branded invite email sent to existing user ${emailLower}`);
+          } else {
+            console.error(`❌ [CREATE-USER] Failed to send invite email to ${emailLower}:`, emailResult.error);
+          }
+        }
+      } else {
+        // New user — create auth user (no email sent by Supabase)
+        console.log(`📧 [CREATE-USER] Creating auth user for ${emailLower}`);
+
+        const { data: newUser, error: createError } = await admin.auth.admin.createUser({
+          email: emailLower,
+          email_confirm: false,
+          user_metadata: { full_name, company_id },
+        });
+
+        if (createError) {
+          console.error(`❌ [CREATE-USER] createUser failed for ${emailLower}:`, createError.message);
+          // Continue — profile will be created with generated ID
+        } else {
+          authUserId = newUser.user.id;
+          console.log(`✅ [CREATE-USER] Auth user created: ${authUserId}`);
+
+          // Generate invite link (no email sent by Supabase)
+          const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+            type: "invite",
+            email: emailLower,
+            options: { redirectTo: `${appUrl}/setup-account` },
+          });
+
+          if (linkError) {
+            console.error(`❌ [CREATE-USER] Invite link generation failed for ${emailLower}:`, linkError.message);
+          } else {
+            const inviteUrl = linkData.properties.action_link;
+            const html = generateTeamInviteEmailHTML({ companyName, inviteUrl, inviterName, roleName: roleValue });
+
+            const emailResult = await sendEmail({
+              to: emailLower,
+              subject: `${companyName} has invited you to join Opsly`,
+              html,
+              bcc: "hello@opslytech.com",
+            });
+
+            invitationSent = emailResult.success;
+            if (invitationSent) {
+              console.log(`✅ [CREATE-USER] Branded invite email sent to ${emailLower}`);
+            } else {
+              console.error(`❌ [CREATE-USER] Failed to send invite email to ${emailLower}:`, emailResult.error);
+            }
+          }
+        }
       }
     } catch (inviteErr: any) {
       console.error("❌ Invite exception:", inviteErr);

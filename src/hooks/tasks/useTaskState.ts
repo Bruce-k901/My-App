@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { ChecklistTask, TaskDataBase, Asset, EnabledFeatures } from '@/types/task-completion.types';
+import { normalizeYesNoItem } from '@/types/task-completion.types';
 import type { TemplateField } from '@/types/checklist';
 
 interface UseTaskStateResult {
@@ -36,6 +37,10 @@ interface UseTaskStateResult {
   actionResponses: Record<number, string>;
   setActionResponse: (index: number, response: string) => void;
 
+  // Yes/No manager selections (for request action — per-item manager IDs)
+  yesNoManagerSelections: Record<number, string[]>;
+  setYesNoManagerSelection: (index: number, managerIds: string[]) => void;
+
   // Photos
   photos: File[];
   addPhoto: (file: File) => void;
@@ -57,6 +62,9 @@ interface UseTaskStateResult {
   addCustomRecord: () => void;
   updateCustomRecord: (index: number, fieldName: string, value: any) => void;
   removeCustomRecord: (index: number) => void;
+
+  // Available managers (for yes/no action notifications)
+  availableManagers: Array<{ id: string; full_name: string; email: string }>;
 
   // Loading states
   loading: boolean;
@@ -81,6 +89,7 @@ export function useTaskState(
   const [checklistItems, setChecklistItems] = useState<Array<{ text: string; completed: boolean }>>([]);
   const [yesNoItems, setYesNoItems] = useState<any[]>([]);
   const [actionResponses, setActionResponsesState] = useState<Record<number, string>>({});
+  const [yesNoManagerSelections, setYesNoManagerSelectionsState] = useState<Record<number, string[]>>({});
   const [photos, setPhotos] = useState<File[]>([]);
   const [notes, setNotes] = useState('');
   const [outOfRangeActions, setOutOfRangeActions] = useState<Map<string, { action: 'monitor' | 'callout'; duration?: number; notes?: string }>>(new Map());
@@ -89,6 +98,7 @@ export function useTaskState(
   const [customFields, setCustomFields] = useState<TemplateField[]>([]);
   const [customFieldValues, setCustomFieldValues] = useState<Record<string, any>>({});
   const [customRecords, setCustomRecords] = useState<Record<string, any>[]>([]);
+  const [availableManagers, setAvailableManagers] = useState<Array<{ id: string; full_name: string; email: string }>>([]);
 
   // Loading states
   const [loading, setLoading] = useState(true);
@@ -110,26 +120,11 @@ export function useTaskState(
       };
     }
 
-    // Detect custom fields via THREE methods (belt-and-suspenders):
-    // 1. template.use_custom_fields (DB column)
-    // 2. task_data.use_custom_fields (seed/cron flag)
-    // 3. template.template_fields array present from page query join
-    // 4. evidence_types includes 'custom_fields'
-    const taskDataRaw = task.task_data as Record<string, any> | null;
+    // Detect custom fields: only trust the DB column and evidence_types
     const templateAny = template as any;
     const hasCustomFields =
       templateAny.use_custom_fields === true ||
-      taskDataRaw?.use_custom_fields === true ||
-      (Array.isArray(templateAny.template_fields) && templateAny.template_fields.length > 0) ||
       (Array.isArray(templateAny.evidence_types) && templateAny.evidence_types.includes('custom_fields'));
-
-    console.log('[useTaskState] enabledFeatures memo:', {
-      templateId: templateAny?.id,
-      use_custom_fields: templateAny.use_custom_fields,
-      task_data_flag: taskDataRaw?.use_custom_fields,
-      template_fields_len: Array.isArray(templateAny.template_fields) ? templateAny.template_fields.length : 'N/A',
-      hasCustomFields,
-    });
 
     if (hasCustomFields) {
       return {
@@ -164,7 +159,7 @@ export function useTaskState(
       signature: evidenceTypes.includes('signature'),
       customFields: false
     };
-  }, [template, task]);
+  }, [template]);
 
   // Load task data when modal opens
   useEffect(() => {
@@ -179,12 +174,14 @@ export function useTaskState(
       setChecklistItems([]);
       setYesNoItems([]);
       setActionResponsesState({});
+      setYesNoManagerSelectionsState({});
       setPhotos([]);
       setNotes('');
       setOutOfRangeActions(new Map());
       setCustomFields([]);
       setCustomFieldValues({});
       setCustomRecords([]);
+      setAvailableManagers([]);
       setLoading(true);
       setError(null);
       return;
@@ -237,31 +234,16 @@ export function useTaskState(
           }
 
           // Load custom fields if template uses custom form builder
-          // Detection: use_custom_fields flag, task_data flag, pre-joined template_fields, or evidence_types
           const tplAny = templateData as any;
           const isCustomFieldsTemplate =
             tplAny.use_custom_fields === true ||
-            (rawTaskData as any).use_custom_fields === true ||
-            (Array.isArray(tplAny.template_fields) && tplAny.template_fields.length > 0) ||
             (Array.isArray(tplAny.evidence_types) && tplAny.evidence_types.includes('custom_fields'));
 
-          console.log('[useTaskState] Custom fields detection:', {
-            templateId: tplAny.id,
-            templateName: tplAny.name,
-            use_custom_fields: tplAny.use_custom_fields,
-            task_data_use_custom_fields: (rawTaskData as any).use_custom_fields,
-            template_fields_count: Array.isArray(tplAny.template_fields) ? tplAny.template_fields.length : 'not array',
-            evidence_types: tplAny.evidence_types,
-            isCustomFieldsTemplate,
-          });
-
           if (isCustomFieldsTemplate) {
-            // Use pre-joined template_fields from page query if available (avoids extra DB call)
+            // Use pre-joined template_fields from page query if available
             let fields = Array.isArray(tplAny.template_fields) && tplAny.template_fields.length > 0
               ? tplAny.template_fields
               : null;
-
-            console.log('[useTaskState] Pre-joined template_fields:', fields ? `${fields.length} fields` : 'none — will fetch');
 
             // Fallback 1: direct client query
             if (!fields) {
@@ -271,30 +253,20 @@ export function useTaskState(
                 .eq('template_id', tplAny.id)
                 .order('field_order');
 
-              console.log('[useTaskState] Client DB query result:', {
-                fields: dbFields?.length ?? 0,
-                error: fieldsError?.message || null,
-                code: fieldsError?.code || null,
-              });
-
               if (!fieldsError && dbFields && dbFields.length > 0) {
                 fields = dbFields;
               }
             }
 
-            // Fallback 2: server API route (bypasses RLS entirely)
+            // Fallback 2: server API route (bypasses RLS)
             if (!fields || fields.length === 0) {
               try {
-                console.log('[useTaskState] Falling back to server API for template fields...');
                 const res = await fetch(`/api/tasks/template-fields?templateId=${tplAny.id}`);
                 if (res.ok) {
                   const json = await res.json();
                   if (json.fields && json.fields.length > 0) {
                     fields = json.fields;
-                    console.log('[useTaskState] Server API returned', fields.length, 'fields');
                   }
-                } else {
-                  console.error('[useTaskState] Server API error:', res.status);
                 }
               } catch (apiErr) {
                 console.error('[useTaskState] Server API fetch error:', apiErr);
@@ -302,7 +274,6 @@ export function useTaskState(
             }
 
             if (fields && fields.length > 0) {
-              console.log('[useTaskState] Setting customFields:', fields.length, 'fields');
               setCustomFields(fields);
 
               // Initialize values from task_data or defaults
@@ -321,20 +292,29 @@ export function useTaskState(
               if (rawTaskData.custom_records && Array.isArray(rawTaskData.custom_records)) {
                 setCustomRecords(rawTaskData.custom_records);
               } else {
-                // Start with one empty record if there's a repeatable field
                 const hasRepeatable = topFields.some((f: any) => f.field_type === 'repeatable_record');
                 if (hasRepeatable) {
                   setCustomRecords([{}]);
                 }
               }
-            } else {
-              console.error('[useTaskState] CRITICAL: No custom fields found despite isCustomFieldsTemplate=true');
             }
           }
         }
 
         // Set enriched taskData (after template fallbacks applied)
         setTaskData(rawTaskData);
+
+        // 2.5 Load available managers for yes/no action notifications
+        if (companyId) {
+          const { data: managers } = await supabase
+            .from('profiles')
+            .select('id, full_name, email')
+            .eq('company_id', companyId)
+            .in('app_role', ['Manager', 'General Manager', 'Admin']);
+          if (managers && managers.length > 0) {
+            setAvailableManagers(managers);
+          }
+        }
 
         // 3. Build equipment list from task_data - NO DATABASE QUERY NEEDED
         let equipmentList: Array<{
@@ -488,28 +468,66 @@ export function useTaskState(
     // Determine if template uses yes/no checklist
     const hasYesNoEvidence = templateData?.evidence_types?.includes('yes_no_checklist');
 
+    // Build lookup of template's latest default_checklist_items by text
+    // This allows merging template-configured actions into legacy task items
+    const templateDefaultItems = getArray(templateData?.recurrence_pattern?.default_checklist_items) || [];
+    const templateItemsByText = new Map<string, any>();
+    for (const tItem of templateDefaultItems) {
+      if (tItem && typeof tItem === 'object' && tItem.text && tItem.options && Array.isArray(tItem.options)) {
+        templateItemsByText.set(tItem.text.trim().toLowerCase(), tItem);
+      }
+    }
+
+    // Helper: merge a raw item with template options (if available) and normalize to enhanced format
+    const mergeAndNormalize = (item: any): any => {
+      const text = (item?.text || '').trim();
+      const answer = item?.answer || null;
+
+      // Already has options — keep them but also check for template updates
+      if (item?.options && Array.isArray(item.options)) {
+        const templateMatch = templateItemsByText.get(text.toLowerCase());
+        // If template has updated options with actions, prefer template's options
+        if (templateMatch) {
+          const templateHasActions = templateMatch.options.some((o: any) =>
+            o.actions?.logException || o.actions?.requestAction || o.actions?.requireAction || o.actions?.message
+          );
+          const itemHasActions = item.options.some((o: any) =>
+            o.actions?.logException || o.actions?.requestAction || o.actions?.requireAction || o.actions?.message
+          );
+          if (templateHasActions && !itemHasActions) {
+            return { text, options: templateMatch.options, answer, actionResponse: undefined, exceptionLogged: undefined };
+          }
+        }
+        return { ...item, answer, actionResponse: undefined, exceptionLogged: undefined };
+      }
+
+      // Legacy item — check template for enhanced version
+      const templateMatch = templateItemsByText.get(text.toLowerCase());
+      if (templateMatch) {
+        return { text, options: templateMatch.options, answer, actionResponse: undefined, exceptionLogged: undefined };
+      }
+
+      // No template match — normalize to enhanced format with empty actions
+      return normalizeYesNoItem({ text, answer });
+    };
+
     // If we have checklist items but no explicit yes/no items, check if they should be yes/no
     if (!rawYesNoItems && rawChecklistItems && hasYesNoEvidence) {
-      // Items from recurrence_pattern may be in yes/no format (have options property)
+      // Items from recurrence_pattern may be in yes/no format
       const yesNoFormatted = rawChecklistItems.map((item: any) => {
-        if (item && typeof item === 'object' && item.options && Array.isArray(item.options)) {
-          return { ...item, answer: item.answer || null };
+        if (item && typeof item === 'object') {
+          return mergeAndNormalize({ ...item, answer: item.answer || null });
         }
         const text = typeof item === 'string' ? item : (item?.text || item?.label || '');
-        return text ? { text, answer: null } : null;
+        return text ? mergeAndNormalize({ text, answer: null }) : null;
       }).filter(Boolean);
 
       if (yesNoFormatted.length > 0) {
         setYesNoItems(yesNoFormatted);
       }
     } else if (rawYesNoItems && rawYesNoItems.length > 0) {
-      // Initialize yes/no items (preserve enhanced format if present)
-      setYesNoItems(rawYesNoItems.map((item: any) => {
-        if (item.options && Array.isArray(item.options)) {
-          return { ...item, answer: item.answer || null, actionResponse: undefined, exceptionLogged: undefined };
-        }
-        return { text: item.text || '', answer: item.answer || null };
-      }));
+      // Initialize yes/no items — normalize all to enhanced format and merge template options
+      setYesNoItems(rawYesNoItems.map((item: any) => mergeAndNormalize(item)));
     }
 
     // Initialize regular checklist items (only if NOT using yes/no mode)
@@ -566,6 +584,11 @@ export function useTaskState(
   // Action response setter (for require action items)
   const setActionResponse = useCallback((index: number, response: string) => {
     setActionResponsesState(prev => ({ ...prev, [index]: response }));
+  }, []);
+
+  // Manager selection setter (for request action items)
+  const setYesNoManagerSelection = useCallback((index: number, managerIds: string[]) => {
+    setYesNoManagerSelectionsState(prev => ({ ...prev, [index]: managerIds }));
   }, []);
 
   // Photo helpers
@@ -632,6 +655,8 @@ export function useTaskState(
     setYesNoAnswer,
     actionResponses,
     setActionResponse,
+    yesNoManagerSelections,
+    setYesNoManagerSelection,
     photos,
     addPhoto,
     removePhoto,
@@ -646,6 +671,7 @@ export function useTaskState(
     addCustomRecord,
     updateCustomRecord,
     removeCustomRecord,
+    availableManagers,
     loading,
     error
   };

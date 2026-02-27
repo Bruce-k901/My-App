@@ -141,9 +141,7 @@ export function ModuleBar() {
               href={module.href}
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-lg transition-all relative",
-                isActive
-                  ? "bg-module-fg/[0.06]"
-                  : "hover:bg-module-fg/[0.04] group"
+                !isActive && "hover:bg-module-fg/[0.04] group"
               )}
             >
               <Icon
