@@ -42,6 +42,8 @@ export async function sendCourseAssignmentNotification(
     const supabaseAdmin = getSupabaseAdmin();
 
     // Get employee's auth user ID
+    // For old-style profiles, profiles.id IS the auth UUID (no separate auth_user_id)
+    // For new-style profiles, auth_user_id stores the auth UUID separately
     let employeeAuthId = employee.auth_user_id;
     if (!employeeAuthId && employee.id) {
       // Try to get auth_user_id from profiles table
@@ -50,12 +52,13 @@ export async function sendCourseAssignmentNotification(
         .select('auth_user_id')
         .eq('id', employee.id)
         .maybeSingle();
-      
-      employeeAuthId = profileData?.auth_user_id || null;
+
+      // Fall back to employee.id — for old profiles, id = auth UUID
+      employeeAuthId = profileData?.auth_user_id || employee.id;
     }
 
     if (!employeeAuthId) {
-      console.error('Cannot send notification: employee has no auth_user_id', employee.id);
+      console.error('Cannot send notification: employee has no auth_user_id or id', employee.id);
       return null;
     }
 
