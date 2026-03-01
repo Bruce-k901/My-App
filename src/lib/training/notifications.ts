@@ -29,8 +29,57 @@ interface Site {
 }
 
 /**
- * Send course assignment notification via messaging system
- * Creates a direct message from "System" to the user
+ * Resolve a profile's auth UUID for messaging/notification purposes.
+ * Strategies: auth_user_id field → DB lookup → getUserById check → email match.
+ */
+async function resolveAuthUUID(
+  supabaseAdmin: ReturnType<typeof getSupabaseAdmin>,
+  profileId: string,
+  knownAuthId?: string | null
+): Promise<string | null> {
+  if (knownAuthId) return knownAuthId;
+
+  const { data: profileData } = await supabaseAdmin
+    .from('profiles')
+    .select('auth_user_id, email, employee_number')
+    .eq('id', profileId)
+    .maybeSingle();
+
+  if (profileData?.auth_user_id) {
+    console.log(`[Training] Resolved auth UUID from auth_user_id for ${profileData.employee_number || profileId}`);
+    return profileData.auth_user_id;
+  }
+
+  // profile.id might BE the auth UUID (old-style profiles)
+  const { data: authCheck } = await supabaseAdmin.auth.admin.getUserById(profileId);
+  if (authCheck?.user) {
+    console.log(`[Training] profile.id IS auth UUID for ${profileData?.employee_number || profileId}`);
+    return profileId;
+  }
+
+  // Last resort: match by email
+  if (profileData?.email) {
+    const { data: usersList } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
+    const match = usersList?.users?.find(
+      (u) => u.email?.toLowerCase() === profileData.email!.toLowerCase()
+    );
+    if (match) {
+      console.log(`[Training] Resolved auth UUID via email for ${profileData.employee_number || profileData.email}`);
+      return match.id;
+    }
+  }
+
+  console.error('[Training] Cannot resolve auth UUID:', {
+    profileId,
+    employeeNumber: profileData?.employee_number,
+    email: profileData?.email,
+  });
+  return null;
+}
+
+/**
+ * Send course assignment notification via messaging system.
+ * Pattern modelled on the working notify-open-shifts route.
  */
 export async function sendCourseAssignmentNotification(
   assignment: CourseAssignment,
@@ -38,76 +87,29 @@ export async function sendCourseAssignmentNotification(
   employee: Profile,
   site?: Site | null
 ): Promise<string | null> {
+  const tag = '[Training Msg]';
   try {
     const supabaseAdmin = getSupabaseAdmin();
 
-    // Resolve employee's auth UUID using multiple fallback strategies:
-    // 1. auth_user_id on profile (new-style profiles)
-    // 2. Look up auth_user_id from DB by profile id
-    // 3. Verify profile.id IS the auth UUID via auth.admin
-    // 4. Look up auth user by email (employee_number for logging)
-    let employeeAuthId = employee.auth_user_id;
-    if (!employeeAuthId && employee.id) {
-      const { data: profileData } = await supabaseAdmin
-        .from('profiles')
-        .select('auth_user_id, email, employee_number')
-        .eq('id', employee.id)
-        .maybeSingle();
+    console.log(`${tag} Starting — assignment=${assignment.id}, company=${assignment.company_id}, employee=${employee.id}`);
 
-      employeeAuthId = profileData?.auth_user_id || null;
+    // 1. Resolve employee auth UUID
+    const employeeAuthId = await resolveAuthUUID(supabaseAdmin, employee.id, employee.auth_user_id);
+    if (!employeeAuthId) return null;
+    console.log(`${tag} Employee auth UUID: ${employeeAuthId}`);
 
-      if (!employeeAuthId) {
-        // Try: profile.id might BE the auth UUID (old-style profiles)
-        const { data: authCheck } = await supabaseAdmin.auth.admin.getUserById(employee.id);
-        if (authCheck?.user) {
-          employeeAuthId = employee.id;
-          console.log(`[Training Notification] Resolved auth UUID via profile.id for employee ${profileData?.employee_number || employee.id}`);
-        } else if (profileData?.email) {
-          // Last resort: look up auth user by email
-          const { data: usersList } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
-          const match = usersList?.users?.find(
-            (u) => u.email?.toLowerCase() === profileData.email!.toLowerCase()
-          );
-          if (match) {
-            employeeAuthId = match.id;
-            console.log(`[Training Notification] Resolved auth UUID via email for employee ${profileData?.employee_number || profileData?.email}`);
-          }
-        }
-      }
-
-      if (!employeeAuthId) {
-        console.error('Cannot resolve auth UUID for employee:', {
-          profileId: employee.id,
-          employeeNumber: profileData?.employee_number,
-          email: profileData?.email,
-          authUserIdField: profileData?.auth_user_id,
-        });
-        return null;
-      }
+    // 2. Resolve assigner auth UUID
+    let assignerAuthId: string | null = null;
+    if (assignment.assigned_by) {
+      assignerAuthId = await resolveAuthUUID(supabaseAdmin, assignment.assigned_by);
+      console.log(`${tag} Assigner auth UUID: ${assignerAuthId}`);
     }
 
-    if (!employeeAuthId) {
-      console.error('Cannot send notification: no employee id provided');
-      return null;
-    }
-
-    // Check if messaging_channels table exists
-    const channelCheck = await supabaseAdmin
-      .from('messaging_channels')
-      .select('id')
-      .limit(1);
-
-    if (channelCheck.error) {
-      console.warn('messaging_channels table may not exist, skipping notification:', channelCheck.error);
-      return null;
-    }
-
-    // Check if a direct channel already exists between "System" and employee
-    // For system messages, we'll create a channel with a special name pattern
+    // 3. Find or create channel (match notify-open-shifts pattern)
     const channelName = `Training: ${course.name}`;
-    
-    // Try to find existing channel for this assignment
-    const { data: existingChannel } = await supabaseAdmin
+    let channelId: string | null = null;
+
+    const { data: existingChannel, error: findErr } = await supabaseAdmin
       .from('messaging_channels')
       .select('id')
       .eq('company_id', assignment.company_id)
@@ -115,108 +117,108 @@ export async function sendCourseAssignmentNotification(
       .eq('name', channelName)
       .maybeSingle();
 
-    let channelId: string;
+    if (findErr) {
+      console.error(`${tag} Error finding channel:`, JSON.stringify(findErr));
+      return null;
+    }
 
-    if (existingChannel) {
+    if (existingChannel?.id) {
       channelId = existingChannel.id;
+      console.log(`${tag} Found existing channel: ${channelId}`);
     } else {
-      // Create new direct channel
-      // Get the assigner's profile and auth UUID (from assignment.assigned_by)
-      let assignerProfileId: string | null = null;
-      let assignerAuthId: string | null = null;
-      if (assignment.assigned_by) {
-        const { data: assignerProfile } = await supabaseAdmin
-          .from('profiles')
-          .select('id, auth_user_id')
-          .eq('id', assignment.assigned_by)
-          .maybeSingle();
-        assignerProfileId = assignerProfile?.id || null;
-        assignerAuthId = assignerProfile?.auth_user_id || assignerProfile?.id || null;
-      }
-
-      const createdBy = assignerProfileId || employee.id;
-
-      const { data: newChannel, error: channelError } = await supabaseAdmin
+      const createdBy = assignment.assigned_by || employee.id;
+      const { data: newChannel, error: chErr } = await supabaseAdmin
         .from('messaging_channels')
         .insert({
-          channel_type: 'direct',
           company_id: assignment.company_id,
+          channel_type: 'direct',
           name: channelName,
+          description: `Course assignment notification for ${course.name}`,
           created_by: createdBy,
           is_auto_created: true,
-          description: `Course assignment notification for ${course.name}`,
-        })
+        } as any)
         .select('id')
         .single();
 
-      if (channelError || !newChannel) {
-        console.error('Error creating messaging channel:', channelError);
+      if (chErr || !newChannel) {
+        console.error(`${tag} Error creating channel:`, JSON.stringify(chErr), { company_id: assignment.company_id, createdBy });
         return null;
       }
-
       channelId = newChannel.id;
+      console.log(`${tag} Created channel: ${channelId}`);
+    }
 
-      // Add employee as participant (use auth UUID — frontend queries with auth.uid())
-      const { error: membersError } = await supabaseAdmin
+    // 4. Ensure members (best-effort, match notify-open-shifts pattern)
+    const memberIds = Array.from(new Set([employeeAuthId, ...(assignerAuthId ? [assignerAuthId] : [])]));
+
+    const { data: existingMembers } = await supabaseAdmin
+      .from('messaging_channel_members')
+      .select('profile_id,left_at')
+      .eq('channel_id', channelId)
+      .in('profile_id', memberIds);
+
+    const existingMap = new Map((existingMembers || []).map((m: any) => [m.profile_id || m.user_id, m]));
+    const toInsert = memberIds
+      .filter((uid) => !existingMap.has(uid))
+      .map((uid) => ({
+        channel_id: channelId!,
+        profile_id: uid,
+        member_role: uid === assignerAuthId ? 'admin' : 'member',
+      }));
+
+    if (toInsert.length) {
+      const { error: memErr } = await supabaseAdmin
         .from('messaging_channel_members')
-        .insert({
-          channel_id: channelId,
-          profile_id: employeeAuthId,
-          member_role: 'member',
-        } as any);
+        .insert(toInsert as any);
 
-      if (membersError) {
-        console.error('Error adding channel member:', membersError);
-        // Continue anyway - channel is created
-      }
-
-      // Also add assigner if different from employee (use auth UUID)
-      if (assignerAuthId && assignerAuthId !== employeeAuthId) {
-        await supabaseAdmin
-          .from('messaging_channel_members')
-          .insert({
-            channel_id: channelId,
-            profile_id: assignerAuthId,
-            member_role: 'admin',
-          } as any);
+      if (memErr) {
+        console.error(`${tag} Error adding members:`, JSON.stringify(memErr), { toInsert });
+      } else {
+        console.log(`${tag} Added ${toInsert.length} member(s)`);
       }
     }
 
-    // Generate message content
+    // Re-activate any members who previously left
+    const leftIds = (existingMembers || []).filter((m: any) => m.left_at).map((m: any) => m.profile_id || m.user_id);
+    if (leftIds.length) {
+      await supabaseAdmin
+        .from('messaging_channel_members')
+        .update({ left_at: null } as any)
+        .eq('channel_id', channelId)
+        .in('profile_id', leftIds);
+    }
+
+    // 5. Build message content
     const employeeFirstName = employee.full_name?.split(' ')[0] || 'there';
-    const durationHours = course.duration_minutes 
-      ? Math.round(course.duration_minutes / 60 * 10) / 10 
+    const durationHours = course.duration_minutes
+      ? Math.round(course.duration_minutes / 60 * 10) / 10
       : null;
     const deadlineText = assignment.deadline_date
-      ? new Date(assignment.deadline_date).toLocaleDateString('en-GB', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        })
+      ? new Date(assignment.deadline_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
       : 'soon';
 
     const messageContent = `Hi ${employeeFirstName},
 
 You have been assigned to complete the following training course:
 
-📚 ${course.name}
-${durationHours ? `⏱️ Estimated duration: ${durationHours} hours` : ''}
-${assignment.deadline_date ? `📅 Deadline: ${deadlineText}` : ''}
+${course.name}
+${durationHours ? `Estimated duration: ${durationHours} hours` : ''}
+${assignment.deadline_date ? `Deadline: ${deadlineText}` : ''}
 
 ${site ? `This course is required for your role at ${site.name}.` : 'This course is required for your role.'}
 
-Please click the button below to confirm your details and begin the course. Note: A £5 charge will apply to your site upon successful completion.
+Please click the button below to confirm your details and begin the course. Note: A charge will apply to your site upon successful completion.
 
 If you have any questions, please speak to your manager.
 
 Best regards,
 Opsly Training System`;
 
-    // Get sender profile (assigner or employee)
+    // 6. Post message (match notify-open-shifts: plain insert, no .select().single())
     const senderId = assignment.assigned_by || employee.id;
+    console.log(`${tag} Inserting message — channel=${channelId}, sender=${senderId}`);
 
-    // Create message with action button metadata
-    const { data: message, error: messageError } = await supabaseAdmin
+    const { error: msgErr } = await supabaseAdmin
       .from('messaging_messages')
       .insert({
         channel_id: channelId,
@@ -232,24 +234,24 @@ Opsly Training System`;
             url: `/training/confirm/${assignment.id}`,
           },
         },
-      } as any)
-      .select('id')
-      .single();
+      } as any);
 
-    if (messageError || !message) {
-      console.error('Error creating message:', messageError);
+    if (msgErr) {
+      console.error(`${tag} Error creating message:`, JSON.stringify(msgErr));
       return null;
     }
+    console.log(`${tag} Message inserted OK`);
 
-    // Update channel's last_message_at
+    // 7. Update channel's last_message_at
     await supabaseAdmin
       .from('messaging_channels')
       .update({ last_message_at: new Date().toISOString() })
       .eq('id', channelId);
 
+    console.log(`${tag} Complete — channel=${channelId}`);
     return channelId;
   } catch (error: any) {
-    console.error('Error in sendCourseAssignmentNotification:', error);
+    console.error(`${tag} Unexpected error:`, error?.message, error?.stack);
     return null;
   }
 }
@@ -264,28 +266,24 @@ export function generateAssignmentMessage(
   site?: Site | null
 ): string {
   const employeeFirstName = employee.full_name?.split(' ')[0] || 'there';
-  const durationHours = course.duration_minutes 
-    ? Math.round(course.duration_minutes / 60 * 10) / 10 
+  const durationHours = course.duration_minutes
+    ? Math.round(course.duration_minutes / 60 * 10) / 10
     : null;
   const deadlineText = assignment.deadline_date
-    ? new Date(assignment.deadline_date).toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      })
+    ? new Date(assignment.deadline_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
     : 'soon';
 
   return `Hi ${employeeFirstName},
 
 You have been assigned to complete the following training course:
 
-📚 ${course.name}
-${durationHours ? `⏱️ Estimated duration: ${durationHours} hours` : ''}
-${assignment.deadline_date ? `📅 Deadline: ${deadlineText}` : ''}
+${course.name}
+${durationHours ? `Estimated duration: ${durationHours} hours` : ''}
+${assignment.deadline_date ? `Deadline: ${deadlineText}` : ''}
 
 ${site ? `This course is required for your role at ${site.name}.` : 'This course is required for your role.'}
 
-Please click the button below to confirm your details and begin the course. Note: A £5 charge will apply to your site upon successful completion.
+Please click the button below to confirm your details and begin the course. Note: A charge will apply to your site upon successful completion.
 
 If you have any questions, please speak to your manager.
 

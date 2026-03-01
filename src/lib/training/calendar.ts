@@ -20,18 +20,23 @@ interface Profile {
 }
 
 /**
- * Create calendar reminder for course assignment
- * Creates a notification in the notifications table (not separate calendar_tasks)
+ * Create calendar reminder for course assignment.
+ * Creates a notification in the notifications table.
+ * Uses ONLY columns that exist in the notifications table:
+ *   company_id, user_id, type, title, message, link, metadata, read
  */
 export async function createCourseReminderTask(
   assignment: CourseAssignment,
   course: TrainingCourse,
   profile: Profile
 ): Promise<string | null> {
+  const tag = '[Training Cal]';
   try {
     const supabaseAdmin = getSupabaseAdmin();
 
-    // Resolve the employee's auth UUID (frontend queries notifications by auth UUID)
+    console.log(`${tag} Starting — assignment=${assignment.id}, profile=${assignment.profile_id}`);
+
+    // Resolve the employee's auth UUID
     const { data: employeeProfile } = await supabaseAdmin
       .from('profiles')
       .select('auth_user_id, email, employee_number')
@@ -41,24 +46,25 @@ export async function createCourseReminderTask(
     let employeeAuthId = employeeProfile?.auth_user_id || null;
 
     if (!employeeAuthId) {
-      // Try: profile.id might BE the auth UUID (old-style profiles)
+      // profile.id might BE the auth UUID (old-style profiles)
       const { data: authCheck } = await supabaseAdmin.auth.admin.getUserById(assignment.profile_id);
       if (authCheck?.user) {
         employeeAuthId = assignment.profile_id;
+        console.log(`${tag} profile.id IS auth UUID for ${employeeProfile?.employee_number || assignment.profile_id}`);
       } else if (employeeProfile?.email) {
-        // Last resort: look up auth user by email
         const { data: usersList } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
         const match = usersList?.users?.find(
           (u) => u.email?.toLowerCase() === employeeProfile.email!.toLowerCase()
         );
         if (match) {
           employeeAuthId = match.id;
+          console.log(`${tag} Resolved auth UUID via email for ${employeeProfile.employee_number || employeeProfile.email}`);
         }
       }
     }
 
     if (!employeeAuthId) {
-      console.error('Cannot resolve auth UUID for calendar reminder:', {
+      console.error(`${tag} Cannot resolve auth UUID:`, {
         profileId: assignment.profile_id,
         employeeNumber: employeeProfile?.employee_number,
         email: employeeProfile?.email,
@@ -66,7 +72,9 @@ export async function createCourseReminderTask(
       return null;
     }
 
-    // Calculate reminder date: 7 days before deadline, or 7 days from now if no deadline
+    console.log(`${tag} Employee auth UUID: ${employeeAuthId}`);
+
+    // Calculate reminder date: 7 days before deadline, or 7 days from now
     let reminderDate: Date;
     if (assignment.deadline_date) {
       const deadline = new Date(assignment.deadline_date);
@@ -79,23 +87,24 @@ export async function createCourseReminderTask(
 
     // Don't create reminder if it's in the past
     if (reminderDate < new Date()) {
-      console.warn('Reminder date is in the past, skipping reminder creation');
+      console.warn(`${tag} Reminder date is in the past, skipping`);
       return null;
     }
 
     // Build course URL
-    const courseUrl = course.content_path 
+    const courseUrl = course.content_path
       ? `/learn/${course.content_path}`
       : `/dashboard/courses`;
 
     const reminderMessage = `You have been assigned to complete ${course.name}. Click the link to continue your training.
 
 Course: ${course.name}
-${assignment.deadline_date ? `Deadline: ${new Date(assignment.deadline_date).toLocaleDateString('en-GB')}` : ''}
+${assignment.deadline_date ? `Deadline: ${new Date(assignment.deadline_date).toLocaleDateString('en-GB')}` : ''}`;
 
-[Continue Training](${courseUrl})`;
+    // Insert notification using ONLY valid columns (no severity/status/due_date/priority)
+    // Extra info goes in metadata
+    console.log(`${tag} Inserting notification — user_id=${employeeAuthId}, company_id=${profile.company_id}`);
 
-    // Create notification (use user_id with auth UUID — frontend queries user_id column)
     const { data: notification, error: notificationError } = await supabaseAdmin
       .from('notifications')
       .insert({
@@ -105,18 +114,24 @@ ${assignment.deadline_date ? `Deadline: ${new Date(assignment.deadline_date).toL
         title: `Complete Training: ${course.name}`,
         message: reminderMessage,
         link: courseUrl,
-        severity: 'info',
-        status: 'active',
-        due_date: reminderDate.toISOString().split('T')[0],
-        priority: 'medium',
+        read: false,
+        metadata: {
+          kind: 'training_reminder',
+          assignmentId: assignment.id,
+          courseId: assignment.course_id,
+          dueDate: reminderDate.toISOString().split('T')[0],
+          priority: 'medium',
+        },
       } as any)
       .select('id')
       .single();
 
     if (notificationError || !notification) {
-      console.error('Error creating calendar reminder:', notificationError);
+      console.error(`${tag} Error creating notification:`, JSON.stringify(notificationError));
       return null;
     }
+
+    console.log(`${tag} Notification created: ${notification.id}`);
 
     // Update assignment with calendar reference
     await supabaseAdmin
@@ -124,9 +139,10 @@ ${assignment.deadline_date ? `Deadline: ${new Date(assignment.deadline_date).toL
       .update({ calendar_task_id: notification.id })
       .eq('id', assignment.id);
 
+    console.log(`${tag} Complete — notification=${notification.id}`);
     return notification.id;
   } catch (error: any) {
-    console.error('Error in createCourseReminderTask:', error);
+    console.error(`${tag} Unexpected error:`, error?.message, error?.stack);
     return null;
   }
 }
