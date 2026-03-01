@@ -4522,7 +4522,14 @@ export default function RotaBuilderPage() {
               throw new Error(`Leave request failed: ${leaveError.message}`);
             }
 
-            // 2. Also insert staff_attendance as audit record
+            // 2. Make the shift open by clearing profile_id
+            const { error: shiftError } = await supabase
+              .from('rota_shifts')
+              .update({ profile_id: null, estimated_cost: 0 })
+              .eq('id', shiftId);
+            if (shiftError) console.warn('[Absence] Failed to make shift open (non-blocking):', shiftError);
+
+            // 3. Also insert staff_attendance as audit record
             const { error: attendanceError } = await supabase.from('staff_attendance').insert({
               profile_id: profileId,
               company_id: companyId,
@@ -4533,7 +4540,7 @@ export default function RotaBuilderPage() {
             });
             if (attendanceError) console.warn('[Absence] staff_attendance insert failed (non-blocking):', attendanceError);
 
-            // 3. If sick, also create a sickness record
+            // 4. If sick, also create a sickness record
             if (reason === 'sick') {
               const staffMember = staff.find(s => s.id === profileId);
               const { error: sicknessError } = await supabase.from('staff_sickness_records').insert({
@@ -4551,7 +4558,7 @@ export default function RotaBuilderPage() {
               if (sicknessError) console.warn('[Absence] sickness record insert failed (non-blocking):', sicknessError);
             }
 
-            // 4. Reload rota data so the absence shows immediately
+            // 5. Reload rota data so the absence shows immediately
             toast.success('Absence recorded');
             await loadData();
           }}
@@ -4578,6 +4585,25 @@ export default function RotaBuilderPage() {
           staff={assignmentStaff}
           shiftInfo={mobileAssignShiftId ? shifts.find(s => s.id === mobileAssignShiftId) : null}
         />
+
+        {/* Edit Shift Modal (shared with desktop) */}
+        {editingShift && (
+          <EditShiftModal
+            shift={editingShift}
+            staff={assignmentStaff}
+            sections={sections}
+            sectionsEnabled={sectionsEnabled}
+            onSave={(data) => {
+              handleUpdateShift(editingShift.id, data);
+              setEditingShift(null);
+            }}
+            onDelete={() => {
+              handleDeleteShift(editingShift.id);
+              setEditingShift(null);
+            }}
+            onClose={() => setEditingShift(null)}
+          />
+        )}
       </div>
     );
   }
