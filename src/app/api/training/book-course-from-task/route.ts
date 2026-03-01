@@ -241,7 +241,7 @@ export async function POST(request: NextRequest) {
         assigned_by: profile.id,
         deadline_date: deadlineDate,
       })
-      .select('id')
+      .select('id, company_id, profile_id, course_id, deadline_date, assigned_by')
       .single();
 
     if (assignmentError || !assignment) {
