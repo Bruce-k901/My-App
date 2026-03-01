@@ -11,6 +11,7 @@ import {
   ChevronRight,
   X,
   Users,
+  Bell,
 } from '@/components/ui/icons';
 import { toast } from 'sonner';
 import { portalToOverlayRoot } from '@/lib/overlay-portal';
@@ -49,6 +50,7 @@ interface ShiftActionSheetProps {
   onRecordAbsence?: (shiftId: string, profileId: string, reason: string, notes: string) => Promise<void>;
   onEditShift?: (shift: ShiftInfo) => void;
   onAssignShift?: (shiftId: string) => void;
+  onNotifyTeam?: () => Promise<void>;
   currentUserId?: string;
   isUserClockedIn?: boolean;
   canManageRota?: boolean;
@@ -72,6 +74,7 @@ export function ShiftActionSheet({
   onRecordAbsence,
   onEditShift,
   onAssignShift,
+  onNotifyTeam,
   currentUserId,
   isUserClockedIn = false,
   canManageRota = false,
@@ -138,6 +141,20 @@ export function ShiftActionSheet({
     } catch (err: any) {
       console.error('Record absence error:', err);
       toast.error(err?.message || 'Failed to record absence');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleNotifyTeam() {
+    if (!onNotifyTeam) return;
+    setLoading(true);
+    try {
+      await onNotifyTeam();
+      handleClose();
+    } catch (err: any) {
+      console.error('Notify team error:', err);
+      toast.error(err?.message || 'Failed to notify team');
     } finally {
       setLoading(false);
     }
@@ -284,6 +301,16 @@ export function ShiftActionSheet({
                       onAssignShift(shift.id);
                       handleClose();
                     }}
+                  />
+                )}
+
+                {/* Notify Team — managers only, open shifts */}
+                {canManageRota && !isAssigned && onNotifyTeam && (
+                  <ActionButton
+                    icon={<Bell className="w-5 h-5" />}
+                    label="Notify Team"
+                    onClick={handleNotifyTeam}
+                    loading={loading}
                   />
                 )}
 

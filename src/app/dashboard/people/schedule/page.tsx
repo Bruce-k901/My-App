@@ -4566,6 +4566,7 @@ export default function RotaBuilderPage() {
             setEditingShift(shift as Shift);
           }}
           onAssignShift={(shiftId) => setMobileAssignShiftId(shiftId)}
+          onNotifyTeam={notifyTeamAboutOpenShifts}
           currentUserId={profile?.id}
           isUserClockedIn={userAttendanceStatus?.onShift ?? false}
           canManageRota={canManageRota}
