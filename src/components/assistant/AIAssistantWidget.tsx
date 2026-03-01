@@ -50,6 +50,8 @@ import { supabase } from '@/lib/supabase';
 import { usePanelStore } from '@/lib/stores/panel-store';
 import { useTheme } from '@/hooks/useTheme';
 import { TicketCreationModal } from './TicketCreationModal';
+import { SendMessageModal } from './SendMessageModal';
+import { CreateTaskModal } from './CreateTaskModal';
 
 // ============================================================================
 // TYPES
@@ -181,6 +183,10 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
     type: 'issue' | 'idea' | 'question';
     screenshot?: string;
   } | null>(null);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [pendingMessage, setPendingMessage] = useState<{ content?: string } | null>(null);
+  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [pendingTask, setPendingTask] = useState<{ name?: string; instructions?: string } | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -261,6 +267,29 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
       return { isGeneration: true, type: 'risk-assessment' };
     }
     return { isGeneration: false };
+  };
+
+  // Check if message is a send-message intent
+  const isMessageQuery = (content: string): { isMessage: boolean } => {
+    const lower = content.toLowerCase();
+    if (lower.includes('send message to') || lower.includes('send a message to') ||
+        lower.includes('message to') || lower.includes('send this to') ||
+        lower.includes('forward this to') || lower.includes('share this with') ||
+        lower.includes('dm ') || lower.includes('tell them about')) {
+      return { isMessage: true };
+    }
+    return { isMessage: false };
+  };
+
+  // Check if message is a create-task intent
+  const isTaskQuery = (content: string): { isTask: boolean } => {
+    const lower = content.toLowerCase();
+    if (lower.includes('create a task') || lower.includes('create task') ||
+        lower.includes('make a task') || lower.includes('add a task') ||
+        lower.includes('assign a task') || lower.includes('assign task to')) {
+      return { isTask: true };
+    }
+    return { isTask: false };
   };
 
   // Generate SOP
@@ -579,6 +608,112 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
     setMessages(prev => [...prev, cancelMessage]);
   };
 
+  // Handle send message modal submit
+  const handleSendMessageSubmit = async (recipientProfileId: string, messageContent: string) => {
+    setShowMessageModal(false);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/oa/send-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipientProfileId, content: messageContent }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to send message');
+      }
+
+      const data = await response.json();
+
+      const successMessage: Message = {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: `Message sent to ${data.recipientName || 'team member'} via Msgly.`,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, successMessage]);
+    } catch (error: any) {
+      const errorMessage: Message = {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: `Sorry, I couldn't send the message: ${error.message}`,
+        timestamp: new Date(),
+        isError: true,
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setPendingMessage(null);
+      setIsLoading(false);
+    }
+  };
+
+  // Handle send message modal close
+  const handleSendMessageClose = () => {
+    setShowMessageModal(false);
+    setPendingMessage(null);
+  };
+
+  // Handle create task modal submit
+  const handleCreateTaskSubmit = async (
+    assigneeProfileId: string,
+    taskName: string,
+    taskInstructions: string,
+    dueDate: string,
+    taskPriority: string,
+  ) => {
+    setShowTaskModal(false);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/oa/create-task', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          assigneeProfileId,
+          taskName,
+          instructions: taskInstructions,
+          dueDate,
+          priority: taskPriority,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to create task');
+      }
+
+      const data = await response.json();
+
+      const successMessage: Message = {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: `Task "${taskName}" created and assigned to ${data.assigneeName || 'team member'}.`,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, successMessage]);
+    } catch (error: any) {
+      const errorMessage: Message = {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: `Sorry, I couldn't create the task: ${error.message}`,
+        timestamp: new Date(),
+        isError: true,
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setPendingTask(null);
+      setIsLoading(false);
+    }
+  };
+
+  // Handle create task modal close
+  const handleCreateTaskClose = () => {
+    setShowTaskModal(false);
+    setPendingTask(null);
+  };
+
   // Send message to API
   const sendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return;
@@ -671,6 +806,40 @@ export default function AIAssistantWidget({ position = 'bottom-right', compact =
           setIsLoading(false);
         }
 
+        return;
+      }
+
+      // Check if this is a send-message intent
+      const messageCheck = isMessageQuery(currentInput);
+      if (messageCheck.isMessage) {
+        setPendingMessage({ content: '' });
+        setShowMessageModal(true);
+        setIsLoading(false);
+
+        const modalMessage: Message = {
+          id: crypto.randomUUID(),
+          role: 'assistant',
+          content: 'Who would you like to send a message to? Select a team member and compose your message.',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, modalMessage]);
+        return;
+      }
+
+      // Check if this is a create-task intent
+      const taskCheck = isTaskQuery(currentInput);
+      if (taskCheck.isTask) {
+        setPendingTask({ name: '', instructions: '' });
+        setShowTaskModal(true);
+        setIsLoading(false);
+
+        const modalMessage: Message = {
+          id: crypto.randomUUID(),
+          role: 'assistant',
+          content: 'Let\'s create a task. Select who to assign it to and fill in the details.',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, modalMessage]);
         return;
       }
 
@@ -1512,6 +1681,42 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
                     </div>
                   )}
 
+                  {/* Action buttons (for non-error assistant messages) */}
+                  {message.role === 'assistant' && !message.isError && (
+                    <div className={`mt-1.5 flex items-center gap-1`}>
+                      <button
+                        onClick={() => {
+                          setPendingMessage({ content: message.content });
+                          setShowMessageModal(true);
+                        }}
+                        className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${
+                          isDark
+                            ? 'text-white/30 hover:text-white/60 hover:bg-white/[0.04]'
+                            : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                        }`}
+                        title="Send to Msgly"
+                      >
+                        <MessageCircle className="w-3 h-3" />
+                        <span>Send</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setPendingTask({ instructions: message.content });
+                          setShowTaskModal(true);
+                        }}
+                        className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${
+                          isDark
+                            ? 'text-white/30 hover:text-white/60 hover:bg-white/[0.04]'
+                            : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                        }`}
+                        title="Create Task"
+                      >
+                        <ClipboardList className="w-3 h-3" />
+                        <span>Task</span>
+                      </button>
+                    </div>
+                  )}
+
                   {/* Timestamp */}
                   <div className={`text-xs mt-1 ${message.role === 'user' ? 'text-right' : ''} ${
                     isDark ? 'text-theme-disabled' : 'text-theme-tertiary'
@@ -1781,6 +1986,29 @@ Examples: Stock count reassignment, Fridge temperature logging, Adding new team 
           initialTitle={pendingTicket.title}
           type={pendingTicket.type}
           screenshot={pendingTicket.screenshot}
+        />
+      )}
+
+      {/* Send Message Modal */}
+      {companyId && (
+        <SendMessageModal
+          isOpen={showMessageModal}
+          onClose={handleSendMessageClose}
+          onSubmit={handleSendMessageSubmit}
+          initialContent={pendingMessage?.content}
+          companyId={companyId}
+        />
+      )}
+
+      {/* Create Task Modal */}
+      {companyId && (
+        <CreateTaskModal
+          isOpen={showTaskModal}
+          onClose={handleCreateTaskClose}
+          onSubmit={handleCreateTaskSubmit}
+          initialName={pendingTask?.name}
+          initialInstructions={pendingTask?.instructions}
+          companyId={companyId}
         />
       )}
     </>

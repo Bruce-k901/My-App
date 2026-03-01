@@ -1,3 +1,4 @@
+import { oa, resolveAuthUUID } from '@/lib/oa';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 interface CourseAssignment {
@@ -20,10 +21,8 @@ interface Profile {
 }
 
 /**
- * Create calendar reminder for course assignment.
- * Creates a notification in the notifications table.
- * Uses ONLY columns that exist in the notifications table:
- *   company_id, user_id, type, title, message, link, metadata, read
+ * Create calendar reminder for course assignment via OA service layer.
+ * Creates a notification in the notifications table, due 7 days before deadline.
  */
 export async function createCourseReminderTask(
   assignment: CourseAssignment,
@@ -37,38 +36,9 @@ export async function createCourseReminderTask(
     console.log(`${tag} Starting — assignment=${assignment.id}, profile=${assignment.profile_id}`);
 
     // Resolve the employee's auth UUID
-    const { data: employeeProfile } = await supabaseAdmin
-      .from('profiles')
-      .select('auth_user_id, email, employee_number')
-      .eq('id', assignment.profile_id)
-      .maybeSingle();
-
-    let employeeAuthId = employeeProfile?.auth_user_id || null;
-
+    const employeeAuthId = await resolveAuthUUID(supabaseAdmin, assignment.profile_id);
     if (!employeeAuthId) {
-      // profile.id might BE the auth UUID (old-style profiles)
-      const { data: authCheck } = await supabaseAdmin.auth.admin.getUserById(assignment.profile_id);
-      if (authCheck?.user) {
-        employeeAuthId = assignment.profile_id;
-        console.log(`${tag} profile.id IS auth UUID for ${employeeProfile?.employee_number || assignment.profile_id}`);
-      } else if (employeeProfile?.email) {
-        const { data: usersList } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
-        const match = usersList?.users?.find(
-          (u) => u.email?.toLowerCase() === employeeProfile.email!.toLowerCase()
-        );
-        if (match) {
-          employeeAuthId = match.id;
-          console.log(`${tag} Resolved auth UUID via email for ${employeeProfile.employee_number || employeeProfile.email}`);
-        }
-      }
-    }
-
-    if (!employeeAuthId) {
-      console.error(`${tag} Cannot resolve auth UUID:`, {
-        profileId: assignment.profile_id,
-        employeeNumber: employeeProfile?.employee_number,
-        email: employeeProfile?.email,
-      });
+      console.error(`${tag} Cannot resolve auth UUID for profile ${assignment.profile_id}`);
       return null;
     }
 
@@ -101,46 +71,34 @@ export async function createCourseReminderTask(
 Course: ${course.name}
 ${assignment.deadline_date ? `Deadline: ${new Date(assignment.deadline_date).toLocaleDateString('en-GB')}` : ''}`;
 
-    // Insert notification using ONLY valid columns (no severity/status/due_date/priority)
-    // Extra info goes in metadata
-    console.log(`${tag} Inserting notification — user_id=${employeeAuthId}, company_id=${profile.company_id}`);
+    // Create reminder via OA
+    const notificationId = await oa.createReminder({
+      companyId: profile.company_id,
+      recipientUserId: employeeAuthId,
+      title: `Complete Training: ${course.name}`,
+      message: reminderMessage,
+      link: courseUrl,
+      dueDate: reminderDate.toISOString().split('T')[0],
+      metadata: {
+        kind: 'training_reminder',
+        assignmentId: assignment.id,
+        courseId: assignment.course_id,
+        dueDate: reminderDate.toISOString().split('T')[0],
+        priority: 'medium',
+      },
+    });
 
-    const { data: notification, error: notificationError } = await supabaseAdmin
-      .from('notifications')
-      .insert({
-        company_id: profile.company_id,
-        user_id: employeeAuthId,
-        type: 'task',
-        title: `Complete Training: ${course.name}`,
-        message: reminderMessage,
-        link: courseUrl,
-        read: false,
-        metadata: {
-          kind: 'training_reminder',
-          assignmentId: assignment.id,
-          courseId: assignment.course_id,
-          dueDate: reminderDate.toISOString().split('T')[0],
-          priority: 'medium',
-        },
-      } as any)
-      .select('id')
-      .single();
+    if (notificationId) {
+      // Update assignment with calendar reference
+      await supabaseAdmin
+        .from('course_assignments')
+        .update({ calendar_task_id: notificationId })
+        .eq('id', assignment.id);
 
-    if (notificationError || !notification) {
-      console.error(`${tag} Error creating notification:`, JSON.stringify(notificationError));
-      return null;
+      console.log(`${tag} Complete — notification=${notificationId}`);
     }
 
-    console.log(`${tag} Notification created: ${notification.id}`);
-
-    // Update assignment with calendar reference
-    await supabaseAdmin
-      .from('course_assignments')
-      .update({ calendar_task_id: notification.id })
-      .eq('id', assignment.id);
-
-    console.log(`${tag} Complete — notification=${notification.id}`);
-    return notification.id;
+    return notificationId;
   } catch (error: any) {
     console.error(`${tag} Unexpected error:`, error?.message, error?.stack);
     return null;

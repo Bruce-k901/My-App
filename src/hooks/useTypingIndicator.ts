@@ -36,7 +36,7 @@ export function useTypingIndicator({
     if (isTyping) {
       isTypingRef.current = true;
 
-      // Update typing indicator (table uses profile_id)
+      // Update typing indicator (DB column is profile_id, PK is channel_id + profile_id)
       // Wrap in try-catch to suppress errors (typing indicators are non-critical)
       try {
         await supabase

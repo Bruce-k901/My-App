@@ -530,19 +530,25 @@ export function useConversations({
       // For direct conversations, set name to the OTHER participant's name
       // This is just for reference - the display logic will show the other person's name
       if (type === "direct" && participantIds.length === 1 && !name) {
-        try {
-            const { data: otherProfile, error: profileError } = await supabase
-              .from("profiles")
-              .select("full_name, email")
-              .eq("id", participantIds[0])
-            .single();
-            
-          if (otherProfile?.full_name) {
-            conversationData.name = otherProfile.full_name;
-          } else if (otherProfile?.email) {
-            conversationData.name = otherProfile.email;
-          }
-        } catch {}
+        // OA profile has no company_id so RLS blocks it — use known name
+        const OA_ID = '00000000-0000-0000-0000-000000000002';
+        if (participantIds[0] === OA_ID) {
+          conversationData.name = 'Opsly Assistant';
+        } else {
+          try {
+              const { data: otherProfile, error: profileError } = await supabase
+                .from("profiles")
+                .select("full_name, email")
+                .eq("id", participantIds[0])
+              .single();
+
+            if (otherProfile?.full_name) {
+              conversationData.name = otherProfile.full_name;
+            } else if (otherProfile?.email) {
+              conversationData.name = otherProfile.email;
+            }
+          } catch {}
+        }
       }
 
       // For team/group conversations, require a name or generate one from participants

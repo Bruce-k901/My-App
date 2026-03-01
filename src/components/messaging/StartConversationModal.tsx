@@ -5,6 +5,7 @@ import { X, User, Users, Building2, Search } from '@/components/ui/icons';
 import { useConversations } from '@/hooks/useConversations';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
+import { isSystemProfile } from '@/lib/oa/identity';
 import type { TopicCategory } from '@/types/messaging';
 
 interface StartConversationModalProps {
@@ -68,6 +69,8 @@ export function StartConversationModal({
   }, [isOpen, companyId]);
 
   const filteredUsers = users.filter((user) => {
+    // Exclude system profiles (OA, Opsly Admin) from the contact list
+    if (isSystemProfile(user.id)) return false;
     if (!searchTerm) return true;
     const searchLower = searchTerm.toLowerCase();
     return (
@@ -115,7 +118,7 @@ export function StartConversationModal({
       // Use the hook's createConversation function which handles everything properly
       const allParticipantIds = [...selectedUsers];
       const conversationName = conversationType === 'group' ? groupName.trim() : undefined;
-      
+
       // Creating conversation via hook
 
       const conversation = await createConversation(
@@ -345,9 +348,9 @@ export function StartConversationModal({
                           <div className="text-sm font-medium text-theme-primary truncate">
                             {user.full_name || 'No name'}
                           </div>
-                          {user.email && (
-                            <div className="text-xs text-theme-secondary truncate">{user.email}</div>
-                          )}
+                          <div className="text-xs text-theme-secondary truncate">
+                            {user.email || ''}
+                          </div>
                         </div>
                         {isSelected && (
                           <div className="flex-shrink-0 w-5 h-5 rounded-full bg-[#D37E91] flex items-center justify-center">

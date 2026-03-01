@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useMessages } from '@/hooks/useMessages';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { formatMessageTime } from '@/lib/utils/dateUtils';
-import { Edit2, Trash2, Reply, Smile, MoreVertical, Copy, Forward, Check, CheckSquare, Tag } from '@/components/ui/icons';
+import { Edit2, Trash2, Reply, Smile, MoreVertical, Copy, Forward, Check, CheckSquare, Tag, Bot } from '@/components/ui/icons';
+import { isOpslyAssistant } from '@/lib/oa/identity';
+import Link from 'next/link';
 import { useAppContext } from '@/context/AppContext';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
@@ -365,9 +367,15 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                 className={`flex gap-2 sm:gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}
               >
                 {showAvatar && !isOwn && (
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/25 flex items-center justify-center text-xs font-semibold text-[#D37E91] dark:text-[#D37E91]">
-                    {message.sender?.full_name?.charAt(0).toUpperCase() || 'U'}
-                  </div>
+                  isOpslyAssistant(message.sender_id) ? (
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#D37E91]/15 dark:bg-[#D37E91]/25 flex items-center justify-center">
+                      <Bot className="w-4 h-4 text-[#D37E91]" />
+                    </div>
+                  ) : (
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#D37E91]/10 dark:bg-[#D37E91]/25 flex items-center justify-center text-xs font-semibold text-[#D37E91] dark:text-[#D37E91]">
+                      {message.sender?.full_name?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                  )
                 )}
                 {showAvatar && isOwn && <div className="flex-shrink-0 w-8" />}
 
@@ -377,8 +385,13 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                   }`}
                 >
                   {showAvatar && message.sender && (message.sender.full_name || message.sender.email) && (
-                    <div className="text-xs text-theme-tertiary mb-1 px-2">
+                    <div className="text-xs text-theme-tertiary mb-1 px-2 flex items-center gap-1.5">
                       {message.sender.full_name || message.sender.email?.split('@')[0]}
+                      {isOpslyAssistant(message.sender_id) && (
+                        <span className="text-[10px] bg-[#D37E91]/15 text-[#D37E91] px-1.5 py-0.5 rounded-full font-medium">
+                          Bot
+                        </span>
+                      )}
                     </div>
                   )}
 
@@ -497,6 +510,20 @@ export function MessageThread({ conversationId, messagesHook, onReply }: Message
                           <span className="text-theme-tertiary">{message.metadata.wa_contact_name}</span>
                         )}
                       </div>
+                    )}
+
+                    {/* OA action button */}
+                    {message.metadata?.actionButton?.href && (
+                      <Link
+                        href={message.metadata.actionButton.href}
+                        className={`inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+                          message.metadata.actionButton.style === 'secondary'
+                            ? 'bg-theme-surface-elevated text-theme-primary hover:bg-theme-hover border border-theme'
+                            : 'bg-[#D37E91]/10 text-[#D37E91] hover:bg-[#D37E91]/20'
+                        }`}
+                      >
+                        {message.metadata.actionButton.label || 'Open'}
+                      </Link>
                     )}
 
                     <div className="flex items-center justify-between mt-1">
