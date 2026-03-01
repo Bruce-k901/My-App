@@ -327,6 +327,27 @@ export async function POST(request: NextRequest) {
       // Continue even if follow-up task fails
     }
 
+    // 9. Complete the originating task (certificate expiry task)
+    if (taskId) {
+      try {
+        const { error: taskUpdateError } = await supabaseAdmin
+          .from('checklist_tasks')
+          .update({
+            status: 'completed',
+            completed_at: new Date().toISOString(),
+            completed_by: profile.id,
+            completion_notes: `Course booked: ${course.name} (deadline: ${deadlineDate})`,
+          })
+          .eq('id', taskId);
+
+        if (taskUpdateError) {
+          console.error('Error completing originating task:', taskUpdateError);
+        }
+      } catch (error) {
+        console.error('Error completing originating task:', error);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       assignmentId: assignment.id,
