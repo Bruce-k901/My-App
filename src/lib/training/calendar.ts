@@ -31,6 +31,15 @@ export async function createCourseReminderTask(
   try {
     const supabaseAdmin = getSupabaseAdmin();
 
+    // Resolve the employee's auth UUID (frontend queries notifications by auth UUID)
+    const { data: employeeProfile } = await supabaseAdmin
+      .from('profiles')
+      .select('auth_user_id')
+      .eq('id', assignment.profile_id)
+      .maybeSingle();
+
+    const employeeAuthId = employeeProfile?.auth_user_id || assignment.profile_id;
+
     // Calculate reminder date: 7 days before deadline, or 7 days from now if no deadline
     let reminderDate: Date;
     if (assignment.deadline_date) {
@@ -60,12 +69,12 @@ ${assignment.deadline_date ? `Deadline: ${new Date(assignment.deadline_date).toL
 
 [Continue Training](${courseUrl})`;
 
-    // Create notification
+    // Create notification (use user_id with auth UUID — frontend queries user_id column)
     const { data: notification, error: notificationError } = await supabaseAdmin
       .from('notifications')
       .insert({
         company_id: profile.company_id,
-        recipient_user_id: assignment.profile_id,
+        user_id: employeeAuthId,
         type: 'task',
         title: `Complete Training: ${course.name}`,
         message: reminderMessage,

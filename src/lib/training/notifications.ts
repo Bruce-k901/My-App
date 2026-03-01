@@ -89,15 +89,17 @@ export async function sendCourseAssignmentNotification(
       channelId = existingChannel.id;
     } else {
       // Create new direct channel
-      // Get the assigner's profile (from assignment.assigned_by)
+      // Get the assigner's profile and auth UUID (from assignment.assigned_by)
       let assignerProfileId: string | null = null;
+      let assignerAuthId: string | null = null;
       if (assignment.assigned_by) {
         const { data: assignerProfile } = await supabaseAdmin
           .from('profiles')
-          .select('id')
+          .select('id, auth_user_id')
           .eq('id', assignment.assigned_by)
           .maybeSingle();
         assignerProfileId = assignerProfile?.id || null;
+        assignerAuthId = assignerProfile?.auth_user_id || assignerProfile?.id || null;
       }
 
       const createdBy = assignerProfileId || employee.id;
@@ -122,12 +124,12 @@ export async function sendCourseAssignmentNotification(
 
       channelId = newChannel.id;
 
-      // Add employee as participant
+      // Add employee as participant (use auth UUID — frontend queries with auth.uid())
       const { error: membersError } = await supabaseAdmin
         .from('messaging_channel_members')
         .insert({
           channel_id: channelId,
-          profile_id: employee.id,
+          profile_id: employeeAuthId,
           member_role: 'member',
         } as any);
 
@@ -136,13 +138,13 @@ export async function sendCourseAssignmentNotification(
         // Continue anyway - channel is created
       }
 
-      // Also add assigner if different from employee
-      if (assignerProfileId && assignerProfileId !== employee.id) {
+      // Also add assigner if different from employee (use auth UUID)
+      if (assignerAuthId && assignerAuthId !== employeeAuthId) {
         await supabaseAdmin
           .from('messaging_channel_members')
           .insert({
             channel_id: channelId,
-            profile_id: assignerProfileId,
+            profile_id: assignerAuthId,
             member_role: 'admin',
           } as any);
       }
