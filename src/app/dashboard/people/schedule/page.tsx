@@ -1919,12 +1919,6 @@ export default function RotaBuilderPage() {
     }
   }, [companyId, siteContext.loading, loadSites]);
 
-  useEffect(() => {
-    if (selectedSite && companyId && !siteContext.loading) {
-      loadData();
-    }
-  }, [selectedSite, weekStarting, companyId, siteContext.loading, loadData]);
-
   const loadData = useCallback(async () => {
     if (!selectedSite || !companyId) return;
     if (!mountedRef.current) return;
@@ -2836,6 +2830,12 @@ export default function RotaBuilderPage() {
       }
     }
   }, [selectedSite, weekStarting, companyId]);
+
+  useEffect(() => {
+    if (selectedSite && companyId && !siteContext.loading) {
+      loadData();
+    }
+  }, [selectedSite, weekStarting, companyId, siteContext.loading, loadData]);
 
   // ============================================
   // COMPUTED VALUES
