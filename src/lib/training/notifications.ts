@@ -128,7 +128,8 @@ export async function sendCourseAssignmentNotification(
         .insert({
           channel_id: channelId,
           profile_id: employee.id,
-        });
+          member_role: 'member',
+        } as any);
 
       if (membersError) {
         console.error('Error adding channel member:', membersError);
@@ -142,7 +143,8 @@ export async function sendCourseAssignmentNotification(
           .insert({
             channel_id: channelId,
             profile_id: assignerProfileId,
-          });
+            member_role: 'admin',
+          } as any);
       }
     }
 

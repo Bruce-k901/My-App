@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { sendCourseAssignmentNotification } from '@/lib/training/notifications';
+import { createCourseReminderTask } from '@/lib/training/calendar';
+import { createCourseFollowUpTask } from '@/lib/training/createCourseFollowUpTask';
 
 /**
  * POST /api/training/assignments
@@ -116,48 +119,70 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create messaging conversation
+    // Get site details for notifications
+    const siteId = targetProfile.home_site || targetProfile.site_id;
+    let siteData: { id: string; name: string } | null = null;
+    if (siteId) {
+      const { data: site } = await supabaseAdmin
+        .from('sites')
+        .select('id, name')
+        .eq('id', siteId)
+        .maybeSingle();
+      siteData = site;
+    }
+
+    // Send msgly notification
     try {
-      const { sendCourseAssignmentNotification } = await import('@/lib/training/notifications');
-      
-      // Get course details
-      const { data: courseData } = await supabaseAdmin
-        .from('training_courses')
-        .select('id, name, code, duration_minutes')
-        .eq('id', courseId)
-        .single();
+      const channelId = await sendCourseAssignmentNotification(
+        assignment,
+        course,
+        targetProfile,
+        siteData
+      );
 
-      // Get site details if available
-      const siteId = targetProfile.home_site || targetProfile.site_id;
-      let siteData = null;
-      if (siteId) {
-        const { data: site } = await supabaseAdmin
-          .from('sites')
-          .select('id, name')
-          .eq('id', siteId)
-          .maybeSingle();
-        siteData = site;
-      }
-
-      if (courseData) {
-        const channelId = await sendCourseAssignmentNotification(
-          assignment,
-          courseData,
-          targetProfile,
-          siteData
-        );
-
-        // Update assignment with conversation reference
-        if (channelId) {
-          await supabaseAdmin
-            .from('course_assignments')
-            .update({ msgly_conversation_id: channelId })
-            .eq('id', assignment.id);
-        }
+      if (channelId) {
+        await supabaseAdmin
+          .from('course_assignments')
+          .update({ msgly_conversation_id: channelId })
+          .eq('id', assignment.id);
       }
     } catch (msgError) {
-      // Log but don't fail - assignment is created even if messaging fails
       console.error('Error creating messaging notification:', msgError);
+    }
+
+    // Create calendar reminder for the employee
+    try {
+      const notificationId = await createCourseReminderTask(
+        assignment,
+        course,
+        { id: profileId, company_id: currentProfile.company_id }
+      );
+
+      if (notificationId) {
+        await supabaseAdmin
+          .from('course_assignments')
+          .update({ calendar_task_id: notificationId })
+          .eq('id', assignment.id);
+      }
+    } catch (calError) {
+      console.error('Error creating calendar reminder:', calError);
+    }
+
+    // Create follow-up task for the assigning manager
+    try {
+      await createCourseFollowUpTask({
+        assignmentId: assignment.id,
+        profileId: profileId,
+        courseId: courseId,
+        companyId: currentProfile.company_id,
+        siteId: siteId || null,
+        managerId: currentProfile.id,
+        employeeName: targetProfile.full_name || 'Employee',
+        courseName: course.name,
+        deadlineDate: deadlineDate,
+      });
+    } catch (followUpError) {
+      console.error('Error creating follow-up task:', followUpError);
     }
 
     return NextResponse.json({

@@ -60,15 +60,16 @@ ${assignment.deadline_date ? `Deadline: ${new Date(assignment.deadline_date).toL
 
 [Continue Training](${courseUrl})`;
 
-    // Create notification (using pattern from EnhancedShiftHandover)
+    // Create notification
     const { data: notification, error: notificationError } = await supabaseAdmin
       .from('notifications')
       .insert({
         company_id: profile.company_id,
-        profile_id: assignment.profile_id,
+        recipient_user_id: assignment.profile_id,
         type: 'task',
         title: `Complete Training: ${course.name}`,
         message: reminderMessage,
+        link: courseUrl,
         severity: 'info',
         status: 'active',
         due_date: reminderDate.toISOString().split('T')[0],
