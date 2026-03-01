@@ -142,7 +142,7 @@ export default function RiskAssessmentsPage() {
             <h3 className="text-sm font-semibold text-gray-700 dark:text-neutral-300 mb-3">Recent Uploads</h3>
             <div className="space-y-2">
               {coshhSheets.slice(0, 5).map((sheet) => (
-                <div key={sheet.id} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-neutral-900/50 rounded border border-gray-200 dark:border-neutral-600">
+                <div key={sheet.id} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-white/[0.03] rounded border border-gray-200 dark:border-theme">
                   <div className="flex-1">
                     <div className="text-sm text-theme-primary">{sheet.product_name}</div>
  <div className="text-xs text-gray-600 dark:text-theme-tertiary">{sheet.manufacturer}</div>

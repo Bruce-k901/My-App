@@ -868,7 +868,7 @@ export default function SOPViewPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--background-primary))] dark:bg-neutral-900">
+      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--background-primary))]">
  <div className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Loading SOP...</div>
       </div>
     );
@@ -876,7 +876,7 @@ export default function SOPViewPage() {
 
   if (!sop) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--background-primary))] dark:bg-neutral-900">
+      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--background-primary))]">
  <div className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">SOP not found</div>
       </div>
     );
@@ -885,7 +885,7 @@ export default function SOPViewPage() {
   return (
  <div className="min-h-screen bg-[rgb(var(--background-primary))] print:bg-theme-surface">
       {/* Header - Hidden when printing */}
-      <div className="no-print sticky top-0 z-10 bg-[rgb(var(--background-primary))] dark:bg-neutral-900 border-b border-[rgb(var(--border))] dark:border-theme">
+      <div className="no-print sticky top-0 z-10 bg-[rgb(var(--background-primary))] border-b border-[rgb(var(--border))] dark:border-theme">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <button
@@ -898,7 +898,7 @@ export default function SOPViewPage() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               {/* Recipe Scaling Multiplier */}
               {printData?.recipe && (
-                <div className="flex items-center gap-3 px-4 sm:px-5 py-2.5 sm:py-3 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 rounded-xl border-2 border-module-fg dark:border-module-fg/70 shadow-lg shadow-module-fg/20 dark:shadow-module-fg/30">
+                <div className="flex items-center gap-3 px-4 sm:px-5 py-2.5 sm:py-3 bg-[rgb(var(--surface-elevated))] rounded-xl border-2 border-module-fg dark:border-module-fg/70 shadow-lg shadow-module-fg/20 dark:shadow-module-fg/30">
                   <label htmlFor="multiplier" className="text-sm sm:text-base font-semibold text-[rgb(var(--text-primary))] dark:text-white whitespace-nowrap">
                     Portions:
                   </label>
@@ -936,7 +936,7 @@ export default function SOPViewPage() {
                         setMultiplier(clampedValue);
                       }
                     }}
-                    className="w-20 sm:w-28 bg-[rgb(var(--background-primary))] dark:bg-neutral-900 border-2 border-module-fg dark:border-module-fg rounded-lg px-3 py-2 text-lg font-bold text-[rgb(var(--text-primary))] dark:text-white focus:border-module-fg dark:focus:border-module-fg focus:outline-none focus:ring-2 focus:ring-module-fg/40 dark:focus:ring-module-fg/40"
+                    className="w-20 sm:w-28 bg-[rgb(var(--background-primary))] border-2 border-module-fg dark:border-module-fg rounded-lg px-3 py-2 text-lg font-bold text-[rgb(var(--text-primary))] dark:text-white focus:border-module-fg dark:focus:border-module-fg focus:outline-none focus:ring-2 focus:ring-module-fg/40 dark:focus:ring-module-fg/40"
                   />
                   <span className="text-sm sm:text-base font-bold text-module-fg dark:text-module-fg">
                     ×{multiplier.toFixed(1)}

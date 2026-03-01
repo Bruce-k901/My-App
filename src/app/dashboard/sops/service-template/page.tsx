@@ -162,7 +162,7 @@ export default function ServiceSOPTemplatePage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
+    <div className="max-w-5xl mx-auto p-6 space-y-6 min-h-screen">
       <BackButton href="/dashboard/sops" label="Back to SOPs" />
 
       {/* Header */}
@@ -174,7 +174,7 @@ export default function ServiceSOPTemplatePage() {
       </div>
 
       {/* SOP DETAILS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">SOP Details</h2>
         
         <div className="grid grid-cols-2 gap-4">
@@ -183,7 +183,7 @@ export default function ServiceSOPTemplatePage() {
             <input 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., Lunch Service Standard"
             />
           </div>
@@ -193,7 +193,7 @@ export default function ServiceSOPTemplatePage() {
             <input 
               value={refCode}
               readOnly
-              className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-theme-tertiary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-tertiary"
             />
           </div>
 
@@ -202,7 +202,7 @@ export default function ServiceSOPTemplatePage() {
             <input 
               value={version}
               onChange={(e) => setVersion(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
 
@@ -211,7 +211,7 @@ export default function ServiceSOPTemplatePage() {
             <input 
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
 
@@ -220,7 +220,7 @@ export default function ServiceSOPTemplatePage() {
             <select 
               value={status} 
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             >
               <option value="Draft">Draft</option>
               <option value="Published">Published</option>
@@ -233,7 +233,7 @@ export default function ServiceSOPTemplatePage() {
             <input 
               value={estimatedTime}
               onChange={(e) => setEstimatedTime(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., 30 minutes"
             />
           </div>
@@ -241,7 +241,7 @@ export default function ServiceSOPTemplatePage() {
       </section>
 
       {/* SERVICE STANDARDS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Service Standards</h2>
         <p className="text-xs text-theme-tertiary mb-4">
           Define core service principles and expected behaviors
@@ -255,7 +255,7 @@ export default function ServiceSOPTemplatePage() {
                 <input
                   value={std.standard}
                   onChange={(e) => setServiceStandards(serviceStandards.map(s => s.id === std.id ? { ...s, standard: e.target.value } : s))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Greeting"
                 />
               </div>
@@ -264,7 +264,7 @@ export default function ServiceSOPTemplatePage() {
                 <input
                   value={std.description}
                   onChange={(e) => setServiceStandards(serviceStandards.map(s => s.id === std.id ? { ...s, description: e.target.value } : s))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="Expected behavior..."
                 />
               </div>
@@ -302,7 +302,7 @@ export default function ServiceSOPTemplatePage() {
         </button>
         <button
           onClick={() => showToast({ title: 'Export', description: 'PDF export coming soon', type: 'info' })}
-          className="px-6 py-3 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-theme-primary font-medium flex items-center gap-2"
+          className="px-6 py-3 bg-theme-button hover:bg-theme-button-hover rounded-lg text-theme-primary font-medium flex items-center gap-2"
         >
           <Download size={20} />
           Export PDF

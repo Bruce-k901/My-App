@@ -304,14 +304,14 @@ export default function OpeningProcedureTemplatePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-neutral-900">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="text-theme-tertiary">Loading libraries...</div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
+    <div className="max-w-5xl mx-auto p-6 space-y-6 min-h-screen">
       <BackButton href="/dashboard/sops" label="Back to SOPs" />
 
       <div className="bg-gradient-to-r from-yellow-600/20 to-orange-600/20 rounded-2xl p-6 border border-yellow-500/30">
@@ -325,7 +325,7 @@ export default function OpeningProcedureTemplatePage() {
       </div>
 
       {/* SOP Details */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-yellow-400 mb-4">Procedure Details</h2>
         
         <div className="grid grid-cols-2 gap-4">
@@ -334,11 +334,11 @@ export default function OpeningProcedureTemplatePage() {
             <select 
               value={status} 
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50 focus:border-module-fg/50 hover:bg-neutral-800 transition-colors"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50 focus:border-module-fg/50 hover:bg-theme-hover transition-colors"
             >
-              <option value="Draft" className="bg-neutral-900 text-theme-primary">Draft</option>
-              <option value="Published" className="bg-neutral-900 text-theme-primary">Published</option>
-              <option value="Archived" className="bg-neutral-900 text-theme-primary">Archived</option>
+              <option value="Draft" className="bg-theme-surface text-theme-primary">Draft</option>
+              <option value="Published" className="bg-theme-surface text-theme-primary">Published</option>
+              <option value="Archived" className="bg-theme-surface text-theme-primary">Archived</option>
             </select>
           </div>
 
@@ -347,7 +347,7 @@ export default function OpeningProcedureTemplatePage() {
             <input 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., Daily Opening Checklist"
             />
           </div>
@@ -357,7 +357,7 @@ export default function OpeningProcedureTemplatePage() {
             <input 
               value={refCode}
               readOnly
-              className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-theme-tertiary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-tertiary"
             />
           </div>
 
@@ -366,7 +366,7 @@ export default function OpeningProcedureTemplatePage() {
             <input 
               value={version}
               onChange={(e) => setVersion(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
 
@@ -375,7 +375,7 @@ export default function OpeningProcedureTemplatePage() {
             <input 
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="Your name"
             />
           </div>
@@ -385,11 +385,11 @@ export default function OpeningProcedureTemplatePage() {
             <select
               value={siteLocation}
               onChange={(e) => setSiteLocation(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50 focus:border-module-fg/50 hover:bg-neutral-800 transition-colors"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50 focus:border-module-fg/50 hover:bg-theme-hover transition-colors"
             >
-              <option value="" className="bg-neutral-900 text-theme-primary">Select site...</option>
+              <option value="" className="bg-theme-surface text-theme-primary">Select site...</option>
               {sites.map(site => (
-                <option key={site.id} value={site.name} className="bg-neutral-900 text-theme-primary">{site.name}</option>
+                <option key={site.id} value={site.name} className="bg-theme-surface text-theme-primary">{site.name}</option>
               ))}
             </select>
           </div>
@@ -397,7 +397,7 @@ export default function OpeningProcedureTemplatePage() {
       </section>
 
       {/* Time-Based Checklist */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-yellow-400 flex items-center gap-2">
             <Clock size={20} />
@@ -405,7 +405,7 @@ export default function OpeningProcedureTemplatePage() {
           </h2>
           <button
             onClick={addTimeSlot}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-theme-primary transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Time Slot
@@ -414,7 +414,7 @@ export default function OpeningProcedureTemplatePage() {
 
         <div className="space-y-4">
           {timeSlots.map((slot) => (
-            <div key={slot.id} className="bg-neutral-900/50 rounded-lg p-4 border border-neutral-600">
+            <div key={slot.id} className="bg-theme-surface-elevated rounded-lg p-4 border border-theme">
               <div className="flex items-center gap-3 mb-3">
                 <TimePicker
                   value={slot.time}
@@ -436,14 +436,14 @@ export default function OpeningProcedureTemplatePage() {
                       type="checkbox"
                       checked={task.completed}
                       onChange={(e) => updateTask(slot.id, task.id, 'completed', e.target.checked)}
-                      className="rounded border-neutral-600"
+                      className="rounded border-theme"
                     />
                     <input
                       type="text"
                       value={task.task}
                       onChange={(e) => updateTask(slot.id, task.id, 'task', e.target.value)}
                       placeholder="Enter task..."
-                      className="flex-1 bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-1.5 text-theme-primary text-sm"
+                      className="flex-1 bg-theme-muted border border-theme rounded-lg px-3 py-1.5 text-theme-primary text-sm"
                     />
                     {slot.tasks.length > 1 && (
                       <button
@@ -469,7 +469,7 @@ export default function OpeningProcedureTemplatePage() {
       </section>
 
       {/* Equipment Startup Sequence */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-yellow-400 flex items-center gap-2">
             <CheckCircle2 size={20} />
@@ -477,7 +477,7 @@ export default function OpeningProcedureTemplatePage() {
           </h2>
           <button
             onClick={addEquipmentStartup}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-theme-primary transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Equipment
@@ -492,11 +492,11 @@ export default function OpeningProcedureTemplatePage() {
                 <select
                   value={eq.equipment_id}
                   onChange={(e) => updateEquipmentStartup(eq.id, 'equipment_id', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50 focus:border-module-fg/50 hover:bg-neutral-800 transition-colors"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50 focus:border-module-fg/50 hover:bg-theme-hover transition-colors"
                 >
-                  <option value="" className="bg-neutral-900 text-theme-primary">Select equipment...</option>
+                  <option value="" className="bg-theme-surface text-theme-primary">Select equipment...</option>
                   {equipmentLibrary.map(equip => (
-                    <option key={equip.id} value={equip.id} className="bg-neutral-900 text-theme-primary">{equip.equipment_name}</option>
+                    <option key={equip.id} value={equip.id} className="bg-theme-surface text-theme-primary">{equip.equipment_name}</option>
                   ))}
                 </select>
               </div>
@@ -505,12 +505,12 @@ export default function OpeningProcedureTemplatePage() {
                 <select
                   value={eq.startup_status}
                   onChange={(e) => updateEquipmentStartup(eq.id, 'startup_status', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50 focus:border-module-fg/50 hover:bg-neutral-800 transition-colors"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50 focus:border-module-fg/50 hover:bg-theme-hover transition-colors"
                 >
-                  <option value="" className="bg-neutral-900 text-theme-primary">Status...</option>
-                  <option value="Operational" className="bg-neutral-900 text-theme-primary">Operational</option>
-                  <option value="Needs Maintenance" className="bg-neutral-900 text-theme-primary">Needs Maintenance</option>
-                  <option value="Out of Order" className="bg-neutral-900 text-theme-primary">Out of Order</option>
+                  <option value="" className="bg-theme-surface text-theme-primary">Status...</option>
+                  <option value="Operational" className="bg-theme-surface text-theme-primary">Operational</option>
+                  <option value="Needs Maintenance" className="bg-theme-surface text-theme-primary">Needs Maintenance</option>
+                  <option value="Out of Order" className="bg-theme-surface text-theme-primary">Out of Order</option>
                 </select>
               </div>
               <div className="col-span-4">
@@ -518,7 +518,7 @@ export default function OpeningProcedureTemplatePage() {
                 <input
                   value={eq.notes}
                   onChange={(e) => updateEquipmentStartup(eq.id, 'notes', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="Optional notes..."
                 />
               </div>
@@ -536,12 +536,12 @@ export default function OpeningProcedureTemplatePage() {
       </section>
 
       {/* Safety Checks */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-yellow-400">Safety Checks</h2>
           <button
             onClick={addSafetyCheck}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-theme-primary transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Check
@@ -556,7 +556,7 @@ export default function OpeningProcedureTemplatePage() {
                 <input
                   value={check.check_item}
                   onChange={(e) => updateSafetyCheck(check.id, 'check_item', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Fire exits clear"
                 />
               </div>
@@ -565,11 +565,11 @@ export default function OpeningProcedureTemplatePage() {
                 <select
                   value={check.status}
                   onChange={(e) => updateSafetyCheck(check.id, 'status', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50 focus:border-module-fg/50 hover:bg-neutral-800 transition-colors"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-module-fg/50 focus:border-module-fg/50 hover:bg-theme-hover transition-colors"
                 >
-                  <option value="Pending" className="bg-neutral-900 text-theme-primary">Pending</option>
-                  <option value="Complete" className="bg-neutral-900 text-theme-primary">Complete</option>
-                  <option value="Issue" className="bg-neutral-900 text-theme-primary">Issue</option>
+                  <option value="Pending" className="bg-theme-surface text-theme-primary">Pending</option>
+                  <option value="Complete" className="bg-theme-surface text-theme-primary">Complete</option>
+                  <option value="Issue" className="bg-theme-surface text-theme-primary">Issue</option>
                 </select>
               </div>
               <div className="col-span-2">
@@ -577,7 +577,7 @@ export default function OpeningProcedureTemplatePage() {
                 <input
                   value={check.checked_by}
                   onChange={(e) => updateSafetyCheck(check.id, 'checked_by', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 />
               </div>
               <div className="col-span-2">
@@ -585,7 +585,7 @@ export default function OpeningProcedureTemplatePage() {
                 <input
                   value={check.notes}
                   onChange={(e) => updateSafetyCheck(check.id, 'notes', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 />
               </div>
               <div className="col-span-1">
@@ -602,12 +602,12 @@ export default function OpeningProcedureTemplatePage() {
       </section>
 
       {/* Stock Checks */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-yellow-400">Stock Checks</h2>
           <button
             onClick={addStockCheck}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-theme-primary transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Item
@@ -622,7 +622,7 @@ export default function OpeningProcedureTemplatePage() {
                 <input
                   value={item.item_name}
                   onChange={(e) => updateStockCheck(item.id, 'item_name', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Milk"
                 />
               </div>
@@ -631,7 +631,7 @@ export default function OpeningProcedureTemplatePage() {
                 <input
                   value={item.quantity_on_hand}
                   onChange={(e) => updateStockCheck(item.id, 'quantity_on_hand', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="Qty"
                 />
               </div>
@@ -642,7 +642,7 @@ export default function OpeningProcedureTemplatePage() {
                     type="checkbox"
                     checked={item.expiry_check}
                     onChange={(e) => updateStockCheck(item.id, 'expiry_check', e.target.checked)}
-                    className="rounded border-neutral-600"
+                    className="rounded border-theme"
                   />
                   <span className="text-xs text-theme-tertiary">Checked</span>
                 </div>
@@ -652,7 +652,7 @@ export default function OpeningProcedureTemplatePage() {
                 <input
                   value={item.notes}
                   onChange={(e) => updateStockCheck(item.id, 'notes', e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 />
               </div>
               <div className="col-span-1">
@@ -669,12 +669,12 @@ export default function OpeningProcedureTemplatePage() {
       </section>
 
       {/* Final Walkthrough Checklist */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-yellow-400">Final Walkthrough Checklist</h2>
           <button
             onClick={addWalkthroughItem}
-            className="flex items-center gap-2 px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-sm text-theme-primary transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-theme-button hover:bg-theme-button-hover rounded-lg text-sm text-theme-primary transition-colors"
           >
             <Plus size={16} />
             Add Item
@@ -688,21 +688,21 @@ export default function OpeningProcedureTemplatePage() {
                 type="checkbox"
                 checked={item.verified}
                 onChange={(ie) => updateWalkthroughItem(item.id, 'verified', ie.target.checked)}
-                className="rounded border-neutral-600"
+                className="rounded border-theme"
               />
               <input
                 type="text"
                 value={item.item}
                 onChange={(e) => updateWalkthroughItem(item.id, 'item', e.target.value)}
                 placeholder="Walkthrough item..."
-                className="flex-1 bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                className="flex-1 bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
               />
               <input
                 type="text"
                 value={item.notes}
                 onChange={(e) => updateWalkthroughItem(item.id, 'notes', e.target.value)}
                 placeholder="Notes..."
-                className="w-48 bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                className="w-48 bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
               />
               <button
                 onClick={() => removeWalkthroughItem(item.id)}
@@ -716,7 +716,7 @@ export default function OpeningProcedureTemplatePage() {
       </section>
 
       {/* Manager Sign-Off */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-yellow-400 mb-4">Manager Sign-Off</h2>
         
         <div className="grid grid-cols-2 gap-4">
@@ -725,7 +725,7 @@ export default function OpeningProcedureTemplatePage() {
             <input
               value={managerSignOff.verified_by}
               onChange={(e) => setManagerSignOff({ ...managerSignOff, verified_by: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="Manager name"
             />
           </div>
@@ -735,7 +735,7 @@ export default function OpeningProcedureTemplatePage() {
               type="date"
               value={managerSignOff.verification_date}
               onChange={(e) => setManagerSignOff({ ...managerSignOff, verification_date: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
           <div className="col-span-2">
@@ -743,7 +743,7 @@ export default function OpeningProcedureTemplatePage() {
             <textarea
               value={managerSignOff.notes}
               onChange={(e) => setManagerSignOff({ ...managerSignOff, notes: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               rows={3}
               placeholder="Additional notes..."
             />

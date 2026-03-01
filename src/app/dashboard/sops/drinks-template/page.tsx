@@ -287,7 +287,7 @@ export default function DrinksSOPTemplatePage() {
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
+      <div className="max-w-5xl mx-auto p-6 space-y-6 min-h-screen">
         <div className="text-theme-tertiary text-center py-8">Loading libraries...</div>
       </div>
     );
@@ -299,12 +299,12 @@ export default function DrinksSOPTemplatePage() {
   const garnishesOnly = drinksLibrary.filter(d => d.category === 'Garnish');
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
+    <div className="max-w-5xl mx-auto p-6 space-y-6 min-h-screen">
       {/* Back Button */}
       <BackButton href="/dashboard/sops" label="Back to SOPs" />
       
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600/20 to-module-fg/25 rounded-2xl p-6 border border-purple-500/30">
+      <div className="bg-gradient-to-r from-checkly-dark/20 to-checkly-dark/10 dark:from-checkly/20 dark:to-checkly/10 rounded-2xl p-6 border border-checkly-dark/30 dark:border-checkly/30">
         <h1 className="text-2xl font-semibold mb-2">Drinks SOP Template</h1>
         <p className="text-theme-tertiary text-sm">
           Bar recipes and drink preparation procedures
@@ -312,7 +312,7 @@ export default function DrinksSOPTemplatePage() {
       </div>
 
       {/* SOP DETAILS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">SOP Details</h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
@@ -320,21 +320,21 @@ export default function DrinksSOPTemplatePage() {
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., Classic Mojito"
             />
           </div>
           <div>
             <label className="block text-sm text-theme-tertiary mb-1">Reference Code (Auto)</label>
-            <input value={refCode} readOnly className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-theme-tertiary" />
+            <input value={refCode} readOnly className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-tertiary" />
           </div>
           <div>
             <label className="block text-sm text-theme-tertiary mb-1">Version *</label>
-            <input value={version} onChange={(e) => setVersion(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
+            <input value={version} onChange={(e) => setVersion(e.target.value)} className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary" />
           </div>
           <div>
             <label className="block text-sm text-theme-tertiary mb-1">Status *</label>
-            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary">
+            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary">
               <option value="Draft">Draft</option>
               <option value="Published">Published</option>
               <option value="Archived">Archived</option>
@@ -342,23 +342,23 @@ export default function DrinksSOPTemplatePage() {
           </div>
           <div>
             <label className="block text-sm text-theme-tertiary mb-1">Author *</label>
-            <input value={author} onChange={(e) => setAuthor(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" />
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary" />
           </div>
           <div>
             <label className="block text-sm text-theme-tertiary mb-1">Estimated Time</label>
-            <input value={estimatedTime} onChange={(e) => setEstimatedTime(e.target.value)} className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary" placeholder="e.g., 2 minutes" />
+            <input value={estimatedTime} onChange={(e) => setEstimatedTime(e.target.value)} className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary" placeholder="e.g., 2 minutes" />
           </div>
         </div>
       </section>
 
       {/* SPIRITS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Spirits & Liqueurs</h2>
         <div className="space-y-2">
           {spirits.map((spirit, index) => {
             const selectedDrink = drinksLibrary.find(d => d.id === spirit.drink_id);
             return (
-              <div key={spirit.id} className="p-3 bg-neutral-900/50 rounded-lg border border-neutral-600">
+              <div key={spirit.id} className="p-3 bg-theme-surface-elevated rounded-lg border border-theme">
                 {selectedDrink?.allergens && selectedDrink.allergens.length > 0 && (
                   <div className="mb-2 flex items-center gap-2 p-2 bg-orange-500/10 border border-orange-500/30 rounded">
                     <AlertTriangle size={16} className="text-orange-400" />
@@ -383,7 +383,7 @@ export default function DrinksSOPTemplatePage() {
                     <input
                       value={spirit.quantity}
                       onChange={(e) => setSpirits(spirits.map(s => s.id === spirit.id ? { ...s, quantity: e.target.value } : s))}
-                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                      className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                       placeholder="e.g., 50ml"
                     />
                   </div>
@@ -392,7 +392,7 @@ export default function DrinksSOPTemplatePage() {
                     <input
                       value={spirit.abv}
                       readOnly
-                      className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-theme-tertiary text-sm"
+                      className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-tertiary text-sm"
                     />
                   </div>
                   <div className="col-span-1">
@@ -415,13 +415,13 @@ export default function DrinksSOPTemplatePage() {
       </section>
 
       {/* MIXERS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Mixers</h2>
         <div className="space-y-2">
           {mixers.map((mixer, index) => {
             const selectedDrink = drinksLibrary.find(d => d.id === mixer.drink_id);
             return (
-              <div key={mixer.id} className="p-3 bg-neutral-900/50 rounded-lg border border-neutral-600">
+              <div key={mixer.id} className="p-3 bg-theme-surface-elevated rounded-lg border border-theme">
                 {selectedDrink?.allergens && selectedDrink.allergens.length > 0 && (
                   <div className="mb-2 flex items-center gap-2 p-2 bg-orange-500/10 border border-orange-500/30 rounded">
                     <AlertTriangle size={16} className="text-orange-400" />
@@ -446,7 +446,7 @@ export default function DrinksSOPTemplatePage() {
                     <input
                       value={mixer.quantity}
                       onChange={(e) => setMixers(mixers.map(m => m.id === mixer.id ? { ...m, quantity: e.target.value } : m))}
-                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                      className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                       placeholder="e.g., 100ml"
                     />
                   </div>
@@ -470,7 +470,7 @@ export default function DrinksSOPTemplatePage() {
       </section>
 
       {/* GARNISHES SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Garnishes</h2>
         <div className="space-y-2">
           {garnishes.map((garnish, index) => {
@@ -493,7 +493,7 @@ export default function DrinksSOPTemplatePage() {
                   <input
                     value={garnish.quantity}
                     onChange={(e) => setGarnishes(garnishes.map(g => g.id === garnish.id ? { ...g, quantity: e.target.value } : g))}
-                    className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                    className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                     placeholder="e.g., 3 leaves"
                   />
                 </div>
@@ -516,7 +516,7 @@ export default function DrinksSOPTemplatePage() {
       </section>
 
       {/* DISPOSABLES SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Disposables Required</h2>
         <div className="space-y-2">
           {disposables.map((item, index) => (
@@ -537,7 +537,7 @@ export default function DrinksSOPTemplatePage() {
                 <input
                   value={item.quantity}
                   onChange={(e) => setDisposables(disposables.map(d => d.id === item.id ? { ...d, quantity: e.target.value } : d))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 />
               </div>
               <div className="col-span-1">
@@ -558,11 +558,11 @@ export default function DrinksSOPTemplatePage() {
       </section>
 
       {/* PROCESS STEPS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Preparation Steps</h2>
         <div className="space-y-3">
           {processSteps.map((step, index) => (
-            <div key={step.id} className="p-4 bg-neutral-900/50 rounded-lg border border-neutral-600">
+            <div key={step.id} className="p-4 bg-theme-surface-elevated rounded-lg border border-theme">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-semibold text-magenta-400">Step {index + 1}</span>
                 <button
@@ -576,7 +576,7 @@ export default function DrinksSOPTemplatePage() {
               <textarea
                 value={step.step}
                 onChange={(e) => setProcessSteps(processSteps.map(s => s.id === step.id ? { ...s, step: e.target.value } : s))}
-                className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm mb-2"
+                className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm mb-2"
                 placeholder="Describe this step..."
                 rows={2}
               />
@@ -584,7 +584,7 @@ export default function DrinksSOPTemplatePage() {
                 <input
                   value={step.timing}
                   onChange={(e) => setProcessSteps(processSteps.map(s => s.id === step.id ? { ...s, timing: e.target.value } : s))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="Timing (e.g., Muddle 10 seconds)"
                 />
               </div>
@@ -592,7 +592,7 @@ export default function DrinksSOPTemplatePage() {
               <div className="mt-2">
                 {step.photo_url ? (
                   <div className="relative inline-block">
-                    <img src={step.photo_url} alt="Step photo" className="w-32 h-32 object-cover rounded-lg border border-neutral-600" />
+                    <img src={step.photo_url} alt="Step photo" className="w-32 h-32 object-cover rounded-lg border border-theme" />
                     <button
                       onClick={() => setProcessSteps(processSteps.map(s => s.id === step.id ? { ...s, photo_url: "" } : s))}
                       className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white"
@@ -615,7 +615,7 @@ export default function DrinksSOPTemplatePage() {
                     <button
                       onClick={() => photoInputRefs.current[step.id]?.click()}
                       disabled={uploadingPhotos[step.id]}
-                      className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg text-theme-primary text-sm disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2 bg-theme-muted hover:bg-theme-hover border border-theme rounded-lg text-theme-primary text-sm disabled:opacity-50"
                     >
                       {uploadingPhotos[step.id] ? (
                         <> <Loader2 size={16} className="animate-spin" /> Uploading... </>
@@ -644,7 +644,7 @@ export default function DrinksSOPTemplatePage() {
           <Save size={20} />
           {saving ? 'Saving...' : 'Save SOP'}
         </button>
-        <button className="px-6 py-3 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-theme-primary font-medium flex items-center gap-2">
+        <button className="px-6 py-3 bg-theme-button hover:bg-theme-button-hover rounded-lg text-theme-primary font-medium flex items-center gap-2">
           <Download size={20} />
           Export PDF
         </button>

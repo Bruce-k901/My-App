@@ -469,7 +469,7 @@ export default function COSHHPage() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search chemicals by name, manufacturer, or use case..."
-          className="w-full bg-theme-surface border border-theme rounded-lg pl-10 pr-4 py-2 text-theme-primary placeholder-gray-400 dark:placeholder-neutral-400 focus:outline-none focus:border-module-fg/50 dark:focus:border-module-fg/50 transition-colors"
+          className="w-full bg-theme-surface border border-theme rounded-lg pl-10 pr-4 py-2 text-theme-primary placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-module-fg/50 dark:focus:border-module-fg/50 transition-colors"
         />
       </div>
 
@@ -480,7 +480,7 @@ export default function COSHHPage() {
             <div className="space-y-4">
  <FileText size={48} className="text-gray-400 dark:text-theme-tertiary mx-auto"/>
               <div>
-                <p className="text-gray-700 dark:text-neutral-300 font-semibold mb-2">No chemicals found in your library</p>
+                <p className="text-gray-700 dark:text-theme-secondary font-semibold mb-2">No chemicals found in your library</p>
  <p className="text-gray-600 dark:text-theme-tertiary text-sm mb-4">
                   Add chemicals to your library first, then you can upload COSHH data sheets for each one.
                 </p>

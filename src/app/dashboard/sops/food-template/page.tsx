@@ -82,10 +82,10 @@ function SortableStepItem({
     <div
       ref={setNodeRef}
       style={style}
-      className={`p-4 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-900/50 rounded-lg border ${
+      className={`p-4 bg-[rgb(var(--surface-elevated))] rounded-lg border ${
         isDragging 
           ? 'border-magenta-500/60 shadow-lg' 
-          : 'border-[rgb(var(--border))] dark:border-neutral-600'
+          : 'border-[rgb(var(--border))]'
       }`}
     >
       <div className="flex items-center gap-3 mb-3">
@@ -109,7 +109,7 @@ function SortableStepItem({
           value={step.title || ''}
           onChange={(e) => updateProcessStep(step.id, 'title', e.target.value)}
           placeholder={`Step ${index + 1}`}
-          className="flex-1 bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-1.5 text-sm font-semibold text-magenta-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 placeholder:text-magenta-400/60"
+          className="flex-1 bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-1.5 text-sm font-semibold text-magenta-400 focus:outline-none focus:ring-2 focus:ring-magenta-500/40 placeholder:text-magenta-400/60"
         />
 
         {/* Delete Button */}
@@ -127,7 +127,7 @@ function SortableStepItem({
         <textarea
           value={step.description}
           onChange={(e) => updateProcessStep(step.id, 'description', e.target.value)}
- className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
+ className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
           placeholder="Describe this step in detail..."
           rows={2}
         />
@@ -147,7 +147,7 @@ function SortableStepItem({
                   updateProcessStep(step.id, 'temperature', value);
                 }
               }}
- className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
+ className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
               placeholder="Optional"
             />
           </div>
@@ -156,17 +156,17 @@ function SortableStepItem({
             <input
               value={step.duration}
               onChange={(e) => updateProcessStep(step.id, 'duration', e.target.value)}
- className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
+ className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
               placeholder="e.g., 15 min"
             />
           </div>
           <div className="flex items-end">
-            <label className="flex items-center gap-2 text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 cursor-pointer">
+            <label className="flex items-center gap-2 text-sm text-[rgb(var(--text-secondary))] cursor-pointer">
               <input
                 type="checkbox"
                 checked={step.is_ccp}
                 onChange={(e) => updateProcessStep(step.id, 'is_ccp', e.target.checked)}
-                className="w-4 h-4 rounded border-[rgb(var(--border))] dark:border-neutral-600 bg-[rgb(var(--surface))] dark:bg-neutral-900"
+                className="w-4 h-4 rounded border-[rgb(var(--border))] bg-[rgb(var(--surface))]"
               />
               Critical Control Point
             </label>
@@ -176,7 +176,7 @@ function SortableStepItem({
         <input
           value={step.haccp_note}
           onChange={(e) => updateProcessStep(step.id, 'haccp_note', e.target.value)}
- className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
+ className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
           placeholder="HACCP notes (optional)"
         />
 
@@ -188,7 +188,7 @@ function SortableStepItem({
               <img 
                 src={step.photo_url} 
                 alt="Process step photo" 
-                className="w-32 h-32 object-cover rounded-lg border border-[rgb(var(--border))] dark:border-neutral-600"
+                className="w-32 h-32 object-cover rounded-lg border border-[rgb(var(--border))]"
               />
               <button
                 onClick={() => handleRemovePhoto(step.id, step.photo_url)}
@@ -212,7 +212,7 @@ function SortableStepItem({
               <button
                 onClick={() => photoInputRefs.current[step.id]?.click()}
                 disabled={uploadingPhotos[step.id]}
-                className="flex items-center gap-2 px-4 py-2 bg-[rgb(var(--surface-elevated))] hover:bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg text-[rgb(var(--text-primary))] text-sm transition-colors disabled:opacity-50 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:border-neutral-600 dark:text-white"
+                className="flex items-center gap-2 px-4 py-2 bg-[rgb(var(--surface-elevated))] hover:bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg text-[rgb(var(--text-primary))] text-sm transition-colors disabled:opacity-50 dark:text-white"
               >
                 {uploadingPhotos[step.id] ? (
                   <>
@@ -1291,27 +1291,27 @@ function FoodSOPTemplatePageContent() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--background-primary))] dark:bg-neutral-900">
+      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--background-primary))]">
  <div className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Loading ingredients library...</div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6 bg-[rgb(var(--background-primary))] dark:bg-neutral-900 min-h-screen">
+    <div className="max-w-5xl mx-auto p-6 space-y-6 bg-[rgb(var(--background-primary))] min-h-screen">
       {/* Back Button */}
       <BackButton href="/dashboard/sops" label="Back to SOPs" />
       
       {/* Header */}
       <div className="bg-gradient-to-r from-magenta-600/20 to-blue-600/20 rounded-2xl p-6 border border-magenta-500/30">
         <h1 className="text-2xl font-semibold mb-2 text-[rgb(var(--text-primary))] dark:text-white">Food SOP Template</h1>
-        <p className="text-[rgb(var(--text-secondary))] dark:text-neutral-300 text-sm">
+        <p className="text-[rgb(var(--text-secondary))] text-sm">
           Form-based approach with auto-calculations and UK H&S compliance
         </p>
       </div>
 
       {/* SOP DETAILS SECTION */}
-      <section className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl p-6 border border-[rgb(var(--border))] dark:border-theme">
+      <section className="bg-[rgb(var(--surface-elevated))] rounded-xl p-6 border border-[rgb(var(--border))] dark:border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">SOP Details</h2>
  <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mb-4">
           All SOPs must include title, reference code, version, and author per UK Health & Safety requirements
@@ -1319,11 +1319,11 @@ function FoodSOPTemplatePageContent() {
         
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Category *</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] mb-1">Category *</label>
             <select 
               value={category} 
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white"
+              className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white"
             >
               <option value="Food Prep">Food Prep</option>
               <option value="Service (FOH)">Service (FOH)</option>
@@ -1337,11 +1337,11 @@ function FoodSOPTemplatePageContent() {
           </div>
           
           <div>
-            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Status *</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] mb-1">Status *</label>
             <select 
               value={status} 
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white"
+              className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white"
             >
               <option value="Draft">Draft</option>
               <option value="Published">Published</option>
@@ -1350,39 +1350,39 @@ function FoodSOPTemplatePageContent() {
           </div>
 
           <div className="col-span-2">
-            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">SOP Title *</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] mb-1">SOP Title *</label>
             <input 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
- className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
+ className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
               placeholder="e.g., Chocolate Brownie Production"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Reference Code (Auto)</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] mb-1">Reference Code (Auto)</label>
             <input 
               value={refCode}
               readOnly
- className="w-full bg-[rgb(var(--surface-elevated))] dark:bg-neutral-900/50 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"
+ className="w-full bg-[rgb(var(--surface-elevated))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Version *</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] mb-1">Version *</label>
             <input 
               value={version}
               onChange={(e) => setVersion(e.target.value)}
-              className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white"
+              className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Author *</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] mb-1">Author *</label>
             <input 
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
- className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
+ className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
               placeholder="Your name"
             />
           </div>
@@ -1394,9 +1394,9 @@ function FoodSOPTemplatePageContent() {
                 type="checkbox"
                 checked={isSubRecipe}
                 onChange={(e) => setIsSubRecipe(e.target.checked)}
-                className="w-4 h-4 rounded border-[rgb(var(--border))] dark:border-neutral-600 bg-[rgb(var(--surface))] dark:bg-neutral-900 text-magenta-500 focus:ring-magenta-500"
+                className="w-4 h-4 rounded border-[rgb(var(--border))] bg-[rgb(var(--surface))] text-magenta-500 focus:ring-magenta-500"
               />
-              <span className="text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300">
+              <span className="text-sm text-[rgb(var(--text-secondary))]">
                 Mark as Sub-Recipe (will be added to ingredients library on save)
               </span>
             </label>
@@ -1440,14 +1440,14 @@ function FoodSOPTemplatePageContent() {
           {toolColours.length > 0 && (
             <div className="mt-2">
  <span className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary">Tool colours used: </span>
-              <span className="text-xs text-[rgb(var(--text-secondary))] dark:text-neutral-300">{toolColours.join(', ')}</span>
+              <span className="text-xs text-[rgb(var(--text-secondary))]">{toolColours.join(', ')}</span>
             </div>
           )}
         </div>
       </section>
 
       {/* INGREDIENTS SECTION */}
-      <section className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl p-6 border border-[rgb(var(--border))] dark:border-theme">
+      <section className="bg-[rgb(var(--surface-elevated))] rounded-xl p-6 border border-[rgb(var(--border))] dark:border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Ingredients</h2>
  <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mb-4">
           List all ingredients with quantities. Allergens are auto-flagged per UK Food Information Regulations 2014
@@ -1475,7 +1475,7 @@ function FoodSOPTemplatePageContent() {
                   step="0.01"
                   value={ing.quantity}
                   onChange={(e) => updateIngredient(ing.id, 'quantity', e.target.value)}
-                  className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm"
+                  className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm"
                 />
               </div>
               <div className="col-span-2">
@@ -1483,7 +1483,7 @@ function FoodSOPTemplatePageContent() {
                 <select
                   value={ing.unit}
                   onChange={(e) => updateIngredient(ing.id, 'unit', e.target.value)}
-                  className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm"
+                  className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm"
                 >
                   <option value="">Select unit...</option>
                   {UNIT_OPTIONS.map(unit => (
@@ -1496,7 +1496,7 @@ function FoodSOPTemplatePageContent() {
                 <input
                   value={ing.colour_code}
                   readOnly
- className="w-full bg-[rgb(var(--surface-elevated))] dark:bg-neutral-900/50 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm truncate"
+ className="w-full bg-[rgb(var(--surface-elevated))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm truncate"
                   title={ing.colour_code}
                 />
               </div>
@@ -1562,14 +1562,14 @@ function FoodSOPTemplatePageContent() {
                   <input
                     value={eq.colour_code}
                     readOnly
- className="w-full bg-[rgb(var(--surface-elevated))] dark:bg-neutral-900/50 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm"
+ className="w-full bg-[rgb(var(--surface-elevated))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary text-sm"
                     title="Colour code set from equipment selection"
                   />
                 ) : (
                   <select
                     value={eq.colour_code}
                     onChange={(e) => updateEquipment(eq.id, 'colour_code', e.target.value)}
-                    className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm"
+                    className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white text-sm"
                   >
                     <option value="">Select...</option>
                     {COLOUR_CODES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -1581,7 +1581,7 @@ function FoodSOPTemplatePageContent() {
                 <input
                   value={eq.sanitation_notes}
                   onChange={(e) => updateEquipment(eq.id, 'sanitation_notes', e.target.value)}
- className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
+ className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] text-sm placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
                   placeholder="Cleaning method"
                 />
               </div>
@@ -1608,7 +1608,7 @@ function FoodSOPTemplatePageContent() {
       </section>
 
       {/* PROCESS STEPS SECTION */}
-      <section className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl p-6 border border-[rgb(var(--border))] dark:border-theme">
+      <section className="bg-[rgb(var(--surface-elevated))] rounded-xl p-6 border border-[rgb(var(--border))] dark:border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Process Steps</h2>
  <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mb-4">
           Break down the process into clear, numbered steps. Include HACCP critical control points where applicable. 
@@ -1653,7 +1653,7 @@ function FoodSOPTemplatePageContent() {
       </section>
 
       {/* STORAGE SECTION */}
-      <section className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl p-6 border border-[rgb(var(--border))] dark:border-theme">
+      <section className="bg-[rgb(var(--surface-elevated))] rounded-xl p-6 border border-[rgb(var(--border))] dark:border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Storage Information</h2>
  <p className="text-xs text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary mb-4">
           Specify storage conditions per Food Safety Act 1990 requirements
@@ -1661,11 +1661,11 @@ function FoodSOPTemplatePageContent() {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Storage Type *</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] mb-1">Storage Type *</label>
             <select 
               value={storageType}
               onChange={(e) => setStorageType(e.target.value)}
-              className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white"
+              className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] dark:text-white"
             >
               {STORAGE_TYPES.map(st => (
                 <option key={st.value} value={st.value}>{st.label}</option>
@@ -1674,21 +1674,21 @@ function FoodSOPTemplatePageContent() {
           </div>
 
           <div>
-            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Shelf Life</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] mb-1">Shelf Life</label>
             <input
               value={shelfLife}
               onChange={(e) => setShelfLife(e.target.value)}
- className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
+ className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
               placeholder="e.g., 3 days"
             />
           </div>
 
           <div className="col-span-2">
-            <label className="block text-sm text-[rgb(var(--text-secondary))] dark:text-neutral-300 mb-1">Container Type</label>
+            <label className="block text-sm text-[rgb(var(--text-secondary))] mb-1">Container Type</label>
             <input
               value={containerType}
               onChange={(e) => setContainerType(e.target.value)}
- className="w-full bg-[rgb(var(--surface))] dark:bg-neutral-900 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
+ className="w-full bg-[rgb(var(--surface))] border border-[rgb(var(--border))] rounded-lg px-3 py-2 text-[rgb(var(--text-primary))] placeholder:text-[rgb(var(--text-tertiary))] dark:placeholder:text-theme-tertiary"
               placeholder="e.g., Food-grade plastic container with lid"
             />
           </div>
@@ -1707,7 +1707,7 @@ function FoodSOPTemplatePageContent() {
         </button>
         <button
           onClick={() => window.print()}
-          className="px-6 py-3 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-700 hover:bg-[rgb(var(--surface))] dark:hover:bg-neutral-600 rounded-lg text-[rgb(var(--text-primary))] dark:text-white font-medium flex items-center gap-2 transition-colors shadow-lg"
+          className="px-6 py-3 bg-[rgb(var(--surface-elevated))] hover:bg-[rgb(var(--surface))] rounded-lg text-[rgb(var(--text-primary))] dark:text-white font-medium flex items-center gap-2 transition-colors shadow-lg"
         >
           <Download size={20} />
           Export PDF / Print
@@ -1720,7 +1720,7 @@ function FoodSOPTemplatePageContent() {
 export default function FoodSOPTemplatePage() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--background-primary))] dark:bg-neutral-900">
+      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--background-primary))]">
  <div className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">Loading food SOP template...</div>
       </div>
     }>

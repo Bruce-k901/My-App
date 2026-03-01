@@ -281,7 +281,7 @@ function SOPsListContent() {
     const badges = {
       'Published': { icon: CheckCircle, color: 'green', bg: 'bg-green-500/20 dark:bg-green-500/20', text: 'text-green-600 dark:text-green-400' },
       'Draft': { icon: AlertCircle, color: 'yellow', bg: 'bg-yellow-500/20 dark:bg-yellow-500/20', text: 'text-yellow-600 dark:text-yellow-400' },
-'Archived': { icon: Archive, color:'gray', bg:'bg-[rgb(var(--surface-elevated))] dark:bg-neutral-700', text:'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'}
+'Archived': { icon: Archive, color:'gray', bg:'bg-[rgb(var(--surface-elevated))]', text:'text-[rgb(var(--text-tertiary))] dark:text-theme-tertiary'}
     };
     return badges[status] || badges['Draft'];
   };
@@ -310,7 +310,7 @@ function SOPsListContent() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search SOPs..."
-            className="w-full bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 text-sm sm:text-base text-[rgb(var(--text-primary))] dark:text-white placeholder-[rgb(var(--text-tertiary))] dark:placeholder-neutral-400"
+            className="w-full bg-[rgb(var(--surface-elevated))] border border-[rgb(var(--border))] rounded-lg pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 text-sm sm:text-base text-[rgb(var(--text-primary))] dark:text-white placeholder-[rgb(var(--text-tertiary))]"
           />
         </div>
         {!isMobile && (
@@ -318,7 +318,7 @@ function SOPsListContent() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-[rgb(var(--text-primary))] dark:text-white"
+              className="bg-[rgb(var(--surface-elevated))] border border-[rgb(var(--border))] rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-[rgb(var(--text-primary))] dark:text-white"
             >
               <option value="all">All Status</option>
               <option value="Published">Published</option>
@@ -326,7 +326,7 @@ function SOPsListContent() {
             </select>
             <button
               onClick={() => router.push('/dashboard/sops/archive')}
-              className="px-3 sm:px-4 py-2 bg-[rgb(var(--surface-elevated))] dark:bg-neutral-700 hover:bg-theme-surface-elevated dark:hover:bg-neutral-600 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg text-[rgb(var(--text-secondary))] dark:text-neutral-300 flex items-center justify-center gap-2 transition-colors text-sm sm:text-base"
+              className="px-3 sm:px-4 py-2 bg-[rgb(var(--surface-elevated))] hover:bg-theme-surface-elevated border border-[rgb(var(--border))] rounded-lg text-[rgb(var(--text-secondary))] flex items-center justify-center gap-2 transition-colors text-sm sm:text-base"
             >
               <Archive size={16} />
               <span className="hidden sm:inline">Archived SOPs</span>
@@ -340,8 +340,8 @@ function SOPsListContent() {
       {loading ? (
  <div className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary text-center py-8">Loading SOPs...</div>
       ) : filteredSOPs.length === 0 ? (
-        <div className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl p-8 text-center border border-[rgb(var(--border))] dark:border-theme">
-          <FileText size={48} className="text-[rgb(var(--text-tertiary))] dark:text-neutral-600 mx-auto mb-3" />
+        <div className="bg-[rgb(var(--surface-elevated))]/50 rounded-xl p-8 text-center border border-[rgb(var(--border))] dark:border-theme">
+          <FileText size={48} className="text-[rgb(var(--text-tertiary))] mx-auto mb-3" />
  <p className="text-[rgb(var(--text-secondary))] dark:text-theme-tertiary">No SOPs found.</p>
         </div>
       ) : (
@@ -353,11 +353,11 @@ function SOPsListContent() {
             const Icon = isExpanded ? ChevronUp : ChevronDown;
             
             return (
-              <div key={key} className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800/50 rounded-xl border border-[rgb(var(--border))] dark:border-theme overflow-hidden">
+              <div key={key} className="bg-[rgb(var(--surface-elevated))]/50 rounded-xl border border-[rgb(var(--border))] dark:border-theme overflow-hidden">
                 {/* Category Header */}
                 <button
                   onClick={() => toggleCategory(key)}
-                  className="w-full flex items-center justify-between p-4 hover:bg-black/[0.03] dark:hover:bg-neutral-800/50 transition-colors"
+                  className="w-full flex items-center justify-between p-4 hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg ${group.bgColor}`}>
@@ -388,7 +388,7 @@ function SOPsListContent() {
                           className={`rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 group transition-colors cursor-pointer ${
                             isHighlighted
                               ? 'bg-blue-500/20 dark:bg-blue-500/20 border-2 border-blue-500/60 dark:border-blue-500/60 shadow-lg shadow-blue-500/20 dark:shadow-blue-500/20 animate-pulse'
-                              : 'bg-theme-surface/50 hover:bg-theme-surface-elevated dark:hover:bg-neutral-900 border border-[rgb(var(--border))] dark:border-theme'
+                              : 'bg-theme-surface/50 hover:bg-theme-surface-elevated border border-[rgb(var(--border))] dark:border-theme'
                           }`}
                         >
                           <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">

@@ -311,19 +311,19 @@ export default function CleaningSOPTemplatePage() {
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
+      <div className="max-w-5xl mx-auto p-6 space-y-6 min-h-screen">
         <div className="text-theme-tertiary text-center py-8">Loading libraries...</div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
+    <div className="max-w-5xl mx-auto p-6 space-y-6 min-h-screen">
       {/* Back Button */}
       <BackButton href="/dashboard/sops" label="Back to SOPs" />
       
       {/* Header */}
-      <div className="bg-gradient-to-r from-teal-600/20 to-blue-600/20 rounded-2xl p-6 border border-module-fg/30">
+      <div className="bg-gradient-to-r from-checkly-dark/20 to-checkly-dark/10 dark:from-checkly/20 dark:to-checkly/10 rounded-2xl p-6 border border-module-fg/30">
         <h1 className="text-2xl font-semibold mb-2">Cleaning SOP Template</h1>
         <p className="text-theme-tertiary text-sm">
           Sanitation and hygiene procedures with chemical safety
@@ -331,7 +331,7 @@ export default function CleaningSOPTemplatePage() {
       </div>
 
       {/* SOP DETAILS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">SOP Details</h2>
         
         <div className="grid grid-cols-2 gap-4">
@@ -340,7 +340,7 @@ export default function CleaningSOPTemplatePage() {
             <input 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., Kitchen Work Surfaces Deep Clean"
             />
           </div>
@@ -350,7 +350,7 @@ export default function CleaningSOPTemplatePage() {
             <input 
               value={refCode}
               readOnly
-              className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-theme-tertiary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-tertiary"
             />
           </div>
 
@@ -359,7 +359,7 @@ export default function CleaningSOPTemplatePage() {
             <input 
               value={version}
               onChange={(e) => setVersion(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
 
@@ -368,7 +368,7 @@ export default function CleaningSOPTemplatePage() {
             <input 
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
 
@@ -377,7 +377,7 @@ export default function CleaningSOPTemplatePage() {
             <select 
               value={status} 
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             >
               <option value="Draft">Draft</option>
               <option value="Published">Published</option>
@@ -390,7 +390,7 @@ export default function CleaningSOPTemplatePage() {
             <select 
               value={frequency} 
               onChange={(e) => setFrequency(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             >
               {FREQUENCY_OPTIONS.map(f => (
                 <option key={f.value} value={f.value}>{f.label}</option>
@@ -403,7 +403,7 @@ export default function CleaningSOPTemplatePage() {
             <input 
               value={estimatedTime}
               onChange={(e) => setEstimatedTime(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., 45 minutes"
             />
           </div>
@@ -413,7 +413,7 @@ export default function CleaningSOPTemplatePage() {
             <input 
               value={riskAssessmentLink}
               onChange={(e) => setRiskAssessmentLink(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="Link to risk assessment document"
             />
           </div>
@@ -421,7 +421,7 @@ export default function CleaningSOPTemplatePage() {
       </section>
 
       {/* AREA/EQUIPMENT SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Area/Equipment to Clean</h2>
         <p className="text-xs text-theme-tertiary mb-4">
           Specify what needs to be cleaned
@@ -435,7 +435,7 @@ export default function CleaningSOPTemplatePage() {
                 <input
                   value={area.area}
                   onChange={(e) => setCleaningAreas(cleaningAreas.map(a => a.id === area.id ? { ...a, area: e.target.value } : a))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Kitchen"
                 />
               </div>
@@ -444,7 +444,7 @@ export default function CleaningSOPTemplatePage() {
                 <input
                   value={area.equipment}
                   onChange={(e) => setCleaningAreas(cleaningAreas.map(a => a.id === area.id ? { ...a, equipment: e.target.value } : a))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Work surfaces"
                 />
               </div>
@@ -475,7 +475,7 @@ export default function CleaningSOPTemplatePage() {
                       />
                       <button
                         onClick={() => photoInputRefs.current[area.id]?.click()}
-                        className="w-full bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg p-2 text-theme-primary text-sm"
+                        className="w-full bg-theme-muted hover:bg-theme-hover border border-theme rounded-lg p-2 text-theme-primary text-sm"
                       >
                         <Upload size={16} />
                       </button>
@@ -506,7 +506,7 @@ export default function CleaningSOPTemplatePage() {
       </section>
 
       {/* CHEMICALS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Chemicals Required</h2>
         <p className="text-xs text-theme-tertiary mb-4">
           Select chemicals from library (auto-fills contact time and hazards)
@@ -516,7 +516,7 @@ export default function CleaningSOPTemplatePage() {
           {chemicals.map((chem, index) => {
             const selectedChemical = chemicalsLibrary.find(c => c.id === chem.chemical_id);
             return (
-              <div key={chem.id} className="p-3 bg-neutral-900/50 rounded-lg border border-neutral-600">
+              <div key={chem.id} className="p-3 bg-theme-surface-elevated rounded-lg border border-theme">
                 {/* Hazard warnings */}
                 {selectedChemical?.hazard_symbols && selectedChemical.hazard_symbols.length > 0 && (
                   <div className="mb-2 flex items-center gap-2 p-2 bg-red-500/10 border border-red-500/30 rounded">
@@ -542,7 +542,7 @@ export default function CleaningSOPTemplatePage() {
                     <input
                       value={chem.contact_time}
                       readOnly
-                      className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-theme-tertiary text-sm"
+                      className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-tertiary text-sm"
                     />
                   </div>
                   <div className="col-span-2">
@@ -550,7 +550,7 @@ export default function CleaningSOPTemplatePage() {
                     <input
                       value={chem.dilution}
                       onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, dilution: e.target.value } : c))}
-                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                      className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                       placeholder="Optional"
                     />
                   </div>
@@ -559,7 +559,7 @@ export default function CleaningSOPTemplatePage() {
                     <input
                       value={chem.notes}
                       onChange={(e) => setChemicals(chemicals.map(c => c.id === chem.id ? { ...c, notes: e.target.value } : c))}
-                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                      className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                       placeholder="Optional"
                     />
                   </div>
@@ -600,7 +600,7 @@ export default function CleaningSOPTemplatePage() {
       </section>
 
       {/* PPE SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">PPE Required</h2>
         <p className="text-xs text-theme-tertiary mb-4">
           Personal protective equipment needed for this cleaning task
@@ -625,7 +625,7 @@ export default function CleaningSOPTemplatePage() {
                 <select
                   value={item.required ? 'yes' : 'no'}
                   onChange={(e) => setPPE(ppe.map(p => p.id === item.id ? { ...p, required: e.target.value === 'yes' } : p))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 >
                   <option value="yes">Yes</option>
                   <option value="no">No</option>
@@ -636,7 +636,7 @@ export default function CleaningSOPTemplatePage() {
                 <input
                   value={item.notes}
                   onChange={(e) => setPPE(ppe.map(p => p.id === item.id ? { ...p, notes: e.target.value } : p))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="Optional"
                 />
               </div>
@@ -663,7 +663,7 @@ export default function CleaningSOPTemplatePage() {
       </section>
 
       {/* PRE-CLEANING CHECKS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Pre-Cleaning Checks</h2>
         <p className="text-xs text-theme-tertiary mb-4">
           Safety checks before starting cleaning
@@ -671,17 +671,17 @@ export default function CleaningSOPTemplatePage() {
 
         <div className="space-y-2">
           {preChecks.map((check, index) => (
-            <div key={check.id} className="flex items-center gap-3 p-3 bg-neutral-900/50 rounded-lg border border-neutral-600">
+            <div key={check.id} className="flex items-center gap-3 p-3 bg-theme-surface-elevated rounded-lg border border-theme">
               <input
                 type="checkbox"
                 checked={check.verified}
                 onChange={(e) => setPreChecks(preChecks.map(c => c.id === check.id ? { ...c, verified: e.target.checked } : c))}
-                className="w-5 h-5 rounded border-neutral-600 bg-neutral-900"
+                className="w-5 h-5 rounded border-theme bg-theme-muted"
               />
               <input
                 value={check.check}
                 onChange={(e) => setPreChecks(preChecks.map(c => c.id === check.id ? { ...c, check: e.target.value } : c))}
-                className="flex-1 bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                className="flex-1 bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 placeholder="e.g., Equipment powered off"
               />
               <button
@@ -705,7 +705,7 @@ export default function CleaningSOPTemplatePage() {
       </section>
 
       {/* PROCESS STEPS SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Step-by-Step Process</h2>
         <p className="text-xs text-theme-tertiary mb-4">
           Detailed cleaning procedure
@@ -713,7 +713,7 @@ export default function CleaningSOPTemplatePage() {
 
         <div className="space-y-3">
           {processSteps.map((step, index) => (
-            <div key={step.id} className="p-4 bg-neutral-900/50 rounded-lg border border-neutral-600">
+            <div key={step.id} className="p-4 bg-theme-surface-elevated rounded-lg border border-theme">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-semibold text-magenta-400">Step {index + 1}</span>
                 <button
@@ -731,7 +731,7 @@ export default function CleaningSOPTemplatePage() {
                   <input
                     value={step.step}
                     onChange={(e) => setProcessSteps(processSteps.map(s => s.id === step.id ? { ...s, step: e.target.value } : s))}
-                    className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                    className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                     placeholder="e.g., Apply degreaser to surface"
                   />
                 </div>
@@ -742,7 +742,7 @@ export default function CleaningSOPTemplatePage() {
                     <input
                       value={step.method}
                       onChange={(e) => setProcessSteps(processSteps.map(s => s.id === step.id ? { ...s, method: e.target.value } : s))}
-                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                      className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                       placeholder="e.g., Spray and scrub"
                     />
                   </div>
@@ -751,7 +751,7 @@ export default function CleaningSOPTemplatePage() {
                     <input
                       value={step.duration}
                       onChange={(e) => setProcessSteps(processSteps.map(s => s.id === step.id ? { ...s, duration: e.target.value } : s))}
-                      className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                      className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                       placeholder="e.g., 10 minutes"
                     />
                   </div>
@@ -784,7 +784,7 @@ export default function CleaningSOPTemplatePage() {
                         />
                         <button
                           onClick={() => photoInputRefs.current[step.id]?.click()}
-                          className="bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 rounded-lg p-2 text-theme-primary text-sm flex items-center gap-2"
+                          className="bg-theme-muted hover:bg-theme-hover border border-theme rounded-lg p-2 text-theme-primary text-sm flex items-center gap-2"
                         >
                           <Upload size={16} />
                           Upload Photo
@@ -808,7 +808,7 @@ export default function CleaningSOPTemplatePage() {
       </section>
 
       {/* POST-CLEANING VERIFICATION SECTION */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <h2 className="text-xl font-semibold text-magenta-400 mb-4">Post-Cleaning Verification</h2>
         <p className="text-xs text-theme-tertiary mb-4">
           Final checks to confirm cleaning is complete
@@ -822,7 +822,7 @@ export default function CleaningSOPTemplatePage() {
                 <input
                   value={check.check}
                   onChange={(e) => setPostChecks(postChecks.map(c => c.id === check.id ? { ...c, check: e.target.value } : c))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Surface is dry"
                 />
               </div>
@@ -831,7 +831,7 @@ export default function CleaningSOPTemplatePage() {
                 <input
                   value={check.standard}
                   onChange={(e) => setPostChecks(postChecks.map(c => c.id === check.id ? { ...c, standard: e.target.value } : c))}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Visually clean, no residue"
                 />
               </div>
@@ -842,7 +842,7 @@ export default function CleaningSOPTemplatePage() {
                     type="checkbox"
                     checked={check.verified}
                     onChange={(e) => setPostChecks(postChecks.map(c => c.id === check.id ? { ...c, verified: e.target.checked } : c))}
-                    className="w-5 h-5 rounded border-neutral-600 bg-neutral-900"
+                    className="w-5 h-5 rounded border-theme bg-theme-muted"
                   />
                   <span className="text-xs text-theme-tertiary">Yes</span>
                 </div>
@@ -881,7 +881,7 @@ export default function CleaningSOPTemplatePage() {
         </button>
         <button
           onClick={() => showToast({ title: 'Export', description: 'PDF export coming soon', type: 'info' })}
-          className="px-6 py-3 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-theme-primary font-medium flex items-center gap-2"
+          className="px-6 py-3 bg-theme-button hover:bg-theme-button-hover rounded-lg text-theme-primary font-medium flex items-center gap-2"
         >
           <Download size={20} />
           Export PDF

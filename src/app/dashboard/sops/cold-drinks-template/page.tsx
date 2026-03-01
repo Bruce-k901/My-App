@@ -211,20 +211,20 @@ export default function ColdDrinksSOPTemplatePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-neutral-900">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="text-theme-tertiary">Loading libraries...</div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6 bg-neutral-900 min-h-screen">
+    <div className="max-w-6xl mx-auto p-6 space-y-6 min-h-screen">
       <BackButton href="/dashboard/sops" label="Back to SOPs" />
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 rounded-2xl p-6 border border-blue-500/30">
+      <div className="bg-gradient-to-r from-checkly-dark/20 to-checkly-dark/10 dark:from-checkly/20 dark:to-checkly/10 rounded-2xl p-6 border border-checkly-dark/30 dark:border-checkly/30">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-2 h-8 bg-blue-500 rounded-full"></div>
+          <div className="w-2 h-8 bg-checkly-dark dark:bg-checkly rounded-full"></div>
           <div>
             <h1 className="text-lg font-semibold text-theme-primary">Cold Drinks SOP Template</h1>
             <p className="text-sm text-theme-tertiary">Smoothies, Shakes & Juices</p>
@@ -233,8 +233,8 @@ export default function ColdDrinksSOPTemplatePage() {
       </div>
 
       {/* SOP Details */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
-        <h2 className="text-xl font-semibold text-blue-400 mb-4">SOP Details</h2>
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly mb-4">SOP Details</h2>
         
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -242,7 +242,7 @@ export default function ColdDrinksSOPTemplatePage() {
             <select 
               value={status} 
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             >
               <option value="Draft">Draft</option>
               <option value="Published">Published</option>
@@ -255,7 +255,7 @@ export default function ColdDrinksSOPTemplatePage() {
             <input 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., Berry Smoothie"
             />
           </div>
@@ -265,7 +265,7 @@ export default function ColdDrinksSOPTemplatePage() {
             <input 
               value={refCode}
               readOnly
-              className="w-full bg-neutral-900/50 border border-neutral-600 rounded-lg px-3 py-2 text-theme-tertiary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-tertiary"
             />
           </div>
 
@@ -274,7 +274,7 @@ export default function ColdDrinksSOPTemplatePage() {
             <input 
               value={version}
               onChange={(e) => setVersion(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             />
           </div>
 
@@ -283,7 +283,7 @@ export default function ColdDrinksSOPTemplatePage() {
             <input 
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="Your name"
             />
           </div>
@@ -293,7 +293,7 @@ export default function ColdDrinksSOPTemplatePage() {
             <input 
               value={estimatedTime}
               onChange={(e) => setEstimatedTime(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., 3 minutes"
             />
           </div>
@@ -301,8 +301,8 @@ export default function ColdDrinksSOPTemplatePage() {
       </section>
 
       {/* Equipment */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
-        <h2 className="text-xl font-semibold text-blue-400 mb-4">Equipment</h2>
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly mb-4">Equipment</h2>
         
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -310,7 +310,7 @@ export default function ColdDrinksSOPTemplatePage() {
             <input
               value={equipment.blender_type}
               onChange={(e) => setEquipment({ ...equipment, blender_type: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., Vitamix 5200"
             />
           </div>
@@ -320,7 +320,7 @@ export default function ColdDrinksSOPTemplatePage() {
             <input
               value={equipment.speed_setting}
               onChange={(e) => setEquipment({ ...equipment, speed_setting: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., High - 30 seconds"
             />
           </div>
@@ -330,7 +330,7 @@ export default function ColdDrinksSOPTemplatePage() {
             <input
               value={equipment.other_equipment}
               onChange={(e) => setEquipment({ ...equipment, other_equipment: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., Juicer, Ice crusher"
             />
           </div>
@@ -338,17 +338,17 @@ export default function ColdDrinksSOPTemplatePage() {
       </section>
 
       {/* Ingredients */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-blue-400">Ingredients</h2>
-          <button onClick={addIngredient} className="px-3 py-1.5 bg-blue-600/20 hover:bg-module-fg/10 border border-blue-500/40 rounded-lg text-blue-400 text-sm flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly">Ingredients</h2>
+          <button onClick={addIngredient} className="px-3 py-1.5 bg-checkly-dark/20 dark:bg-checkly/20 hover:bg-checkly-dark/30 dark:hover:bg-checkly/30 border border-checkly-dark/40 dark:border-checkly/40 rounded-lg text-checkly-dark dark:text-checkly text-sm flex items-center gap-2">
             <Plus size={16} /> Add Ingredient
           </button>
         </div>
 
         <div className="space-y-3">
           {ingredients.map((ing, index) => (
-            <div key={ing.id} className="grid grid-cols-12 gap-2 items-start bg-neutral-900/50 p-3 rounded-lg">
+            <div key={ing.id} className="grid grid-cols-12 gap-2 items-start bg-theme-surface-elevated p-3 rounded-lg">
               <div className="col-span-3">
                 {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Ingredient</label>}
                 <select
@@ -359,7 +359,7 @@ export default function ColdDrinksSOPTemplatePage() {
                     updateIngredient(ing.id, 'item_name', selected?.ingredient_name || selected?.item_name || '');
                     updateIngredient(ing.id, 'allergens', selected?.allergens || []);
                   }}
-                  className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                 >
                   <option value="">Select...</option>
                   {ingredientsLibrary.map(item => (
@@ -375,7 +375,7 @@ export default function ColdDrinksSOPTemplatePage() {
                 <input
                   value={ing.quantity}
                   onChange={(e) => updateIngredient(ing.id, 'quantity', e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., 100"
                 />
               </div>
@@ -384,7 +384,7 @@ export default function ColdDrinksSOPTemplatePage() {
                 <input
                   value={ing.unit}
                   onChange={(e) => updateIngredient(ing.id, 'unit', e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="g, ml"
                 />
               </div>
@@ -393,7 +393,7 @@ export default function ColdDrinksSOPTemplatePage() {
                 <input
                   value={ing.prep_notes}
                   onChange={(e) => updateIngredient(ing.id, 'prep_notes', e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="Frozen, Peeled"
                 />
               </div>
@@ -402,7 +402,7 @@ export default function ColdDrinksSOPTemplatePage() {
                 <input
                   value={ing.cost}
                   onChange={(e) => updateIngredient(ing.id, 'cost', e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="£0.00"
                 />
               </div>
@@ -421,23 +421,23 @@ export default function ColdDrinksSOPTemplatePage() {
       </section>
 
       {/* Recipe Steps */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-blue-400">Recipe Steps</h2>
-          <button onClick={addRecipeStep} className="px-3 py-1.5 bg-blue-600/20 hover:bg-module-fg/10 border border-blue-500/40 rounded-lg text-blue-400 text-sm flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly">Recipe Steps</h2>
+          <button onClick={addRecipeStep} className="px-3 py-1.5 bg-checkly-dark/20 dark:bg-checkly/20 hover:bg-checkly-dark/30 dark:hover:bg-checkly/30 border border-checkly-dark/40 dark:border-checkly/40 rounded-lg text-checkly-dark dark:text-checkly text-sm flex items-center gap-2">
             <Plus size={16} /> Add Step
           </button>
         </div>
 
         <div className="space-y-4">
           {recipeSteps.map((step, index) => (
-            <div key={step.id} className="bg-neutral-900/50 p-4 rounded-lg space-y-3">
+            <div key={step.id} className="bg-theme-surface-elevated p-4 rounded-lg space-y-3">
               <div>
                 <label className="block text-xs text-theme-tertiary mb-1">Step Description</label>
                 <textarea
                   value={step.step}
                   onChange={(e) => updateRecipeStep(step.id, 'step', e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   rows={2}
                   placeholder="Describe the step..."
                 />
@@ -448,7 +448,7 @@ export default function ColdDrinksSOPTemplatePage() {
                   <input
                     value={step.blending_time}
                     onChange={(e) => updateRecipeStep(step.id, 'blending_time', e.target.value)}
-                    className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                    className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                     placeholder="e.g., High 30 seconds"
                   />
                 </div>
@@ -457,7 +457,7 @@ export default function ColdDrinksSOPTemplatePage() {
                   <input
                     value={step.order}
                     onChange={(e) => updateRecipeStep(step.id, 'order', e.target.value)}
-                    className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                    className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                     placeholder="e.g., Add liquid first"
                   />
                 </div>
@@ -478,23 +478,23 @@ export default function ColdDrinksSOPTemplatePage() {
       </section>
 
       {/* Consistency Checks */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-blue-400">Consistency Checks</h2>
-          <button onClick={addConsistencyCheck} className="px-3 py-1.5 bg-blue-600/20 hover:bg-module-fg/10 border border-blue-500/40 rounded-lg text-blue-400 text-sm flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly">Consistency Checks</h2>
+          <button onClick={addConsistencyCheck} className="px-3 py-1.5 bg-checkly-dark/20 dark:bg-checkly/20 hover:bg-checkly-dark/30 dark:hover:bg-checkly/30 border border-checkly-dark/40 dark:border-checkly/40 rounded-lg text-checkly-dark dark:text-checkly text-sm flex items-center gap-2">
             <Plus size={16} /> Add Check
           </button>
         </div>
 
         <div className="space-y-3">
           {consistencyChecks.map((cc, index) => (
-            <div key={cc.id} className="grid grid-cols-12 gap-2 items-start bg-neutral-900/50 p-3 rounded-lg">
+            <div key={cc.id} className="grid grid-cols-12 gap-2 items-start bg-theme-surface-elevated p-3 rounded-lg">
               <div className="col-span-5">
                 {index === 0 && <label className="block text-xs text-theme-tertiary mb-1">Check</label>}
                 <input
                   value={cc.check}
                   onChange={(e) => updateConsistencyCheck(cc.id, 'check', e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Texture"
                 />
               </div>
@@ -503,7 +503,7 @@ export default function ColdDrinksSOPTemplatePage() {
                 <input
                   value={cc.standard}
                   onChange={(e) => updateConsistencyCheck(cc.id, 'standard', e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary text-sm"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary text-sm"
                   placeholder="e.g., Smooth, no lumps"
                 />
               </div>
@@ -522,8 +522,8 @@ export default function ColdDrinksSOPTemplatePage() {
       </section>
 
       {/* Presentation */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
-        <h2 className="text-xl font-semibold text-blue-400 mb-4">Presentation</h2>
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly mb-4">Presentation</h2>
         
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -531,7 +531,7 @@ export default function ColdDrinksSOPTemplatePage() {
             <select
               value={presentation.glassware_id}
               onChange={(e) => setPresentation({ ...presentation, glassware_id: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             >
               <option value="">Select glassware...</option>
               {glasswareLibrary.map(glass => (
@@ -545,7 +545,7 @@ export default function ColdDrinksSOPTemplatePage() {
             <select
               value={presentation.garnish_id}
               onChange={(e) => setPresentation({ ...presentation, garnish_id: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             >
               <option value="">Select garnish...</option>
               {drinksLibrary.filter(d => d.category === 'Garnish').map(garnish => (
@@ -559,7 +559,7 @@ export default function ColdDrinksSOPTemplatePage() {
             <select
               value={presentation.straw_id}
               onChange={(e) => setPresentation({ ...presentation, straw_id: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
             >
               <option value="">Select straw...</option>
               {disposablesLibrary.filter(d => d.category === 'Straws').map(straw => (
@@ -573,7 +573,7 @@ export default function ColdDrinksSOPTemplatePage() {
             <input
               value={presentation.serving_temp}
               onChange={(e) => setPresentation({ ...presentation, serving_temp: e.target.value })}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+              className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
               placeholder="e.g., Chilled 4°C"
             />
           </div>
@@ -581,8 +581,8 @@ export default function ColdDrinksSOPTemplatePage() {
       </section>
 
       {/* Storage Info */}
-      <section className="bg-neutral-800/50 rounded-xl p-6 border border-theme">
-        <h2 className="text-xl font-semibold text-blue-400 mb-4">Storage Information</h2>
+      <section className="bg-theme-surface rounded-xl p-6 border border-theme">
+        <h2 className="text-xl font-semibold text-checkly-dark dark:text-checkly mb-4">Storage Information</h2>
         
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
@@ -604,7 +604,7 @@ export default function ColdDrinksSOPTemplatePage() {
                 <input
                   value={storage.prep_advance}
                   onChange={(e) => setStorage({ ...storage, prep_advance: e.target.value })}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
                   placeholder="e.g., 2 hours"
                 />
               </div>
@@ -614,7 +614,7 @@ export default function ColdDrinksSOPTemplatePage() {
                 <input
                   value={storage.storage_method}
                   onChange={(e) => setStorage({ ...storage, storage_method: e.target.value })}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
                   placeholder="e.g., Chilled, Ice bath"
                 />
               </div>
@@ -624,7 +624,7 @@ export default function ColdDrinksSOPTemplatePage() {
                 <input
                   value={storage.shelf_life}
                   onChange={(e) => setStorage({ ...storage, shelf_life: e.target.value })}
-                  className="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-3 py-2 text-theme-primary"
+                  className="w-full bg-theme-muted border border-theme rounded-lg px-3 py-2 text-theme-primary"
                   placeholder="e.g., 24 hours refrigerated"
                 />
               </div>

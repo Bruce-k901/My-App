@@ -114,13 +114,13 @@ export default function TemplatesPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search templates..."
-            className="w-full bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg pl-10 pr-4 py-2 text-[rgb(var(--text-primary))] dark:text-white placeholder-[rgb(var(--text-tertiary))] dark:placeholder-neutral-400"
+            className="w-full bg-[rgb(var(--surface-elevated))] border border-[rgb(var(--border))] rounded-lg pl-10 pr-4 py-2 text-[rgb(var(--text-primary))] placeholder-[rgb(var(--text-tertiary))]"
           />
         </div>
         <select
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
-          className="bg-[rgb(var(--surface-elevated))] dark:bg-neutral-800 border border-[rgb(var(--border))] dark:border-neutral-600 rounded-lg px-4 py-2 text-[rgb(var(--text-primary))] dark:text-white"
+          className="bg-[rgb(var(--surface-elevated))] border border-[rgb(var(--border))] rounded-lg px-4 py-2 text-[rgb(var(--text-primary))]"
         >
           <option value="all">All Categories</option>
           <option value="Food Prep">Food Prep</option>
@@ -143,49 +143,49 @@ export default function TemplatesPage() {
             'food-prep': { 
               bg: 'bg-orange-50 dark:bg-gradient-to-br dark:from-orange-500/20 dark:to-red-500/20', 
               border: 'border-orange-200 dark:border-orange-500/30',
-              text: 'text-orange-900 dark:text-white',
-              icon: 'text-orange-600 dark:text-white'
+              text: 'text-orange-900',
+              icon: 'text-orange-600'
             },
             'service': { 
               bg: 'bg-blue-50 dark:bg-gradient-to-br dark:from-blue-500/20 dark:to-cyan-500/20', 
               border: 'border-blue-200 dark:border-blue-500/30',
-              text: 'text-blue-900 dark:text-white',
-              icon: 'text-blue-600 dark:text-white'
+              text: 'text-blue-900',
+              icon: 'text-blue-600'
             },
             'drinks': { 
               bg: 'bg-purple-50 dark:bg-gradient-to-br dark:from-purple-500/20 dark:to-module-fg/25', 
               border: 'border-purple-200 dark:border-purple-500/30',
-              text: 'text-purple-900 dark:text-white',
-              icon: 'text-purple-600 dark:text-white'
+              text: 'text-purple-900',
+              icon: 'text-purple-600'
             },
             'hot-drinks': { 
               bg: 'bg-amber-50 dark:bg-gradient-to-br dark:from-amber-500/20 dark:to-yellow-500/20', 
               border: 'border-amber-200 dark:border-amber-500/30',
-              text: 'text-amber-900 dark:text-white',
-              icon: 'text-amber-600 dark:text-white'
+              text: 'text-amber-900',
+              icon: 'text-amber-600'
             },
             'cold-drinks': { 
               bg: 'bg-green-50 dark:bg-gradient-to-br dark:from-green-500/20 dark:to-emerald-500/20', 
               border: 'border-green-200 dark:border-green-500/30',
-              text: 'text-green-900 dark:text-white',
-              icon: 'text-green-600 dark:text-white'
+              text: 'text-green-900',
+              icon: 'text-green-600'
             },
             'cleaning': { 
               bg: 'bg-teal-50 dark:bg-gradient-to-br dark:from-teal-500/20 dark:to-blue-500/20', 
               border: 'border-teal-200 dark:border-module-fg/30',
-              text: 'text-teal-900 dark:text-white',
+              text: 'text-teal-900',
               icon: 'text-module-fg'
             },
             'opening': { 
               bg: 'bg-yellow-50 dark:bg-gradient-to-br dark:from-yellow-500/20 dark:to-orange-500/20', 
               border: 'border-yellow-200 dark:border-yellow-500/30',
-              text: 'text-yellow-900 dark:text-white',
-              icon: 'text-yellow-600 dark:text-white'
+              text: 'text-yellow-900',
+              icon: 'text-yellow-600'
             },
             'closing': { 
               bg: 'bg-indigo-50 dark:bg-gradient-to-br dark:from-indigo-500/20 dark:to-purple-500/20', 
               border: 'border-indigo-200 dark:border-module-fg/30',
-              text: 'text-indigo-900 dark:text-white',
+              text: 'text-indigo-900',
               icon: 'text-module-fg'
             }
           };
