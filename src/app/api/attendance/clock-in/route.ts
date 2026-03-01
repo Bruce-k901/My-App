@@ -86,17 +86,31 @@ export async function POST(request: NextRequest) {
         activeShiftClockIn: activeShift.clock_in_time,
       });
 
+      // Check if there's a corresponding active time_entries record
+      const { data: activeEntry } = await supabase
+        .from('time_entries')
+        .select('id')
+        .eq('profile_id', profile.id)
+        .eq('status', 'active')
+        .is('clock_out', null)
+        .maybeSingle();
+
       // Auto-close stale shifts (open for 16+ hours) so staff aren't stuck
       const shiftAge = Date.now() - new Date(activeShift.clock_in_time).getTime();
       const sixteenHours = 16 * 60 * 60 * 1000;
 
-      if (shiftAge > sixteenHours) {
+      if (shiftAge > sixteenHours || !activeEntry) {
+        // Orphaned or stale shift — auto-close it so the user can clock in
+        const closeReason = !activeEntry
+          ? 'Auto-closed: orphaned shift (no matching active time_entry)'
+          : 'Auto-closed: stale shift on new clock-in';
+
         await supabase
           .from('staff_attendance')
           .update({
             clock_out_time: clockInTime,
             shift_status: 'off_shift',
-            shift_notes: 'Auto-closed: stale shift on new clock-in',
+            shift_notes: closeReason,
           })
           .eq('id', activeShift.id);
 
@@ -106,7 +120,7 @@ export async function POST(request: NextRequest) {
           .update({
             clock_out: clockInTime,
             status: 'completed',
-            notes: 'Auto-closed: stale shift on new clock-in',
+            notes: closeReason,
           })
           .eq('profile_id', profile.id)
           .eq('status', 'active')

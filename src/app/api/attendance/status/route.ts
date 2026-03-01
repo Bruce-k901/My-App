@@ -116,13 +116,16 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // User is NOT on shift — clean up any orphaned time_entries that are still 'active'
+    // User is NOT on shift — clean up any orphaned records
+    const now = new Date().toISOString();
+
+    // Clean up orphaned time_entries that are still 'active'
     // This prevents the TimeClock from showing stale "124h" elapsed times
     const { error: cleanupError } = await supabase
       .from('time_entries')
       .update({
         status: 'completed',
-        clock_out: new Date().toISOString(),
+        clock_out: now,
         notes: 'Auto-closed: no matching active shift in staff_attendance',
       })
       .eq('profile_id', profile.id)
@@ -131,6 +134,23 @@ export async function GET(request: NextRequest) {
 
     if (cleanupError) {
       console.error('Error cleaning up orphaned time_entries (non-fatal):', cleanupError);
+    }
+
+    // Also clean up orphaned staff_attendance records that are still 'on_shift'
+    // This prevents clock-in from being blocked by a ghost shift
+    const { error: attendanceCleanupError } = await supabase
+      .from('staff_attendance')
+      .update({
+        clock_out_time: now,
+        shift_status: 'off_shift',
+        shift_notes: 'Auto-closed: orphaned shift detected during status check',
+      })
+      .eq('profile_id', profile.id)
+      .eq('shift_status', 'on_shift')
+      .is('clock_out_time', null);
+
+    if (attendanceCleanupError) {
+      console.error('Error cleaning up orphaned staff_attendance (non-fatal):', attendanceCleanupError);
     }
 
     return NextResponse.json({
