@@ -4499,10 +4499,11 @@ export default function RotaBuilderPage() {
             // Map absence reason to leave type code
             const leaveTypeCode = reason === 'sick' ? 'SICK' : 'UNPAID';
             const leaveType = leaveTypes.find(lt => lt.code === leaveTypeCode) || leaveTypes[0];
+            console.log('[Absence] leaveTypes available:', leaveTypes, 'selected:', leaveType, 'for reason:', reason);
             if (!leaveType) throw new Error('No leave types configured — please contact your admin');
 
             // 1. Insert leave_requests (drives the rota display)
-            const { error: leaveError } = await supabase.from('leave_requests').insert({
+            const leavePayload = {
               profile_id: profileId,
               company_id: companyId,
               leave_type_id: leaveType.id,
@@ -4513,11 +4514,16 @@ export default function RotaBuilderPage() {
               reason: `${reason}${notes ? ': ' + notes : ''}`,
               reviewed_by: profile?.id,
               reviewed_at: new Date().toISOString(),
-            });
-            if (leaveError) throw leaveError;
+            };
+            console.log('[Absence] Inserting leave_request:', leavePayload);
+            const { error: leaveError } = await supabase.from('leave_requests').insert(leavePayload);
+            if (leaveError) {
+              console.error('[Absence] leave_requests insert failed:', leaveError);
+              throw new Error(`Leave request failed: ${leaveError.message}`);
+            }
 
             // 2. Also insert staff_attendance as audit record
-            await supabase.from('staff_attendance').insert({
+            const { error: attendanceError } = await supabase.from('staff_attendance').insert({
               profile_id: profileId,
               company_id: companyId,
               site_id: selectedSite,
@@ -4525,11 +4531,12 @@ export default function RotaBuilderPage() {
               shift_status: 'absent',
               shift_notes: `${reason}${notes ? ': ' + notes : ''}`,
             });
+            if (attendanceError) console.warn('[Absence] staff_attendance insert failed (non-blocking):', attendanceError);
 
             // 3. If sick, also create a sickness record
             if (reason === 'sick') {
               const staffMember = staff.find(s => s.id === profileId);
-              await supabase.from('staff_sickness_records').insert({
+              const { error: sicknessError } = await supabase.from('staff_sickness_records').insert({
                 company_id: companyId,
                 site_id: selectedSite,
                 staff_member_id: profileId,
@@ -4541,6 +4548,7 @@ export default function RotaBuilderPage() {
                 reported_date: new Date().toISOString().split('T')[0],
                 status: 'active',
               });
+              if (sicknessError) console.warn('[Absence] sickness record insert failed (non-blocking):', sicknessError);
             }
 
             // 4. Reload rota data so the absence shows immediately

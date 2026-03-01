@@ -135,8 +135,9 @@ export function ShiftActionSheet({
     try {
       await onRecordAbsence(shift.id, shift.profile_id, absenceReason, absenceNotes);
       handleClose();
-    } catch {
-      // Error handled by parent
+    } catch (err: any) {
+      console.error('Record absence error:', err);
+      toast.error(err?.message || 'Failed to record absence');
     } finally {
       setLoading(false);
     }
