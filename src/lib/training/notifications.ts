@@ -41,24 +41,53 @@ export async function sendCourseAssignmentNotification(
   try {
     const supabaseAdmin = getSupabaseAdmin();
 
-    // Get employee's auth user ID
-    // For old-style profiles, profiles.id IS the auth UUID (no separate auth_user_id)
-    // For new-style profiles, auth_user_id stores the auth UUID separately
+    // Resolve employee's auth UUID using multiple fallback strategies:
+    // 1. auth_user_id on profile (new-style profiles)
+    // 2. Look up auth_user_id from DB by profile id
+    // 3. Verify profile.id IS the auth UUID via auth.admin
+    // 4. Look up auth user by email (employee_number for logging)
     let employeeAuthId = employee.auth_user_id;
     if (!employeeAuthId && employee.id) {
-      // Try to get auth_user_id from profiles table
       const { data: profileData } = await supabaseAdmin
         .from('profiles')
-        .select('auth_user_id')
+        .select('auth_user_id, email, employee_number')
         .eq('id', employee.id)
         .maybeSingle();
 
-      // Fall back to employee.id — for old profiles, id = auth UUID
-      employeeAuthId = profileData?.auth_user_id || employee.id;
+      employeeAuthId = profileData?.auth_user_id || null;
+
+      if (!employeeAuthId) {
+        // Try: profile.id might BE the auth UUID (old-style profiles)
+        const { data: authCheck } = await supabaseAdmin.auth.admin.getUserById(employee.id);
+        if (authCheck?.user) {
+          employeeAuthId = employee.id;
+          console.log(`[Training Notification] Resolved auth UUID via profile.id for employee ${profileData?.employee_number || employee.id}`);
+        } else if (profileData?.email) {
+          // Last resort: look up auth user by email
+          const { data: usersList } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
+          const match = usersList?.users?.find(
+            (u) => u.email?.toLowerCase() === profileData.email!.toLowerCase()
+          );
+          if (match) {
+            employeeAuthId = match.id;
+            console.log(`[Training Notification] Resolved auth UUID via email for employee ${profileData?.employee_number || profileData?.email}`);
+          }
+        }
+      }
+
+      if (!employeeAuthId) {
+        console.error('Cannot resolve auth UUID for employee:', {
+          profileId: employee.id,
+          employeeNumber: profileData?.employee_number,
+          email: profileData?.email,
+          authUserIdField: profileData?.auth_user_id,
+        });
+        return null;
+      }
     }
 
     if (!employeeAuthId) {
-      console.error('Cannot send notification: employee has no auth_user_id or id', employee.id);
+      console.error('Cannot send notification: no employee id provided');
       return null;
     }
 

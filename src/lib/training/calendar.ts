@@ -34,11 +34,37 @@ export async function createCourseReminderTask(
     // Resolve the employee's auth UUID (frontend queries notifications by auth UUID)
     const { data: employeeProfile } = await supabaseAdmin
       .from('profiles')
-      .select('auth_user_id')
+      .select('auth_user_id, email, employee_number')
       .eq('id', assignment.profile_id)
       .maybeSingle();
 
-    const employeeAuthId = employeeProfile?.auth_user_id || assignment.profile_id;
+    let employeeAuthId = employeeProfile?.auth_user_id || null;
+
+    if (!employeeAuthId) {
+      // Try: profile.id might BE the auth UUID (old-style profiles)
+      const { data: authCheck } = await supabaseAdmin.auth.admin.getUserById(assignment.profile_id);
+      if (authCheck?.user) {
+        employeeAuthId = assignment.profile_id;
+      } else if (employeeProfile?.email) {
+        // Last resort: look up auth user by email
+        const { data: usersList } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
+        const match = usersList?.users?.find(
+          (u) => u.email?.toLowerCase() === employeeProfile.email!.toLowerCase()
+        );
+        if (match) {
+          employeeAuthId = match.id;
+        }
+      }
+    }
+
+    if (!employeeAuthId) {
+      console.error('Cannot resolve auth UUID for calendar reminder:', {
+        profileId: assignment.profile_id,
+        employeeNumber: employeeProfile?.employee_number,
+        email: employeeProfile?.email,
+      });
+      return null;
+    }
 
     // Calculate reminder date: 7 days before deadline, or 7 days from now if no deadline
     let reminderDate: Date;
