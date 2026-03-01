@@ -31,7 +31,7 @@ export function WeekSelector({ weekStart, onWeekChange }: WeekSelectorProps) {
       </Button>
 
       <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-lg min-w-[200px] justify-center">
-        <Calendar className="h-4 w-4 text-[#14B8A6]" />
+        <Calendar className="h-4 w-4 text-module-fg" />
         <span className="text-theme-primary font-medium">
           {format(weekStart, 'd MMM')} – {format(weekEnd, 'd MMM yyyy')}
         </span>

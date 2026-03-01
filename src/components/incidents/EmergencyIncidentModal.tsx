@@ -597,7 +597,7 @@ export function EmergencyIncidentModal({
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 overflow-hidden">
       <div className="absolute inset-0" onClick={onClose} />
-      <div className="absolute right-0 top-0 h-full w-full max-w-3xl lg:max-w-4xl bg-white dark:bg-[#1a1d2e] border-l border-red-300 dark:border-red-500/30 shadow-2xl overflow-y-auto animate-slideInRight">
+      <div className="absolute right-0 top-0 h-full w-full max-w-3xl lg:max-w-4xl bg-white dark:bg-[#1a1d2e] border-l border-red-300 dark:border-red-500/30 shadow-2xl overflow-y-auto overflow-x-hidden animate-slideInRight">
         <div className="p-4 sm:p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-red-200 dark:border-red-500/20">
@@ -646,7 +646,7 @@ export function EmergencyIncidentModal({
                   type="datetime-local"
                   value={formData.incident_datetime}
                   onChange={(e) => setFormData({ ...formData, incident_datetime: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                   required
                 />
               </div>
@@ -697,7 +697,7 @@ export function EmergencyIncidentModal({
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   placeholder="e.g., Kitchen - Prep Area"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                   required
                 />
               </div>
@@ -710,7 +710,7 @@ export function EmergencyIncidentModal({
                 onChange={(e) => setFormData({ ...formData, incident_description: e.target.value })}
                 placeholder="Describe what happened, what went wrong, and immediate consequences..."
                 rows={4}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                 required
               />
             </div>
@@ -752,7 +752,7 @@ export function EmergencyIncidentModal({
                     setLostTimeDays(Number.isNaN(parsed) ? null : Math.max(parsed, 0));
                   }}
                   placeholder="0"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                 />
               </div>
 
@@ -795,7 +795,7 @@ export function EmergencyIncidentModal({
                   value={riddorNotes}
                   onChange={(e) => setRiddorNotes(e.target.value)}
                   placeholder="Add decision notes or supporting detail"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                 />
               </div>
             </div>
@@ -866,7 +866,7 @@ export function EmergencyIncidentModal({
                           type="datetime-local"
                           value={riddorReportedDate}
                           onChange={(e) => setRiddorReportedDate(e.target.value)}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                       </div>
                       <div>
@@ -876,7 +876,7 @@ export function EmergencyIncidentModal({
                           value={riddorReference}
                           onChange={(e) => setRiddorReference(e.target.value)}
                           placeholder="e.g., Incident ref number"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                       </div>
                     </div>
@@ -946,7 +946,7 @@ export function EmergencyIncidentModal({
                 onChange={(e) => setFormData({ ...formData, immediate_actions: e.target.value })}
                 placeholder="Describe immediate actions taken..."
                 rows={3}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
               />
             </div>
           </div>
@@ -989,28 +989,28 @@ export function EmergencyIncidentModal({
                           placeholder="Name"
                           value={casualty.name}
                           onChange={(e) => handleUpdateCasualty(index, 'name', e.target.value)}
- className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                         <input
                           type="text"
                           placeholder="Age"
                           value={casualty.age}
                           onChange={(e) => handleUpdateCasualty(index, 'age', e.target.value)}
- className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                         <input
                           type="text"
                           placeholder="Injury Type"
                           value={casualty.injury_type}
                           onChange={(e) => handleUpdateCasualty(index, 'injury_type', e.target.value)}
- className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] col-span-2"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] col-span-2"
                         />
                         <input
                           type="text"
                           placeholder="Treatment"
                           value={casualty.treatment_required}
                           onChange={(e) => handleUpdateCasualty(index, 'treatment_required', e.target.value)}
- className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] col-span-2"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] col-span-2"
                         />
                       </div>
                     </div>
@@ -1056,14 +1056,14 @@ export function EmergencyIncidentModal({
                             placeholder="Name"
                             value={witness.name}
                             onChange={(e) => handleUpdateWitness(index, 'name', e.target.value)}
- className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                           />
                           <input
                             type="text"
                             placeholder="Contact"
                             value={witness.contact}
                             onChange={(e) => handleUpdateWitness(index, 'contact', e.target.value)}
- className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                           />
                         </div>
                         <textarea
@@ -1071,7 +1071,7 @@ export function EmergencyIncidentModal({
                           value={witness.statement}
                           onChange={(e) => handleUpdateWitness(index, 'statement', e.target.value)}
                           rows={2}
- className="w-full px-2 py-1.5 text-sm rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-2 py-1.5 text-sm rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                       </div>
                     </div>
@@ -1216,7 +1216,7 @@ export function EmergencyIncidentModal({
                             }
                           })}
                           rows={2}
- className="w-full mt-2 px-2 py-1.5 text-xs rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full mt-2 px-2 py-1.5 text-xs rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                       )}
                     </div>
@@ -1233,7 +1233,7 @@ export function EmergencyIncidentModal({
               type="text"
               value={formData.reported_by}
               onChange={(e) => setFormData({ ...formData, reported_by: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
               required
             />
           </div>

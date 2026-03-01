@@ -92,7 +92,7 @@ export function StepCard({
       style={style}
       className={cn(
         'bg-gray-50 dark:bg-white/[0.02] border border-theme rounded-lg overflow-hidden',
-        isDragging && 'ring-2 ring-[#14B8A6]/50'
+        isDragging && 'ring-2 ring-module-fg/50'
       )}
     >
       {/* Collapsed Header */}

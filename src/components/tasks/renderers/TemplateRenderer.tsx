@@ -63,6 +63,27 @@ interface TemplateRendererProps {
   disabled?: boolean;
 }
 
+/** Parse structured instruction string into sections, omitting empty ones */
+function parseInstructions(raw: string | null | undefined): { label: string; content: string }[] | null {
+  if (!raw) return null;
+  const sections: { label: string; content: string }[] = [];
+  const purposeMatch = raw.match(/Purpose:\n([\s\S]*?)(?:\n\n|$)/);
+  const importanceMatch = raw.match(/Importance:\n([\s\S]*?)(?:\n\n|$)/);
+  const methodMatch = raw.match(/Method:\n([\s\S]*?)(?:\n\n|$)/);
+  const specialMatch = raw.match(/Special Requirements:\n([\s\S]*?)(?:\n\n|$)/);
+  if (purposeMatch?.[1]?.trim()) sections.push({ label: 'Purpose', content: purposeMatch[1].trim() });
+  if (importanceMatch?.[1]?.trim()) sections.push({ label: 'Importance', content: importanceMatch[1].trim() });
+  if (methodMatch?.[1]?.trim()) sections.push({ label: 'Method', content: methodMatch[1].trim() });
+  if (specialMatch?.[1]?.trim()) sections.push({ label: 'Special Requirements', content: specialMatch[1].trim() });
+  // If no structured sections found but there's plain text, show it as-is
+  if (sections.length === 0 && raw.trim()) {
+    // Check if it's just empty headers with no content
+    const stripped = raw.replace(/Purpose:|Importance:|Method:|Special Requirements:/g, '').trim();
+    if (stripped) sections.push({ label: 'Instructions', content: raw.trim() });
+  }
+  return sections.length > 0 ? sections : null;
+}
+
 export function TemplateRenderer({
   task,
   taskData,
@@ -100,6 +121,10 @@ export function TemplateRenderer({
 }: TemplateRendererProps) {
   // Check if we have temperature data to render - just check assets Map
   const hasTemperatureData = assets.size > 0;
+
+  // Parse instructions into sections, omitting empty ones
+  const rawInstructions = task.custom_instructions || template?.instructions;
+  const instructionSections = parseInstructions(rawInstructions);
 
   // Reference documents attached to the template (SOPs, RAs, guides)
   // Check task_data first, then fall back to template's recurrence_pattern
@@ -158,13 +183,18 @@ export function TemplateRenderer({
 
     return (
       <div className="space-y-6">
-        {/* Task Instructions */}
-        {(task.custom_instructions || template?.instructions) && (
+        {/* Task Instructions — only show sections with content */}
+        {instructionSections && (
           <div className="bg-module-fg/10 border border-module-fg/30 rounded-lg p-4">
             <h4 className="text-sm font-medium text-module-fg mb-2">Instructions</h4>
-            <p className="text-sm text-theme-tertiary whitespace-pre-wrap">
-              {task.custom_instructions || template?.instructions}
-            </p>
+            <div className="space-y-2">
+              {instructionSections.map(s => (
+                <div key={s.label}>
+                  <p className="text-xs font-semibold text-module-fg/60 uppercase tracking-wider">{s.label}</p>
+                  <p className="text-sm text-theme-tertiary whitespace-pre-wrap mt-0.5">{s.content}</p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -205,13 +235,18 @@ export function TemplateRenderer({
   // Legacy feature-toggle mode
   return (
     <div className="space-y-6">
-      {/* Task Instructions */}
-      {(task.custom_instructions || template?.instructions) && (
+      {/* Task Instructions — only show sections with content */}
+      {instructionSections && (
         <div className="bg-module-fg/10 border border-module-fg/30 rounded-lg p-4">
           <h4 className="text-sm font-medium text-module-fg mb-2">Instructions</h4>
-          <p className="text-sm text-theme-tertiary whitespace-pre-wrap">
-            {task.custom_instructions || template?.instructions}
-          </p>
+          <div className="space-y-2">
+            {instructionSections.map(s => (
+              <div key={s.label}>
+                <p className="text-xs font-semibold text-module-fg/60 uppercase tracking-wider">{s.label}</p>
+                <p className="text-sm text-theme-tertiary whitespace-pre-wrap mt-0.5">{s.content}</p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

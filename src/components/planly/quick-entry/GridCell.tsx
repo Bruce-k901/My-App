@@ -120,7 +120,7 @@ export function GridCell({
         'w-full text-center bg-transparent border-0 rounded',
         compact ? 'h-7 text-sm' : 'h-10',
         'text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-white/20',
-        'focus:outline-none focus:bg-[#14B8A6]/10 focus:ring-2 focus:ring-[#14B8A6] focus:ring-inset',
+        'focus:outline-none focus:bg-module-fg/10 focus:ring-2 focus:ring-module-fg focus:ring-inset',
         'hover:bg-theme-surface-elevated dark:hover:bg-white/[0.03] transition-colors',
         '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
       )}

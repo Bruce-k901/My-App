@@ -243,7 +243,7 @@ function UploadStep({
         className={cn(
           'border-2 border-dashed rounded-lg p-12 text-center transition-colors',
           isDragging
-            ? 'border-[#14B8A6] bg-[#14B8A6]/5'
+            ? 'border-module-fg bg-module-fg/5'
             : 'border-gray-300 dark:border-white/20'
         )}
         onDragOver={(e) => {
@@ -412,7 +412,7 @@ function PreviewStep({
                           className={cn(
                             'text-xs px-2 py-0.5 rounded',
                             destGroupMatch
-                              ? 'bg-[#14B8A6]/10 text-[#14B8A6]'
+                              ? 'bg-module-fg/10 text-module-fg'
                               : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400'
                           )}
                         >
@@ -452,7 +452,7 @@ function PreviewStep({
         <Button
           onClick={onConfirm}
           disabled={validRows === 0}
-          className="bg-[#14B8A6] hover:bg-[#0D9488] text-white disabled:opacity-50"
+          className="bg-module-fg hover:bg-module-fg/80 text-white disabled:opacity-50"
         >
           Import {validRows} Customer{validRows !== 1 && 's'}
         </Button>
@@ -468,7 +468,7 @@ function PreviewStep({
 function ProcessingStep() {
   return (
     <div className="flex flex-col items-center justify-center py-16">
-      <Loader2 className="w-12 h-12 text-[#14B8A6] animate-spin mb-4" />
+      <Loader2 className="w-12 h-12 text-module-fg animate-spin mb-4" />
       <h3 className="text-lg font-medium text-theme-primary mb-2">
         Importing customers...
       </h3>
@@ -513,7 +513,7 @@ function CompleteStep({
 
       <Button
         onClick={onClose}
-        className="bg-[#14B8A6] hover:bg-[#0D9488] text-white"
+        className="bg-module-fg hover:bg-module-fg/80 text-white"
       >
         Done
       </Button>

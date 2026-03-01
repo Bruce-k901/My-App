@@ -57,16 +57,16 @@ export function DayColumn({
       ref={setNodeRef}
       className={cn(
         'flex-shrink-0 w-80 bg-white dark:bg-white/[0.02] border border-theme rounded-lg flex flex-col',
-        isOver && 'ring-2 ring-[#14B8A6]/50 bg-teal-50 dark:bg-[#14B8A6]/5'
+        isOver && 'ring-2 ring-module-fg/50 bg-module-fg/5'
       )}
     >
       {/* Day Header */}
       <div className="flex items-center justify-between p-3 border-b border-theme">
         <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-[#14B8A6]" />
+          <Calendar className="h-4 w-4 text-module-fg" />
           <span className="font-medium text-theme-primary">Day {day.dayNumber}</span>
           {isDeliveryDay ? (
-            <span className="text-xs px-2 py-0.5 rounded bg-teal-100 dark:bg-[#14B8A6]/10 text-[#14B8A6] border border-teal-200 dark:border-[#14B8A6]/20">
+            <span className="text-xs px-2 py-0.5 rounded bg-module-fg/10 text-module-fg border border-module-fg/20">
               Delivery
             </span>
           ) : (

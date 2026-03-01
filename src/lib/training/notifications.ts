@@ -6,6 +6,7 @@ interface CourseAssignment {
   course_id: string;
   company_id: string;
   deadline_date?: string | null;
+  assigned_by?: string | null;
 }
 
 interface TrainingCourse {

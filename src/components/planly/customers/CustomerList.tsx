@@ -86,7 +86,7 @@ export function CustomerList({ siteId }: CustomerListProps) {
             onClick={() => setShowArchived(!showArchived)}
             className={cn(
               showArchived
-                ? 'bg-[#14B8A6] hover:bg-[#0D9488] text-white'
+                ? 'bg-module-fg hover:bg-module-fg/80 text-white'
                 : 'border-theme text-theme-secondary hover:bg-theme-hover'
             )}
           >
@@ -106,7 +106,7 @@ export function CustomerList({ siteId }: CustomerListProps) {
 
           {/* Add Customer */}
           <Link href="/dashboard/planly/customers/new">
-            <Button className="bg-[#14B8A6] hover:bg-[#0D9488] text-white">
+            <Button className="bg-module-fg hover:bg-module-fg/80 text-white">
               <Plus className="h-4 w-4 mr-2" />
               Add Customer
             </Button>
@@ -324,7 +324,7 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
         className={cn(
           'bg-theme-surface border border-theme rounded-lg transition-all',
           isArchived && 'opacity-60 bg-gray-50 dark:bg-white/[0.02]',
-          isExpanded && 'ring-2 ring-[#14B8A6]'
+          isExpanded && 'ring-2 ring-module-fg'
         )}
       >
         {/* Collapsed Row */}
@@ -367,7 +367,7 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
 
               <div className="hidden lg:block">
                 {customer.destination_group && (
-                  <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-[#14B8A6]/10 text-[#14B8A6] border border-[#14B8A6]/20">
+                  <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-module-fg/10 text-module-fg border border-module-fg/20">
                     <Package className="w-3 h-3" />
                     {customer.destination_group.name}
                   </span>
@@ -387,7 +387,7 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                     <Link
                       href="/dashboard/planly/delivery-schedule"
                       onClick={(e) => e.stopPropagation()}
-                      className="text-xs px-2 py-0.5 rounded bg-teal-50 dark:bg-module-fg/10 text-module-fg border border-teal-200 dark:border-module-fg/30 flex items-center gap-1 hover:bg-teal-100 dark:hover:bg-module-fg/10 transition-colors"
+                      className="text-xs px-2 py-0.5 rounded bg-module-fg/10 text-module-fg border border-module-fg/20 flex items-center gap-1 hover:bg-module-fg/20 dark:hover:bg-module-fg/10 transition-colors"
                     >
                       <Truck className="w-3 h-3" />
                       Delivery
@@ -484,13 +484,13 @@ function CustomerRow({ customer, siteId, isExpanded, onToggle, onRefresh }: Cust
                   <div className="flex items-center gap-4">
                     {(customer.needs_delivery ?? true) ? (
                       <div className="flex items-center gap-2">
-                        <span className="text-xs px-2 py-1 rounded bg-teal-50 dark:bg-module-fg/10 text-module-fg border border-teal-200 dark:border-module-fg/30 flex items-center gap-1">
+                        <span className="text-xs px-2 py-1 rounded bg-module-fg/10 text-module-fg border border-module-fg/20 flex items-center gap-1">
                           <Truck className="w-3 h-3" />
                           Requires Delivery
                         </span>
                         <Link
                           href="/dashboard/planly/delivery-schedule"
-                          className="text-sm text-[#14B8A6] hover:underline"
+                          className="text-sm text-module-fg hover:underline"
                           onClick={(e) => e.stopPropagation()}
                         >
                           View Schedule →
@@ -941,7 +941,7 @@ function EditCustomerForm({
         <Button
           onClick={onSave}
           disabled={isSaving || !data.name.trim()}
-          className="bg-[#14B8A6] hover:bg-[#0D9488] text-white"
+          className="bg-module-fg hover:bg-module-fg/80 text-white"
         >
           {isSaving ? 'Saving...' : 'Save Changes'}
         </Button>

@@ -26,10 +26,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user's profile to check permissions and get company_id
+    // Use .or() to match either id or auth_user_id (some profiles may have one but not the other)
     const { data: currentProfile, error: profileError } = await supabase
       .from('profiles')
       .select('id, company_id, app_role, is_platform_admin')
-      .eq('auth_user_id', user.id)
+      .or(`id.eq.${user.id},auth_user_id.eq.${user.id}`)
       .maybeSingle();
 
     if (profileError || !currentProfile) {
@@ -189,7 +190,7 @@ export async function GET(request: NextRequest) {
     const { data: currentProfile, error: profileError } = await supabase
       .from('profiles')
       .select('id, company_id, app_role')
-      .eq('auth_user_id', user.id)
+      .or(`id.eq.${user.id},auth_user_id.eq.${user.id}`)
       .maybeSingle();
 
     if (profileError || !currentProfile) {

@@ -70,12 +70,12 @@ export default function SlideOutPanel({
               <div>
                 <h2 className="text-xl font-semibold text-theme-primary">{title}</h2>
                 {subtitle && (
-                  <p className="text-sm text-theme-tertiary mt-1">{subtitle}</p>
+                  <p className="text-sm text-theme-secondary mt-1">{subtitle}</p>
                 )}
               </div>
               <button
                 onClick={onClose}
-                className="p-2 -mr-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-theme-tertiary hover:text-theme-primary transition-colors"
+                className="p-2 -mr-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-theme-secondary hover:text-theme-primary transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>

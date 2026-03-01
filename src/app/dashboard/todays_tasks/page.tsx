@@ -605,6 +605,32 @@ export default function DailyChecklistPage() {
         }))
       })
       
+      // ── Identify triggered (on-demand / ad-hoc) site_checklists ──
+      // Tasks spawned from triggered site_checklists must NOT appear in the
+      // Scheduled tab – they belong in the Ad Hoc tab only.
+      const triggeredSiteChecklistIds = new Set<string>()
+      const siteChecklistIds = [...new Set(
+        (allTasks || [])
+          .map((t: any) => t.site_checklist_id)
+          .filter((id): id is string => !!id)
+      )]
+
+      if (siteChecklistIds.length > 0) {
+        const { data: siteChecklists } = await supabase
+          .from('site_checklists')
+          .select('id, frequency')
+          .in('id', siteChecklistIds)
+          .eq('frequency', 'triggered')
+
+        if (siteChecklists) {
+          siteChecklists.forEach((sc: any) => triggeredSiteChecklistIds.add(sc.id))
+        }
+
+        if (triggeredSiteChecklistIds.size > 0) {
+          console.log(`🔄 Found ${triggeredSiteChecklistIds.size} triggered (ad-hoc) site_checklists – excluding from Scheduled tab`)
+        }
+      }
+
       // Role-based task type filtering
       // CRITICAL: Only show tasks from "My Tasks" (site_checklists), NOT directly from templates
       // Templates should never appear in "Today's Tasks" - only task instances from site_checklists
@@ -647,7 +673,12 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
           }
           
           // PRIORITY 4: Include template tasks (have site_checklist_id - from "My Tasks")
+          // BUT exclude tasks from triggered (on-demand) site_checklists – those belong in Ad Hoc tab
           if (task.site_checklist_id) {
+            if (triggeredSiteChecklistIds.has(task.site_checklist_id)) {
+              console.log('❌ Excluding triggered/ad-hoc task from Scheduled tab:', task.id, task.custom_name);
+              return false;
+            }
             console.log('✅ Including template task from "My Tasks":', task.id, task.custom_name || task.template?.name);
             return true;
           }
@@ -693,7 +724,12 @@ const expiryTypes = ['sop_review', 'ra_review', 'certificate_expiry', 'policy_ex
           }
           
           // PRIORITY 3: Include template tasks (have site_checklist_id - from "My Tasks")
+          // BUT exclude tasks from triggered (on-demand) site_checklists – those belong in Ad Hoc tab
           if (task.site_checklist_id !== null) {
+            if (triggeredSiteChecklistIds.has(task.site_checklist_id)) {
+              console.log('❌ Excluding triggered/ad-hoc task from Scheduled tab (staff):', task.id, task.custom_name);
+              return false;
+            }
             return true;
           }
           return false;

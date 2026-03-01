@@ -684,7 +684,13 @@ export function MasterTemplateModal({ isOpen, onClose, onSave, editingTemplate, 
       };
 
       // Build instructions from purpose, importance, method, specialRequirements
-      const instructions = `Purpose:\n${templateConfig.purpose}\n\nImportance:\n${templateConfig.importance}\n\nMethod:\n${templateConfig.method}\n\nSpecial Requirements:\n${templateConfig.specialRequirements}`;
+      // Only include sections that have content
+      const instructionParts: string[] = [];
+      if (templateConfig.purpose?.trim()) instructionParts.push(`Purpose:\n${templateConfig.purpose.trim()}`);
+      if (templateConfig.importance?.trim()) instructionParts.push(`Importance:\n${templateConfig.importance.trim()}`);
+      if (templateConfig.method?.trim()) instructionParts.push(`Method:\n${templateConfig.method.trim()}`);
+      if (templateConfig.specialRequirements?.trim()) instructionParts.push(`Special Requirements:\n${templateConfig.specialRequirements.trim()}`);
+      const instructions = instructionParts.join('\n\n');
 
       // Build evidence types from features (standard + custom can coexist)
       const evidenceTypes = featuresToEvidenceTypes({

@@ -159,7 +159,9 @@
       "Bash(tasklist:*)",
       "WebFetch(domain:phosphoricons.com)",
       "Bash(curl.exe:*)",
-      "Bash(do grep -q \"CREATE TABLE.*global_documents\" \"$file\")"
+      "Bash(do grep -q \"CREATE TABLE.*global_documents\" \"$file\")",
+      "Bash(set \"SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhpam95YnVidHJnYnJocXVxd3J4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDI2NzI2MSwiZXhwIjoyMDc1ODQzMjYxfQ.sZ9coWo06X5esoYG39udHXRfwfIWw1DModoxyAvh4O4\")",
+      "Bash(SUPABASE_SERVICE_ROLE_KEY=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhpam95YnVidHJnYnJocXVxd3J4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDI2NzI2MSwiZXhwIjoyMDc1ODQzMjYxfQ.sZ9coWo06X5esoYG39udHXRfwfIWw1DModoxyAvh4O4\" node:*)"
     ]
   }
 }

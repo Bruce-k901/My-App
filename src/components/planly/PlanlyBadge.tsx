@@ -31,9 +31,9 @@ export function PlanlyBadge({ data, size = 'sm', showDetails = false, className 
     switch (data.configuration_status) {
       case 'ready':
         return {
-          bg: 'bg-[#14B8A6]/10 dark:bg-[#14B8A6]/20',
-          border: 'border-[#14B8A6]/30',
-          text: 'text-[#14B8A6]',
+          bg: 'bg-module-fg/10 dark:bg-module-fg/20',
+          border: 'border-module-fg/30',
+          text: 'text-module-fg',
           icon: CheckCircle,
           label: 'Planly Ready',
         };
@@ -95,7 +95,7 @@ export function PlanlyBadgeInline({ isLinked, status }: { isLinked: boolean; sta
   if (!isLinked) return null;
 
   const statusColor = status === 'ready'
-    ? 'bg-[#14B8A6]'
+    ? 'bg-module-fg'
     : status === 'incomplete'
     ? 'bg-amber-500'
     : 'bg-gray-400';
@@ -104,7 +104,7 @@ export function PlanlyBadgeInline({ isLinked, status }: { isLinked: boolean; sta
     <span
       className={cn(
         'inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded',
-        'bg-[#14B8A6]/10 text-[#14B8A6]'
+        'bg-module-fg/10 text-module-fg'
       )}
       title="Linked to Planly"
     >

@@ -152,6 +152,9 @@ serve(async (req) => {
 
     for (const task of tasks) {
       try {
+        // Skip ad-hoc / on-demand tasks — they should not trigger scheduled notifications
+        if (task.task_data?.source_type === 'ad_hoc') continue
+
         const validation = validateTask(task)
         if (!validation.valid || !validation.hasTime) continue
 

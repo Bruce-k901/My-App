@@ -127,9 +127,16 @@
 /* so there is NEVER generic black/white text on any module page.        */
 [class*="module-"] {
   --text-primary: var(--module-fg);
-  --text-secondary: var(--module-fg) / 0.72;
-  --text-tertiary: var(--module-fg) / 0.5;
-  --text-disabled: var(--module-fg) / 0.35;
+  --text-secondary: var(--module-fg) / 0.82;
+  --text-tertiary: var(--module-fg) / 0.65;
+  --text-disabled: var(--module-fg) / 0.45;
+}
+
+/* High-contrast override for module pages (fixes specificity vs descendant wrapper) */
+.high-contrast [class*="module-"] {
+  --text-secondary: var(--module-fg) / 0.95;
+  --text-tertiary: var(--module-fg) / 0.85;
+  --text-disabled: var(--module-fg) / 0.65;
 }
 
 /* Module-adaptive form controls (checkbox/radio tick matches module colour) */

@@ -240,7 +240,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                   className={cn(
                     'flex-1 px-4 py-2.5 text-sm font-medium transition-colors',
                     defaultFulfillment === 'delivery'
-                      ? 'bg-[#14B8A6] text-white'
+                      ? 'bg-module-fg text-white'
                       : 'bg-gray-50 dark:bg-white/[0.03] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06]'
                   )}
                 >
@@ -252,7 +252,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                   className={cn(
                     'flex-1 px-4 py-2.5 text-sm font-medium transition-colors border-l border-theme',
                     defaultFulfillment === 'collection'
-                      ? 'bg-[#14B8A6] text-white'
+                      ? 'bg-module-fg text-white'
                       : 'bg-gray-50 dark:bg-white/[0.03] text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06]'
                   )}
                 >
@@ -266,7 +266,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
               <select
                 value={destinationGroupId}
                 onChange={(e) => setDestinationGroupId(e.target.value)}
-                className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/50"
               >
                 <option value="" className="bg-theme-surface">No group</option>
                 {(destinationGroups || []).map((group: any) => (
@@ -286,7 +286,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                     name="shipState"
                     checked={defaultShipState === 'baked'}
                     onChange={() => setDefaultShipState('baked')}
-                    className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
+                    className="w-4 h-4 text-module-fg bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
                   />
                   <span className="text-theme-primary">Baked (Fresh)</span>
                 </label>
@@ -296,7 +296,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                     name="shipState"
                     checked={defaultShipState === 'frozen'}
                     onChange={() => setDefaultShipState('frozen')}
-                    className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
+                    className="w-4 h-4 text-module-fg bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
                   />
                   <span className="text-theme-primary">Frozen</span>
                 </label>
@@ -325,7 +325,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
               <select
                 value={defaultPaymentTerms}
                 onChange={(e) => setDefaultPaymentTerms(e.target.value as PaymentTerms)}
-                className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/50"
               >
                 <option value="prepaid" className="bg-theme-surface">Prepaid</option>
                 <option value="net_7" className="bg-theme-surface">Net 7</option>
@@ -451,7 +451,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
         <Card className="p-6 bg-white dark:bg-white/[0.02] border-theme">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Globe className="h-5 w-5 text-[#14B8A6]" />
+              <Globe className="h-5 w-5 text-module-fg" />
               <h2 className="text-lg font-semibold text-theme-primary">Portal Users</h2>
             </div>
             <span className="text-sm text-theme-tertiary">
@@ -544,7 +544,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
                       setIsAddingUser(false);
                     }
                   }}
-                  className="bg-[#14B8A6] hover:bg-[#0D9488] text-white"
+                  className="bg-module-fg hover:bg-module-fg/90 text-white"
                 >
                   {isPortalLoading ? (
                     <>
@@ -590,7 +590,7 @@ export function CustomerForm({ siteId, customer }: CustomerFormProps) {
         <Button
           type="submit"
           disabled={isLoading}
-          className="bg-[#14B8A6] hover:bg-[#14B8A6]/90 text-white"
+          className="bg-module-fg hover:bg-module-fg/90 text-white"
         >
           {isLoading ? (
             <>

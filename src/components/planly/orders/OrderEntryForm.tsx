@@ -147,7 +147,7 @@ export function OrderEntryForm({ siteId }: OrderEntryFormProps) {
             <div className="space-y-2">
               <Label className="text-theme-secondary">Delivery Date</Label>
               <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-[#14B8A6]" />
+                <Calendar className="h-5 w-5 text-module-fg" />
                 <Input
                   type="date"
                   value={deliveryDate}
@@ -192,7 +192,7 @@ export function OrderEntryForm({ siteId }: OrderEntryFormProps) {
               <Button
                 variant="ghost"
                 onClick={handleAddLine}
-                className="mt-2 text-[#14B8A6] hover:text-[#14B8A6]/80"
+                className="mt-2 text-module-fg hover:text-module-fg/80"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add your first product
@@ -234,7 +234,7 @@ export function OrderEntryForm({ siteId }: OrderEntryFormProps) {
         <Button
           onClick={handleSubmit}
           disabled={isLoading || !customerId || lineCount === 0}
-          className="bg-[#14B8A6] hover:bg-[#14B8A6]/90 text-white"
+          className="bg-module-fg hover:bg-module-fg/90 text-white"
         >
           {isLoading ? (
             <>

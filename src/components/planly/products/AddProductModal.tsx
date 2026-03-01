@@ -220,7 +220,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                 className={cn(
                   'flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors',
                   activeTab === tab.id
-                    ? 'border-[#14B8A6] text-[#14B8A6]'
+                    ? 'border-module-fg text-module-fg'
                     : 'border-transparent text-theme-tertiary hover:text-theme-secondary'
                 )}
               >
@@ -283,7 +283,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                           className={cn(
                             'w-full flex items-center justify-between px-4 py-3 text-left border-b border-theme last:border-0 transition-colors',
                             stocklyProductId === product.id
-                              ? 'bg-[#14B8A6]/10 dark:bg-[#14B8A6]/20'
+                              ? 'bg-module-fg/10 dark:bg-module-fg/20'
                               : 'hover:bg-theme-surface-elevated dark:hover:bg-white/[0.03]'
                           )}
                         >
@@ -298,7 +298,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                             )}
                           </div>
                           {stocklyProductId === product.id && (
-                            <div className="w-2 h-2 rounded-full bg-[#14B8A6]" />
+                            <div className="w-2 h-2 rounded-full bg-module-fg" />
                           )}
                         </button>
                       ))
@@ -306,8 +306,8 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                   </div>
 
                   {selectedProduct && (
-                    <div className="mt-2 p-2 bg-[#14B8A6]/10 dark:bg-[#14B8A6]/20 rounded-lg">
-                      <span className="text-sm text-[#14B8A6]">
+                    <div className="mt-2 p-2 bg-module-fg/10 dark:bg-module-fg/20 rounded-lg">
+                      <span className="text-sm text-module-fg">
                         Selected: {selectedProduct.name}
                       </span>
                     </div>
@@ -320,7 +320,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                   <select
                     value={categoryId}
                     onChange={(e) => setCategoryId(e.target.value)}
-                    className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                    className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/50"
                   >
                     <option value="" className="bg-theme-surface">No category</option>
                     {(categories || []).map((cat: any) => (
@@ -349,7 +349,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                     type="checkbox"
                     checked={isNew}
                     onChange={(e) => setIsNew(e.target.checked)}
-                    className="w-5 h-5 rounded bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
+                    className="w-5 h-5 rounded bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-module-fg focus:ring-module-fg/50"
                   />
                   <div>
                     <span className="font-medium text-theme-primary">Show "New!" Badge</span>
@@ -377,7 +377,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                     <select
                       value={processingGroupId}
                       onChange={(e) => setProcessingGroupId(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                      className="w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/50"
                     >
                       <option value="" className="bg-theme-surface">No processing group</option>
                       {processingGroups.map((group) => (
@@ -412,7 +412,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                       <select
                         value={equipmentTypeId}
                         onChange={(e) => setEquipmentTypeId(e.target.value)}
-                        className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                        className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/50"
                       >
                         <option value="" className="bg-theme-surface">No equipment</option>
                         {equipmentTypes.map((type) => (
@@ -467,7 +467,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                     <select
                       value={processTemplateId}
                       onChange={(e) => setProcessTemplateId(e.target.value)}
-                      className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                      className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/50"
                     >
                       <option value="" className="bg-theme-surface">No template</option>
                       {(processTemplates || []).map((template: any) => (
@@ -484,7 +484,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                     <select
                       value={bakeGroupId}
                       onChange={(e) => setBakeGroupId(e.target.value)}
-                      className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                      className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/50"
                     >
                       <option value="" className="bg-theme-surface">No bake group</option>
                       {(bakeGroups || []).map((group: any) => (
@@ -512,7 +512,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                       <select
                         value={trayType}
                         onChange={(e) => setTrayType(e.target.value as TrayType)}
-                        className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                        className="mt-1 w-full px-4 py-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-module-fg/50"
                       >
                         <option value="full" className="bg-theme-surface">Full</option>
                         <option value="half" className="bg-theme-surface">Half</option>
@@ -538,7 +538,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                           name="shipState"
                           checked={defaultShipState === 'baked'}
                           onChange={() => setDefaultShipState('baked')}
-                          className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
+                          className="w-4 h-4 text-module-fg bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
                         />
                         <span className="text-theme-primary">Baked (Fresh)</span>
                       </label>
@@ -548,7 +548,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                           name="shipState"
                           checked={defaultShipState === 'frozen'}
                           onChange={() => setDefaultShipState('frozen')}
-                          className="w-4 h-4 text-[#14B8A6] bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
+                          className="w-4 h-4 text-module-fg bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06]"
                         />
                         <span className="text-theme-primary">Frozen</span>
                       </label>
@@ -561,7 +561,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                       type="checkbox"
                       checked={canShipFrozen}
                       onChange={(e) => setCanShipFrozen(e.target.checked)}
-                      className="w-5 h-5 rounded bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
+                      className="w-5 h-5 rounded bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-module-fg focus:ring-module-fg/50"
                     />
                     <div>
                       <span className="font-medium text-theme-primary">Can Ship Frozen</span>
@@ -598,7 +598,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
                     type="checkbox"
                     checked={isVatable}
                     onChange={(e) => setIsVatable(e.target.checked)}
-                    className="w-5 h-5 rounded bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
+                    className="w-5 h-5 rounded bg-gray-50 dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.06] text-module-fg focus:ring-module-fg/50"
                   />
                   <div>
                     <span className="font-medium text-theme-primary">VAT Applicable</span>
@@ -637,7 +637,7 @@ export function AddProductModal({ siteId, isOpen, onClose, onSuccess }: AddProdu
             <Button
               type="submit"
               disabled={isSubmitting || !stocklyProductId}
-              className="bg-[#14B8A6] hover:bg-[#14B8A6]/90 text-white disabled:opacity-50"
+              className="bg-module-fg hover:bg-module-fg/90 text-white disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>

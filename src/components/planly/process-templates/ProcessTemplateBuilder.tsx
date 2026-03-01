@@ -512,13 +512,13 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
   if (isEdit && !template) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#14B8A6]" />
+        <Loader2 className="h-8 w-8 animate-spin text-module-fg" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0B0F1A] flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-[rgb(var(--background))] flex flex-col">
       {/* Header */}
       <div className="border-b border-theme bg-white dark:bg-white/[0.02]">
         <div className="container mx-auto px-4 py-4">
@@ -558,7 +558,7 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
                         setBaseDoughRecipeId(e.target.value || null);
                         setIsDirty(true);
                       }}
-                      className="text-sm bg-gray-100 dark:bg-white/[0.05] border border-theme rounded-md text-theme-secondary px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#14B8A6]/50"
+                      className="text-sm bg-gray-100 dark:bg-white/[0.05] border border-theme rounded-md text-theme-secondary px-2 py-1 focus:outline-none focus:ring-1 focus:ring-module-fg/50"
                     >
                       <option value="">Select base dough recipe...</option>
                       {recipes.map((recipe) => (
@@ -580,7 +580,7 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
                       className="text-sm bg-gray-100 dark:bg-white/[0.05] border border-theme text-theme-secondary placeholder:text-theme-tertiary dark:placeholder:text-theme-disabled w-48 px-2 py-1"
                     />
                     {productionPlanLabel && (
-                      <span className="text-xs text-[#14B8A6]">
+                      <span className="text-xs text-module-fg">
                         → "Dough Mix - {productionPlanLabel}"
                       </span>
                     )}
@@ -616,7 +616,7 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
               <Button
                 onClick={() => handleSave(true)}
                 disabled={isSaving}
-                className="bg-[#14B8A6] hover:bg-[#14B8A6]/90 text-white"
+                className="bg-module-fg hover:bg-module-fg/90 text-white"
               >
                 {isSaving ? (
                   <>
@@ -690,7 +690,7 @@ export function ProcessTemplateBuilder({ templateId, siteId }: ProcessTemplateBu
 
             <DragOverlay>
               {activeId && (
- <div className="bg-theme-surface ] border border-[#14B8A6]/50 rounded-lg p-3 shadow-xl opacity-80">
+ <div className="bg-theme-surface ] border border-module-fg/50 rounded-lg p-3 shadow-xl opacity-80">
                   <span className="text-theme-primary text-sm">Moving step...</span>
                 </div>
               )}

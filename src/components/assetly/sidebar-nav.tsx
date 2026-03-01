@@ -117,7 +117,7 @@ export function AssetlyNavItem({ item }: { item: NavItem }) {
     const IconComponent = item.icon;
     return (
       <div className="px-3 py-3 mt-4">
-        <div className="flex items-center gap-2 text-sm uppercase text-assetly-dark/35 dark:text-assetly/35 tracking-wider font-bold">
+        <div className="flex items-center gap-2 text-sm uppercase text-assetly-dark/70 dark:text-assetly/70 tracking-wider font-bold">
           <IconComponent className="w-5 h-5" suppressHydrationWarning />
           <span suppressHydrationWarning>{item.label}</span>
         </div>

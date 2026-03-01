@@ -26,8 +26,9 @@ export default function Switch({ checked, onChange, disabled, className, label }
         }}
         className={cn(
           "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
-          "bg-white/10 backdrop-blur-lg border border-white/20",
-          checked ? "bg-blue-500/50" : "bg-white/10",
+          checked
+            ? "bg-module-fg"
+            : "bg-gray-300 dark:bg-white/20",
           disabled && "opacity-50 cursor-not-allowed",
         )}
       >

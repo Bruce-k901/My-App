@@ -63,7 +63,7 @@ export default function MultiSelect({
 
   return (
     <div ref={ref} className={cn("relative", className)}>
-      {label && <label className="block text-xs text-theme-primary/50 mb-1">{label}</label>}
+      {label && <label className="block text-xs text-theme-secondary mb-1">{label}</label>}
       
       <button
         type="button"

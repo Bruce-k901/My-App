@@ -79,7 +79,7 @@ interface DialogFooterProps {
 }
 
 export function DialogDescription({ children, className = '' }: DialogDescriptionProps) {
- return <p className={`text-sm text-gray-600 dark:text-theme-tertiary mt-2 ${className}`}>{children}</p>;
+ return <p className={`text-sm text-gray-600 dark:text-theme-secondary mt-2 ${className}`}>{children}</p>;
 }
 
 export function DialogFooter({ children, className = '' }: DialogFooterProps) {

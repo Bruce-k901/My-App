@@ -39,6 +39,8 @@ END $$;
 
 -- Create a wrapper function that reads the key from Vault at runtime.
 -- This avoids hardcoding the service role key in the cron schedule.
+-- NOTE: Dynamic URL resolution via request.headers does NOT work in a
+--       pg_cron context (no HTTP request), so we use the project URL directly.
 CREATE OR REPLACE FUNCTION public.invoke_check_task_notifications()
 RETURNS void
 LANGUAGE plpgsql
@@ -46,7 +48,7 @@ SECURITY DEFINER
 AS $$
 DECLARE
   _key text;
-  _url text;
+  _url text := 'https://xijoybubtrgbrhquqwrx.supabase.co';
 BEGIN
   -- Read service role key from Vault
   SELECT decrypted_secret INTO _key
@@ -59,18 +61,10 @@ BEGIN
     RETURN;
   END IF;
 
-  -- Build the edge function URL from the project reference
-  -- Supabase sets SUPABASE_URL as a database config var on managed instances
-  _url := current_setting('app.settings.supabase_url', true);
-  IF _url IS NULL OR _url = '' THEN
-    -- Fallback: construct from project ref (works for most Supabase projects)
-    _url := 'https://' || current_setting('request.headers', true)::json->>'host';
-  END IF;
-
-  -- If we still can't resolve it, use the known project URL
+  -- Try app.settings.supabase_url first (set on some managed instances)
   _url := coalesce(
-    nullif(_url, ''),
-    'https://xijoybubtrgbrhquqwrx.supabase.co'
+    nullif(current_setting('app.settings.supabase_url', true), ''),
+    _url
   );
 
   PERFORM net.http_post(

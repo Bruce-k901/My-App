@@ -364,9 +364,9 @@ export default function ProductionSetupWizardPage() {
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
                   s < step
-                    ? 'bg-teal-500 text-white'
+                    ? 'bg-module-fg text-white'
                     : s === step
-                    ? 'bg-teal-500 text-white'
+                    ? 'bg-module-fg text-white'
                     : 'bg-gray-200 dark:bg-white/10 text-theme-tertiary'
                 }`}
               >
@@ -375,7 +375,7 @@ export default function ProductionSetupWizardPage() {
               {s < 3 && (
                 <div
                   className={`w-24 sm:w-32 h-1 mx-2 rounded ${
-                    s < step ? 'bg-teal-500' : 'bg-gray-200 dark:bg-white/10'
+                    s < step ? 'bg-module-fg' : 'bg-gray-200 dark:bg-white/10'
                   }`}
                 />
               )}
@@ -467,14 +467,14 @@ export default function ProductionSetupWizardPage() {
                       <label
                         key={product.id}
                         className={`flex items-center gap-3 p-3 border-b border-theme last:border-0 cursor-pointer hover:bg-theme-hover transition-colors ${
-                          isSelected ? 'bg-teal-50 dark:bg-module-fg/10' : ''
+                          isSelected ? 'bg-module-fg/10' : ''
                         }`}
                       >
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => toggleProduct(product.id)}
-                          className="w-4 h-4 rounded border-gray-300 text-teal-500 focus:ring-teal-500"
+                          className="w-4 h-4 rounded border-gray-300 text-module-fg focus:ring-module-fg"
                         />
                         <span className="text-theme-primary">
                           {getProductName(product)}
@@ -511,7 +511,7 @@ export default function ProductionSetupWizardPage() {
               <label
                 className={`flex-1 p-4 border rounded-lg cursor-pointer transition-colors ${
                   state.is_laminated
-                    ? 'border-teal-500 bg-teal-50 dark:bg-module-fg/10'
+                    ? 'border-module-fg bg-module-fg/10'
                     : 'border-theme hover:border-gray-300'
                 }`}
               >
@@ -522,7 +522,7 @@ export default function ProductionSetupWizardPage() {
                   className="sr-only"
                 />
                 <div className="flex items-center gap-2">
-                  <Layers className="h-5 w-5 text-teal-500" />
+                  <Layers className="h-5 w-5 text-module-fg" />
                   <span className="font-medium text-theme-primary">
                     Yes, I make laminated sheets
                   </span>
@@ -531,7 +531,7 @@ export default function ProductionSetupWizardPage() {
               <label
                 className={`flex-1 p-4 border rounded-lg cursor-pointer transition-colors ${
                   !state.is_laminated
-                    ? 'border-teal-500 bg-teal-50 dark:bg-module-fg/10'
+                    ? 'border-module-fg bg-module-fg/10'
                     : 'border-theme hover:border-gray-300'
                 }`}
               >
@@ -789,8 +789,8 @@ export default function ProductionSetupWizardPage() {
             </div>
 
             {/* Summary */}
-            <div className="p-4 bg-teal-50 dark:bg-module-fg/10 rounded-lg border border-teal-200 dark:border-module-fg/30">
-              <p className="text-sm text-teal-700 dark:text-module-fg">
+            <div className="p-4 bg-module-fg/10 rounded-lg border border-module-fg/20">
+              <p className="text-sm text-module-fg">
                 <Check className="inline h-4 w-4 mr-1" />
                 Setup looks good! You can edit this anytime in Production Settings.
               </p>
@@ -923,14 +923,14 @@ export default function ProductionSetupWizardPage() {
                       <label
                         key={pid}
                         className={`flex items-center gap-3 p-2 border-b border-theme last:border-0 cursor-pointer hover:bg-theme-hover ${
-                          isSelected ? 'bg-teal-50 dark:bg-module-fg/10' : ''
+                          isSelected ? 'bg-module-fg/10' : ''
                         }`}
                       >
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => toggleProductInStyle(pid)}
-                          className="w-4 h-4 rounded border-gray-300 text-teal-500 focus:ring-teal-500"
+                          className="w-4 h-4 rounded border-gray-300 text-module-fg focus:ring-module-fg"
                         />
                         <span className="text-sm text-theme-primary">
                           {getProductName(product)}

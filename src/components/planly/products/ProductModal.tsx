@@ -285,7 +285,7 @@ export function ProductModal({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-theme">
           <div className="flex items-center gap-3">
-            <Package className="h-5 w-5 text-[#14B8A6]" />
+            <Package className="h-5 w-5 text-module-fg" />
             <div>
               <h2 className="text-lg font-semibold text-theme-primary">
                 {isEditing ? 'Edit Product' : 'Add Product'}
@@ -321,7 +321,7 @@ export function ProductModal({
             {/* Card 1: Product Details */}
             <div className="p-4 bg-theme-button rounded-lg border border-theme">
               <div className="flex items-center gap-2 mb-4">
-                <Package className="h-4 w-4 text-[#14B8A6]" />
+                <Package className="h-4 w-4 text-module-fg" />
                 <h3 className="font-medium text-theme-primary">Product Details</h3>
               </div>
               <div className="space-y-4">
@@ -360,7 +360,7 @@ export function ProductModal({
                             className={cn(
                               'w-full flex items-center justify-between px-3 py-2 text-left border-b border-theme last:border-0 transition-colors text-sm',
                               stocklyProductId === product.id
-                                ? 'bg-[#14B8A6]/10 dark:bg-[#14B8A6]/20'
+                                ? 'bg-module-fg/10 dark:bg-module-fg/20'
                                 : 'hover:bg-theme-surface-elevated dark:hover:bg-white/[0.03]'
                             )}
                           >
@@ -368,16 +368,16 @@ export function ProductModal({
                               {product.name || `Product ${product.id.slice(0, 8)}`}
                             </span>
                             {stocklyProductId === product.id && (
-                              <div className="w-2 h-2 rounded-full bg-[#14B8A6]" />
+                              <div className="w-2 h-2 rounded-full bg-module-fg" />
                             )}
                           </button>
                         ))
                       )}
                     </div>
                     {stocklyProductId && (
-                      <div className="p-3 bg-[#14B8A6]/10 dark:bg-[#14B8A6]/20 rounded-lg border border-[#14B8A6]/30">
+                      <div className="p-3 bg-module-fg/10 dark:bg-module-fg/20 rounded-lg border border-module-fg/30">
                         <div className="flex items-center gap-2">
-                          <Package className="h-4 w-4 text-[#14B8A6]" />
+                          <Package className="h-4 w-4 text-module-fg" />
                           <span className="font-medium text-theme-primary">
                             {stocklyProductName || 'Product Selected'}
                           </span>
@@ -428,7 +428,7 @@ export function ProductModal({
             {/* Card 2: Production Settings */}
             <div className="p-4 bg-theme-button rounded-lg border border-theme">
               <div className="flex items-center gap-2 mb-4">
-                <Settings className="h-4 w-4 text-[#14B8A6]" />
+                <Settings className="h-4 w-4 text-module-fg" />
                 <h3 className="font-medium text-theme-primary">Production Settings</h3>
               </div>
               <div className="space-y-4">
@@ -593,7 +593,7 @@ export function ProductModal({
             {/* Card 3: Shipping & Display */}
             <div className="p-4 bg-theme-button rounded-lg border border-theme">
               <div className="flex items-center gap-2 mb-4">
-                <Truck className="h-4 w-4 text-[#14B8A6]" />
+                <Truck className="h-4 w-4 text-module-fg" />
                 <h3 className="font-medium text-theme-primary">Shipping & Display</h3>
               </div>
               <div className="space-y-4">
@@ -607,7 +607,7 @@ export function ProductModal({
                       className={cn(
                         'flex-1 flex items-center justify-center gap-2 py-2 px-3 text-sm font-medium transition-colors',
                         defaultShipState === 'baked'
-                          ? 'bg-[#14B8A6] text-white'
+                          ? 'bg-module-fg text-white'
                           : 'bg-theme-surface text-theme-secondary hover:bg-theme-surface-elevated dark:hover:bg-white/10'
                       )}
                     >
@@ -620,7 +620,7 @@ export function ProductModal({
                       className={cn(
                         'flex-1 flex items-center justify-center gap-2 py-2 px-3 text-sm font-medium transition-colors',
                         defaultShipState === 'frozen'
-                          ? 'bg-[#14B8A6] text-white'
+                          ? 'bg-module-fg text-white'
                           : 'bg-theme-surface text-theme-secondary hover:bg-theme-surface-elevated dark:hover:bg-white/10'
                       )}
                     >
@@ -640,7 +640,7 @@ export function ProductModal({
                     type="checkbox"
                     checked={canShipFrozen}
                     onChange={(e) => setCanShipFrozen(e.target.checked)}
-                    className="w-5 h-5 rounded bg-theme-surface border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
+                    className="w-5 h-5 rounded bg-theme-surface border-gray-300 dark:border-white/[0.06] text-module-fg focus:ring-module-fg/50"
                   />
                 </label>
 
@@ -654,7 +654,7 @@ export function ProductModal({
                     type="checkbox"
                     checked={isNew}
                     onChange={(e) => setIsNew(e.target.checked)}
-                    className="w-5 h-5 rounded bg-theme-surface border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
+                    className="w-5 h-5 rounded bg-theme-surface border-gray-300 dark:border-white/[0.06] text-module-fg focus:ring-module-fg/50"
                   />
                 </label>
 
@@ -668,7 +668,7 @@ export function ProductModal({
                     type="checkbox"
                     checked={isPaused}
                     onChange={(e) => setIsPaused(e.target.checked)}
-                    className="w-5 h-5 rounded bg-theme-surface border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
+                    className="w-5 h-5 rounded bg-theme-surface border-gray-300 dark:border-white/[0.06] text-module-fg focus:ring-module-fg/50"
                   />
                 </label>
 
@@ -685,7 +685,7 @@ export function ProductModal({
             {/* Card 4: Pricing */}
             <div className="p-4 bg-theme-button rounded-lg border border-theme">
               <div className="flex items-center gap-2 mb-4">
-                <DollarSign className="h-4 w-4 text-[#14B8A6]" />
+                <DollarSign className="h-4 w-4 text-module-fg" />
                 <h3 className="font-medium text-theme-primary">Pricing</h3>
               </div>
               <div className="space-y-4">
@@ -713,7 +713,7 @@ export function ProductModal({
                     type="checkbox"
                     checked={isVatable}
                     onChange={(e) => setIsVatable(e.target.checked)}
-                    className="w-5 h-5 rounded bg-theme-surface border-gray-300 dark:border-white/[0.06] text-[#14B8A6] focus:ring-[#14B8A6]/50"
+                    className="w-5 h-5 rounded bg-theme-surface border-gray-300 dark:border-white/[0.06] text-module-fg focus:ring-module-fg/50"
                   />
                 </label>
 
@@ -751,7 +751,7 @@ export function ProductModal({
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting || !stocklyProductId}
-            className="bg-[#14B8A6] hover:bg-[#14B8A6]/90 text-white disabled:opacity-50"
+            className="bg-module-fg hover:bg-module-fg/90 text-white disabled:opacity-50"
           >
             {isSubmitting ? (
               <>

@@ -52,8 +52,8 @@ import {
   Loader2,
 } from '@/components/ui/icons';
 import TimePicker from '@/components/ui/TimePicker';
-import { pdf } from '@react-pdf/renderer';
-import { RotaPDF } from '@/lib/pdf/templates/RotaPDF';
+// @react-pdf/renderer is dynamically imported in handleDownloadPDF to avoid
+// bloating the page bundle (~500KB+ including WASM yoga-layout)
 import { DayApprovalPanel } from '@/components/rota/DayApprovalPanel';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { ShiftActionSheet } from '@/components/rota/ShiftActionSheet';
@@ -1902,27 +1902,28 @@ export default function RotaBuilderPage() {
       } else {
         setSites([]);
         setSelectedSite(null);
+        // No sites available — loadData will never run, so clear loading state
+        setLoading(false);
       }
     } catch (err: any) {
       console.error('Error in loadSites:', err);
       setError(err.message || 'Failed to load sites');
       setSites([]);
+      setLoading(false);
     }
   }, [companyId, siteContext.accessibleSites, siteContext.selectedSiteId, siteContext.loading, searchParams]);
 
   useEffect(() => {
-    if (companyId && !siteContext.loading && sites.length === 0 && !error) {
+    if (companyId && !siteContext.loading) {
       loadSites();
     }
-     
-  }, [companyId, siteContext.loading, siteContext.accessibleSites]);
+  }, [companyId, siteContext.loading, loadSites]);
 
   useEffect(() => {
     if (selectedSite && companyId && !siteContext.loading) {
       loadData();
     }
-
-  }, [selectedSite, weekStarting, companyId, siteContext.loading]);
+  }, [selectedSite, weekStarting, companyId, siteContext.loading, loadData]);
 
   const loadData = useCallback(async () => {
     if (!selectedSite || !companyId) return;
@@ -3308,6 +3309,11 @@ export default function RotaBuilderPage() {
   const handleDownloadPDF = useCallback(async () => {
     setIsGeneratingPDF(true);
     try {
+      // Dynamic import to avoid bloating the page bundle on mobile
+      const [{ pdf }, { RotaPDF }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('@/lib/pdf/templates/RotaPDF'),
+      ]);
       const siteName = sites.find((s) => s.id === selectedSite)?.name || 'Unknown Site';
       const weekStartStr = weekStarting.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
       const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];

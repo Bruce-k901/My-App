@@ -300,7 +300,7 @@ export function PricingGrid({
             size="sm"
             onClick={applyBulkDiscount}
             disabled={!discountPercent}
-            className="bg-[#14B8A6] hover:bg-[#14B8A6]/90 border-[#14B8A6] text-white"
+            className="bg-module-fg hover:bg-module-fg/90 border-module-fg text-white"
           >
             Apply Discount
           </Button>
@@ -446,7 +446,7 @@ export function PricingGrid({
                             onChange={(e) =>
                               handleNoExpiryChange(product.id, e.target.checked)
                             }
-                            className="h-4 w-4 rounded border-gray-300 dark:border-white/20 text-[#14B8A6] focus:ring-[#14B8A6]"
+                            className="h-4 w-4 rounded border-gray-300 dark:border-white/20 text-module-fg focus:ring-module-fg"
                           />
                         </div>
                       )}
@@ -496,7 +496,7 @@ export function PricingGrid({
           <Button
             onClick={handleSave}
             disabled={!hasChanges || isSaving}
-            className="bg-[#14B8A6] hover:bg-[#14B8A6]/90 text-white"
+            className="bg-module-fg hover:bg-module-fg/90 text-white"
           >
             {isSaving ? (
               <>

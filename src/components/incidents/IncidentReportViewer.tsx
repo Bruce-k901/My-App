@@ -511,7 +511,7 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload, on
                 </h3>
                 <div className="space-y-3">
                   {fullIncident.casualties.map((casualty: any, index: number) => (
- <div key={index} className="bg-theme-surface ] rounded p-3 border border-theme">
+ <div key={index} className="bg-theme-surface rounded p-3 border border-theme">
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
                           <span className="text-theme-secondary">Name: </span>
@@ -553,7 +553,7 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload, on
                 </h3>
                 <div className="space-y-3">
                   {fullIncident.witnesses.map((witness: any, index: number) => (
- <div key={index} className="bg-theme-surface ] rounded p-3 border border-theme">
+ <div key={index} className="bg-theme-surface rounded p-3 border border-theme">
                       <div className="text-sm space-y-2">
                         <div>
                           <span className="text-theme-secondary">Name: </span>
@@ -654,7 +654,7 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload, on
                       value={investigationNotes}
                       onChange={(e) => setInvestigationNotes(e.target.value)}
                       rows={4}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 text-sm"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 text-sm"
                       placeholder="Record investigation findings..."
                     />
                   ) : (
@@ -672,7 +672,7 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload, on
                       value={rootCause}
                       onChange={(e) => setRootCause(e.target.value)}
                       rows={3}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 text-sm"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 text-sm"
                       placeholder="What was the root cause?"
                     />
                   ) : (
@@ -690,7 +690,7 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload, on
                       value={correctiveActions}
                       onChange={(e) => setCorrectiveActions(e.target.value)}
                       rows={3}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 text-sm"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 text-sm"
                       placeholder="What corrective actions are being taken?"
                     />
                   ) : (
@@ -738,7 +738,7 @@ export function IncidentReportViewer({ incident, isOpen, onClose, onDownload, on
                 ) : (
                   <div className="space-y-2">
                     {followUpTaskDetails.map((task) => (
- <div key={task.id} className="bg-theme-surface ] rounded p-3 border border-theme">
+ <div key={task.id} className="bg-theme-surface rounded p-3 border border-theme">
                         <div className="flex items-center justify-between">
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-medium text-theme-primary truncate">

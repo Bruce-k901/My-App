@@ -211,7 +211,7 @@ export function ChecklyNavItem({ item }: { item: NavItem }) {
     const IconComponent = item.icon;
     return (
       <div className="px-3 py-3 mt-4">
-        <div className="flex items-center gap-2 text-sm uppercase text-checkly-dark/35 dark:text-checkly/35 tracking-wider font-bold">
+        <div className="flex items-center gap-2 text-sm uppercase text-checkly-dark/70 dark:text-checkly/70 tracking-wider font-bold">
           <IconComponent className="w-5 h-5" suppressHydrationWarning />
           <span suppressHydrationWarning>{item.label}</span>
         </div>

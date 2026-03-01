@@ -170,7 +170,16 @@ export default function TaskDetailPage() {
   }
 
   const isCompleted = task.status === 'completed';
-  const isOverdue = task.status === 'pending' && new Date(task.due_date) < new Date();
+  const isOverdue = (() => {
+    if (task.status !== 'pending') return false;
+    const now = new Date();
+    if (task.due_time) {
+      // Has a specific time — only overdue after that time
+      return now > new Date(`${task.due_date}T${task.due_time}`);
+    }
+    // No specific time — only overdue if due date is before today
+    return task.due_date < now.toISOString().split('T')[0];
+  })();
   const taskName = task.custom_name || task.template?.name || 'Unknown Task';
   const latestCompletion = completionRecords[0];
   const template = task.template || null;

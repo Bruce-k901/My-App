@@ -61,7 +61,7 @@ export function QuickActions({
           disabled={disabled}
           className={cn(
             'bg-gray-50 dark:bg-white/[0.03] border-theme text-theme-secondary hover:bg-gray-100 dark:hover:bg-white/[0.06]',
-            isDropdownOpen && 'ring-2 ring-[#14B8A6]/50'
+            isDropdownOpen && 'ring-2 ring-module-fg/50'
           )}
         >
           <ArrowDown className="h-4 w-4 mr-2" />

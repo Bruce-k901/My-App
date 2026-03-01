@@ -101,7 +101,7 @@ export function CustomerSelector({ siteId, value, onChange }: CustomerSelectorPr
             'w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-left',
             'bg-gray-50 dark:bg-white/[0.03] border border-theme text-theme-primary',
             'hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors',
-            open && 'ring-2 ring-[#14B8A6]/50'
+            open && 'ring-2 ring-module-fg/50'
           )}
         >
           {selectedCustomer ? (
@@ -134,7 +134,7 @@ export function CustomerSelector({ siteId, value, onChange }: CustomerSelectorPr
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search customers..."
-                  className="w-full pl-9 pr-8 py-2 bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-md text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/50"
+                  className="w-full pl-9 pr-8 py-2 bg-gray-50 dark:bg-white/[0.03] border border-theme rounded-md text-theme-primary placeholder:text-theme-tertiary dark:placeholder:text-theme-tertiary focus:outline-none focus:ring-2 focus:ring-module-fg/50"
                   autoFocus
                 />
                 {search && (
@@ -155,10 +155,10 @@ export function CustomerSelector({ siteId, value, onChange }: CustomerSelectorPr
               onClick={handleCreateCustomer}
               className="w-full flex items-center gap-3 px-3 py-3 text-left border-b border-theme hover:bg-theme-surface-elevated dark:hover:bg-white/[0.06] transition-colors"
             >
-              <div className="w-6 h-6 rounded-full bg-[#14B8A6]/10 flex items-center justify-center">
-                <Plus className="h-4 w-4 text-[#14B8A6]" />
+              <div className="w-6 h-6 rounded-full bg-module-fg/10 flex items-center justify-center">
+                <Plus className="h-4 w-4 text-module-fg" />
               </div>
-              <span className="font-medium text-[#14B8A6]">Create new customer</span>
+              <span className="font-medium text-module-fg">Create new customer</span>
             </button>
 
             {/* Customer List */}
@@ -189,7 +189,7 @@ export function CustomerSelector({ siteId, value, onChange }: CustomerSelectorPr
                           <div className={cn(
                             'w-4 h-4 rounded border flex items-center justify-center shrink-0',
                             value === customer.id
-                              ? 'bg-[#14B8A6] border-[#14B8A6]'
+                              ? 'bg-module-fg border-module-fg'
                               : 'border-gray-300 dark:border-white/20'
                           )}>
                             {value === customer.id && (
@@ -234,7 +234,7 @@ export function CustomerSelector({ siteId, value, onChange }: CustomerSelectorPr
                           <div className={cn(
                             'w-4 h-4 rounded border flex items-center justify-center shrink-0',
                             value === customer.id
-                              ? 'bg-[#14B8A6] border-[#14B8A6]'
+                              ? 'bg-module-fg border-module-fg'
                               : 'border-gray-300 dark:border-white/20'
                           )}>
                             {value === customer.id && (

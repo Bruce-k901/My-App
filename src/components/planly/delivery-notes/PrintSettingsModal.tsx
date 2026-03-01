@@ -80,7 +80,7 @@ export function PrintSettingsModal({
                   name="paperSize"
                   checked={localSettings.paperSize === 'A4'}
                   onChange={() => handlePaperSizeChange('A4')}
-                  className="w-4 h-4 text-[#14B8A6] focus:ring-[#14B8A6]"
+                  className="w-4 h-4 text-module-fg focus:ring-module-fg"
                 />
                 <span className="text-sm text-theme-secondary">
                   A4 (4 notes per sheet)
@@ -92,7 +92,7 @@ export function PrintSettingsModal({
                   name="paperSize"
                   checked={localSettings.paperSize === 'A5'}
                   onChange={() => handlePaperSizeChange('A5')}
-                  className="w-4 h-4 text-[#14B8A6] focus:ring-[#14B8A6]"
+                  className="w-4 h-4 text-module-fg focus:ring-module-fg"
                 />
                 <span className="text-sm text-theme-secondary">
                   A5 (2 notes per sheet)
@@ -104,7 +104,7 @@ export function PrintSettingsModal({
                   name="paperSize"
                   checked={localSettings.paperSize === 'custom'}
                   onChange={() => handlePaperSizeChange('custom')}
-                  className="w-4 h-4 text-[#14B8A6] focus:ring-[#14B8A6]"
+                  className="w-4 h-4 text-module-fg focus:ring-module-fg"
                 />
                 <span className="text-sm text-theme-secondary">
                   Custom
@@ -179,7 +179,7 @@ export function PrintSettingsModal({
                     ...prev,
                     showCuttingMarkers: e.target.checked,
                   }))}
-                  className="w-4 h-4 rounded text-[#14B8A6] focus:ring-[#14B8A6]"
+                  className="w-4 h-4 rounded text-module-fg focus:ring-module-fg"
                 />
                 <span className="text-sm text-theme-secondary">
                   Show cutting markers
@@ -193,7 +193,7 @@ export function PrintSettingsModal({
                     ...prev,
                     showAllProducts: e.target.checked,
                   }))}
-                  className="w-4 h-4 rounded text-[#14B8A6] focus:ring-[#14B8A6]"
+                  className="w-4 h-4 rounded text-module-fg focus:ring-module-fg"
                 />
                 <span className="text-sm text-theme-secondary">
                   Show all products (include items with no quantity)
@@ -216,7 +216,7 @@ export function PrintSettingsModal({
           </Button>
           <Button
             onClick={handleSave}
-            className="bg-[#14B8A6] hover:bg-[#0D9488] text-white"
+            className="bg-module-fg hover:bg-module-fg/80 text-white"
           >
             Save Settings
           </Button>

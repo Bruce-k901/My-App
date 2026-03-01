@@ -148,7 +148,7 @@ export function QuickEntryGrid({
                   className={cn(
                     'w-14 px-1 py-1.5 text-center font-medium',
                     index >= 5
-                      ? 'text-[#14B8A6] bg-[#14B8A6]/5 dark:bg-[#14B8A6]/10'
+                      ? 'text-module-fg bg-module-fg/5 dark:bg-module-fg/10'
                       : 'text-theme-secondary'
                   )}
                 >
@@ -191,7 +191,7 @@ export function QuickEntryGrid({
                           key={date.toISOString()}
                           className={cn(
                             'px-0.5 py-0.5',
-                            colIndex >= 5 && 'bg-[#14B8A6]/5 dark:bg-[#14B8A6]/5'
+                            colIndex >= 5 && 'bg-module-fg/5'
                           )}
                         >
                           <GridCell

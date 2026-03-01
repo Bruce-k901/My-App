@@ -92,7 +92,7 @@ export function PackingPlanHeader({
                 className="border-theme text-theme-secondary hover:bg-theme-hover px-2 rounded-r-none border-r-0"
                 title="Open calendar"
               >
-                <Calendar className="h-4 w-4 text-[#14B8A6]" />
+                <Calendar className="h-4 w-4 text-module-fg" />
               </Button>
 
               {/* Date display with day of week */}
@@ -186,7 +186,7 @@ export function PackingPlanHeader({
           onClick={onTranspose}
           className={
             transposed
-              ? 'bg-[#14B8A6] hover:bg-[#0D9488] text-white'
+              ? 'bg-module-fg hover:bg-module-fg/80 text-white'
               : 'border-theme text-theme-secondary hover:bg-theme-hover'
           }
         >

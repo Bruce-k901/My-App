@@ -143,7 +143,7 @@ export function PlanlyNavItem({ item }: { item: NavItem }) {
     const IconComponent = item.icon;
     return (
       <div className="px-3 py-3 mt-4">
-        <div className="flex items-center gap-2 text-sm uppercase text-planly-dark/35 dark:text-planly/35 tracking-wider font-bold">
+        <div className="flex items-center gap-2 text-sm uppercase text-planly-dark/70 dark:text-planly/70 tracking-wider font-bold">
           <IconComponent className="w-5 h-5" />
           <span>{item.label}</span>
         </div>
@@ -163,7 +163,7 @@ export function PlanlyNavItem({ item }: { item: NavItem }) {
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
           isActive
             ? 'bg-planly-dark/[0.08] dark:bg-planly/10 text-planly-dark dark:text-planly font-medium'
-            : 'text-[#888] dark:text-theme-tertiary hover:bg-planly-dark/[0.04] dark:hover:bg-planly/5 hover:text-[#555] dark:hover:text-theme-secondary'
+            : 'text-theme-tertiary hover:bg-planly-dark/[0.04] dark:hover:bg-planly/5 hover:text-theme-secondary'
         }`}
       >
         <IconComponent className="w-5 h-5 flex-shrink-0" />
@@ -199,12 +199,12 @@ export function PlanlyNavItem({ item }: { item: NavItem }) {
           className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
             shouldHighlightParent
               ? 'bg-planly-dark/[0.08] dark:bg-planly/10 text-planly-dark dark:text-planly font-medium'
-              : 'text-[#888] dark:text-theme-tertiary hover:bg-planly-dark/[0.04] dark:hover:bg-planly/5 hover:text-[#555] dark:hover:text-theme-secondary'
+              : 'text-theme-tertiary hover:bg-planly-dark/[0.04] dark:hover:bg-planly/5 hover:text-theme-secondary'
           }`}
         >
           <IconComponent className="w-5 h-5 flex-shrink-0" />
           <span className="flex-1">{item.label}</span>
-          <span className="text-[#999] dark:text-theme-tertiary">
+          <span className="text-theme-tertiary">
             {shouldExpand ? (
               <ChevronDown className="w-4 h-4" />
             ) : (
@@ -227,7 +227,7 @@ export function PlanlyNavItem({ item }: { item: NavItem }) {
                   className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-colors relative ${
                     isChildActive
                       ? 'bg-planly-dark/[0.08] dark:bg-planly/10 text-planly-dark dark:text-planly font-medium before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-planly-dark dark:before:bg-planly'
-                      : 'text-[#888] dark:text-theme-tertiary hover:text-[#555] dark:hover:text-theme-secondary'
+                      : 'text-theme-tertiary hover:text-theme-secondary'
                   }`}
                 >
                   <ChildIcon className="w-4 h-4" />
@@ -294,7 +294,7 @@ export function PlanlySidebar() {
                 <Link
                   key={`${item.label}-${index}`}
                   href={href}
-                  className="flex items-center justify-center w-full h-10 rounded-lg text-[#888] dark:text-theme-tertiary hover:bg-planly-dark/[0.04] dark:hover:bg-planly/5 hover:text-[#555] dark:hover:text-theme-secondary transition-colors"
+                  className="flex items-center justify-center w-full h-10 rounded-lg text-theme-tertiary hover:bg-planly-dark/[0.04] dark:hover:bg-planly/5 hover:text-theme-secondary transition-colors"
                   title={item.label}
                 >
                   <Icon className="w-5 h-5" />
@@ -314,19 +314,19 @@ export function PlanlySidebar() {
           <div className="p-4 flex items-center gap-1">
             <button
               onClick={() => router.push(`/dashboard/people/${profile?.id}`)}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[#888] dark:text-theme-tertiary hover:bg-planly-dark/[0.04] dark:hover:bg-planly/5 hover:text-[#555] dark:hover:text-theme-secondary transition-colors flex-1 min-w-0 text-left"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-theme-tertiary hover:bg-planly-dark/[0.04] dark:hover:bg-planly/5 hover:text-theme-secondary transition-colors flex-1 min-w-0 text-left"
             >
               <UserCircle className="w-5 h-5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="truncate text-[#1a1a1a] dark:text-white">{profile?.full_name || 'My Profile'}</p>
-                <p className="truncate text-xs text-[#888] dark:text-theme-tertiary">{profile?.position_title || 'Employee'}</p>
+                <p className="truncate text-theme-primary">{profile?.full_name || 'My Profile'}</p>
+                <p className="truncate text-xs text-theme-tertiary">{profile?.position_title || 'Employee'}</p>
               </div>
             </button>
             {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}
           </div>
         ) : (
           <div className="flex flex-col items-center gap-1 py-2">
-            <button onClick={() => router.push(`/dashboard/people/${profile?.id}`)} title={profile?.full_name || 'My Profile'} className="text-[#888] dark:text-theme-tertiary hover:text-[#555] dark:hover:text-theme-secondary transition-colors">
+            <button onClick={() => router.push(`/dashboard/people/${profile?.id}`)} title={profile?.full_name || 'My Profile'} className="text-theme-tertiary hover:text-theme-secondary transition-colors">
               <UserCircle className="w-5 h-5" />
             </button>
             {canPin && <SidebarPin isCollapsed={isCollapsed} onToggle={togglePin} />}

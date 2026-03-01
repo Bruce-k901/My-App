@@ -52,7 +52,7 @@ export default function Select({
   
   return (
     <div className={cn("relative", className)}>
- {label && <label className="block text-xs text-[rgb(var(--text-secondary))] dark:text-theme-tertiary mb-1">{label}</label>}
+ {label && <label className="block text-xs text-[rgb(var(--text-secondary))] dark:text-theme-secondary mb-1">{label}</label>}
       
       <SelectPrimitive.Root
         value={internalValue}

@@ -98,7 +98,7 @@ export function StepEditor({
               type="checkbox"
               checked={stage.is_overnight}
               onChange={(e) => onUpdate('is_overnight', e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 dark:border-white/20 text-[#14B8A6] focus:ring-[#14B8A6] bg-theme-surface"
+              className="w-4 h-4 rounded border-gray-300 dark:border-white/20 text-module-fg focus:ring-module-fg bg-theme-surface"
             />
             <span className="text-sm text-theme-secondary">Overnight step</span>
           </label>

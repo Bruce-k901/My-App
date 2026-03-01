@@ -97,7 +97,7 @@ export function DeliveryNotesHeader({
               className={`${smallBtnClass} border-theme text-theme-secondary hover:bg-theme-hover px-2 rounded-r-none border-r-0`}
               title="Open calendar"
             >
-              <Calendar className="h-4 w-4 text-[#14B8A6]" />
+              <Calendar className="h-4 w-4 text-module-fg" />
             </Button>
 
             {/* Date display */}
@@ -184,7 +184,7 @@ export function DeliveryNotesHeader({
         <Button
           onClick={onPrint}
           disabled={isLoading || noteCount === 0}
-          className={`${smallBtnClass} bg-[#14B8A6] hover:bg-[#0D9488] text-white`}
+          className={`${smallBtnClass} bg-module-fg hover:bg-module-fg/80 text-white`}
           title="Print delivery notes"
         >
           <Printer className="h-4 w-4 mr-2" />

@@ -342,7 +342,7 @@ export default function ProductionSettingsPage() {
                           )}
                         </div>
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-teal-50 dark:bg-module-fg/10 text-teal-700 dark:text-teal-300 rounded text-xs">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-module-fg/10 text-module-fg rounded text-xs">
                             <Package className="h-3 w-3" />
                             {dough.product_count || 0} products
                           </span>

@@ -129,12 +129,12 @@ export function ProductList({ siteId }: ProductListProps) {
   return (
     <div className="space-y-6">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-10 bg-gray-50 dark:bg-[#0B0F1A] -mx-4 px-4 pt-2 pb-4 space-y-4">
+      <div className="sticky top-0 z-10 bg-gray-50 dark:bg-[rgb(var(--background))] -mx-4 px-4 pt-2 pb-4 space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-theme-primary">Products</h1>
           <Button
             onClick={handleAddNew}
-            className="bg-[#14B8A6] hover:bg-[#0D9488] text-white"
+            className="bg-module-fg hover:bg-module-fg/80 text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Product
@@ -156,7 +156,7 @@ export function ProductList({ siteId }: ProductListProps) {
                       className={cn(
                         'flex items-center gap-2 px-4 py-2 border-b-2 font-medium text-sm transition-colors',
                         isActive
-                          ? 'border-[#14B8A6] text-[#14B8A6]'
+                          ? 'border-module-fg text-module-fg'
                           : 'border-transparent text-theme-tertiary hover:text-theme-secondary hover:border-gray-300 dark:hover:border-white/30'
                       )}
                     >
@@ -244,7 +244,7 @@ export function ProductList({ siteId }: ProductListProps) {
                   </div>
                 )}
               </div>
-              <Package className="h-5 w-5 text-[#14B8A6] flex-shrink-0" />
+              <Package className="h-5 w-5 text-module-fg flex-shrink-0" />
             </div>
 
             {/* Product details */}

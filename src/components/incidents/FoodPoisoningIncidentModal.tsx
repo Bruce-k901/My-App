@@ -288,7 +288,7 @@ export function FoodPoisoningIncidentModal({
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 overflow-hidden">
       <div className="absolute inset-0" onClick={onClose} />
-      <div className="absolute right-0 top-0 h-full w-full max-w-3xl lg:max-w-4xl bg-white dark:bg-[#1a1d2e] border-l border-orange-300 dark:border-orange-500/30 shadow-2xl overflow-y-auto animate-slideInRight">
+      <div className="absolute right-0 top-0 h-full w-full max-w-3xl lg:max-w-4xl bg-white dark:bg-[#1a1d2e] border-l border-orange-300 dark:border-orange-500/30 shadow-2xl overflow-y-auto overflow-x-hidden animate-slideInRight">
         <div className="p-4 sm:p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-orange-200 dark:border-orange-500/20">
@@ -337,7 +337,7 @@ export function FoodPoisoningIncidentModal({
                     type="date"
                     value={formData.incident_date}
                     onChange={(e) => setFormData({ ...formData, incident_date: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                     required
                   />
                 </div>
@@ -362,7 +362,7 @@ export function FoodPoisoningIncidentModal({
                     value={formData.reported_by_customer}
                     onChange={(e) => setFormData({ ...formData, reported_by_customer: e.target.value })}
                     placeholder="Full name of customer"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                     required
                   />
                 </div>
@@ -393,7 +393,7 @@ export function FoodPoisoningIncidentModal({
                     value={formData.customer_email}
                     onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
                     placeholder="customer@email.com"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                   />
                 </div>
 
@@ -406,7 +406,7 @@ export function FoodPoisoningIncidentModal({
                     value={formData.customer_phone}
                     onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })}
                     placeholder="+44 7700 900000"
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                   />
                 </div>
               </div>
@@ -478,7 +478,7 @@ export function FoodPoisoningIncidentModal({
                     type="datetime-local"
                     value={formData.symptom_start_datetime}
                     onChange={(e) => setFormData({ ...formData, symptom_start_datetime: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                   />
                 </div>
               </div>
@@ -558,7 +558,7 @@ export function FoodPoisoningIncidentModal({
                   onChange={(e) => setFormData({ ...formData, menu_items_consumed: e.target.value })}
                   placeholder="List all menu items and dishes the customer consumed. Include specific dishes, ingredients, and preparation details (e.g., 'Chicken Caesar Salad - contained raw egg in dressing, cooked chicken, fresh lettuce. Consumed at 7:30pm')."
                   rows={3}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                   required
                 />
               </div>
@@ -572,7 +572,7 @@ export function FoodPoisoningIncidentModal({
                     type="datetime-local"
                     value={formData.meal_time}
                     onChange={(e) => setFormData({ ...formData, meal_time: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                   />
                 </div>
 
@@ -614,7 +614,7 @@ export function FoodPoisoningIncidentModal({
                   onChange={(e) => setFormData({ ...formData, food_consumed_24h: e.target.value })}
                   placeholder="List any other food or drinks consumed in the 24 hours before symptoms started. This helps identify if the issue came from your establishment or elsewhere."
                   rows={2}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                 />
               </div>
 
@@ -627,7 +627,7 @@ export function FoodPoisoningIncidentModal({
                   onChange={(e) => setFormData({ ...formData, unaffected_comparison: e.target.value })}
                   placeholder="List people who ate similar items but did not get sick. This helps identify the specific cause (e.g., 'Table 12 had same chicken salad - no issues. Table 14 had vegetarian option - no issues.')"
                   rows={2}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                 />
               </div>
             </div>
@@ -704,7 +704,7 @@ export function FoodPoisoningIncidentModal({
                   onChange={(e) => setFormData({ ...formData, immediate_corrective_actions: e.target.value })}
                   placeholder="What immediate actions have been taken to prevent further incidents? (e.g., 'Removed suspect batch from service, increased temperature monitoring, staff retraining on specific procedure...')"
                   rows={3}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                 />
               </div>
             </div>
@@ -766,7 +766,7 @@ export function FoodPoisoningIncidentModal({
                   onChange={(e) => setFormData({ ...formData, additional_notes: e.target.value })}
                   placeholder="Any additional relevant information, context, or notes about the incident..."
                   rows={4}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-500"
                 />
               </div>
             </div>

@@ -448,7 +448,7 @@ export function CustomerComplaintModal({
                       type="text"
                       value={formData.customer_name}
                       onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       placeholder="Enter customer name"
                     />
                   </div>
@@ -460,7 +460,7 @@ export function CustomerComplaintModal({
                       type="email"
                       value={formData.customer_email}
                       onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       placeholder="customer@example.com"
                     />
                   </div>
@@ -472,7 +472,7 @@ export function CustomerComplaintModal({
                       type="tel"
                       value={formData.customer_phone}
                       onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       placeholder="+44 123 456 7890"
                     />
                   </div>
@@ -484,7 +484,7 @@ export function CustomerComplaintModal({
                       type="date"
                       value={formData.visit_date}
                       onChange={(e) => setFormData({ ...formData, visit_date: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                     />
                   </div>
                   <div>
@@ -543,7 +543,7 @@ export function CustomerComplaintModal({
                       type="text"
                       value={formData.complaint_title}
                       onChange={(e) => setFormData({ ...formData, complaint_title: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       placeholder="Brief summary of the complaint"
                     />
                   </div>
@@ -555,7 +555,7 @@ export function CustomerComplaintModal({
                       value={formData.complaint_description}
                       onChange={(e) => setFormData({ ...formData, complaint_description: e.target.value })}
                       rows={5}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none"
                       placeholder="Provide detailed description of the complaint..."
                     />
                   </div>
@@ -568,7 +568,7 @@ export function CustomerComplaintModal({
                         type="text"
                         value={formData.location_in_venue}
                         onChange={(e) => setFormData({ ...formData, location_in_venue: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         placeholder="e.g., Table 12, Bar area, Restroom"
                       />
                     </div>
@@ -605,7 +605,7 @@ export function CustomerComplaintModal({
                       value={formData.immediate_response}
                       onChange={(e) => setFormData({ ...formData, immediate_response: e.target.value })}
                       rows={4}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none"
                       placeholder="Describe what immediate action was taken when the complaint was received..."
                     />
                   </div>
@@ -618,7 +618,7 @@ export function CustomerComplaintModal({
                         type="text"
                         value={formData.response_taken_by}
                         onChange={(e) => setFormData({ ...formData, response_taken_by: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         placeholder="Staff member name"
                       />
                     </div>
@@ -630,7 +630,7 @@ export function CustomerComplaintModal({
                         type="date"
                         value={formData.response_date}
                         onChange={(e) => setFormData({ ...formData, response_date: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       />
                     </div>
                   </div>
@@ -698,7 +698,7 @@ export function CustomerComplaintModal({
                                 });
                               }}
                               rows={2}
- className="w-full mt-2 px-3 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none text-sm"
+ className="w-full mt-2 px-3 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none text-sm"
                               placeholder="Add additional details or notes..."
                               onClick={(e) => e.stopPropagation()}
                             />
@@ -717,7 +717,7 @@ export function CustomerComplaintModal({
                       type="date"
                       value={formData.follow_up_deadline}
                       onChange={(e) => setFormData({ ...formData, follow_up_deadline: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                     />
                   </div>
                   <div>
@@ -728,7 +728,7 @@ export function CustomerComplaintModal({
                       type="text"
                       value={formData.assigned_to}
                       onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                       placeholder="Manager or staff member"
                     />
                   </div>
@@ -770,7 +770,7 @@ export function CustomerComplaintModal({
                             type="text"
                             value={formData.reported_to}
                             onChange={(e) => setFormData({ ...formData, reported_to: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-yellow-300 dark:border-yellow-500/30 text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-yellow-300 dark:border-yellow-500/30 text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500"
                             placeholder="e.g., Environmental Health Officer"
                           />
                         </div>
@@ -783,7 +783,7 @@ export function CustomerComplaintModal({
                               type="date"
                               value={formData.reported_date}
                               onChange={(e) => setFormData({ ...formData, reported_date: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-yellow-300 dark:border-yellow-500/30 text-theme-primary focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-yellow-300 dark:border-yellow-500/30 text-theme-primary focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500"
                             />
                           </div>
                           <div>
@@ -794,7 +794,7 @@ export function CustomerComplaintModal({
                               type="text"
                               value={formData.report_reference}
                               onChange={(e) => setFormData({ ...formData, report_reference: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-yellow-300 dark:border-yellow-500/30 text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-yellow-300 dark:border-yellow-500/30 text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:focus:ring-yellow-500"
                               placeholder="Reference number if available"
                             />
                           </div>
@@ -832,7 +832,7 @@ export function CustomerComplaintModal({
                           type="date"
                           value={formData.resolution_date}
                           onChange={(e) => setFormData({ ...formData, resolution_date: e.target.value })}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91]"
                         />
                       </div>
                       <div>
@@ -843,7 +843,7 @@ export function CustomerComplaintModal({
                           value={formData.resolution_details}
                           onChange={(e) => setFormData({ ...formData, resolution_details: e.target.value })}
                           rows={4}
- className="w-full px-4 py-2 rounded-lg bg-theme-surface ] border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none"
+ className="w-full px-4 py-2 rounded-lg bg-theme-surface border border-theme text-theme-primary placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#D37E91]/50 dark:focus:ring-[#D37E91] resize-none"
                           placeholder="Describe how the complaint was resolved..."
                         />
                       </div>

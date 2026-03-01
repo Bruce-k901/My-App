@@ -484,7 +484,7 @@ export default function TeamlyDashboard() {
               <span className="flex-1 text-module-fg font-medium">
                 {alert.message}
               </span>
-              <ArrowRight className="w-4 h-4 text-module-fg/50 group-hover:text-module-fg transition-colors" />
+              <ArrowRight className="w-4 h-4 text-module-fg/65 group-hover:text-module-fg transition-colors" />
             </Link>
           ))}
         </div>

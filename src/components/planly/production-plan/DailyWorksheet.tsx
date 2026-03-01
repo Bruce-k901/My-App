@@ -588,7 +588,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                       {packing.customers.map(c => (
                         <th key={c} className="py-1 px-1 text-theme-secondary font-semibold text-center border-r border-gray-300 dark:border-white/20 text-[9px] print:text-[7px] align-bottom leading-tight whitespace-normal">{c}</th>
                       ))}
-                      <th className="text-center py-0.5 px-1 text-module-fg font-bold w-[45px] print:w-[35px] border-l-2 border-gray-500 dark:border-white/40 bg-teal-50 dark:bg-teal-900/20 text-[10px] print:text-[8px]">Tot</th>
+                      <th className="text-center py-0.5 px-1 text-module-fg font-bold w-[45px] print:w-[35px] border-l-2 border-gray-500 dark:border-white/40 bg-module-fg/10 text-[10px] print:text-[8px]">Tot</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -629,7 +629,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                                 </td>
                               );
                             })}
-                            <td className="text-center py-0.5 px-1 text-module-fg font-bold tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-teal-50/50 dark:bg-teal-900/10 text-[11px] print:text-[8px]">{p.total}</td>
+                            <td className="text-center py-0.5 px-1 text-module-fg font-bold tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-module-fg/5 text-[11px] print:text-[8px]">{p.total}</td>
                           </tr>
                         );
                         rowIdx++;
@@ -641,7 +641,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                           {packing.customers.map(c => (
                             <td key={c} className="text-center py-1 px-0.5 text-theme-secondary/90 tabular-nums border-r border-gray-300 dark:border-white/20 text-[10px] print:text-[8px]">{packing.colTotals.get(c) || ''}</td>
                           ))}
-                          <td className="text-center py-1 px-1 text-teal-700 dark:text-teal-300 tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-module-fg/10 text-[11px] print:text-[8px]">{packing.grand}</td>
+                          <td className="text-center py-1 px-1 text-module-fg tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-module-fg/10 text-[11px] print:text-[8px]">{packing.grand}</td>
                         </tr>
                       );
                       return out;
@@ -769,7 +769,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                     ))}
                     <tr className="border-t-2 border-gray-400 dark:border-white/30 font-bold bg-gray-100 dark:bg-white/5">
                       <td className="py-1.5 px-2 text-theme-primary border-r border-theme">Total</td>
-                      <td className="py-1.5 px-2 text-right text-teal-700 dark:text-teal-300 tabular-nums border-r border-theme">{doughSheets.total_sheets}</td>
+                      <td className="py-1.5 px-2 text-right text-module-fg tabular-nums border-r border-theme">{doughSheets.total_sheets}</td>
                       <td className="py-1.5 px-2 text-right text-theme-secondary tabular-nums">
                         {doughSheets.by_style.reduce((sum, s) => sum + s.total_products, 0)}
                       </td>
@@ -884,7 +884,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                             {trayGrids.map((dg, di) => (
                               dg.trayNums.map((tn, ti) => (
                                 <th key={`${dg.name}-${tn}`}
-                                    className={`text-center py-1 px-0.5 text-module-fg font-bold w-7 print:w-5 bg-teal-50 dark:bg-teal-900/20 ${ti === dg.trayNums.length - 1 && di < trayGrids.length - 1 ? 'border-r-2 border-gray-400 dark:border-white/30' : 'border-r border-gray-300 dark:border-white/20'}`}>
+                                    className={`text-center py-1 px-0.5 text-module-fg font-bold w-7 print:w-5 bg-module-fg/10 ${ti === dg.trayNums.length - 1 && di < trayGrids.length - 1 ? 'border-r-2 border-gray-400 dark:border-white/30' : 'border-r border-gray-300 dark:border-white/20'}`}>
                                   {tn}
                                 </th>
                               ))
@@ -963,7 +963,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                         {xcheck.dests.map(d => (
                           <th key={d} className="text-center py-1 px-2 text-theme-secondary font-semibold border-r border-gray-300 dark:border-white/20 text-[9px] print:text-[7px] min-w-[70px] print:min-w-[55px]">{d.replace(' Bake', '')}</th>
                         ))}
-                        <th className="text-center py-1 px-1.5 text-module-fg font-bold border-l-2 border-gray-500 dark:border-white/40 bg-teal-50 dark:bg-teal-900/20 min-w-[40px]">Tot</th>
+                        <th className="text-center py-1 px-1.5 text-module-fg font-bold border-l-2 border-gray-500 dark:border-white/40 bg-module-fg/10 min-w-[40px]">Tot</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -999,7 +999,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                                 const q = p?.byDest.get(d) || 0;
  return <td key={d} className={`text-center py-0.5 px-2 tabular-nums border-r border-gray-300 dark:border-white/20 min-w-[70px] print:min-w-[55px] ${q > 0 ? 'text-theme-primary font-medium' : 'text-gray-300/20'}`}>{q > 0 ? q : ''}</td>;
                               })}
-                              <td className="text-center py-0.5 px-1.5 text-module-fg font-bold tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-teal-50/50 dark:bg-teal-900/10">{total > 0 ? total : ''}</td>
+                              <td className="text-center py-0.5 px-1.5 text-module-fg font-bold tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-module-fg/5">{total > 0 ? total : ''}</td>
                             </tr>
                           );
                           rowIdx++;
@@ -1012,7 +1012,7 @@ export function DailyWorksheet({ siteId, initialDate = new Date() }: Props) {
                               const t = [...xcheck.productMap.values()].reduce((s, p) => s + (p.byDest.get(d) || 0), 0);
                               return <td key={d} className="text-center py-1 px-2 text-theme-secondary/90 tabular-nums border-r border-gray-300 dark:border-white/20 min-w-[70px] print:min-w-[55px]">{t}</td>;
                             })}
-                            <td className="text-center py-1 px-1.5 text-teal-700 dark:text-teal-300 tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-module-fg/10">{xcheck.grand}</td>
+                            <td className="text-center py-1 px-1.5 text-module-fg tabular-nums border-l-2 border-gray-500 dark:border-white/40 bg-module-fg/10">{xcheck.grand}</td>
                           </tr>
                         );
                         return out;

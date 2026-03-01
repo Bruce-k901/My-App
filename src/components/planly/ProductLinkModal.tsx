@@ -183,7 +183,7 @@ export function ProductLinkModal({
       <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Link2 className="h-5 w-5 text-[#14B8A6]" />
+            <Link2 className="h-5 w-5 text-module-fg" />
             Link Products to "{processingGroupName}"
           </DialogTitle>
         </DialogHeader>
@@ -256,7 +256,7 @@ export function ProductLinkModal({
                       <button
                         type="button"
                         onClick={selectAllAvailable}
-                        className="text-xs text-[#14B8A6] hover:text-[#14B8A6]/80"
+                        className="text-xs text-module-fg hover:text-module-fg/80"
                       >
                         Select all
                       </button>
@@ -291,7 +291,7 @@ export function ProductLinkModal({
                           className={cn(
                             'w-full flex items-center justify-between px-3 py-2 rounded-lg border transition-colors text-left',
                             isSelected
-                              ? 'bg-[#14B8A6]/10 border-[#14B8A6]/30 dark:bg-[#14B8A6]/20 dark:border-[#14B8A6]/40'
+                              ? 'bg-module-fg/10 border-module-fg/30 dark:bg-module-fg/20 dark:border-module-fg/40'
                               : 'bg-theme-surface border-theme hover:bg-theme-surface-elevated dark:hover:bg-white/10'
                           )}
                         >
@@ -300,7 +300,7 @@ export function ProductLinkModal({
                               className={cn(
                                 'w-5 h-5 rounded border-2 flex items-center justify-center transition-colors',
                                 isSelected
-                                  ? 'bg-[#14B8A6] border-[#14B8A6]'
+                                  ? 'bg-module-fg border-module-fg'
                                   : 'border-gray-300 dark:border-white/30'
                               )}
                             >
@@ -347,7 +347,7 @@ export function ProductLinkModal({
               <Button
                 onClick={handleLinkProducts}
                 disabled={saving || selectedIds.size === 0}
-                className="bg-[#14B8A6] hover:bg-[#14B8A6]/90 text-white"
+                className="bg-module-fg hover:bg-module-fg/90 text-white"
               >
                 {saving ? (
                   <>

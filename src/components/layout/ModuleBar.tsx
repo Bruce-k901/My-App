@@ -38,8 +38,7 @@ import {
 } from '@/components/ui/icons';
 import { cn } from "@/lib/utils";
 import { ClockInButton } from "@/components/notifications/ClockInButton";
-import { MODULE_HEX, type ModuleKey } from "@/config/module-colors";
-import { useTheme } from "@/hooks/useTheme";
+import type { ModuleKey } from "@/config/module-colors";
 
 interface Module {
   name: string;
@@ -91,8 +90,6 @@ const modules: Module[] = [
 
 export function ModuleBar() {
   const pathname = usePathname();
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
 
   return (
     <div
@@ -109,9 +106,6 @@ export function ModuleBar() {
           const isActive = allPaths.some(
             (p) => pathname === p || pathname.startsWith(p + "/")
           );
-          const color = isDark
-            ? MODULE_HEX[module.moduleKey].light
-            : MODULE_HEX[module.moduleKey].dark;
 
           if (module.disabled) {
             return (
@@ -119,11 +113,8 @@ export function ModuleBar() {
                 key={module.name}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg opacity-40 cursor-not-allowed pointer-events-none"
               >
-                <Icon className="w-5 h-5" style={{ color }} />
-                <span className={cn(
-                  "text-sm font-medium",
-                  isDark ? "text-theme-tertiary" : "text-[#999]"
-                )}>
+                <Icon className="w-5 h-5 text-module-fg" />
+                <span className="text-sm font-medium text-[#999] dark:text-theme-tertiary">
                   {module.name}
                 </span>
                 {module.badge && (
@@ -147,52 +138,29 @@ export function ModuleBar() {
               <Icon
                 className={cn(
                   "w-5 h-5 transition-colors",
-                  !isActive && (isDark ? "text-theme-tertiary group-hover:text-theme-tertiary" : "text-[#999] group-hover:text-[#666]")
+                  isActive
+                    ? "text-module-fg"
+                    : "text-[#999] dark:text-theme-secondary group-hover:text-[#666] dark:group-hover:text-theme-primary"
                 )}
-                style={{
-                  color: isActive ? color : undefined
-                }}
               />
               <span
                 className={cn(
                   "text-sm transition-colors",
-                  isActive ? "font-semibold" : "font-medium",
-                  !isActive && (isDark ? "text-theme-tertiary group-hover:text-theme-tertiary" : "text-[#999] group-hover:text-[#666]")
+                  isActive
+                    ? "font-semibold text-module-fg"
+                    : "font-medium text-[#999] dark:text-theme-secondary group-hover:text-[#666] dark:group-hover:text-theme-primary"
                 )}
-                style={isActive ? { color } : undefined}
               >
                 {module.name}
               </span>
               {/* Active bottom border indicator */}
               {isActive && (
-                <span
-                  className="absolute bottom-0 left-2 right-2 h-[2.5px] rounded-t-full"
-                  style={{ backgroundColor: color }}
-                />
+                <span className="absolute bottom-0 left-2 right-2 h-[2.5px] rounded-t-full bg-module-fg" />
               )}
             </Link>
           );
         })}
       </div>
-
-      {/* Bottom border tint — uses active module colour */}
-      {(() => {
-        const activeModule = modules.find((m) => {
-          const paths = [m.href, ...(m.extraPaths || [])];
-          return paths.some((p) => pathname === p || pathname.startsWith(p + "/"));
-        });
-        if (activeModule) {
-          const borderColor = isDark
-            ? MODULE_HEX[activeModule.moduleKey].light
-            : MODULE_HEX[activeModule.moduleKey].dark;
-          return (
-            <style>{`
-              .module-bar-border { border-bottom-color: ${borderColor}14 !important; }
-            `}</style>
-          );
-        }
-        return null;
-      })()}
 
       {/* Clock In Button */}
       <div className="flex-1 flex justify-end">

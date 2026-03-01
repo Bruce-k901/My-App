@@ -419,7 +419,7 @@ export default function StocklyDashboard() {
                 <action.icon className="w-5 h-5 text-module-fg" />
               </div>
               <h3 className="text-[rgb(var(--text-primary))] font-semibold">{action.title}</h3>
-              <p className="text-[rgb(var(--text-tertiary))] text-sm">{action.description}</p>
+              <p className="text-[rgb(var(--text-secondary))] text-sm">{action.description}</p>
               <ArrowRight className="absolute bottom-4 right-4 w-5 h-5 text-[rgb(var(--text-tertiary))] group-hover:text-module-fg transition-colors" />
             </Component>
           );
@@ -448,7 +448,7 @@ export default function StocklyDashboard() {
                 }`} />
                 <div className="flex-1 min-w-0">
                   <p className="text-[rgb(var(--text-primary))] text-sm font-medium">{alert.title}</p>
-                  <p className="text-[rgb(var(--text-tertiary))] text-xs truncate">{alert.description}</p>
+                  <p className="text-[rgb(var(--text-secondary))] text-xs truncate">{alert.description}</p>
                 </div>
                 <ArrowRight className="w-4 h-4 text-[rgb(var(--text-tertiary))] group-hover:text-module-fg transition-colors" />
               </Link>
@@ -465,7 +465,7 @@ export default function StocklyDashboard() {
         >
           <div className="flex items-center gap-2 mb-2">
             <Package className="w-4 h-4 text-module-fg" />
-            <span className="text-[rgb(var(--text-tertiary))] text-xs">Stock Value</span>
+            <span className="text-[rgb(var(--text-secondary))] text-xs">Stock Value</span>
           </div>
           <p className="text-xl font-bold text-module-fg">{formatCurrency(stats.stockValue)}</p>
         </Link>
@@ -476,7 +476,7 @@ export default function StocklyDashboard() {
         >
           <div className="flex items-center gap-2 mb-2">
             <Truck className="w-4 h-4 text-module-fg" />
-            <span className="text-[rgb(var(--text-tertiary))] text-xs">Deliveries Today</span>
+            <span className="text-[rgb(var(--text-secondary))] text-xs">Deliveries Today</span>
           </div>
           <p className="text-xl font-bold text-module-fg">{formatCurrency(stats.deliveriesToday)}</p>
         </Link>
@@ -487,7 +487,7 @@ export default function StocklyDashboard() {
         >
           <div className="flex items-center gap-2 mb-2">
             <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
-            <span className="text-[rgb(var(--text-tertiary))] text-xs">Wastage Today</span>
+            <span className="text-[rgb(var(--text-secondary))] text-xs">Wastage Today</span>
           </div>
           <p className="text-xl font-bold text-red-600 dark:text-red-400">
             {stats.wastageToday > 0 ? `-${formatCurrency(stats.wastageToday)}` : '£0'}
@@ -502,7 +502,7 @@ export default function StocklyDashboard() {
             <TrendingDown className={`w-4 h-4 ${
               stats.gpPercent && stats.gpPercent >= 70 ? 'text-module-fg' : 'text-amber-600 dark:text-amber-400'
             }`} />
-            <span className="text-[rgb(var(--text-tertiary))] text-xs">Latest GP</span>
+            <span className="text-[rgb(var(--text-secondary))] text-xs">Latest GP</span>
           </div>
           <p className={`text-xl font-bold ${
             stats.gpPercent && stats.gpPercent >= 70 ? 'text-module-fg' :
