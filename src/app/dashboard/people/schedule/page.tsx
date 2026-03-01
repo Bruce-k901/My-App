@@ -57,6 +57,7 @@ import TimePicker from '@/components/ui/TimePicker';
 import { DayApprovalPanel } from '@/components/rota/DayApprovalPanel';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { ShiftActionSheet } from '@/components/rota/ShiftActionSheet';
+import { StaffPickerSheet } from '@/components/rota/StaffPickerSheet';
 import { useShiftPatterns } from '@/hooks/use-shift-patterns';
 
 // ============================================
@@ -137,6 +138,13 @@ interface LeaveRequest {
   start_date: string;
   end_date: string;
   status: string;
+  reason?: string | null;
+}
+
+interface LeaveType {
+  id: string;
+  code: string;
+  name: string;
 }
 
 type RosterItem =
@@ -1786,6 +1794,7 @@ export default function RotaBuilderPage() {
   const [siteAssignments, setSiteAssignments] = useState<Map<string, { borrowed_site_id: string; start_date: string; end_date: string | null }[]>>(new Map());
   const [plannedClosures, setPlannedClosures] = useState<PlannedClosure[]>([]);
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
+  const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]);
 
   // UI state
   const [addingShiftDate, setAddingShiftDate] = useState<Date | null>(null);
@@ -1812,6 +1821,7 @@ export default function RotaBuilderPage() {
   const [selectedMobileShift, setSelectedMobileShift] = useState<Shift | null>(null);
   const [isShiftActionOpen, setIsShiftActionOpen] = useState(false);
   const [userAttendanceStatus, setUserAttendanceStatus] = useState<{ onShift: boolean } | null>(null);
+  const [mobileAssignShiftId, setMobileAssignShiftId] = useState<string | null>(null);
 
   // Close actions dropdown on outside click / escape
   useEffect(() => {
@@ -2475,7 +2485,7 @@ export default function RotaBuilderPage() {
       // 4c. Load approved/taken leave requests for staff that overlap with the current week
       const { data: leaveData, error: leaveError } = await supabase
         .from('leave_requests')
-        .select('id, profile_id, start_date, end_date, status')
+        .select('id, profile_id, start_date, end_date, status, reason')
         .eq('company_id', companyId)
         .in('status', ['approved', 'taken'])
         // Fetch leave that overlaps with the current week
@@ -2490,6 +2500,15 @@ export default function RotaBuilderPage() {
         console.log(`[Rota] Loaded ${leaveData?.length || 0} leave requests for week ${weekStr} to ${weekEndStr}`, leaveData);
         setLeaveRequests(leaveData || []);
       }
+
+      // 4d. Load leave types for absence recording
+      const { data: leaveTypesData } = await supabase
+        .from('leave_types')
+        .select('id, code, name')
+        .eq('company_id', companyId)
+        .eq('is_active', true);
+      if (!mountedRef.current) return;
+      setLeaveTypes(leaveTypesData || []);
 
       // 5. Load ALL staff for the company using RPC to bypass RLS issues
       console.log('Loading staff for company:', companyId);
@@ -4244,12 +4263,14 @@ export default function RotaBuilderPage() {
                       .map(shift => {
                         const staffMember = getStaffMember(shift.profile_id);
                         const hours = getShiftNetHours(shift);
-                        const isOnLeave = shift.profile_id && leaveRequests.some(leave => {
+                        const leaveMatch = shift.profile_id ? leaveRequests.find(leave => {
                           if (leave.profile_id !== shift.profile_id) return false;
                           const startDate = new Date(leave.start_date);
                           const endDate = new Date(leave.end_date);
                           return mobileSelectedDay >= startDate && mobileSelectedDay <= endDate;
-                        });
+                        }) : null;
+                        const isOnLeave = !!leaveMatch;
+                        const isAbsent = isOnLeave && /sick|no.?show|personal|other/i.test(leaveMatch?.reason || '');
 
                         return (
                           <div
@@ -4258,12 +4279,14 @@ export default function RotaBuilderPage() {
                               setSelectedMobileShift(shift);
                               setIsShiftActionOpen(true);
                             }}
-                            className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3 flex items-center gap-3 cursor-pointer active:bg-black/10 dark:active:bg-white/10 transition-colors"
+                            className={`bg-black/5 dark:bg-white/5 border rounded-xl p-3 flex items-center gap-3 cursor-pointer active:bg-black/10 dark:active:bg-white/10 transition-colors ${
+                              isAbsent ? 'border-red-500/30 opacity-70' : 'border-black/10 dark:border-white/10'
+                            }`}
                           >
                             {/* Color indicator */}
                             <div
                               className="w-1 h-12 rounded-full flex-shrink-0"
-                              style={{ backgroundColor: shift.section_color || shift.color || 'rgb(var(--module-fg))' }}
+                              style={{ backgroundColor: isAbsent ? '#EF4444' : (shift.section_color || shift.color || 'rgb(var(--module-fg))') }}
                             />
 
                             {/* Avatar */}
@@ -4287,7 +4310,12 @@ export default function RotaBuilderPage() {
                                 <span className="font-medium text-theme-primary truncate">
                                   {staffMember?.full_name || shift.profile_name || 'Unknown'}
                                 </span>
-                                {isOnLeave && (
+                                {isAbsent && (
+                                  <span className="text-[10px] px-1.5 py-0.5 bg-red-500/20 text-red-400 rounded font-medium">
+                                    Absent
+                                  </span>
+                                )}
+                                {isOnLeave && !isAbsent && (
                                   <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/20 text-amber-400 rounded">
                                     On Leave
                                   </span>
@@ -4464,7 +4492,32 @@ export default function RotaBuilderPage() {
             setUserAttendanceStatus({ onShift: false });
           }}
           onRecordAbsence={async (shiftId, profileId, reason, notes) => {
-            const { error } = await supabase.from('staff_attendance').insert({
+            // Find the shift to get the date
+            const shift = shifts.find(s => s.id === shiftId);
+            if (!shift) throw new Error('Shift not found');
+
+            // Map absence reason to leave type code
+            const leaveTypeCode = reason === 'sick' ? 'SICK' : 'UNPAID';
+            const leaveType = leaveTypes.find(lt => lt.code === leaveTypeCode) || leaveTypes[0];
+            if (!leaveType) throw new Error('No leave types configured — please contact your admin');
+
+            // 1. Insert leave_requests (drives the rota display)
+            const { error: leaveError } = await supabase.from('leave_requests').insert({
+              profile_id: profileId,
+              company_id: companyId,
+              leave_type_id: leaveType.id,
+              start_date: shift.shift_date,
+              end_date: shift.shift_date,
+              total_days: 1,
+              status: 'approved',
+              reason: `${reason}${notes ? ': ' + notes : ''}`,
+              reviewed_by: profile?.id,
+              reviewed_at: new Date().toISOString(),
+            });
+            if (leaveError) throw leaveError;
+
+            // 2. Also insert staff_attendance as audit record
+            await supabase.from('staff_attendance').insert({
               profile_id: profileId,
               company_id: companyId,
               site_id: selectedSite,
@@ -4472,16 +4525,50 @@ export default function RotaBuilderPage() {
               shift_status: 'absent',
               shift_notes: `${reason}${notes ? ': ' + notes : ''}`,
             });
-            if (error) throw error;
+
+            // 3. If sick, also create a sickness record
+            if (reason === 'sick') {
+              const staffMember = staff.find(s => s.id === profileId);
+              await supabase.from('staff_sickness_records').insert({
+                company_id: companyId,
+                site_id: selectedSite,
+                staff_member_id: profileId,
+                staff_member_name: staffMember?.full_name || 'Unknown',
+                illness_onset_date: shift.shift_date,
+                symptoms: notes || 'Reported sick via rota',
+                exclusion_period_start: shift.shift_date,
+                reported_by: profile?.id,
+                reported_date: new Date().toISOString().split('T')[0],
+                status: 'active',
+              });
+            }
+
+            // 4. Reload rota data so the absence shows immediately
             toast.success('Absence recorded');
+            await loadData();
           }}
           onEditShift={(shift) => {
             setEditingShift(shift as Shift);
           }}
+          onAssignShift={(shiftId) => setMobileAssignShiftId(shiftId)}
           currentUserId={profile?.id}
           isUserClockedIn={userAttendanceStatus?.onShift ?? false}
           canManageRota={canManageRota}
           siteId={selectedSite}
+        />
+
+        {/* Staff Picker Sheet for assigning staff to open shifts */}
+        <StaffPickerSheet
+          isOpen={!!mobileAssignShiftId}
+          onClose={() => setMobileAssignShiftId(null)}
+          onSelectStaff={async (staffId) => {
+            if (mobileAssignShiftId) {
+              await handleAssignStaff(mobileAssignShiftId, staffId);
+              setMobileAssignShiftId(null);
+            }
+          }}
+          staff={assignmentStaff}
+          shiftInfo={mobileAssignShiftId ? shifts.find(s => s.id === mobileAssignShiftId) : null}
         />
       </div>
     );
