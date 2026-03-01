@@ -4,20 +4,16 @@
 // CertificateTaskModal - Handle Certificate Expiry Tasks
 // ============================================================================
 // Task-aware modal for handling certificate expiry tasks from Today's Tasks
-// Allows managers to:
-// 1. View certificate details (employee, type, current expiry)
-// 2. Update the expiry date when certificate is renewed
-// 3. Optionally book training if certificate needs renewal
-//
-// Writes to training_records (single source of truth).
-// DB trigger syncs changes back to profile cert fields automatically.
+// Two clear paths:
+// 1. Book Training Course (primary) – books a course and auto-completes task
+// 2. Update Expiry Date (secondary) – records renewed cert and completes task
 // ============================================================================
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { X, Calendar, Award, AlertCircle, Loader2, User, Clock, ExternalLink, Mail } from '@/components/ui/icons'
+import { X, Calendar, Award, AlertCircle, Loader2, BookOpen, Mail } from '@/components/ui/icons'
 import type { ChecklistTaskWithTemplate } from '@/types/checklist-types'
-import { AssignCourseModal } from '@/components/training/AssignCourseModal'
+import { BookCourseFromTaskModal } from '@/components/training/BookCourseFromTaskModal'
 
 interface CertificateTaskModalProps {
   task: ChecklistTaskWithTemplate
@@ -55,7 +51,8 @@ export default function CertificateTaskModal({
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [employee, setEmployee] = useState<any>(null)
-  const [showAssignModal, setShowAssignModal] = useState(false)
+  const [currentUserProfile, setCurrentUserProfile] = useState<any>(null)
+  const [showBookModal, setShowBookModal] = useState(false)
   const [resolvedCourse, setResolvedCourse] = useState<{ id: string; name: string } | null>(null)
 
   // Form state
@@ -69,6 +66,7 @@ export default function CertificateTaskModal({
   const currentExpiry = taskData?.expiry_date
   const daysUntilExpiry = taskData?.days_until_expiry
   const level = taskData?.level
+  const taskSiteId = task.site_id || taskData?.site_id || null
 
   // training_certificate tasks come from training_records and carry course_id + course_name directly
   const isTrainingRecord = sourceType === 'training_certificate'
@@ -80,7 +78,7 @@ export default function CertificateTaskModal({
     ? (courseName || 'Training Certificate')
     : (CERTIFICATE_LABELS[certificateType] || certificateType)
 
-  // Resolve the training course for the assign button
+  // Resolve the training course for the book button
   useEffect(() => {
     if (!isOpen || !employee?.company_id) return
 
@@ -114,39 +112,52 @@ export default function CertificateTaskModal({
     resolveCourse()
   }, [isOpen, employee?.company_id, isTrainingRecord, courseId, courseName, certificateType, level])
 
-  // Load employee data
+  // Load employee data + current user profile
   useEffect(() => {
     if (!isOpen || !profileId) return
 
-    const loadEmployee = async () => {
+    const loadData = async () => {
       try {
         setLoading(true)
         setError(null)
 
-        const { data, error: profileError } = await supabase
-          .from('profiles')
-          .select('id, full_name, email, company_id')
-          .eq('id', profileId)
-          .single()
+        // Load employee and current user in parallel
+        const { data: { user } } = await supabase.auth.getUser()
 
-        if (profileError) throw profileError
+        const [employeeResult, profileResult] = await Promise.all([
+          supabase
+            .from('profiles')
+            .select('id, full_name, email, company_id')
+            .eq('id', profileId)
+            .single(),
+          user ? supabase
+            .from('profiles')
+            .select('id, company_id')
+            .eq('auth_user_id', user.id)
+            .maybeSingle() : Promise.resolve({ data: null, error: null }),
+        ])
 
-        setEmployee(data)
+        if (employeeResult.error) throw employeeResult.error
+        setEmployee(employeeResult.data)
 
-        // Pre-fill with suggested renewal date (1 year from now for most certs)
+        if (profileResult.data) {
+          setCurrentUserProfile(profileResult.data)
+        }
+
+        // Pre-fill with suggested renewal date (1 year from now)
         const suggestedDate = new Date()
         suggestedDate.setFullYear(suggestedDate.getFullYear() + 1)
         setNewExpiryDate(suggestedDate.toISOString().split('T')[0])
 
       } catch (err) {
-        console.error('Error loading employee:', err)
-        setError(err instanceof Error ? err.message : 'Failed to load employee data')
+        console.error('Error loading data:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load data')
       } finally {
         setLoading(false)
       }
     }
 
-    loadEmployee()
+    loadData()
   }, [isOpen, profileId])
 
   const handleUpdateExpiry = async () => {
@@ -156,18 +167,16 @@ export default function CertificateTaskModal({
       setSubmitting(true)
       setError(null)
 
-      // Resolve course ID - training_certificate tasks already have it, profile-based tasks need lookup
+      // Resolve course ID
       let resolvedCourseId: string
 
       if (isTrainingRecord && courseId) {
         resolvedCourseId = courseId
       } else {
-        // Resolve course code from certificate_type
         const codeResolver = CERT_TYPE_TO_COURSE_CODE[certificateType]
         if (!codeResolver) throw new Error(`Unknown certificate type: ${certificateType}`)
         const courseCode = typeof codeResolver === 'function' ? codeResolver(level) : codeResolver
 
-        // Look up the course
         const { data: course, error: courseError } = await supabase
           .from('training_courses')
           .select('id')
@@ -181,11 +190,9 @@ export default function CertificateTaskModal({
         resolvedCourseId = course.id
       }
 
-      // Get current user for recorded_by
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
-      // Use complete_training() RPC - handles upsert
       const { error: rpcError } = await supabase.rpc('complete_training', {
         p_profile_id: profileId,
         p_course_id: resolvedCourseId,
@@ -198,7 +205,6 @@ export default function CertificateTaskModal({
 
       if (rpcError) throw rpcError
 
-      // Complete the task
       await completeTask()
 
     } catch (err) {
@@ -270,109 +276,123 @@ export default function CertificateTaskModal({
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-theme-surface rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden border border-theme">
 
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-theme">
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${isExpired ? 'bg-red-500/20' : isUrgent ? 'bg-amber-500/20' : 'bg-amber-500/10'}`}>
-              <Award className={`w-5 h-5 ${isExpired ? 'text-red-400' : 'text-amber-400'}`} />
+        {/* Header with employee info */}
+        <div className="p-5 border-b border-theme">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${isExpired ? 'bg-red-500/20' : isUrgent ? 'bg-amber-500/20' : 'bg-amber-500/10'}`}>
+                <Award className={`w-5 h-5 ${isExpired ? 'text-red-400' : 'text-amber-400'}`} />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-theme-primary">
+                  {isNoExpiry ? 'Set Certificate Expiry' : 'Certificate Renewal'}
+                </h2>
+                <p className="text-sm text-theme-tertiary">{certificateLabel}</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-theme-primary">
-                {isNoExpiry ? 'Set Certificate Expiry' : 'Certificate Renewal'}
-              </h2>
-              <p className="text-sm text-theme-tertiary">{certificateLabel}</p>
+            <button
+              onClick={onClose}
+              disabled={submitting}
+              className="p-2 hover:bg-theme-hover rounded-lg transition-colors disabled:opacity-50"
+            >
+              <X className="w-5 h-5 text-theme-tertiary" />
+            </button>
+          </div>
+
+          {/* Compact employee row */}
+          <div className="flex items-center gap-3 bg-theme-muted rounded-lg px-3 py-2.5">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+              {employee?.full_name?.charAt(0) || 'U'}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm text-theme-primary font-medium truncate">{employee?.full_name || 'Unknown Employee'}</div>
+              <div className="text-xs text-theme-tertiary truncate">{employee?.email}</div>
+            </div>
+            <div className="text-right flex-shrink-0">
+              <div className="text-xs text-theme-tertiary">Expiry</div>
+              <div className={`text-sm font-medium ${isExpired ? 'text-red-400' : isUrgent ? 'text-amber-400' : isWarning ? 'text-yellow-400' : 'text-green-400'}`}>
+                {isNoExpiry ? 'Not set' : isExpired ? 'EXPIRED' : currentExpiry ? new Date(currentExpiry).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Unknown'}
+              </div>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            disabled={submitting}
-            className="p-2 hover:bg-theme-hover rounded-lg transition-colors disabled:opacity-50"
-          >
-            <X className="w-5 h-5 text-theme-tertiary" />
-          </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-12rem)]">
+        <div className="p-5 space-y-4 overflow-y-auto max-h-[calc(90vh-14rem)]">
           {error && (
-            <div className="p-3 bg-red-100 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg flex items-start gap-3 text-red-600 dark:text-red-400 text-sm">
+            <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3 text-red-400 text-sm">
               <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
-          {/* Employee Info */}
-          <div className="bg-theme-muted rounded-lg p-4 border border-theme">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-semibold">
-                {employee?.full_name?.charAt(0) || 'U'}
+          {/* ============================================ */}
+          {/* SECTION 1: Book Training Course (PRIMARY)   */}
+          {/* ============================================ */}
+          {resolvedCourse && employee && (
+            <div className="rounded-xl border-2 border-[#D37E91]/40 bg-[#D37E91]/[0.06] p-5">
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="p-1.5 rounded-lg bg-[#D37E91]/20">
+                  <BookOpen className="w-4 h-4 text-[#D37E91]" />
+                </div>
+                <h3 className="text-theme-primary font-semibold">Book Training Course</h3>
               </div>
-              <div>
-                <div className="text-theme-primary font-medium">{employee?.full_name || 'Unknown Employee'}</div>
-                <div className="text-sm text-theme-tertiary">{employee?.email}</div>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <div className="text-xs text-theme-tertiary mb-1">Certificate Type</div>
-                <div className="text-theme-primary font-medium">{certificateLabel}</div>
-              </div>
-              {level && (
-                <div>
-                  <div className="text-xs text-theme-tertiary mb-1">Level</div>
-                  <div className="text-theme-primary font-medium">Level {level}</div>
-                </div>
-              )}
-              <div>
-                <div className="text-xs text-theme-tertiary mb-1">Current Expiry</div>
-                <div className={`font-medium ${isExpired ? 'text-red-400' : isUrgent ? 'text-amber-400' : 'text-theme-primary'}`}>
-                  {currentExpiry ? new Date(currentExpiry).toLocaleDateString() : 'Not set'}
-                </div>
-              </div>
-              <div>
-                <div className="text-xs text-theme-tertiary mb-1">Status</div>
-                <div className={`font-medium ${isExpired ? 'text-red-400' : isUrgent ? 'text-amber-400' : isWarning ? 'text-yellow-400' : 'text-green-400'}`}>
-                  {isNoExpiry ? 'No expiry set' : isExpired ? 'EXPIRED' : daysUntilExpiry !== undefined ? `${daysUntilExpiry} days remaining` : 'Unknown'}
-                </div>
-              </div>
-            </div>
-          </div>
+              <p className="text-sm text-theme-tertiary mb-4">
+                Send {employee.full_name?.split(' ')[0] || 'the employee'} a course enrolment link.
+                They&apos;ll receive a message on Msgly and a calendar reminder.
+              </p>
 
-          {/* Alert for expired/urgent */}
-          {(isExpired || isUrgent) && !isNoExpiry && (
-            <div className={`p-4 rounded-lg border ${isExpired ? 'bg-red-100 dark:bg-red-500/10 border-red-200 dark:border-red-500/30' : 'bg-amber-100 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30'}`}>
-              <div className="flex items-start gap-3">
-                <AlertCircle className={`w-5 h-5 flex-shrink-0 ${isExpired ? 'text-red-400' : 'text-amber-400'}`} />
+              <div className="bg-theme-surface/50 rounded-lg p-3 mb-4 flex items-center gap-3">
+                <Mail className="w-4 h-4 text-[#D37E91] flex-shrink-0" />
                 <div>
-                  <div className={`font-medium ${isExpired ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}>
-                    {isExpired ? 'Certificate Expired' : 'Certificate Expiring Soon'}
-                  </div>
-                  <div className="text-sm text-theme-secondary mt-1">
-                    {isExpired
-                      ? 'This certificate has expired. Please update with the new expiry date once renewed.'
-                      : 'This certificate will expire soon. Update the expiry date when the certificate is renewed.'}
-                  </div>
+                  <div className="text-sm text-theme-primary font-medium">{resolvedCourse.name}</div>
+                  <div className="text-xs text-theme-tertiary">£5.00 charge on completion</div>
                 </div>
               </div>
+
+              <button
+                onClick={() => setShowBookModal(true)}
+                disabled={submitting}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#D37E91] hover:bg-[#c06b7e] disabled:bg-[#D37E91]/50 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-semibold text-sm"
+              >
+                <BookOpen className="w-4 h-4" />
+                Book Course & Complete Task
+              </button>
             </div>
           )}
 
-          {/* Update Expiry Form */}
-          <div className="bg-theme-muted rounded-lg p-4 border border-theme">
-            <h3 className="text-theme-primary font-semibold mb-3 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-              {isNoExpiry ? 'Set Expiry Date' : 'Update Expiry Date'}
-            </h3>
+          {/* OR Divider */}
+          {resolvedCourse && employee && (
+            <div className="flex items-center gap-4">
+              <div className="flex-1 h-px bg-theme-hover" />
+              <span className="text-xs font-medium text-theme-tertiary uppercase tracking-wider">or</span>
+              <div className="flex-1 h-px bg-theme-hover" />
+            </div>
+          )}
+
+          {/* ============================================ */}
+          {/* SECTION 2: Update Expiry Date (SECONDARY)   */}
+          {/* ============================================ */}
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/[0.04] p-5">
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="p-1.5 rounded-lg bg-amber-500/20">
+                <Calendar className="w-4 h-4 text-amber-400" />
+              </div>
+              <h3 className="text-theme-primary font-semibold">
+                {isNoExpiry ? 'Set Expiry Date' : 'Update Expiry Date'}
+              </h3>
+            </div>
+
             <p className="text-sm text-theme-tertiary mb-4">
               {isNoExpiry
-                ? 'Enter the expiry date for this certificate.'
-                : 'Enter the new expiry date from the renewed certificate.'}
+                ? 'Already have the certificate? Enter the expiry date.'
+                : 'Already renewed? Enter the new expiry date from the certificate.'}
             </p>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div>
-                <label className="block text-sm text-theme-tertiary mb-2">New Expiry Date</label>
+                <label className="block text-xs font-medium text-theme-tertiary mb-1.5">New Expiry Date</label>
                 <input
                   type="date"
                   value={newExpiryDate}
@@ -381,15 +401,12 @@ export default function CertificateTaskModal({
                   disabled={submitting}
                   className="w-full px-3 py-2 bg-white dark:bg-white/[0.06] border border-theme rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
-                <p className="text-xs text-theme-tertiary mt-1">
-                  Select the expiry date shown on the renewed certificate
-                </p>
               </div>
 
               <button
                 onClick={handleUpdateExpiry}
                 disabled={!newExpiryDate || submitting}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-amber-600 hover:bg-amber-700 disabled:bg-amber-600/50 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-amber-600 hover:bg-amber-700 disabled:bg-amber-600/50 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium text-sm"
               >
                 {submitting ? (
                   <>
@@ -408,19 +425,7 @@ export default function CertificateTaskModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between gap-3 p-6 border-t border-theme">
-          <div>
-            {resolvedCourse && employee && (
-              <button
-                onClick={() => setShowAssignModal(true)}
-                disabled={submitting}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#D37E91] hover:bg-[#c06b7e] text-white rounded-lg transition-colors disabled:opacity-50"
-              >
-                <Mail className="w-4 h-4" />
-                Book Training Course
-              </button>
-            )}
-          </div>
+        <div className="flex items-center justify-end p-4 border-t border-theme">
           <button
             onClick={onClose}
             disabled={submitting}
@@ -431,17 +436,23 @@ export default function CertificateTaskModal({
         </div>
       </div>
 
-      {/* Assign Course Modal */}
-      {showAssignModal && resolvedCourse && employee && (
-        <AssignCourseModal
+      {/* Book Course Modal */}
+      {showBookModal && resolvedCourse && employee && (
+        <BookCourseFromTaskModal
           isOpen={true}
-          onClose={() => setShowAssignModal(false)}
+          onClose={() => setShowBookModal(false)}
+          taskId={task.id}
           profileId={profileId}
-          profileName={employee.full_name || 'Employee'}
           courseId={resolvedCourse.id}
           courseName={resolvedCourse.name}
+          employeeName={employee.full_name || 'Employee'}
+          companyId={employee.company_id}
+          siteId={taskSiteId}
+          managerId={currentUserProfile?.id || profileId}
           onSuccess={() => {
-            setShowAssignModal(false)
+            setShowBookModal(false)
+            onComplete()
+            onClose()
           }}
         />
       )}
