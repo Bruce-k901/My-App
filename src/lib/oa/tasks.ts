@@ -68,7 +68,7 @@ export async function createReminder(params: OACreateReminderParams): Promise<st
       .from('notifications')
       .insert({
         company_id: params.companyId,
-        profile_id: params.recipientUserId,
+        recipient_user_id: params.recipientUserId,
         type: 'task',
         title: params.title,
         message: params.message || null,
@@ -117,7 +117,7 @@ export async function sendNotification(params: OASendNotificationParams): Promis
     };
 
     if (params.siteId) insertData.site_id = params.siteId;
-    if (params.recipientUserId) insertData.profile_id = params.recipientUserId;
+    if (params.recipientUserId) insertData.recipient_user_id = params.recipientUserId;
     if (params.recipientRole) insertData.recipient_role = params.recipientRole;
 
     const { data: notification, error: notifError } = await admin
