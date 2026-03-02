@@ -39,7 +39,7 @@ export default function ContractorCard({
 
   // Create subtitle for line 2: Region (left) + Email/Phone (right)
   const createSubtitle = () => {
-    const leftSide = contractor.region || "—";
+    const leftSide = contractor.region || "-";
     const rightSide = [contractor.email, contractor.phone].filter(Boolean).join(" • ");
     return rightSide ? `${leftSide} • ${rightSide}` : leftSide;
   };
@@ -60,7 +60,7 @@ export default function ContractorCard({
         <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
           {/* Category name (faded) */}
           <span className="text-sm text-theme-tertiary mr-2">
-            {contractor.category || "—"}
+            {contractor.category || "-"}
           </span>
           <CardChevron 
             isOpen={isOpen} 
@@ -190,6 +190,6 @@ function LinkField({ label, value, type, showPlaceholder = false }: { label: str
 }
 
 function formatMoney(amount?: number | null): string {
-  if (amount === null || amount === undefined) return "—";
+  if (amount === null || amount === undefined) return "-";
   return `£${amount.toFixed(2)}`;
 }
